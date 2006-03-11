@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2005 The eFaps Team
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+
+<document>
+  <properties>
+    <title>Configuration</title>
+  </properties>
+  <body>
+    <section name="Forms">
+      <subsection name="Settings for Forms">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Default Value</th>
+              <th>Possible Values</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ExpandAttribute</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>FooterMenu</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>HeaderMenu</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </subsection>
+    </section>
+
+    <section name="Tables">
+      <subsection name="Settings for Tables">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Default Value</th>
+              <th>Possible Values</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ExpandAttribute</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>FooterMenu</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>HeaderMenu</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>SelectionColRef</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </subsection>
+    </section>
+
+    <section name="Fields for Forms and Tables">
+      <subsection name="Settings for Fields">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Default Value</th>
+              <th>Possible Values</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AlternateOID</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Columns</td>
+              <td>20</td>
+              <td>number</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Creatable</td>
+              <td>true</td>
+              <td>boolean</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>CreateValue</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Editable</td>
+              <td>true</td>
+              <td>[Boolean]</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Expression</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>GroupCount</td>
+              <td></td>
+              <td>[Number]</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Hidden</td>
+              <td>false</td>
+              <td>boolean</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>HRef</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Icon</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Label</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>ProgramValue</td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Required</td>
+              <td>false</td>
+              <td>[Boolean]</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Rows</td>
+              <td>1</td>
+              <td>[Number]</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Searchable</td>
+              <td>true</td>
+              <td>[Boolean]</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>ShowTypeIcon</td>
+              <td>false</td>
+              <td>[Boolean]</td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Target</td>
+              <td></td>
+              <td>content / hidden / popup</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </subsection>
+    </section>
+
+  </body>
+</document>

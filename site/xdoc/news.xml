@@ -1,0 +1,35 @@
+<!--
+
+ Copyright 2005 The eFaps Team
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+
+<document>
+  <body>
+    <news>
+      <entry name="2005-11-06 - First published Release">
+        <p>First official release on <a href="http://www.efaps.org/site">www.efaps.org</a>:</p>
+        <ul>
+          <li>web site is generated with Maven (and also uploaded with Maven)</li>
+          <li>rudimentary WebDAV integration (as hack)</li>
+          <li>rudimentary JAAS support (hack)</li>
+          <li>using Apache Tomcat 5.5</li>
+          <li>Maven JavaCC plugin used (instead of having generated code in the source tree)</li>
+          <li>Licensed under <a href="license.html">Apache License 2.0</a></li>
+        </ul>
+      </entry>
+    </news>
+  </body>
+</document>

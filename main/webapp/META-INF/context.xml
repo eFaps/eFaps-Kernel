@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context path="/eFaps" docBase="S:/efaps/application/target/eFaps" debug="1">
+
+  <Resource 
+      name="jdbc/eFaps" 
+      auth="Container" 
+      type="javax.sql.DataSource"
+      factory="org.apache.commons.dbcp.BasicDataSourceFactory"
+      username="APP"
+      password="APP"
+      driverClassName="org.apache.derby.jdbc.ClientDriver"
+      url="jdbc:derby://localhost:1527/efaps"
+      maxActive="100"
+      maxIdle="10"
+      maxWait="-1"
+      removeAbandoned="true"
+      logAbandoned="true"
+  />
+
+  <Realm 
+      className="org.apache.catalina.realm.JAASRealm"   
+      appName="eFaps"
+      userClassNames="org.efaps.jaas.UserPrincipal"       
+      roleClassNames="org.efaps.jaas.RolePrincipal"
+      debug="99"
+      useContextClassLoader="false"
+    />
+
+</Context>

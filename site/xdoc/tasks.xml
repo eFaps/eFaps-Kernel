@@ -1,0 +1,301 @@
+<!--
+
+ Copyright 2005 The eFaps Team
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+
+<document>
+  <properties>
+    <title>eFaps Task</title>
+    <author email="tim.moxter@efaps.org">tmo</author>
+  </properties>
+  <body>
+
+    <!--
+      *************************************************************************
+      Common
+    -->
+    <category name="Common" owner="tmo" description="eFaps Common Tasks">
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          All source files must get a header with license information
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Work on errors in Java source code created by Checkstyle report
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Repository for Source Code needed
+        </task>
+    </category>
+
+    <!--
+      *************************************************************************
+      Kernel
+    -->
+    <category name="Kernel" owner="tmo" description="eFaps Kernel Tasks">
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Transaction needed for files checkin / checkout
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Using Apache Commons VFS also for checkin via JDBC (org.efaps.db.Checkin) instead of hardcoding inside the class =&gt; idea is to use temporary files (maybe another concept is better...)
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Version / Revision of objects
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Implementation of triggers for pre / post / overwrite events for actions insert / update / check in / check out. =&gt; Idea is to create a general java interface which must be implemented for such a trigger; parameters must be flexible, so an 'event'-instance is given to the trigger methods
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          History???
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          User Access for all classes in package org.efaps.db 
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          User Preferences for prefered language (stored on the person object) =&gt; needed e.g. while logging in or sending emails to the user etc.
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Use JAAS as authentification (store information in the org.efaps.db.Context object)
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          JAAS login module must be reworked to support groups and roles
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Another JAAS login module needed wrapping vendor JAAS login modules and updating eFaps database with new users (person) and their related roles / groups
+        </task>
+    </category>
+
+    <!--
+      *************************************************************************
+      Kernel
+    -->
+    <category name="Trigger" owner="tmo" description="eFaps Common Triggers">
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Common Trigger to send eMails depending on defined users and their preferences
+        </task>
+    </category>
+
+    <!--
+      *************************************************************************
+      Shell integration
+    -->
+    <category name="Shell" owner="tmo" description="eFaps JavaScript Shell Integration">
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Login must be possible (not hardcoded to person 'Administrator')
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Roles must be importable and exportable
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Trigger Definitions must be importable and exportable
+        </task>
+    </category>
+
+    <!--
+      *************************************************************************
+      Web Application
+    -->
+    <category name="Application" owner="tmo" description="eFaps Web Application Tasks">
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Table list on "Administration -&gt; Data Model -&gt; Types" does not work...
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Remove action on tree folder does not work if the sub category is added from a web form on tree menu level.
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Using of JAAS for authentification (rework of the login servlet)
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Defining JSP-filter testing that a user is logged in (instead of testing in JSP code)
+        </task>
+    </category>
+
+    <!--
+      *************************************************************************
+      WebDAV Integration
+    -->
+    <category name="WebDAV" owner="tmo" description="eFaps WebDav Integration Tasks">
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          The store class is in wrong package org.apache.slide...., must be in org.efaps.webdav package
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Transaction must be reworked, sometimes does not work correctly
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Caching of more information within one transaction (so that only one sql access is needed) to improve performance
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Move Domain.xml from web application root directory to WEB-INF directory
+        </task>
+    </category>
+
+    <!--
+      *************************************************************************
+      TeamCenter
+    -->
+    <category name="TeamCenter" owner="tmo" description="eFaps Team Center application">
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Member Category for root rolders
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          Access Category for rolders
+        </task>
+        <task creator="tmo"
+              assignedto="" 
+              startdate="2005-11-06" 
+              enddate="" 
+              effort="" 
+              status="Created">
+          subscription category for folders and root folders
+        </task>
+    </category>
+
+
+  </body>
+</document>

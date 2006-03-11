@@ -1,0 +1,76 @@
+/**
+ *
+ */
+
+.eFapsCalendarTable {
+	border-width: 1;
+	border-style: solid;
+	border-color: #007700;
+	empty-cells: show;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	border-collapse: collapse;
+	background-color: #FFFFFF;
+}
+
+.eFapsCalendarHeadText {
+	font-size: 9px;
+	text-align: center;
+	color: #008800;
+	background-color: #FFFFFF;
+}
+
+.eFapsCalendarHeader {
+	font-size: 10px;
+	text-align: center;
+	font-weight:bold;
+	color: #FFFFFF;
+	background-color: #008800;
+}
+
+/**
+ * css for the cells which are NOT in the current month
+ */
+td.eFapsCalendarNotCurMonth {
+	background-color: #DDFFDD;
+	border-color: #008800;
+	border-width: 1;
+	border-style: solid;
+	padding: 2px;
+}
+a.eFapsCalendarNotCurMonth {
+	color: #AAAAAA;
+}
+
+/**
+ * css for the cells which are in the current month
+ */
+td.eFapsCalendarCurMonth {
+	background-color: #00CC00;
+	border-color: #008800;
+	border-width: 1;
+	border-style: solid;
+	padding: 2px;
+}
+a.eFapsCalendarCurMonth {
+	color: #FFFFFF;
+}
+
+/**
+ * css for the cell which representated the current date!
+ */
+td.eFapsCalendarCurDate {
+	background-color: #BB0000;
+	border-color: #008800;
+	border-width: 1;
+	border-style: solid;
+	padding: 2px;
+}
+a.eFapsCalendarCurDate {
+	color: #FFFFFF;
+}
+
+.eFapsCalendarImage {
+	border-width: 0;
+	border-style: none;
+}

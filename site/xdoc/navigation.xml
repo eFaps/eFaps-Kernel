@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2005 The eFaps Team
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+      http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+
+<project name="eFaps">
+  <title>eFaps</title>
+  <body>
+    <links>
+      <item href="http://maven.apache.org/" name="Maven">
+      </item>
+    </links>
+    <menu name="Overview">
+      <item href="/overview/download.html" name="Download"/>
+    </menu>
+
+    <menu name="Documentation">
+      <item href="/configuration/index.html" name="Configuration" collapse="true">
+
+        <item href="/configuration/datamodel/index.html" name="Data Model" collapse="true">
+          <item href="/configuration/datamodel/sqltables.html" name="SQL Tables"/>
+          <item href="/configuration/datamodel/types.html" name="Types"/>
+          <item href="/configuration/datamodel/attributetypes.html" name="Attribute Types"/>
+        </item>
+
+        <item href="/configuration/ui/index.html" name="User Interface" collapse="true">
+          <item href="/configuration/ui/commands.html" name="Commands and Menus"/>
+          <item href="/configuration/ui/collections.html" name="Collections (Forms and Tables)"/>
+        </item>
+
+      </item>
+
+    </menu>
+
+    <menu name="Installation">
+      <item href="/installation/jaas.html" name="JAAS Authentication"/>
+    </menu>
+
+    <!-- google search -->
+<!--
+    <search/>
+-->
+</body>
+</project>

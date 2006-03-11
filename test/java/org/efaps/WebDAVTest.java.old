@@ -1,0 +1,52 @@
+package org.efaps;
+
+import java.io.File;
+import java.util.List;
+import java.util.ArrayList;
+
+import junit.framework.TestCase;
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
+//import org.apache.commons.httpclient.auth.AuthPolicy;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+
+/**
+ * Unit test for simple App.
+ *
+ * @author <a href="mailto:jason@zenplex.com">Jason van Zyl</a>
+ */
+public class WebDAVTest extends AbstractTestCase  {
+
+  /**
+   * Create the test case
+   *
+   * @param testName name of the test case
+   */
+  public WebDAVTest(String _testName)  {
+      super(_testName);
+  }
+
+  /**
+   * @return the suite of tests being tested
+   */
+  public static Test suite()  {
+    return new TestSuite(WebDAVTest.class);
+  }
+
+  /**
+   * Rigourous Test :-)
+   */
+  public void testApp()  {
+
+    HttpClient client = new HttpClient();
+    Credentials cred = new UsernamePasswordCredentials("Administrator", "Administrator");
+
+client.getState().setCredentials(null, cred);
+
+System.out.println("jallo");
+      assertEquals( "maven kicks ass", "maven kicks ass" );
+  }
+}

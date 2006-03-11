@@ -1,0 +1,179 @@
+/******************************************************************************
+** Default Settings 
+******************************************************************************/
+
+/* Background Appearance */
+body {
+	background-color: white;
+}
+
+/* Font Appearance */
+body, th, td, p, div {
+	font-family: arial, verdana, helvetica, sans-serif;
+	font-size: 8pt;
+}
+
+/* table width is normaly 99% */
+table {
+	width: 99%;
+	empty-cells: show;
+}
+
+/*****************************************************************************/
+/* Frame Header                                                              */
+/*****************************************************************************/
+
+/* div for the complete header */
+div.eFapsFrameHeader {
+	left: 0px; 
+	top: 0px; 
+	height: 85px;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+div.eFapsFrameHeaderTitle {  
+	white-space: nowrap;
+	font-size: 13pt;
+	font-weight: bold;
+	position: absolute;
+	height: 33px;
+	padding-top: 6px;
+	margin-top: 14px;
+	margin-left: 16px;
+	vertical-align: bottom;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: black;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: black;
+}
+
+/* problem of mozilla and IE: width must be different! here for mozilla */
+#eFapsFrameHeaderTitle[id] {
+	position: static;
+	margin-right: 17px;
+	margin-top: 13px;
+	padding-top: 7px;
+	height: 26px;
+}
+
+span.eFapsFrameHeaderTitle {
+	width: 100%;
+}
+
+#eFapsFrameHeaderProgressBar  {
+	position: absolute;
+	top: 2px;
+	right: 30px;
+}
+
+/*****************************************************************************/
+/* Frame Filter                                                              */
+/*****************************************************************************/
+
+div.eFapsFrameFilter  {
+	position: absolute;
+	right: 20px;
+	top: 20px;
+}
+/******************************************************************************
+** Style Sheet for Web Forms
+******************************************************************************/
+
+/* Default Label Appearance */
+td.eFapsFormLabel {
+        color: black;
+        font-weight: bold;
+        height: 24px;
+        border-bottom: 1px solid black; 
+}
+
+/* Required Label Appearance */
+td.eFapsFormLabelRequired {
+        color: black;
+        font-weight: bold;
+        height: 24px;
+        font-style: italic;
+        border-bottom: 1px solid black; 
+}
+
+/* Input Field Appearance */
+td.eFapsFormInputField  {
+        font-size: 12px;
+        border-bottom: 1px solid black; 
+}
+
+td.eFapsFormInputField a:link,
+td.eFapsFormInputField a:visited,
+td.eFapsFormInputField a img  {
+	text-decoration: none;
+        color: black;
+        border-style: none;
+}
+
+/******************************************************************************
+** Style Sheet for Web Tables
+******************************************************************************/
+
+/* web table itself */
+table.eFapsTable  {
+	width: 100%;
+	margin-top: -8px;
+	padding-left: 6px;
+}
+
+/* Table Header Appearance */
+th.eFapsTableHeader {
+        text-align: left;
+        border-top: 2px solid black; 
+        border-bottom: 2px solid black; 
+}
+
+/* Table Header Link Appearance */
+th.eFapsTableHeader a {
+	color: black;
+        text-align: left;
+        text-decoration: none;
+}
+th.eFapsTableHeader a:hover {
+        text-decoration: underline;
+        color: black;
+}
+
+/* Table Header Image */
+th.eFapsTableHeader a img {
+	border-style: none;
+	border-width: 0;
+}
+
+/* Odd Table Row Appearance */
+tr.eFapsTableRowOdd {
+}
+
+/* Even Table Row Appearance */
+tr.eFapsTableRowEven {
+}
+
+/* one Column with values of a web table */
+tr.eFapsTableRowOdd td,
+tr.eFapsTableRowEven td  {
+        color: black;
+        border-bottom: 1px solid black; 
+}
+
+/* references in table columns */
+tr.eFapsTableRowOdd td a,
+tr.eFapsTableRowEven td a {
+        text-decoration: none;
+        color: black;
+}
+
+/* image of buttons in a row of a web table */
+tr.eFapsTableRowOdd td a img,
+tr.eFapsTableRowEven td a img  {
+	border-width: 0;
+	border-style: none;
+}
