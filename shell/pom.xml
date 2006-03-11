@@ -22,7 +22,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.efaps</groupId>
   <packaging>jar</packaging>
-  <artifactId>shell</artifactId>
+  <artifactId>eFaps-Shell</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <parent>
@@ -35,8 +35,6 @@
   * Project itself
   ************************************************************************+ -->
   <build>
-    <finalName>eFaps</finalName>
-
     <plugins>
       <!--
         Compiler Settings:
@@ -60,7 +58,7 @@
   <dependencies>
     <dependency>
       <groupId>org.efaps</groupId>
-      <artifactId>kernel</artifactId>
+      <artifactId>eFaps-Kernel</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
