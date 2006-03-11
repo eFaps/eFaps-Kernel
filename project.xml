@@ -61,7 +61,7 @@
        scm:<system>:<system specific connection string> -->
 
   <repository>
-    <connection>scm:svn:https://tmo@moxter.net:4443/svn/efaps/trunk</connection>
+    <connection>scm:svn:https://moxter.net:4443/svn/efaps/trunk</connection>
     <url>https://moxter.net:4443/svn/efaps/</url>
   </repository>
   <!-- any mailing lists for the project -->
