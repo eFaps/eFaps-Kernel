@@ -24,24 +24,29 @@
   <groupId>org.efaps</groupId>
 
   <artifactId>efaps</artifactId>
+  <inceptionYear>2002</inceptionYear>
+  <description></description>
+  <version>1.0-SNAPSHOT</version>
 
 <!--  <packaging>jar</packaging>-->
 <packaging>war</packaging>
-  <version>1.0-SNAPSHOT</version>
   <name>eFaps</name>
   <url>http://www.efaps.org/site</url>
 
 
   <developers>
     <developer>
-      <id/>
+      <id>tmo</id>
       <name>Tim Moxter</name>
-      <email/>
-      <url/>
-      <organization/>
+      <email>tim.moxter@efaps.org</email>
+      <url>www.efaps.org</url>
+      <organization>eFaps</organization>
       <organizationUrl/>
-      <roles/>
-      <timezone/>
+      <roles>
+        <role>Architect</role>
+        <role>Release Manager</role>
+      </roles>
+      <timezone>+1</timezone>
       <properties/>
     </developer>
   </developers>
