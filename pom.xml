@@ -29,7 +29,7 @@
   <version>1.0-SNAPSHOT</version>
 
 <!--  <packaging>jar</packaging>-->
-<packaging>war</packaging>
+<packaging>pom</packaging>
   <name>eFaps</name>
   <url>http://www.efaps.org/site</url>
 
@@ -80,41 +80,6 @@
 
     <plugins>
       <!--
-        Compiler Settings:
-        - Java 1.5 is needed!
-      -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-          <!--compileSourceRoots>${project.compileSourceRoots}</compileSourceRoots-->
-        </configuration>
-      </plugin>
-
-      <!--
-        JavaCC Settings:
-        - Target package must be set
-        - goal 'javacc' must be called in phase 'process-resources'
-      -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>javacc-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>process-resources</phase>
-            <configuration>
-              <packageName>org.efaps.beans.valueparser</packageName>
-            </configuration>
-            <goals>
-              <goal>javacc</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!--
         Resources settings:
         - no psd images, only js, gif and properties
       -->
@@ -143,6 +108,14 @@
 
     </plugins>
   </build>
+
+
+  <!-- ************************************************************************
+  * All Modules
+  ************************************************************************+ -->
+<modules>
+  <module>kernel</module>
+</modules>
 
   <!-- ************************************************************************
   * Report Description
