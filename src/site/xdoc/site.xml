@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2005 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+-->
+
+<project name="eFaps">
+
+  <!--bannerLeft>
+    <name>Maven</name>
+    <src>http://maven.apache.org/images/apache-maven-project.png</src>
+    <href>http://maven.apache.org/</href>
+  </bannerLeft-->
+  <bannerRight>
+    <src>images/logo.jpg</src>
+  </bannerRight>
+
+  <body>
+    <links>
+      <item name="Maven 2" href="http://maven.apache.org/maven2/"/>
+    </links>
+
+    <menu name="Overview">
+      <item name="Download" href="overview/download.html"/>
+    </menu>
+<!--
+
+    <menu name="Overview">
+      <item name="Download" href="/overview/download.html"/>
+    </menu>
+
+    <menu name="Documentation">
+      <item name="Configuration"      href="/configuration/index.html" collapse="true">
+        <item name="Data Model"         href="/configuration/datamodel/index.html" collapse="true">
+          <item name="SQL Tables"       href="/configuration/datamodel/sqltables.html" />
+          <item name="Types"            href="/configuration/datamodel/types.html"/>
+          <item name="Attribute Types"  href="/configuration/datamodel/attributetypes.html"/>
+        </item>
+      </item>
+
+      <item name="User Interface"     href="/configuration/ui/index.html" collapse="true">
+        <item name="Commands and Menus" href="/configuration/ui/commands.html"/>
+        <item name="Collections (Forms and Tables)" href="/configuration/ui/collections.html"/>
+      </item>
+    </menu>
+    <menu name="Installation">
+      <item name="JAAS Authentication" href="/installation/jaas.html"/>
+    </menu>
+-->
+
+    ${reports}
+
+  </body>
+
+</project>
