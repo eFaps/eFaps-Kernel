@@ -306,8 +306,8 @@ try  {
 
 
 int incSelIndex = 0;
-/*      JoinRowSet jrs = new JoinRowSetImpl();*/
-oracle.jdbc.rowset.OracleJoinRowSet jrs = new oracle.jdbc.rowset.OracleJoinRowSet();
+JoinRowSet jrs = new JoinRowSetImpl();
+/*oracle.jdbc.rowset.OracleJoinRowSet jrs = new oracle.jdbc.rowset.OracleJoinRowSet();*/
 
       for (JoinElement joinElement : getJoinElements())  {
 
@@ -382,10 +382,9 @@ e.printStackTrace();
       Statement stmt = con.getConnection().createStatement();
       ResultSet rs = stmt.executeQuery(_completeStatement.getStatement().toString());
 
-oracle.jdbc.rowset.OracleCachedRowSet crs = new oracle.jdbc.rowset.OracleCachedRowSet();
-/*
+/*oracle.jdbc.rowset.OracleCachedRowSet crs = new oracle.jdbc.rowset.OracleCachedRowSet();*/
 CachedRowSet crs = new CachedRowSetImpl();
-*/
+
       crs.populate(rs);
       setResultSet(crs);
 

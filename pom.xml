@@ -1,0 +1,263 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.efaps</groupId>
+
+  <artifactId>efaps</artifactId>
+
+<!--  <packaging>jar</packaging>-->
+<packaging>war</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <name>eFaps</name>
+  <url>http://www.efaps.org/site</url>
+
+
+  <developers>
+    <developer>
+      <id/>
+      <name>Tim Moxter</name>
+      <email/>
+      <url/>
+      <organization/>
+      <organizationUrl/>
+      <roles/>
+      <timezone/>
+      <properties/>
+    </developer>
+  </developers>
+
+  <build>
+    <finalName>eFaps</finalName>
+
+    <plugins>
+      <!--
+        Compiler Settings:
+        - Java 1.5 is needed!
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+          <!--compileSourceRoots>${project.compileSourceRoots}</compileSourceRoots-->
+        </configuration>
+      </plugin>
+
+      <!--
+        JavaCC Settings:
+        - Target package must be set
+        - goal 'javacc' must be called in phase 'process-resources'
+      -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javacc-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>process-resources</phase>
+            <configuration>
+              <packageName>org.efaps.beans.valueparser</packageName>
+            </configuration>
+            <goals>
+              <goal>javacc</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.1</version>
+<!--
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>Needed from the Apache Jakarta String Taglibs component.</comment>
+      </properties>
+Needed from eFaps within toString methods.
+-->
+    </dependency>
+
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.1</version>
+<!--      <type>compile</type>-->
+      <!--url>http://jakarta.apache.org/commons/fileupload/</url-->
+      <!--properties>
+        <war.bundle>true</war.bundle>
+        <comment>The component is needed for the file upload use case from the eFaps web application. It helps to access in the form process JSP to a file like a normal request paramter.</comment>
+      </properties-->
+    </dependency>
+
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
+<!--
+      <url>http://jakarta.apache.org/commons/logging/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>For logging purpose the Apache Commons Loggin component is used (also used from slide and Java Server Faces).</comment>
+      </properties>
+-->
+    </dependency>
+
+    <dependency>
+      <groupId>commons-transaction</groupId>
+      <artifactId>commons-transaction</artifactId>
+      <version>1.1</version>
+
+<!--
+      <url>http://jakarta.apache.org/commons/transaction/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>
+        The Apache Commons Transaction component is used from eFaps for transaction handling.
+        The Apache Commons Transaction component is used also from the slide module (Version 1.0.1 must be used because slide Version 2.1 does not work with Commons Transaction Version 1.1!!)</comment>
+      </properties>
+-->
+
+    </dependency>
+
+    <dependency>
+      <groupId>geronimo-spec</groupId>
+      <artifactId>geronimo-spec-jta</artifactId>
+      <version>1.0-M1</version>
+<!--
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>It defines the javax.transaction interfaces used by eFaps.</comment>
+      </properties>
+-->
+    </dependency>
+
+
+    <dependency>
+      <groupId>commons-vfs</groupId>
+      <artifactId>commons-vfs</artifactId>
+      <version>20050307052300</version>
+<!--
+      <url>http://jakarta.apache.org/commons/vfs/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>Used from eFaps to access (load and store) files on external resources.</comment>
+      </properties>
+-->
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>compile</scope>
+<!--
+      <url>http://java.sun.com/products/servlet</url>
+      <properties>
+        <comment>Needed to compile the servlets from eFaps.</comment>
+      </properties>
+-->
+    </dependency>
+
+    <dependency>
+      <groupId>slide</groupId>
+      <artifactId>slide-kernel</artifactId>
+      <version>2.1</version>
+<!--
+      <url>http://jakarta.apache.org/slide</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>The component is part of the slide module.</comment>
+      </properties>
+-->
+    </dependency>
+
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+      <version>1.6R1</version>
+<!--
+      <properties>
+        <war.bundle>true</war.bundle>
+      </properties>
+Needed for the JavaScript interface to eFaps.
+-->
+
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.0</version>
+      <scope>test</scope>
+      <!--url>http://jakarta.apache.org/commons/fileupload/</url-->
+      <!--properties>
+        <war.bundle>true</war.bundle>
+        <comment>The component is needed for the file upload use case from the eFaps web application. It helps to access in the form process JSP to a file like a normal request paramter.</comment>
+      </properties-->
+    </dependency>
+
+    <!--
+      Derby Client
+    -->
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyclient</artifactId>
+      <version>10.1.2.1</version>
+      <scope>package</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_de_DE</artifactId>
+      <version>10.1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_es</artifactId>
+      <version>10.1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_fr</artifactId>
+      <version>10.1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_it</artifactId>
+      <version>10.1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_ja_JP</artifactId>
+      <version>10.1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_ko_KR</artifactId>
+      <version>10.1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_pt_BR</artifactId>
+      <version>10.1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_zh_CN</artifactId>
+      <version>10.1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_zh_TW</artifactId>
+      <version>10.1.2.1</version>
+    </dependency>
+
+  </dependencies>
+
+</project>
