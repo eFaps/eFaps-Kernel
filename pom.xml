@@ -18,6 +18,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
 -->
 
   <modelVersion>4.0.0</modelVersion>
@@ -316,20 +321,6 @@ Needed from eFaps within toString methods.
         <comment>The component is part of the slide module.</comment>
       </properties>
 -->
-    </dependency>
-
-    <dependency>
-      <groupId>rhino</groupId>
-      <artifactId>js</artifactId>
-      <version>1.6R1</version>
-      <scope>provided</scope>
-<!--
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-Needed for the JavaScript interface to eFaps.
--->
-
     </dependency>
 
     <!--
