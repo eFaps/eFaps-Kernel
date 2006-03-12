@@ -76,6 +76,7 @@
   * All Modules
   ************************************************************************+ -->
   <modules>
+    <module>derby</module>
     <module>kernel</module>
     <module>shell</module>
     <module>webapp</module>
@@ -207,6 +208,7 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.1</version>
+      <scope>provided</scope>
 <!--
       <properties>
         <war.bundle>true</war.bundle>
@@ -220,6 +222,7 @@ Needed from eFaps within toString methods.
       <groupId>commons-fileupload</groupId>
       <artifactId>commons-fileupload</artifactId>
       <version>1.1</version>
+      <scope>provided</scope>
 <!--      <type>compile</type>-->
       <!--url>http://jakarta.apache.org/commons/fileupload/</url-->
       <!--properties>
@@ -232,6 +235,7 @@ Needed from eFaps within toString methods.
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.0.4</version>
+      <scope>provided</scope>
 <!--
       <url>http://jakarta.apache.org/commons/logging/</url>
       <properties>
@@ -245,6 +249,7 @@ Needed from eFaps within toString methods.
       <groupId>commons-transaction</groupId>
       <artifactId>commons-transaction</artifactId>
       <version>1.1</version>
+      <scope>provided</scope>
 
 <!--
       <url>http://jakarta.apache.org/commons/transaction/</url>
@@ -262,6 +267,7 @@ Needed from eFaps within toString methods.
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-jta</artifactId>
       <version>1.0-M1</version>
+      <scope>provided</scope>
 <!--
       <properties>
         <war.bundle>true</war.bundle>
@@ -275,6 +281,7 @@ Needed from eFaps within toString methods.
       <groupId>commons-vfs</groupId>
       <artifactId>commons-vfs</artifactId>
       <version>20050307052300</version>
+      <scope>provided</scope>
 <!--
       <url>http://jakarta.apache.org/commons/vfs/</url>
       <properties>
@@ -288,7 +295,7 @@ Needed from eFaps within toString methods.
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.4</version>
-      <scope>compile</scope>
+      <scope>provided</scope>
 <!--
       <url>http://java.sun.com/products/servlet</url>
       <properties>
@@ -301,6 +308,7 @@ Needed from eFaps within toString methods.
       <groupId>slide</groupId>
       <artifactId>slide-kernel</artifactId>
       <version>2.1</version>
+      <scope>provided</scope>
 <!--
       <url>http://jakarta.apache.org/slide</url>
       <properties>
@@ -314,6 +322,7 @@ Needed from eFaps within toString methods.
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
       <version>1.6R1</version>
+      <scope>provided</scope>
 <!--
       <properties>
         <war.bundle>true</war.bundle>
@@ -336,61 +345,6 @@ Needed for the JavaScript interface to eFaps.
         <war.bundle>true</war.bundle>
         <comment>The component is needed for the file upload use case from the eFaps web application. It helps to access in the form process JSP to a file like a normal request paramter.</comment>
       </properties-->
-    </dependency>
-
-    <!--
-      Derby Client
-    -->
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyclient</artifactId>
-      <version>10.1.2.1</version>
-      <scope>package</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyLocale_de_DE</artifactId>
-      <version>10.1.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyLocale_es</artifactId>
-      <version>10.1.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyLocale_fr</artifactId>
-      <version>10.1.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyLocale_it</artifactId>
-      <version>10.1.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyLocale_ja_JP</artifactId>
-      <version>10.1.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyLocale_ko_KR</artifactId>
-      <version>10.1.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyLocale_pt_BR</artifactId>
-      <version>10.1.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyLocale_zh_CN</artifactId>
-      <version>10.1.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyLocale_zh_TW</artifactId>
-      <version>10.1.2.1</version>
     </dependency>
 
   </dependencies>
