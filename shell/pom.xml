@@ -101,6 +101,70 @@
       <artifactId>eFaps-Kernel</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
+
+    <!--
+      Derby Client
+    -->
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyclient</artifactId>
+      <version>10.1.2.1</version>
+      <scope>package</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_de_DE</artifactId>
+      <version>10.1.2.1</version>
+      <scope>package</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_es</artifactId>
+      <version>10.1.2.1</version>
+      <scope>package</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_fr</artifactId>
+      <version>10.1.2.1</version>
+      <scope>package</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_it</artifactId>
+      <version>10.1.2.1</version>
+      <scope>package</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_ja_JP</artifactId>
+      <version>10.1.2.1</version>
+      <scope>package</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_ko_KR</artifactId>
+      <version>10.1.2.1</version>
+      <scope>package</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_pt_BR</artifactId>
+      <version>10.1.2.1</version>
+      <scope>package</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_zh_CN</artifactId>
+      <version>10.1.2.1</version>
+      <scope>package</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyLocale_zh_TW</artifactId>
+      <version>10.1.2.1</version>
+      <scope>package</scope>
+    </dependency>
   </dependencies>
 
 </project>
