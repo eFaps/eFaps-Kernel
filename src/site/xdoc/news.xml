@@ -24,6 +24,21 @@
 <document>
   <body>
     <news>
+      <entry name="2006-03-12 - SubVersion / Update to Maven 2">
+        <ul>
+          <li>First import to the SubVersion Repository</li>
+          <li>Maven 2 is now used (replaces Maven 1.0)</li>
+          <li>Reorganisation of the Structure, now 4 Modules: derby, kernel,
+              shell and webapp</li>
+        </ul>
+      </entry>
+
+      <entry name="2006-01-15 - SubVersion Installed">
+        <ul>
+          <li>SubVersion Repository is installed</li>
+        </ul>
+      </entry>
+
       <entry name="2005-11-06 - First published Release">
         <p>First official release on <a href="http://www.efaps.org/site">www.efaps.org</a>:</p>
         <ul>
@@ -31,7 +46,8 @@
           <li>rudimentary WebDAV integration (as hack)</li>
           <li>rudimentary JAAS support (hack)</li>
           <li>using Apache Tomcat 5.5</li>
-          <li>Maven JavaCC plugin used (instead of having generated code in the source tree)</li>
+          <li>Maven JavaCC plugin used (instead of having generated code in
+              the source tree)</li>
           <li>Licensed under <a href="license.html">Apache License 2.0</a></li>
         </ul>
       </entry>
