@@ -59,8 +59,9 @@
       </item>
     </menu>
     <menu name="Installation">
-      <item name="Prerequisites" href="/installation/prerequisite.html"/>
-      <item name="JAAS Authentication" href="/installation/jaas.html"/>
+      <item name="Prerequisites"        href="/installation/prerequisite.html"/>
+      <item name="Derby DB"             href="/installation/derby.html"/>
+      <item name="JAAS Authentication"  href="/installation/jaas.html"/>
     </menu>
 
     ${reports}
