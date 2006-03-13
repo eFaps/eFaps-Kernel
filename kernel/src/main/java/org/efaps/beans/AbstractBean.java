@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.beans;
@@ -73,15 +76,6 @@ System.out.println("AbstractBean.destructor");
       setLoginPerson(Person.get(_loginName));
     }
   }
-
-  /**
-   * The instance method returns a new created context object with the current
-   * logged in person object in {@link #loginPerson}.
-   */
-  protected Context createNewContext() throws Exception  {
-    return new Context(getLoginPerson(), getLocale());
-  }
-
 
   /**
    * The instance method returns the locale object from the response object.

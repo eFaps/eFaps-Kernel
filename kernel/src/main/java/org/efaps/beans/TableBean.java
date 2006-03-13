@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.beans;
@@ -48,27 +51,26 @@ System.out.println("TableBean.destructor");
   }
 
   public void execute() throws Exception  {
-    Context context = createNewContext();
-    try  {
+    Context context = Context.getThreadContext();
 System.out.println("--->selectedFilter="+getSelectedFilter());
-      executeTitle(context);
+    executeTitle(context);
 
-      SearchQuery query = new SearchQuery();
+    SearchQuery query = new SearchQuery();
 
-      if (getCommand().getProperty("TargetQueryTypes")!=null)  {
-        query.setQueryTypes(context, getCommand().getProperty("TargetQueryTypes"));
-      } else if (getCommand().getProperty("TargetExpand")!=null)  {
-        query.setExpand(context, getInstance(), getCommand().getProperty("TargetExpand"));
+    if (getCommand().getProperty("TargetQueryTypes")!=null)  {
+      query.setQueryTypes(context, getCommand().getProperty("TargetQueryTypes"));
+    } else if (getCommand().getProperty("TargetExpand")!=null)  {
+      query.setExpand(context, getInstance(), getCommand().getProperty("TargetExpand"));
+    }
+
+    query.add(context, getTable());
+
+
+
+    if (getCommand().getTargetTableFilters()!=null)  {
+      if (getSelectedFilter()==0 && getCommand().getTargetTableFilters().size()>0)  {
+        setSelectedFilter(1);
       }
-
-      query.add(context, getTable());
-
-
-
-      if (getCommand().getTargetTableFilters()!=null)  {
-        if (getSelectedFilter()==0 && getCommand().getTargetTableFilters().size()>0)  {
-          setSelectedFilter(1);
-        }
 /*        if (getCommand().getTargetTableFilters().size()>=getSelectedFilter() && getSelectedFilter()>0)  {
           String clause = ((CommandAbstract.TargetTableFilter)getCommand().getTargetTableFilters().get(getSelectedFilter()-1)).getClause();
           if (clause!=null)  {
@@ -76,23 +78,15 @@ System.out.println("--->selectedFilter="+getSelectedFilter());
           }
         }
 */
-      }
-
-      query.execute(context);
-
-      setValues(new ArrayList<Row>());
-
-      executeRowResult(context, query);
-
-      setInitialised(true);
-    } catch (Exception e)  {
-      throw e;
-    } finally  {
-      try  {
-        context.close();
-      } catch (Exception e)  {
-      }
     }
+
+    query.execute(context);
+
+    setValues(new ArrayList<Row>());
+
+    executeRowResult(context, query);
+
+    setInitialised(true);
   }
 
   protected void executeTitle(Context _context) throws Exception {

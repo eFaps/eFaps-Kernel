@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.beans;
@@ -56,8 +59,7 @@ public abstract class AbstractCollectionBean extends AbstractBean implements Col
    * @see #targetFrame
    */
   public void setCommandName(String _name) throws Exception  {
-    Context context = createNewContext();
-    try  {
+      Context context = Context.getThreadContext();
       setCommand(Command.get(context, _name));
       if (getCommand()==null)  {
         setCommand(Menu.get(context, _name));
@@ -74,28 +76,21 @@ if (getCommand().getTargetMenu()!=null)  {
         setMode(getCommand().getTargetMode());
         setTargetFrame(getCommand().getTarget());
       }
-    } catch (Exception e)  {
-      throw e;
-    } finally  {
-      try  {
-        context.close();
-      } catch (Exception e)  {
-      }
-    }
   }
 
   /////////////////////////////////////////////////////////////////////////////
 
   public void startProcessView() throws Exception  {
 System.out.println("######## start view process");
-this.viewContext = createNewContext();
+//this.viewContext = createNewContext();
+this.viewContext = Context.getThreadContext();
   }
 
 
   public void endProcessView() throws Exception  {
 System.out.println("######## end view process");
-this.viewContext.close();
-this.viewContext = null;
+//this.viewContext.close();
+//this.viewContext = null;
   }
 
 Context viewContext = null;

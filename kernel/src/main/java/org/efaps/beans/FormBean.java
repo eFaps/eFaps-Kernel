@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.beans;
@@ -58,16 +61,15 @@ System.out.println("FormBean.destructor");
   /////////////////////////////////////////////////////////////////////////////
 
   public void execute() throws Exception  {
-    Context context = createNewContext();
-    try  {
-      if (isCreateMode())  {
-        setValues(new ArrayList());
-        getValues().add(null);
+    Context context = Context.getThreadContext();
+    if (isCreateMode())  {
+      setValues(new ArrayList());
+      getValues().add(null);
 
 Type type = getCommand().getTargetCreateType();
 
-        for (int i=0; i<getForm().getFields().size(); i++)  {
-          Field field = (Field)getForm().getFields().get(i);
+      for (int i=0; i<getForm().getFields().size(); i++)  {
+        Field field = (Field)getForm().getFields().get(i);
 
 
 if (field.getExpression()!=null)  {
@@ -84,31 +86,29 @@ if (field.getExpression()!=null)  {
   }
 }
 
-        }
-      } else  {
+      }
+    } else  {
 Instance instance = getInstance();
 if (ukInstance!=null)  {
   instance = ukInstance;
 }
-        SearchQuery query = new SearchQuery();
-        query.setObject(context, instance);
-        query.add(context, getForm());
+      SearchQuery query = new SearchQuery();
+      query.setObject(context, instance);
+      query.add(context, getForm());
 //        query.addAllFromString(context, getTitle());
 
 ValueParser parser = new ValueParser(new StringReader(getTitle()));
 ValueList list = parser.ExpressionString();
 list.makeSelect(context, query);
 
-        query.addAllFromString(context, getUkTitle());
-        query.execute(context);
+      query.addAllFromString(context, getUkTitle());
+      query.execute(context);
 
-
-
-        if (query.next())  {
-          setValues(new ArrayList());
-          getValues().add(query.getInstance(context, instance.getType()));
-          for (int i=0; i<getForm().getFields().size(); i++)  {
-            Field field = (Field)getForm().getFields().get(i);
+      if (query.next())  {
+        setValues(new ArrayList());
+        getValues().add(query.getInstance(context, instance.getType()));
+        for (int i=0; i<getForm().getFields().size(); i++)  {
+          Field field = (Field)getForm().getFields().get(i);
 
 if (field.getExpression()!=null)  {
   Object value = query.get(context, field);
@@ -121,21 +121,13 @@ if (field.getExpression()!=null)  {
     setMaxGroupCount(field.getGroupCount());
   }
 }
-          }
+        }
 //          setTitle(query.replaceAllInString(context, getTitle()));
 setTitle(list.makeString(context, query));
-          setUkTitle(query.replaceAllInString(context, getUkTitle()));
-        }
+        setUkTitle(query.replaceAllInString(context, getUkTitle()));
+      }
 
-        query.close();
-      }
-    } catch (Exception e)  {
-      throw e;
-    } finally  {
-      try  {
-        context.close();
-      } catch (Exception e)  {
-      }
+      query.close();
     }
   }
 
@@ -148,31 +140,11 @@ setTitle(list.makeString(context, query));
    * @see #processUpdate
    */
   public void process() throws Exception  {
-Context context = Context.getThreadContext();
-if (isCreateMode())  {
-  processCreate(context);
-} else  {
-  processUpdate(context);
-}
-
-/*    Context context = createNewContext();
-    try  {
-
-      if (isCreateMode())  {
-        processCreate(context);
-      } else  {
-        processUpdate(context);
-      }
-
-    } catch (Exception e)  {
-      throw e;
-    } finally  {
-      try  {
-        context.close();
-      } catch (Exception e)  {
-      }
+    if (isCreateMode())  {
+      processCreate(Context.getThreadContext());
+    } else  {
+      processUpdate(Context.getThreadContext());
     }
-*/
   }
 
   /**
@@ -266,49 +238,39 @@ System.out.println("field.getName()="+field.getName());
    * @see #ukInstance
    */
   public void ukTest() throws Exception  {
-System.out.println("ukTest--->");
-    Context context = createNewContext();
-    try  {
-      Map map = new HashMap();
-      for (int i=0; i< getForm().getFields().size(); i++)  {
-        Field field = (Field)getForm().getFields().get(i);
+    Context context = Context.getThreadContext();
+    Map map = new HashMap();
+    for (int i=0; i< getForm().getFields().size(); i++)  {
+      Field field = (Field)getForm().getFields().get(i);
 /*        if (field.getAttribute()!=null && field.getAttribute().getUniqueKeys()!=null)  {
           map.put(field.getAttribute(), getRequest().getParameter(field.getName()));
         }
 */
+    }
+
+
+    Type type = getCommand().getTargetCreateType();
+    for (Iterator ukIter = type.getUniqueKeys().iterator(); ukIter.hasNext(); )  {
+      UniqueKey uniqueKey = (UniqueKey)ukIter.next();
+      SearchQuery query = new SearchQuery();
+      for (Iterator attrIter = uniqueKey.getAttributes().iterator(); attrIter.hasNext(); )  {
+        Attribute attr = (Attribute)attrIter.next();
+        String value = (String)map.get(attr);
+        if (value==null)  {
+          query = null;
+          break;
+        }
+        query.addWhereAttrEqValue(context, attr, value);
       }
-
-
-      Type type = getCommand().getTargetCreateType();
-      for (Iterator ukIter = type.getUniqueKeys().iterator(); ukIter.hasNext(); )  {
-        UniqueKey uniqueKey = (UniqueKey)ukIter.next();
-        SearchQuery query = new SearchQuery();
-        for (Iterator attrIter = uniqueKey.getAttributes().iterator(); attrIter.hasNext(); )  {
-          Attribute attr = (Attribute)attrIter.next();
-          String value = (String)map.get(attr);
-          if (value==null)  {
-            query = null;
+      if (query!=null)  {
+        query.execute(context);
+        if (query.next())  {
+          Instance instance = query.getInstance(context, type);
+          if (!query.next())  {
+            setUkInstance(instance);
             break;
           }
-          query.addWhereAttrEqValue(context, attr, value);
         }
-        if (query!=null)  {
-          query.execute(context);
-          if (query.next())  {
-            Instance instance = query.getInstance(context, type);
-            if (!query.next())  {
-              setUkInstance(instance);
-              break;
-            }
-          }
-        }
-      }
-    } catch (Exception e)  {
-      throw e;
-    } finally  {
-      try  {
-        context.close();
-      } catch (Exception e)  {
       }
     }
   }
@@ -419,17 +381,7 @@ System.out.println("ukTest--->");
     if (_ukOid!=null && _ukOid.length()>0)  {
       setMode(CommandAbstract.TARGET_MODE_EDIT);
       setUkMode(true);
-      Context context = createNewContext();
-      try  {
-        setUkInstance(new Instance(context, _ukOid));
-      } catch (Exception e)  {
-        throw e;
-      } finally  {
-        try  {
-          context.close();
-        } catch (Exception e)  {
-        }
-      }
+      setUkInstance(new Instance(Context.getThreadContext(), _ukOid));
       addHiddenValue("ukOid", _ukOid);
     }
   }

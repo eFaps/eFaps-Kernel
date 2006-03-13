@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.beans;
@@ -58,12 +61,7 @@ System.out.println("SearchBean.destructor");
    */
   public void setSearchName(String _name) throws Exception  {
     addHiddenValue("search" , _name);
-    Context context = createNewContext();
-    try  {
-      setSearch(Search.get(context, _name));
-    } catch (Throwable e)  {
-      context.close();
-    }
+    setSearch(Search.get(Context.getThreadContext(), _name));
   }
 
   /**
@@ -148,9 +146,8 @@ System.out.println("hallo!.3");
    * result table
    */
   public void execute4ResultTable() throws Exception  {
-    Context context = createNewContext();
-    try  {
-      SearchQuery query = new SearchQuery();
+    Context context = Context.getThreadContext();
+    SearchQuery query = new SearchQuery();
 //    boolean selectId = mode.equalsIgnoreCase(MODE_CONNECT);
 
 Type type = ((Search.SearchCommand)getCommand()).getSearchType();
@@ -158,10 +155,10 @@ Type type = ((Search.SearchCommand)getCommand()).getSearchType();
 query.setQueryTypes(context, type.getName());
 
 
-      for (int i=0; i<getForm().getFields().size(); i++)  {
-        Field field = (Field)getForm().getFields().get(i);
-        String value = getParameter(field.getName());
-        if (value!=null && value.length()>0 && !value.equals("*"))  {
+    for (int i=0; i<getForm().getFields().size(); i++)  {
+      Field field = (Field)getForm().getFields().get(i);
+      String value = getParameter(field.getName());
+      if (value!=null && value.length()>0 && !value.equals("*"))  {
 if (field.getProgramValue()==null)  {
 
 // das ist das problem!! deshalb null-pointer-exceptions!!
@@ -172,24 +169,16 @@ query.addWhereExprEqValue(context, field.getExpression(), value);
 } else  {
   field.getProgramValue().addSearchWhere(context, query, value);
 }
-        }
-      }
-      query.add(context, getTable());
-      query.execute(context);
-
-      setValues(new ArrayList());
-      getTableBean().setValues(getValues());
-      getTableBean().executeRowResult(context, query);
-
-      setInitialised(true);
-    } catch (Exception e)  {
-      throw e;
-    } finally  {
-      try  {
-        context.close();
-      } catch (Exception e)  {
       }
     }
+    query.add(context, getTable());
+    query.execute(context);
+
+    setValues(new ArrayList());
+    getTableBean().setValues(getValues());
+    getTableBean().executeRowResult(context, query);
+
+    setInitialised(true);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -202,36 +191,27 @@ query.addWhereExprEqValue(context, field.getExpression(), value);
    * @see #add4Form
    */
   public void execute4SearchForm() throws Exception  {
-    Context context = createNewContext();
-    try  {
-      setValues(new ArrayList());
-      getValues().add(null);
-      for (int i=0; i<getForm().getFields().size(); i++)  {
-        Field field = (Field)getForm().getFields().get(i);
+    setValues(new ArrayList());
+    getValues().add(null);
+    for (int i=0; i<getForm().getFields().size(); i++)  {
+      Field field = (Field)getForm().getFields().get(i);
 AttributeTypeInterface attrValue = null;
 if (field.getExpression()!=null)  {
   Type type = ((Search.SearchCommand)getCommand()).getSearchType();
   attrValue = type.getAttribute(field.getExpression()).newInstance();
 //  attrValue.setField(field);
 } else if (field.getProgramValue()!=null)  {
-  attrValue = field.getProgramValue().evalSearchAttributeValue(context, getInstance());
+  attrValue = field.getProgramValue()
+      .evalSearchAttributeValue(Context.getThreadContext(), getInstance());
 //  attrValue.setField(field);
 } else if (field.getGroupCount()>0)  {
   if (getMaxGroupCount()<field.getGroupCount())  {
     setMaxGroupCount(field.getGroupCount());
   }
 }
-        add4Form(attrValue, field);
-      }
-      setInitialised(true);
-    } catch (Exception e)  {
-      throw e;
-    } finally  {
-      try  {
-        context.close();
-      } catch (Exception e)  {
-      }
+      add4Form(attrValue, field);
     }
+    setInitialised(true);
   }
 
   /**
@@ -266,22 +246,13 @@ throw new Exception("Could not found parent attribute '"+command.getConnectParen
       }
 
       Instance parent = getInstance();
-      Context context = createNewContext();
-      try  {
-        for (int i=0; i<_oids.length; i++)  {
-          Instance child = new Instance(context, _oids[i]);
-          Insert insert = new Insert(context, type);
-          insert.add(context, parentAttr, ""+parent.getId());
-          insert.add(context, childAttr,  ""+child.getId());
-          insert.execute(context);
-        }
-      } catch (Exception e)  {
-        throw e;
-      } finally  {
-        try  {
-          context.close();
-        } catch (Exception e)  {
-        }
+      Context context = Context.getThreadContext();
+      for (int i=0; i<_oids.length; i++)  {
+        Instance child = new Instance(context, _oids[i]);
+        Insert insert = new Insert(context, type);
+        insert.add(context, parentAttr, ""+parent.getId());
+        insert.add(context, childAttr,  ""+child.getId());
+        insert.execute(context);
       }
     }
   }
