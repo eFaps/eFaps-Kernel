@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.servlet;
@@ -157,21 +160,21 @@ try {
         switch (transactionManager.getStatus())  {
         case Status.STATUS_ACTIVE:
           if (ok)  {
-System.out.println("############################################################################### transaction commit");
+System.out.println("###############################################################################1 transaction commit");
             transactionManager.commit();
             break;
           }
           // if not ok, rollback!
         case Status.STATUS_MARKED_ROLLBACK:
           try {
-System.out.println("############################################################################### transaction rollback");
+System.out.println("###############################################################################2 transaction rollback");
             transactionManager.rollback();
           } catch (Throwable e)  {
           }
 
         default:
           try {
-System.out.println("############################################################################### transaction rollback");
+System.out.println("###############################################################################3 transaction rollback");
             transactionManager.rollback();
           } catch (Throwable e)  {
           }
@@ -180,10 +183,13 @@ System.out.println("############################################################
 }
 
       } catch (IOException e)  {
+e.printStackTrace();
         throw e;
       } catch (ServletException e)  {
+e.printStackTrace();
         throw e;
       } catch (Throwable e)  {
+e.printStackTrace();
         throw new ServletException(e);
       } finally  {
         context.close();
