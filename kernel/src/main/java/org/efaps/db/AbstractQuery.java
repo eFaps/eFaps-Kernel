@@ -36,9 +36,6 @@ import java.util.logging.Logger;
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.JoinRowSet;
 
-import com.sun.rowset.CachedRowSetImpl;
-import com.sun.rowset.JoinRowSetImpl;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
@@ -309,7 +306,7 @@ try  {
 
 
 int incSelIndex = 0;
-JoinRowSet jrs = new JoinRowSetImpl();
+JoinRowSet jrs = _context.getDatabase().createJoinRowSetInstance();
 /*oracle.jdbc.rowset.OracleJoinRowSet jrs = new oracle.jdbc.rowset.OracleJoinRowSet();*/
 
       for (JoinElement joinElement : getJoinElements())  {
@@ -385,8 +382,7 @@ e.printStackTrace();
       Statement stmt = con.getConnection().createStatement();
       ResultSet rs = stmt.executeQuery(_completeStatement.getStatement().toString());
 
-/*oracle.jdbc.rowset.OracleCachedRowSet crs = new oracle.jdbc.rowset.OracleCachedRowSet();*/
-CachedRowSet crs = new CachedRowSetImpl();
+CachedRowSet crs = _context.getDatabase().createCachedRowSetInstance();
 
       crs.populate(rs);
       setResultSet(crs);
