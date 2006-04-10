@@ -25,14 +25,10 @@ import org.efaps.util.EFapsException;
  */
 public class Command extends CommandAbstract  {
 
-//public Command()  {
-//super(0,null);
-//}
-
   /**
    * The static variable defines the class name in eFaps.
    */
-  static public EFapsClassName EFAPS_CLASSNAME = EFapsClassName.COMMAND;
+  public static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.COMMAND;
 
   /**
    * Constructor to set the id and name of the command object.
