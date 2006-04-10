@@ -32,6 +32,9 @@ import javax.transaction.xa.XAResource;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Person;
+import org.efaps.db.databases.AbstractDatabase;
+import org.efaps.db.databases.DerbyDatabase;
+import org.efaps.db.databases.OracleDatabase;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.transaction.JDBCStoreResource;
 import org.efaps.db.transaction.StoreResource;
@@ -66,8 +69,14 @@ public class Context {
    */
   private static ThreadLocal<Context>threadContext = new ThreadLocal<Context>();
 
-  public static void setDbType(DbType _dbType)  {
+  public static void setDbType(DbType _dbType) throws ClassNotFoundException, IllegalAccessException {
+System.out.println("---------------- DBType = "+_dbType);
     dbType = _dbType;
+    if (dbType == DbType.Derby)  {
+      database = new DerbyDatabase();
+    } else if (dbType == DbType.Oracle)  {
+      database = new OracleDatabase();
+    }
   }
 
   /**
@@ -78,6 +87,12 @@ public class Context {
    */
   public static DbType getDbType()  {
     return dbType;
+  }
+
+  private static AbstractDatabase database = null;
+
+  public static AbstractDatabase getDatabase()  {
+    return database;
   }
 
 
