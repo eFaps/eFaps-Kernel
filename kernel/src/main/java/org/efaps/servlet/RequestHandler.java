@@ -65,6 +65,11 @@ public class RequestHandler extends AbstractServlet  {
   final private static String INITPARAM_LOGGING = "logging";
 
   /**
+   * Parameter name for the database type.
+   */
+  final private static String INITPARAM_DBTYPE = "dbType";
+
+  /**
    *
    */
   final private static String SESSIONPARAM_LOGIN_TARGET = "login.target";
@@ -113,6 +118,18 @@ if (loggingProperties!=null && loggingProperties.length()>0)  {
   LogManager.getLogManager().readConfiguration(ins);
 }
 
+String dbType = _config.getInitParameter(INITPARAM_DBTYPE);
+if (dbType!=null)  {
+  if ("Derby".equals(dbType.toString()))  {
+    Context.setDbType(Context.DbType.Derby);
+  } else if ("Oracle".equals(dbType.toString()))  {
+    Context.setDbType(Context.DbType.Oracle);
+  } else  {
+    throw new ServletException("unknown database type '" + dbType + "'!");
+  }
+} else  {
+  throw new ServletException("no database type defined!");
+}
 
 
 InitialContext initCtx = new InitialContext();
