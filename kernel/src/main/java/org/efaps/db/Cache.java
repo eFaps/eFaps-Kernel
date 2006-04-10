@@ -31,6 +31,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.ui.UserInterfaceObject;
 import org.efaps.db.Context;
 
 /**
@@ -92,7 +93,7 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
   /**
    *
    */
-  protected Map<Long,K> getCache4Id()  {
+  public Map<Long,K> getCache4Id()  {
     return this.cache4Id;
   }
 
@@ -145,6 +146,7 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
       SQLTable.initialise(_context);
       Type.initialise(_context);
       Attribute.initialise(_context);
+      UserInterfaceObject.initialise(_context);
     }
   }
 
