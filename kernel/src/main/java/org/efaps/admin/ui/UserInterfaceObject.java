@@ -73,7 +73,8 @@ public abstract class UserInterfaceObject extends AdminObject  {
    * @see AdminObject.setLinkProperty
    */
   private void readFromDB4Links(Context _context) throws Exception  {
-    SearchQuery query = new SearchQuery();
+// folgende aktion funktionier irgendwie nicht unter oracle...
+/*    SearchQuery query = new SearchQuery();
     query.setQueryTypes(_context, "Admin_UI_Link");
     query.addWhereExprEqValue(_context, "From", getId());
     query.setExpandChildTypes(true);
@@ -89,8 +90,47 @@ public abstract class UserInterfaceObject extends AdminObject  {
       String toName = (String)query.get(_context, "To.Name");
       Type   toType = (Type)query.get(_context, "To.Type");
 
+System.out.println("type="+type);
+System.out.println("toId="+toId);
+System.out.println("toName="+toName);
+System.out.println("toType="+toType);
+
       setLinkProperty(_context, EFapsClassName.getEnum(type.getName()), toId, EFapsClassName.getEnum(toType.getName()), toName);
     }
+*/
+Statement stmt = _context.getConnection().createStatement();
+try  {
+  ResultSet rs = stmt.executeQuery(
+      "select "+
+        "UIABSTRACT2UIABSTRACT.TYPEID,"+
+        "UIABSTRACT2UIABSTRACT.TOID,"+
+        "ABSTRACT.TYPEID,"+
+        "ABSTRACT.NAME "+
+      "from UIABSTRACT2UIABSTRACT, ABSTRACT "+
+      "where UIABSTRACT2UIABSTRACT.FROMID="+getId()+" and UIABSTRACT2UIABSTRACT.TOID=ABSTRACT.ID"
+  );
+  while (rs.next())  {
+    long conTypeId  = rs.getLong(1);
+    long toId       = rs.getLong(2);
+    long toTypeId   = rs.getLong(3);
+    String toName   = rs.getString(4);
+    Type conType    = Type.get(conTypeId);
+    Type toType     = Type.get(toTypeId);
+System.out.println("type="+conType);
+System.out.println("toId="+toId);
+System.out.println("toName="+toName);
+System.out.println("toType="+toType);
+if (EFapsClassName.getEnum(conType.getName())!=null)  {
+    setLinkProperty(_context, EFapsClassName.getEnum(conType.getName()), toId, EFapsClassName.getEnum(toType.getName()), toName);
+}
+  }
+  rs.close();
+} catch (Exception e)  {
+e.printStackTrace();
+  throw e;
+} finally  {
+  stmt.close();
+}
   }
 
   /**
@@ -209,12 +249,60 @@ e.printStackTrace();
 
   /////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Initialise the cache of commands.
+   *
+   * @param _context  eFaps context for this request
+   */
+  public static void initialise(Context _context) throws Exception  {
+    Command.getCache().initialise(_context);
+    Menu.getCache().initialise(_context);
+    Search.getCache().initialise(_context);
+    Form.getCache().initialise(_context);
+    Table.getCache().initialise(_context);
+    for (Command command : Command.getCache().getCache4Id().values())  {
+      command.readFromDB(_context);
+    }
+    for (Menu command : Menu.getCache().getCache4Id().values())  {
+      command.readFromDB(_context);
+    }
+    for (Search command : Search.getCache().getCache4Id().values())  {
+      command.readFromDB(_context);
+    }
+    for (Form command : Form.getCache().getCache4Id().values())  {
+      command.readFromDB(_context);
+    }
+    for (Table command : Table.getCache().getCache4Id().values())  {
+      command.readFromDB(_context);
+    }
+  }
+
+
   static protected class UserInterfaceObjectCache<UIObj extends UserInterfaceObject> extends Cache<UIObj>  {
 
     protected UserInterfaceObjectCache(Class<UIObj> _callerClass)  {
       this.callerClass = _callerClass;
     }
 
+    /**
+     * Initialise the cache of commands.
+     *
+     * @param _context  eFaps context for this request
+     */
+    protected void initialise(Context _context) throws Exception  {
+      Class<UIObj> uiObjClass = getCallerClass();
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes(_context, getEFapsClassName().name);
+      query.addSelect(_context, "ID");
+      query.addSelect(_context, "Name");
+      query.execute(_context);
+      while (query.next())  {
+        long id     = (Long)query.get(_context, "ID");
+        String name = (String)query.get(_context, "Name");
+        UIObj uiObj = uiObjClass.getConstructor(Long.class, String.class).newInstance(id, name);
+        add(uiObj);
+      }
+    }
 
     protected UIObj read(Context _context, long _id) throws EFapsException  {
       try  {
@@ -230,6 +318,7 @@ e.printStackTrace();
         throw new EFapsException(UserInterfaceObjectCache.class, "read.Throwable4Id", e, _id);
       }
     }
+
 
     protected UIObj read(Context _context, String _name) throws EFapsException  {
       try  {
