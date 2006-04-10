@@ -129,9 +129,9 @@ public Table getTable(int _index)  {
    * @see #getCache
    */
   static public Search get(Context _context, String _name) throws EFapsException  {
-    Search search = (Search)getSearchCache().get(_name);
+    Search search = (Search)getCache().get(_name);
     if (search==null)  {
-      search = getSearchCache().read(_context, _name);
+      search = getCache().read(_context, _name);
     }
     return search;
   }
@@ -141,7 +141,7 @@ public Table getTable(int _index)  {
    *
    * @return value of static variable {@link #cache}
    */
-  private static UserInterfaceObjectCache<Search> getSearchCache()  {
+  protected static UserInterfaceObjectCache<Search> getCache()  {
     return searchCache;
   }
 
