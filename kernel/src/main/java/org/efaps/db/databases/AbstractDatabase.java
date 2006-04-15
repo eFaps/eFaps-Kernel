@@ -17,6 +17,10 @@
 
 package org.efaps.db.databases;
 
+import java.util.Map;
+import java.util.HashMap;
+
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.sql.rowset.CachedRowSet;
@@ -58,11 +62,25 @@ public abstract class AbstractDatabase  {
    */
 //  public abstract void createTable();
 
-
+  /**
+   * The class is used to create a new instance of {@link CachedRowSet}.
+   *
+   * @see #createCachedRowSetInstance
+   */
   private Class < CachedRowSet > cachedRowSetImplClass = null;
 
+  /**
+   * The class is used to create a new instance of {@link JoinRowSet}.
+   *
+   * @see #createJoinRowSetInstance
+   */
   private Class < JoinRowSet > joinRowSetImplClass = null;
 
+  /**
+   * The map stores the mapping between the column types used in eFaps the
+   * database specific column types.
+   */
+  protected final Map < ColumnType, String > columnMap = new HashMap < ColumnType, String >();
 
   protected AbstractDatabase() throws ClassNotFoundException, IllegalAccessException  {
     this((Class < CachedRowSet >)Class.forName("com.sun.rowset.CachedRowSetImpl"),
@@ -82,16 +100,42 @@ public abstract class AbstractDatabase  {
    *
    * @return cached row set instance
    */
-  public CachedRowSet createCachedRowSetInstance() throws ClassNotFoundException, InstantiationException, IllegalAccessException  {
+  public CachedRowSet createCachedRowSetInstance() throws InstantiationException, IllegalAccessException  {
     return this.cachedRowSetImplClass.newInstance();
   }
 
   /**
-   * The instance method returns a nw join row set instance.
+   * The instance method returns a new join row set instance.
    *
    * @return join row set instance
    */
-  public JoinRowSet createJoinRowSetInstance() throws ClassNotFoundException, InstantiationException, IllegalAccessException  {
+  public JoinRowSet createJoinRowSetInstance() throws InstantiationException, IllegalAccessException  {
     return this.joinRowSetImplClass.newInstance();
   }
+
+  /**
+   * @param _columnType column type for which the vendor specific column type
+   *                    should be returned
+   */
+  public String getColumnType(final ColumnType _columnType)  {
+    return this.columnMap.get(_columnType);
+  }
+
+  /**
+   * The method returns the database vendor specific value for the current time
+   * stamp.
+   *
+   * @return vendor specific string of the current time stamp
+   */
+  public abstract String getCurrentTimeStamp();
+
+  /**
+   * The method implements a delete all of database user specific objects (e.g.
+   * tables, views etc...). The method is called before a complete rebuild is
+   * done.
+   *
+   * @param _con  sql connection
+   * @throws SQLException
+   */
+  public abstract void deleteAll(final Connection _con) throws SQLException;
 }
