@@ -40,8 +40,7 @@ public class ModifiedType extends DateTimeType  {
    * @return always <i>true</i>
    */
   public boolean prepareUpdate(StringBuffer _stmt)  {
-//    _stmt.append("SYSDATE");
-_stmt.append("CURRENT_TIMESTAMP");
+    _stmt.append(Context.getDbType().getCurrentTimeStamp());
     return true;
   }
 }
