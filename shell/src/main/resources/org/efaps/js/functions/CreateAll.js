@@ -822,6 +822,7 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
 
     stmt.close();
   } catch (e)  {
+    print(e);
     throw e;
   } finally  {
     context.close();
