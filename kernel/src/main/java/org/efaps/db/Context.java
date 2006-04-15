@@ -33,8 +33,6 @@ import javax.transaction.xa.XAResource;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Person;
 import org.efaps.db.databases.AbstractDatabase;
-import org.efaps.db.databases.DerbyDatabase;
-import org.efaps.db.databases.OracleDatabase;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.transaction.JDBCStoreResource;
 import org.efaps.db.transaction.StoreResource;
@@ -47,21 +45,9 @@ import org.efaps.util.EFapsException;
 public class Context {
 
   /**
-   *  Enum storing which dbtype is used.
-   */
-  public static enum DbType {
-    Unknown, Derby, Oracle
-  };
-
-  /**
    * Static variable storing the database type.
    */
-  private static DbType dbType = DbType.Unknown;
-
-  /**
-   * Static variable used to store the database name of the context.
-   */
-  private static String dbUser = null;
+  private static AbstractDatabase dbType = null;
 
   /**
    * Each thread has his own context object. The value is automatically
@@ -69,14 +55,9 @@ public class Context {
    */
   private static ThreadLocal<Context>threadContext = new ThreadLocal<Context>();
 
-  public static void setDbType(DbType _dbType) throws ClassNotFoundException, IllegalAccessException {
+  public static void setDbType(AbstractDatabase _dbType) throws ClassNotFoundException, IllegalAccessException {
 System.out.println("---------------- DBType = "+_dbType);
     dbType = _dbType;
-    if (dbType == DbType.Derby)  {
-      database = new DerbyDatabase();
-    } else if (dbType == DbType.Oracle)  {
-      database = new OracleDatabase();
-    }
   }
 
   /**
@@ -85,26 +66,8 @@ System.out.println("---------------- DBType = "+_dbType);
    *
    * @see #dbType
    */
-  public static DbType getDbType()  {
+  public static AbstractDatabase getDbType()  {
     return dbType;
-  }
-
-  private static AbstractDatabase database = null;
-
-  public static AbstractDatabase getDatabase()  {
-    return database;
-  }
-
-
-  /**
-   *
-   */
-  public static void setDbUser(final String _dbUser)  {
-    dbUser = _dbUser;
-  }
-
-  public static String getDbUser()  {
-    return dbUser;
   }
 
 
