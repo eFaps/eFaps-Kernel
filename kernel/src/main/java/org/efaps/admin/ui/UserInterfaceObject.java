@@ -285,22 +285,28 @@ e.printStackTrace();
     }
 
     /**
-     * Initialise the cache of commands.
+     * Initialise the cache of a specific user interface object type.
+     * Initialise means, that all all objects of this user interface type are
+     * read from the database and stored in the cache. If the eFaps admin type
+     * itself is not defined, that initialiase does nothing (this could happen
+     * in the create phase).
      *
      * @param _context  eFaps context for this request
      */
     protected void initialise(Context _context) throws Exception  {
       Class<UIObj> uiObjClass = getCallerClass();
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes(_context, getEFapsClassName().name);
-      query.addSelect(_context, "ID");
-      query.addSelect(_context, "Name");
-      query.execute(_context);
-      while (query.next())  {
-        long id     = (Long)query.get(_context, "ID");
-        String name = (String)query.get(_context, "Name");
-        UIObj uiObj = uiObjClass.getConstructor(Long.class, String.class).newInstance(id, name);
-        add(uiObj);
+      if (Type.get(getEFapsClassName().name) != null)  {
+        SearchQuery query = new SearchQuery();
+        query.setQueryTypes(_context, getEFapsClassName().name);
+        query.addSelect(_context, "ID");
+        query.addSelect(_context, "Name");
+        query.execute(_context);
+        while (query.next())  {
+          long id     = (Long)query.get(_context, "ID");
+          String name = (String)query.get(_context, "Name");
+          UIObj uiObj = uiObjClass.getConstructor(Long.class, String.class).newInstance(id, name);
+          add(uiObj);
+        }
       }
     }
 
