@@ -21,26 +21,14 @@
 
 importClass(Packages.org.efaps.db.Context);
 importClass(Packages.org.efaps.admin.user.Person);
+importClass(Packages.org.efaps.db.databases.AbstractDatabase);
 
-// IBM's derby
-if (Packages.org.efaps.db.Context.getDbType()==Packages.org.efaps.db.Context.DbType.Derby)  {
-  var TYPE_INTEGER      = "bigint";
-  var TYPE_STRING_SHORT = "char";
-  var TYPE_STRING_LONG  = "varchar";
-  var TYPE_DATETIME     = "timestamp";
-  var TYPE_BLOB         = "blob(2G)";
-  var CURRENT_TIMESTAMP = "current_timestamp";
-
-// Oracle
-} else if (Packages.org.efaps.db.Context.getDbType()==Packages.org.efaps.db.Context.DbType.Oracle)  {
-  var TYPE_INTEGER      = "number";
-  var TYPE_STRING_SHORT = "varchar2";
-  var TYPE_STRING_LONG  = "varchar2";
-  var TYPE_DATETIME     = "date";
-  var TYPE_BLOB         = "blob";
-  var CURRENT_TIMESTAMP = "sysdate";
-}
-
+var TYPE_INTEGER      = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.INTEGER);
+var TYPE_STRING_SHORT = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.STRING_SHORT);
+var TYPE_STRING_LONG  = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.STRING_LONG);
+var TYPE_DATETIME     = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.DATETIME);
+var TYPE_BLOB         = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.BLOB);
+var CURRENT_TIMESTAMP = Context.getDbType().getCurrentTimeStamp();
 
 function _exec(_stmt, _subject, _txt, _cmd)  {
   if (_txt!=null && _subject!=null)  {
