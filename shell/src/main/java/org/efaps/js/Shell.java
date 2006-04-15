@@ -22,6 +22,7 @@ import org.mozilla.javascript.tools.shell.Main;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
+import org.efaps.db.databases.AbstractDatabase;
 
 /**
  * The shell program.
@@ -83,25 +84,22 @@ for (Object key : props.keySet())  {
    ref.add(new StringRefAddr(key.toString(), (value==null ? null : value.toString())));
 }
 
+// configure database type
+Object dbTypeObj = props.get("dbType");
+if ((dbTypeObj == null) || (dbTypeObj.toString().length() == 0))  {
+  throw new Exception("could not initaliase database type");
+}
+AbstractDatabase dbType = ((Class<AbstractDatabase>)Class.forName(dbTypeObj.toString())).newInstance();
+if (dbType == null)  {
+  throw new Exception("could not initaliase database type");
+}
+Context.setDbType(dbType);
+
 // get datasource object
 ObjectFactory of = (ObjectFactory)(Class.forName(ref.getFactoryClassName())).newInstance();
 DataSource ds = (DataSource)of.getObjectInstance(ref, null, null, null);
-
-// configure context
 Context.setDataSource(ds);
-Object dbType = props.get("dbType");
-if (dbType!=null)  {
-  if ("Derby".equals(dbType.toString()))  {
-    Context.setDbType(Context.DbType.Derby);
-  } else if ("Oracle".equals(dbType.toString()))  {
-    Context.setDbType(Context.DbType.Oracle);
-  }
-}
 
-Object dbUser = props.get("username");
-if (dbUser!=null)  {
-  Context.setDbUser(dbUser.toString().trim());
-}
 
 //System.setProperty("java.util.logging.config.file", "logging.properties");
 
