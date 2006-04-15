@@ -306,7 +306,7 @@ try  {
 
 
 int incSelIndex = 0;
-JoinRowSet jrs = _context.getDatabase().createJoinRowSetInstance();
+JoinRowSet jrs = _context.getDbType().createJoinRowSetInstance();
 /*oracle.jdbc.rowset.OracleJoinRowSet jrs = new oracle.jdbc.rowset.OracleJoinRowSet();*/
 
       for (JoinElement joinElement : getJoinElements())  {
@@ -382,7 +382,7 @@ e.printStackTrace();
       Statement stmt = con.getConnection().createStatement();
       ResultSet rs = stmt.executeQuery(_completeStatement.getStatement().toString());
 
-CachedRowSet crs = _context.getDatabase().createCachedRowSetInstance();
+CachedRowSet crs = _context.getDbType().createCachedRowSetInstance();
 
       crs.populate(rs);
       setResultSet(crs);
