@@ -28,13 +28,23 @@
   <comment>This is the bootstrap to connect to an eFaps database</comment>
 
   <!--
-    This property configures the database type. Following values are possible:
-      - derby
-      - oracle
+    This property configures the database type. The value is a name of a class
+    derived from org.efaps.db.database.AbstractDatabase. Currently, two class
+    names could be used:
+      - org.efaps.db.databases.DerbyDatabase
+      - org.efaps.db.databases.OracleDatabase
     The information is needed to implement the vendor specific database
     functionality (e.g. a delete of all or table column types).
   -->
-  <entry key="dbType">Derby</entry>
+  <entry key="dbType">org.efaps.db.databases.DerbyDatabase</entry>
+
+  <!--
+    Database JDBC parameters:
+    - database user name
+    - database password
+    - JDBC driver class name
+    - JDBC url
+  -->
   <entry key="username">APP</entry>
   <entry key="password">APP</entry>
   <entry key="driverClassName">org.apache.derby.jdbc.ClientDriver</entry>
