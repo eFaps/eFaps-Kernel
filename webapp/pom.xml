@@ -42,6 +42,22 @@
   ************************************************************************+ -->
   <build>
     <finalName>eFaps</finalName>
+
+    <plugins>
+      <!--
+        Compiler Settings:
+        - Java 1.5 is needed!
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+    </plugins>
+
   </build>
 
   <!-- ************************************************************************
@@ -54,7 +70,7 @@
       <groupId>org.efaps</groupId>
       <artifactId>eFaps-Kernel</artifactId>
       <version>1.0-SNAPSHOT</version>
-      <scope>package</scope>
+      <scope>compile</scope>
     </dependency>
 
     <!-- used for toString methods -->
@@ -119,13 +135,13 @@
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-jta</artifactId>
       <version>1.0-M1</version>
-      <scope>package</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>slide</groupId>
       <artifactId>slide-kernel</artifactId>
       <version>2.1</version>
-      <scope>package</scope>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Connection Pooling -->
