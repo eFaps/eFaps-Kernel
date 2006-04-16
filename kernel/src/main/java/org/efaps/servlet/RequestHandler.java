@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.servlet;
@@ -28,7 +31,6 @@ import java.sql.SQLException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.logging.LogManager;
 import java.util.Map;
 import java.util.Stack;
 
@@ -117,12 +119,6 @@ this.pathLoginPage = replaceMacrosInUrl(_config.getInitParameter(INITPARAM_URL_L
 
 
 try {
-
-String loggingProperties = _config.getInitParameter(INITPARAM_LOGGING);
-if (loggingProperties!=null && loggingProperties.length()>0)  {
-  ByteArrayInputStream ins = new ByteArrayInputStream(loggingProperties.getBytes());
-  LogManager.getLogManager().readConfiguration(ins);
-}
 
 InitialContext initCtx = new InitialContext();
 javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");

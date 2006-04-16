@@ -1,3 +1,23 @@
+/*
+ * Copyright 2006 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
+
 package org.efaps.js;
 
 import java.io.StringReader;
@@ -26,11 +46,6 @@ import org.efaps.db.databases.AbstractDatabase;
 
 /**
  * The shell program.
- *
- * Can execute scripts interactively or in batch mode at the command line.
- * An example of controlling the JavaScript engine.
- *
- * @author Norris Boyd
  */
 public class Shell {
 
@@ -100,8 +115,6 @@ ObjectFactory of = (ObjectFactory)(Class.forName(ref.getFactoryClassName())).new
 DataSource ds = (DataSource)of.getObjectInstance(ref, null, null, null);
 Context.setDataSource(ds);
 
-
-//System.setProperty("java.util.logging.config.file", "logging.properties");
 
 org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
 
