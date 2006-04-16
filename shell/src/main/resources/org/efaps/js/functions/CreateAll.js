@@ -124,18 +124,8 @@ function eFapsCreateAll()  {
   deleteAll();
   createAll();
 
-print("############ Reload Cache");
-try  {
-  Shell.transactionManager.begin();
-  var context = new Context(Shell.transactionManager.getTransaction(), null, null);
-  Context.setThreadContext(context);
-  Packages.org.efaps.db.Cache.reloadCache(context);
-  Shell.transactionManager.rollback();
-  context.close();
-
-} catch (e)  {
-  print(e);
-}
+  print("############ Reload Cache");
+  reloadCache();
 
   Shell.transactionManager.begin();
   var context = new Context(Shell.transactionManager.getTransaction(), Packages.org.efaps.admin.user.Person.get("Administrator"), null);
@@ -145,18 +135,8 @@ try  {
   Shell.transactionManager.commit();
   context.close();
 
-print("############ Reload Cache");
-try  {
-  Shell.transactionManager.begin();
-  var context = new Context(Shell.transactionManager.getTransaction(), null, null);
-  Context.setThreadContext(context);
-  Packages.org.efaps.db.Cache.reloadCache(context);
-  Shell.transactionManager.rollback();
-  context.close();
-
-} catch (e)  {
-  print(e);
-}
+  print("############ Reload Cache");
+  reloadCache();
 
   Shell.transactionManager.begin();
   var context = new Context(Shell.transactionManager.getTransaction(), Packages.org.efaps.admin.user.Person.get("Administrator"), null);
@@ -166,18 +146,8 @@ try  {
   Shell.transactionManager.commit();
   context.close();
 
-print("############ Reload Cache");
-try  {
-  Shell.transactionManager.begin();
-  var context = new Context(Shell.transactionManager.getTransaction(), null, null);
-  Context.setThreadContext(context);
-  Packages.org.efaps.db.Cache.reloadCache(context);
-  Shell.transactionManager.rollback();
-  context.close();
-
-} catch (e)  {
-  print(e);
-}
+  print("############ Reload Cache");
+  reloadCache();
 
   _eFapsCreateAllUpdatePassword();
 }
