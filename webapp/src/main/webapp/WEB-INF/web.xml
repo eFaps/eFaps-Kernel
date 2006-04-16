@@ -1,5 +1,28 @@
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN" "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
 
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
 <web-app>
   <display-name>eFaps</display-name>
   <description>no description</description>
@@ -21,24 +44,6 @@
     <display-name>eFapsServlet</display-name>
     <description>no description</description>
     <servlet-class>org.efaps.servlet.RequestHandler</servlet-class>
-
-    <!--
-      Parameters configure the logging management. Documentation see package
-      "java.util.logging" in the java standard api documentation (starting
-      with version 1.4).
-    -->
-    <init-param>
-      <param-name>logging</param-name>
-      <param-value>
-        handlers                                = java.util.logging.FileHandler
-        java.util.logging.FileHandler.pattern   = S:/efaps/log/tomcat%u.log
-        java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
-        java.util.logging.FileHandler.append    = true
-        java.util.logging.FileHandler.limit     = 0
-        org.efaps.sql.handlers                  = java.util.logging.FileHandler
-        org.efaps.sql.level                     = INFO
-      </param-value>
-    </init-param>
 
     <init-param>
       <param-name>urlLoginPage</param-name>
