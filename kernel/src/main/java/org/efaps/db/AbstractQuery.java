@@ -30,11 +30,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.sql.rowset.CachedRowSet;
 import javax.sql.rowset.JoinRowSet;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
@@ -53,9 +54,10 @@ import org.efaps.util.EFapsException;
  */
 public abstract class AbstractQuery  {
 
-  protected static Logger sqlLogger = Logger.getLogger("org.efaps.sql");
-
-  private static final String CLASSNAME= "org.efaps.db.AbstractQuery";
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Log LOG = LogFactory.getLog(AbstractQuery.class);
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -376,7 +378,9 @@ this.cachedResult.beforeFirst();
     try  {
       con = _context.getConnectionResource();
 
-      sqlLogger.logp(Level.INFO, CLASSNAME, "execute", _completeStatement.getStatement().toString());
+      if (LOG.isTraceEnabled())  {
+        LOG.trace(_completeStatement.getStatement().toString());
+      }
 
       Statement stmt = con.getConnection().createStatement();
       ResultSet rs = stmt.executeQuery(_completeStatement.getStatement().toString());

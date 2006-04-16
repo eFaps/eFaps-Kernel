@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db;
@@ -24,9 +27,10 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
@@ -43,9 +47,10 @@ import org.efaps.util.EFapsException;
  */
 public class Update  {
 
-  private static Logger sqlLogger = Logger.getLogger("org.efaps.sql");
-
-  private static final String CLASSNAME= "org.efaps.db.Update";
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Log LOG = LogFactory.getLog(Update.class);
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -250,12 +255,16 @@ e.printStackTrace();
     }
     cmd.append(" where ").append(_table.getSqlColId()).append("=").append(getId()).append("");
 
-    sqlLogger.logp(Level.INFO, CLASSNAME, "createOneStatement", cmd.toString());
+    if (LOG.isTraceEnabled())  {
+      LOG.trace(cmd.toString());
+    }
 
     PreparedStatement stmt = _con.getConnection().prepareStatement(cmd.toString());
     for (int i=0, j=1; i<list.size(); i++, j++)  {
       AttributeTypeInterface attr = (AttributeTypeInterface)list.get(i);
-sqlLogger.logp(Level.INFO, CLASSNAME, "createOneStatement", attr.toString());
+      if (LOG.isTraceEnabled())  {
+        LOG.trace(attr.toString());
+      }
       attr.update(_context, stmt, j);
     }
     return stmt;

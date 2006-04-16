@@ -29,8 +29,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
@@ -46,9 +47,10 @@ import org.efaps.util.EFapsException;
  */
 public class Insert extends Update {
 
-  private static Logger sqlLogger = Logger.getLogger("org.efaps.sql");
-
-  private static final String CLASSNAME = "org.efaps.db.Insert";
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Log LOG = LogFactory.getLog(Insert.class);
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -203,7 +205,9 @@ public class Insert extends Update {
     }
     cmd.append(") values (").append(_id).append("").append(val).append(")");
 
-    sqlLogger.logp(Level.INFO, CLASSNAME, "createOneStatement", cmd.toString());
+    if (LOG.isTraceEnabled())  {
+      LOG.trace(cmd.toString());
+    }
 
     PreparedStatement stmt = _con.getConnection().prepareStatement(cmd.toString());
     for (int i=0, j=1; i<list.size(); i++, j++)  {
