@@ -29,10 +29,10 @@ with (TYPE)  {
     setSQLTable("Admin_UI_FileTable");
     setSQLColumn("FILELENGTH");
   }
+  addProperty("StoreAttributeFileLength","FileLength");
+  addProperty("StoreAttributeFileName",	"FileName");
   addProperty("Icon",                   "${COMMONURL}/Image.jsp?name=Admin_UI_FileImage");
   addProperty("Tree",                   "Admin_UI_FileTree");
-  addProperty("VFSFileLengthAttribute", "FileLength");
-  addProperty("VFSFileNameAttribute",   "FileName");
   addProperty("VFSPrefix",              "UIFILE:ID:FILECONTENT");
   addProperty("VFSProvider",            "org.efaps.db.vfs.provider.sqldatabase.SQLDataBaseFileProvider");
 }

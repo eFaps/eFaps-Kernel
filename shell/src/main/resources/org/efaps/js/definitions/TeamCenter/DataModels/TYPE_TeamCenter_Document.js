@@ -26,9 +26,9 @@ with (TYPE)  {
     setSQLColumn("FILELENGTH");
   }
   addProperty("Icon",                   "${COMMONURL}/Image.jsp?name=TeamCenter_DocumentImage");
+  addProperty("StoreAttributeFileLength","FileLength");
+  addProperty("StoreAttributeFileName", "FileName");
   addProperty("Tree",                   "TeamCenter_DocumentTree");
-  addProperty("VFSFileLengthAttribute", "FileLength");
-  addProperty("VFSFileNameAttribute",   "FileName");
   addProperty("VFSPrefix",              "S:/efaps/TESTSTORE");
   addProperty("VFSProvider",            "org.apache.commons.vfs.provider.local.DefaultLocalFileProvider");
 }
