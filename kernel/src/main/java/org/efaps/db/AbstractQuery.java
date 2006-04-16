@@ -340,31 +340,9 @@ if (incSelIndex == 0)  {
 
         execute(_context, completeStatement);
 
-//System.out.println("joinElement.getMatchColumn()="+joinElement.getMatchColumn());
-
-//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~joinElement.getMatchColumn()="+joinElement.getMatchColumn());
-//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~count="+getResultSet().getMetaData().getColumnCount());
-
-//for (int i=1;i<=getResultSet().getMetaData().getColumnCount();i++)  {
-//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~column["+i+"]="+getResultSet().getMetaData().getColumnName(i));
-//}
-
-
-//        jrs.addRowSet(this.resultSet, joinElement.getMatchColumn());
-cachedResult.populate(this.resultSet, joinElement.getMatchColumn());
-
+        cachedResult.populate(this.resultSet, joinElement.getMatchColumn());
       }
-//System.out.println("AbstractQuery.execute().count resultSet="+jrs.getRowSets().size());
-//System.out.println("AbstractQuery.execute().resultSet.getMetaData="+jrs.getMetaData());
-//System.out.println("AbstractQuery.execute().resultSet.getMetaData.columns="+jrs.getMetaData().getColumnCount());
-//for (int i=1; i<jrs.getMetaData().getColumnCount()+1; i++)  {
-//System.out.println("AbstractQuery.execute().resultSet.getMetaData.getColumnLabel("+i+")="+jrs.getMetaData().getColumnLabel(i));
-//System.out.println("AbstractQuery.execute().resultSet.getMetaData.getColumnName("+i+")="+jrs.getMetaData().getColumnName(i));
-//}
 
-System.out.println("-----------------------------------------------------");
-System.out.println(cachedResult.cache);
-System.out.println("-----------------------------------------------------");
 
 //      setResultSet(jrs);
 setResultSet(null);
