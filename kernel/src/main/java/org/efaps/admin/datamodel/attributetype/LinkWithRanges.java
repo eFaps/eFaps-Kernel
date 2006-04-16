@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Locale;
-
-import org.efaps.admin.user.Person;
-import org.efaps.admin.user.Role;
-import org.efaps.db.Context;
-import org.efaps.db.SearchQuery;
-import org.efaps.admin.ui.Field;
-import org.efaps.admin.datamodel.Attribute;
 
 /**
  *
