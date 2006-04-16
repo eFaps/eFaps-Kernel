@@ -17,6 +17,7 @@
 
 package org.efaps.db;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.efaps.admin.datamodel.Type;
@@ -50,10 +51,15 @@ public class Checkin extends AbstractAction  {
   }
 
   /**
-   * Executes the checkin.
+   * Executes the checkin:
+   * <ul>
+   * <li>the file is checked in</li>
+   * <li>the file name and file length is stored in with
+   *     {@link org.efaps.db.Update} (complete filename without path)</li>
+   * </ul>
    *
    * @param _context  eFaps context for this request
-   * @param _fileName file name to checkin
+   * @param _fileName file name to checkin (could include also the path)
    * @param _in       input stream with the binary data
    * @param _size     size of file in stream to check in (negative size means
    *                  that all from the stream must be written)
@@ -68,17 +74,20 @@ public class Checkin extends AbstractAction  {
     try  {
       Type type = getInstance().getType();
 
-      String fileName   = type.getProperty(PROPERTY_STORE_ATTR_FILE_NAME);
-      String fileLength = type.getProperty(PROPERTY_STORE_ATTR_FILE_LENGTH);
+      String attrFileName   = type.getProperty(PROPERTY_STORE_ATTR_FILE_NAME);
+      String attrFileLength = type.getProperty(PROPERTY_STORE_ATTR_FILE_LENGTH);
 
       storeRsrc = _context.getStoreResource(type, getInstance().getId());
       int size = storeRsrc.write(_in, _size);
       storeRsrc.commit();
       storeRsrc = null;
 
+      File file = new File(_fileName);
+      String fileName = file.getName();
+
       Update update = new Update(_context, getInstance());
-      update.add(_context, fileName, _fileName);
-      update.add(_context, fileLength, ""+size);
+      update.add(_context, attrFileName, fileName);
+      update.add(_context, attrFileLength, ""+size);
       update.execute(_context);
 
     } catch (EFapsException e)  {
