@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
+import org.efaps.db.query.CachedResult;
 
 /**
  *
@@ -45,7 +48,7 @@ abstract public class AbstractType implements AttributeTypeInterface  {
    *
    *
    */
-  abstract public Object readValue(Context _context, ResultSet _rs, ArrayList<Integer> _indexes) throws Exception;
+  abstract public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes) throws Exception;
 
   /////////////////////////////////////////////////////////////////////////////
   // methods for the user interface

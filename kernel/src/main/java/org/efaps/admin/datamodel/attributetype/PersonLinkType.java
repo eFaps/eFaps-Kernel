@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -25,6 +27,7 @@ import java.util.Locale;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
+import org.efaps.db.query.CachedResult;
 
 /**
  *
@@ -36,10 +39,10 @@ public class PersonLinkType extends AbstractLinkType  {
    * @param _rs
    * @param _index
    */
-  public Object readValue(Context _context, ResultSet _rs, ArrayList<Integer> _indexes) throws SQLException  {
+  public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes)  {
     Object ret = null;
 
-    Long userId = (Long)super.readValue(_context, _rs, _indexes);
+    Long userId = (Long) super.readValue(_context, _rs, _indexes);
     if (userId != null)  {
 try {
     ret = Person.get(getValue());

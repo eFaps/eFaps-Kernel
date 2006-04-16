@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Locale;
 
 import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
+import org.efaps.db.query.CachedResult;
 
 /**
  *
@@ -55,10 +56,10 @@ public interface AttributeTypeInterface  {
   /**
    *
    * @param __context eFaps context for this request
-   * @param _rs       result set from the JDBC select statement
+   * @param _rs       cached result from the JDBC select statement
    * @param _index    index in the result set
    */
-  public Object readValue(Context _context, ResultSet _rs, ArrayList<Integer> _index) throws Exception;
+  public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _index) throws Exception;
 
   /////////////////////////////////////////////////////////////////////////////
   // methods for the interface to the UI
@@ -80,20 +81,6 @@ public interface AttributeTypeInterface  {
   public String getViewableString(Locale _locale);
 
   /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance method gets the field for this attribute type interface.
-   *
-   * @return field for this attribute value representing
-   */
-//  public Field getField();
-
-  /**
-   * The instance method sets the field for this attribute type interface.
-   *
-   * @param _field  field to set for this attribute type value
-   */
-//  public void setField(Field _field);
 
   /**
    * The instance method gets the attribute for this attribute type interface.

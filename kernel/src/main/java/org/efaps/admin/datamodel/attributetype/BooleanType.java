@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import java.util.Locale;
 
 import org.efaps.db.Context;
 import org.efaps.admin.ui.Field;
+import org.efaps.db.query.CachedResult;
 
 /**
  *
@@ -48,13 +51,14 @@ public class BooleanType extends AbstractType  {
    *
    * @todo test that only one value is given for indexes
    */
-  public Object readValue(Context _context, ResultSet _rs, ArrayList<Integer> _indexes) throws SQLException  {
+  public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes) throws SQLException  {
 //    int value = _rs.getInt(_index);
     Boolean value = false;
-
+/*
     if (_rs.getInt(_indexes.get(0).intValue())!=0)  {
       value = true;
     }
+*/
 setValue(value);
     return value;
   }

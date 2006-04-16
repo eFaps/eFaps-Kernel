@@ -282,12 +282,14 @@ getMainSelectTypes().put(_type, selectType);
 if (selectType==null)  {
   throw new Exception("Type "+_type.getName()+" is not selected! New Instance can not created!");
 }
-    String id = getResultSet().getString(selectType.getIndexId().intValue());
+//    String id = getResultSet().getString(selectType.getIndexId().intValue());
+String id = this.cachedResult.getString(selectType.getIndexId().intValue());
 
 Type type = _type;
 
 if (selectType.getIndexType()!=null)  {
-  long typeId = getResultSet().getLong(selectType.getIndexType().intValue());
+//  long typeId = getResultSet().getLong(selectType.getIndexType().intValue());
+  long typeId = this.cachedResult.getLong(selectType.getIndexType().intValue());
   type = Type.get(typeId);
 }
 
@@ -295,6 +297,8 @@ if (selectType.getIndexType()!=null)  {
   }
 
   /////////////////////////////////////////////////////////////////////////////
+
+org.efaps.db.query.CachedResult cachedResult = null;
 
   /**
    * The instance method executes the query.
@@ -306,8 +310,10 @@ try  {
 
 
 int incSelIndex = 0;
-JoinRowSet jrs = _context.getDbType().createJoinRowSetInstance();
+//JoinRowSet jrs = _context.getDbType().createJoinRowSetInstance();
 /*oracle.jdbc.rowset.OracleJoinRowSet jrs = new oracle.jdbc.rowset.OracleJoinRowSet();*/
+
+this.cachedResult = new org.efaps.db.query.CachedResult();
 
       for (JoinElement joinElement : getJoinElements())  {
 
@@ -336,7 +342,17 @@ if (incSelIndex == 0)  {
 
 //System.out.println("joinElement.getMatchColumn()="+joinElement.getMatchColumn());
 
-        jrs.addRowSet(getResultSet(), joinElement.getMatchColumn());
+//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~joinElement.getMatchColumn()="+joinElement.getMatchColumn());
+//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~count="+getResultSet().getMetaData().getColumnCount());
+
+//for (int i=1;i<=getResultSet().getMetaData().getColumnCount();i++)  {
+//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~column["+i+"]="+getResultSet().getMetaData().getColumnName(i));
+//}
+
+
+//        jrs.addRowSet(this.resultSet, joinElement.getMatchColumn());
+cachedResult.populate(this.resultSet, joinElement.getMatchColumn());
+
       }
 //System.out.println("AbstractQuery.execute().count resultSet="+jrs.getRowSets().size());
 //System.out.println("AbstractQuery.execute().resultSet.getMetaData="+jrs.getMetaData());
@@ -346,8 +362,12 @@ if (incSelIndex == 0)  {
 //System.out.println("AbstractQuery.execute().resultSet.getMetaData.getColumnName("+i+")="+jrs.getMetaData().getColumnName(i));
 //}
 
+System.out.println("-----------------------------------------------------");
+System.out.println(cachedResult.cache);
+System.out.println("-----------------------------------------------------");
 
-      setResultSet(jrs);
+//      setResultSet(jrs);
+setResultSet(null);
 
 
 //System.out.println("----getAllSelExprMap()="+getAllSelExprMap());
@@ -365,6 +385,7 @@ for (SelExpr2Attr selExpr : getAllOIDSelExprMap().values())  {
 } catch (Exception e)  {
 e.printStackTrace();
 }
+this.cachedResult.beforeFirst();
   }
 
   /**
@@ -412,6 +433,8 @@ throw new EFapsException(getClass(), "execute.Throwable");
    *         <i>false</i>
    */
   public boolean next() throws Exception  {
+    return this.cachedResult.next();
+/*
     boolean ret;
     if (getResultSet()!=null)  {
       ret = getResultSet().next();
@@ -419,6 +442,7 @@ throw new EFapsException(getClass(), "execute.Throwable");
       ret = false;
     }
     return ret;
+*/
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -539,9 +563,9 @@ throw new EFapsException(getClass(), "execute.Throwable");
    * @see #resultSet
    * @see #setResultSet
    */
-  private CachedRowSet getResultSet()   {
-    return this.resultSet;
-  }
+//  private CachedRowSet getResultSet()   {
+//    return this.resultSet;
+//  }
 
   /**
    * This is the setter method for instance variable {@link #resultSet}.
@@ -1063,7 +1087,8 @@ throw new EFapsException(getClass(), "SelectExpression.get.NoAttribute");
       }
 //System.out.println("~~~~~~~~~~~~++getIndexes()="+getIndexes());
       AttributeTypeInterface ret = getAttribute().newInstance();
-      return ret.readValue(_context, getResultSet(), getIndexes());
+return ret.readValue(_context, cachedResult, getIndexes());
+//      return ret.readValue(_context, getResultSet(), getIndexes());
     }
 
     ///////////////////////////////////////////////////////////////////////////
