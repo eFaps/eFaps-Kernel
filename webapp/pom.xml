@@ -160,6 +160,14 @@
       <scope>package</scope>
     </dependency>
 
+    <!-- Apache MyFaces used for JSF -->
+    <dependency>
+      <groupId>myfaces</groupId>
+      <artifactId>myfaces-all</artifactId>
+      <version>1.1.1</version>
+      <scope>package</scope>
+    </dependency>
+
   </dependencies>
 
 </project>
