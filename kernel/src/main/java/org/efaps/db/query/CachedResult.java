@@ -20,9 +20,8 @@
 
 package org.efaps.db.query;
 
-import java.math.BigDecimal;
-
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -31,7 +30,14 @@ import java.util.Map;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
+/**
+ * The class is used to cache all results from a eFaps search query. Multiple
+ * database selects could be added to one instance. The class simulates the
+ * class {@link javax.sql.rowset.JoinRowSet}, because the original classes do
+ * not work with Oracle JDBC drivers.
+ */
 public class CachedResult  {
 
   private Map < Object, List > cache = new HashMap < Object, List> ();
@@ -54,13 +60,29 @@ public class CachedResult  {
   public CachedResult()  {
   }
 
+  /**
+   * Moves the cursor to the front of this cached result object, just before
+   * the first row. This method has no effect if the cached result contains no
+   * rows.
+   */
   public void beforeFirst()  {
     this.iter = this.rows.iterator();
   }
 
+  /**
+   * Moves the cursor down one row from its current position. A cached result
+   * cursor is initially positioned before the first row; the first call to the
+   * method next makes the first row the current row; the second call makes
+   * the second row the current row, and so on.
+   *
+   * @return true if the new current row is valid; false if there are no more
+   *         rows
+   */
   public boolean next()  {
+    if (this.iter == null)  {
+      beforeFirst();
+    }
     boolean ret = this.iter.hasNext();
-
     if (ret)  {
       this.currentRow = this.iter.next();
     }
@@ -98,30 +120,62 @@ public class CachedResult  {
     }
   }
 
-  public Object getObject(int _index)  {
+  /**
+   * @param _index  column index
+   */
+  public Object getObject(final int _index)  {
     return this.currentRow.get(_index - 1);
   }
 
-
-  public String getString(int _index)  {
+  /**
+   * @param _index  column index
+   */
+  public String getString(final int _index)  {
     Object obj =  getObject(_index);
 
     return obj == null ? null : obj.toString();
   }
 
-  public Long getLong(int _index)  {
+  /**
+   * @param _index  column index
+   */
+  public Long getLong(final int _index)  {
     Long ret = null;
     Object obj = getObject(_index);
-    if (obj instanceof Long)  {
-      ret = (Long) obj;
-// TODO: BigDecimal
+    if (obj instanceof Number)  {
+      ret = ((Number) obj).longValue();
     } else  {
       ret = Long.parseLong(obj.toString());
     }
     return ret;
   }
 
-  public Double getDouble(int _index)  {
-    return (Double) getObject(_index);
+  /**
+   * @param _index  column index
+   */
+  public Double getDouble(final int _index)  {
+    Double ret = null;
+    Object obj = getObject(_index);
+    if (obj instanceof Number)  {
+      ret = ((Number) obj).doubleValue();
+    } else  {
+      ret = Double.parseDouble(obj.toString());
+    }
+    return ret;
+  }
+
+  /**
+   * @param _index  column index
+   */
+  public Date getTimestamp(final int _index)  {
+    Date ret = null;
+    Object obj = getObject(_index);
+// TODO: timestamp from Oracle database does not work!
+    if (obj instanceof Timestamp)  {
+      ret = new Date(((Timestamp) obj).getTime());
+    } else if (obj instanceof Date)  {
+      ret = (Date) obj;
+    }
+    return ret;
   }
 }
