@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -25,10 +27,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
@@ -55,17 +55,17 @@ public class Type extends DataModelObject  {
   /**
    * Logging instance used in this class.
    */
-  private final static Log log = LogFactory.getLog(Type.class);
+  private static final Log LOG = LogFactory.getLog(Type.class);
 
   /**
    * This is the sql select statement to select all types from the database.
    */
-  private final static String SQL_SELECT  = "select "+
-                                                "ID,"+
-                                                "NAME,"+
-                                                "PARENTDMTYPE,"+
-                                                "SQLCACHEEXPR "+
-                                              "from ADMINTYPE";
+  private static final String SQL_SELECT  = "select "
+                                                + "ID,"
+                                                + "NAME,"
+                                                + "PARENTDMTYPE,"
+                                                + "SQLCACHEEXPR "
+                                              + "from ADMINTYPE";
 
   /**
    * This is the constructor for class Type. Every instance of class Type
@@ -73,7 +73,7 @@ public class Type extends DataModelObject  {
    *
    * @param _name   name of the instance
    */
-  protected Type(long _id, String _name)  {
+  protected Type(final long _id, final String _name)  {
     super(_id, _name);
   }
 
@@ -82,16 +82,16 @@ public class Type extends DataModelObject  {
    *
    * @param _attribute  attribute to add
    */
-  protected void addAttribute(Attribute _attribute)  {
+  protected void addAttribute(final Attribute _attribute)  {
     _attribute.setParent(this);
     getAttributes().put(_attribute.getName(), _attribute);
-    if (_attribute.getTable()!=null)  {
+    if (_attribute.getTable() != null)  {
       getTables().add(_attribute.getTable());
       _attribute.getTable().add(this);
-      if (getMainTable()==null)  {
-        if (_attribute.getTable().getMainTable()!=null)  {
+      if (getMainTable() == null)  {
+        if (_attribute.getTable().getMainTable() != null)  {
           setMainTable(_attribute.getTable().getMainTable());
-        } else if (_attribute.getTable().getMainTable()==null)  {
+        } else if (_attribute.getTable().getMainTable() == null)  {
           setMainTable(_attribute.getTable());
         }
       }
@@ -112,12 +112,12 @@ public class Type extends DataModelObject  {
    * @param _attr attribute with the link to this type
    * @todo description of algorithm
    */
-  protected void addLink(Attribute _attr)  {
+  protected void addLink(final Attribute _attr)  {
     getLinks().put(_attr.getParent().getName() + "\\" + _attr.getName(), _attr);
     for (Type type : _attr.getParent().getChildTypes())  {
       getLinks().put(type.getName() + "\\" + _attr.getName(), _attr);
     }
-    for (Type child: getChildTypes())  {
+    for (Type child : getChildTypes())  {
       if (child.getParentType().getId() == this.getId())  {
         child.addLink(_attr);
       }
@@ -130,7 +130,7 @@ public class Type extends DataModelObject  {
    * @param _name name of the attribute for this type to return
    * @return instance of class {@link Attribute}
    */
-  public Attribute getAttribute(String _name)  {
+  public final Attribute getAttribute(final String _name)  {
     return getAttributes().get(_name);
   }
 
@@ -141,8 +141,8 @@ public class Type extends DataModelObject  {
    * @param _class  searched attribute type
    * @return all attributes assigned from parameter <i>_class</i>
    */
-  public Set<Attribute> getAttributes(Class _class)  {
-    Set<Attribute> ret = new HashSet<Attribute>();
+  public final Set < Attribute > getAttributes(final Class _class)  {
+    Set < Attribute > ret = new HashSet < Attribute > ();
     for (Attribute attr : getAttributes().values())  {
       if (attr.getAttributeType().getClassRepr().isAssignableFrom(_class))  {
         ret.add(attr);
@@ -157,10 +157,10 @@ public class Type extends DataModelObject  {
    *
    * @return <i>true</i> if type is cacheable, otherwise <i>false</i>
    */
-  public boolean isCacheable()  {
+  public final boolean isCacheable()  {
     boolean ret = false;
 
-    if (getCache()!=null)  {
+    if (getCache() != null)  {
       ret = true;
     }
     return ret;
@@ -173,7 +173,7 @@ public class Type extends DataModelObject  {
    * @return cache object for given parameter <i>_id</i>
    * @param _id
    */
-  public CacheInterface getCacheObject(long _id)  {
+  public CacheInterface getCacheObject(final long _id)  {
     return getCache().get(_id);
   }
 
@@ -183,7 +183,7 @@ public class Type extends DataModelObject  {
    * @see #policies
    * @see #getPolicies
    */
-  public void addPolicy(Policy _policy)  {
+  public void addPolicy(final Policy _policy)  {
     synchronized (getPolicies())  {
       getPolicies().add(_policy);
     }
@@ -192,7 +192,7 @@ public class Type extends DataModelObject  {
   /**
    *
    */
-  public void readCache(Context _context, String _cacheExpr) throws SQLException  {
+  public void readCache(final Context _context, final String _cacheExpr) throws SQLException  {
 //    Cache cache = new Cache(_context.getConnection(), getTableName(), _cacheExpr);
 //    setCache(cache);
   }
@@ -203,7 +203,7 @@ public class Type extends DataModelObject  {
    * @param _context
    * @see #getName
    */
-  public String getViewableName(Context _context)  {
+  public String getViewableName(final Context _context)  {
     return getName();
   }
 
@@ -214,7 +214,7 @@ public class Type extends DataModelObject  {
    * @param _type type to test for parent
    * @return true if this type is a child, otherwise false
    */
-  public boolean isKindOf(Type _type)  {
+  public boolean isKindOf(final Type _type)  {
     boolean ret = false;
     Type type = this;
     while ((type != null) && (type.getId() != _type.getId()))  {
@@ -235,7 +235,7 @@ public class Type extends DataModelObject  {
    * @param _name     name of the property (key)
    * @return value of the property with the given name / key.
    */
-  public String getProperty(String _name)  {
+  public String getProperty(final String _name)  {
     String value = super.getProperty(_name);
     if ((value == null) && (getParentType() != null))  {
       value = getParentType().getProperty(_name);
@@ -252,7 +252,7 @@ public class Type extends DataModelObject  {
   public String toString()  {
     return new ToStringBuilder(this).
       appendSuper(super.toString()).
-      append("parentType", (getParentType()!=null ? getParentType().getName() : "")).
+      append("parentType", getParentType() != null ? getParentType().getName() : "").
       append("uniqueKey", getUniqueKeys()).
       toString();
   }
@@ -268,7 +268,7 @@ public class Type extends DataModelObject  {
    * @see #addUniqueKey
    * @see #setViewAttribute
    */
-  protected void setProperty(Context _context, String _name, String _value) throws Exception  {
+  protected void setProperty(final Context _context, final String _name, final String _value) throws Exception  {
     if (_name.startsWith("Icon"))  {
       setIcon(RequestHandler.replaceMacrosInUrl(_value));
     } else if (_name.startsWith("Tree"))  {
@@ -290,9 +290,9 @@ public class Type extends DataModelObject  {
    * @param _attrList string with comma separated list of attribute names
    * @see #setProperty
    */
-  private void addUniqueKey(String _attrList)  {
-    if (getUniqueKeys()==null)  {
-      setUniqueKeys(new HashSet<UniqueKey>());
+  private void addUniqueKey(final String _attrList)  {
+    if (getUniqueKeys() == null)  {
+      setUniqueKeys(new HashSet < UniqueKey > ());
     }
     getUniqueKeys().add(new UniqueKey(this, _attrList));
   }
@@ -310,7 +310,7 @@ public class Type extends DataModelObject  {
    * @see #viewAttribute
    * @see #setProperty
    */
-  private void setViewAttribute(Context _context, String _name) throws Exception  {
+  private void setViewAttribute(final Context _context, final String _name) throws Exception  {
 /*    Attribute attr = getAttribute(_name);
     if (attr == null)  {
       attr = Attribute.get(_context, _name);
@@ -328,7 +328,7 @@ public class Type extends DataModelObject  {
    * @param _childType  child type to add
    * @see #childTypes
    */
-  private void addChildType(Type _childType)  {
+  private void addChildType(final Type _childType)  {
 //    for (Attribute linkAttr: getLinks().values())  {
 //      _childType.addLink(linkAttr);
 //    }
@@ -400,7 +400,7 @@ throw e;
    *
    * @see #getChildTypes
    */
-  private Set<Type> childTypes = new HashSet<Type>();
+  private Set < Type > childTypes = new HashSet < Type > ();
 
   /**
    * The instance variables stores all attributes for this type object.
@@ -410,7 +410,7 @@ throw e;
    * @see #getAttribute
    * @see #getAttributes(Class)
    */
-  private Map<String,Attribute> attributes = new Hashtable<String,Attribute>();
+  private Map < String,Attribute > attributes = new Hashtable < String, Attribute > ();
 
   /**
    * Cache of the business objects of this type.
@@ -426,7 +426,7 @@ throw e;
    * @see #addPolicy
    * @see #getPolicies
    */
-  private Set<Policy> policies = new HashSet<Policy>();
+  private Set < Policy > policies = new HashSet < Policy > ();
 
   /**
    * Instance of a HashSet to store all needed tables for this type. The
@@ -435,7 +435,7 @@ throw e;
    * @see #add(Attribute)
    * @see #getTables
    */
-  private Set<SQLTable> tables = new HashSet<SQLTable>();
+  private Set < SQLTable > tables = new HashSet < SQLTable > ();
 
   /**
    * The instance variable stores the main table, which must be inserted
@@ -495,7 +495,7 @@ throw e;
    * @see #getUniqueKeys
    * @see #setUniqueKeys
    */
-  private Collection<UniqueKey> uniqueKeys = null;
+  private Collection < UniqueKey > uniqueKeys = null;
 
   /**
    * The type icon is stored in this instance variable.
@@ -507,7 +507,7 @@ throw e;
    *
    * @see #getLinks
    */
-  private Map<String,Attribute> links = new HashMap<String,Attribute>();
+  private Map < String, Attribute > links = new HashMap < String, Attribute > ();
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -519,7 +519,7 @@ throw e;
    * @see #parentType
    * @see #getParentType
    */
-  private void setParentType(Type _parentType)  {
+  private void setParentType(final Type _parentType)  {
     this.parentType = _parentType;
   }
 
@@ -542,7 +542,7 @@ throw e;
    * @see #parentTypeIds
    * @see #getParentTypeIds
    */
-  private void setParentTypeIds(String _parentTypeIds)  {
+  private void setParentTypeIds(final String _parentTypeIds)  {
     this.parentTypeIds = _parentTypeIds;
   }
 
@@ -565,7 +565,7 @@ throw e;
    * @return value of instance variable {@link #childTypes}
    * @see #childTypes
    */
-  public Set<Type> getChildTypes()  {
+  public Set < Type > getChildTypes()  {
     return this.childTypes;
   }
 
@@ -575,7 +575,7 @@ throw e;
    * @return value of instance variable {@link #attributes}
    * @see #attributes
    */
-  public Map<String,Attribute> getAttributes()  {
+  public Map < String, Attribute > getAttributes()  {
     return this.attributes;
   }
 
@@ -597,7 +597,7 @@ throw e;
    * @see #getCache
    * @see #cache
    */
-  private void setCache(Cache _cache)  {
+  private void setCache(final Cache _cache)  {
     this.cache = _cache;
   }
 
@@ -608,7 +608,7 @@ throw e;
    * @see #addPolicy
    * @see #policies
    */
-  public Set<Policy> getPolicies()  {
+  public Set < Policy > getPolicies()  {
     return this.policies;
   }
 
@@ -619,7 +619,7 @@ throw e;
    * @see #addPolicy
    * @see #tables
    */
-  public Set<SQLTable> getTables()  {
+  public Set < SQLTable > getTables()  {
     return this.tables;
   }
 
@@ -641,7 +641,7 @@ throw e;
    * @see #getMainTable
    * @see #mainTable
    */
-  private void setMainTable(SQLTable _mainTable)  {
+  private void setMainTable(final SQLTable _mainTable)  {
     this.mainTable = _mainTable;
   }
 
@@ -663,7 +663,7 @@ throw e;
    * @see #getFormView
    * @see #formView
    */
-  private void setFormView(Form _formView)  {
+  private void setFormView(final Form _formView)  {
     this.formView = _formView;
   }
 
@@ -685,7 +685,7 @@ throw e;
    * @see #getFormEdit
    * @see #formEdit
    */
-  private void setFormEdit(Form _formEdit)  {
+  private void setFormEdit(final Form _formEdit)  {
     this.formEdit = _formEdit;
   }
 
@@ -707,7 +707,7 @@ throw e;
    * @see #getFormCreate
    * @see #formCreate
    */
-  private void setFormCreate(Form _formCreate)  {
+  private void setFormCreate(final Form _formCreate)  {
     this.formCreate = _formCreate;
   }
 
@@ -723,15 +723,15 @@ throw e;
   }
 
 String treeMenuName = null;
-private void setTreeMenuName(String _treeMenuName)  {
+private void setTreeMenuName(final String _treeMenuName)  {
   this.treeMenuName = _treeMenuName;
 }
 public String getTreeMenuName()  {
   return this.treeMenuName;
 }
 
-public Menu getTreeMenu(Context _context) throws Exception  {
-  if (getTreeMenu()==null && getTreeMenuName()!=null)  {
+public Menu getTreeMenu(final Context _context) throws Exception  {
+  if ((getTreeMenu() == null) && (getTreeMenuName() != null))  {
     setTreeMenu(Menu.get(_context, getTreeMenuName()));
   }
   return getTreeMenu();
@@ -744,7 +744,7 @@ public Menu getTreeMenu(Context _context) throws Exception  {
    * @see #getTreeMenu
    * @see #treeMenu
    */
-  private void setTreeMenu(Menu _treeMenu)  {
+  private void setTreeMenu(final Menu _treeMenu)  {
     this.treeMenu = _treeMenu;
   }
 
@@ -766,7 +766,7 @@ public Menu getTreeMenu(Context _context) throws Exception  {
    * @see #getViewAttribute
    * @see #viewAttribute
    */
-  private void setViewAttribute(Attribute _viewAttribute)  {
+  private void setViewAttribute(final Attribute _viewAttribute)  {
     this.viewAttribute = _viewAttribute;
   }
 
@@ -777,7 +777,7 @@ public Menu getTreeMenu(Context _context) throws Exception  {
    * @see #setUniqueKeys
    * @see #uniqueKeys
    */
-  public Collection<UniqueKey> getUniqueKeys()  {
+  public Collection < UniqueKey > getUniqueKeys()  {
     return this.uniqueKeys;
   }
 
@@ -788,7 +788,7 @@ public Menu getTreeMenu(Context _context) throws Exception  {
    * @see #getUniqueKeys
    * @see #uniqueKeys
    */
-  private void setUniqueKeys(Collection<UniqueKey> _uniqueKeys)  {
+  private void setUniqueKeys(final Collection < UniqueKey > _uniqueKeys)  {
     this.uniqueKeys = _uniqueKeys;
   }
 
@@ -810,7 +810,7 @@ public Menu getTreeMenu(Context _context) throws Exception  {
    * @see #getIcon
    * @see #icon
    */
-  private void setIcon(String _icon)  {
+  private void setIcon(final String _icon)  {
     this.icon = _icon;
   }
 
@@ -820,7 +820,7 @@ public Menu getTreeMenu(Context _context) throws Exception  {
    * @return value of instance variable {@link #links}
    * @see #links
    */
-  public Map<String,Attribute> getLinks()  {
+  public Map < String, Attribute > getLinks()  {
     return this.links;
   }
 
@@ -834,7 +834,7 @@ public Menu getTreeMenu(Context _context) throws Exception  {
   public static void initialise(final Context _context) throws Exception  {
     ConnectionResource con = null;
     try  {
-      Map<Long,Long> parents = new HashMap<Long,Long>();
+      Map < Long, Long > parents = new HashMap < Long, Long > ();
 
       con = _context.getConnectionResource();
 
@@ -849,9 +849,9 @@ public Menu getTreeMenu(Context _context) throws Exception  {
           String name =         rs.getString(2).trim();
           long parentTypeId =   rs.getLong(3);
           String sqlCacheExpr = rs.getString(4);
-          sqlCacheExpr = (sqlCacheExpr!=null ? sqlCacheExpr.trim() : null);
+          sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
 
-          log.debug("read type '" + name + "' (id = " + id + ")");
+          LOG.debug("read type '" + name + "' (id = " + id + ")");
 
           Type type = new Type(id, name);
           if (id == 1000)  {
@@ -882,7 +882,7 @@ type.readFromDB4Properties(_context);
       }
 
       // initialise parents
-      for (Map.Entry<Long,Long> entry: parents.entrySet())  {
+      for (Map.Entry < Long, Long > entry : parents.entrySet())  {
         Type child  = Type.get(entry.getKey());
         Type parent = Type.get(entry.getValue());
 
@@ -904,8 +904,8 @@ type.readFromDB4Properties(_context);
    *
    * @return instance of class {@link Type}
    */
-  public static Type get(long _id) throws Exception  {
-    Type type = (Type)getTypeCache().get(_id);
+  public static Type get(final long _id) throws Exception  {
+    Type type = getTypeCache().get(_id);
     return type;
   }
 
@@ -914,8 +914,8 @@ type.readFromDB4Properties(_context);
    *
    * @return instance of class {@link Type}
    */
-  public static Type get(String _name) throws Exception  {
-    Type type = (Type)getTypeCache().get(_name);
+  public static Type get(final String _name) throws Exception  {
+    Type type = getTypeCache().get(_name);
     return type;
   }
 
@@ -924,7 +924,7 @@ type.readFromDB4Properties(_context);
    *
    * @return value of static variable {@link #typeCache}
    */
-  static Cache<Type> getTypeCache()  {
+  static Cache < Type > getTypeCache()  {
     return typeCache;
   }
 
@@ -933,7 +933,7 @@ type.readFromDB4Properties(_context);
    *
    * @see #get
    */
-  private static Cache<Type> typeCache = new Cache<Type>();
+  private static Cache < Type > typeCache = new Cache < Type > ();
 
   /////////////////////////////////////////////////////////////////////////////
 

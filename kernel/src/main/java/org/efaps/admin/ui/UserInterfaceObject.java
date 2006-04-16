@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
@@ -44,7 +47,7 @@ public abstract class UserInterfaceObject extends AdminObject  {
    * @param _id         id to set
    * @param _name name  to set
    */
-  protected UserInterfaceObject(long _id, String _name)  {
+  protected UserInterfaceObject(final long _id, final String _name)  {
     super(_id, _name);
   }
 
@@ -59,7 +62,7 @@ public abstract class UserInterfaceObject extends AdminObject  {
    * @see #readFromDB4Links
    * @see #readFromDB4Access
    */
-  protected void readFromDB(Context _context) throws Exception  {
+  protected void readFromDB(final Context _context) throws Exception  {
     readFromDB4Properties(_context);
     readFromDB4Links(_context);
     readFromDB4Access(_context);
@@ -72,7 +75,7 @@ public abstract class UserInterfaceObject extends AdminObject  {
    * @param _context eFaps context for this request
    * @see AdminObject.setLinkProperty
    */
-  private void readFromDB4Links(Context _context) throws Exception  {
+  private void readFromDB4Links(final Context _context) throws Exception  {
 // folgende aktion funktionier irgendwie nicht unter oracle...
 /*    SearchQuery query = new SearchQuery();
     query.setQueryTypes(_context, "Admin_UI_Link");
@@ -101,13 +104,13 @@ System.out.println("toType="+toType);
 Statement stmt = _context.getConnection().createStatement();
 try  {
   ResultSet rs = stmt.executeQuery(
-      "select "+
-        "UIABSTRACT2UIABSTRACT.TYPEID,"+
-        "UIABSTRACT2UIABSTRACT.TOID,"+
-        "ABSTRACT.TYPEID,"+
-        "ABSTRACT.NAME "+
-      "from UIABSTRACT2UIABSTRACT, ABSTRACT "+
-      "where UIABSTRACT2UIABSTRACT.FROMID="+getId()+" and UIABSTRACT2UIABSTRACT.TOID=ABSTRACT.ID"
+      "select "
+          + "UIABSTRACT2UIABSTRACT.TYPEID,"
+          + "UIABSTRACT2UIABSTRACT.TOID,"
+          + "ABSTRACT.TYPEID,"
+          + "ABSTRACT.NAME "
+      + "from UIABSTRACT2UIABSTRACT, ABSTRACT "
+      + "where UIABSTRACT2UIABSTRACT.FROMID=" + getId() + " and UIABSTRACT2UIABSTRACT.TOID=ABSTRACT.ID"
   );
   while (rs.next())  {
     long conTypeId  = rs.getLong(1);
@@ -116,13 +119,11 @@ try  {
     String toName   = rs.getString(4);
     Type conType    = Type.get(conTypeId);
     Type toType     = Type.get(toTypeId);
-System.out.println("type="+conType);
-System.out.println("toId="+toId);
-System.out.println("toName="+toName);
-System.out.println("toType="+toType);
-if (EFapsClassName.getEnum(conType.getName())!=null)  {
-    setLinkProperty(_context, EFapsClassName.getEnum(conType.getName()), toId, EFapsClassName.getEnum(toType.getName()), toName);
-}
+    if (EFapsClassName.getEnum(conType.getName()) != null)  {
+        setLinkProperty(_context,
+            EFapsClassName.getEnum(conType.getName()), toId,
+            EFapsClassName.getEnum(toType.getName()), toName);
+    }
   }
   rs.close();
 } catch (Exception e)  {
@@ -140,15 +141,15 @@ e.printStackTrace();
    * @param _context eFaps context for this request
    * @see AdminObject.setProperty
    */
-  private void readFromDB4Properties(Context _context) throws Exception  {
+  private void readFromDB4Properties(final Context _context) throws Exception  {
     Statement stmt = _context.getConnection().createStatement();
     try  {
       ResultSet rs = stmt.executeQuery(
-          "select "+
-            "PROPERTY.NAME,"+
-            "PROPERTY.VALUE "+
-          "from PROPERTY "+
-          "where PROPERTY.ABSTRACT="+getId()+""
+          "select "
+              + "PROPERTY.NAME,"
+              + "PROPERTY.VALUE "
+          + "from PROPERTY "
+          + "where PROPERTY.ABSTRACT=" + getId()
       );
       while (rs.next())  {
         String name =   rs.getString(1).trim();
@@ -169,20 +170,20 @@ e.printStackTrace();
    *
    * @param _context for this request
    */
-  private void readFromDB4Access(Context _context) throws Exception  {
+  private void readFromDB4Access(final Context _context) throws Exception  {
     Statement stmt = _context.getConnection().createStatement();
     try  {
       ResultSet rs = stmt.executeQuery(
-          "select "+
-            "UIACCESS.USERABSTRACT "+
-          "from UIACCESS "+
-          "where UIACCESS.UIABSTRACT="+getId()+""
+          "select "
+              + "UIACCESS.USERABSTRACT "
+          + "from UIACCESS "
+          + "where UIACCESS.UIABSTRACT=" + getId()
       );
       while (rs.next())  {
         long userId = rs.getLong(1);
         UserObject userObject = UserObject.getUserObject(_context, userId);
 if (userObject == null)  {
-throw new Exception("user "+userId+" does not exists!");
+throw new Exception("user " + userId + " does not exists!");
 } else  {
         getAccess().add(userObject);
 }
@@ -208,7 +209,7 @@ e.printStackTrace();
    * @return  <i>true</i>if context user has access, otherwise <i>false</i> is
    *          returned
    */
-  public boolean hasAccess(Context _context)  {
+  public boolean hasAccess(final Context _context)  {
     boolean ret = false;
 
     if (getAccess().isEmpty())  {
@@ -232,7 +233,7 @@ e.printStackTrace();
    *
    * @see #getAccess
    */
-  private Set<UserObject> access = new HashSet<UserObject>();
+  private Set < UserObject > access = new HashSet < UserObject >();
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -243,7 +244,7 @@ e.printStackTrace();
    * @see #access
    * @see #add(Role)
    */
-  protected Set<UserObject> getAccess()  {
+  protected Set < UserObject > getAccess()  {
     return this.access;
   }
 
@@ -254,7 +255,7 @@ e.printStackTrace();
    *
    * @param _context  eFaps context for this request
    */
-  public static void initialise(Context _context) throws Exception  {
+  public static void initialise(final Context _context) throws Exception  {
     Command.getCache().initialise(_context);
     Menu.getCache().initialise(_context);
     Search.getCache().initialise(_context);
@@ -278,9 +279,9 @@ e.printStackTrace();
   }
 
 
-  static protected class UserInterfaceObjectCache<UIObj extends UserInterfaceObject> extends Cache<UIObj>  {
+  static protected class UserInterfaceObjectCache < UIObj extends UserInterfaceObject > extends Cache < UIObj >  {
 
-    protected UserInterfaceObjectCache(Class<UIObj> _callerClass)  {
+    protected UserInterfaceObjectCache(final Class < UIObj > _callerClass)  {
       this.callerClass = _callerClass;
     }
 
@@ -293,8 +294,8 @@ e.printStackTrace();
      *
      * @param _context  eFaps context for this request
      */
-    protected void initialise(Context _context) throws Exception  {
-      Class<UIObj> uiObjClass = getCallerClass();
+    protected void initialise(final Context _context) throws Exception  {
+      Class < UIObj > uiObjClass = getCallerClass();
       if (Type.get(getEFapsClassName().name) != null)  {
         SearchQuery query = new SearchQuery();
         query.setQueryTypes(_context, getEFapsClassName().name);
@@ -302,15 +303,15 @@ e.printStackTrace();
         query.addSelect(_context, "Name");
         query.execute(_context);
         while (query.next())  {
-          long id     = (Long)query.get(_context, "ID");
-          String name = (String)query.get(_context, "Name");
+          long id     = (Long) query.get(_context, "ID");
+          String name = (String) query.get(_context, "Name");
           UIObj uiObj = uiObjClass.getConstructor(Long.class, String.class).newInstance(id, name);
           add(uiObj);
         }
       }
     }
 
-    protected UIObj read(Context _context, long _id) throws EFapsException  {
+    protected UIObj read(final Context _context, final long _id) throws EFapsException  {
       try  {
         SearchQuery query = new SearchQuery();
         query.setQueryTypes(_context, getEFapsClassName().name);
@@ -326,7 +327,7 @@ e.printStackTrace();
     }
 
 
-    protected UIObj read(Context _context, String _name) throws EFapsException  {
+    protected UIObj read(final Context _context, final String _name) throws EFapsException  {
       try  {
         SearchQuery query = new SearchQuery();
         query.setQueryTypes(_context, getEFapsClassName().name);
@@ -342,7 +343,7 @@ e.printStackTrace();
     }
 
     private EFapsClassName getEFapsClassName() throws EFapsException  {
-      Class<UIObj> uiObjClass = getCallerClass();
+      Class < UIObj > uiObjClass = getCallerClass();
       try  {
         return ((EFapsClassName)uiObjClass.getField("EFAPS_CLASSNAME").get(null));
       } catch (NoSuchFieldException e)  {
@@ -352,9 +353,9 @@ e.printStackTrace();
       }
     }
 
-    private UIObj read(Context _context, SearchQuery _query) throws EFapsException  {
+    private UIObj read(final Context _context, final SearchQuery _query) throws EFapsException  {
       UIObj uiObj = null;
-      Class<UIObj> uiObjClass = getCallerClass();
+      Class < UIObj > uiObjClass = getCallerClass();
       try  {
         _query.execute(_context);
         if (_query.next())  {
@@ -394,7 +395,7 @@ e.printStackTrace();
     ///////////////////////////////////////////////////////////////////////////
     // instance variables
 
-    private final Class<UIObj> callerClass;
+    private final Class < UIObj > callerClass;
 
     ///////////////////////////////////////////////////////////////////////////
     // getter and setter methods
@@ -402,7 +403,7 @@ e.printStackTrace();
     /**
      *
      */
-    private  Class<UIObj> getCallerClass() throws EFapsException  {
+    private  Class < UIObj > getCallerClass() throws EFapsException  {
       return this.callerClass;
     }
 

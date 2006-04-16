@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db;
@@ -45,12 +48,13 @@ public class Insert extends Update {
 
   private static Logger sqlLogger = Logger.getLogger("org.efaps.sql");
 
-  private static final String CLASSNAME= "org.efaps.db.Insert";
+  private static final String CLASSNAME = "org.efaps.db.Insert";
 
   /////////////////////////////////////////////////////////////////////////////
 
   /**
-   *
+   * @param _context  context for this request
+   * @param _type     type instance to insert
    */
   public Insert(Context _context, Type _type) throws EFapsException  {
     super(_context, _type, null);
@@ -76,7 +80,7 @@ public class Insert extends Update {
   private void addTables()  {
     for (SQLTable table : getType().getTables())  {
       if (getExpr4Tables().get(table) == null)  {
-        getExpr4Tables().put(table, new HashMap<String,AttributeTypeInterface>());
+        getExpr4Tables().put(table, new HashMap < String, AttributeTypeInterface >());
       }
     }
 
@@ -87,12 +91,13 @@ public class Insert extends Update {
    *
    * @param _context  context for this request
    * @param _type     data model type
+   * @throws EFapsException from called method
    */
   private void addCreateUpdateAttributes(Context _context) throws EFapsException  {
     Iterator iter = getType().getAttributes().entrySet().iterator();
     while (iter.hasNext())  {
-      Map.Entry entry = (Map.Entry)iter.next();
-      Attribute attr = (Attribute)entry.getValue();
+      Map.Entry entry = (Map.Entry) iter.next();
+      Attribute attr = (Attribute) entry.getValue();
       AttributeType attrType = attr.getAttributeType();
       if (attrType.isCreateUpdate())  {
         add(_context, attr, null);
@@ -101,6 +106,7 @@ public class Insert extends Update {
   }
 
   /**
+   * @param _context  context for this request
    */
   public void execute(Context _context) throws EFapsException  {
     ConnectionResource con = null;
@@ -137,7 +143,13 @@ public class Insert extends Update {
     }
   }
 
-  private void executeOneStatement(Context _context, ConnectionResource _con, SQLTable _table, Map _expressions, String _id) throws EFapsException  {
+  /**
+   * @param _context  context for this request
+   */
+  private void executeOneStatement(final Context _context,
+      final ConnectionResource _con, final SQLTable _table,
+      final Map _expressions, final String _id) throws EFapsException  {
+
     PreparedStatement stmt = null;
     try {
       stmt = createOneStatement(_context, _con, _table, _expressions, _id);
@@ -161,7 +173,13 @@ public class Insert extends Update {
     }
   }
 
-  private PreparedStatement createOneStatement(Context _context, ConnectionResource _con, SQLTable _table, Map _expressions, String _id) throws SQLException  {
+  /**
+   * @param _context  context for this request
+   */
+  private PreparedStatement createOneStatement(final Context _context,
+      final ConnectionResource _con, final SQLTable _table,
+      final Map _expressions, final String _id) throws SQLException  {
+
     List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
     StringBuffer cmd = new StringBuffer();
     StringBuffer val = new StringBuffer();
@@ -198,7 +216,9 @@ public class Insert extends Update {
     return stmt;
   }
 
-  private long getNewId(ConnectionResource _con, SQLTable _table) throws EFapsException  {
+  private long getNewId(final ConnectionResource _con,
+      final SQLTable _table) throws EFapsException  {
+
     long ret = 0;
     Statement stmt = null;
     try  {
