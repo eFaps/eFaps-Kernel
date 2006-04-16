@@ -1,0 +1,346 @@
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.efaps</groupId>
+
+  <artifactId>efaps</artifactId>
+  <inceptionYear>2002</inceptionYear>
+  <description></description>
+  <version>1.0-SNAPSHOT</version>
+
+<!--  <packaging>jar</packaging>-->
+<packaging>pom</packaging>
+  <name>eFaps</name>
+  <url>http://www.efaps.org/site</url>
+
+
+  <developers>
+    <developer>
+      <id>tmo</id>
+      <name>Tim Moxter</name>
+      <email>tim.moxter@efaps.org</email>
+      <url>www.efaps.org</url>
+      <organization>eFaps</organization>
+      <organizationUrl/>
+      <roles>
+        <role>Architect</role>
+        <role>Release Manager</role>
+      </roles>
+      <timezone>+1</timezone>
+      <properties/>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution/>
+      <comments/>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:svn:https://moxter.net:4443/svn/efaps/trunk</connection>
+    <developerConnection>scm:svn:https://moxter.net:4443/svn/efaps/trunk</developerConnection>
+    <tag/>
+    <url>https://moxter.net:4443/svn/efaps</url>
+  </scm>
+
+  <organization>
+    <name>eFaps</name>
+    <url>http://www.efaps.org/</url>
+  </organization>
+
+  <!-- ************************************************************************
+  * All Modules
+  ************************************************************************+ -->
+  <modules>
+    <module>derby</module>
+    <module>kernel</module>
+    <module>shell</module>
+    <module>webapp</module>
+  </modules>
+
+  <!-- ************************************************************************
+  * Project itself
+  ************************************************************************+ -->
+  <build>
+    <plugins>
+      <!--
+        Resources settings:
+        - no psd images, only js, gif and properties
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <configuration>
+          <filters>
+            <filter>**/*.properties</filter>
+            <filter>**/*.js</filter>
+            <filter>**/*.gif</filter>
+<exclude>**/*.psd</exclude>
+
+          </filters>
+        </configuration>
+      </plugin>
+
+      <!-- Zip Complete Source Code -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorId>src</descriptorId>
+          <finalName>eFaps</finalName>
+          <outputDirectory>${project.build.directory}/site/distribution</outputDirectory>
+          <workDirectory>${project.build.directory}/assembly</workDirectory>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+
+  <!-- ************************************************************************
+  * Report Description
+  ************************************************************************+ -->
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+           <reportSet>
+              <reports>
+                  <!-- Continous Integration -->
+                 <!-- report>cim</report -->
+                  <!-- Dependencies Report -->
+                 <report>dependencies</report>
+                  <!-- Issue Tracking -->
+                 <!-- report>issue-tracking</report-->
+                  <!-- Mailing Lists -->
+                 <!-- report>mailing-list</report -->
+                  <!-- License -->
+                 <report>license</report>
+                  <!-- Project Team -->
+                 <report>project-team</report>
+                  <!-- Source Repository -->
+                 <report>scm</report>
+              </reports>
+           </reportSet>
+        </reportSets>
+
+    <!-- news from site/xdocs/news.xml -->
+<!--
+    <report>maven-news-plugin</report>
+-->
+    <!-- task list from site/xdocs/tasks.xml -->
+<!--
+    <report>maven-tasks-plugin</report>
+
+    <report>jutils-lint4j-plugin</report>
+-->
+      </plugin>
+
+      <!-- Checkstyle Report -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>checkstyle.xml</configLocation>
+        </configuration>
+      </plugin>
+
+      <!-- JavaDoc -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+
+      <!-- Readable SourceCode as HTML-Pages -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jxr-maven-plugin</artifactId>
+      </plugin>
+
+      <!-- todo list from source code -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>taglist-maven-plugin</artifactId>
+        <configuration>
+        <tags>TODO, @todo, @deprecated</tags>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </reporting>
+
+  <distributionManagement>
+    <site>
+      <id>eFaps</id>
+      <url>scp://root@80.237.163.137/home/httpd/vhosts/efaps.org/httpdocs/site/</url>
+    </site>
+  </distributionManagement>
+
+
+  <!-- ************************************************************************
+  * Depencies
+  ************************************************************************+ -->
+  <dependencies>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
+<!--
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>Needed from the Apache Jakarta String Taglibs component.</comment>
+      </properties>
+Needed from eFaps within toString methods.
+-->
+    </dependency>
+
+    <dependency>
+      <groupId>commons-fileupload</groupId>
+      <artifactId>commons-fileupload</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
+<!--      <type>compile</type>-->
+      <!--url>http://jakarta.apache.org/commons/fileupload/</url-->
+      <!--properties>
+        <war.bundle>true</war.bundle>
+        <comment>The component is needed for the file upload use case from the eFaps web application. It helps to access in the form process JSP to a file like a normal request paramter.</comment>
+      </properties-->
+    </dependency>
+
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
+      <scope>provided</scope>
+<!--
+      <url>http://jakarta.apache.org/commons/logging/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>For logging purpose the Apache Commons Loggin component is used (also used from slide and Java Server Faces).</comment>
+      </properties>
+-->
+    </dependency>
+
+    <dependency>
+      <groupId>commons-transaction</groupId>
+      <artifactId>commons-transaction</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
+
+<!--
+      <url>http://jakarta.apache.org/commons/transaction/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>
+        The Apache Commons Transaction component is used from eFaps for transaction handling.
+        The Apache Commons Transaction component is used also from the slide module (Version 1.0.1 must be used because slide Version 2.1 does not work with Commons Transaction Version 1.1!!)</comment>
+      </properties>
+-->
+
+    </dependency>
+
+    <dependency>
+      <groupId>geronimo-spec</groupId>
+      <artifactId>geronimo-spec-jta</artifactId>
+      <version>1.0-M1</version>
+      <scope>provided</scope>
+<!--
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>It defines the javax.transaction interfaces used by eFaps.</comment>
+      </properties>
+-->
+    </dependency>
+
+
+    <dependency>
+      <groupId>commons-vfs</groupId>
+      <artifactId>commons-vfs</artifactId>
+      <version>20050307052300</version>
+      <scope>provided</scope>
+<!--
+      <url>http://jakarta.apache.org/commons/vfs/</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>Used from eFaps to access (load and store) files on external resources.</comment>
+      </properties>
+-->
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.4</version>
+      <scope>provided</scope>
+<!--
+      <url>http://java.sun.com/products/servlet</url>
+      <properties>
+        <comment>Needed to compile the servlets from eFaps.</comment>
+      </properties>
+-->
+    </dependency>
+
+    <dependency>
+      <groupId>slide</groupId>
+      <artifactId>slide-kernel</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
+<!--
+      <url>http://jakarta.apache.org/slide</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>The component is part of the slide module.</comment>
+      </properties>
+-->
+    </dependency>
+
+    <!--
+      JUnit for Testing
+    -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.0</version>
+      <scope>test</scope>
+      <!--url>http://jakarta.apache.org/commons/fileupload/</url-->
+      <!--properties>
+        <war.bundle>true</war.bundle>
+        <comment>The component is needed for the file upload use case from the eFaps web application. It helps to access in the form process JSP to a file like a normal request paramter.</comment>
+      </properties-->
+    </dependency>
+
+  </dependencies>
+
+
+</project>
