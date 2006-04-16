@@ -34,24 +34,35 @@ import java.sql.SQLException;
 
 public class CachedResult  {
 
-  public Map < Object, List > cache = new HashMap < Object, List> ();
+  private Map < Object, List > cache = new HashMap < Object, List> ();
+
+  /**
+   * The variable stores the same values than in {@link #cache}, but without
+   * key. The order is not changed, the order is the same than the result of
+   * select statement.
+   */
+  private List < List > rows = new ArrayList < List > ();
 
   private Iterator < List > iter = null;
 
-  private List current = null;
+  /**
+   * The instance variable is a pointer to the current row in the cached
+   * result table list.
+   */
+  private List currentRow = null;
 
   public CachedResult()  {
   }
 
   public void beforeFirst()  {
-    this.iter = this.cache.values().iterator();
+    this.iter = this.rows.iterator();
   }
 
   public boolean next()  {
     boolean ret = this.iter.hasNext();
 
     if (ret)  {
-      this.current = this.iter.next();
+      this.currentRow = this.iter.next();
     }
     return ret;
   }
@@ -70,7 +81,8 @@ public class CachedResult  {
         for (int i = 1; i <= columnCount; i++)  {
           list.add(_rs.getObject(i));
         }
-        cache.put(_rs.getObject(_keyIndex), list);
+        this.cache.put(_rs.getObject(_keyIndex), list);
+        this.rows.add(list);
       }
     } else  {
       while (_rs.next())  {
@@ -86,16 +98,20 @@ public class CachedResult  {
     }
   }
 
+  public Object getObject(int _index)  {
+    return this.currentRow.get(_index - 1);
+  }
+
 
   public String getString(int _index)  {
-    Object obj =  this.current.get(_index - 1);
+    Object obj =  getObject(_index);
 
     return obj == null ? null : obj.toString();
   }
 
   public Long getLong(int _index)  {
     Long ret = null;
-    Object obj = this.current.get(_index - 1);
+    Object obj = getObject(_index);
     if (obj instanceof Long)  {
       ret = (Long) obj;
 // TODO: BigDecimal
@@ -106,6 +122,6 @@ public class CachedResult  {
   }
 
   public Double getDouble(int _index)  {
-    return (Double) this.current.get(_index - 1);
+    return (Double) getObject(_index);
   }
 }
