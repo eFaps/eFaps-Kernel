@@ -1,3 +1,24 @@
+/*
+ * Copyright 2006 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Author:          tmo
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
+
 importClass(java.io.File);
 importClass(java.io.FileInputStream);
 
@@ -79,7 +100,7 @@ Image.prototype.update = function(_fileName, _objName)  {
  * @param _fileName name of the file to checkin
  */
 Image.prototype.checkin = function(_fileName)  {
-/*  var context = Packages.org.mozilla.javascript.Context.enter();
+  var context = Packages.org.mozilla.javascript.Context.enter();
   var reader;
   try  {
     var stream = _eFapsClassLoader.getResourceAsStream(_fileName);
@@ -87,16 +108,16 @@ Image.prototype.checkin = function(_fileName)  {
       stream = new FileInputStream(new File(_fileName));
     }
 
-    var checkin = new Checkin(Shell.getContext(), this.getInstance(), "FileContent");
+    var checkin = new Checkin(Shell.getContext(), this.getInstance());
     checkin.execute(Shell.getContext(), _fileName, stream, stream.available());
 
     stream.close();
   } catch (e)  {
+print(e);
     context.reportError(e.toString());
   } finally  {
     try  {reader.close();} catch(f) {}
   }
-*/
 }
 
 
