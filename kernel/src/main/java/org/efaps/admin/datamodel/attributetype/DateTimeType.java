@@ -42,18 +42,8 @@ public class DateTimeType extends AbstractType  {
    * @todo test that only one value is given for indexes
    */
   public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes)  {
-//    Timestamp timeStamp = _rs.getTimestamp(_index);
-    Date value = null;
-
-/*    Timestamp timeStamp = _rs.getTimestamp(_indexes.get(0).intValue());
-    if (timeStamp!=null)  {
-      value = new Date(timeStamp.getTime());
-    }
-*/
-setValue(value);
-
-
-    return value;
+    setValue(_rs.getTimestamp(_indexes.get(0).intValue()));
+    return getValue();
   }
 
   /////////////////////////////////////////////////////////////////////////////
