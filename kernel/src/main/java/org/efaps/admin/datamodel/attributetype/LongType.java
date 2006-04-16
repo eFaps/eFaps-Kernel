@@ -45,9 +45,9 @@ public class LongType extends AbstractType  {
    * @todo test that only one value is given for indexes
    */
   public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes)  {
-//    setValue(_rs.getInt(_index));
-setValue(_rs.getLong(_indexes.get(0).intValue()));
-    return _rs.getLong(_indexes.get(0).intValue());
+    Long value = _rs.getLong(_indexes.get(0).intValue());
+    setValue(value != null ? value.longValue() : 0);
+    return getValue();
   }
 
   ////////////////////////////////////////////////////////////////////////////7
