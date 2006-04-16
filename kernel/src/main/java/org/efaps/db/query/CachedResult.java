@@ -144,7 +144,7 @@ public class CachedResult  {
     Object obj = getObject(_index);
     if (obj instanceof Number)  {
       ret = ((Number) obj).longValue();
-    } else  {
+    } else if (obj != null)  {
       ret = Long.parseLong(obj.toString());
     }
     return ret;
@@ -158,7 +158,7 @@ public class CachedResult  {
     Object obj = getObject(_index);
     if (obj instanceof Number)  {
       ret = ((Number) obj).doubleValue();
-    } else  {
+    } else if (obj != null)  {
       ret = Double.parseDouble(obj.toString());
     }
     return ret;
