@@ -209,6 +209,27 @@ function _eFapsCreateAllInsertAttributeTypes(_stmt)  {
 }
 
 /**
+ * The private function inserts the SQL Tables for the event definitions.
+ *
+ * @param _stmt SQL statement to work on
+ */
+function _eFapsCreateAllEventTable(_stmt)  {
+  print("Create Event SQL Table");
+
+  _exec(_stmt, "Table 'EVENTDEF'", "Definition of Events (e.g. Triggers)",
+    "create table EVENTDEF ("+
+      "ID                    "+TYPE_INTEGER+"                   not null,"+
+      "ABSTRACT              "+TYPE_INTEGER+"                   not null,"+
+      "INDEXPOS              "+TYPE_INTEGER+"                   not null,"+
+      "constraint EVENTDEF_UK_ID          unique(ID),"+
+      "constraint EVENTDEF_FK_ID          foreign key(ID)       references ABSTRACT(ID),"+
+      "constraint EVENTDEF_FK_ABSTRACT    foreign key(ID)       references ABSTRACT(ID),"+
+      "constraint EVENTDEF_UK_ID_INDEXPOS unique(ID,INDEXPOS)"+
+    ")"
+  );
+}
+
+/**
  * The private function creates all user tables.
  *
  * @param _stmt SQL statement to work on
@@ -621,6 +642,7 @@ function createAll()  {
 
     ///////////////////////////////////////////////////////////////////////////////
 
+    _eFapsCreateAllEventTable(stmt);
     _eFapsCreateAllUITables(stmt);
     _eFapsCreateAllTeamCenterTables(stmt);
 
