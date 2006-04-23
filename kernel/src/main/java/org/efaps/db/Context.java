@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db;
@@ -56,7 +59,6 @@ public class Context {
   private static ThreadLocal<Context>threadContext = new ThreadLocal<Context>();
 
   public static void setDbType(AbstractDatabase _dbType) throws ClassNotFoundException, IllegalAccessException {
-System.out.println("---------------- DBType = "+_dbType);
     dbType = _dbType;
   }
 
@@ -201,7 +203,7 @@ e.printStackTrace();
     }
 
     con.open();
-System.out.println("getConnectionResource.con="+con);
+//System.out.println("getConnectionResource.con="+con);
 
     return con;
   }
@@ -210,7 +212,7 @@ System.out.println("getConnectionResource.con="+con);
    *
    */
   public void returnConnectionResource(ConnectionResource _con)  {
-System.out.println("returnConnectionResource.con="+_con);
+//System.out.println("returnConnectionResource.con="+_con);
     if (_con == null)  {
 // throw new EFapsException();
     }
