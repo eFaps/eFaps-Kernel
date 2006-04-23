@@ -178,7 +178,8 @@ System.out.println("############################################################
             transactionManager.rollback();
           } catch (Throwable e)  {
           }
-          throw new ServletException("transaction in undefined status");
+// TODO: throw of Exception is not a good idea... if an exception is thrown in the try code, this exception is overwritten!
+//          throw new ServletException("transaction in undefined status");
         }
 }
 
