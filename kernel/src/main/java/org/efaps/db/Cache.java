@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db;
@@ -31,6 +34,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.ui.UserInterfaceObject;
 import org.efaps.db.Context;
 
@@ -147,6 +151,7 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
       Type.initialise(_context);
       Attribute.initialise(_context);
       UserInterfaceObject.initialise(_context);
+      EventDefinition.initialise(_context);
     }
   }
 
