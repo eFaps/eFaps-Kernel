@@ -23,10 +23,12 @@ package org.efaps.admin.datamodel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +36,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.lifecycle.Policy;
 import org.efaps.admin.lifecycle.Status;
 import org.efaps.admin.ui.Form;
@@ -347,6 +351,38 @@ public class Type extends DataModelObject  {
     }
   }
 
+  /**
+   * Adds a new trigger event to this type.
+   *
+   * @param _triggerEvent   trigger class name to add
+   * @param _eventDef       event defition to add
+   */
+  public void addTrigger(final TriggerEvent _triggerEvent, final EventDefinition _eventDef)  {
+    List < EventDefinition > events = this.trigger.get(_triggerEvent);
+    if (events == null)  {
+      events = new ArrayList < EventDefinition > ();
+      this.trigger.put(_triggerEvent, events);
+    }
+    int pos = 0;
+    for (EventDefinition cur : events)  {
+      if (_eventDef.getIndexPos() > cur.getIndexPos())  {
+        break;
+      }
+      pos++;
+    }
+    events.add(pos, _eventDef);
+  }
+
+  /**
+   * Returns the ordered list of triggers assigned to this type instance.
+   *
+   * @param _triggerEvent   trigger class name for which the triggers
+   *                        should returned
+   */
+  public List < EventDefinition > getTrigger(final TriggerEvent _triggerEvent)  {
+    return this.trigger.get(_triggerEvent);
+  }
+
   /////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -508,6 +544,11 @@ throw e;
    * @see #getLinks
    */
   private Map < String, Attribute > links = new HashMap < String, Attribute > ();
+
+  /**
+   * All triggers for this type are stored in this map.
+   */
+  private final Map < TriggerEvent, List < EventDefinition > > trigger = new HashMap <  TriggerEvent, List < EventDefinition > > ();
 
   /////////////////////////////////////////////////////////////////////////////
 
