@@ -168,7 +168,7 @@
 
   <!-- Java Faces Servlet -->
   <servlet>
-    <servlet-name>Faces Servlet</servlet-name>
+    <servlet-name>eFapsFacesServlet</servlet-name>
     <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
@@ -359,6 +359,12 @@
   <servlet-mapping>
     <servlet-name>eFapsWebDAVServlet</servlet-name>
     <url-pattern>webdav/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- extension mapping -->
+  <servlet-mapping>
+    <servlet-name>eFapsFacesServlet</servlet-name>
+    <url-pattern>*.jsf</url-pattern>
   </servlet-mapping>
 
   <!-- The mapping for the Slide WebDAV servlet.
