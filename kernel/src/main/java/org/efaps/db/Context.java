@@ -22,8 +22,9 @@ package org.efaps.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Locale;
 import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
 import java.util.Stack;
 
 import javax.naming.NamingException;
@@ -87,7 +88,7 @@ protected static DataSource getDataSource()  {
   /**
    * Stores all created connection resources.
    */
-  private HashSet<ConnectionResource> connectionStore =
+  private Set<ConnectionResource> connectionStore =
                                       new HashSet<ConnectionResource>();
 
   /**
@@ -178,6 +179,67 @@ System.out.println("--------------------------------- context.close");
     if ((threadContext.get() != null) && (threadContext.get() == this))  {
       threadContext.set(null);
     }
+// check if all JDBC connection are close...
+for (ConnectionResource con : this.connectionStore)  {
+  try  {
+// TODO: write in log-file...
+    if ((con.getConnection() != null) && !con.getConnection().isClosed())  {
+      con.getConnection().close();
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("");
+      System.out.println("");
+      System.out.println("connection not closed");
+      System.out.println("");
+      System.out.println("");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+    }
+  } catch (SQLException e)  {
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("");
+      System.out.println("");
+      System.out.println("SQLException is thrown while trying to get close status of connection or while trying to close");
+      System.out.println("");
+      System.out.println("");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+  }
+}
+
   }
 
 
@@ -196,10 +258,11 @@ try  {
       con = new ConnectionResource(this, getDataSource().getConnection());
 } catch (SQLException e)  {
 e.printStackTrace();
+  throw new EFapsException(getClass(), "getConnectionResource.SQLException", e);
 }
       this.connectionStore.add(con);
     } else  {
-      con =this.connectionStack.pop();
+      con = this.connectionStack.pop();
     }
 
     con.open();
