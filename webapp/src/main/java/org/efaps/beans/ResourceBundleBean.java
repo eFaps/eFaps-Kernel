@@ -20,10 +20,11 @@
 
 package org.efaps.beans;
 
-import java.util.ResourceBundle;
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -105,6 +106,14 @@ public class ResourceBundleBean  {
     return translate(_context != null ? _context.getLocale() : null, _id);
   }
 
+  /**
+   * Gets a string for the given identifier from this resource bundle. If no
+   * string for the given identifier can be found, the return value is the key
+   * with prefix and suffix of three question marks (???).
+   *
+   * @param _locale   locale object used to translate
+   * @param _id       identifier for which the the translation is searched
+   */
   public String translate(final Locale _locale, final String _id)  {
     String key = _locale != null ? _locale.getLanguage() + _locale.getCountry() : "";
 
@@ -113,7 +122,13 @@ public class ResourceBundleBean  {
       bundle = ResourceBundle.getBundle(this.bundleName, _locale);
       bundles.put(key, bundle);
     }
-    return bundle.getString(_id);
+    String ret;
+    try  {
+       ret =  bundle.getString(_id);
+    } catch (MissingResourceException e)  {
+      ret = "???" + _id + "???";
+    }
+    return ret;
   }
 
 
