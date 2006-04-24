@@ -91,7 +91,7 @@ public class Update  {
       Attribute attr = (Attribute)entry.getValue();
       AttributeType attrType = attr.getAttributeType();
       if (attrType.isAlwaysUpdate())  {
-        add(_context, attr, null);
+        add(_context, attr, null, false);
       }
     }
   }
@@ -132,6 +132,14 @@ if (attr==null)  {
    * @todo what happens if an attribute owns more than one SQL column? see TODO comment
    */
   public void add(Context _context, Attribute _attr, String _value) throws EFapsException  {
+    add(_context, _attr, _value, true);
+  }
+
+final protected Map < Attribute , String > values = new HashMap < Attribute, String > ();
+
+  /**
+   */
+  public void add(final Context _context, final Attribute _attr, final String _value, final boolean _triggerRelevant) throws EFapsException  {
     Map<String,AttributeTypeInterface> expressions = getExpr4Tables().get(_attr.getTable());
 
     if (expressions==null)  {
@@ -146,7 +154,11 @@ if (attr==null)  {
 //    expressions.put(_attr.getSqlColName(), attrType);
 expressions.put(_attr.getSqlColNames().get(0), attrType);
 
-mapAttr2Value.put(_attr.getName(), attrType);
+this.mapAttr2Value.put(_attr.getName(), attrType);
+
+    if (_triggerRelevant)  {
+      this.values.put(_attr, _value);
+    }
   }
 
 
