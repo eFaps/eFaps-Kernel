@@ -186,14 +186,17 @@ System.out.println("############################################################
 
       } catch (IOException e)  {
 // TODO: log of exception!
+System.out.println("############################################################################### SercurityFilter-Exception:");
 e.printStackTrace();
         throw e;
       } catch (ServletException e)  {
 // TODO: log of exception!
+System.out.println("############################################################################### SercurityFilter-Exception:");
 e.printStackTrace();
         throw e;
       } catch (Throwable e)  {
 // TODO: log of exception!
+System.out.println("############################################################################### SercurityFilter-Exception:");
 e.printStackTrace();
         throw new ServletException(e);
       } finally  {
