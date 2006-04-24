@@ -65,7 +65,7 @@ public class LoginServlet extends AbstractServlet  {
       session.setAttribute(SESSIONPARAM_LOGIN_NAME, name);  // just a marker object
 
       _res.setContentType("text/html");
-      _res.sendRedirect(RequestHandler.replaceMacrosInUrl("${COMMONURL}/Main.jsp"));
+      _res.sendRedirect(RequestHandler.replaceMacrosInUrl("${COMMONURL}/Main.jsf"));
     } else  {
 //_res.sendRedirect(RequestHandler.replaceMacrosInUrl("${ROOTURL}/"));
       doSendLoginFrameNotCorrect(_req, _res);

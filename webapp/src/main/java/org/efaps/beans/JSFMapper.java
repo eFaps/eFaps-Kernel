@@ -30,6 +30,8 @@ import org.efaps.beans.MenuAbstractBean.CommandHolder;
 
 public class JSFMapper {
 
+    private final static String[] TARGETS = {null,"Content","popup","eFapsFrameHidden"};
+
     public static List getJSFNavigationMenuItems(final ResourceBundleBean _i18nBean, 
                                                  final MenuHolder         _menuHolder) {
         List<NavigationMenuItem> jsfNavigationMenuItems = new Vector<NavigationMenuItem>();
@@ -66,8 +68,8 @@ public class JSFMapper {
             }
             navigationMenuItem.setAction(sURL);
         }
-//        String sTarget = getTargetTarget(_commandHolder);
-        String sTarget = "Content";
+
+        String sTarget = getTargetTarget(_commandHolder);
         if (sTarget != null)  {
             navigationMenuItem.setTarget(sTarget);
         }
@@ -112,5 +114,24 @@ public class JSFMapper {
         }
 
         return sbURL.toString();
+    }
+
+    public static String getTargetTarget(final CommandHolder _commandHolder)
+    {
+        int iTargetId = _commandHolder.getSub().getTarget();
+
+        String sTarget = TARGETS[iTargetId];
+        if ("popup".equals(sTarget))
+        {
+            int iHeight = _commandHolder.getSub().getWindowHeight();
+            int iWidth  = _commandHolder.getSub().getWindowWidth();
+
+            StringBuilder sbTarget = new StringBuilder(sTarget);
+            sbTarget.append(iHeight).append("x").append(iWidth);
+
+            sTarget = sbTarget.toString();
+        }
+
+        return sTarget;
     }
 }

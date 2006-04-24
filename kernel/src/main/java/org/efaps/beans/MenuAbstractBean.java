@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.myfaces.custom.navmenu.NavigationMenuItem;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.MenuAbstract;
@@ -93,18 +92,6 @@ abstract protected void execute(Context _context) throws Exception;
     this.menuHolder = _menuHolder;
   }
 
-  /**
-   * This is the getter method for the jsf NavigationMenuItems which are parsed 
-   * from the instance variable {@link #menuHolder}.
-   *
-   * @return List of the NavigationMenuItems
-   * @see #menuHolder
-   * @see #setMenuHolder
-   * @see #getMenuHolder
-   */
-  public List<NavigationMenuItem> getJSFMenu()  {
-    return JSFMapper.getJSFNavigationMenuItems(this.menuHolder);
-  }
   /////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////

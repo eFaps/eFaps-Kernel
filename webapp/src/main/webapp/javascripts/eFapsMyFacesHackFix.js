@@ -20,9 +20,24 @@ function cmItemMouseUp (obj, index)
     if (link.match(/^\w*:A\]relative:/) != null ) {
       // Link is a relative URL
       link = link.replace(/^\w*:A\]relative:/, "");  // Remove JSF ID and relative marker
-	  this.document.forms[form].target = target;
-	  this.document.forms[form].action = link;
-      this.document.forms[form].submit();
+	  var erg = target.match("popup(.*)x(.*)");
+	  if (erg)
+	  {
+		var height = erg[1];
+		var width  = erg[2];
+        var properties = "height="+height+",width="+width
+		this.open(link, "_blank", properties);
+	  }
+      else
+      {
+		this.open(link, target, properties);
+      }
+/*	  else
+	  {
+		  this.document.forms[form].target = target;
+		  this.document.forms[form].action = link;
+		  this.document.forms[form].submit();
+	  } */
     } else if (link.match(/^\w*:A\]\w*:\/\//) != null ) {
       // Link is a URL
       link = link.replace(/^\w*:A\]/, "");  // Remove JSF ID

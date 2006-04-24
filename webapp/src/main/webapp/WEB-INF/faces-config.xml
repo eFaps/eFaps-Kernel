@@ -58,4 +58,15 @@
     </managed-property>
   </managed-bean>
 
+  <!-- history bean -->
+  <managed-bean>
+    <managed-bean-name>menuMainToolbar</managed-bean-name>
+    <managed-bean-class>org.efaps.beans.MenuMainToolBarBean</managed-bean-class>
+    <managed-bean-scope>request</managed-bean-scope>
+    <!-- translation resource settings -->
+    <managed-property>
+      <property-name>i18nBean</property-name>
+      <value>#{i18n}</value>
+    </managed-property>
+  </managed-bean>
 </faces-config>
