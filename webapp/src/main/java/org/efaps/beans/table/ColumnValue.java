@@ -20,13 +20,17 @@
 
 package org.efaps.beans.table;
 
+import java.io.Serializable;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * An instance of this class represents one column in a web table or web form.
  *
  * @author tmo
  * @version $Rev$
  */
-public class ColumnValue < H >  {
+public class ColumnValue < H > implements Serializable  {
 
   private final H value;
 
@@ -36,5 +40,17 @@ public class ColumnValue < H >  {
 
   public H getValue()  {
     return this.value;
+  }
+
+  /**
+   * The method overrides the original method 'toString' and returns the value
+   * of this instance.
+   *
+   * @return name of the user interface object
+   */
+  public String toString()  {
+    return new ToStringBuilder(this).
+      append("value", getValue()).
+      toString();
   }
 }
