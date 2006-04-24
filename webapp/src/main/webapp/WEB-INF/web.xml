@@ -129,6 +129,10 @@
     <filter-name>extensionsFilter</filter-name>
     <url-pattern>*.jsf</url-pattern>
   </filter-mapping>
+  <filter-mapping>
+    <filter-name>extensionsFilter</filter-name>
+    <url-pattern>/faces/*</url-pattern>
+  </filter-mapping>
 
   <servlet>
     <servlet-name>eFapsServlet</servlet-name>
