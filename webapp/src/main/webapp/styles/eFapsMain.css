@@ -1,0 +1,691 @@
+/******************************************************************************
+** Default Settings 
+******************************************************************************/
+
+/* Background Appearance */
+body {
+	background-color: white;
+padding:0px; margin:0px; border:0px hidden transparent; border-style:none; max-height:100%; overflow:hidden;
+}
+
+/* Font Appearance */
+body, th, td, p, div, span {
+	font-family: arial, verdana, helvetica, sans-serif;
+	font-size: 8pt;
+}
+
+/******************************************************************************
+** General Body settings for Login Page
+******************************************************************************/
+
+body.eFapsLogin  {
+}
+
+table.eFapsLogin {
+}
+
+
+/*****************************************************************************/
+/* Main ToolBar (tool bar of the main header)                                */
+/*****************************************************************************/
+
+table.main {width:100%; height:99%; max-height:99%; overflow: hidden; margin:0px; background-color:white;}
+td.mainMenu {padding:0px; margin:0px; border:2px solid black; border-style:outset; background-color:#dadada;}
+td.logo {padding:0px; margin:0px;}
+img.logo {margin:2px; border:0px hidden transparent; border-style:none; height:75px;}
+
+/**
+ * Content Frame
+ */
+.eFapsFrameContent  {
+    position:relative;
+	left: 0px;
+	width: 98%;
+	max-height: 98%;
+	overflow: scroll;
+	height: 0px;
+	border-width: 0px;
+	border-style: none;
+	margin: 0px;
+	padding: 0px;
+	background-color: white;
+	z-index: 1;
+}
+
+
+/******************************************************************************
+** General Body settings for Top Header Frame
+******************************************************************************/
+
+/* top header */
+body.eFapsTopHeader  {
+	background-color: #007000;
+}
+
+/******************************************************************************
+** General Body settings for Frames
+******************************************************************************/
+
+/* body class in mode view */
+body.eFapsFrameView  {
+	background-color: #FFFFFF;
+}
+
+/* body class in mode edit */
+body.eFapsFrameEdit  {
+	background-color: #DDDECB;
+}
+
+/*****************************************************************************/
+/* Frame Header                                                              */
+/*****************************************************************************/
+/* div for the complete header */
+div.eFapsFrameHeader {
+	position:absolute;
+	left: 0px; 
+	top: 0px; 
+	height: 85px;
+	margin: 0;
+	padding: 0;
+	width: 100%;
+}
+
+div.eFapsFrameHeaderTitle {  
+	white-space: nowrap;
+	font-size: 13pt;
+	font-weight: bold;
+	color: #008800;
+	position: absolute;
+	height: 33px;
+	padding-top: 6px;
+	margin-top: 14px;
+	margin-left: 16px;
+	vertical-align: bottom;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: black;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: black;
+}
+
+/* problem of mozilla and IE: width must be different! here for mozilla */
+#eFapsFrameHeaderTitle[id] {
+	position: static;
+	margin-right: 17px;
+	margin-top: 13px;
+	padding-top: 7px;
+	height: 26px;
+}
+
+span.eFapsFrameHeaderTitle {
+	width: 100%;
+}
+
+#eFapsFrameHeaderProgressBar  {
+	position: absolute;
+	top: 2px;
+	right: 30px;
+}
+
+/*****************************************************************************/
+/* Frame Header Menu                                                         */
+/*****************************************************************************/
+
+/* Id of the frame header menu bar. */
+#eFapsFrameHeaderMenu  {
+	position: absolute;
+	left: 10px;
+	top: 54px;
+}
+
+/* complete css class for the header menu bar */
+.eFapsFrameHeaderMenu  {
+	color: #003366;
+	float: left;
+	border-width: 0;
+	border-style: none;
+}
+
+/* A margin must be before and after the image of the header menu */
+img.eFapsFrameHeaderMenu  {
+	margin-top: 3px;
+	margin-left: 10px;
+	margin-right: 5px;
+}
+
+/*****************************************************************************/
+/* Frame Filter                                                              */
+/*****************************************************************************/
+
+div.eFapsFrameFilter  {
+	position: absolute;
+	right: 20px;
+	top: 20px;
+}
+
+/*****************************************************************************/
+/* Frame Toolbar                                                             */
+/*****************************************************************************/
+
+div.eFapsFrameToolbar  {
+	position: absolute;
+	right: 20px;
+	top: 56px;
+	background-color: black;
+	border-width: 0px;
+	border-style: none;
+	padding-top: 1px;
+	padding-right: 2px;
+	padding-left: 3px;
+	padding-bottom: 0px;
+}
+
+div.eFapsFrameToolbar a img {
+	border-width: 0;
+	border-style: none;
+	margin-left: -2px;
+}
+
+/*****************************************************************************/
+/* Frame Main                                                                */
+/*****************************************************************************/
+
+/**
+ * Main of a frame
+ */
+.eFapsFrameMain  {
+	position:absolute;
+	left:0px;
+	top:74px;
+	width:30px;
+	height:10px;
+	border-width:0;
+	border-style: none;
+	margin:0;
+	padding:0;
+	background-color: white;
+z-index: 1;
+}
+
+div.eFapsFrameMain  {
+	overflow: auto; 
+}
+
+/*****************************************************************************/
+/* Frame Footer                                                              */
+/*****************************************************************************/
+
+.eFapsFrameFooter  {
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	width: 100%;
+	height: 40px;
+	margin: 0;
+	padding: 0;
+/*	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: black;
+*/
+}
+
+/*****************************************************************************/
+/* Frame Footer Menu                                                         */
+/*****************************************************************************/
+
+/* Id of the frame header menu bar. */
+#eFapsFrameFooterMenu  {
+	position: absolute;
+	left: 10px;
+	bottom: 25px;
+}
+
+/* complete css class for the header menu bar */
+.eFapsFrameFooterMenu  {
+	color: #003366;
+	float: left;
+	border-width: 0;
+	border-style: none;
+}
+
+/* A margin must be before and after the image of the footer menu */
+img.eFapsFrameFooterMenu  {
+	margin-top: 3px;
+	margin-left: 10px;
+	margin-right: 5px;
+}
+
+/*****************************************************************************/
+/* Frame Footer Action Menu                                                  */
+/*****************************************************************************/
+
+.eFapsFrameFooterAction  {
+	color: #003366;
+	border-width: 0;
+	border-style: none;
+	vertical-align: middle;
+	margin: 2px;
+	padding: 0;
+	white-space: nowrap;
+}
+
+/* complete div with the footer action buttons */
+#eFapsFrameFooterAction  {
+	position: absolute;
+	right: 0px;
+	bottom: 5px;
+	white-space: nowrap;
+}
+
+/* The divs must be always left side! */
+div.eFapsFrameFooterAction  {
+	float: left;
+}
+
+/* A margin must be before and after the image of the header menu */
+img.eFapsFrameFooterAction  {
+	margin-left: 10px;
+	margin-right: 0px;
+}
+
+/*****************************************************************************/
+/* Hidden Frame                                                              */
+/*****************************************************************************/
+
+.eFapsFrameHidden  {
+    position:absolute;
+	visibility: hidden;
+	height: 1px;
+	width: 1px;
+	max-height: 1px;
+}
+
+/******************************************************************************
+** Style Sheet for Web Forms
+******************************************************************************/
+
+/* web form itself */
+table.eFapsForm  {
+	width: 100%;
+	margin-top: -6px;
+	padding-left: 6px;
+padding-right: 4px;
+}
+
+/* Default Label Appearance */
+td.eFapsFormLabel {
+        background-color: #dadada;
+        color: black;
+        font-weight: bold;
+        height: 24px;
+}
+
+/* Required Label Appearance */
+td.eFapsFormLabelRequired {
+        background-color: #dadada;
+        color: #990000;
+        font-weight: bold;
+        height: 24px;
+        font-style: italic
+}
+
+/* Input Field Appearance */
+td.eFapsFormInputField {
+        background-color: #eeeeee;
+        font-size: 12px;
+}
+
+/* image in a field of a web form */
+table.eFapsForm tr td a img  {
+	border-width: 0;
+	border-style: none;
+}
+
+/******************************************************************************
+** Style Sheet for Web Tables
+******************************************************************************/
+
+/* web table itself */
+table.eFapsTable  {
+	width: 100%;
+	margin-top: -6px;
+	padding-left: 6px;
+}
+
+/* Table Header Appearance */
+th.eFapsTableHeader {
+        text-align: left;
+        color: white;
+        background-color: #00A000;
+	border-style: none;
+	border-width: 0;
+	white-space: nowrap;
+}
+
+/* Table Header Link Appearance */
+th.eFapsTableHeader a {
+        text-align: left;
+        color: white;
+        text-decoration: none;
+}
+th.eFapsTableHeader a:hover {
+        text-decoration: underline;
+        color: #ccffff;
+}
+
+/* Table Header Image */
+th.eFapsTableHeader a img {
+	border-style: none;
+	border-width: 0;
+}
+
+/* Odd Table Row Appearance */
+tr.eFapsTableRowOdd {
+        background-color: #ffffff;
+}
+
+/* Even Table Row Appearance */
+tr.eFapsTableRowEven {
+        background-color: #d0ffd0; 
+}
+
+/* image of buttons in a row of a web table */
+tr.eFapsTableRowOdd td a img,
+tr.eFapsTableRowEven td a img  {
+	border-width: 0;
+	border-style: none;
+/*	width: 19px;*/
+/*	height: 20px;*/
+}
+
+/******************************************************************************
+** Button Settings
+******************************************************************************/
+
+/* Button Link Appearance */
+a.eFapsButtonLink {
+	color: #008000;
+}
+a.eFapsButtonLink:hover {
+	color: #008000;
+}
+
+
+.eFapsButtonDoneCancel {
+	color: #008000;
+	text-align: right;
+	white-space: nowrap;
+}
+
+/******************************************************************************
+** Tree Navigation Menu (for one object)
+******************************************************************************/
+
+/* body of a tree navigation menu */
+body.eFapsTreeNav {
+	background-color: #FFFFFF;
+	white-space: nowrap;
+}
+
+/* span (with and without child nodes) */
+span.eFapsTreeNav,
+span.eFapsTreeNavHCN {
+	color: #000000;
+	text-decoration: none;
+	border-width: 0;
+	padding-top: 2px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+/* h reference (with and without child nodes) */
+a.eFapsTreeNav,
+a.eFapsTreeNavHCN  {
+	color: #000000;
+	text-decoration: none;
+	border-width: 0;
+	padding-top: 2px;
+	padding-bottom: 1px;
+	padding-right: 2px;
+	padding-left: 2px;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+/* h reference (with and without child nodes) */
+a.eFapsTreeNav:hover,
+a.eFapsTreeNavHCN:hover  {
+	background-color: #AAFFAA;
+}
+
+/* focused h refence (with and without child nodes) */
+a.eFapsTreeNavFocus,
+a.eFapsTreeNavHCNFocus  {
+	background-color: green;
+	color: white;
+	padding-top: 2px;
+	padding-bottom: 1px;
+	padding-right: 2px;
+	padding-left: 2px;
+	border-style: none;
+	border-width: 0;
+	text-decoration: none;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+/* plus / minus / line images */
+img.eFapsTreeNavImages  {
+	width: 19px;
+	height: 20px;
+	border-style: none;
+	border-width: 0;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	margin-top: 0px;
+	margin-bottom: -4px;
+}
+
+/* type images in front of the text */
+img.eFapsTreeNavImages4Text {
+	width: 15px;
+	height: 13px;
+}
+
+/* span holding all images needed for type tree nodes */
+span.eFapsTreeTypeImages  {
+	padding-left: 7px;
+}
+
+/* one image needed for type tree nodes */
+img.eFapsTreeTypeImages  {
+	border-style: none;
+	border-width: 0;
+}
+
+/******************************************************************************
+** Tree Tabulator Menu (My Desk Menu on the left side)
+******************************************************************************/
+
+/* body */
+body.eFapsTreeTab {
+	background-color: #008000;
+}
+
+/* div of the tree tab in showing menu */
+div.eFapsTreeTabShow  {
+}
+
+/* div of the tree tab in hiding menu */
+div.eFapsTreeTabHide  {
+	display: none;
+}
+
+/* image of the button for the show or hide of the tree tabulator */
+img.eFapsTreeTabButtonShowHide  {
+	border-style:solid;
+ 	border-width:0;
+}
+
+/* span (with and without child nodes) */
+span.eFapsTreeTab,
+span.eFapsTreeTabHCN  {
+	color: #FFFFFF;
+	text-decoration: none;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+/* h reference (with and without child nodes) */
+a.eFapsTreeTab,
+a.eFapsTreeTabHCN  {
+	color: #FFFFFF;
+	text-decoration: none;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+/* h reference (with and without child nodes) */
+a.eFapsTreeTab:hover,
+a.eFapsTreeTabHCN:hover  {
+	color: yellow;
+	text-decoration: none;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+/* focused h reference (with and without child nodes) */
+a.eFapsTreeTabFocus,
+a.eFapsTreeTabHCNFocus {
+	background-color: yellow;
+	color: green;
+	text-decoration: none;
+	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	padding-top: 2px;
+	padding-bottom: 1px;
+	padding-right: 2px;
+	padding-left: 2px;
+}
+
+/* table */
+table.treeTab {
+	width: 100%;
+	margin:0;
+	padding:0;
+	margin-top: 10;
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+/* column of the top column */
+td.eFapsTreeTabTop,
+td.eFapsTreeTab  {
+	width: 1%;
+	height: 10px;
+	margin:0;
+	padding:0;
+	white-space: nowrap;
+	border-style: solid;
+ 	border-width: 0;
+}
+
+/* image of the top column */
+img.eFapsTreeTabTop {
+	width: 100%;
+	height: 10px;
+	margin:0;
+	padding:0;
+	border-style:solid;
+ 	border-width:0;
+}
+
+/* column for the top right and the right image */
+td.eFapsTreeTabTopRight {
+	width: 99%;
+	height: 10px;
+	margin:0;
+	padding:0;
+	vertical-align:bottom;
+	text-align:left;
+	white-space: nowrap;
+}
+td.eFapsTreeTabRight {
+	width: 99%;
+	height: 14px;
+	margin:0;
+	padding:0;
+	vertical-align:top;
+	white-space: nowrap;
+}
+/* the top right image */
+img.eFapsTreeTabTopRight {
+	width: 27px;
+	height: 10px;
+	margin:0;
+	padding:0;
+	border-style:solid;
+ 	border-width:0;
+}
+/* the right end image */
+img.eFapsTreeTabRightEnd {
+	margin:0;
+	padding:0;
+	border-style:solid;
+ 	border-width:0;
+}
+
+/* image on the right side */
+img.eFapsTreeTabRight {
+	height: 14px;
+	width: 13px;
+	margin:0;
+	padding:0;
+	border-style:solid;
+ 	border-width:0;
+}
+
+/* line image on the right side */
+img.eFapsTreeTabRightLine  {
+	margin:0;
+	padding:0;
+	height: 14px;
+	width: 70%;
+	border-style:solid;
+ 	border-width:0;
+}
+
+/* plus and minus image */
+img.eFapsTreeTabIcons {
+	width: 15px;
+	height: 15px;
+	border-style:solid;
+	border-width:0;
+}
+
+/******************************************************************************
+** Error Page Settings
+******************************************************************************/
+
+table.eFapsError  {
+	border-style: solid;
+	border-color: #FF0000;
+}
+
+/* Error Label Appearance */
+td.eFapsErrorLabel {
+	background-color: #FFB0B0;
+	color: black;
+	font-weight: bold;
+	height: 24px;
+	width: 90px;
+}
+
+/* Error Text Appearance */
+td.eFapsErrorText {
+	background-color: #FFD0D0;
+	font-size: 12px;
+}
+
+
