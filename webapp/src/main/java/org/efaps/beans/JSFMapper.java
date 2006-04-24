@@ -30,27 +30,34 @@ import org.efaps.beans.MenuAbstractBean.CommandHolder;
 
 public class JSFMapper {
 
-    public static List getJSFNavigationMenuItems(final MenuHolder _menuHolder) {
+    public static List getJSFNavigationMenuItems(final ResourceBundleBean _i18nBean, 
+                                                 final MenuHolder         _menuHolder) {
         List<NavigationMenuItem> jsfNavigationMenuItems = new Vector<NavigationMenuItem>();
         
         List<CommandHolder> menuElements = _menuHolder.getSubs();
 
         for (CommandHolder menuElement : menuElements) {
-            jsfNavigationMenuItems.add(getJSFNavigationMenuItem(menuElement));
+            jsfNavigationMenuItems.add(getJSFNavigationMenuItem(_i18nBean, menuElement));
         }
 
         return jsfNavigationMenuItems;
     }
 
-    public static NavigationMenuItem getJSFNavigationMenuItem(final CommandHolder _commandHolder) {
+    public static NavigationMenuItem getJSFNavigationMenuItem(final ResourceBundleBean _i18nBean,
+                                                              final CommandHolder      _commandHolder) {
         CommandAbstract    command            = _commandHolder.getSub();
-        NavigationMenuItem navigationMenuItem = new NavigationMenuItem(command.getLabel(),
-                                                                       String.valueOf(command.getAction()));
 
+        // initalise the NavigationMenuItem instance with mapped Label and raw
+        // action
+        NavigationMenuItem navigationMenuItem = 
+                new NavigationMenuItem(_i18nBean.translate(command.getLabel()),
+                                       String.valueOf(command.getAction()));
+        // map the icon path
         if (_commandHolder.getIcon() != null)  {
             navigationMenuItem.setIcon("/.."+_commandHolder.getIcon());
         }
         
+        // map the target url
         String sURL = getTargetURL(_commandHolder);
         if (sURL != null && sURL.length() > 0)  {
             if (!sURL.matches("^\\w{1,5}://.*"))
@@ -59,7 +66,6 @@ public class JSFMapper {
             }
             navigationMenuItem.setAction(sURL);
         }
-
 //        String sTarget = getTargetTarget(_commandHolder);
         String sTarget = "Content";
         if (sTarget != null)  {
@@ -67,7 +73,9 @@ public class JSFMapper {
         }
 
         if (_commandHolder.isMenu()) {
-            navigationMenuItem.setNavigationMenuItems(getJSFNavigationMenuItems((MenuHolder) _commandHolder));
+            // map the sub items
+            navigationMenuItem.setNavigationMenuItems(
+                    getJSFNavigationMenuItems(_i18nBean, (MenuHolder) _commandHolder));
         }
         else {
         }
