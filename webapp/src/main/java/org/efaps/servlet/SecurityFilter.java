@@ -150,6 +150,7 @@ try  {
 } catch (Exception e)  {
 e.printStackTrace();
 }
+// TODO: is a open sql connection in the context returned automatically?
       try  {
 boolean ok = false;
 try {
@@ -184,12 +185,15 @@ System.out.println("############################################################
 }
 
       } catch (IOException e)  {
+// TODO: log of exception!
 e.printStackTrace();
         throw e;
       } catch (ServletException e)  {
+// TODO: log of exception!
 e.printStackTrace();
         throw e;
       } catch (Throwable e)  {
+// TODO: log of exception!
 e.printStackTrace();
         throw new ServletException(e);
       } finally  {
