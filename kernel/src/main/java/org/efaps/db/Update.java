@@ -37,6 +37,9 @@ import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.TriggerKeys4Values;
 import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -112,6 +115,25 @@ public class Update  {
       }
     }
 */
+  }
+
+  /**
+   * The method gets all triggers for the given trigger event and executes
+   * them in the given order. If no triggers are defined, nothing is done.
+   *
+   * @param _context      eFaps context for this request
+   * @param _triggerEvent trigger events to execute
+   * @throws EFapsException from trigger execution
+   */
+  protected void executeTrigger(final Context _context, TriggerEvent _triggerEvent) throws EFapsException  {
+    List < EventDefinition > triggers = getInstance().getType().getTrigger(_triggerEvent);
+    if (triggers != null)  {
+      Map < TriggerKeys4Values, Map > map = new HashMap < TriggerKeys4Values, Map >();
+      map.put(TriggerKeys4Values.NEW_VALUES, this.values);
+      for (EventDefinition evenDef : triggers)  {
+        evenDef.execute(_context, getInstance(), map);
+      }
+    }
   }
 
 
@@ -210,6 +232,8 @@ if (testNeeded)  {
   public void execute(Context _context) throws Exception  {
     ConnectionResource con = null;
     try  {
+      executeTrigger(_context, TriggerEvent.UPDATE_PRE);
+
       con = _context.getConnectionResource();
 
       if (test4Unique(_context))  {
@@ -234,6 +258,8 @@ throw new Exception("Can not update! It exists not!");
         }
       }
       con.commit();
+
+      executeTrigger(_context, TriggerEvent.UPDATE_POST);
     } catch (Exception e)  {
 e.printStackTrace();
       throw e;
@@ -313,14 +339,6 @@ e.printStackTrace();
   private Instance instance = null;
 
   /**
-   * The hash table instance variable stores depending on the field as key the
-   * index in the select statement.
-   *
-   * @see #getFields
-   */
-  private Hashtable fields = new Hashtable();
-
-  /**
    * The string instance variable stores the table names of the select
    * statement.
    *
@@ -350,16 +368,6 @@ e.printStackTrace();
    */
   protected void setInstance(Instance _instance)  {
     this.instance = _instance;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #fields}.
-   *
-   * @return value of instance variable {@link #fields}
-   * @see #fields
-   */
-  private Hashtable getFields()   {
-    return this.fields;
   }
 
   /**
