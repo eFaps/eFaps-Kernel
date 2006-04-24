@@ -20,7 +20,11 @@
 
 package org.efaps.beans.table;
 
+import java.io.Serializable;
+
 import javax.faces.convert.Converter;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * An instance of this class represents one header / definition in a web table
@@ -29,7 +33,7 @@ import javax.faces.convert.Converter;
  * @author tmo
  * @version $Rev$
  */
-public class ColumnHeader  {
+public class ColumnHeader implements Serializable  {
 
   private final String name;
 
@@ -53,6 +57,20 @@ public class ColumnHeader  {
 
   public Converter getConverter()  {
     return this.converter;
+  }
+
+  /**
+   * The method overrides the original method 'toString' and returns the name,
+   * label and converter of this instance.
+   *
+   * @return name of the user interface object
+   */
+  public String toString()  {
+    return new ToStringBuilder(this).
+      append("name", getName()).
+      append("label", getLabel()).
+      append("converter", getConverter()).
+      toString();
   }
 }
 
