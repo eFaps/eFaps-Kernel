@@ -38,9 +38,12 @@ import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.ui.Field;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.efaps.admin.event.TriggerKeys4Values;
 
 /**
  *
@@ -102,7 +105,7 @@ public class Insert extends Update {
       Attribute attr = (Attribute) entry.getValue();
       AttributeType attrType = attr.getAttributeType();
       if (attrType.isCreateUpdate())  {
-        add(_context, attr, null);
+        add(_context, attr, null, false);
       }
     }
   }
@@ -113,6 +116,8 @@ public class Insert extends Update {
   public void execute(Context _context) throws EFapsException  {
     ConnectionResource con = null;
     try  {
+      executeTrigger(_context, TriggerEvent.INSERT_PRE);
+
       con = _context.getConnectionResource();
 
       if (test4Unique(_context))  {
@@ -132,6 +137,8 @@ public class Insert extends Update {
       }
 
       con.commit();
+
+      executeTrigger(_context, TriggerEvent.INSERT_POST);
     } catch (EFapsException e)  {
       if (con != null)  {
         con.abort();
@@ -144,6 +151,26 @@ public class Insert extends Update {
       throw new EFapsException(getClass(), "execute.Throwable");
     }
   }
+
+  /**
+   * The method gets all triggers for the given trigger event and executes
+   * them in the given order. If no triggers are defined, nothing is done.
+   *
+   * @param _context      eFaps context for this request
+   * @param _triggerEvent trigger events to execute
+   * @throws EFapsException from trigger execution
+   */
+  protected void executeTrigger(final Context _context, TriggerEvent _triggerEvent) throws EFapsException  {
+    List < EventDefinition > triggers = getInstance().getType().getTrigger(_triggerEvent);
+    if (triggers != null)  {
+      Map < TriggerKeys4Values, Map > map = new HashMap < TriggerKeys4Values, Map >();
+      map.put(TriggerKeys4Values.NEW_VALUES, this.values);
+      for (EventDefinition evenDef : triggers)  {
+        evenDef.execute(_context, getInstance(), map);
+      }
+    }
+  }
+
 
   /**
    * @param _context  context for this request
