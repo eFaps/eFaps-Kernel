@@ -36,6 +36,7 @@ import javax.faces.convert.DateTimeConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Person;
 import org.efaps.beans.table.ColumnHeader;
@@ -129,7 +130,7 @@ public class HistoryBean extends AbstractBean  {
         stmt = con.getConnection().createStatement();
 
         stmt.execute(
-            "select EVENTTYPEID,MODIFIED,MODIFIER "
+            "select EVENTTYPEID,MODIFIED,MODIFIER,ATTRID,ATTRVALUE "
                 + "from ABSTRACT_HISTORY "
                 + "where FORTYPEID=" + instance.getType().getId() + " "
                    + "and FORID=" + instance.getId()
@@ -142,9 +143,19 @@ public class HistoryBean extends AbstractBean  {
           List row = new ArrayList();
           String eventType = "History.Event." + Type.get(rs.getLong(1)).getName();
 
+          Attribute attr = Attribute.get(rs.getLong(4));
+          String attrName = "";
+          if (attr != null)  {
+            attrName = this.i18nBean.translate(instance.getType().getName() + "/" + attr.getName() + ".Label");
+          }
+
+          String value = rs.getString(5);
+
           row.add(new ColumnValue < String > (this.i18nBean.translate(eventType)));
           row.add(new ColumnValue < Date >   (rs.getTimestamp(2)));
           row.add(new ColumnValue < String > (Person.get(rs.getLong(3)).getName()));
+          row.add(new ColumnValue < String > (attrName));
+          row.add(new ColumnValue < String > (value == null ? "" : value));
           rows.add(row);
         }
 
@@ -246,9 +257,11 @@ System.out.println("preserved datamodel updated");
       dateTimeConverter.setType("both");
 
       List headerList = new ArrayList();
-      headerList.add(new ColumnHeader("eventtype", this.i18nBean.translate("History.Header.EventType"), stringConverter));
-      headerList.add(new ColumnHeader("modified",  this.i18nBean.translate("History.Header.Modified"), dateTimeConverter));
-      headerList.add(new ColumnHeader("modifier",  this.i18nBean.translate("History.Header.Modifier"), stringConverter));
+      headerList.add(new ColumnHeader("eventtype",    this.i18nBean.translate("History.Header.EventType"),          stringConverter));
+      headerList.add(new ColumnHeader("modified",     this.i18nBean.translate("History.Header.Modified"),           dateTimeConverter));
+      headerList.add(new ColumnHeader("modifier",     this.i18nBean.translate("History.Header.Modifier"),           stringConverter));
+      headerList.add(new ColumnHeader("attrid",       this.i18nBean.translate("History.Header.AttributeName"),      stringConverter));
+      headerList.add(new ColumnHeader("attrnewvalue", this.i18nBean.translate("History.Header.AttributeNewValue"),  stringConverter));
       this.columnHeaders = new ListDataModel(headerList);
     }
     return this.columnHeaders;
