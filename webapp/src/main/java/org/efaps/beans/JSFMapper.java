@@ -30,108 +30,102 @@ import org.efaps.beans.MenuAbstractBean.CommandHolder;
 
 public class JSFMapper {
 
-    private final static String[] TARGETS = {null,"Content","popup","eFapsFrameHidden"};
+    private final static String[] TARGETS = {"","Content","popup","eFapsFrameHidden"};
 
-    public static List getJSFNavigationMenuItems(final ResourceBundleBean _i18nBean, 
+    public static List getJSFNavigationMenuItems(final ResourceBundleBean _i18nBean,
                                                  final MenuHolder         _menuHolder) {
-        List<NavigationMenuItem> jsfNavigationMenuItems = new Vector<NavigationMenuItem>();
-        
-        List<CommandHolder> menuElements = _menuHolder.getSubs();
+      List<NavigationMenuItem> jsfNavigationMenuItems = new Vector<NavigationMenuItem>();
 
-        for (CommandHolder menuElement : menuElements) {
-            jsfNavigationMenuItems.add(getJSFNavigationMenuItem(_i18nBean, menuElement));
-        }
+      List<CommandHolder> menuElements = _menuHolder.getSubs();
 
-        return jsfNavigationMenuItems;
+      for (CommandHolder menuElement : menuElements) {
+        jsfNavigationMenuItems.add(getJSFNavigationMenuItem(_i18nBean, menuElement));
+      }
+
+      return jsfNavigationMenuItems;
     }
 
     public static NavigationMenuItem getJSFNavigationMenuItem(final ResourceBundleBean _i18nBean,
                                                               final CommandHolder      _commandHolder) {
-        CommandAbstract    command            = _commandHolder.getSub();
+      CommandAbstract    command            = _commandHolder.getSub();
 
-        // initalise the NavigationMenuItem instance with mapped Label and raw
-        // action
-        NavigationMenuItem navigationMenuItem = 
-                new NavigationMenuItem(_i18nBean.translate(command.getLabel()),
-                                       String.valueOf(command.getAction()));
-        // map the icon path
-        if (_commandHolder.getIcon() != null)  {
-            navigationMenuItem.setIcon("/.."+_commandHolder.getIcon());
-        }
-        
-        // map the target url
-        String sURL = getTargetURL(_commandHolder);
-        if (sURL != null && sURL.length() > 0)  {
-            if (!sURL.matches("^\\w{1,5}://.*"))
-            {
-                sURL = (new StringBuilder("relative:")).append(sURL).toString();
-            }
-            navigationMenuItem.setAction(sURL);
-        }
+      // initalise the NavigationMenuItem instance with mapped Label and raw
+      // action
+      NavigationMenuItem navigationMenuItem =
+              new NavigationMenuItem(_i18nBean.translate(command.getLabel()),
+                                     String.valueOf(command.getAction()));
+      // map the icon path
+      if (_commandHolder.getIcon() != null)  {
+        navigationMenuItem.setIcon("/.."+_commandHolder.getIcon());
+      }
 
-        String sTarget = getTargetTarget(_commandHolder);
-        if (sTarget != null)  {
-            navigationMenuItem.setTarget(sTarget);
+      // map the target url
+      String sURL = getTargetURL(_commandHolder);
+      if (sURL != null && sURL.length() > 0)  {
+        if (!sURL.matches("^\\w{1,5}://.*"))  {
+          sURL = (new StringBuilder("relative:")).append(sURL).toString();
         }
+        navigationMenuItem.setAction(sURL);
+      }
 
-        if (_commandHolder.isMenu()) {
-            // map the sub items
-            navigationMenuItem.setNavigationMenuItems(
-                    getJSFNavigationMenuItems(_i18nBean, (MenuHolder) _commandHolder));
-        }
-        else {
-        }
+      String sTarget = getTargetTarget(_commandHolder);
+      if (sTarget != null)  {
+        navigationMenuItem.setTarget(sTarget);
+      }
 
-        return navigationMenuItem;
+      if (_commandHolder.isMenu()) {
+        // map the sub items
+        navigationMenuItem.setNavigationMenuItems(
+                getJSFNavigationMenuItems(_i18nBean, (MenuHolder) _commandHolder));
+      } else  {
+// TODO: what happens if it is not a menu?
+      }
+
+      return navigationMenuItem;
     }
 
-    public static String getTargetURL(final CommandHolder _commandHolder)
-    {
+    public static String getTargetURL(final CommandHolder _commandHolder)  {
         StringBuilder sbURL = new StringBuilder();
         String        sURI  = _commandHolder.getSub().getReference();
 
-        if (sURI == null && 
-                (_commandHolder.getSub().getTargetTable()      != null || 
-                 _commandHolder.getSub().getTargetForm()       != null ||
-                 _commandHolder.getSub().getTargetCreateType() != null))
-        {
-            sURI = "Link.jsp?";
-        }
-        if (sURI == null && _commandHolder.getSub().isSubmit())
-        {
+      if (sURI == null &&
+              (_commandHolder.getSub().getTargetTable()  != null ||
+               _commandHolder.getSub().getTargetForm()   != null ||
+               _commandHolder.getSub().getTargetSearch() != null))  {
+
+        sURI = "Link.jsp?";
+      }
+      if (sURI == null && _commandHolder.getSub().isSubmit())  {
         // TODO set submitUrl
 //            sbURL = new StringBuilder();
-        }
-        if (sURI != null)
-        {
-            // TODO append oid and/or nodeId 
+      }
+      if (sURI != null)  {
+          // TODO append oid and/or nodeId
 
-            // add command name string to url
-            sbURL.append("&command=").append(_commandHolder.getSub().getName());
+          // add command name string to url
+          sbURL.append("&command=").append(_commandHolder.getSub().getName());
 
-            sbURL.deleteCharAt(0)
-                 .insert(0, sURI);
-        }
+          sbURL.deleteCharAt(0)
+               .insert(0, sURI);
+      }
 
-        return sbURL.toString();
+      return sbURL.toString();
     }
 
-    public static String getTargetTarget(final CommandHolder _commandHolder)
-    {
-        int iTargetId = _commandHolder.getSub().getTarget();
+    public static String getTargetTarget(final CommandHolder _commandHolder)  {
+      int iTargetId = _commandHolder.getSub().getTarget();
 
-        String sTarget = TARGETS[iTargetId];
-        if ("popup".equals(sTarget))
-        {
-            int iHeight = _commandHolder.getSub().getWindowHeight();
-            int iWidth  = _commandHolder.getSub().getWindowWidth();
+      String sTarget = TARGETS[iTargetId];
+      if ("popup".equals(sTarget))  {
+        int iHeight = _commandHolder.getSub().getWindowHeight();
+        int iWidth  = _commandHolder.getSub().getWindowWidth();
 
-            StringBuilder sbTarget = new StringBuilder(sTarget);
-            sbTarget.append(iHeight).append("x").append(iWidth);
+        StringBuilder sbTarget = new StringBuilder(sTarget);
+        sbTarget.append(iHeight).append("x").append(iWidth);
 
-            sTarget = sbTarget.toString();
-        }
+        sTarget = sbTarget.toString();
+      }
 
-        return sTarget;
+      return sTarget;
     }
 }
