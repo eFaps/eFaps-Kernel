@@ -46,7 +46,7 @@
               renderedIfEmpty="true"
               var="row"
               value="#{history.data}"
-              preserveDataModel="true"
+              preserveDataModel="false"
               preserveSort="true"
               sortColumn="#{history.sort}"
               sortAscending="#{history.ascending}">
