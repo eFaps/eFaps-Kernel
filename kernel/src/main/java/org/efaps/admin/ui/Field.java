@@ -123,7 +123,7 @@ public Field()  {
    */
   protected void setLinkProperty(Context _context, EFapsClassName _linkType, long _toId, EFapsClassName _toType, String _toName) throws Exception  {
     switch (_linkType)  {
-      case LINK_ICON:           setIcon(RequestHandler.replaceMacrosInUrl("${COMMONURL}/Image.jsp?name="+_toName));break;
+      case LINK_ICON:           setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/" + _toName));break;
       default:                  super.setLinkProperty(_context, _linkType, _toId, _toType, _toName);break;
     }
   }

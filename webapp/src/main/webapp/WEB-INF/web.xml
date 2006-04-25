@@ -156,6 +156,13 @@
   </servlet>
 
   <servlet>
+    <servlet-name>eFapsImageServlet</servlet-name>
+    <display-name>eFapsImageServlet</display-name>
+    <description>eFaps servlet used to checkout images stored in the database.</description>
+    <servlet-class>org.efaps.servlet.ImageServlet</servlet-class>
+  </servlet>
+
+  <servlet>
     <servlet-name>eFapsLoginServlet</servlet-name>
     <display-name>eFapsLoginServlet</display-name>
     <description>eFaps servlet used to log in to eFaps.</description>
@@ -358,6 +365,11 @@
   <servlet-mapping>
     <servlet-name>eFapsLoginServlet</servlet-name>
     <url-pattern>servlet/login/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>eFapsImageServlet</servlet-name>
+    <url-pattern>servlet/image/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

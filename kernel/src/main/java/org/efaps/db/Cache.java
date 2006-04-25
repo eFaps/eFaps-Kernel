@@ -84,6 +84,15 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
     getCache4Name().put(_cacheObj.getName(), _cacheObj);
   }
 
+  /**
+   * The method tests, if the cache has stored some entries.
+   *
+   * @return <i>true</i> if the cache has some entries, otherwise <i>false</i>
+   */
+  public boolean hasEntries()  {
+    return (getCache4Id().size() > 0) || (getCache4Name().size() > 0);
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
 

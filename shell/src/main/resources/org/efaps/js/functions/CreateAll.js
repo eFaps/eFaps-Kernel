@@ -432,6 +432,41 @@ function createAll()  {
         "constraint ABSTR_FK_MDFR       foreign key(MODIFIER)     references USERPERSON(ID)"+
       ")"
     );
+/*
+create table HISTORY (
+  ID              number not null,
+  EVENTTYPEID     number not null,
+  FORTYPEID       number not null,
+  FORID           number not null,
+  MODIFIER        number not null,
+  MODIFIED        date not null,
+  constraint HIST_UK_ID        unique(ID),
+  constraint HIST_FK_EVNTYPEID foreign key(EVENTTYPEID)  references DMTYPE(ID),
+  constraint HIST_FK_FORTYPEID foreign key(FORTYPEID)    references DMTYPE(ID),
+  constraint HIST_FK_MODIFIER  foreign key(MODIFIER)     references USERABSTRACT(ID)
+);  
+
+
+create sequence HISTORY_SEQ increment by 1 start with 1 nocache;
+
+create trigger HISTORY_TRIGGER
+  before insert on HISTORY
+  for each row
+begin
+  select HISTORY_SEQ.nextval into :new.id from dual;
+end;
+/
+
+create sequence ABSTRACT_SEQ increment by 1 start with 35000 nocache;
+
+create trigger ABSTRACT_TRG
+  before insert on ABSTRACT
+  for each row
+begin
+  select ABSTRACT_SEQ.nextval into :new.id from dual;
+end;
+/
+*/
 
     _exec(stmt, "Table 'PROPERTY'", "Properties",
       "create table PROPERTY ("+
@@ -724,7 +759,7 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     _eFapsCreateInsertAttr(stmt, 20999, 20000, 20023, 'SQLNewIDSelect',   'SQLNEWIDSELECT',   100, null);
     _eFapsCreateInsertAttr(stmt, 20999, 20000, 20024, 'DMTableMain',      'DMTABLEMAIN',      400, 20000);
     _exec(stmt, null, null, "insert into PROPERTY values(20000,20000,'Tree','Admin_DataModel_SQLTableTree')");
-    _exec(stmt, null, null, "insert into PROPERTY values(20001,20000,'Icon','${COMMONURL}/Image.jsp?name=eFapsAdminDataModelSQLTable')");
+    _exec(stmt, null, null, "insert into PROPERTY values(20001,20000,'Icon','${ROOTURL}/servlet/image/eFapsAdminDataModelSQLTable')");
 
     text = "Insert Table for 'Admin_DataModel_Type'";
     _eFapsCreateInsertSQLTable(stmt, text, 21999, "Admin_DataModel_TypeTable", "DMTYPE", "ID", null, null, 15999);
@@ -734,7 +769,7 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     _eFapsCreateInsertAttr(stmt, 21999, 21000, 21020, 'SQLCacheExpr',     'SQLCACHEEXPR',     100, null);
     _eFapsCreateInsertAttr(stmt, 21999, 21000, 21021, 'ParentType',       'PARENTDMTYPE',     400, 21000);
     _exec(stmt, null, null, "insert into PROPERTY values(21000,21000,'Tree','Admin_DataModel_TypeTree')");
-    _exec(stmt, null, null, "insert into PROPERTY values(21001,21000,'Icon','${COMMONURL}/Image.jsp?name=eFapsAdminDataModelType')");
+    _exec(stmt, null, null, "insert into PROPERTY values(21001,21000,'Icon','${ROOTURL}/servlet/image/eFapsAdminDataModelType')");
 
     text = "Insert Table for 'Admin_DataModel_AttributeType'";
     _eFapsCreateInsertSQLTable(stmt, text, 22999, "Admin_DataModel_AttributeTypeTable", "DMATTRIBUTETYPE", "ID", null, "select DMATTRIBUTETYPE_SEQ.nextval from DUAL", null);
@@ -753,7 +788,7 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     _eFapsCreateInsertAttr(stmt, 22999, 22000, 22022, 'AlwaysUpdate',     'ALWAYSUPDATE',     290, null);
     _eFapsCreateInsertAttr(stmt, 22999, 22000, 22023, 'CreateUpdate',     'CREATEUPDATE',     290, null);
     _exec(stmt, null, null, "insert into PROPERTY values(22000,22000,'Tree','Admin_DataModel_AttributeTypeTree')");
-    _exec(stmt, null, null, "insert into PROPERTY values(22001,22000,'Icon','${COMMONURL}/Image.jsp?name=eFapsAdminDataModelAttributeType')");
+    _exec(stmt, null, null, "insert into PROPERTY values(22001,22000,'Icon','${ROOTURL}/servlet/image/eFapsAdminDataModelAttributeType')");
 
     text = "Insert Table for 'Admin_DataModel_Attribute'";
     _eFapsCreateInsertSQLTable(stmt, text, 23999, "Admin_DataModel_AttributeTable", "DMATTRIBUTE", "ID", null, null, 15999);
@@ -766,7 +801,7 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     _eFapsCreateInsertAttr(stmt, 23999, 23000, 23023, 'TypeLink',          'DMTYPELINK',      400, 21000);
     _eFapsCreateInsertAttr(stmt, 23999, 23000, 23024, 'SQLColumn',         'SQLCOLUMN',       100, null);
     _exec(stmt, null, null, "insert into PROPERTY values(23000,23000,'Tree','Admin_DataModel_AttributeTree')");
-    _exec(stmt, null, null, "insert into PROPERTY values(23001,23000,'Icon','${COMMONURL}/Image.jsp?name=eFapsAdminDataModelAttribute')");
+    _exec(stmt, null, null, "insert into PROPERTY values(23001,23000,'Icon','${ROOTURL}/servlet/image/eFapsAdminDataModelAttribute')");
 
     text = "Insert Table for 'Admin_Property'";
     _eFapsCreateInsertSQLTable(stmt, text, 26999, "Admin_PropertyTable", "PROPERTY", "ID", null, "select max(ID)+1 from PROPERTY", null);
@@ -779,7 +814,7 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     _eFapsCreateInsertAttr(stmt, 26999, 26000, 26020, 'Value',            'VALUE',            100, null);
     _eFapsCreateInsertAttr(stmt, 26999, 26000, 26021, 'Abstract',         'ABSTRACT',         400, 15000);
     _exec(stmt, null, null, "insert into PROPERTY values(26000,26000,'Tree','Admin_PropertyTree')");
-    _exec(stmt, null, null, "insert into PROPERTY values(26001,26000,'Icon','${COMMONURL}/Image.jsp?name=Admin_PropertyImage')");
+    _exec(stmt, null, null, "insert into PROPERTY values(26001,26000,'Icon','${ROOTURL}/servlet/image/Admin_PropertyImage')");
 
     text = "Insert Table for 'Admin_DataModel_Table2Type'";
     _eFapsCreateInsertSQLTable(stmt, text, 27999, "Admin_DataModel_Table2TypeTable", "DMTABLE2TYPE", "ID", null, null, null);
