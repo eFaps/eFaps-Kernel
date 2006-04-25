@@ -20,10 +20,8 @@
 
 package org.efaps.beans;
 
-import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,6 +33,9 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.DateTimeConverter;
 import javax.faces.model.DataModel;
 import javax.faces.model.ListDataModel;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -55,6 +56,14 @@ import org.efaps.util.EFapsException;
  */
 public class HistoryBean extends AbstractBean  {
 
+  /**
+   * Logging instance used in this class.
+   */
+  private final static Log LOG = LogFactory.getLog(HistoryBean.class);
+
+  /**
+   * All column headers are stored as list in this instance variable.
+   */
   private DataModel columnHeaders = null;
 
   /**
@@ -62,26 +71,25 @@ public class HistoryBean extends AbstractBean  {
    *
    * @see #getHistoryEntries
    */
-//  private final List < List > entries = new ArrayList < List > ();
   private DataModel data;
-
-  /**
-   * The value is <i>true</i> if the  list must be sorted ascending.
-   *
-   * @see #doSort
-   * @see #isAscending
-   * @see #setAscending
-   */
-  private boolean ascending = true;
 
   /**
    * The string stores the name of the column which must be used to sort.
    *
    * @see #doSort
-   * @see #getSort
-   * @see #setSort
+   * @see #getSortColumn
+   * @see #setSortColumn
    */
-  private String sort = null;
+  private String sortColumn = null;
+
+  /**
+   * The value is <i>true</i> if the  list must be sorted ascending.
+   *
+   * @see #doSort
+   * @see #isSortAscending
+   * @see #setSortAscending
+   */
+  private boolean sortAscending = true;
 
   /**
    * The string stores the name of the column with was used to sort.
@@ -104,14 +112,35 @@ public class HistoryBean extends AbstractBean  {
    */
   private ResourceBundleBean i18nBean = null;
 
+  /**
+   * The instance is set to the given object id in the parameter. Then the
+   * history data is read with {@link #doExecute} and sorted {@link #doSort}
+   * by the modified column descending.
+   *
+   * @param _oid  new object id to set
+   * @see #doExecute
+   * @see #doSort
+   * @see #sortColumn
+   * @see #sortAscending
+   */
   public void setOid(String _oid) throws Exception  {
    if (_oid != null)  {
       super.setOid(_oid);
       doExecute();
+      this.sortColumn = "1";
+      this.sortAscending = false;
+      doSort();
     }
   }
 
-  protected void doExecute() throws Exception  {
+  /**
+   * All history data depending on the object id is read and stored in
+   * instance variable {@link #data}.
+   *
+   * @throws EFapsException if no instance is given, from called methods, or
+   *                        if another exception is thrown
+   */
+  protected void doExecute() throws EFapsException  {
     Context context = Context.getThreadContext();
 
     Instance instance = getInstance();
@@ -172,7 +201,7 @@ public class HistoryBean extends AbstractBean  {
 
       con.commit();
     } catch (EFapsException e)  {
-e.printStackTrace();
+      LOG.error("while reading history data", e);
       if (con != null)  {
         try {
           con.abort();
@@ -181,7 +210,7 @@ e.printStackTrace();
       }
       throw e;
     } catch (Throwable e)  {
-e.printStackTrace();
+      LOG.error("while reading history data", e);
       if (con != null)  {
         try {
           con.abort();
@@ -192,27 +221,39 @@ e.printStackTrace();
     }
   }
 
-  protected void doSort(final String _column, final boolean _ascending)  {
-/*    if ((_column != null) && ((_ascending != this.sortedAscending) || !_column.equals(this.sortedColumn)))  {
-      Comparator < Entry > comparator = new Comparator < Entry >()  {
-        public int compare(Entry _o1, Entry _o2)  {
-          if (_column == null)  {
-            return 0;
-          }
-          if (_column.equals("modified"))  {
-            return _ascending ? _o1.getModified().compareTo(_o2.getModified()) : _o2.getModified().compareTo(_o1.getModified());
-          } else if (_column.equals("modifier"))  {
-            return _ascending ? _o1.getModifier().compareTo(_o2.getModifier()) : _o2.getModifier().compareTo(_o1.getModifier());
-          } else  {
-            return 0;
-          }
+  /**
+   * The {@link #data} is sorted depending on the column defined in
+   * {@link #sortColumn} in the way defined in {@link #sortAscending}. If the
+   * data is already sorted with the same values (stored in
+   * {@link #sortedColumn} and {@link #sortedAscending}), the sort is not done
+   * again.
+   *
+   * @see #sortColumn
+   * @see #sortAscending
+   * @see #sortedColumn
+   * @see #sortedAscending
+   */
+  protected void doSort()  {
+    if ((this.sortColumn != null)
+        && ((this.sortAscending != this.sortedAscending) || !this.sortColumn.equals(this.sortedColumn)))  {
+
+      final int index = Integer.parseInt(this.sortColumn);
+      final boolean sortAscending = this.sortAscending;
+
+      Comparator < List < ColumnValue > > comparator = new Comparator < List < ColumnValue > >()  {
+        public int compare(List < ColumnValue > _o1, List < ColumnValue > _o2)  {
+          ColumnValue val1 = _o1.get(index);
+          ColumnValue val2 = _o2.get(index);
+          return sortAscending ?
+              ((Comparable) val1.getValue()).compareTo(val2.getValue())
+              : ((Comparable) val2.getValue()).compareTo(val1.getValue());
         }
       };
-      Collections.sort(this.entries, comparator);
-      this.sortedColumn = _column;
-      this.sortedAscending = _ascending;
+
+      Collections.sort((List < List < ColumnValue > >)this.data.getWrappedData(), comparator);
+      this.sortedColumn = this.sortColumn;
+      this.sortedAscending = this.sortAscending;
     }
-*/
   }
 
   public Object getColumnValue()  {
@@ -229,12 +270,10 @@ e.printStackTrace();
    *
    * @return sorted history entries
    * @see #doSort
-   * @see #sort
-   * @see #ascending
    * @see #data
    */
   public DataModel getData()  {
-// TODO: sort of the data
+    doSort();
     return this.data;
   }
 
@@ -257,58 +296,58 @@ System.out.println("preserved datamodel updated");
       dateTimeConverter.setType("both");
 
       List headerList = new ArrayList();
-      headerList.add(new ColumnHeader("eventtype",    this.i18nBean.translate("History.Header.EventType"),          stringConverter));
-      headerList.add(new ColumnHeader("modified",     this.i18nBean.translate("History.Header.Modified"),           dateTimeConverter));
-      headerList.add(new ColumnHeader("modifier",     this.i18nBean.translate("History.Header.Modifier"),           stringConverter));
-      headerList.add(new ColumnHeader("attrid",       this.i18nBean.translate("History.Header.AttributeName"),      stringConverter));
-      headerList.add(new ColumnHeader("attrnewvalue", this.i18nBean.translate("History.Header.AttributeNewValue"),  stringConverter));
+      headerList.add(new ColumnHeader("0", this.i18nBean.translate("History.Header.EventType"),          stringConverter));
+      headerList.add(new ColumnHeader("1", this.i18nBean.translate("History.Header.Modified"),           dateTimeConverter));
+      headerList.add(new ColumnHeader("2", this.i18nBean.translate("History.Header.Modifier"),           stringConverter));
+      headerList.add(new ColumnHeader("3", this.i18nBean.translate("History.Header.AttributeName"),      stringConverter));
+      headerList.add(new ColumnHeader("4", this.i18nBean.translate("History.Header.AttributeNewValue"),  stringConverter));
       this.columnHeaders = new ListDataModel(headerList);
     }
     return this.columnHeaders;
   }
 
   /**
-   * This is the getter method for instance variable {@link #sort}.
+   * This is the getter method for instance variable {@link #sortColumn}.
    *
-   * @return value of instance variable {@link #sort}
-   * @see #sort
-   * @see #setSort
+   * @return value of instance variable {@link #sortColumn}
+   * @see #sortColumn
+   * @see #setSortColumn
    */
-  public String getSort()  {
-    return this.sort;
+  public String getSortColumn()  {
+    return this.sortColumn;
   }
 
   /**
-   * This is the setter method for instance variable {@link #sort}.
+   * This is the setter method for instance variable {@link #sortColumn}.
    *
    * @param _sort   new value to set
-   * @see #sort
-   * @see #getSort
+   * @see #sortColumn
+   * @see #getSortColumn
    */
-  public void setSort(String _sort)  {
-    this.sort = _sort;
+  public void setSortColumn(final String _sortColumn)  {
+    this.sortColumn = _sortColumn;
   }
 
   /**
-   * This is the getter method for instance variable {@link #ascending}.
+   * This is the getter method for instance variable {@link #sortAscending}.
    *
-   * @return value of instance variable {@link #ascending}
-   * @see #ascending
-   * @see #setAscending
+   * @return value of instance variable {@link #sortAscending}
+   * @see #sortAscending
+   * @see #setSortAscending
    */
-  public boolean isAscending()  {
-    return this.ascending;
+  public boolean isSortAscending()  {
+    return this.sortAscending;
   }
 
   /**
-   * This is the setter method for instance variable {@link #ascending}.
+   * This is the setter method for instance variable {@link #sortAscending}.
    *
    * @param _ascending  new value to set
-   * @see #ascending
-   * @see #isAscending
+   * @see #sortAscending
+   * @see #isSortAscending
    */
-  public void setAscending(final boolean _ascending)  {
-    this.ascending = _ascending;
+  public void setAscending(final boolean _sortAscending)  {
+    this.sortAscending = _sortAscending;
   }
 
   /**

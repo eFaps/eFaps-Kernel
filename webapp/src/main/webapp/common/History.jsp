@@ -36,9 +36,6 @@
 
   <body>
     <f:view>
-<%--
-      <t:saveState id="history" value="#{history}"/>
---%>
       <t:dataTable styleClass="eFapsTable"
               headerClass="eFapsTableHeader"
               rowClasses="eFapsTableRowOdd,eFapsTableRowEven"
@@ -48,8 +45,8 @@
               value="#{history.data}"
               preserveDataModel="false"
               preserveSort="true"
-              sortColumn="#{history.sort}"
-              sortAscending="#{history.ascending}">
+              sortColumn="#{history.sortColumn}"
+              sortAscending="#{history.sortAscending}">
 
         <t:columns value="#{history.columnHeaders}" var="column">
           <f:facet name="header">
