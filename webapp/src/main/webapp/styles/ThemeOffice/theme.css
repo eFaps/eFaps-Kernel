@@ -1,5 +1,10 @@
 /* ThemeOfficeMenu Style Sheet */
 
+img
+{
+    vertical-align:text-bottom;
+}
+
 .ThemeOfficeMenu,.ThemeOfficeSubMenuTable
 {
 	font-family:	verdana, arial, sans-serif;
@@ -46,7 +51,8 @@
 
 .ThemeOfficeMainItem
 {
-	background-color:	#EFEBDE;
+	background-color:	#dadada;
+	text-align:middle;
 }
 
 .ThemeOfficeMainItemHover,.ThemeOfficeMainItemActive

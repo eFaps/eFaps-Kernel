@@ -16,9 +16,7 @@
   </head>
   <body onLoad="eFapsPositionContent()" leftmargin="0" topmargin="0" rightmargin="0" marginwidth="0" scroll="no">
     <table class="main">
-      <tr>
-        <td class="logo"><img class="logo" src="../images/logo.jpg"></td>
-      </tr>
+      <%@include file="LogoRowInclude.jsp"%>
       <tr>
         <td class="mainMenu">
           <f:view>
