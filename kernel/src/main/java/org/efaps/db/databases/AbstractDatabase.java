@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db.databases;
@@ -138,4 +141,18 @@ public abstract class AbstractDatabase  {
    * @throws SQLException
    */
   public abstract void deleteAll(final Connection _con) throws SQLException;
+
+  /**
+   * A new sql table with column <code>ID</code> is created. If no parent table
+   * is given (set to <i>null</i>), the column <code>ID</code> of the table is
+   * automatically incremented, otherwise a foreign key to the parent table on
+   * column <code>ID</code> is set.
+   *
+   * @param _con          sql connection
+   * @param _table        name of the table to create
+   * @param _parentTable  name of the parent table (could be null to define a
+   *                      table without parent, but with autoincrement)
+   */
+  public abstract void createTable(final Connection _con, final String _table,
+          final String _parentTable) throws SQLException;
 }

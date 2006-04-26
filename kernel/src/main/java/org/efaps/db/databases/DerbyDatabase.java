@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db.databases;
@@ -97,6 +100,56 @@ public class DerbyDatabase extends AbstractDatabase  {
     } finally  {
       stmtSel.close();
       stmtExec.close();
+    }
+  }
+
+  /**
+   * For the derby database, an eFaps sql table is created in this steps:
+   * <ul>
+   * <li>sql table itself with column <code>ID</code> and unique key on the
+   *     column is created</li>
+   * <li>if the table is an autoincrement table (parent table is
+   *     <code>null</code>, the column <code>ID</code> is set as autoincrement
+   *     column</li>
+   * <li>if no parent table is defined, the foreign key to the parent table is
+   *     automatically set</li>
+   * </ul>
+   *
+   * @throws SQLException if the table could not be created
+   */
+  public void createTable(final Connection _con, final String _table,
+          final String _parentTable) throws SQLException  {
+
+    Statement stmt = _con.createStatement();
+
+    try  {
+
+      // create table itself
+      StringBuilder cmd = new StringBuilder();
+      cmd.append("create table ").append(_table).append(" ")
+         .append("  ID bigint not null");
+
+      // autoincrement
+      if (_parentTable == null)  {
+        cmd.append(" generated always as identity (start with 1, increment by 1)");
+      }
+
+      cmd.append(",")
+         .append("  constraint ").append(_table).append("_UK_ID unique(ID)");
+
+      // foreign key to parent sql table
+      if (_parentTable != null)  {
+        cmd.append(",")
+           .append("constraint ").append(_table).append("_FK_ID ")
+           .append("  foreign key(ID) ")
+           .append("  references ").append(_parentTable).append("(ID)");
+      }
+
+      cmd.append(");");
+      stmt.executeUpdate(cmd.toString());
+
+    } finally  {
+      stmt.close();
     }
   }
 }
