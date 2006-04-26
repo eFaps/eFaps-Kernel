@@ -39,7 +39,13 @@ public abstract class AdminObject implements CacheInterface  {
   public enum EFapsClassName  {
     DATAMODEL_TYPE("Admin_DataModel_Type"),
 
-    EVENT_DEFINITION                ("Admin_Event_Definition"),
+    USER_PERSON("Admin_User_Person"),
+    USER_ROLE("Admin_User_Role"),
+
+    LIFECYCLE_POLICY("Admin_LifeCycle_Policy"),
+    LIFECYCLE_STATUS("Admin_LifeCycle_Status"),
+
+    EVENT_DEFINITION("Admin_Event_Definition"),
 
     COLLECTION("Admin_UI_Collection"),
     FIELD("Admin_UI_Field"),

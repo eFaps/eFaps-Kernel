@@ -54,7 +54,6 @@ public class SQLTable extends DataModelObject  {
                                                 "SQLTABLE,"+
                                                 "SQLCOLUMNID,"+
                                                 "SQLCOLUMNTYPE,"+
-                                                "SQLNEWIDSELECT,"+
                                                 "DMTABLEMAIN "+
                                               "from ADMINSQLTABLE";
 
@@ -138,14 +137,6 @@ public class SQLTable extends DataModelObject  {
    * @see #setSqlColType
    */
   private String sqlColType = null;
-
-  /**
-   * The instance variable stores the sql select statement to get a new ID.
-   *
-   * @see #getSqlNewIdSelect
-   * @see #setSqlNewIdSelect
-   */
-  private String sqlNewIdSelect = null;
 
   /**
    * The instance variable stores the main table for this table instance. The
@@ -244,29 +235,6 @@ public class SQLTable extends DataModelObject  {
   }
 
   /**
-   * This is the setter method for instance variable {@link #sqlNewIdSelect}.
-   *
-   * @param _sqlNewIdSelect new value for instance variable
-   *                        {@link #sqlNewIdSelect}
-   * @see #sqlNewIdSelect
-   * @see #getSqlNewIdSelect
-   */
-  private void setSqlNewIdSelect(String _sqlNewIdSelect)  {
-    this.sqlNewIdSelect = (_sqlNewIdSelect != null ? _sqlNewIdSelect.trim() : null);
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #sqlNewIdSelect}.
-   *
-   * @return value of instance variable {@link #sqlNewIdSelect}
-   * @see #sqlNewIdSelect
-   * @see #setSqlNewIdSelect
-   */
-  public String getSqlNewIdSelect()  {
-    return this.sqlNewIdSelect;
-  }
-
-  /**
    * This is the setter method for instance variable {@link #mainTable}.
    *
    * @param _mainTable new value for instance variable {@link #mainTable}
@@ -348,9 +316,8 @@ public class SQLTable extends DataModelObject  {
           table.setSqlTable(rs.getString(3).trim());
           table.setSqlColId(rs.getString(4).trim());
           table.setSqlColType(rs.getString(5));
-          table.setSqlNewIdSelect(rs.getString(6));
           getCache().add(table);
-          long tableMainId = rs.getLong(7);
+          long tableMainId = rs.getLong(6);
           if (tableMainId>0)  {
             mainTables.put(id, tableMainId);
           }

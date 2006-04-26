@@ -155,15 +155,15 @@ ret=true;
     try  {
       ResultSet rs = stmt.executeQuery(
           "select "+
-              "USERPERSON.EMAIL,"+
-              "USERPERSON.FIRSTNAME,"+
-              "USERPERSON.LASTNAME,"+
-              "USERPERSON.ORG,"+
-              "USERPERSON.URL,"+
-              "USERPERSON.PHONE,"+
-              "USERPERSON.FAX "+
-          "from USERPERSON "+
-          "where USERPERSON.ID="+getId()
+              "V_USERPERSON.EMAIL,"+
+              "V_USERPERSON.FIRSTNAME,"+
+              "V_USERPERSON.LASTNAME,"+
+              "V_USERPERSON.ORG,"+
+              "V_USERPERSON.URL,"+
+              "V_USERPERSON.PHONE,"+
+              "V_USERPERSON.FAX "+
+          "from V_USERPERSON "+
+          "where V_USERPERSON.ID="+getId()
       );
       if (rs.next())  {
         setEmail(rs.getString(1));
@@ -187,10 +187,9 @@ e.printStackTrace();
     try  {
       ResultSet rs = stmt.executeQuery(
           "select "+
-              "USERABSTRACTFROM "+
-          "from USERABSTRACT2ABSTRACT "+
-          "where TYPEID=10100 and "+
-                "USERABSTRACTTO="+getId()
+              "V_USERPERSON2ROLE.USERABSTRACTFROM "+
+          "from V_USERPERSON2ROLE "+
+          "where V_USERPERSON2ROLE.USERABSTRACTTO="+getId()
       );
       while (rs.next())  {
         Role role = Role.get(rs.getLong(1));
@@ -411,11 +410,10 @@ e.printStackTrace();
       try  {
         ret = getCache().readPerson(context,
             "select "+
-              "USERABSTRACT.ID,"+
-              "USERABSTRACT.NAME "+
-            "from USERABSTRACT "+
-            "where USERABSTRACT.TYPEID=10000 and "+
-                  "USERABSTRACT.ID="+_id
+              "V_USERPERSON.ID,"+
+              "V_USERPERSON.NAME "+
+            "from V_USERPERSON "+
+            "where V_USERPERSON.ID="+_id
         );
       } catch (Throwable e)  {
         throw new Exception(e);
@@ -443,11 +441,10 @@ System.out.println("----------------------------- read person");
       try  {
         ret = getCache().readPerson(context,
             "select "+
-              "USERABSTRACT.ID,"+
-              "USERABSTRACT.NAME "+
-            "from USERABSTRACT "+
-            "where USERABSTRACT.TYPEID=10000 and "+
-                  "USERABSTRACT.NAME='"+_name+"'"
+              "V_USERPERSON.ID,"+
+              "V_USERPERSON.NAME "+
+            "from V_USERPERSON "+
+            "where V_USERPERSON.NAME='"+_name+"'"
         );
       } catch (Throwable e)  {
         throw new Exception(e);

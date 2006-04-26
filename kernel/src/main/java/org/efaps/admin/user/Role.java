@@ -123,11 +123,10 @@ public class Role extends UserObject  {
       try  {
         ret = getCache().readRole(context,
             "select "+
-              "USERABSTRACT.ID,"+
-              "USERABSTRACT.NAME "+
-            "from USERABSTRACT "+
-            "where USERABSTRACT.TYPEID=11000 and "+
-                  "USERABSTRACT.ID="+_id
+              "V_USERROLE.ID,"+
+              "V_USERROLE.NAME "+
+            "from V_USERROLE "+
+            "where V_USERROLE.ID="+_id
         );
       } catch (Throwable e)  {
         throw new Exception(e);
@@ -154,11 +153,10 @@ public class Role extends UserObject  {
       try  {
         ret = getCache().readRole(context,
             "select "+
-              "USERABSTRACT.ID,"+
-              "USERABSTRACT.NAME "+
-            "from USERABSTRACT "+
-            "where USERABSTRACT.TYPEID=11000 and "+
-                  "USERABSTRACT.NAME='"+_name+"'"
+              "V_USERROLE.ID,"+
+              "V_USERROLE.NAME "+
+            "from V_USERROLE "+
+            "where V_USERROLE.NAME='"+_name+"'"
         );
       } catch (Throwable e)  {
         throw new Exception(e);

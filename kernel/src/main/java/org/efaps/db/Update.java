@@ -272,7 +272,7 @@ e.printStackTrace();
 
   private PreparedStatement createOneStatement(Context _context, ConnectionResource _con, SQLTable _table, Map _expressions) throws SQLException, EFapsException  {
     List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
-    StringBuffer cmd = new StringBuffer();
+    StringBuilder cmd = new StringBuilder();
     cmd.append("update ").append(_table.getSqlTable()).append(" set ");
     Iterator iter = _expressions.entrySet().iterator();
     boolean command = false;

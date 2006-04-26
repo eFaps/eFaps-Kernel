@@ -36,7 +36,7 @@ public class BlobType extends AbstractFileType  {
   /////////////////////////////////////////////////////////////////////////////
   // db interface
 
-  public boolean prepareUpdate(StringBuffer _stmt)  {
+  public boolean prepareUpdate(StringBuilder _stmt)  {
     _stmt.append("''");
     return true;
   }

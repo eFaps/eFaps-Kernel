@@ -42,7 +42,7 @@ public class ModifiedType extends DateTimeType  {
    * @param _stmt string buffer with the statement
    * @return always <i>true</i>
    */
-  public boolean prepareUpdate(StringBuffer _stmt)  {
+  public boolean prepareUpdate(StringBuilder _stmt)  {
     _stmt.append(Context.getDbType().getCurrentTimeStamp());
     return true;
   }

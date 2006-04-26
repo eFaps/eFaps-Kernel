@@ -58,6 +58,14 @@ public class Checkout extends AbstractAction  {
   }
 
   /**
+   * The method is only a dummy method and closes the checkout action. The
+   * method should be called, if in the future the checkout class needs a
+   * call to this method.
+   */
+  public void close()  {
+  }
+
+  /**
    *
    * @param _context  eFaps context for this request
    */
@@ -103,7 +111,6 @@ public class Checkout extends AbstractAction  {
       }
       throw new EFapsException(Checkout.class, "execute.Throwable", e);
     }
-
 
 
 //FileSystem fileSystem = new org.efaps.db.vfs.provider.sqldatabase.SQLDataBaseFileSystem();

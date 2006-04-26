@@ -44,7 +44,7 @@ public class ModifierLinkType extends PersonLinkType  {
    * @param _stmt string buffer with the statement
    * @see #update
    */
-  public boolean prepareUpdate(StringBuffer _stmt)  {
+  public boolean prepareUpdate(StringBuilder _stmt)  {
     _stmt.append("?");
     return false;
   }

@@ -30,13 +30,51 @@ var TYPE_DATETIME     = Context.getDbType().getColumnType(AbstractDatabase.Colum
 var TYPE_BLOB         = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.BLOB);
 var CURRENT_TIMESTAMP = Context.getDbType().getCurrentTimeStamp();
 
-function _exec(_stmt, _subject, _txt, _cmd)  {
-  if (_txt!=null && _subject!=null)  {
-    print("  - " + _subject + "  (" + _txt + ")");
+/**
+ * Write out some log stuff. The format is:
+ * <ul>
+ *   <li>
+ *     if a subject and text is given:<br/>
+ *     <code>[SPACE][SPACE]-[SUBJECT][SPACE]([TEXT])</code>
+ *   </li>
+ *   <li>
+ *     if only subject is given:<br/>
+ *     <code>[SPACE][SPACE]-[SUBJECT]</code>
+ *   </li>
+ *   <li>otherwise nothing is printed</li>
+ * <ul>
+ *
+ * @param _subject  subject of the log text
+ * @param _text     text of the log text
+ */
+function _eFapsCreateLog(_subject, _text)  {
+  if (_text!=null && _subject!=null)  {
+    print("  - " + _subject + "  (" + _text + ")");
+  } else if (_subject!=null)  {
+    print("  - " + _subject);
   }
-//print(_cmd);
+}
+
+function _exec(_stmt, _subject, _text, _cmd)  {
+  _eFapsCreateLog(_subject, _text);
   var bck = _stmt.execute(_cmd);
 }
+
+function _insert(_stmt, _subject, _text, _cmd, _table)  {
+  var ret;
+
+  _eFapsCreateLog(_subject, _text);
+
+  _stmt.execute(_cmd);
+
+  var rs = _stmt.executeQuery("select max(ID) from " + _table);
+  
+  if (rs.next())  {
+    ret= rs.getString(1);
+  }
+  return ret;
+}
+
 
 /**
  * Updates the password for person 'Administrator' to 'Administrator'..
@@ -153,28 +191,53 @@ function eFapsCreateAll()  {
 }
 
 
+function _eFapsCreateCreateTable(_con, _stmt, _text, _table, _parentTable, _array)  {
+  _eFapsCreateLog("Table '" + _table + "'", _text);
+  
+  Context.getDbType().createTable(_con, _table, _parentTable);
+  for (var i=0; i<_array.length; i++)  {
+    _stmt.execute("alter table " + _table + " add " + _array[i]);
+  }
+}
 
-function _eFapsCreateInsertSQLTable(_stmt, _text, _id, _name, _sqlTable, _sqlColId, _sqlColType, _sqlNewIdSelect, _tableMainId)  {
+function _eFapsCreateInsertSQLTable(_stmt, _text, _name, _sqlTable, _sqlColId, _sqlColType, _tableMainId)  {
   var sqlColType = (_sqlColType==null ? "null" : "'"+_sqlColType+"'");
-  var sqlNewIdSelect = (_sqlNewIdSelect==null ? "null" : "'"+_sqlNewIdSelect+"'");
   var tableMainId = (_tableMainId==null ? "null" : _tableMainId);
 
-  _exec(_stmt, _text, "",   "insert into ABSTRACT values  (20000, "+_id+", '"+_name+"', '', 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")");
-  _exec(_stmt, null, null, "insert into DMTABLE  values  ("+_id+",'"+_sqlTable+"','"+_sqlColId+"',"+sqlColType+","+sqlNewIdSelect+", "+tableMainId+")");
+  var ret = _insert(_stmt, _text, null, 
+      "insert into ABSTRACT "+
+          "(TYPEID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
+          +"values  (-20000, '"+_name+"', '', 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")", "ABSTRACT");
+  _exec(_stmt, null, null,  "insert into DMTABLE values  ("+ret+",'"+_sqlTable+"','"+_sqlColId+"',"+sqlColType+","+tableMainId+")");
+  return ret;
 }
 
-function _eFapsCreateInsertType(_stmt, _text, _id, _name, _parentTypeId)  {
+function _eFapsCreateInsertType(_stmt, _text, _name, _parentTypeId)  {
   var parentTypeId = (_parentTypeId==null ? "null" : _parentTypeId);
 
-  _exec(_stmt, _text, "",   "insert into ABSTRACT values  (21000,"+_id+", '"+_name+"', '', 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")");
-  _exec(_stmt, null, null, "insert into DMTYPE   values  ("+_id+", "+parentTypeId+", null)");
+  var ret = _insert(_stmt, _text, null, 
+      "insert into ABSTRACT "+
+          "(TYPEID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
+          +"values  (-21000, '"+_name+"', '', 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")", "ABSTRACT");
+  _exec(_stmt, null, null, "insert into DMTYPE values  ("+ret+", "+parentTypeId+", null)");
+  return ret;
 }
 
-function _eFapsCreateInsertAttr(_stmt, _tableId, _typeId, _id, _name, _sqlColumn, _attrTypeId, _typeLink)  {
+function _eFapsCreateInsertAttr(_stmt, _tableId, _typeId, _name, _sqlColumn, _attrTypeId, _typeLink)  {
   var typeLink = (_typeLink==null ? "null" : _typeLink);
 
-  _exec(_stmt, null, null, "insert into ABSTRACT            values  (23000, "+_id+", '"+_name+"', '', 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTE         values  ("+_id+", "+_tableId+", "+_typeId+",  "+_attrTypeId+", "+typeLink+", '"+_sqlColumn+"')");
+  var ret = _insert(_stmt, null, null, 
+      "insert into ABSTRACT "+
+          "(TYPEID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
+          +"values  (-22000, '"+_name+"', '', 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")", "ABSTRACT");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTE values  ("+ret+", "+_tableId+", "+_typeId+",  "+_attrTypeId+", "+typeLink+", '"+_sqlColumn+"')");
+  return ret;
+}
+
+function _eFapsCreateInsertProp(_stmt, _abstractId, _key, _value)  {
+  _exec(_stmt, null, null, 
+      "insert into PROPERTY (ABSTRACT,NAME,VALUE) "
+          +"values("+_abstractId+",'"+_key+"','"+_value+"')");
 }
 
 /**
@@ -213,20 +276,27 @@ function _eFapsCreateAllInsertAttributeTypes(_stmt)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateAllEventTable(_stmt)  {
+function _eFapsCreateAllEventTable(_con, _stmt)  {
   print("Create Event SQL Table");
 
-  _exec(_stmt, "Table 'EVENTDEF'", "Definition of Events (e.g. Triggers)",
-    "create table EVENTDEF ("+
-      "ID                    "+TYPE_INTEGER+"                   not null,"+
-      "ABSTRACT              "+TYPE_INTEGER+"                   not null,"+
-      "INDEXPOS              "+TYPE_INTEGER+"                   not null,"+
-      "constraint EVENTDEF_UK_ID          unique(ID),"+
-      "constraint EVENTDEF_FK_ID          foreign key(ID)       references ABSTRACT(ID),"+
-      "constraint EVENTDEF_FK_ABSTRACT    foreign key(ID)       references ABSTRACT(ID),"+
-      "constraint EVENTDEF_UK_ID_INDEXPOS unique(ID,INDEXPOS)"+
-    ")"
-  );
+  _eFapsCreateCreateTable(_con, _stmt, "Definition of Events (e.g. Triggers)", "EVENTDEF", "ABSTRACT",[
+      ["ABSTRACT              "+TYPE_INTEGER+"                   not null"],
+      ["INDEXPOS              "+TYPE_INTEGER+"                   not null"],
+      ["constraint EVENTDEF_UK_ID_INDEXPOS unique(ID,INDEXPOS)"]
+  ]);
+
+  _eFapsCreateCreateTable(_con, _stmt, "History of Events for Objects", "HISTORY", null,[
+      ["EVENTTYPEID     "+TYPE_INTEGER+" not null"],
+      ["FORTYPEID       "+TYPE_INTEGER+" not null"],
+      ["FORID           "+TYPE_INTEGER+" not null"],
+      ["MODIFIER        "+TYPE_INTEGER+" not null"],
+      ["MODIFIED        "+TYPE_DATETIME+" not null"],
+      ["ATTRID          "+TYPE_INTEGER],
+      ["ATTRVALUE       "+TYPE_STRING_LONG+"(4000)"],
+      ["constraint HIST_FK_EVNTYPEID foreign key(EVENTTYPEID)  references DMTYPE(ID)"],
+      ["constraint HIST_FK_FORTYPEID foreign key(FORTYPEID)    references DMTYPE(ID)"],
+      ["constraint HIST_FK_MODIFIER  foreign key(MODIFIER)     references USERABSTRACT(ID)"]
+  ]);
 }
 
 /**
@@ -234,59 +304,46 @@ function _eFapsCreateAllEventTable(_stmt)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateAllUserTables(_stmt)  {
+function _eFapsCreateAllUserTables(_con, _stmt)  {
   print("Create User Tables");
 
-  _exec(_stmt, "Table 'USERABSTRACT'", "Abstract User",
-    "create table USERABSTRACT ("+
-      "TYPEID                "+TYPE_INTEGER+"                   not null,"+
-      "ID                    "+TYPE_INTEGER+"                   not null,"+
-      "NAME                  "+TYPE_STRING_SHORT+"(128)         not null,"+
-      "CREATOR               "+TYPE_INTEGER+"                   not null,"+
-      "CREATED               "+TYPE_DATETIME+"                  not null,"+
-      "MODIFIER              "+TYPE_INTEGER+"                   not null,"+
-      "MODIFIED              "+TYPE_DATETIME+"                  not null,"+
-  "STATUS  int  default 10001 not null,"+
-      "constraint USERABSTR_PK_ID     primary key(ID),"+
-      "constraint USERABSTR_UK_NAME   unique(NAME)"+
-    ")"
-  );
+  _eFapsCreateCreateTable(_con, _stmt, "Abstract User", "USERABSTRACT", null,[
+      ["TYPEID                "+TYPE_INTEGER+"                   not null"],
+      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+      ["CREATED               "+TYPE_DATETIME+"                  not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+["STATUS  int  default 10001 not null"],
+      ["constraint USERABSTR_UK_NAME   unique(NAME)"]
+  ]);
 
-  _exec(_stmt, "Table 'USERPERSON'", "Person object",
-    "create table USERPERSON ("+
-      "ID                    "+TYPE_INTEGER+"                   not null,"+
-      "FIRSTNAME             "+TYPE_STRING_SHORT+"(128)         not null,"+
-      "LASTNAME              "+TYPE_STRING_SHORT+"(128)         not null,"+
-      "EMAIL                 "+TYPE_STRING_SHORT+"(128)         not null,"+
-      "ORG                   "+TYPE_STRING_SHORT+"(128),"+
-      "URL                   "+TYPE_STRING_SHORT+"(254),"+
-      "PHONE                 "+TYPE_STRING_SHORT+"(32),"+
-      "MOBILE                "+TYPE_STRING_SHORT+"(32),"+
-      "FAX                   "+TYPE_STRING_SHORT+"(32),"+
-      "PASSWORD              "+TYPE_STRING_SHORT+"(128),"+
-      "constraint USERPERSON_UK_ID    unique(ID),"+
-      "constraint USERPERSON_FK_ID    foreign key(ID)           references USERABSTRACT(ID)"+
-    ")"
-  );
+  _eFapsCreateCreateTable(_con, _stmt, "Person object", "USERPERSON", "USERABSTRACT",[
+      ["FIRSTNAME             "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["LASTNAME              "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["EMAIL                 "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["ORG                   "+TYPE_STRING_SHORT+"(128)"],
+      ["URL                   "+TYPE_STRING_SHORT+"(254)"],
+      ["PHONE                 "+TYPE_STRING_SHORT+"(32)"],
+      ["MOBILE                "+TYPE_STRING_SHORT+"(32)"],
+      ["FAX                   "+TYPE_STRING_SHORT+"(32)"],
+      ["PASSWORD              "+TYPE_STRING_SHORT+"(128)"]
+  ]);
 
-  _exec(_stmt, "Table 'USERABSTRACT2ABSTRACT'", "Connection between Abstract User and Abstract User",
-    "create table USERABSTRACT2ABSTRACT ("+
-      "ID                    "+TYPE_INTEGER+"                   not null,"+
-      "TYPEID                "+TYPE_INTEGER+"                   not null,"+
-      "CREATOR               "+TYPE_INTEGER+"                   not null,"+
-      "CREATED               "+TYPE_DATETIME+"                  not null,"+
-      "MODIFIER              "+TYPE_INTEGER+"                   not null,"+
-      "MODIFIED              "+TYPE_DATETIME+"                  not null,"+
-      "USERABSTRACTFROM      "+TYPE_INTEGER+"                   not null,"+
-      "USERABSTRACTTO        "+TYPE_INTEGER+"                   not null,"+
-      "constraint USRABS2ABS_PK_ID    primary key(ID),"+
-      "constraint USRABS2ABS_UK_FRTO  unique(USERABSTRACTFROM,USERABSTRACTTO),"+
-      "constraint USRABS2ABS_FK_CRTR  foreign key(CREATOR)          references USERABSTRACT(ID),"+
-      "constraint USRABS2ABS_FK_MDFR  foreign key(MODIFIER)         references USERABSTRACT(ID),"+
-      "constraint USRABS2ABS_FK_FROM  foreign key(USERABSTRACTFROM) references USERABSTRACT(ID),"+
-      "constraint USRABS2ABS_FK_TO    foreign key(USERABSTRACTTO)   references USERABSTRACT(ID)"+
-    ")"
-  );
+  _eFapsCreateCreateTable(_con, _stmt, "Connection between Abstract User and Abstract User", "USERABSTRACT2ABSTRACT", null,[
+      ["TYPEID                "+TYPE_INTEGER+"                   not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+      ["CREATED               "+TYPE_DATETIME+"                  not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+      ["USERABSTRACTFROM      "+TYPE_INTEGER+"                   not null"],
+      ["USERABSTRACTTO        "+TYPE_INTEGER+"                   not null"],
+      ["constraint USRABS2ABS_UK_FRTO  unique(USERABSTRACTFROM,USERABSTRACTTO)"],
+      ["constraint USRABS2ABS_FK_CRTR  foreign key(CREATOR)          references USERABSTRACT(ID)"],
+      ["constraint USRABS2ABS_FK_MDFR  foreign key(MODIFIER)         references USERABSTRACT(ID)"],
+      ["constraint USRABS2ABS_FK_FROM  foreign key(USERABSTRACTFROM) references USERABSTRACT(ID)"],
+      ["constraint USRABS2ABS_FK_TO    foreign key(USERABSTRACTTO)   references USERABSTRACT(ID)"]
+  ]);
 }
 
 /**
@@ -294,43 +351,33 @@ function _eFapsCreateAllUserTables(_stmt)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateAllTeamCenterTables(_stmt)  {
+function _eFapsCreateAllTeamCenterTables(_con, _stmt)  {
 
-  _exec(_stmt, "Table 'TCFOLDER'", "Folder Object",
-    "create table TCFOLDER ("+
-      "ID                    "+TYPE_INTEGER+"                   not null,"+
-      "PARENTFOLDER          "+TYPE_INTEGER+","+
-      "constraint TCFOLDER_UK_ID      unique(ID),"+
-      "constraint TCFOLDER_FK_ID      foreign key(ID)           references ABSTRACT(ID),"+
-      "constraint TCFOLDER_FK_PRNTFOL foreign key(PARENTFOLDER) references TCFOLDER(ID)"+
-    ")"
-  );
+  print("Create TeamCenter Tables");
 
-  _exec(_stmt, "Table 'TCDOCUMENT'", "Document Object",
-    "create table TCDOCUMENT ("+
-      "ID                    "+TYPE_INTEGER+"                   not null,"+
-      "FILENAME              "+TYPE_STRING_SHORT+"(128),"+
-      "FILELENGTH            "+TYPE_INTEGER+","+
-      "constraint TCDOCUMENT_UK_ID    unique(ID),"+
-      "constraint TCDOCUMENT_FK_ID    foreign key(ID)           references ABSTRACT(ID)"+
-    ")"
-  );
+  _eFapsCreateCreateTable(_con, _stmt, "Folder object", "TCFOLDER", "ABSTRACT",[
+      ["PARENTFOLDER          "+TYPE_INTEGER],
+      ["constraint TCFOLDER_FK_PRNTFOL foreign key(PARENTFOLDER) references TCFOLDER(ID)"]
+  ]);
 
-  _exec(_stmt, "Table 'TCDOC2FOL'", "Connection beetween Documents and Folders",
-    "create table TCDOC2FOL ("+
-      "ID                    "+TYPE_INTEGER+"                   not null,"+
-      "TCDOCUMENT            "+TYPE_INTEGER+"                   not null,"+
-      "TCFOLDER              "+TYPE_INTEGER+"                   not null,"+
-      "CREATOR               "+TYPE_INTEGER+"                   not null,"+
-      "CREATED               "+TYPE_DATETIME+"                  not null,"+
-      "MODIFIER              "+TYPE_INTEGER+"                   not null,"+
-      "MODIFIED              "+TYPE_DATETIME+"                  not null,"+
-      "constraint TCDOC2FOL_PK_ID     primary key(ID),"+
-      "constraint TCDOC2FOL_UK_FOLDOC unique(TCDOCUMENT,TCFOLDER),"+
-      "constraint TCDOC2FOL_FK_TCDOC  foreign key(TCDOCUMENT)   references ABSTRACT(ID),"+
-      "constraint TCDOC2FOL_FK_TCFLDR foreign key(TCFOLDER)     references TCFOLDER(ID)"+
-    ")"
-  );
+  _eFapsCreateCreateTable(_con, _stmt, "Document object", "TCDOCUMENT", "ABSTRACT",[
+      ["FILENAME              "+TYPE_STRING_SHORT+"(128)"],
+      ["FILELENGTH            "+TYPE_INTEGER]
+  ]);
+
+  _eFapsCreateCreateTable(_con, _stmt, "Connection beetween Documents and Folders", "TCDOC2FOL", null,[
+      ["TCDOCUMENT            "+TYPE_INTEGER+"                   not null"],
+      ["TCFOLDER              "+TYPE_INTEGER+"                   not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+      ["CREATED               "+TYPE_DATETIME+"                  not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+      ["constraint TCDOC2FOL_UK_FOLDOC unique(TCDOCUMENT,TCFOLDER)"],
+      ["constraint TCDOC2FOL_FK_TCDOC  foreign key(TCDOCUMENT)   references ABSTRACT(ID)"],
+      ["constraint TCDOC2FOL_FK_TCFLDR foreign key(TCFOLDER)     references TCFOLDER(ID)"],
+      ["constraint TCDOC2FOL_FK_CRTR   foreign key(CREATOR)      references USERPERSON(ID)"],
+      ["constraint TCDOC2FOL_FK_MDFR   foreign key(MODIFIER)     references USERPERSON(ID)"]
+  ]);
 }
 
 
@@ -339,64 +386,46 @@ function _eFapsCreateAllTeamCenterTables(_stmt)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateAllUITables(_stmt)  {
+function _eFapsCreateAllUITables(_con, _stmt)  {
   print("Create User Interface Tables");
 
-  _exec(_stmt, "Table 'UIFILE'", "table used to import files for user interface objects",
-    "create table UIFILE ("+
-      "ID                    "+TYPE_INTEGER+"                       not null,"+
-      "FILENAME              "+TYPE_STRING_SHORT+"(128),"+
-      "FILELENGTH            "+TYPE_INTEGER+","+
-      "FILECONTENT           "+TYPE_BLOB+","+
-      "constraint UIFILE_UK_ID        unique(ID),"+
-      "constraint UIFILE_FK_ID        foreign key(ID)               references ABSTRACT(ID)"+
-    ")"
-  );
+  _eFapsCreateCreateTable(_con, _stmt, "table used to import files for user interface objects", "UIFILE", "ABSTRACT",[
+      ["FILENAME              "+TYPE_STRING_SHORT+"(128)"],
+      ["FILELENGTH            "+TYPE_INTEGER],
+      ["FILECONTENT           "+TYPE_BLOB]
+  ]);
 
-  _exec(_stmt, "Table 'UIABSTRACT2UIABSTRACT'", "connection between UI objects",
-    "create table UIABSTRACT2UIABSTRACT ("+
-      "ID                    "+TYPE_INTEGER+"                       not null,"+
-      "TYPEID                "+TYPE_INTEGER+"                       not null,"+
-      "CREATOR               "+TYPE_INTEGER+"                       not null,"+
-      "CREATED               "+TYPE_DATETIME+"                      not null,"+
-      "MODIFIER              "+TYPE_INTEGER+"                       not null,"+
-      "MODIFIED              "+TYPE_DATETIME+"                      not null,"+
-      "FROMID                "+TYPE_INTEGER+"                       not null,"+
-      "TOID                  "+TYPE_INTEGER+"                       not null,"+
-      "constraint UIABS2ABS_PK_ID     primary key(ID),"+
-      "constraint UIABS2ABS_FK_CRTR   foreign key(CREATOR)          references USERPERSON(ID),"+
-      "constraint UIABS2ABS_FK_MDFR   foreign key(MODIFIER)         references USERPERSON(ID),"+
-      "constraint UIABS2ABS_FK_FRMID  foreign key(FROMID)           references ABSTRACT(ID),"+
-      "constraint UIABS2ABS_FK_TOID   foreign key(TOID)             references ABSTRACT(ID)"+
-    ")"
-  );
+  _eFapsCreateCreateTable(_con, _stmt, "connection between UI objects", "UIABSTRACT2UIABSTRACT", null,[
+      ["TYPEID                "+TYPE_INTEGER+"                       not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                       not null"],
+      ["CREATED               "+TYPE_DATETIME+"                      not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                       not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                      not null"],
+      ["FROMID                "+TYPE_INTEGER+"                       not null"],
+      ["TOID                  "+TYPE_INTEGER+"                       not null"],
+      ["constraint UIABS2ABS_FK_CRTR   foreign key(CREATOR)          references USERPERSON(ID)"],
+      ["constraint UIABS2ABS_FK_MDFR   foreign key(MODIFIER)         references USERPERSON(ID)"],
+      ["constraint UIABS2ABS_FK_FRMID  foreign key(FROMID)           references ABSTRACT(ID)"],
+      ["constraint UIABS2ABS_FK_TOID   foreign key(TOID)             references ABSTRACT(ID)"]
+  ]);
 
-  _exec(_stmt, "Table 'UIACCESS'", "user access for one UI object",
-    "create table UIACCESS ("+
-      "UIABSTRACT            "+TYPE_INTEGER+"                       not null,"+
-      "USERABSTRACT          "+TYPE_INTEGER+"                       not null,"+
-      "CREATOR               "+TYPE_INTEGER+"                       not null,"+
-      "CREATED               "+TYPE_DATETIME+"                      not null,"+
-      "MODIFIER              "+TYPE_INTEGER+"                       not null,"+
-      "MODIFIED              "+TYPE_DATETIME+"                      not null,"+
-      "ID                    "+TYPE_INTEGER+"                       not null,"+
-      "constraint UIACS_PK_ID                                       primary key(ID),"+
-      "constraint UIACS_FK_USRABSTR   foreign key(USERABSTRACT)     references USERABSTRACT(ID),"+
-      "constraint UIACS_FK_CRTR       foreign key(CREATOR)          references USERPERSON(ID),"+
-      "constraint UIACS_FK_MDFR       foreign key(MODIFIER)         references USERPERSON(ID),"+
-      "constraint UIACS_FK_UIABSTR    foreign key(UIABSTRACT)       references ABSTRACT(ID)"+
-    ")"
-  );
+  _eFapsCreateCreateTable(_con, _stmt, "user access for one UI object", "UIACCESS", null,[
+      ["UIABSTRACT            "+TYPE_INTEGER+"                       not null"],
+      ["USERABSTRACT          "+TYPE_INTEGER+"                       not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                       not null"],
+      ["CREATED               "+TYPE_DATETIME+"                      not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                       not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                      not null"],
+      ["constraint UIACS_FK_USRABSTR   foreign key(USERABSTRACT)     references USERABSTRACT(ID)"],
+      ["constraint UIACS_FK_CRTR       foreign key(CREATOR)          references USERPERSON(ID)"],
+      ["constraint UIACS_FK_MDFR       foreign key(MODIFIER)         references USERPERSON(ID)"],
+      ["constraint UIACS_FK_UIABSTR    foreign key(UIABSTRACT)       references ABSTRACT(ID)"]
+  ]);
 
-  _exec(_stmt, "Table 'UIFIELD'", "fields for forms and tables",
-    "create table UIFIELD ("+
-      "ID                    "+TYPE_INTEGER+"                       not null,"+
-      "COLLECTION            "+TYPE_INTEGER+"                       not null,"+
-      "constraint UIFLD_UK_ID         unique(ID),"+
-      "constraint UIFLD_FK_ID         foreign key(ID)               references ABSTRACT(ID),"+
-      "constraint UIFLD_FK_CLCT       foreign key(COLLECTION)       references ABSTRACT(ID)"+
-    ")"
-  );
+  _eFapsCreateCreateTable(_con, _stmt, "fields for forms and tables", "UIFIELD", "ABSTRACT",[
+      ["COLLECTION            "+TYPE_INTEGER+"                       not null"],
+      ["constraint UIFLD_FK_CLCT       foreign key(COLLECTION)       references ABSTRACT(ID)"]
+  ]);
 //      "constraint UIFLD_UK_NAME_CLCT  unique(NAME, COLLECTION),"+
 
 }
@@ -406,115 +435,68 @@ function createAll()  {
   var context = new Context();
 
   try  {
-
-    var stmt = context.getConnection().createStatement();
+    var con = context.getConnection();
+    var stmt = con.createStatement();
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    _eFapsCreateAllUserTables(stmt);
+    _eFapsCreateAllUserTables(context.getConnection(), stmt);
 
     ///////////////////////////////////////////////////////////////////////////////
 
     print("Create Abstract Tables");
 
+    Context.getDbType().createTable(con, "ABSTRACT", null);
     _exec(stmt, "Table 'ABSTRACT'", "Abstract",
-      "create table ABSTRACT ("+
-        "TYPEID                "+TYPE_INTEGER+"                   not null,"+
-        "ID                    "+TYPE_INTEGER+"                   not null,"+
-        "NAME                  "+TYPE_STRING_SHORT+"(128)         not null,"+
-        "REVISION              "+TYPE_STRING_SHORT+"(10),"+
-        "CREATOR               "+TYPE_INTEGER+"                   not null,"+
-        "CREATED               "+TYPE_DATETIME+"                  not null,"+
-        "MODIFIER              "+TYPE_INTEGER+"                   not null,"+
-        "MODIFIED              "+TYPE_DATETIME+"                  not null,"+
-        "constraint ABSTR_PK_ID         primary key(ID),"+
-        "constraint ABSTR_FK_CRTR       foreign key(CREATOR)      references USERPERSON(ID),"+
-        "constraint ABSTR_FK_MDFR       foreign key(MODIFIER)     references USERPERSON(ID)"+
-      ")"
+      "alter table ABSTRACT "+
+        "add TYPEID                "+TYPE_INTEGER+"                   not null "+
+        "add NAME                  "+TYPE_STRING_SHORT+"(128)         not null "+
+        "add REVISION              "+TYPE_STRING_SHORT+"(10) "+
+        "add CREATOR               "+TYPE_INTEGER+"                   not null "+
+        "add CREATED               "+TYPE_DATETIME+"                  not null "+
+        "add MODIFIER              "+TYPE_INTEGER+"                   not null "+
+        "add MODIFIED              "+TYPE_DATETIME+"                  not null "+
+        "add constraint ABSTR_FK_CRTR       foreign key(CREATOR)      references USERPERSON(ID) "+
+        "add constraint ABSTR_FK_MDFR       foreign key(MODIFIER)     references USERPERSON(ID)"
     );
-/*
-create table HISTORY (
-  ID              number not null,
-  EVENTTYPEID     number not null,
-  FORTYPEID       number not null,
-  FORID           number not null,
-  MODIFIER        number not null,
-  MODIFIED        date not null,
-  constraint HIST_UK_ID        unique(ID),
-  constraint HIST_FK_EVNTYPEID foreign key(EVENTTYPEID)  references DMTYPE(ID),
-  constraint HIST_FK_FORTYPEID foreign key(FORTYPEID)    references DMTYPE(ID),
-  constraint HIST_FK_MODIFIER  foreign key(MODIFIER)     references USERABSTRACT(ID)
-);  
 
-
-create sequence HISTORY_SEQ increment by 1 start with 1 nocache;
-
-create trigger HISTORY_TRIGGER
-  before insert on HISTORY
-  for each row
-begin
-  select HISTORY_SEQ.nextval into :new.id from dual;
-end;
-/
-
-create sequence ABSTRACT_SEQ increment by 1 start with 35000 nocache;
-
-create trigger ABSTRACT_TRG
-  before insert on ABSTRACT
-  for each row
-begin
-  select ABSTRACT_SEQ.nextval into :new.id from dual;
-end;
-/
-*/
-
+    Context.getDbType().createTable(con, "PROPERTY", null);
     _exec(stmt, "Table 'PROPERTY'", "Properties",
-      "create table PROPERTY ("+
-        "ID                    "+TYPE_INTEGER+"                   not null,"+
-        "ABSTRACT              "+TYPE_INTEGER+"                   not null,"+
-        "NAME                  "+TYPE_STRING_SHORT+"(128)         not null,"+
-        "VALUE                 "+TYPE_STRING_SHORT+"(128),"+
-        "constraint PROPERTY_PK_ID      primary key(ID),"+
-        "constraint PROPERTY_UK_IDNAME  unique(ABSTRACT,NAME),"+
-        "constraint PROPERTY_FK_ABSTR   foreign key(ABSTRACT)     references ABSTRACT(ID) on delete cascade"+
-      ")"
+      "alter table PROPERTY "+
+        "add ABSTRACT              "+TYPE_INTEGER+"                   not null "+
+        "add NAME                  "+TYPE_STRING_SHORT+"(128)         not null "+
+        "add VALUE                 "+TYPE_STRING_SHORT+"(128) "+
+        "add constraint PROPERTY_UK_ABNAME  unique(ABSTRACT,NAME) "+
+        "add constraint PROPERTY_FK_ABSTR   foreign key(ABSTRACT)     references ABSTRACT(ID) on delete cascade"
     );
 
     ///////////////////////////////////////////////////////////////////////////////
 
     print("Create Access Tables");
 
-    _exec(stmt, "Table 'LCPOLICY'", "Policy object",
-      "create table LCPOLICY ("+
-        "ID                    "+TYPE_INTEGER+"                   not null,"+
-        "NAME                  "+TYPE_STRING_SHORT+"(128)         not null,"+
-        "CREATOR               "+TYPE_INTEGER+"                   not null,"+
-        "CREATED               "+TYPE_DATETIME+"                  not null,"+
-        "MODIFIER              "+TYPE_INTEGER+"                   not null,"+
-        "MODIFIED              "+TYPE_DATETIME+"                  not null,"+
-        "constraint LCPOLICY_PK_ID      primary key(ID),"+
-        "constraint LCPOLICY_UK_NAME    unique(NAME),"+
-        "constraint LCPOLICY_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID),"+
-        "constraint LCPOLICY_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"+
-      ")"
-    );
+    _eFapsCreateCreateTable(con, stmt, "Policy object", "LCPOLICY", null,[
+        ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+        ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+        ["CREATED               "+TYPE_DATETIME+"                  not null"],
+        ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+        ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+        ["constraint LCPOLICY_UK_NAME    unique(NAME)"],
+        ["constraint LCPOLICY_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID)"],
+        ["constraint LCPOLICY_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"]
+    ]);
 
-    _exec(stmt, "Table 'LCSTATUS'", "Status object",
-      "create table LCSTATUS ("+
-        "ID                    "+TYPE_INTEGER+"                   not null,"+
-        "NAME                  "+TYPE_STRING_SHORT+"(128)         not null,"+
-        "CREATOR               "+TYPE_INTEGER+"                   not null,"+
-        "CREATED               "+TYPE_DATETIME+"                  not null,"+
-        "MODIFIER              "+TYPE_INTEGER+"                   not null,"+
-        "MODIFIED              "+TYPE_DATETIME+"                  not null,"+
-        "LCPOLICY              "+TYPE_INTEGER+"                   not null,"+
-        "constraint LCSTS_PK_ID         primary key(ID),"+
-        "constraint LCSTS_UK_NM_PLCY    unique(NAME,LCPOLICY),"+
-        "constraint LCSTS_FK_CREATOR    foreign key(CREATOR)      references USERPERSON(ID),"+
-        "constraint LCSTS_FK_MODIFIER   foreign key(MODIFIER)     references USERPERSON(ID),"+
-        "constraint LCSTS_FK_LCPOLICY   foreign key(LCPOLICY)     references LCPOLICY(ID)"+
-      ")"
-    );
+    _eFapsCreateCreateTable(con, stmt, "Status object", "LCSTATUS", null,[
+        ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+        ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+        ["CREATED               "+TYPE_DATETIME+"                  not null"],
+        ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+        ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+        ["LCPOLICY              "+TYPE_INTEGER+"                   not null"],
+        ["constraint LCSTS_UK_NM_PLCY    unique(NAME,LCPOLICY)"],
+        ["constraint LCSTS_FK_CREATOR    foreign key(CREATOR)      references USERPERSON(ID)"],
+        ["constraint LCSTS_FK_MODIFIER   foreign key(MODIFIER)     references USERPERSON(ID)"],
+        ["constraint LCSTS_FK_LCPOLICY   foreign key(LCPOLICY)     references LCPOLICY(ID)"]
+    ]);
 
     _exec(stmt, "Table 'LCACCESSTYPE'", "Access Types",
       "create table LCACCESSTYPE ("+
@@ -531,73 +513,54 @@ end;
       ")"
     );
 
-    _exec(stmt, "Table 'LCSTATUSACCESS'", "Access Itself",
-      "create table LCSTATUSACCESS ("+
-        "ID                    "+TYPE_INTEGER+"                   not null,"+
-        "NAME                  "+TYPE_STRING_SHORT+"(128)         not null,"+
-        "CREATOR               "+TYPE_INTEGER+"                   not null,"+
-        "CREATED               "+TYPE_DATETIME+"                  not null,"+
-        "MODIFIER              "+TYPE_INTEGER+"                   not null,"+
-        "MODIFIED              "+TYPE_DATETIME+"                  not null,"+
-        "LCSTATUS              "+TYPE_INTEGER+"                   not null,"+
-        "LCACCESSTYPE          "+TYPE_INTEGER+"                   not null,"+
-        "USERABSTRACT          "+TYPE_INTEGER+"                   not null,"+
-        "constraint LCSTSACS_PK_ID      primary key(ID),"+
-        "constraint LCSTSACS_UNIQUE     unique(LCSTATUS,LCACCESSTYPE,USERABSTRACT),"+
-        "constraint LCSTSACS_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID),"+
-        "constraint LCSTSACS_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID),"+
-        "constraint LCSTSACS_FK_STS     foreign key(LCSTATUS)     references LCSTATUS(ID),"+
-        "constraint LCSTSACS_FK_ACSTP   foreign key(LCACCESSTYPE) references LCACCESSTYPE(ID),"+
-        "constraint LCSTSACS_FK_USR     foreign key(USERABSTRACT) references USERABSTRACT(ID)"+
-      ")"
-    );
+    _eFapsCreateCreateTable(con, stmt, "Access Itself", "LCSTATUSACCESS", null,[
+        ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+        ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+        ["CREATED               "+TYPE_DATETIME+"                  not null"],
+        ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+        ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+        ["LCSTATUS              "+TYPE_INTEGER+"                   not null"],
+        ["LCACCESSTYPE          "+TYPE_INTEGER+"                   not null"],
+        ["USERABSTRACT          "+TYPE_INTEGER+"                   not null"],
+        ["constraint LCSTSACS_UNIQUE     unique(LCSTATUS,LCACCESSTYPE,USERABSTRACT)"],
+        ["constraint LCSTSACS_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID)"],
+        ["constraint LCSTSACS_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"],
+        ["constraint LCSTSACS_FK_STS     foreign key(LCSTATUS)     references LCSTATUS(ID)"],
+        ["constraint LCSTSACS_FK_ACSTP   foreign key(LCACCESSTYPE) references LCACCESSTYPE(ID)"],
+        ["constraint LCSTSACS_FK_USR     foreign key(USERABSTRACT) references USERABSTRACT(ID)"]
+    ]);
 
     ///////////////////////////////////////////////////////////////////////////////
 
     print("Create Data Model Tables");
 
-    _exec(stmt, "Table 'DMTABLE'", "sql table names for the data model",
-      "create table DMTABLE ("+
-        "ID                    "+TYPE_INTEGER+"                   not null,"+
-        "SQLTABLE              "+TYPE_STRING_SHORT+"(35)          not null,"+
-        "SQLCOLUMNID           "+TYPE_STRING_SHORT+"(35)          not null,"+
-        "SQLCOLUMNTYPE         "+TYPE_STRING_SHORT+"(35),"+
-        "SQLNEWIDSELECT        "+TYPE_STRING_LONG+"(4000),"+
-        "DMTABLEMAIN           "+TYPE_INTEGER+","+
-        "constraint DMTABLE_UK_ID       unique(ID),"+
-        "constraint DMTABLE_FK_ID       foreign key(ID)                 references ABSTRACT(ID),"+
-        "constraint DMTABLE_UK_SQLTBLE  unique(SQLTABLE),"+
-        "constraint DMTABLE_FK_DMTBLMN  foreign key(DMTABLEMAIN)        references DMTABLE(ID)"+
-      ")"
-    );
+    _eFapsCreateCreateTable(con, stmt, "sql table names for the data model", "DMTABLE", "ABSTRACT",[
+        ["SQLTABLE              "+TYPE_STRING_SHORT+"(35)          not null"],
+        ["SQLCOLUMNID           "+TYPE_STRING_SHORT+"(35)          not null"],
+        ["SQLCOLUMNTYPE         "+TYPE_STRING_SHORT+"(35)"],
+        ["DMTABLEMAIN           "+TYPE_INTEGER],
+        ["constraint DMTABLE_UK_SQLTBLE  unique(SQLTABLE)"],
+        ["constraint DMTABLE_FK_DMTBLMN  foreign key(DMTABLEMAIN)  references DMTABLE(ID)"]
+    ]);
 
-    _exec(stmt, "Table 'DMTYPE'", "type definition",
-      "create table DMTYPE ("+
-        "ID                    "+TYPE_INTEGER+"                   not null,"+
-        "PARENTDMTYPE          "+TYPE_INTEGER+","+
-        "SQLCACHEEXPR          "+TYPE_STRING_SHORT+"(50),"+
-        "constraint DMTYPE_UK_ID        unique(ID),"+
-        "constraint DMTYPE_FK_ID        foreign key(ID)           references ABSTRACT(ID),"+
-        "constraint DMTYPE_FK_PRNTDMTP  foreign key(PARENTDMTYPE) references DMTYPE(ID)"+
-      ")"
-    );
+    _eFapsCreateCreateTable(con, stmt, "type definition", "DMTYPE", "ABSTRACT",[
+        ["PARENTDMTYPE          "+TYPE_INTEGER],
+        ["SQLCACHEEXPR          "+TYPE_STRING_SHORT+"(50)"],
+        ["constraint DMTYPE_FK_PRNTDMTP  foreign key(PARENTDMTYPE) references DMTYPE(ID)"]
+    ]);
 
-    _exec(stmt, "Table 'DMTYPE2POLICY'", "connection of policies for type definitions",
-      "create table DMTYPE2POLICY ("+
-        "ID                    "+TYPE_INTEGER+"                   not null,"+
-        "CREATOR               "+TYPE_INTEGER+"                   not null,"+
-        "CREATED               "+TYPE_DATETIME+"                  not null,"+
-        "MODIFIER              "+TYPE_INTEGER+"                   not null,"+
-        "MODIFIED              "+TYPE_DATETIME+"                  not null,"+
-        "DMTYPE                "+TYPE_INTEGER+"                   not null,"+
-        "LCPOLICY              "+TYPE_INTEGER+"                   not null,"+
-        "constraint DMTPE2PLCY_PK_ID    primary key(ID),"+
-        "constraint DMTPE2PLCY_FK_CRTR  foreign key(CREATOR)      references USERPERSON(ID),"+
-        "constraint DMTPE2PLCY_FK_MDFR  foreign key(MODIFIER)     references USERPERSON(ID),"+
-        "constraint DMTPE2PLCY_FK_DMTP  foreign key(DMTYPE)       references DMTYPE(ID),"+
-        "constraint DMTPE2PLCY_FK_PLCY  foreign key(LCPOLICY)     references LCPOLICY(ID)"+
-      ")"
-    );
+    _eFapsCreateCreateTable(con, stmt, "connection of policies for type definitions", "DMTYPE2POLICY", null,[
+        ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+        ["CREATED               "+TYPE_DATETIME+"                  not null"],
+        ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+        ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+        ["DMTYPE                "+TYPE_INTEGER+"                   not null"],
+        ["LCPOLICY              "+TYPE_INTEGER+"                   not null"],
+        ["constraint DMTPE2PLCY_FK_CRTR  foreign key(CREATOR)      references USERPERSON(ID)"],
+        ["constraint DMTPE2PLCY_FK_MDFR  foreign key(MODIFIER)     references USERPERSON(ID)"],
+        ["constraint DMTPE2PLCY_FK_DMTP  foreign key(DMTYPE)       references DMTYPE(ID)"],
+        ["constraint DMTPE2PLCY_FK_PLCY  foreign key(LCPOLICY)     references LCPOLICY(ID)"]
+    ]);
 
     _exec(stmt, "Table 'DMATTRIBUTETYPE'", "attribute types",
       "create table DMATTRIBUTETYPE ("+
@@ -617,22 +580,17 @@ end;
       ")"
     );
 
-    _exec(stmt, "Table 'DMATTRIBUTE'", "attributes of types",
-      "create table DMATTRIBUTE ("+
-        "ID                    "+TYPE_INTEGER+"                       not null,"+
-        "DMTABLE               "+TYPE_INTEGER+"                       not null,"+
-        "DMTYPE                "+TYPE_INTEGER+"                       not null,"+
-        "DMATTRIBUTETYPE       "+TYPE_INTEGER+"                       not null,"+
-        "DMTYPELINK            "+TYPE_INTEGER+","+
-        "SQLCOLUMN             "+TYPE_STRING_SHORT+"(50)              not null,"+
-        "constraint DMATTR_UK_ID        unique(ID),"+
-        "constraint DMATTR_FK_ID        foreign key(ID)               references ABSTRACT(ID),"+
-        "constraint DMATTR_FK_DMTABLE   foreign key(DMTABLE)          references DMTABLE(ID),"+
-        "constraint DMATTR_FK_DMTYPE    foreign key(DMTYPE)           references DMTYPE(ID),"+
-        "constraint DMATTR_FK_DMATTRTP  foreign key(DMATTRIBUTETYPE)  references DMATTRIBUTETYPE(ID),"+
-        "constraint DMATTR_FK_DMTPLINK  foreign key(DMTYPELINK)       references DMTYPE(ID)"+
-      ")"
-    );
+    _eFapsCreateCreateTable(con, stmt, "attributes of types", "DMATTRIBUTE", "ABSTRACT",[
+        ["DMTABLE               "+TYPE_INTEGER+"                       not null"],
+        ["DMTYPE                "+TYPE_INTEGER+"                       not null"],
+        ["DMATTRIBUTETYPE       "+TYPE_INTEGER+"                       not null"],
+        ["DMTYPELINK            "+TYPE_INTEGER],
+        ["SQLCOLUMN             "+TYPE_STRING_SHORT+"(50)              not null"],
+        ["constraint DMATTR_FK_DMTABLE   foreign key(DMTABLE)          references DMTABLE(ID)"],
+        ["constraint DMATTR_FK_DMTYPE    foreign key(DMTYPE)           references DMTYPE(ID)"],
+        ["constraint DMATTR_FK_DMATTRTP  foreign key(DMATTRIBUTETYPE)  references DMATTRIBUTETYPE(ID)"],
+        ["constraint DMATTR_FK_DMTPLINK  foreign key(DMTYPELINK)       references DMTYPE(ID)"]
+    ]);
 //        "constraint DMATTR_UK_DMTP_NM   unique(DMTYPE,NAME),"+
 
     _exec(stmt, "View 'ADMINTYPE'", "view representing all types",
@@ -668,7 +626,6 @@ end;
               "DMTABLE.SQLTABLE,"+
               "DMTABLE.SQLCOLUMNID,"+
               "DMTABLE.SQLCOLUMNTYPE,"+
-              "DMTABLE.SQLNEWIDSELECT,"+
               "DMTABLE.DMTABLEMAIN "+
           "from DMTABLE,ABSTRACT "+
           "where ABSTRACT.ID=DMTABLE.ID"
@@ -677,17 +634,17 @@ end;
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    _eFapsCreateAllEventTable(stmt);
-    _eFapsCreateAllUITables(stmt);
-    _eFapsCreateAllTeamCenterTables(stmt);
+    _eFapsCreateAllEventTable(con, stmt);
+    _eFapsCreateAllUITables(con, stmt);
+    _eFapsCreateAllTeamCenterTables(con, stmt);
 
     ///////////////////////////////////////////////////////////////////////////////
 
     print("Standard Inserts");
 
-    _exec(stmt, "Insert Administrator Person", "",
-      "insert into USERABSTRACT(TYPEID, ID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS) "+
-          "values (10000, 1,'Administrator', 1, "+CURRENT_TIMESTAMP+", 1, "+CURRENT_TIMESTAMP+", 10001)"
+    _exec(stmt, "Insert Administrator Person", null,
+      "insert into USERABSTRACT(TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS) "+
+          "values (-10000, 'Administrator', 1, "+CURRENT_TIMESTAMP+", 1, "+CURRENT_TIMESTAMP+", 10001)"
     );
     _exec(stmt, null, null,
       "insert into USERPERSON(ID, FIRSTNAME, LASTNAME, EMAIL, URL, PASSWORD) "+
@@ -695,14 +652,14 @@ end;
     );
 
 
-    _exec(stmt, "Insert Administrator Role",  "",
-      "insert into USERABSTRACT(TYPEID, ID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS) "+
-          "values (11000, 1000,'Administration', 1, "+CURRENT_TIMESTAMP+", 1, "+CURRENT_TIMESTAMP+", 10001)"
+    _exec(stmt, "Insert Administrator Role",  null,
+      "insert into USERABSTRACT(TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS) "+
+          "values (-11000, 'Administration', 1, "+CURRENT_TIMESTAMP+", 1, "+CURRENT_TIMESTAMP+", 10001)"
     );
 
-    _exec(stmt, "Connect Administrator Person to Role Administration", "",
-      "insert into USERABSTRACT2ABSTRACT "+
-          "values (1, 10100, 1, "+CURRENT_TIMESTAMP+", 1, "+CURRENT_TIMESTAMP+", 1, 1000)"
+    _exec(stmt, "Connect Administrator Person to Role Administration", null,
+      "insert into USERABSTRACT2ABSTRACT(TYPEID,CREATOR,CREATED,MODIFIER,MODIFIED,USERABSTRACTFROM,USERABSTRACTTO) "+
+          "values (-12000, 1, "+CURRENT_TIMESTAMP+", 1, "+CURRENT_TIMESTAMP+", 1, 2)"
     );
 
     var text = "Insert all access types";
@@ -717,9 +674,12 @@ end;
     _exec(stmt, null, null, "insert into LCACCESSTYPE values (131,'demote',  1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")");
 
     text = "Insert Person Policy";
-    _exec(stmt, text, "",   "insert into LCPOLICY values (10000,'Admin_User_Person',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")");
-    _exec(stmt, null, null, "insert into LCSTATUS values (10000,'Inactive',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",10000)");
-    _exec(stmt, null, null, "insert into LCSTATUS values (10001,'Active',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",10000)");
+    var newId = _insert(stmt, text, "",   "insert into LCPOLICY(NAME,CREATOR,CREATED,MODIFIER,MODIFIED) values ('Admin_User_Person',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")","LCPOLICY");
+    _exec(stmt, null, null, "insert into LCSTATUS(NAME,CREATOR,CREATED,MODIFIER,MODIFIED,LCPOLICY) values ('Inactive',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+","+newId+")");
+    _exec(stmt, null, null, "insert into LCSTATUS(NAME,CREATOR,CREATED,MODIFIER,MODIFIED,LCPOLICY) values ('Active',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+","+newId+")");
+
+
+
 
 _eFapsCreateAllInsertAttributeTypes(stmt);
 
@@ -732,120 +692,249 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     //alter table USERABSTRACT add constraint USRABSTR_FK_STS     foreign key(STATUS)     references LCSTATUS(ID);
 
     ///////////////////////////////////////////////////////////////////////////////
+    // insert 'abstract'
 
     text = "Insert Table for 'Admin_Abstract'";
-    _eFapsCreateInsertSQLTable(stmt, text, 15999, "Admin_AbstractTable", "ABSTRACT", "ID", "TYPEID", "select max(ID)+1 from ABSTRACT", null);
+    var sqlTableIdAbstract = _eFapsCreateInsertSQLTable(stmt, text, "Admin_AbstractTable", "ABSTRACT", "ID", "TYPEID", null);
 
     text = "Insert Type for 'Admin_Abstract'";
-    _eFapsCreateInsertType(stmt, text, 15000, "Admin_Abstract", null);
-    _eFapsCreateInsertAttr(stmt, 15999, 15000, 15001, 'Type',             'TYPEID',            99, null);
-    _eFapsCreateInsertAttr(stmt, 15999, 15000, 15002, 'OID',              'TYPEID,ID',        111, null);
-    _eFapsCreateInsertAttr(stmt, 15999, 15000, 15003, 'ID',               'ID',               210, null);
-    _eFapsCreateInsertAttr(stmt, 15999, 15000, 15004, 'Creator',          'CREATOR',          411, null);
-    _eFapsCreateInsertAttr(stmt, 15999, 15000, 15005, 'Created',          'CREATED',          331, null);
-    _eFapsCreateInsertAttr(stmt, 15999, 15000, 15006, 'Modifier',         'MODIFIER',         412, null);
-    _eFapsCreateInsertAttr(stmt, 15999, 15000, 15007, 'Modified',         'MODIFIED',         332, null);
-    _eFapsCreateInsertAttr(stmt, 15999, 15000, 15008, 'Name',             'NAME',             100, null);
-    _eFapsCreateInsertAttr(stmt, 15999, 15000, 15009, 'Revision',         'REVISION',         100, null);
+    var typeIdAbstract = _eFapsCreateInsertType(stmt, text, "Admin_Abstract", null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Type',             'TYPEID',            99, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'OID',              'TYPEID,ID',        111, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'ID',               'ID',               210, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Creator',          'CREATOR',          411, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Created',          'CREATED',          331, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Modifier',         'MODIFIER',         412, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Modified',         'MODIFIED',         332, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Name',             'NAME',             100, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Revision',         'REVISION',         100, null);
+
+    /////////////////////////////////////////
+    // insert 'sql table' 
 
     text = "Insert Table for 'Admin_DataModel_SQLTable'";
-    _eFapsCreateInsertSQLTable(stmt, text, 20999, "Admin_DataModel_SQLTableTable", "DMTABLE", "ID", null, null, 15999);
+    var sqlTableIdSQLTable = _eFapsCreateInsertSQLTable(stmt, text, "Admin_DataModel_SQLTableTable", "DMTABLE", "ID", null, sqlTableIdAbstract);
 
     text = "Insert Type for 'Admin_DataModel_SQLTable'";
-    _eFapsCreateInsertType(stmt, text, 20000, "Admin_DataModel_SQLTable", 15000);
-    _eFapsCreateInsertAttr(stmt, 20999, 20000, 20020, 'SQLTable',         'SQLTABLE',         100, null);
-    _eFapsCreateInsertAttr(stmt, 20999, 20000, 20021, 'SQLColumnID',      'SQLCOLUMNID',      100, null);
-    _eFapsCreateInsertAttr(stmt, 20999, 20000, 20022, 'SQLColumnType',    'SQLCOLUMNTYPE',    100, null);
-    _eFapsCreateInsertAttr(stmt, 20999, 20000, 20023, 'SQLNewIDSelect',   'SQLNEWIDSELECT',   100, null);
-    _eFapsCreateInsertAttr(stmt, 20999, 20000, 20024, 'DMTableMain',      'DMTABLEMAIN',      400, 20000);
-    _exec(stmt, null, null, "insert into PROPERTY values(20000,20000,'Tree','Admin_DataModel_SQLTableTree')");
-    _exec(stmt, null, null, "insert into PROPERTY values(20001,20000,'Icon','${ROOTURL}/servlet/image/eFapsAdminDataModelSQLTable')");
+    var typeIdSQLTable = _eFapsCreateInsertType(stmt, text, "Admin_DataModel_SQLTable", typeIdAbstract);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLTable',         'SQLTABLE',         100, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLColumnID',      'SQLCOLUMNID',      100, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLColumnType',    'SQLCOLUMNTYPE',    100, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLNewIDSelect',   'SQLNEWIDSELECT',   100, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'DMTableMain',      'DMTABLEMAIN',      400, typeIdSQLTable);
+    _eFapsCreateInsertProp(stmt, typeIdSQLTable, "Tree", "Admin_DataModel_SQLTableTree");
+    _eFapsCreateInsertProp(stmt, typeIdSQLTable, "Icon", "${ROOTURL}/servlet/image/eFapsAdminDataModelSQLTable");
 
+    /////////////////////////////////////////
+    // insert 'type' 
+    
     text = "Insert Table for 'Admin_DataModel_Type'";
-    _eFapsCreateInsertSQLTable(stmt, text, 21999, "Admin_DataModel_TypeTable", "DMTYPE", "ID", null, null, 15999);
+    var sqlTableIdType = _eFapsCreateInsertSQLTable(stmt, text, "Admin_DataModel_TypeTable", "DMTYPE", "ID", null, sqlTableIdAbstract);
 
     text = "Insert Type for 'Admin_DataModel_Type'";
-    _eFapsCreateInsertType(stmt, text, 21000, "Admin_DataModel_Type", 15000);
-    _eFapsCreateInsertAttr(stmt, 21999, 21000, 21020, 'SQLCacheExpr',     'SQLCACHEEXPR',     100, null);
-    _eFapsCreateInsertAttr(stmt, 21999, 21000, 21021, 'ParentType',       'PARENTDMTYPE',     400, 21000);
-    _exec(stmt, null, null, "insert into PROPERTY values(21000,21000,'Tree','Admin_DataModel_TypeTree')");
-    _exec(stmt, null, null, "insert into PROPERTY values(21001,21000,'Icon','${ROOTURL}/servlet/image/eFapsAdminDataModelType')");
+    var typeIdType = _eFapsCreateInsertType(stmt, text, "Admin_DataModel_Type", typeIdAbstract);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdType, typeIdType, 'SQLCacheExpr',     'SQLCACHEEXPR',     100, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdType, typeIdType, 'ParentType',       'PARENTDMTYPE',     400, typeIdType);
+    _eFapsCreateInsertProp(stmt, typeIdType, "Tree", "Admin_DataModel_TypeTree");
+    _eFapsCreateInsertProp(stmt, typeIdType, "Icon", "${ROOTURL}/servlet/image/eFapsAdminDataModelType");
+
+    /////////////////////////////////////////
+    // insert 'attribute type' 
 
     text = "Insert Table for 'Admin_DataModel_AttributeType'";
-    _eFapsCreateInsertSQLTable(stmt, text, 22999, "Admin_DataModel_AttributeTypeTable", "DMATTRIBUTETYPE", "ID", null, "select DMATTRIBUTETYPE_SEQ.nextval from DUAL", null);
+    var sqlTableIdAttrType = _eFapsCreateInsertSQLTable(stmt, text, "Admin_DataModel_AttributeTypeTable", "DMATTRIBUTETYPE", "ID", null, null);
 
     text = "Insert Type for 'Admin_DataModel_AttributeType'";
-    _eFapsCreateInsertType(stmt, text, 22000, "Admin_DataModel_AttributeType", null);
-    _eFapsCreateInsertAttr(stmt, 22999, 22000, 22001, 'OID',              'ID',               111, null);
-    _eFapsCreateInsertAttr(stmt, 22999, 22000, 22002, 'ID',               'ID',               210, null);
-    _eFapsCreateInsertAttr(stmt, 22999, 22000, 22003, 'Name',             'NAME',             100, null);
-    _eFapsCreateInsertAttr(stmt, 22999, 22000, 22004, 'Creator',          'CREATOR',          411, null);
-    _eFapsCreateInsertAttr(stmt, 22999, 22000, 22005, 'Created',          'CREATED',          331, null);
-    _eFapsCreateInsertAttr(stmt, 22999, 22000, 22006, 'Modifier',         'MODIFIER',         412, null);
-    _eFapsCreateInsertAttr(stmt, 22999, 22000, 22007, 'Modified',         'MODIFIED',         332, null);
-    _eFapsCreateInsertAttr(stmt, 22999, 22000, 22020, 'Classname',        'CLASSNAME',        100, null);
-    _eFapsCreateInsertAttr(stmt, 22999, 22000, 22021, 'ClassnameUI',      'CLASSNAMEUI',      100, null);
-    _eFapsCreateInsertAttr(stmt, 22999, 22000, 22022, 'AlwaysUpdate',     'ALWAYSUPDATE',     290, null);
-    _eFapsCreateInsertAttr(stmt, 22999, 22000, 22023, 'CreateUpdate',     'CREATEUPDATE',     290, null);
-    _exec(stmt, null, null, "insert into PROPERTY values(22000,22000,'Tree','Admin_DataModel_AttributeTypeTree')");
-    _exec(stmt, null, null, "insert into PROPERTY values(22001,22000,'Icon','${ROOTURL}/servlet/image/eFapsAdminDataModelAttributeType')");
+    var typeIdAttrType = _eFapsCreateInsertType(stmt, text, "Admin_DataModel_AttributeType", null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'OID',              'ID',               111, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'ID',               'ID',               210, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Name',             'NAME',             100, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Creator',          'CREATOR',          411, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Created',          'CREATED',          331, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Modifier',         'MODIFIER',         412, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Modified',         'MODIFIED',         332, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Classname',        'CLASSNAME',        100, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'ClassnameUI',      'CLASSNAMEUI',      100, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'AlwaysUpdate',     'ALWAYSUPDATE',     290, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'CreateUpdate',     'CREATEUPDATE',     290, null);
+    _eFapsCreateInsertProp(stmt, typeIdAttrType, "Tree", "Admin_DataModel_AttributeTypeTree");
+    _eFapsCreateInsertProp(stmt, typeIdAttrType, "Icon", "${ROOTURL}/servlet/image/eFapsAdminDataModelAttributeType");
+
+    /////////////////////////////////////////
+    // insert 'attribute' 
 
     text = "Insert Table for 'Admin_DataModel_Attribute'";
-    _eFapsCreateInsertSQLTable(stmt, text, 23999, "Admin_DataModel_AttributeTable", "DMATTRIBUTE", "ID", null, null, 15999);
+    var sqlTableIdAttr = _eFapsCreateInsertSQLTable(stmt, text, "Admin_DataModel_AttributeTable", "DMATTRIBUTE", "ID", null, sqlTableIdAbstract);
 
     text = "Insert Type for 'Admin_DataModel_Attribute'";
-    _eFapsCreateInsertType(stmt, text, 23000, "Admin_DataModel_Attribute", 15000);
-    _eFapsCreateInsertAttr(stmt, 23999, 23000, 23020, 'Table',             'DMTABLE',         400, 20000);
-    _eFapsCreateInsertAttr(stmt, 23999, 23000, 23021, 'ParentType',        'DMTYPE',          400, 21000);
-    _eFapsCreateInsertAttr(stmt, 23999, 23000, 23022, 'AttributeType',     'DMATTRIBUTETYPE', 400, 22000);
-    _eFapsCreateInsertAttr(stmt, 23999, 23000, 23023, 'TypeLink',          'DMTYPELINK',      400, 21000);
-    _eFapsCreateInsertAttr(stmt, 23999, 23000, 23024, 'SQLColumn',         'SQLCOLUMN',       100, null);
-    _exec(stmt, null, null, "insert into PROPERTY values(23000,23000,'Tree','Admin_DataModel_AttributeTree')");
-    _exec(stmt, null, null, "insert into PROPERTY values(23001,23000,'Icon','${ROOTURL}/servlet/image/eFapsAdminDataModelAttribute')");
+    var typeIdAttr = _eFapsCreateInsertType(stmt, text, "Admin_DataModel_Attribute", typeIdAbstract);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'Table',             'DMTABLE',         400, typeIdSQLTable);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'ParentType',        'DMTYPE',          400, typeIdType);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'AttributeType',     'DMATTRIBUTETYPE', 400, typeIdAttrType);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'TypeLink',          'DMTYPELINK',      400, typeIdType);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'SQLColumn',         'SQLCOLUMN',       100, null);
+    _eFapsCreateInsertProp(stmt, typeIdAttr, "Tree", "Admin_DataModel_AttributeTree");
+    _eFapsCreateInsertProp(stmt, typeIdAttr, "Icon", "${ROOTURL}/servlet/image/eFapsAdminDataModelAttribute");
+
+    /////////////////////////////////////////
+    // insert 'admin property' 
 
     text = "Insert Table for 'Admin_Property'";
-    _eFapsCreateInsertSQLTable(stmt, text, 26999, "Admin_PropertyTable", "PROPERTY", "ID", null, "select max(ID)+1 from PROPERTY", null);
+    var sqlTableIdProp = _eFapsCreateInsertSQLTable(stmt, text, "Admin_PropertyTable", "PROPERTY", "ID", null, null);
 
     text = "Insert Type for 'Admin_Property'";
-    _eFapsCreateInsertType(stmt, text, 26000, "Admin_Property", null);
-    _eFapsCreateInsertAttr(stmt, 26999, 26000, 26001, 'OID',              'ID',               111, null);
-    _eFapsCreateInsertAttr(stmt, 26999, 26000, 26002, 'ID',               'ID',               210, null);
-    _eFapsCreateInsertAttr(stmt, 26999, 26000, 26003, 'Name',             'NAME',             100, null);
-    _eFapsCreateInsertAttr(stmt, 26999, 26000, 26020, 'Value',            'VALUE',            100, null);
-    _eFapsCreateInsertAttr(stmt, 26999, 26000, 26021, 'Abstract',         'ABSTRACT',         400, 15000);
-    _exec(stmt, null, null, "insert into PROPERTY values(26000,26000,'Tree','Admin_PropertyTree')");
-    _exec(stmt, null, null, "insert into PROPERTY values(26001,26000,'Icon','${ROOTURL}/servlet/image/Admin_PropertyImage')");
+    var typeIdProp = _eFapsCreateInsertType(stmt, text, "Admin_Property", null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'OID',              'ID',               111, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'ID',               'ID',               210, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'Name',             'NAME',             100, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'Value',            'VALUE',            100, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'Abstract',         'ABSTRACT',         400, typeIdAbstract);
+    _eFapsCreateInsertProp(stmt, typeIdProp, "Tree", "Admin_PropertyTree");
+    _eFapsCreateInsertProp(stmt, typeIdProp, "Icon", "${ROOTURL}/servlet/image/Admin_PropertyImage");
+
+    /////////////////////////////////////////
+    // insert 'sql table 2 type' 
 
     text = "Insert Table for 'Admin_DataModel_Table2Type'";
-    _eFapsCreateInsertSQLTable(stmt, text, 27999, "Admin_DataModel_Table2TypeTable", "DMTABLE2TYPE", "ID", null, null, null);
-    _exec(stmt, null, null, "insert into PROPERTY values (27999, 27999, 'ReadOnly', 'true')");
+    var sqlTableIdTable2Type = _eFapsCreateInsertSQLTable(stmt, text, "Admin_DataModel_Table2TypeTable", "DMTABLE2TYPE", "ID", null, null);
+    _eFapsCreateInsertProp(stmt, sqlTableIdTable2Type, "ReadOnly", "true");
 
     text = "Insert Type for 'Admin_DataModel_Table2Type'";
-    _eFapsCreateInsertType(stmt, text, 27000, "Admin_DataModel_Table2Type", null);
-    _eFapsCreateInsertAttr(stmt, 27999, 27000, 27001, 'OID',              'ID',               111, null);
-    _eFapsCreateInsertAttr(stmt, 27999, 27000, 27002, 'ID',               'ID',               210, null);
-    _eFapsCreateInsertAttr(stmt, 27999, 27000, 27003, 'FromTable',        'FROMID',           400, 20000);
-    _eFapsCreateInsertAttr(stmt, 27999, 27000, 27004, 'ToType',           'TOID',             400, 21000);
+    var typeIdTable2Type = _eFapsCreateInsertType(stmt, text, "Admin_DataModel_Table2Type", null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdTable2Type, typeIdTable2Type, 'OID',              'ID',               111, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdTable2Type, typeIdTable2Type, 'ID',               'ID',               210, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdTable2Type, typeIdTable2Type, 'FromTable',        'FROMID',           400, typeIdSQLTable);
+    _eFapsCreateInsertAttr(stmt, sqlTableIdTable2Type, typeIdTable2Type, 'ToType',           'TOID',             400, typeIdType);
+
+    /////////////////////////////////////////
+    // insert 'Event Definition' 
+
+    print("Create Event Definitions (needed for reload cache)");
+
+    text = "Insert Table for 'Admin_Event_Definition'";
+    var sqlTableEventDef = _eFapsCreateInsertSQLTable(stmt, text, "Admin_Event_DefinitionTable", "EVENTDEF", "ID", null, sqlTableIdAbstract);
+
+    text = "Insert Type for 'Admin_Event_Definition'";
+    var typeIdEventDef = _eFapsCreateInsertType(stmt, text, "Admin_Event_Definition", typeIdAbstract);
+    _eFapsCreateInsertAttr(stmt, sqlTableEventDef, typeIdEventDef, "IndexPosition",    "INDEXPOS",         210, null);
+    _eFapsCreateInsertAttr(stmt, sqlTableEventDef, typeIdEventDef, "Abstract",         "ABSTRACT",         400, typeIdAbstract);
 
     ///////////////////////////////////////////////////////////////////////////////
+
+    print("Insert User Types and create User Views");
 
     text = "Insert Type for 'Admin_User_Person' (only to store ID for type)";
-    _eFapsCreateInsertType(stmt, text, 10000, "Admin_User_Person", null);
+    var typeIdPerson        = _eFapsCreateInsertType(stmt, text, "Admin_User_Person", null);
+/*    
     _exec(stmt, null, null, "insert into DMTYPE2POLICY       values (1,1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",10000,10000)");
-
-    text = "Insert Type for 'Admin_User_Person2Role' (only to store ID for type)";
-    _eFapsCreateInsertType(stmt, text, 10100, "Admin_User_Person2Role", null);
-
-    text = "Insert Type for 'Admin_User_Person2Group' (only to store ID for type)";
-    _eFapsCreateInsertType(stmt, text, 10200, "Admin_User_Person2Group", null);
+*/
 
     text = "Insert Type for 'Admin_User_Role' (only to store ID for type)";
-    _eFapsCreateInsertType(stmt, text, 11000, "Admin_User_Role", null);
+    var typeIdRole          = _eFapsCreateInsertType(stmt, text, "Admin_User_Role", null);
 
     text = "Insert Type for 'Admin_User_Group' (only to store ID for type)";
-    _eFapsCreateInsertType(stmt, text, 12000, "Admin_User_Group", null);
+    var typeIdGroup         = _eFapsCreateInsertType(stmt, text, "Admin_User_Group", null);
+   
+    text = "Insert Type for 'Admin_User_Person2Role' (only to store ID for type)";
+    var typeIdPerson2Role   = _eFapsCreateInsertType(stmt, text, "Admin_User_Person2Role", null);
+
+    text = "Insert Type for 'Admin_User_Person2Group' (only to store ID for type)";
+    var typeIdPerson2Group  = _eFapsCreateInsertType(stmt, text, "Admin_User_Person2Group", null);
+
+
+    _exec(stmt, "View 'V_USERPERSON'", "view representing all persons",
+      "create view V_USERPERSON as "+
+        "select "+
+            "USERABSTRACT.ID,"+
+            "USERABSTRACT.NAME,"+
+            "USERPERSON.FIRSTNAME,"+
+            "USERPERSON.LASTNAME,"+
+            "USERPERSON.EMAIL,"+
+            "USERPERSON.ORG,"+
+            "USERPERSON.URL,"+
+            "USERPERSON.PHONE,"+
+            "USERPERSON.MOBILE,"+
+            "USERPERSON.FAX,"+
+            "USERPERSON.PASSWORD "+
+          "from USERABSTRACT,USERPERSON "+
+          "where USERABSTRACT.ID=USERPERSON.ID"
+    );
+
+    _exec(stmt, "View 'V_USERROLE'", "view representing all roles",
+      "create view V_USERROLE as "+
+        "select "+
+            "USERABSTRACT.ID,"+
+            "USERABSTRACT.NAME "+
+          "from USERABSTRACT "+
+          "where USERABSTRACT.TYPEID="+typeIdRole
+    );
+
+    _exec(stmt, "View 'V_USERGROUP'", "view representing all groups",
+      "create view V_USERGROUP as "+
+        "select "+
+            "USERABSTRACT.ID,"+
+            "USERABSTRACT.NAME "+
+          "from USERABSTRACT "+
+          "where USERABSTRACT.TYPEID="+typeIdGroup
+    );
+
+    _exec(stmt, "View 'V_USERPERSON2ROLE'", "view representing connection between person and role",
+      "create view V_USERPERSON2ROLE as "+
+        "select "+
+            "USERABSTRACT2ABSTRACT.ID,"+
+            "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"+
+            "USERABSTRACT2ABSTRACT.USERABSTRACTTO "+
+          "from USERABSTRACT2ABSTRACT "+
+          "where USERABSTRACT2ABSTRACT.TYPEID="+typeIdPerson2Role
+    );
+
+    _exec(stmt, "View 'V_USERPERSON2GROUP'", "view representing connection between person and group",
+      "create view V_USERPERSON2GROUP as "+
+        "select "+
+            "USERABSTRACT2ABSTRACT.ID,"+
+            "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"+
+            "USERABSTRACT2ABSTRACT.USERABSTRACTTO "+
+          "from USERABSTRACT2ABSTRACT "+
+          "where USERABSTRACT2ABSTRACT.TYPEID="+typeIdPerson2Group
+    );
+
+    _exec(stmt, "Table 'USERABSTRACT'", "update type id for persons",
+      "update USERABSTRACT set TYPEID="+typeIdPerson+" where TYPEID=-10000"
+    );
+    _exec(stmt, "Table 'USERABSTRACT'", "update type id for persons",
+      "update USERABSTRACT set TYPEID="+typeIdRole+" where TYPEID=-11000"
+    );
+    _exec(stmt, "Table 'USERABSTRACT'", "define foreign key for type id",
+      "alter table USERABSTRACT "+
+        "add constraint USERABSTR_FK_TYPEID foreign key(TYPEID) references DMTYPE(ID)"
+    );
+
+    _exec(stmt, "Table 'USERABSTRACT2ABSTRACT'", "update type id for connection between person and role",
+      "update USERABSTRACT2ABSTRACT set TYPEID="+typeIdPerson2Role+" where TYPEID=-12000"
+    );
+    _exec(stmt, "Table 'USERABSTRACT2ABSTRACT'", "define foreign key for type id",
+      "alter table USERABSTRACT2ABSTRACT "+
+        "add constraint USRABS2ABS_FK_TYPEID foreign key(TYPEID) references DMTYPE(ID)"
+    );
 
     ///////////////////////////////////////////////////////////////////////////////
+
+    print("Activate foreign key for type id in table abstract");
+
+    _exec(stmt, "Table 'ABSTRACT'", "update type id for sql tables",
+      "update ABSTRACT set TYPEID=" + typeIdSQLTable + " where TYPEID=-20000"
+    );
+    _exec(stmt, "Table 'ABSTRACT'", "update type id for types",
+      "update ABSTRACT set TYPEID=" + typeIdType + " where TYPEID=-21000"
+    );
+    _exec(stmt, "Table 'ABSTRACT'", "update type id for sql tables",
+      "update ABSTRACT set TYPEID=" + typeIdAttr + " where TYPEID=-22000"
+    );
+    _exec(stmt, "Table 'ABSTRACT'", "define foreign key for type id",
+      "alter table ABSTRACT "+
+        "add constraint ABSTR_FK_TYPEID foreign key(TYPEID) references DMTYPE(ID)"
+    );
+
 
     stmt.close();
   } catch (e)  {

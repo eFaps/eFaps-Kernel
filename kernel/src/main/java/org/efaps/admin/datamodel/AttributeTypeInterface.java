@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel;
@@ -28,7 +31,8 @@ import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- *
+ * @author tmo
+ * @version $Rev$
  */
 public interface AttributeTypeInterface  {
 
@@ -42,7 +46,7 @@ public interface AttributeTypeInterface  {
    * @return  <i>true</i> if only a preparation is needed, otherwise
    *          <i>false</i> if the value must be set
    */
-  public boolean prepareUpdate(StringBuffer _stmt);
+  public boolean prepareUpdate(StringBuilder _stmt);
 
   /**
    * The method updates in the statment the value.

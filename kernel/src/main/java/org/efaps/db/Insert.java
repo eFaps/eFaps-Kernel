@@ -123,8 +123,10 @@ public class Insert extends Update {
       }
 
       SQLTable mainTable = getType().getMainTable();
-      setInstance(new Instance(_context, getInstance().getType(), getNewId(con, mainTable)));
-      executeOneStatement(_context, con, mainTable, getExpr4Tables().get(mainTable), getId());
+
+      long id = executeOneStatement(_context, con, mainTable, getExpr4Tables().get(mainTable), null);
+
+      setInstance(new Instance(_context, getInstance().getType(), id));
 
       for (Map.Entry<SQLTable, Map<String,AttributeTypeInterface>> entry
                                               : getExpr4Tables().entrySet())  {
@@ -152,19 +154,29 @@ public class Insert extends Update {
 
   /**
    * @param _context  context for this request
+   * @param _id       new created id, if null, the table is an autoincrement
+   *                  SQL table and the id is not set
+   * @return new created id if parameter <i>_id</i> is set to <code>null</code>
    */
-  private void executeOneStatement(final Context _context,
+  private long executeOneStatement(final Context _context,
       final ConnectionResource _con, final SQLTable _table,
       final Map _expressions, final String _id) throws EFapsException  {
 
+    long ret = 0;
     PreparedStatement stmt = null;
     try {
       stmt = createOneStatement(_context, _con, _table, _expressions, _id);
       int rows = stmt.executeUpdate();
-      if (rows==0)  {
+      if (rows == 0)  {
         throw new EFapsException(getClass(), "executeOneStatement.NotInserted",
             _table.getName()
         );
+      }
+      if (_id == null)  {
+        ResultSet rs = stmt.getGeneratedKeys();
+        if (rs.next())  {
+          ret = rs.getLong(1);
+        }
       }
     } catch (EFapsException e)  {
       throw e;
@@ -178,43 +190,66 @@ public class Insert extends Update {
       } catch (Exception e)  {
       }
     }
+    return ret;
   }
 
   /**
+   *
    * @param _context  context for this request
+   * @param _id       new created id, if null, the table is an autoincrement
+   *                  SQL table and the id is not set
+   * @return new created prepared statement
    */
   private PreparedStatement createOneStatement(final Context _context,
       final ConnectionResource _con, final SQLTable _table,
       final Map _expressions, final String _id) throws SQLException  {
 
     List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
-    StringBuffer cmd = new StringBuffer();
-    StringBuffer val = new StringBuffer();
-    cmd.append("insert into ").append(_table.getSqlTable()).append("(").append(_table.getSqlColId());
+    StringBuilder cmd = new StringBuilder();
+    StringBuilder val = new StringBuilder();
+    boolean first = true;
+    cmd.append("insert into ").append(_table.getSqlTable()).append("(");
+    if (_id != null)  {
+      cmd.append(_table.getSqlColId());
+      first = false;
+    }
     Iterator iter = _expressions.entrySet().iterator();
-    boolean command = false;
     while (iter.hasNext())  {
       Map.Entry entry = (Map.Entry)iter.next();
 
-      cmd.append(",").append(entry.getKey());
-      val.append(",");
+      if (!first)  {
+        cmd.append(",");
+        val.append(",");
+      } else  {
+        first = false;
+      }
+      cmd.append(entry.getKey());
 
       AttributeTypeInterface attr = (AttributeTypeInterface)entry.getValue();
       if (!attr.prepareUpdate(val))  {
         list.add(attr);
       }
     }
-    if (_table.getSqlColType()!=null)  {
+    if (_table.getSqlColType() != null)  {
       cmd.append(",").append(_table.getSqlColType());
       val.append(",?");
     }
-    cmd.append(") values (").append(_id).append("").append(val).append(")");
+    cmd.append(") values (");
+    if (_id != null)  {
+      cmd.append(_id);
+    }
+    cmd.append("").append(val).append(")");
 
     if (LOG.isTraceEnabled())  {
       LOG.trace(cmd.toString());
     }
 
-    PreparedStatement stmt = _con.getConnection().prepareStatement(cmd.toString());
+    PreparedStatement stmt;
+    if (_id == null)  {
+       stmt = _con.getConnection().prepareStatement(cmd.toString(), new String[]{"ID"});
+    } else  {
+       stmt = _con.getConnection().prepareStatement(cmd.toString());
+    }
     for (int i=0, j=1; i<list.size(); i++, j++)  {
       AttributeTypeInterface attr = (AttributeTypeInterface)list.get(i);
       attr.update(_context, stmt, j);
@@ -223,38 +258,5 @@ public class Insert extends Update {
       stmt.setLong(list.size()+1, getType().getId());
     }
     return stmt;
-  }
-
-  private long getNewId(final ConnectionResource _con,
-      final SQLTable _table) throws EFapsException  {
-
-    long ret = 0;
-    Statement stmt = null;
-    try  {
-      stmt = _con.getConnection().createStatement();
-      ResultSet rs = stmt.executeQuery(_table.getSqlNewIdSelect());
-      if (!rs.next())  {
-        throw new EFapsException(getClass(), "getNewId.NoIdFound",
-            _table.getName(), _table.getSqlNewIdSelect()
-        );
-      }
-      ret = rs.getLong(1);
-// if max selection!
-if (ret == 0)  {
-  ret = 1;
-}
-    } catch (EFapsException e)  {
-      throw e;
-    } catch (Exception e)  {
-      throw new EFapsException(getClass(), "getNewId.Exception", e,
-          _table.getName(), _table.getSqlNewIdSelect()
-      );
-    } finally  {
-      try  {
-        stmt.close();
-      } catch (SQLException e)  {
-      }
-    }
-    return ret;
   }
 }

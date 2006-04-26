@@ -1,5 +1,22 @@
-/**
- * Implements the SQL Table represenation in JavaScript.
+/*
+ * Copyright 2006 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Author:          tmo
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 importClass(java.io.File);
@@ -10,6 +27,9 @@ importClass(Packages.org.efaps.db.SearchQuery);
 
 var SQLTABLE = null;
 
+/**
+ * Implements the SQL Table represenation in JavaScript.
+ */
 function SQLTable(_name)  {
   var query = new SearchQuery();
   query.setQueryTypes(Shell.getContext(), "Admin_DataModel_SQLTable");
@@ -72,7 +92,6 @@ SQLTable.prototype.cleanup = function()  {
   this.setSQLTable("-"+this.getName());
   this.setSQLColumnID("-");
   this.setSQLColumnType(null);
-  this.setSQLNewIDSelect(null);
   this.setParentSQLTable(null);
 }
 
@@ -170,22 +189,6 @@ SQLTable.prototype.getSQLColumnType = function()  {
  */
 SQLTable.prototype.setSQLColumnType = function(_newSQLColumnType)  {
   this._setAttrValue("SQLColumnType", _newSQLColumnType);
-}
-
-/**
- * @return SQL Column Type name
- */
-SQLTable.prototype.getSQLNewIDSelect = function()  {
-  return this._getAttrValue("SQLNewIDSelect");
-}
-
-/**
- * Sets the new SQL New ID Select Statement of this type.
- *
- * @param _newSQLNewIDSelect  new SQL New ID Select Statement to set
- */
-SQLTable.prototype.setSQLNewIDSelect = function(_newSQLNewIDSelect)  {
-  this._setAttrValue("SQLNewIDSelect", _newSQLNewIDSelect);
 }
 
 /**

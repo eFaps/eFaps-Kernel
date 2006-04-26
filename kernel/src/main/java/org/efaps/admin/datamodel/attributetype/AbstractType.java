@@ -36,7 +36,7 @@ import org.efaps.db.query.CachedResult;
  */
 abstract public class AbstractType implements AttributeTypeInterface  {
 
-  public boolean prepareUpdate(StringBuffer _stmt)  {
+  public boolean prepareUpdate(StringBuilder _stmt)  {
     _stmt.append("?");
     return false;
   }

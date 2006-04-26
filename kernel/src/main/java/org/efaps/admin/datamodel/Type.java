@@ -895,13 +895,13 @@ public Menu getTreeMenu(final Context _context) throws Exception  {
           LOG.debug("read type '" + name + "' (id = " + id + ")");
 
           Type type = new Type(id, name);
-          if (id == 1000)  {
+          if (type.getName().equals(EFapsClassName.USER_PERSON.name))  {
             type.setCache(Person.getCache());
-          } else if (id == 1100)  {
+          } else if (type.getName().equals(EFapsClassName.USER_ROLE.name))  {
             type.setCache(Role.getCache());
-          } else if (id == 1200)  {
+          } else if (type.getName().equals(EFapsClassName.LIFECYCLE_POLICY.name))  {
             type.setCache(Policy.getCache());
-          } else if (id == 1220)  {
+          } else if (type.getName().equals(EFapsClassName.LIFECYCLE_STATUS.name))  {
             type.setCache(Status.getCache());
           }
 
