@@ -85,7 +85,7 @@ return null;
 
       StringBuilder cmd = new StringBuilder();
 
-      cmd.append("insert into ABSTRACT_HISTORY(EVENTTYPEID,FORTYPEID,FORID,MODIFIER,MODIFIED,ATTRID,ATTRVALUE) ")
+      cmd.append("insert into HISTORY(EVENTTYPEID,FORTYPEID,FORID,MODIFIER,MODIFIED,ATTRID,ATTRVALUE) ")
          .append("values (").append(this.eventType.getId()).append(",")
                             .append(_instance.getType().getId()).append(",")
                             .append(_instance.getId()).append(",")

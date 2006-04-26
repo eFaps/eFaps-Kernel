@@ -160,7 +160,7 @@ public class HistoryBean extends AbstractBean  {
 
         stmt.execute(
             "select EVENTTYPEID,MODIFIED,MODIFIER,ATTRID,ATTRVALUE "
-                + "from ABSTRACT_HISTORY "
+                + "from HISTORY "
                 + "where FORTYPEID=" + instance.getType().getId() + " "
                    + "and FORID=" + instance.getId()
         );
