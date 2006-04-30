@@ -198,6 +198,15 @@
       <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/tomahawk-1.1.3-SNAPSHOT-ext1.jar</systemPath>
     </dependency>
 
+    <!-- Virtual File System (specified to use latest relase candidate) -->
+    <dependency>
+      <groupId>commons-vfs</groupId>
+      <artifactId>commons-vfs</artifactId>
+      <version>1.0-RC8-SNAPSHOT</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/commons-vfs-1.0-RC8-SNAPSHOT.jar</systemPath>
+    </dependency>
+
   </dependencies>
 
 </project>
