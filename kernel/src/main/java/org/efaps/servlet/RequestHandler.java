@@ -161,8 +161,8 @@ System.out.println("--->getPathInfo()="+_req.getPathInfo());
 
     if (_req.getPathInfo()!=null && _req.getPathInfo().equals(URL_LOGOUT))  {
       doLogout(_req, _res);
-    } else if (_req.getPathInfo()!=null && _req.getPathInfo().equals(URL_LOGIN))  {
-      doLogin(_req, _res);
+//    } else if (_req.getPathInfo()!=null && _req.getPathInfo().equals(URL_LOGIN))  {
+//      doLogin(_req, _res);
     } else if (isLoggedIn(_req))  {
       _res.setContentType("text/html");
       _res.sendRedirect(replaceMacrosInUrl("${COMMONURL}/Main.jsp"));
@@ -179,13 +179,13 @@ System.out.println("--->getPathInfo()="+_req.getPathInfo());
    */
   public void doPost(HttpServletRequest _req, HttpServletResponse _res) throws ServletException, IOException  {
 
-    if (_req.getPathInfo().equals(URL_LOGIN))  {
-      doLogin(_req, _res);
-    } else  {
-      if (!isLoggedIn(_req))  {
-        doRedirect2Login(_req, _res);
-      }
-    }
+//    if (_req.getPathInfo().equals(URL_LOGIN))  {
+//      doLogin(_req, _res);
+//    } else  {
+//      if (!isLoggedIn(_req))  {
+//        doRedirect2Login(_req, _res);
+//      }
+//    }
   }
 
   /**
@@ -271,7 +271,7 @@ e.printStackTrace();
    * @param _res response variable
    * @see #checkLogin
    */
-  protected void doLogin(HttpServletRequest _req, HttpServletResponse _res) throws IOException  {
+/*  protected void doLogin(HttpServletRequest _req, HttpServletResponse _res) throws IOException  {
     PrintWriter out = _res.getWriter();
 
     String name = _req.getParameter(POSTPARAM_USERNAME);
@@ -287,6 +287,7 @@ e.printStackTrace();
       doSendLoginFrameNotCorrect(_req, _res);
     }
   }
+*/
 
   /**
    *
@@ -306,7 +307,7 @@ e.printStackTrace();
    * @param _passwd password of the person to check
    * @see #checkLogin
    */
-  protected boolean checkLogin(String _name, String _passwd)  {
+/*  protected boolean checkLogin(String _name, String _passwd)  {
     boolean ret = false;
     Context context = null;
     try  {
@@ -322,7 +323,7 @@ e.printStackTrace();
     }
     return ret;
   }
-
+*/
 
   /**
    * Redirect to the login page. To go back to calling page, the request
