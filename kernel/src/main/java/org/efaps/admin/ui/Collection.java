@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
@@ -20,10 +23,11 @@ package org.efaps.admin.ui;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
+import java.util.TreeMap;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
@@ -45,7 +49,7 @@ public abstract class Collection extends UserInterfaceObject  {
   }
 
   public void add(Field _field)  {
-    getFields().add(_field);
+    this.fields.put(_field.getId(), _field);
 //if (_field.getExpression()!=null && _field.getExpression().length()>0)  {
 //    _field.setSelIndex(addFieldExpr(_field.getExpression()));
 //}
@@ -190,14 +194,27 @@ this.selIndexLen++;
     }
   }
 
+  /**
+   * The method takes values of the {@link #fields} and returnes them as
+   * {@link java.util.ArrayList}.
+   *
+   * @return the values of the {@link #fields} map instance as array list
+   * @see #fields
+   */
+  public List < Field > getFields()  {
+    return new ArrayList(this.fields.values());
+  }
+
   /////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Instance vector variable for all fields.
+   * All fields of the collection are stored sorted belonging to the id of the
+   * field in a tree map.
    *
    * @see #getFields
+   * @see #add(Field)
    */
-  private List<Field> fields = new Vector<Field>();
+  private Map < Long, Field > fields = new TreeMap < Long, Field >();
 
 
   /**
@@ -227,16 +244,6 @@ this.selIndexLen++;
 private String hRefBottom = null;
 
   /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Get the value of the {@link #fields} vector instance.
-   *
-   * @return the value of the {@link #fields} vector instance
-   * @see #fields
-   */
-  public List<Field> getFields()  {
-    return this.fields;
-  }
 
   /**
    *
