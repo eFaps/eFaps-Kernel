@@ -37,6 +37,18 @@ import org.efaps.util.EFapsException;
 public abstract class StoreResource extends AbstractResource  {
 
   /**
+   * Store resource could implement the possibility to compress and uncompress
+   * data while writing to and reading from files.
+   */
+  protected enum Compress {NONE, ZIP, GZIP};
+
+  /**
+   * Property Name of the name of the key (id) in the sql table defined with
+   * property {@link #PROPERY_TABLE}.
+   */
+  private final static String PROPERY_COMPRESS = "StoreCompress";
+
+  /**
    * The variable stores the identifier of the file. This store is representing
    * this file.
    *
@@ -53,6 +65,11 @@ public abstract class StoreResource extends AbstractResource  {
   private Type type;
 
   /**
+   * The variable stores if the store itself is compressed.
+   */
+  protected Compress compress = Compress.NONE;
+
+  /**
    *
    * @param _context  eFaps context
    * @param _type     type with the information how to store the file
@@ -63,6 +80,14 @@ public abstract class StoreResource extends AbstractResource  {
     super(_context);
     this.fileId = _fileId;
     this.type = _type;
+    String compressString =  this.type.getProperty(PROPERY_COMPRESS);
+
+    if (compressString != null)  {
+      Compress compress = Compress.valueOf(compressString.trim().toUpperCase());
+      if (compress != null)  {
+        this.compress = compress;
+      }
+    }
   }
 
   /**

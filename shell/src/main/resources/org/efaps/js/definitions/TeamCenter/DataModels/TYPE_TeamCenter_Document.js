@@ -34,6 +34,7 @@ with (TYPE)  {
   addProperty("Icon",                   "${ROOTURL}/servlet/image/TeamCenter_DocumentImage");
   addProperty("StoreAttributeFileLength","FileLength");
   addProperty("StoreAttributeFileName", "FileName");
+  addProperty("StoreCompress",          "GZIP");
   addProperty("StoreResource",          "org.efaps.db.transaction.VFSStoreResource");
   addProperty("StoreVFSName",           "eFaps/store/documents");
   addProperty("Tree",                   "TeamCenter_DocumentTree");

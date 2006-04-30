@@ -20,9 +20,13 @@
 
 package org.efaps.db.transaction;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
@@ -48,6 +52,8 @@ import org.efaps.util.EFapsException;
  *   <li></li>
  *   <li></li>
  * </ol>
+ * The store implements the compress property setting on the type for
+ * <code>ZIP</code> and <code>GZIP</code>.
  *
  * For each file id a new VFS store resource must be created.
  */
@@ -144,6 +150,11 @@ public class VFSStoreResource extends StoreResource  {
       }
       FileContent content = tmpFile.getContent();
       OutputStream out = content.getOutputStream(false);
+      if (this.compress.equals(Compress.GZIP))  {
+        out = new GZIPOutputStream(out);
+      } else if (this.compress.equals(Compress.ZIP))  {
+        out = new ZipOutputStream(out);
+      }
 
       // if size is unkown!
       if (_size < 0)  {
@@ -189,6 +200,11 @@ throw new EFapsException(VFSStoreResource.class, "#####file no readable");
       }
 
       InputStream in = file.getContent().getInputStream();
+      if (this.compress.equals(Compress.GZIP))  {
+        in = new GZIPInputStream(in);
+      } else if (this.compress.equals(Compress.ZIP))  {
+        in = new ZipInputStream(in);
+      }
       if (in!=null)  {
         int length = 1;
         while (length>0)  {
