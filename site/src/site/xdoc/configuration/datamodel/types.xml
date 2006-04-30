@@ -47,6 +47,54 @@
             <td></td>
           </tr>
           <tr>
+            <td>StoreAttributeFileName</td>
+            <td></td>
+            <td>name of an attribute of this type</td>
+            <td>attribute name of the file name</td>
+          </tr>
+          <tr>
+            <td>StoreAttributeFileLength</td>
+            <td></td>
+            <td>name of an attribute of this type</td>
+            <td>attribute name of the file length</td>
+          </tr>
+          <tr>
+            <td>StoreCompress</td>
+            <td>NONE</td>
+            <td><ul><li>NONE</li><li>GZIP</li><li>ZIP</li></ul></td>
+            <td>the content of the store is compressed with the defined types</td>
+          </tr>
+          <tr>
+            <td>StoreJDBCBlob</td>
+            <td></td>
+            <td></td>
+            <td>SQL table column name of the blob</td>
+          </tr>
+          <tr>
+            <td>StoreJDBCKey</td>
+            <td></td>
+            <td></td>
+            <td>SQL table column name of the key (id)</td>
+          </tr>
+          <tr>
+            <td>StoreJDBCTable</td>
+            <td></td>
+            <td></td>
+            <td>SQL table name</td>
+          </tr>
+          <tr>
+            <td>StoreResource</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>StoreVFSName</td>
+            <td></td>
+            <td></td>
+            <td>Java Enterprise Bean name of the configured VFS store</td>
+          </tr>
+          <tr>
             <td>ViewAttribute</td>
             <td></td>
             <td>name of an attribute of this type</td>

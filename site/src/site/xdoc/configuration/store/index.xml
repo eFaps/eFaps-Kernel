@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<document>
+  <properties>
+    <title>Stores</title>
+  </properties>
+  <body>
+
+    <section name="Overview">
+      <p>
+        In a store file could be checked in and out. A store is defined for a
+        type.
+      </p>
+    </section>
+
+    <section name="Different Types of Stores">
+      <p>
+        Currently, two different type of stores are implemented:
+      </p>
+      <ul>
+        <li><a href="JDBCStore.html">JDBC Store</a><br/>the file content is
+            stored in a blob in the database</li>
+        <li><a href="VFSStore.html">VFS Store (Virtual File System)</a><br/>the
+            content is stored with the
+            <a href="http://jakarta.apache.org/commons/vfs/">Apache Jakarta
+            Commons Virtual File system</a>
+            </li>
+      </ul>
+    </section>
+
+    <section name="Common Store Properties at a Type">
+      <p>Some store properties are common and used from all store type
+         implementations. The following properties describes only common
+         store setting which must be defined at the type.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Default Value</th>
+            <th>Possible Values</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>StoreAttributeFileName</td>
+            <td></td>
+            <td>name of an attribute of this type</td>
+            <td>Attribute name where the name of the file (without
+                path) is stored when a file is checked in</td>
+          </tr>
+          <tr>
+            <td>StoreAttributeFileLength</td>
+            <td></td>
+            <td>name of an attribute of this type</td>
+            <td>Attribute name where the length of the file
+                in bytes is stored when a file is checked in</td>
+          </tr>
+          <tr>
+            <td><a name="StoreCompress">StoreCompress</a></td>
+            <td>NONE</td>
+            <td>NONE<br/>GZIP<br/>ZIP</td>
+            <td>The content of the store is compressed with the defined types.
+                (Attention! The parameter is not implemented for all store
+                types.)</td>
+          </tr>
+          <tr>
+            <td><a name="StoreResource">StoreResource</a></td>
+            <td></td>
+            <td>name of a Java class extended from
+                <code>org.efaps.db.transaction.StoreResource</code></td>
+            <td>The value of the property is used to get the Java
+                implementation of the store type.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </body>
+</document>

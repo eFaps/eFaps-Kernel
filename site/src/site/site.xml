@@ -51,12 +51,16 @@
           <item name="Types"            href="/configuration/datamodel/types.html"/>
           <item name="Attribute Types"  href="/configuration/datamodel/attributetypes.html"/>
         </item>
+        <item name="User Interface"     href="/configuration/ui/index.html" collapse="true">
+          <item name="Commands and Menus" href="/configuration/ui/commands.html"/>
+          <item name="Collections (Forms and Tables)" href="/configuration/ui/collections.html"/>
+        </item>
+        <item name="Stores"             href="/configuration/store/index.html" collapse="true">
+          <item name="JDBC Store"       href="/configuration/store/JDBCStore.html"/>
+          <item name="VFS Store"        href="/configuration/store/VFSStore.html"/>
+        </item>
       </item>
 
-      <item name="User Interface"     href="/configuration/ui/index.html" collapse="true">
-        <item name="Commands and Menus" href="/configuration/ui/commands.html"/>
-        <item name="Collections (Forms and Tables)" href="/configuration/ui/collections.html"/>
-      </item>
     </menu>
     <menu name="Installation">
       <item name="Prerequisites"        href="/installation/prerequisite.html"/>

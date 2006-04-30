@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<document>
+  <properties>
+    <title>Defining VFS Stores</title>
+  </properties>
+  <body>
+    <section name="Overview">
+      <p>
+        A VFS Store is used to store binary data for a object with the help of
+        the <a href="http://jakarta.apache.org/commons/vfs/">Apache Jakarta
+        Commons Virtual File System.</a>
+      </p>
+      <p>
+        This store type  supports the two compressing algorithmen GZIP and Zip
+        which could be defined with the property
+        <a href="index.html#StoreCompress">StoreCompress</a>. This is an
+        overall setting and could not be changed on existing stores, because
+        this implementation does not store if a file is already compressed or
+        not.
+      </p>
+    </section>
+
+    <!-- prerequisites to use JDBC store resources -->
+    <section name="Prerequisites">
+      <p>
+        On the type definition, the property
+        <a href="index.html#StoreResource">StoreResource</a> must
+        be set to <code>org.efaps.db.transaction.VFSStoreResource</code>.
+      </p>
+    </section>
+
+    <section name="VFS Store Properties at a Type">
+      <p>
+        Three JDBC store specific properties must be defined:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Default Value</th>
+            <th>Possible Values</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>StoreVFSName</td>
+            <td></td>
+            <td></td>
+            <td>Java Enterprise Bean name of the configured VFS store</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section name="Refence of Resources in the web.xml">
+      <p>
+        All store resource defined as Java enterprise beans must be referenced
+        in the web.xml. The reference is needed that eFaps could access the
+        bean.
+      </p>
+      <p>
+        The resource type must be set to
+        <code>org.efaps.db.transaction.VFSStoreFactoryBean</code>, the resource
+        authentification to <code>Container</code>.
+      </p>
+    </section>
+
+    <section name="Resource Definition within Tomcat">
+      <p>
+        In the context of the application a new resource must be defined which
+        creates new virtual file system store resources. This resources defines
+        the access to the path where the files are stored. Two new attributes
+        on the resource tag are defined and used to configure the factory
+        class:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Attribute Name</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>baseName</td>
+            <td>Name of the base where the files of the stores are located. The
+                name must include the schema name (e.g.
+                <code>file://S:/STORE</code>)</td>
+          </tr>
+          <tr>
+            <td>provider</td>
+            <td>Class name of the file provider implementing interface
+                <a href="http://jakarta.apache.org/commons/vfs/apidocs/org/apache/commons/vfs/provider/FileProvider.html">
+                org.apache.commons.vfs.provider.FileProvider</a>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section name="Example">
+      <p>
+        A type with integer attribute "FileLength" and string attribute
+        "FileName" is defined. Files checked into instances of this type are
+        stored in the local file system in directory "S:\STORE". All files in
+        this store must be GZIP compressed.
+      </p>
+
+      <subsection name="Type Properties">
+        <p>For the type using this store following type properties must be set:</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Property Name</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>StoreAttributeFileLength</td>
+              <td>FileLength</td>
+            </tr>
+            <tr>
+              <td>StoreAttributeFileName</td>
+              <td>FileName</td>
+            </tr>
+            <tr>
+              <td>StoreCompress</td>
+              <td>GZIP</td>
+            </tr>
+            <tr>
+              <td>StoreResource</td>
+              <td>org.efaps.db.transaction.VFSStoreResource</td>
+            </tr>
+            <tr>
+              <td>StoreVFSName</td>
+              <td>eFaps/store/documents</td>
+            </tr>
+          </tbody>
+        </table>
+      </subsection>
+      <subsection name="Resource Reference in the web.xml">
+        <p>
+          The web.xml file must get an entry for the resource as reference like
+          this:
+        </p>
+        <source>&lt;resource-ref&gt;
+  &lt;description&gt;&lt;/description&gt;
+  &lt;res-ref-name&gt;eFaps/store/documents&lt;/res-ref-name&gt;
+  &lt;res-type&gt;org.efaps.db.transaction.VFSStoreFactoryBean&lt;/res-type&gt;
+  &lt;res-auth&gt;Container&lt;/res-auth&gt;
+&lt;/resource-ref&gt;</source>
+        <p>
+          Attention! The resource reference definition in the web.xml must be
+          at the correct place!
+        </p>
+      </subsection>
+      <subsection name="Setting in Tomcat for the Context">
+     <source>&lt;Resource
+    name=&quot;eFaps/store/documents&quot;
+    auth=&quot;Container&quot;
+    type=&quot;org.efaps.db.transaction.VFSStoreFactoryBean&quot;
+    factory=&quot;org.apache.naming.factory.BeanFactory&quot;
+    baseName=&quot;file://S:/STORE&quot;
+    provider=&quot;org.apache.commons.vfs.provider.local.DefaultLocalFileProvider&quot;
+/&gt;</source>
+      </subsection>
+    </section>
+
+  </body>
+</document>
