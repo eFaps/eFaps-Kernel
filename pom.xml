@@ -41,6 +41,42 @@
 
   <developers>
     <developer>
+      <id>mbu</id>
+      <name>Marcus Budde</name>
+      <email>budde@buglo.de</email>
+      <url>www.buglo.org</url>
+      <organization>Budde &amp; Glodzinski OHG</organization>
+      <organizationUrl/>
+      <roles>
+      </roles>
+      <timezone>+1</timezone>
+      <properties/>
+    </developer>
+    <developer>
+      <id>tjo</id>
+      <name>Tim Jouaux</name>
+      <email>tim.jouaux@efaps.org</email>
+      <url>www.efaps.org</url>
+      <organization>eFaps</organization>
+      <organizationUrl/>
+      <roles>
+      </roles>
+      <timezone>+1</timezone>
+      <properties/>
+    </developer>
+    <developer>
+      <id>???</id>
+      <name>Andreas Julius</name>
+      <email>andreas.julius@online.de</email>
+      <url></url>
+      <organization></organization>
+      <organizationUrl/>
+      <roles>
+      </roles>
+      <timezone>+1</timezone>
+      <properties/>
+    </developer>
+    <developer>
       <id>tmo</id>
       <name>Tim Moxter</name>
       <email>tim.moxter@efaps.org</email>
