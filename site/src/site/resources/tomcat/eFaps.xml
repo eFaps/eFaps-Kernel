@@ -41,6 +41,15 @@
       factory="org.apache.naming.factory.BeanFactory"
   />
 
+  <Resource
+      name="eFaps/store/documents"
+      auth="Container"
+      type="org.efaps.db.transaction.VFSStoreFactoryBean"
+      factory="org.apache.naming.factory.BeanFactory"
+      baseName="file://S:/efaps/TESTSTORE"
+      provider="org.apache.commons.vfs.provider.local.DefaultLocalFileProvider"
+  />
+
   <Realm
       className="org.apache.catalina.realm.JAASRealm"
       appName="eFaps"
