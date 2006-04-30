@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db.transaction;
@@ -20,8 +23,6 @@ package org.efaps.db.transaction;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
 
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
@@ -32,8 +33,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileContent;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
-import org.apache.commons.vfs.impl.DefaultFileSystemManager;
-import org.apache.commons.vfs.provider.FileProvider;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
@@ -55,32 +54,26 @@ import org.efaps.util.EFapsException;
 public class VFSStoreResource extends StoreResource  {
 
   /**
-   *
+   * The virtual file systep store resource could handle three different
+   * events:
+   * <ul>
+   *   <li>delete</li>
+   *   <li>write</li>
+   *   <li>read</li>
+   * </ul>
+   * These three events are defined here and set in instance variable
+   * {@link #storeEvent}.
    */
   private enum StoreEvent  {DELETE, WRITE, READ, UNKNOWN};
 
   /**
-   *
-   */
-  private StoreEvent storeEvent = StoreEvent.UNKNOWN;
-
-  /**
    * Logging instance used in this class.
    */
-  private static Log log = LogFactory.getLog(VFSStoreResource.class);
+  private final static Log LOG = LogFactory.getLog(VFSStoreResource.class);
 
   /**
-   * Property NAme of the virtual file system provider class name.
-   */
-  public final static String PROPERTY_PROVIDER  = "VFSProvider";
-
-  /**
-   * Property Name of the virtual file system prefix.
-   */
-  public final static String PROPERY_PREFIX     = "VFSPrefix";
-
-  /**
-   *
+   * Extension of the temporary file in the store used in the transaction that
+   * the original file is not overwritten.
    */
   public final static String EXTENSION_TEMP     = ".tmp";
 
@@ -95,118 +88,38 @@ public class VFSStoreResource extends StoreResource  {
   public final static String EXTENSION_BAKUP    = ".bak";
 
   /**
-   * Static variable storing the default virtual file system manager used to
-   * access different file systems.
-   */
-  private static DefaultFileSystemManager fsManager;
-  static  {
-    fsManager = new DefaultFileSystemManager();
-    try  {
-      fsManager.init();
-    } catch (FileSystemException e)  {
-e.printStackTrace();
-    }
-  }
-
-  /**
    * Buffer used to copy from the input stream to the output stream.
    *
    * @see #read
    * @see #write
    */
-  private byte[] buffer = new byte[1024];
+  private final byte[] buffer = new byte[1024];
 
   /**
-   * Stores the mapping between the key (provider and prefix) and the value
-   * (schema name of the virtual file system) used to create the url prefix
-   * (method {@link #getUrlPrefix}).
+   * The factory bean is a pointer to the eFaps specific implementation of the
+   * VFS file system manager
+   *
+   * @see VFSStoreFactoryBean
+   * @see #VFSStoreResource
    */
-  private static Map<String,String> urlMapping = new HashMap<String,String>();
+  private final VFSStoreFactoryBean res;
+
+  /**
+   * @see #StoreEvent
+   */
+  private StoreEvent storeEvent = StoreEvent.UNKNOWN;
 
   /**
    *
    */
-  public VFSStoreResource(final Context _context, final Type _type, final long _fileId)  {
+  public VFSStoreResource(final Context _context, final Type _type, final long _fileId) throws EFapsException  {
     super(_context, _type, _fileId);
-  }
-
-  /**
-   * The method returns the url prefix which maps from the file provider class
-   * including path to the internal VFS representation (the url includes the
-   * schema and the VFS prefix (location of the starting path).<br/>
-   * If no predefined mapping in {@link #urlMapping} is found, a new mapping is
-   * made. First a new schema of the VFS file system manager must be defined.
-   * As unique schema name the letter 'T' plus the current milliseconds
-   * is used (the schema name must be only unique in this Java virtual machine,
-   * so the complete method is synchronized). Under this schema, a new file
-   * provider defined in type property {@link #PROPERTY_PROVIDER} is registered
-   * in the default file system manager {@link #fsManager}.
-   * Then the key in the mapping {@link #urlMapping} combines the VFS schema
-   * name  and the prefix from the type definition (accessed via the property
-   * key name {@link #PROPERY_PREFIX})
-   *
-   * @return url prefix including schema name for the current type (where the
-   *         store is defined)
-   * @throws EFapsException if
-   *         <ul>
-   *           <li>the provider class name is not found,</li>
-   *           <li>the provider class name is not accessable,</li>
-   *           <li>the provider class name is not instancable,</li>
-   *           <li>the provider instance is not registerable with the new
-   *               schema</li>
-   *           <li>or another exception (catch for {@link java.lang.Throwable})
-   *               occurs.
-   *         </ul>
-   */
-  private synchronized String getUrlPrefix() throws EFapsException  {
-    String provider = getType().getProperty(PROPERTY_PROVIDER);
-    String prefix   = getType().getProperty(PROPERY_PREFIX);
-    String key = provider + prefix;
-    String value = urlMapping.get(key);
-    if (value==null)  {
-      try  {
-        FileProvider fileProvider =
-                      (FileProvider) Class.forName(provider).newInstance();
-        String schema = "T" + System.currentTimeMillis();
-        value = schema + "://" + prefix + "/";
-        fsManager.addProvider(schema, fileProvider);
-        urlMapping.put(key, value);
-      } catch (ClassNotFoundException e)  {
-        log.error("class " + provider + "not found", e);
-        throw new EFapsException(VFSStoreResource.class,
-                      "getUrlPrefix.ClassNotFoundException", e, provider);
-      } catch (IllegalAccessException e)  {
-        log.error("class " + provider + " not accessable", e);
-        throw new EFapsException(VFSStoreResource.class,
-                      "getUrlPrefix.IllegalAccessException", e, provider);
-      } catch (InstantiationException e)  {
-        log.error("class " + provider + " not instanciable", e);
-        throw new EFapsException(VFSStoreResource.class,
-                      "getUrlPrefix.InstantiationException", e, provider);
-      } catch (FileSystemException e)  {
-        log.error("file schema " + value + " for class " + provider
-                                                    + " not registerable", e);
-        throw new EFapsException(VFSStoreResource.class,
-                      "getUrlPrefix.FileSystemException", e, provider, value);
-      } catch (Throwable e)  {
-        log.error("could not register new schema  for class " + provider
-                                              + " with prefix " + prefix, e);
-        throw new EFapsException(VFSStoreResource.class,
-                      "getUrlPrefix.Throwable", e, provider, prefix);
-      }
+    try  {
+      this.res = VFSStoreFactoryBean.getFileProvider(_type);
+    } catch (EFapsException e)  {
+      _context.abort();
+      throw e;
     }
-    return value;
-  }
-
-  /**
-   * The complete URL file is returned including the URL prefix (from
-   * {@link #getUrlPrefix}) and the extension of the file.
-   *
-   * @return file url including the url prefix
-   * #see getUrlPrefix
-   */
-  private String getFileUrl(final String _extension) throws EFapsException  {
-    return getUrlPrefix() + getFileId() + _extension;
   }
 
   /**
@@ -225,7 +138,7 @@ e.printStackTrace();
       this.storeEvent = StoreEvent.WRITE;
       int size = _size;
 
-      FileObject tmpFile = fsManager.resolveFile(getFileUrl(EXTENSION_TEMP));
+      FileObject tmpFile = this.res.findFile(getFileId() + EXTENSION_TEMP);
       if (!tmpFile.exists())  {
         tmpFile.createFile();
       }
@@ -254,10 +167,8 @@ e.printStackTrace();
       }
       tmpFile.close();
       return size;
-    } catch (EFapsException e)  {
-      throw e;
     } catch (IOException e)  {
-      log.error("write of content failed", e);
+      LOG.error("write of content failed", e);
       throw new EFapsException(VFSStoreResource.class, "write.IOException", e);
     }
   }
@@ -271,7 +182,7 @@ e.printStackTrace();
     try  {
       this.storeEvent = StoreEvent.READ;
 
-      file = fsManager.resolveFile(getFileUrl(EXTENSION_NORMAL));
+      file = this.res.findFile(getFileId() + EXTENSION_NORMAL);
 
       if (!file.isReadable())  {
 throw new EFapsException(VFSStoreResource.class, "#####file no readable");
@@ -301,7 +212,8 @@ e.printStackTrace();
   }
 
   /**
-   * Deletes the file defined in {@link #fileId}.
+   * Marks the file defined in {@link #fileId} as deleted. Because of
+   * transaction handling, the delete itself is done inside {@link #commit}.
    */
   public void delete() throws EFapsException  {
     this.storeEvent = StoreEvent.DELETE;
@@ -338,58 +250,51 @@ System.out.println("VFSStore.öööööööööööööööööööööööööö.prepare="+_xid);
    *         {@link java.lang.Throwable})
    */
   public void commit(final Xid _xid, final boolean _onePhase) throws XAException  {
-    if (log.isDebugEnabled())  {
-      log.debug("transaction commit");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("transaction commit");
     }
-if (this.storeEvent == StoreEvent.WRITE)  {
-    try  {
-      FileObject tmpFile = fsManager.resolveFile(getFileUrl(EXTENSION_TEMP));
-      FileObject newFile = fsManager.resolveFile(getFileUrl(EXTENSION_NORMAL));
-      FileObject bakFile = fsManager.resolveFile(getFileUrl(EXTENSION_BAKUP));
-      if (bakFile.exists())  {
-        bakFile.delete();
+    if (this.storeEvent == StoreEvent.WRITE)  {
+      try  {
+        FileObject tmpFile = this.res.findFile(getFileId() + EXTENSION_TEMP);
+        FileObject newFile = this.res.findFile(getFileId() + EXTENSION_NORMAL);
+        FileObject bakFile = this.res.findFile(getFileId() + EXTENSION_BAKUP);
+        if (bakFile.exists())  {
+          bakFile.delete();
+        }
+        if (newFile.exists())  {
+          newFile.moveTo(bakFile);
+        }
+        tmpFile.moveTo(newFile);
+        tmpFile.close();
+        newFile.close();
+        bakFile.close();
+      } catch (Throwable e)  {
+        LOG.error("transaction commit fails for " + _xid + " (one phase = "
+                                                          + _onePhase + ")", e);
+        XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
+        xa.initCause(e);
+        throw xa;
       }
-      if (newFile.exists())  {
-        newFile.moveTo(bakFile);
+    } else if (this.storeEvent == StoreEvent.DELETE)  {
+      try  {
+        FileObject curFile = this.res.findFile(getFileId() + EXTENSION_NORMAL);
+        FileObject bakFile = this.res.findFile(getFileId() + EXTENSION_BAKUP);
+        if (bakFile.exists())  {
+          bakFile.delete();
+        }
+        if (curFile.exists())  {
+          curFile.moveTo(bakFile);
+        }
+        bakFile.close();
+        curFile.close();
+      } catch (Throwable e)  {
+        LOG.error("transaction commit fails for " + _xid + " (one phase = "
+                                                          + _onePhase + ")", e);
+        XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
+        xa.initCause(e);
+        throw xa;
       }
-      tmpFile.moveTo(newFile);
-      tmpFile.close();
-      newFile.close();
-      bakFile.close();
-    } catch (Throwable e)  {
-      log.error("transaction commit fails for " + _xid + " (one phase = "
-                                                        + _onePhase + ")", e);
-      XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
-      xa.initCause(e);
-      throw xa;
     }
-} else if (this.storeEvent == StoreEvent.DELETE)  {
-    try  {
-System.out.println("--1");
-      FileObject curFile = fsManager.resolveFile(getFileUrl(EXTENSION_NORMAL));
-System.out.println("--2"+curFile);
-      FileObject bakFile = fsManager.resolveFile(getFileUrl(EXTENSION_BAKUP));
-System.out.println("--3"+bakFile);
-      if (bakFile.exists())  {
-System.out.println("--4.bakFile.delete");
-        bakFile.delete();
-      }
-      if (curFile.exists())  {
-System.out.println("--5.curFile.move");
-        curFile.moveTo(bakFile);
-      }
-System.out.println("--6.bakFile.close");
-      bakFile.close();
-System.out.println("--6.curFile.close");
-      curFile.close();
-    } catch (Throwable e)  {
-      log.error("transaction commit fails for " + _xid + " (one phase = "
-                                                        + _onePhase + ")", e);
-      XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
-      xa.initCause(e);
-      throw xa;
-    }
-}
   }
 
   /**
@@ -404,16 +309,16 @@ System.out.println("--6.curFile.close");
    *         {@link java.lang.Throwable})
    */
   public void rollback(final Xid _xid) throws XAException  {
-    if (log.isDebugEnabled())  {
-      log.debug("transaction rollback");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("transaction rollback");
     }
     try  {
-      FileObject tmpFile = fsManager.resolveFile(getFileUrl(EXTENSION_TEMP));
+      FileObject tmpFile = this.res.findFile(getFileId() + EXTENSION_TEMP);
       if (tmpFile.exists())  {
         tmpFile.delete();
       }
     } catch (Throwable e)  {
-      log.error("transaction rollback fails for " + _xid, e);
+      LOG.error("transaction rollback fails for " + _xid, e);
       XAException xa = new XAException(XAException.XA_RBCOMMFAIL);
       xa.initCause(e);
       throw xa;

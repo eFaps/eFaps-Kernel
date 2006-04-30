@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db.transaction;
@@ -49,9 +52,21 @@ public class JDBCStoreResource extends StoreResource  {
   private static Log log = LogFactory.getLog(JDBCStoreResource.class);
 
   /**
-   * Property Name of the virtual file system prefix.
+   * Property Name of the name of the blob in the sql table defined with
+   * property {@link #PROPERY_TABLE}.
    */
-  public final static String PROPERY_PREFIX     = "VFSPrefix";
+  public final static String PROPERY_BLOB       = "StoreJDBCBlob";
+
+  /**
+   * Property Name of the name of the key (id) in the sql table defined with
+   * property {@link #PROPERY_TABLE}.
+   */
+  public final static String PROPERY_KEY        = "StoreJDBCKey";
+
+  /**
+   * Property Name of the name of the sql table.
+   */
+  public final static String PROPERY_TABLE      = "StoreJDBCTable";
 
   /**
    *
@@ -66,18 +81,18 @@ public class JDBCStoreResource extends StoreResource  {
   /**
    * The string stores the sql table name where the blob and key is located,
    */
-  private String table = null;
+  private final String table;
 
   /**
    * The string stores the name of key column to select the row in the table
    * {@link #table} (used to create the where clause).
    */
-  private String keyColumn = null;
+  private final String keyColumn;
 
   /**
    * The string stores the name of the blob column in the table {@link #table}.
    */
-  private String blobColumn = null;
+  private final String blobColumn;
 
   /**
    * Buffer used to copy from the input stream to the output stream.
@@ -92,11 +107,9 @@ public class JDBCStoreResource extends StoreResource  {
   public JDBCStoreResource(final Context _context, final Type _type, final long _fileId)  {
     super(_context, _type, _fileId);
 
-    String prefix = getType().getProperty("VFSPrefix");
-    String[] options = prefix.split(":");
-    this.table      = options[0];
-    this.keyColumn  = options[1];
-    this.blobColumn = options[2];
+    this.table      = getType().getProperty(PROPERY_TABLE);
+    this.keyColumn  = getType().getProperty(PROPERY_KEY);
+    this.blobColumn = getType().getProperty(PROPERY_BLOB);
   }
 
   /**

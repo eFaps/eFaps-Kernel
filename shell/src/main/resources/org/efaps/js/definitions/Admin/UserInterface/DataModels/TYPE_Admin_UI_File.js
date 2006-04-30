@@ -31,10 +31,12 @@ with (TYPE)  {
     setSQLTable("Admin_UI_FileTable");
     setSQLColumn("FILELENGTH");
   }
+  addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_UI_FileImage");
   addProperty("StoreAttributeFileLength","FileLength");
   addProperty("StoreAttributeFileName", "FileName");
-  addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_UI_FileImage");
+  addProperty("StoreJDBCBlob",          "FILECONTENT");
+  addProperty("StoreJDBCKey",           "ID");
+  addProperty("StoreJDBCTable",         "UIFILE");
+  addProperty("StoreResource",          "org.efaps.db.transaction.JDBCStoreResource");
   addProperty("Tree",                   "Admin_UI_FileTree");
-  addProperty("VFSPrefix",              "UIFILE:ID:FILECONTENT");
-  addProperty("VFSProvider",            "org.efaps.db.vfs.provider.sqldatabase.SQLDataBaseFileProvider");
 }

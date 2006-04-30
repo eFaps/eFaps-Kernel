@@ -34,7 +34,7 @@ with (TYPE)  {
   addProperty("Icon",                   "${ROOTURL}/servlet/image/TeamCenter_DocumentImage");
   addProperty("StoreAttributeFileLength","FileLength");
   addProperty("StoreAttributeFileName", "FileName");
+  addProperty("StoreResource",          "org.efaps.db.transaction.VFSStoreResource");
+  addProperty("StoreVFSName",           "eFaps/store/documents");
   addProperty("Tree",                   "TeamCenter_DocumentTree");
-  addProperty("VFSPrefix",              "S:/efaps/TESTSTORE");
-  addProperty("VFSProvider",            "org.apache.commons.vfs.provider.local.DefaultLocalFileProvider");
 }
