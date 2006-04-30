@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
@@ -49,12 +52,8 @@ public class Command extends CommandAbstract  {
    * @return instance of class {@link Command}
    * @see #getCache
    */
-  static public Command get(Context _context, long _id) throws EFapsException  {
-    Command command = (Command)getCache().get(_id);
-    if (command == null)  {
-      command = getCache().read(_context, _id);
-    }
-    return command;
+  static public Command get(final long _id) throws EFapsException  {
+    return getCache().get(_id);
   }
 
   /**
@@ -65,12 +64,8 @@ public class Command extends CommandAbstract  {
    * @return instance of class {@link Command}
    * @see #getCache
    */
-  static public Command get(Context _context, String _name) throws EFapsException  {
-    Command command = (Command)getCache().get(_name);
-    if (command == null)  {
-      command = getCache().read(_context, _name);
-    }
-    return command;
+  static public Command get(final String _name) throws EFapsException  {
+    return getCache().get(_name);
   }
 
   /**

@@ -60,9 +60,9 @@ public abstract class AbstractCollectionBean extends AbstractBean implements Col
    */
   public void setCommandName(String _name) throws Exception  {
       Context context = Context.getThreadContext();
-      setCommand(Command.get(context, _name));
-      if (getCommand()==null)  {
-        setCommand(Menu.get(context, _name));
+      setCommand(Command.get(_name));
+      if (getCommand() == null)  {
+        setCommand(Menu.get(_name));
       }
       if (getCommand()!=null)  {
 

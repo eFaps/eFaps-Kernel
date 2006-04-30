@@ -51,17 +51,18 @@ System.out.println("AbstractBean.destructor");
    */
   public void setOid(String _oid) throws Exception  {
     if (_oid!=null && _oid.length()>0)  {
-      Context context = new Context();
-      try  {
-        setInstance(new Instance(context, _oid));
-      } catch (Exception e)  {
-        throw e;
-      } finally  {
-        try  {
-          context.close();
-        } catch (Exception e)  {
-        }
-      }
+setInstance(new Instance(null, _oid));
+//      Context context = new Context();
+//      try  {
+//        setInstance(new Instance(context, _oid));
+//      } catch (Exception e)  {
+//        throw e;
+//      } finally  {
+//        try  {
+//          context.close();
+//        } catch (Exception e)  {
+//        }
+//      }
     }
   }
 

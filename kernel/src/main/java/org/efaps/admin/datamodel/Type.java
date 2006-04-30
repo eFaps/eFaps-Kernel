@@ -752,17 +752,6 @@ throw e;
     this.formCreate = _formCreate;
   }
 
-  /**
-   * This is the getter method for instance variable {@link #treeMenu}.
-   *
-   * @return value of instance variable {@link #treeMenu}
-   * @see #setTreeMenu
-   * @see #treeMenu
-   */
-  private Menu getTreeMenu()  {
-    return this.treeMenu;
-  }
-
 String treeMenuName = null;
 private void setTreeMenuName(final String _treeMenuName)  {
   this.treeMenuName = _treeMenuName;
@@ -771,23 +760,13 @@ public String getTreeMenuName()  {
   return this.treeMenuName;
 }
 
-public Menu getTreeMenu(final Context _context) throws Exception  {
-  if ((getTreeMenu() == null) && (getTreeMenuName() != null))  {
-    setTreeMenu(Menu.get(_context, getTreeMenuName()));
+public Menu getTreeMenu() throws Exception  {
+  if ((this.treeMenu == null) && (getTreeMenuName() != null))  {
+    this.treeMenu = Menu.get(getTreeMenuName());
   }
-  return getTreeMenu();
+  return this.treeMenu;
 }
 
-  /**
-   * This is the setter method for instance variable {@link #treeMenu}.
-   *
-   * @param _treeMenu new value for instance variable {@link #treeMenu}
-   * @see #getTreeMenu
-   * @see #treeMenu
-   */
-  private void setTreeMenu(final Menu _treeMenu)  {
-    this.treeMenu = _treeMenu;
-  }
 
   /**
    * This is the getter method for instance variable {@link #viewAttribute}.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.beans;
@@ -94,19 +97,10 @@ public class CacheSessionBean  {
    */
   private CommandAbstract getCommand(String _commandName) throws Exception  {
     CommandAbstract ret = null;
-    Context context = new Context();
-    try  {
-      ret = Command.get(context, _commandName);
-      if (ret==null)  {
-        ret = Menu.get(context, _commandName);
-      }
-    } catch (Exception e)  {
-      throw e;
-    } finally  {
-      try  {
-        context.close();
-      } catch (Exception e)  {
-      }
+
+    ret = Command.get(_commandName);
+    if (ret==null)  {
+      ret = Menu.get(_commandName);
     }
     return ret;
   }

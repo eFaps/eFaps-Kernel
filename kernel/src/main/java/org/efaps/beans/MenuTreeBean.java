@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.beans;
@@ -52,7 +55,7 @@ System.out.println("MenuTreeBean.destructor");
    * @param _context  eFaps context for this request
    */
   protected void execute(Context _context) throws Exception  {
-    Menu menu = getInstance().getType().getTreeMenu(_context);
+    Menu menu = getInstance().getType().getTreeMenu();
     if (menu==null)  {
 throw new Exception("no tree menu defined for type "+getInstance().getType().getName());
     }

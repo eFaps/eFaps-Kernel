@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
@@ -47,11 +50,11 @@ public class Menu extends MenuAbstract  {
    * @param _id       command / menu id
    */
   protected void add(Context _context, long _id) throws Exception  {
-    Command command = Command.get(_context, _id);
-    if (command!=null)  {
+    Command command = Command.get(_id);
+    if (command != null)  {
       add(command);
     } else  {
-      Menu subMenu = Menu.get(_context, _id);
+      Menu subMenu = Menu.get(_id);
       add(subMenu);
     }
   }
@@ -65,12 +68,8 @@ public class Menu extends MenuAbstract  {
    * @return instance of class {@link Menu}
    * @see #getCache
    */
-  static public Menu get(Context _context, long _id) throws EFapsException  {
-    Menu menu = (Menu)getCache().get(_id);
-    if (menu == null)  {
-      menu = getCache().read(_context, _id);
-    }
-    return menu;
+  static public Menu get(final long _id) throws EFapsException  {
+    return getCache().get(_id);
   }
 
   /**
@@ -81,12 +80,8 @@ public class Menu extends MenuAbstract  {
    * @return instance of class {@link Menu}
    * @see #getCache
    */
-  static public Menu get(Context _context, String _name) throws EFapsException  {
-    Menu menu = (Menu)getCache().get(_name);
-    if (menu == null)  {
-      menu = getCache().read(_context, _name);
-    }
-    return menu;
+  static public Menu get(final String _name) throws EFapsException  {
+    return getCache().get(_name);
   }
 
   /**

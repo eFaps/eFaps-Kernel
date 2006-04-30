@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
@@ -198,7 +201,7 @@ public abstract class CommandAbstract extends UserInterfaceObject  {
     switch (_linkType)  {
       case LINK_ICON:           setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/" + _toName));break;
       case LINK_TARGET_FORM:    setTargetForm(Form.get(_context, _toId));break;
-      case LINK_TARGET_MENU:    setTargetMenu(Menu.get(_context, _toId));break;
+      case LINK_TARGET_MENU:    setTargetMenu(Menu.get(_toId));break;
       case LINK_TARGET_SEARCH:  setTargetSearch(Search.get(_context, _toName));break;
       case LINK_TARGET_TABLE:   setTargetTable(Table.get(_context, _toId));break;
       default:                  super.setLinkProperty(_context, _linkType, _toId, _toType, _toName);

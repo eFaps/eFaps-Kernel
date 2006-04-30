@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.beans;
@@ -44,7 +47,7 @@ System.out.println("MenuMainToolBarBean.destructor");
   }
 
   /**
-   * This is the getter method for the jsf NavigationMenuItems which are parsed 
+   * This is the getter method for the jsf NavigationMenuItems which are parsed
    * from the instance variable {@link #menuHolder}.
    *
    * @return List of the NavigationMenuItems
@@ -66,7 +69,7 @@ System.out.println("MenuMainToolBarBean.destructor");
    * @param _menu     menu object (the value is <i>null</i>!)
    */
   protected void execute(Context _context) throws Exception  {
-    setMenu(_context, Menu.get(_context, "MainToolBar"));
+    setMenu(_context, Menu.get("MainToolBar"));
   }
 
   /**
