@@ -59,6 +59,16 @@ public class Context {
    */
   private static ThreadLocal<Context>threadContext = new ThreadLocal<Context>();
 
+  /**
+   * The instance variable stores all open instances of {@link StoreResource}.
+   *
+   * @see #getStoreResource(Instance)
+   * @see #getStoreResource(Type,long)
+   */
+  private Set < StoreResource > storeStore = new HashSet < StoreResource > ();
+
+
+
   public static void setDbType(AbstractDatabase _dbType) throws ClassNotFoundException, IllegalAccessException {
     dbType = _dbType;
   }
@@ -96,12 +106,6 @@ protected static DataSource getDataSource()  {
    */
   private Stack<ConnectionResource> connectionStack =
                                       new Stack<ConnectionResource>();
-
-  /**
-   * Stores all created store resources.
-   */
-  private HashSet<StoreResource> storeStore = new HashSet<StoreResource>();
-
 
   /**
    * Default constructor used to get a SQL connection to the database.
@@ -167,6 +171,38 @@ System.out.println("--------------------------------- context.finalize connectio
       getConnection().close();
     } catch (Exception e)  {
     }
+  }
+
+  /**
+   * The method tests if all resources (JDBC connection and store resources)
+   * are closed, that means that the resources are freeed and returned for
+   * reuse.
+   *
+   * @return <i>true</i> if all resources are closed, otherwise <i>false</i>
+   *         is returned
+   * @see #connectionStore
+   * @see #storeStore
+   */
+  public boolean allConnectionClosed()  {
+    boolean closed = true;
+
+    for (ConnectionResource con : this.connectionStore)  {
+      if (con.isOpened())  {
+        closed = false;
+        break;
+      }
+    }
+
+    if (closed)  {
+      for (StoreResource store : this.storeStore)  {
+        if (store.isOpened())  {
+          closed = false;
+          break;
+        }
+      }
+    }
+
+    return closed;
   }
 
   public void close()  {
@@ -244,6 +280,17 @@ for (ConnectionResource con : this.connectionStore)  {
 
 
   /**
+   *
+   */
+  public void abort() throws EFapsException  {
+    try  {
+      this.transaction.setRollbackOnly();
+    } catch (SystemException e)  {
+      throw new EFapsException(getClass(), "abort.SystemException", e);
+    }
+  }
+
+  /**
    * Returns a opened connection resource. If a previous close connection
    * resource already exists, this already existing connection resource is
    * returned.
@@ -295,14 +342,16 @@ e.printStackTrace();
   public StoreResource getStoreResource(final Type _type, final long _fileId) throws EFapsException  {
     StoreResource storeRsrc = null;
 
-String provider  = _type.getProperty("VFSProvider");
-if (provider.equals("org.efaps.db.vfs.provider.sqldatabase.SQLDataBaseFileProvider"))  {
+// TODO: dynamic class loading instead of hard coded store resource name
+String provider  = _type.getProperty("StoreResource");
+if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   storeRsrc = new JDBCStoreResource(this, _type, _fileId);
 } else  {
   storeRsrc = new VFSStoreResource(this, _type, _fileId);
 }
 System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
     storeRsrc.open();
+    this.storeStore.add(storeRsrc);
     return storeRsrc;
   }
 

@@ -158,30 +158,24 @@ try {
         ok = true;
 } finally  {
 
-        switch (transactionManager.getStatus())  {
-        case Status.STATUS_ACTIVE:
-          if (ok)  {
-System.out.println("###############################################################################1 transaction commit");
-            transactionManager.commit();
-            break;
-          }
-          // if not ok, rollback!
-        case Status.STATUS_MARKED_ROLLBACK:
-          try {
-System.out.println("###############################################################################2 transaction rollback");
-            transactionManager.rollback();
-          } catch (Throwable e)  {
-          }
+  if (ok && context.allConnectionClosed()
+      && (transactionManager.getStatus() == Status.STATUS_ACTIVE))  {
 
-        default:
-          try {
-System.out.println("###############################################################################3 transaction rollback");
-            transactionManager.rollback();
-          } catch (Throwable e)  {
-          }
+System.out.println("###############################################################################1 transaction commit");
+    transactionManager.commit();
+  } else  {
+System.out.println("###############################################################################2 transaction rollback");
+    if (transactionManager.getStatus() == Status.STATUS_MARKED_ROLLBACK)  {
+System.out.println("                                                                                 rollback status");
 // TODO: throw of Exception is not a good idea... if an exception is thrown in the try code, this exception is overwritten!
 //          throw new ServletException("transaction in undefined status");
-        }
+    } else if (!context.allConnectionClosed())  {
+System.out.println("                                                                                 not all connection closed");
+    } else  {
+System.out.println("                                                                                 undefined");
+    }
+    transactionManager.rollback();
+  }
 }
 
       } catch (IOException e)  {

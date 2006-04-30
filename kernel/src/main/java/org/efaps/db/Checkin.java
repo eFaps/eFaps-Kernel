@@ -75,6 +75,7 @@ public class Checkin extends AbstractAction  {
               final InputStream _in, final int _size) throws EFapsException  {
 
     StoreResource storeRsrc = null;
+    boolean ok = false;
     try  {
       Type type = getInstance().getType();
 
@@ -93,12 +94,15 @@ public class Checkin extends AbstractAction  {
       update.add(_context, attrFileName, fileName);
       update.add(_context, attrFileLength, ""+size);
       update.execute(_context);
-
+      ok = true;
     } catch (EFapsException e)  {
       throw e;
     } catch (Throwable e)  {
       throw new EFapsException(Checkin.class, "execute.Throwable", e);
     } finally  {
+      if (!ok)  {
+        _context.abort();
+      }
       if ((storeRsrc != null) && (storeRsrc.isOpened()))  {
         storeRsrc.abort();
       }
