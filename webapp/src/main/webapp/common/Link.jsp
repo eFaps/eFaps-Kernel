@@ -27,6 +27,7 @@
 <%@page import="org.efaps.admin.ui.Menu"%>
 <%@page import="org.efaps.db.Insert"%>
 <%@page import="org.efaps.db.Instance"%>
+<%@include file = "../common/StdTop.inc"%>
 <%
   CommandAbstract command = Command.get(getParameter("command"));
   if (command==null)  {
