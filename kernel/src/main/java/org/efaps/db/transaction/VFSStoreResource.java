@@ -56,6 +56,9 @@ import org.efaps.util.EFapsException;
  * <code>ZIP</code> and <code>GZIP</code>.
  *
  * For each file id a new VFS store resource must be created.
+ *
+ * @author tmo
+ * @version $Id$
  */
 public class VFSStoreResource extends StoreResource  {
 
@@ -176,6 +179,13 @@ public class VFSStoreResource extends StoreResource  {
           length -= readLength;
         }
       }
+
+      if (this.compress.equals(Compress.GZIP))  {
+        out.close();
+      } else if (this.compress.equals(Compress.ZIP))  {
+        out.close();
+      }
+
       tmpFile.close();
       return size;
     } catch (IOException e)  {
