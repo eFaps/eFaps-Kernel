@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,31 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.TreeMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.user.Role;
-import org.efaps.db.Cache;
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
  */
 abstract public class MenuAbstract extends CommandAbstract  {
+
+  /**
+   * All sub commands or menus are store in the tree map. The tree map is used
+   * to sort the commands / menus belonging to their id.
+   *
+   * @see #getCommands
+   * @add
+   */
+  private Map < Long, CommandAbstract > commands = new TreeMap< Long, CommandAbstract >();
+
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * Constructor to set the id and name of the menu object.
@@ -64,7 +74,7 @@ abstract public class MenuAbstract extends CommandAbstract  {
    * @param _command command to add
    */
   public void add(CommandAbstract _command)  {
-    getCommands().add(_command);
+    this.commands.put(_command.getId(), _command);
   }
 
   /**
@@ -73,7 +83,7 @@ abstract public class MenuAbstract extends CommandAbstract  {
    * @param _menu   menu with sub structure
    */
   public void addAll(MenuAbstract _menu)  {
-    getCommands().addAll(_menu.getCommands());
+    this.commands.putAll(_menu.commands);
   }
 
 
@@ -94,10 +104,8 @@ abstract public class MenuAbstract extends CommandAbstract  {
 
     if (ret && getCommands().size()>0)  {
       ret = false;
-      Iterator iter = getCommands().iterator();
-      while (iter.hasNext())  {
-        UserInterfaceObject obj = (UserInterfaceObject)iter.next();
-        if (obj.hasAccess(_context))  {
+      for (CommandAbstract cmd : getCommands())  {
+        if (cmd.hasAccess(_context))  {
           ret = true;
           break;
         }
@@ -117,6 +125,19 @@ abstract public class MenuAbstract extends CommandAbstract  {
       buf.append(" ").append(cmd);
     }
     return buf.toString();
+  }
+
+  /**
+   * The method takes values of the {@link #commands} and returnes them as
+   * {@link java.util.ArrayList}.
+   *
+   * @return the values of the {@link #commands} map instance as array list
+   * @see #commands
+   * @see #add(Command)
+   * @see #add(Menu)
+   */
+  public List<CommandAbstract> getCommands()  {
+    return new ArrayList(this.commands.values());
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -153,25 +174,5 @@ abstract public class MenuAbstract extends CommandAbstract  {
       long id = (Long)query.get(_context, "ID");
       add(_context, id);
     }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Instance Variable to hold all the commands in a vector instance.
-   *
-   * @see #getCommands
-   */
-  private List<CommandAbstract> commands = new ArrayList<CommandAbstract>();
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the getter method for instance variable {@link #commands}.
-   *
-   * @see #commands
-   */
-  public List<CommandAbstract> getCommands()  {
-    return this.commands;
   }
 }
