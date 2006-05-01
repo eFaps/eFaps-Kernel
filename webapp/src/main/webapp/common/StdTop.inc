@@ -39,8 +39,8 @@
   if(contentType != null && contentType.toLowerCase().startsWith("multipart/form-data"))  {
     // multipart request
     DiskFileUpload dfu = new DiskFileUpload();
-// TODO: global setting!! + temp variable!
-dfu.setRepositoryPath("s:\\temp");
+// TODO: global setting!! + temp variable! 
+// dfu.setRepositoryPath("s:\\temp");	also works without this *jul*
 
     List files = dfu.parseRequest(request);
     parameters = new HashMap<String, String[]>();
