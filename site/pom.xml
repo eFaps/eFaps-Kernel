@@ -182,7 +182,7 @@
   <distributionManagement>
     <site>
       <id>eFaps</id>
-      <url>scp://root@80.237.163.137/home/httpd/vhosts/efaps.org/httpdocs/site/</url>
+      <url>scp://root@80.237.163.137/home/httpd/vhosts/efaps.org/httpdocs/</url>
     </site>
   </distributionManagement>
 
