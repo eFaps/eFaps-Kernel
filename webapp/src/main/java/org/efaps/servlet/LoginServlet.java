@@ -46,7 +46,7 @@ public class LoginServlet extends AbstractServlet  {
   /**
    * User wants to login into eFaps. The user name and password is checked.
    * User name is stored in session variable {@link AbstractServlet#SESSIONPARAM_LOGIN_NAME}.
-   * After login a redirect to the "common/Main.jsp" is made.<br/>
+   * After login a redirect to the "common/Main.jsf" is made.<br/>
    * The post parameter names are {@link #PARAM_USERNAME} and
    * {@link #PARAM_PASSWORD}.
    *

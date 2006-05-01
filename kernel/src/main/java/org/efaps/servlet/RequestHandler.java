@@ -165,7 +165,7 @@ System.out.println("--->getPathInfo()="+_req.getPathInfo());
 //      doLogin(_req, _res);
     } else if (isLoggedIn(_req))  {
       _res.setContentType("text/html");
-      _res.sendRedirect(replaceMacrosInUrl("${COMMONURL}/Main.jsp"));
+      _res.sendRedirect(replaceMacrosInUrl("${COMMONURL}/Main.jsf"));
     } else  if (_req.getPathInfo()==null || _req.getPathInfo().equals("/"))  {
       doSendLoginFrame(_req, _res);
     } else  {
