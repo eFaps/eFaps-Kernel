@@ -1,3 +1,24 @@
+/*
+ * Copyright 2006 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Author:          tmo
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
+
 importClass(Packages.org.efaps.db.Instance);
 importClass(Packages.org.efaps.db.SearchQuery);
 
@@ -189,7 +210,7 @@ function getMenuNameFromFileName(_fileName)  {
  */
 function importMenu(_fileName)  {
   var fileName = new File(_fileName);
-  if (fileName.getName().startsWith(Menu.prototype.FILE_PREFIX))  {
+  if (fileName.getName().startsWith(Menu.prototype.FILE_PREFIX) && fileName.getName().endsWith(".js"))  {
     var objName = getMenuNameFromFileName(fileName.getName());
     print("Import Menu '"+objName+"'");
     var impMenu = new Menu(objName);
@@ -211,7 +232,7 @@ function createMenus(_fileList)  {
   print("~~~~~~~~~~~~");
   for (indx in _fileList)  {
     var fileName = new File(_fileList[indx]);
-    if (fileName.getName().startsWith(Menu.prototype.FILE_PREFIX))  {
+    if (fileName.getName().startsWith(Menu.prototype.FILE_PREFIX) && fileName.getName().endsWith(".js"))  {
       var objName = getMenuNameFromFileName(fileName.getName());
       var obj = new EFapsInstance("Admin_UI_Menu", objName);
       if (obj.oid==null || obj.oid=="" || obj.oid=="0")  {
