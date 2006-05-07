@@ -247,7 +247,7 @@ function getSQLTableNameFromFileName(_fileName)  {
  */
 function importSQLTable(_fileName)  {
   var fileName = new File(_fileName);
-  if (fileName.getName().startsWith(SQLTable.prototype.FILE_PREFIX))  {
+  if (fileName.getName().startsWith(SQLTable.prototype.FILE_PREFIX) && fileName.getName().endsWith(".js"))  {
     var objName = getSQLTableNameFromFileName(fileName.getName());
     print("Import SQL Table '"+objName+"'");
     var impSQLTable = new SQLTable(objName);
@@ -266,7 +266,7 @@ function importSQLTables(_fileList)  {
   print("~~~~~~~~~~~~~~~~~");
   for (indx in _fileList)  {
     var fileName = new File(_fileList[indx]);
-    if (fileName.getName().startsWith(SQLTable.prototype.FILE_PREFIX))  {
+    if (fileName.getName().startsWith(SQLTable.prototype.FILE_PREFIX) && fileName.getName().endsWith(".js"))  {
       var objName = getSQLTableNameFromFileName(fileName.getName());
       var sqlTable = new SQLTable(objName);
       if (sqlTable.getOid()==null || sqlTable.getOid()=="" || sqlTable.getOid()=="0")  {
