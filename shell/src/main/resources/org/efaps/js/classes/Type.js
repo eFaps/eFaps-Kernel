@@ -100,7 +100,7 @@ Type.prototype.addTrigger = function(_type, _indexPos, _subject)  {
  */
 Type.prototype.cleanupTriggers = function()  {
   var query = new SearchQuery();
-  query.setExpand(Shell.getContext(), this.getOid(), "Admin_Event_Trigger\\Abstract");
+  query.setExpand(Shell.getContext(), this.getOid(), "Admin_Event_Definition\\Abstract");
   query.addSelect(Shell.getContext(), "OID");
   query.execute(Shell.getContext());
   while (query.next())  {
