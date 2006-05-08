@@ -22,9 +22,10 @@
 importClass(Packages.java.io.File);
 importClass(Packages.java.io.FileWriter);
 
-importClass(Packages.org.efaps.db.SearchQuery);
-importClass(Packages.org.efaps.db.Instance);
+importClass(Packages.org.efaps.db.Delete);
 importClass(Packages.org.efaps.db.Insert);
+importClass(Packages.org.efaps.db.Instance);
+importClass(Packages.org.efaps.db.SearchQuery);
 
 /**
  * Implements the Type represenation in JavaScript.
@@ -74,11 +75,49 @@ Type.prototype.FILE_PREFIX = new String("TYPE_");
 Type.prototype.VARNAME     = new String("TYPE");
 
 ///////////////////////////////////////////////////////////////////////////////
+// trigger methods
+
+/**
+ * A new trigger is created and connected to this type.
+ * 
+ * @param _type     trigger type to add
+ * @param _indexPo  index position
+ * @param _subject  name of the trigger to create and connect
+ * @return 
+ */
+Type.prototype.addTrigger = function(_type, _indexPos, _subject)  {
+  var insert = new Insert(Shell.getContext(), _type);
+  insert.add(Shell.getContext(), "Name", _subject);
+  insert.add(Shell.getContext(), "IndexPosition", _indexPos);
+  insert.add(Shell.getContext(), "Abstract", this.getId());
+  insert.execute(Shell.getContext());
+
+  return new Trigger(insert.getInstance());
+}
+
+/**
+ * All triggers connected to this type are removed.
+ */
+Type.prototype.cleanupTriggers = function()  {
+  var query = new SearchQuery();
+  query.setExpand(Shell.getContext(), this.getOid(), "Admin_Event_Trigger\\Abstract");
+  query.addSelect(Shell.getContext(), "OID");
+  query.execute(Shell.getContext());
+  while (query.next())  {
+    var attrOid  = query.get(Shell.getContext(), "OID");
+    (new Trigger(new Instance(Shell.getContext(), attrOid))).remove();
+  }
+  query.close();
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // attribute methods
 
 /**
- * Create a new attribute and connects them to this attribute. The new 
- * attribute gets a few default values:
+ * First, it is checked if an attribute with this name already exists on the 
+ * type. If yes, this attribute is returned. Otherwise a new attribute is 
+ * created and connected to this type. The new attribute gets a few default 
+ * values:
  * <ul>
  *   <li>the attribute type is always <b>String</b>.
  *   <li>the SQL Table is <b>Admin_DataModel_AbstractTable</b>
@@ -89,16 +128,30 @@ Type.prototype.VARNAME     = new String("TYPE");
  * @return new created attribute javascript representation
  */
 Type.prototype.addAttribute = function(_name)  {
-  var insert = new Insert(Shell.getContext(), "Admin_DataModel_Attribute");
-  insert.add(Shell.getContext(), "ParentType", this.getId());
-  insert.add(Shell.getContext(), "Name", _name);
-//  attr.AttributeType  = (new EFapsInstance("Admin_DataModel_AttributeType", "String")).ID;
-insert.add(Shell.getContext(), "AttributeType", 99);
-  insert.add(Shell.getContext(), "Table", (new SQLTable("Admin_AbstractTable")).getId());
-  insert.add(Shell.getContext(), "SQLColumn", "-"+_name);
-  insert.execute(Shell.getContext());
+  var attr;
 
-  return new Attribute(insert.getInstance());
+  var query = new SearchQuery();
+  query.setQueryTypes(Shell.getContext(), "Admin_DataModel_Attribute");
+  query.addWhereExprEqValue(Shell.getContext(), "Name", _name);
+  query.addWhereExprEqValue(Shell.getContext(), "ParentType", this.getId());
+  query.addSelect(Shell.getContext(), "OID");
+  query.execute(Shell.getContext());
+  if (query.next())  {
+    var attrOid = query.get(Shell.getContext(), "OID");
+    attr = new Attribute(new Instance(Shell.getContext(), attrOid));
+  } else  {
+    var insert = new Insert(Shell.getContext(), "Admin_DataModel_Attribute");
+    insert.add(Shell.getContext(), "ParentType", this.getId());
+    insert.add(Shell.getContext(), "Name", _name);
+//  attr.AttributeType  = (new EFapsInstance("Admin_DataModel_AttributeType", "String")).ID;
+    insert.add(Shell.getContext(), "AttributeType", 99);
+    insert.add(Shell.getContext(), "Table", (new SQLTable("Admin_AbstractTable")).getId());
+    insert.add(Shell.getContext(), "SQLColumn", "-"+_name);
+    insert.execute(Shell.getContext());
+
+    attr = new Attribute(insert.getInstance());
+  }
+  return attr;
 }
 
 Type.prototype.printAttributes = function() {
@@ -115,7 +168,10 @@ Type.prototype.printAttributes = function() {
 }
 
 /**
- * All defined attributes of this types are removed in the database.
+ * All defined attributes of this types are cleaned up in the database (not 
+ * deleted, only all properties are removed!). A remove of the attribute is not 
+ * always allowed, because it could be that the attribute is already referenced
+ * (e.g. in a history entry).
  */
 Type.prototype.cleanupAttributes = function()  {
   var query = new SearchQuery();
@@ -123,8 +179,8 @@ Type.prototype.cleanupAttributes = function()  {
   query.addSelect(Shell.getContext(), "OID");
   query.execute(Shell.getContext());
   while (query.next())  {
-    var attrOid = query.get(Shell.getContext(), "OID");
-    (new Attribute(new Instance(Shell.getContext(), attrOid))).remove();
+    var attrOid  = query.get(Shell.getContext(), "OID");
+    (new Attribute(new Instance(Shell.getContext(), attrOid))).cleanup();
   }
   query.close();
 }
@@ -158,6 +214,7 @@ Type.prototype._writeAttributes = function(_file, _space)  {
 Type.prototype.cleanup = function()  {
   this.cleanupAttributes();
   this.cleanupProperties();
+  this.cleanupTriggers();
   this.setParentType(null);
 }
 
