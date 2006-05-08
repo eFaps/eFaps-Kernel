@@ -59,4 +59,13 @@
       useContextClassLoader="false"
     />
 
+  <Valve 
+      className="org.apache.catalina.valves.AccessLogValve"
+      directory="logs"
+	  prefix="eFaps_access_log."
+	  suffix=".txt"
+	  pattern="combined"
+	  resolveHosts="false"
+  />
+
 </Context>
