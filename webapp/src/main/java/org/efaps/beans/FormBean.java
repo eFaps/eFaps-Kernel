@@ -48,6 +48,11 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 
+/**
+ *
+ * @author tmo
+ * @version $Rev$
+ */
 public class FormBean extends AbstractCollectionBean  {
 
   public FormBean()  {
