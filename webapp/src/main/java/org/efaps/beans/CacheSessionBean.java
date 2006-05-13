@@ -30,6 +30,10 @@ import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Context;
 
+/**
+ * @author tmo
+ * @version $Rev$
+ */
 public class CacheSessionBean  {
 
   public CacheSessionBean()  {
