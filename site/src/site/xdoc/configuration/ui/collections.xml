@@ -123,6 +123,18 @@
               <td></td>
             </tr>
             <tr>
+              <td>ClassNameUI</td>
+              <td></td>
+              <td>class name implementing interface org.efaps.admin.datamodel.ui.UIInterface</td>
+              <td></td>
+            <tr>
+              <td>ClassNameUpdate</td>
+              <td></td>
+              <td>class name implementing interface org.efaps.beans.form.FormFieldUpdateInterface</td>
+              <td></td>
+            </tr>
+            </tr>
+            <tr>
               <td>Columns</td>
               <td>20</td>
               <td>number</td>

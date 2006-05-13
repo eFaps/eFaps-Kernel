@@ -47,6 +47,7 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
+import org.efaps.beans.form.FormFieldUpdateInterface;
 
 /**
  *
@@ -191,11 +192,17 @@ if (getCommand().getProperty("TargetConnectType")!=null)  {
     for (Field field : getForm().getFields())  {
       if (field.getExpression()==null && field.isCreatable())  {
         FileItem fileItem = getFileParameter(field.getName());
-// TODO: ev. exception?
-        if (fileItem!=null)  {
+        String updateClassName = field.getProperty("ClassNameUpdate");
+
+        if (updateClassName != null)  {
+          Class < FormFieldUpdateInterface > updateClass = (Class < FormFieldUpdateInterface >) Class.forName(updateClassName);
+          FormFieldUpdateInterface fieldUpdate = updateClass.newInstance();
+          fieldUpdate.update(_context, this, field);
+        } else if (fileItem!=null)  {
           Checkin checkin = new Checkin(_context, getInstance());
           checkin.execute(_context, fileItem.getName(), fileItem.getInputStream(), (int)fileItem.getSize());
         }
+// TODO: ev. exception?
       }
     }
   }
@@ -221,11 +228,17 @@ System.out.println("field.getName()="+field.getName());
     for (Field field : getForm().getFields())  {
       if (field.getExpression()==null && field.isEditable())  {
         FileItem fileItem = getFileParameter(field.getName());
-// TODO: ev. exception?
-        if (fileItem!=null)  {
+        String updateClassName = field.getProperty("ClassNameUpdate");
+
+        if (updateClassName != null)  {
+          Class < FormFieldUpdateInterface > updateClass = (Class < FormFieldUpdateInterface >) Class.forName(updateClassName);
+          FormFieldUpdateInterface fieldUpdate = updateClass.newInstance();
+          fieldUpdate.update(_context, this, field);
+        } else if (fileItem!=null)  {
           Checkin checkin = new Checkin(_context, getInstance());
           checkin.execute(_context, fileItem.getName(), fileItem.getInputStream(), (int)fileItem.getSize());
         }
+// TODO: ev. exception?
       }
     }
 
