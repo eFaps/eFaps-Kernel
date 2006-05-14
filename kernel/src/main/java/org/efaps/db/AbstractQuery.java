@@ -796,7 +796,7 @@ private void appendWhereClause(CompleteStatement _completeStatement, int _orderI
         String sqlPrefix = _attr.getTable().getSqlTable() + _index;
         _selectType.getTypeTableNames().add(_attr.getTable());
         for (String _sqlColName : _attr.getSqlColNames())  {
-          SelectExpression selectExpr = getSelectExpression(_selectType, sqlPrefix + "." + _sqlColName, "''");
+          SelectExpression selectExpr = getSelectExpression(_selectType, sqlPrefix + "." + _sqlColName, "null");
 //System.out.println("selectExprs.add="+selectExpr);
           selectExprs.add(selectExpr);
         }
@@ -1359,6 +1359,7 @@ if (getType().getMainTable().getSqlColType()!=null)  {
      */
     protected void addSelect(boolean _isOID, Object _key, Attribute _attr)  {
       getJoinElement().addSelectAttribute(getTypeIndex(), this, _isOID, _key, _attr);
+
 //for (String _sqlColName : _attr.getSqlColNames())  {
 //      String expression = _attr.getTable().getSqlTable() + getTypeIndex() + "." + _sqlColName;
 //      getTypeTableNames().add(_attr.getTable());
@@ -1405,8 +1406,10 @@ elm.addWhere(this, attr, selectType, linkType.getAttribute("ID"));
 
 // for ID selection
 String expression = getType().getMainTable().getSqlTable() + getTypeIndex()  + "." + getType().getMainTable().getSqlColId();
-SelectExpression selectExpr = elm.getSelectExpression(this, expression, "''");
+SelectExpression selectExpr = elm.getSelectExpression(this, expression, "null");
 elm.setMatchColumn(selectExpr.getIndex());
+
+getTypeTableNames().add(attr.getTable());
 
 getMapJoinElements().put(_expression, elm);
 
@@ -1428,7 +1431,7 @@ public void add4Where(Attribute _attr)  {
   for (String _sqlColName : _attr.getSqlColNames())  {
     String expression = _attr.getTable().getSqlTable() + getTypeIndex() + "." + _sqlColName;
     getTypeTableNames().add(_attr.getTable());
-    SelectExpression selectExpr = getJoinElement().getSelectExpression(this, expression, "''");
+    SelectExpression selectExpr = getJoinElement().getSelectExpression(this, expression, "null");
   }
 }
 
