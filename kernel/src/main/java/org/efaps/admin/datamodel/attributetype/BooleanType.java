@@ -52,14 +52,12 @@ public class BooleanType extends AbstractType  {
    * @todo test that only one value is given for indexes
    */
   public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes) throws SQLException  {
-//    int value = _rs.getInt(_index);
     Boolean value = false;
-/*
-    if (_rs.getInt(_indexes.get(0).intValue())!=0)  {
+    Long longValue = _rs.getLong(_indexes.get(0).intValue());
+    if ((longValue != null) && (longValue != 0))  {
       value = true;
     }
-*/
-setValue(value);
+    setValue(value);
     return value;
   }
 

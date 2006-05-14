@@ -43,6 +43,7 @@ public class OracleDatabase extends AbstractDatabase  {
     this.columnMap.put(ColumnType.DATETIME,     "date");
     this.columnMap.put(ColumnType.BLOB,         "blob");
     this.columnMap.put(ColumnType.CLOB,         "clob");
+    this.columnMap.put(ColumnType.BOOLEAN,      "number");
   }
 
   /**

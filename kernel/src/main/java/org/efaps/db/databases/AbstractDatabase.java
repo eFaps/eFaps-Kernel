@@ -38,26 +38,29 @@ public abstract class AbstractDatabase  {
    */
   public enum ColumnType  {
 
-    /* integer number */
+    /** integer number */
     INTEGER,
 
-    /* real number */
+    /** real number */
     REAL,
 
-    /* short string */
+    /** short string */
     STRING_SHORT,
 
-    /* long string */
+    /** long string */
     STRING_LONG,
 
-    /* data and time */
+    /** data and time */
     DATETIME,
 
-    /* binary large object */
+    /** binary large object */
     BLOB,
 
-    /* character large object */
-    CLOB
+    /** character large object */
+    CLOB,
+
+    /** boolean */
+    BOOLEAN
   }
 
   /**
