@@ -83,6 +83,15 @@
   <filter>
     <filter-name>securityFilter</filter-name>
     <filter-class>org.efaps.servlet.SecurityFilter</filter-class>
+
+    <init-param>
+      <param-name>urlLoginPage</param-name>
+      <param-value>login.jsp</param-value>
+      <description>
+        Url to the login jsp. The url must be defined relative to the servlet
+        context name.
+      </description>
+    </init-param>
   </filter>
 
   <!-- Extensions Filter used for Apache myFaces -->
@@ -139,12 +148,6 @@
     <display-name>eFapsServlet</display-name>
     <description>no description</description>
     <servlet-class>org.efaps.servlet.RequestHandler</servlet-class>
-
-    <init-param>
-      <param-name>urlLoginPage</param-name>
-      <param-value>${ROOTURL}/login.jsp</param-value>
-    </init-param>
-
     <load-on-startup>1</load-on-startup>
   </servlet>
 
@@ -167,6 +170,13 @@
     <display-name>eFapsLoginServlet</display-name>
     <description>eFaps servlet used to log in to eFaps.</description>
     <servlet-class>org.efaps.servlet.LoginServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>eFapsLogoutServlet</servlet-name>
+    <display-name>eFapsLogoutServlet</display-name>
+    <description>eFaps servlet used to log out from eFaps.</description>
+    <servlet-class>org.efaps.servlet.LogoutServlet</servlet-class>
   </servlet>
 
   <servlet>
@@ -365,6 +375,11 @@
   <servlet-mapping>
     <servlet-name>eFapsLoginServlet</servlet-name>
     <url-pattern>servlet/login/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>eFapsLogoutServlet</servlet-name>
+    <url-pattern>servlet/logout</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

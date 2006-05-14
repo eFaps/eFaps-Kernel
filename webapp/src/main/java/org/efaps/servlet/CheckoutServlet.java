@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.servlet;
@@ -31,8 +34,11 @@ import org.efaps.db.SearchQuery;
 
 /**
  * The servlet checks out files from objects.
+ *
+ * @author tmo
+ * @version $Rev$
  */
-public class CheckoutServlet extends AbstractServlet  {
+public class CheckoutServlet extends HttpServlet  {
 
   /**
    * name of the object id parameter

@@ -21,7 +21,11 @@
 package org.efaps.servlet;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -53,9 +57,32 @@ public class SecurityFilter implements Filter  {
   final public static String SESSIONPARAM_LOGIN_NAME =   "login.name";
 
   /**
+   * Name of the session variable for the login forward (after the login is
+   * done this is the next page).
+   */
+  final public static String SESSIONPARAM_LOGIN_FORWARD = "login.forward";
+
+  /**
+   * The string is name of the parameter used to define the url login page.
+   */
+  final public static String INIT_PARAM_URL_LOGIN_PAGE = "urlLoginPage";
+
+  /**
    *
    */
   final private static TransactionManager transactionManager = new SlideTransactionManager();
+
+  /**
+   * All uris which are not needed filtered by security check (password check)
+   * are stored in this set variable.
+   */
+  private final Set exludeUris = new HashSet();
+
+  /**
+   * The string is URI to which a forward must be made if the user is not
+   * logged in.
+   */
+  private String notLoggedInForward = null;
 
 
   /**
@@ -67,8 +94,22 @@ public class SecurityFilter implements Filter  {
       2.Does not return within a time period defined by the web container
 
    */
-  public void init(FilterConfig _filterConfig) throws ServletException  {
+  public void init(final FilterConfig _filterConfig) throws ServletException  {
+    String root = "/" + _filterConfig.getServletContext().getServletContextName() + "/";
+
+    this.notLoggedInForward = "/" + _filterConfig.getInitParameter(INIT_PARAM_URL_LOGIN_PAGE);
+
+    if ((this.notLoggedInForward == null) || (this.notLoggedInForward.length() == 0))  {
+      throw new ServletException("Init parameter "
+          + "'" + INIT_PARAM_URL_LOGIN_PAGE + "' not defined");
+    }
+
+    this.exludeUris.add((root + this.notLoggedInForward).replaceAll("//+", "/"));
+    this.exludeUris.add((root + "/servlet/login").replaceAll("//+", "/"));
+
 System.out.println("------ filter init");
+// _filterConfig.getInitParameter("name");
+System.out.println("            _filterConfig.getServletContext().getServletContextName()="+this.exludeUris);
   }
 
   /**
@@ -115,22 +156,20 @@ String uri = httpRequest.getRequestURI();
 
 
     if (httpRequest.getAuthType()!=null && httpRequest.getAuthType().equals(HttpServletRequest.BASIC_AUTH))  {
-System.out.println("        Principal principal = "+httpRequest.getUserPrincipal());
-String userName = httpRequest.getUserPrincipal().getName();
-test(userName, httpRequest, _response, _chain);
-
-    } else if (isLoggedIn(httpRequest) || uri.equals("/eFaps/login.jsp") || uri.equals("/eFaps/servlet/login"))  {
-
-  String userName = (String)httpRequest.getSession().getAttribute(SESSIONPARAM_LOGIN_NAME);
-test(userName, httpRequest, _response, _chain);
-
-
+      String userName = httpRequest.getUserPrincipal().getName();
+      test(userName, httpRequest, _response, _chain);
+    } else if (isLoggedIn(httpRequest))  {
+      String userName = (String)httpRequest.getSession().getAttribute(SESSIONPARAM_LOGIN_NAME);
+      test(userName, httpRequest, _response, _chain);
+    } else if (this.exludeUris.contains(uri))  {
+      _chain.doFilter(_request, _response);
     } else  {
-System.out.println("       NOT logged in");
-
-      _request.getRequestDispatcher("/login.jsp").forward(_request, _response);
-
-//((HttpServletResponse)_response).sendRedirect("/eFaps/login.jsp");
+      String markUrl = httpRequest.getRequestURI();
+      if (httpRequest.getQueryString() != null)  {
+        markUrl += "?" + httpRequest.getQueryString();
+      }
+      httpRequest.getSession().setAttribute(SESSIONPARAM_LOGIN_FORWARD, markUrl);
+      _request.getRequestDispatcher(this.notLoggedInForward).forward(_request, _response);
     }
   }
 

@@ -23,6 +23,7 @@ package org.efaps.servlet;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -45,7 +46,7 @@ import org.efaps.db.SearchQuery;
  * @author tmo
  * @version $Rev$
  */
-public class ImageServlet extends AbstractServlet  {
+public class ImageServlet extends HttpServlet  {
 
   /**
    * Logging instance used in this class.

@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.servlet;
@@ -57,8 +60,11 @@ import org.efaps.webdav.method.PropFindMethod;
 
 /**
  *
+ *
+ * @author tmo
+ * @version $Rev$
  */
-public class WebDAVServlet extends AbstractServlet  {
+public class WebDAVServlet extends HttpServlet  {
 
 //  private static final String METHOD_HEAD = "HEAD";
   private static final String METHOD_PROPFIND = "PROPFIND";

@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.servlet;
@@ -20,18 +23,22 @@ package org.efaps.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.ServletException;
 
 import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 
 /**
  * The servlet logs in a user with name and password.
+ *
+ * @author tmo
+ * @version $Rev$
  */
-public class LoginServlet extends AbstractServlet  {
+public class LoginServlet extends HttpServlet  {
 
   /**
    * name of the name parameter
@@ -45,7 +52,7 @@ public class LoginServlet extends AbstractServlet  {
 
   /**
    * User wants to login into eFaps. The user name and password is checked.
-   * User name is stored in session variable {@link AbstractServlet#SESSIONPARAM_LOGIN_NAME}.
+   * User name is stored in session variable {@link SecurityFilter#SESSIONPARAM_LOGIN_NAME}.
    * After login a redirect to the "common/Main.jsf" is made.<br/>
    * The post parameter names are {@link #PARAM_USERNAME} and
    * {@link #PARAM_PASSWORD}.
@@ -54,7 +61,7 @@ public class LoginServlet extends AbstractServlet  {
    * @param _res response variable
    * @see #checkLogin
    */
-  protected void doGet(HttpServletRequest _req, HttpServletResponse _res) throws ServletException, IOException  {
+  protected void doGet(final HttpServletRequest _req, final HttpServletResponse _res) throws ServletException, IOException  {
     PrintWriter out = _res.getWriter();
 
     String name = _req.getParameter(PARAM_USERNAME);
@@ -62,12 +69,18 @@ public class LoginServlet extends AbstractServlet  {
 
     if (checkLogin(name, passwd))  {
       HttpSession session = _req.getSession(true);
-      session.setAttribute(SESSIONPARAM_LOGIN_NAME, name);  // just a marker object
+      session.setAttribute(SecurityFilter.SESSIONPARAM_LOGIN_NAME, name);
 
       _res.setContentType("text/html");
-      _res.sendRedirect(RequestHandler.replaceMacrosInUrl("${COMMONURL}/Main.jsf"));
+
+String newUrl = (String) _req.getSession().getAttribute(SecurityFilter.SESSIONPARAM_LOGIN_FORWARD);
+if (newUrl == null)  {
+  newUrl = RequestHandler.replaceMacrosInUrl("${COMMONURL}/Main.jsf");
+} else  {
+  _req.getSession().removeAttribute(SecurityFilter.SESSIONPARAM_LOGIN_FORWARD);
+}
+_res.sendRedirect(newUrl);
     } else  {
-//_res.sendRedirect(RequestHandler.replaceMacrosInUrl("${ROOTURL}/"));
       doSendLoginFrameNotCorrect(_req, _res);
     }
   }
