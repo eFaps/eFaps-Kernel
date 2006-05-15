@@ -667,6 +667,7 @@ function eFapsMenu(_doc, _parent, _id, _name, _text, _href, _submitForm, _popup,
   this.document = _doc,
   this.menuDiv = _doc.createElement("div");
   this.menuDiv.className = this.className;
+  this.submitLock = false;
   if (_id && _id!="")  {
     this.menuDiv.id = _id;
   }
@@ -781,13 +782,21 @@ eFapsMenu.prototype.executeHidden = function()  {
 eFapsMenu.prototype.executeSubmit = function()  {
   if (!this.submitLock)
   {
-    this.submitLock = true;
-    eFapsProcessStart();
-    this.getForm().action=this.href;
-    if (this.getForm().command)  {
-	  this.getForm().command.value=this.name;
+    var errorMsg = checkFormForRequirements(this.getForm());
+    if (errorMsg == null || errorMsg.length == 0)
+    {
+      this.submitLock = true;
+      eFapsProcessStart();
+      this.getForm().action=this.href;
+      if (this.getForm().command)  {
+        this.getForm().command.value=this.name;
+      }
+      this.getForm().submit();
     }
-    this.getForm().submit();
+    else
+    {
+      alert(errorMsg);
+    }
   }
   else
   {
@@ -807,5 +816,91 @@ eFapsMenu.prototype.clean = function(_isSubMenu)  {
   }
   if (_isSubMenu)  {
     this.menuDiv.parentNode.removeChild(this.menuDiv);
+  }
+}
+
+/**
+ * The function checks if all mandatory fields on a form are filled
+ *
+ * @param _form   the form object to be checked
+ * @return empty strin if all mandatory fields are filled, a error text else.
+ */
+function checkFormForRequirements(_form)
+{
+  var tables = _form.getElementsByTagName("table");
+  var i = 0;
+  var formTable = null;
+  var errorMsg = "";
+
+  //ermittle die formulartabelle
+  while (i < tables.length && formTable == null)
+  {
+    if(tables[i].className == "eFapsForm")
+    {
+      formTable = tables[i];
+    }
+  }
+
+  if (formTable != null)
+  {
+    var tableRows = formTable.getElementsByTagName("tr");
+    var rowFields = new Array();
+    var fieldInputs = new Array();
+
+	for (i = tableRows.length-1; i >= 0; i--)
+    {
+      rowFields = tableRows[i].getElementsByTagName("td");
+      if (rowFields.length > 1)
+      {
+        if (rowFields[0].className == "eFapsFormLabelRequired")
+        {
+		  //checke 'input' felder die einen text enthalten können
+          fieldInputs = rowFields[1].getElementsByTagName("input");
+          if (fieldInputs.length > 0 &&
+            (fieldInputs[0].type == null || fieldInputs[0].type == "" || 
+            fieldInputs[0].type == "text" || fieldInputs[0].type == "file" || 
+            fieldInputs[0].type == "password" || fieldInputs[0].type == "hidden") && 
+            (fieldInputs[0].value == null || fieldInputs[0].value == ""))
+          {
+            errorMsg = "Please fill out field '"+rowFields[0].firstChild.data+"'\n"+errorMsg;
+            if (fieldInputs[0].type != "hidden")
+            {
+              fieldInputs[0].focus();
+            }
+          }
+
+		  //checke 'textarea' felder
+		  fieldInputs = rowFields[1].getElementsByTagName("textarea");
+          if (fieldInputs.length > 0 &&
+            (fieldInputs[0].value == null || fieldInputs[0].value == ""))
+          {
+            errorMsg = "Please fill out field '"+rowFields[0].firstChild.data+"'\n"+errorMsg;
+            fieldInputs[0].focus();
+          }
+
+		  //checke 'selection' felder
+          fieldInputs = rowFields[1].getElementsByTagName("select");
+          if (fieldInputs.length > 0)
+          {
+            var selectionOptions = fieldInputs[0].options;
+            var hasQualifiedSelection = false;
+            for (var j = 0; j < selectionOptions.length && !hasQualifiedSelection; j++)
+            {
+              if (selectionOptions[j].selected && selectionOptions[j].text != "")
+              {
+                hasQualifiedSelection = true;
+              }
+            }
+            if (!hasQualifiedSelection)
+            {
+              errorMsg = "Please make a selection on '"+rowFields[0].firstChild.data+"'\n"+errorMsg;
+              fieldInputs[0].focus();
+            }
+          }
+        }
+      }
+    }
+
+	return errorMsg;
   }
 }
