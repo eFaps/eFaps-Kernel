@@ -779,13 +779,22 @@ eFapsMenu.prototype.executeHidden = function()  {
  * @see #execute
  */
 eFapsMenu.prototype.executeSubmit = function()  {
-  eFapsProcessStart();
-  this.getForm().action=this.href;
-  if (this.getForm().command)  {
-    this.getForm().command.value=this.name;
+  if (!this.submitLock)
+  {
+    this.submitLock = true;
+    eFapsProcessStart();
+    this.getForm().action=this.href;
+    if (this.getForm().command)  {
+	  this.getForm().command.value=this.name;
+    }
+    this.getForm().submit();
   }
-  this.getForm().submit();
+  else
+  {
+	  alert("Please click only once on '"+this.textHtmlElement.nodeValue+"'");
+  }
 }
+
 /**
  * The function cleans the menu (removes all sub menus from the menu)
  *
