@@ -67,12 +67,4 @@ try {
     String ret = "";
     return ret;
   }
-
-  /**
-   *
-   * @param _context  context for this request
-   * @param _value    new value to set
-   */
-  public void set(Context _context, String _value)  {
-  }
 }

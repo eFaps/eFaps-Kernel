@@ -70,7 +70,8 @@ public abstract class AbstractLinkType extends AbstractType  {
    */
   public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes)  {
 //    setValue(_rs.getLong(_index));
-setValue(_rs.getLong(_indexes.get(0)));
+Long value = _rs.getLong(_indexes.get(0));
+setValue(value != null ? value : 0);
 return getValue();
   }
 
