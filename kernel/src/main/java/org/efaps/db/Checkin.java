@@ -90,6 +90,26 @@ public class Checkin extends AbstractAction  {
       File file = new File(_fileName);
       String fileName = file.getName();
 
+      // remove the path from the filename
+      int lastSeperatorPosX   = fileName.lastIndexOf("/");
+      int lastSeperatorPosWin = fileName.lastIndexOf("\\");
+      int lastSeperatorPosMac = fileName.lastIndexOf(":");
+
+      int lastSeperatorPos = lastSeperatorPosX;
+      if (lastSeperatorPos < lastSeperatorPosWin)
+      {
+          lastSeperatorPos = lastSeperatorPosWin;
+      }
+      if (lastSeperatorPos < lastSeperatorPosMac)
+      {
+          lastSeperatorPos = lastSeperatorPosMac;
+      }
+
+      if (lastSeperatorPos > -1 && lastSeperatorPos < fileName.length()-1)
+      {
+          fileName = fileName.substring(lastSeperatorPos+1);
+      }
+
       Update update = new Update(_context, getInstance());
       update.add(_context, attrFileName, fileName);
       update.add(_context, attrFileLength, ""+size);
