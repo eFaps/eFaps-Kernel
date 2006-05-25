@@ -34,7 +34,10 @@ import org.efaps.db.transaction.StoreResource;
 import org.efaps.util.EFapsException;
 
 /**
+ * The class is used as interface to the eFaps kernel to delete one object.
  *
+ * @author tmo
+ * @version $Rev$
  */
 public class Delete  {
 
@@ -45,6 +48,8 @@ public class Delete  {
 
   /**
    *
+   * @param _context    eFaps context for this request
+   * @param _instance
    */
   public Delete(Context _context, Instance _instance) throws EFapsException  {
     setInstance(_instance);
@@ -52,20 +57,31 @@ public class Delete  {
 
   /**
    *
+   * @param _context    eFaps context for this request
+   * @param _type
+   * @param _id
    */
   public Delete(Context _context, Type _type, String _id) throws EFapsException  {
     setInstance(new Instance(_context, _type, _id));
   }
 
   /**
-   *
+   * @param _context    eFaps context for this request
+   * @param _oid
    */
   public Delete(Context _context, String _oid) throws Exception  {
     setInstance(new Instance(_context, _oid));
   }
 
   /**
+   * The method executes the delete. For the object, a delete is made in all
+   * SQL tables from the type (if the SQL table is not read only!). If a store
+   * is defined for the type, the checked in file is also deleted (with the
+   * help of the store resource implementation; if the store resource
+   * implementation has not implemented the delete, the file is not deleted!).
    *
+   * @param _context    eFaps context for this request
+   * @see SQLTable#readOnly
    */
   public void execute(Context _context) throws Exception  {
     ConnectionResource con = null;
@@ -79,8 +95,8 @@ public class Delete  {
 
         SQLTable mainTable = getInstance().getType().getMainTable();
         for (SQLTable curTable : getInstance().getType().getTables())  {
-          if (curTable != mainTable)  {
-            StringBuffer buf = new StringBuffer();
+          if ((curTable != mainTable) && !curTable.isReadOnly())  {
+            StringBuilder buf = new StringBuilder();
             buf.append("delete from ").append(curTable.getSqlTable()).append(" ");
             buf.append("where ").append(curTable.getSqlColId()).append("=").append(getInstance().getId()).append("");
             if (LOG.isTraceEnabled())  {
@@ -89,7 +105,7 @@ public class Delete  {
             stmt.addBatch(buf.toString());
           }
         }
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         buf.append("delete from ").append(mainTable.getSqlTable()).append(" ");
         buf.append("where ").append(mainTable.getSqlColId()).append("=").append(getInstance().getId()).append("");
         if (LOG.isTraceEnabled())  {
@@ -117,10 +133,7 @@ public class Delete  {
 
     StoreResource store = null;
     try  {
-      String provider  = getInstance().getType().getProperty("VFSProvider");
-System.out.println("...provider="+provider);
-System.out.println("...getInstance()="+getInstance());
-      if (provider != null)  {
+      if (getInstance().getType().hasStoreResource())  {
         store = _context.getStoreResource(getInstance());
         store.delete();
         store.commit();

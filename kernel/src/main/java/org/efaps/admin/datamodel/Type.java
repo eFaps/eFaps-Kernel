@@ -53,6 +53,9 @@ import org.efaps.servlet.RequestHandler;
 /**
  * This is the class for the type description. The type description holds
  * information about creation of a new instance of a type with default values.
+ *
+ * @author tmo
+ * @version $Rev$
  */
 public class Type extends DataModelObject  {
 
@@ -381,6 +384,17 @@ public class Type extends DataModelObject  {
    */
   public List < EventDefinition > getTrigger(final TriggerEvent _triggerEvent)  {
     return this.trigger.get(_triggerEvent);
+  }
+
+  /**
+   * For the given type it is tested if a store is defined for the type.
+   *
+   * @param _type type to test
+   * @return <i>true</i> if a store resource is defined for the type, otherwise
+   *         <i>false</i> is returned
+   */
+  public boolean hasStoreResource()  {
+    return getProperty("StoreResource") != null ? true : false;
   }
 
   /////////////////////////////////////////////////////////////////////////////
