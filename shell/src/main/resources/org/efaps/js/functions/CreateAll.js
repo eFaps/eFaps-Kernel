@@ -310,12 +310,14 @@ function _eFapsCreateAllUserTables(_con, _stmt)  {
   _eFapsCreateCreateTable(_con, _stmt, "Abstract User", "USERABSTRACT", null,[
       ["TYPEID                "+TYPE_INTEGER+"                   not null"],
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["EXTERNALKEY           "+TYPE_STRING_SHORT+"(128)"],
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
       ["CREATED               "+TYPE_DATETIME+"                  not null"],
       ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
       ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
 ["STATUS  int  default 10001 not null"],
-      ["constraint USERABSTR_UK_NAME   unique(NAME)"]
+      ["constraint USERABSTR_UK_NAME   unique(NAME)"],
+      ["constraint USERABSTR_UK_EXTKEY unique(EXTERNALKEY)"]
   ]);
 
   _eFapsCreateCreateTable(_con, _stmt, "Person object", "USERPERSON", "USERABSTRACT",[
@@ -446,29 +448,25 @@ function createAll()  {
 
     print("Create Abstract Tables");
 
-    Context.getDbType().createTable(con, "ABSTRACT", null);
-    _exec(stmt, "Table 'ABSTRACT'", "Abstract",
-      "alter table ABSTRACT "+
-        "add TYPEID                "+TYPE_INTEGER+"                   not null "+
-        "add NAME                  "+TYPE_STRING_SHORT+"(128)         not null "+
-        "add REVISION              "+TYPE_STRING_SHORT+"(10) "+
-        "add CREATOR               "+TYPE_INTEGER+"                   not null "+
-        "add CREATED               "+TYPE_DATETIME+"                  not null "+
-        "add MODIFIER              "+TYPE_INTEGER+"                   not null "+
-        "add MODIFIED              "+TYPE_DATETIME+"                  not null "+
-        "add constraint ABSTR_FK_CRTR       foreign key(CREATOR)      references USERPERSON(ID) "+
-        "add constraint ABSTR_FK_MDFR       foreign key(MODIFIER)     references USERPERSON(ID)"
-    );
+    _eFapsCreateCreateTable(con, stmt, "Abstract Table", "ABSTRACT", null,[
+        ["TYPEID                "+TYPE_INTEGER+"                   not null"],
+        ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+        ["REVISION              "+TYPE_STRING_SHORT+"(10)"],
+        ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+        ["CREATED               "+TYPE_DATETIME+"                  not null"],
+        ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+        ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+        ["constraint ABSTR_FK_CRTR       foreign key(CREATOR)      references USERPERSON(ID)"],
+        ["constraint ABSTR_FK_MDFR       foreign key(MODIFIER)     references USERPERSON(ID)"]
+    ]);
 
-    Context.getDbType().createTable(con, "PROPERTY", null);
-    _exec(stmt, "Table 'PROPERTY'", "Properties",
-      "alter table PROPERTY "+
-        "add ABSTRACT              "+TYPE_INTEGER+"                   not null "+
-        "add NAME                  "+TYPE_STRING_SHORT+"(128)         not null "+
-        "add VALUE                 "+TYPE_STRING_SHORT+"(128) "+
-        "add constraint PROPERTY_UK_ABNAME  unique(ABSTRACT,NAME) "+
-        "add constraint PROPERTY_FK_ABSTR   foreign key(ABSTRACT)     references ABSTRACT(ID) on delete cascade"
-    );
+    _eFapsCreateCreateTable(con, stmt, "Properties", "PROPERTY", null,[
+        ["ABSTRACT              "+TYPE_INTEGER+"                   not null"],
+        ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+        ["VALUE                 "+TYPE_STRING_SHORT+"(128)"],
+        ["constraint PROPERTY_UK_ABNAME  unique(ABSTRACT,NAME)"],
+        ["constraint PROPERTY_FK_ABSTR   foreign key(ABSTRACT)     references ABSTRACT(ID) on delete cascade"]
+    ]);
 
     ///////////////////////////////////////////////////////////////////////////////
 
@@ -593,8 +591,8 @@ function createAll()  {
     ]);
 //        "constraint DMATTR_UK_DMTP_NM   unique(DMTYPE,NAME),"+
 
-    _exec(stmt, "View 'ADMINTYPE'", "view representing all types",
-      "create view ADMINTYPE as "+
+    _exec(stmt, "View 'V_ADMINTYPE'", "view representing all types",
+      "create view V_ADMINTYPE as "+
         "select "+
             "ABSTRACT.ID,"+
             "ABSTRACT.NAME,"+
@@ -604,8 +602,8 @@ function createAll()  {
           "where ABSTRACT.ID=DMTYPE.ID"
     );
 
-    _exec(stmt, "View 'ADMINATTRIBUTE'", "view representing all attributes",
-      "create view ADMINATTRIBUTE as "+
+    _exec(stmt, "View 'V_ADMINATTRIBUTE'", "view representing all attributes",
+      "create view V_ADMINATTRIBUTE as "+
         "select "+
             "ABSTRACT.ID,"+
             "ABSTRACT.NAME,"+
@@ -618,8 +616,8 @@ function createAll()  {
           "where ABSTRACT.ID=DMATTRIBUTE.ID"
     );
 
-    _exec(stmt, "View 'ADMINSQLTABLE'", "view representing all sql tables",
-      "create view ADMINSQLTABLE as "+
+    _exec(stmt, "View 'V_ADMINSQLTABLE'", "view representing all sql tables",
+      "create view V_ADMINSQLTABLE as "+
         "select "+
               "ABSTRACT.ID,"+
               "ABSTRACT.NAME,"+
@@ -720,7 +718,6 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLTable',         'SQLTABLE',         100, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLColumnID',      'SQLCOLUMNID',      100, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLColumnType',    'SQLCOLUMNTYPE',    100, null);
-    _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLNewIDSelect',   'SQLNEWIDSELECT',   100, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'DMTableMain',      'DMTABLEMAIN',      400, typeIdSQLTable);
     _eFapsCreateInsertProp(stmt, typeIdSQLTable, "Tree", "Admin_DataModel_SQLTableTree");
     _eFapsCreateInsertProp(stmt, typeIdSQLTable, "Icon", "${ROOTURL}/servlet/image/eFapsAdminDataModelSQLTable");
@@ -847,6 +844,7 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
         "select "+
             "USERABSTRACT.ID,"+
             "USERABSTRACT.NAME,"+
+            "USERABSTRACT.EXTERNALKEY,"+
             "USERPERSON.FIRSTNAME,"+
             "USERPERSON.LASTNAME,"+
             "USERPERSON.EMAIL,"+
@@ -864,7 +862,8 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
       "create view V_USERROLE as "+
         "select "+
             "USERABSTRACT.ID,"+
-            "USERABSTRACT.NAME "+
+            "USERABSTRACT.NAME,"+
+            "USERABSTRACT.EXTERNALKEY "+
           "from USERABSTRACT "+
           "where USERABSTRACT.TYPEID="+typeIdRole
     );
@@ -873,7 +872,8 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
       "create view V_USERGROUP as "+
         "select "+
             "USERABSTRACT.ID,"+
-            "USERABSTRACT.NAME "+
+            "USERABSTRACT.NAME,"+
+            "USERABSTRACT.EXTERNALKEY "+
           "from USERABSTRACT "+
           "where USERABSTRACT.TYPEID="+typeIdGroup
     );

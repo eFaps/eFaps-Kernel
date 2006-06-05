@@ -25,6 +25,8 @@ import org.efaps.util.EFapsException;
 
 /**
  *
+ * @author tmo
+ * @version $Id$
  */
 public class Menu extends MenuAbstract  {
 
@@ -47,15 +49,16 @@ public class Menu extends MenuAbstract  {
    * An sub command or menu with the given id is added to this menu.
    *
    * @param _context  eFaps context for this request
+   * @param _sortId   id used to sort
    * @param _id       command / menu id
    */
-  protected void add(Context _context, long _id) throws Exception  {
+  protected void add(Context _context, long _sortId, long _id) throws Exception  {
     Command command = Command.get(_id);
     if (command != null)  {
-      add(command);
+      add(_sortId, command);
     } else  {
       Menu subMenu = Menu.get(_id);
-      add(subMenu);
+      add(_sortId, subMenu);
     }
   }
 

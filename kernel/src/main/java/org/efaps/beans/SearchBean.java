@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Search;
@@ -59,7 +60,7 @@ System.out.println("SearchBean.destructor");
    * @param _name name of the search object
    * @see #search
    */
-  public void setSearchName(String _name) throws Exception  {
+  public void setSearchName(final String _name) throws Exception  {
     addHiddenValue("search" , _name);
     setSearch(Search.get(Context.getThreadContext(), _name));
   }
@@ -70,7 +71,7 @@ System.out.println("SearchBean.destructor");
    *
    * @param _name name of the command object
    */
-  public void setCommandName(String _name) throws Exception  {
+  public void setCommandName(final String _name) throws Exception  {
     addHiddenValue("searchCommand" , _name);
     setCommand(getSearch().getSearchCommand(_name));
     setForm(((Search.SearchCommand)getCommand()).getSearchForm());
@@ -118,7 +119,7 @@ System.out.println("hallo!.3");
    * @param _oid    object id
    * @see #instance
    */
-  public void setOid(String _oid) throws Exception  {
+  public void setOid(final String _oid) throws Exception  {
     super.setOid(_oid);
     if (_oid!=null)  {
       addHiddenValue("parentOid", _oid);
@@ -193,26 +194,76 @@ query.addWhereExprEqValue(context, field.getExpression(), value);
   public void execute4SearchForm() throws Exception  {
     setValues(new ArrayList());
     getValues().add(null);
-    for (int i=0; i<getForm().getFields().size(); i++)  {
+
+    Type type = ((Search.SearchCommand)getCommand()).getSearchType();
+
+    for (int i = 0; i < getForm().getFields().size(); i++)  {
       Field field = (Field)getForm().getFields().get(i);
-AttributeTypeInterface attrValue = null;
-if (field.getExpression()!=null)  {
-  Type type = ((Search.SearchCommand)getCommand()).getSearchType();
-  attrValue = type.getAttribute(field.getExpression()).newInstance();
-//  attrValue.setField(field);
-} else if (field.getProgramValue()!=null)  {
-  attrValue = field.getProgramValue()
-      .evalSearchAttributeValue(Context.getThreadContext(), getInstance());
-//  attrValue.setField(field);
-} else if (field.getGroupCount()>0)  {
-  if (getMaxGroupCount()<field.getGroupCount())  {
-    setMaxGroupCount(field.getGroupCount());
-  }
-}
-      add4Form(attrValue, field);
+
+      if (field.getExpression()!=null)  {
+        Attribute attr = type.getAttribute(field.getExpression());
+        if (attr!=null)  {
+          addFieldValue(field, attr, null, null);
+        }
+      } else if (field.getClassUI()!=null)  {
+        addFieldValue(field, null);
+      } else if (field.getGroupCount()>0)  {
+        addFieldValue(field, null);
+        if (getMaxGroupCount()<field.getGroupCount())  {
+          setMaxGroupCount(field.getGroupCount());
+        }
+      }
     }
+
+
     setInitialised(true);
   }
+
+///////////////////////////////////////////////////////////////////////////////
+// START COPY from FormBean
+
+  /**
+   * Adds a field value to the list of values.
+   *
+   * @see #addFieldValue(String,Field,UIInterface,Object,Instance)
+   */
+  public void addFieldValue(Field _field, Attribute _attr, Object _value, Instance _instance)  {
+    String label = null;
+    if (_field.getLabel()!=null)  {
+      label = _field.getLabel();
+    } else  {
+      label = _attr.getParent().getName() + "/" + _attr.getName() + ".Label";
+    }
+    UIInterface classUI = null;
+    if (_field.getClassUI()!=null)  {
+      classUI = _field.getClassUI();
+    } else  {
+      classUI = _attr.getAttributeType().getUI();
+    }
+    addFieldValue(label, _field, classUI, _value, _instance);
+  }
+
+  /**
+   * Adds a field value to the list of values.
+   *
+   * @see #addFieldValue(String,Field,UIInterface,Object,Instance)
+   */
+  public void addFieldValue(Field _field, Instance _instance)  {
+    addFieldValue(_field.getLabel(), _field, _field.getClassUI(), null, _instance);
+  }
+
+  /**
+   * The instance method adds a new attribute value (from instance
+   * {@link AttributeTypeInterface}) to the values.
+   *
+   * @see #values
+   */
+  public void addFieldValue(String _label, Field _field, UIInterface _classUI, Object _value, Instance _instance)  {
+    getValues().add(new Value(_label, _field, _classUI, _value, _instance));
+  }
+
+// END COPY
+///////////////////////////////////////////////////////////////////////////////
 
   /**
    * The instance method adds a new attribute value (from instance
@@ -231,7 +282,7 @@ if (field.getExpression()!=null)  {
   /**
    *
    */
-  public void execute4Connect(String[] _oids) throws Exception  {
+  public void execute4Connect(final String[] _oids) throws Exception  {
     if (_oids!=null)  {
       Search.SearchCommand command  = (Search.SearchCommand)getCommand();
       Type type                     = command.getConnectType();

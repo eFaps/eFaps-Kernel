@@ -80,25 +80,27 @@ if (getCommand().getTargetMenu()!=null)  {
 
   /////////////////////////////////////////////////////////////////////////////
 
+// @TODO: obsolete
   public void startProcessView() throws Exception  {
-System.out.println("######## start view process");
+//System.out.println("######## start view process");
 //this.viewContext = createNewContext();
-this.viewContext = Context.getThreadContext();
+//this.viewContext = Context.getThreadContext();
   }
 
 
+// @TODO: obsolete
   public void endProcessView() throws Exception  {
-System.out.println("######## end view process");
+//System.out.println("######## end view process");
 //this.viewContext.close();
 //this.viewContext = null;
   }
 
-Context viewContext = null;
-
+//Context viewContext = null;
+/*
 protected Context getViewContext()  {
   return this.viewContext;
 }
-
+*/
   /////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -455,28 +457,28 @@ protected void setMenuHolder(MenuAbstractBean.MenuHolder _menuHolder)  {
      *
      */
     public String getCreateHtml() throws EFapsException  {
-      return getClassUI().getCreateHtml(getViewContext(), getValue(), getField());
+      return getClassUI().getCreateHtml(Context.getThreadContext(), getValue(), getField());
     }
 
     /**
      *
      */
     public String getViewHtml() throws EFapsException  {
-      return getClassUI().getViewHtml(getViewContext(), getValue(), getField());
+      return getClassUI().getViewHtml(Context.getThreadContext(), getValue(), getField());
     }
 
     /**
      *
      */
     public String getEditHtml() throws EFapsException  {
-      return getClassUI().getEditHtml(getViewContext(), getValue(), getField());
+      return getClassUI().getEditHtml(Context.getThreadContext(), getValue(), getField());
     }
 
     /**
      *
      */
     public String getSearchHtml() throws EFapsException  {
-      return getClassUI().getSearchHtml(getViewContext(), getValue(), getField());
+      return getClassUI().getSearchHtml(Context.getThreadContext(), getValue(), getField());
     }
 
     ///////////////////////////////////////////////////////////////////////////

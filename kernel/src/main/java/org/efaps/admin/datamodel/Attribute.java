@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel;
@@ -41,6 +44,9 @@ import org.efaps.util.EFapsException;
 /**
  * This is the class for the type description. The type description holds
  * information about creation of a new instance of a type with default values.
+ *
+ * @author tmo
+ * @version $Id$
  */
 public class Attribute extends DataModelObject  {
 
@@ -60,7 +66,7 @@ public class Attribute extends DataModelObject  {
                                                 "DMATTRIBUTETYPE,"+
                                                 "DMTYPELINK,"+
                                                 "SQLCOLUMN "+
-                                              "from ADMINATTRIBUTE";
+                                              "from V_ADMINATTRIBUTE";
 
   /**
    * This is the constructor for class {@link Attribute}. Every instance of

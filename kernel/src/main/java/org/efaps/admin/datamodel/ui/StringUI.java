@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel.ui;
@@ -21,6 +24,10 @@ import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
+/**
+ * @author tmo
+ * @version $Id$
+ */
 public class StringUI implements UIInterface  {
 
   /**
@@ -105,6 +112,10 @@ public class StringUI implements UIInterface  {
    * @param _locale   locale object
    */
   public String getSearchHtml(Context _context, Object _value, Field _field) throws EFapsException  {
-return "search";
+      return "<input type=\"text\" "+
+          "size=\""+_field.getCols()+"\" "+
+          "name=\""+_field.getName()+"\" "+
+          "value=\"*\""+
+      "/>";
   }
 }

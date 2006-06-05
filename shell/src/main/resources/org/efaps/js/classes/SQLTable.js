@@ -125,7 +125,6 @@ SQLTable.prototype.print = function()  {
   query.addSelect(Shell.getContext(), "SQLTable");
   query.addSelect(Shell.getContext(), "SQLColumnID");
   query.addSelect(Shell.getContext(), "SQLColumnType");
-  query.addSelect(Shell.getContext(), "SQLNewIDSelect");
 //  query.addSelect(Shell.getContext(), "DMTableMain.Name");
   query.execute(Shell.getContext());
   if (query.next())  {
@@ -133,7 +132,6 @@ SQLTable.prototype.print = function()  {
     print("SQL Table Name:            "+query.get(Shell.getContext(), "SQLTable"));
     print("Name of ID Column:         "+query.get(Shell.getContext(), "SQLColumnID"));
     print("Name of Type Column:       "+query.get(Shell.getContext(), "SQLColumnType"));
-    print("SQL Statement for New ID:  "+query.get(Shell.getContext(), "SQLNewIDSelect"));
 //    print("Parent SQL Table:          "+query.get("DMTableMain.Name"));
   }
   query.close();
@@ -193,8 +191,6 @@ SQLTable.prototype.setSQLColumnType = function(_newSQLColumnType)  {
 
 /**
  * Sets the new SQL New ID Select Statement of this type.
- *
- * @param _newSQLNewIDSelect  new SQL New ID Select Statement to set
  */
 SQLTable.prototype.getParentSQLTable = function()  {
 //  var prnt = this.object.DMTableMain;
@@ -209,7 +205,7 @@ return "@@@@@ ERROR: NOT IMPLEMENTED";
 /**
  * Sets the new SQL New ID Select Statement of this type.
  *
- * @param _newSQLNewIDSelect  new SQL New ID Select Statement to set
+ * @param _newParentSQLTable  new parent SQL Table to set
  */
 SQLTable.prototype.setParentSQLTable = function(_newParentSQLTable)  {
   if (_newParentSQLTable!=null)  {

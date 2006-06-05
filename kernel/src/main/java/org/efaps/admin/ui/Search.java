@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev: 195 $
+ * Last Changed:    $Date: 2006-04-30 10:54:40 +0200 (Sun, 30 Apr 2006) $
+ * Last Changed By: $Author: tmo $
  */
 
 package org.efaps.admin.ui;
@@ -27,6 +30,8 @@ import org.efaps.util.EFapsException;
 
 /**
  *
+ * @author tmo
+ * @version $Id$
  */
 public class Search extends MenuAbstract  {
 
@@ -44,7 +49,7 @@ public class Search extends MenuAbstract  {
    * @param _id       search id
    * @param _name     search name
    */
-  public Search(Long _id, String _name) throws Exception  {
+  public Search(final Long _id, final String _name) throws Exception  {
     super(_id, _name);
 //    readFromDB(_context);
   }
@@ -53,10 +58,13 @@ public class Search extends MenuAbstract  {
    * A search menu with the given id is added to this search.
    *
    * @param _context  eFaps context for this request
+   * @param _sortId   id used to sort
    * @param _id       id of the search menu to add
    */
-  protected void add(Context _context, long _id) throws Exception  {
-    add(new SearchMenu(_context, _id));
+  protected void add(final Context _context, final long _sortId,
+      final long _id) throws Exception  {
+
+    add(_sortId, new SearchMenu(_context, _id));
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -192,20 +200,24 @@ setLabel(getName()+".Label");
      * A search menu with the given id is added to this search.
      *
      * @param _context  eFaps context for this request
+     * @param _sortId   id used to sort
      * @param _id       id of the search menu to add
      */
-    protected void add(Context _context, long _id) throws Exception  {
-      add(new SearchCommand(_context, _id));
+    protected void add(final Context _context, final long _sortId,
+        final long _id) throws Exception  {
+
+      add(_sortId, new SearchCommand(_context, _id));
     }
 
     /**
      * Add a command to the menu structure.
      *
-     * @param _command command to add
+     * @param _sortId   id used to sort
+     * @param _command  command to add
      */
-    public void add(SearchCommand _command)  {
+    public void add(final long _sortId, final SearchCommand _command)  {
       getSearchCommands().put(_command.getName(), _command);
-      super.add(_command);
+      super.add(_sortId, _command);
     }
   }
 

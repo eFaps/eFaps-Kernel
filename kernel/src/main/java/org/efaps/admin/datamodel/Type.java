@@ -55,7 +55,7 @@ import org.efaps.servlet.RequestHandler;
  * information about creation of a new instance of a type with default values.
  *
  * @author tmo
- * @version $Rev$
+ * @version $Id$
  */
 public class Type extends DataModelObject  {
 
@@ -72,7 +72,7 @@ public class Type extends DataModelObject  {
                                                 + "NAME,"
                                                 + "PARENTDMTYPE,"
                                                 + "SQLCACHEEXPR "
-                                              + "from ADMINTYPE";
+                                              + "from V_ADMINTYPE";
 
   /**
    * This is the constructor for class Type. Every instance of class Type

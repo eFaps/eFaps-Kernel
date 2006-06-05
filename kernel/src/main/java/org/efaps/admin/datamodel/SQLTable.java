@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel;
@@ -36,6 +39,9 @@ import org.efaps.db.transaction.ConnectionResource;
 /**
  * This is the class for the table description. The table description holds
  * information in which table attributes are stored.
+ *
+ * @author tmo
+ * @version $Id$
  */
 public class SQLTable extends DataModelObject  {
 
@@ -55,7 +61,7 @@ public class SQLTable extends DataModelObject  {
                                                 "SQLCOLUMNID,"+
                                                 "SQLCOLUMNTYPE,"+
                                                 "DMTABLEMAIN "+
-                                              "from ADMINSQLTABLE";
+                                              "from V_ADMINSQLTABLE";
 
   /**
    * Stores all instances of SQLTable.

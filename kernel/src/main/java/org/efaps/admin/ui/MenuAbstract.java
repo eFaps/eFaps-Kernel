@@ -64,17 +64,20 @@ abstract public class MenuAbstract extends CommandAbstract  {
    * specific  implemented by all menu implementations.
    *
    * @param _context  eFaps context for this request
+   * @param _sortId   id used to sort
    * @param _id       id of the sub command / menu to add
    */
-  abstract protected void add(Context _context, long _id) throws Exception;
+  abstract protected void add(final Context _context, final long _sortId,
+          final long _id) throws Exception;
 
   /**
    * Add a command to the menu structure.
    *
-   * @param _command command to add
+   * @param _sortId   id used to sort
+   * @param _command  command to add
    */
-  public void add(CommandAbstract _command)  {
-    this.commands.put(_command.getId(), _command);
+  public void add(final long _sortId, final CommandAbstract _command)  {
+    this.commands.put(_sortId, _command);
   }
 
   /**
@@ -82,7 +85,7 @@ abstract public class MenuAbstract extends CommandAbstract  {
    *
    * @param _menu   menu with sub structure
    */
-  public void addAll(MenuAbstract _menu)  {
+  public void addAll(final MenuAbstract _menu)  {
     this.commands.putAll(_menu.commands);
   }
 
@@ -99,7 +102,7 @@ abstract public class MenuAbstract extends CommandAbstract  {
    * @return  <i>true</i>if context user has access, otherwise <i>false</i> is
    *          returned
    */
-  public boolean hasAccess(Context _context)  {
+  public boolean hasAccess(final Context _context)  {
     boolean ret = super.hasAccess(_context);
 
     if (ret && getCommands().size()>0)  {
@@ -166,13 +169,15 @@ abstract public class MenuAbstract extends CommandAbstract  {
   private void readFromDB4Childs(Context _context) throws Exception  {
     Instance menuInst = new Instance(_context, Type.get(EFapsClassName.MENU.name), getId());
     SearchQuery query = new SearchQuery();
-    query.setExpand(_context, menuInst, "Admin_UI_Menu2Command\\FromMenu.ToCommand");
+    query.setExpand(_context, menuInst, "Admin_UI_Menu2Command\\FromMenu");
     query.addSelect(_context, "ID");
+    query.addSelect(_context, "ToCommand");
     query.execute(_context);
 
     while (query.next())  {
-      long id = (Long)query.get(_context, "ID");
-      add(_context, id);
+      long commandId = (Long)query.get(_context, "ToCommand");
+      long sortId = (Long)query.get(_context, "ID");
+      add(_context, sortId, commandId);
     }
   }
 }
