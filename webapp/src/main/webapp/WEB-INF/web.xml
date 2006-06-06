@@ -170,6 +170,23 @@
     <display-name>eFapsLoginServlet</display-name>
     <description>eFaps servlet used to log in to eFaps.</description>
     <servlet-class>org.efaps.servlet.LoginServlet</servlet-class>
+    <init-param>
+      <param-name>application</param-name>
+      <param-value>eFaps</param-value>
+      <description>
+        The value defines the JAAS application name. This is the name defined
+        in the JAAS configuration file.
+        The default value is 'eFaps'.
+      </description>
+    </init-param>
+    <init-param>
+      <param-name>forwardURL</param-name>
+      <param-value>${COMMONURL}/Main.jsf</param-value>
+      <description>
+        The value defines the URL to which is forward if a login is correct.
+        The default value is '${COMMONURL}/Main.jsf'.
+      </description>
+    </init-param>
   </servlet>
 
   <servlet>

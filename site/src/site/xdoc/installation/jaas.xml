@@ -35,7 +35,7 @@
     </section>
     <section name="Tomcat Configuration">
       <p>
-        The JAAS authentication must be first configured that eFaps could use a JAAS authentification. First a configuration file defined the JAAS login module must be created (e.g. in <code>%CATALINA_HOME%/conf/jaas.config</code>):
+        The JAAS authentication must be first configured that eFaps could use a JAAS authentification. The name of the application should be <b>eFaps</b>. First a configuration file defined the JAAS login module must be created (e.g. in <code>%CATALINA_HOME%/conf/jaas.config</code>):
       </p>
       <source>eFaps {
    org.efaps.jaas.UserLoginModule REQUIRED;
@@ -50,6 +50,9 @@
       <p>
         Then Java knows about which login module is used by eFaps.
       </p>
+    </section>
+
+    <section name="Using JAAS for Basic Authentication">
       <p>
         That the basic authentication used by the <a href="http://www.webdav.org">WebDAV</a> integration also works, a JAAS Realm must be defined in the eFaps context configuration file (see <a href="http://tomcat.apache.org/tomcat-5.5-doc/realm-howto.html#JAASRealm">Apache Tomcat JAAS Realm configuration</a>). Insert
         <source>&lt;Realm
@@ -61,6 +64,12 @@
     useContextClassLoader="false"
 /&gt;</source>
         in the eFaps context configuration file (found under <code>%CATALINA_HOME%/conf/Catalina/localhost/eFaps.xml</code>).
+      </p>
+    </section>
+
+    <section name="Configuration of Login Servlet">
+      <p>
+        If the default application name <b>eFaps</b> is not used, the login servlet of eFaps must also be configured. The application name must be set in the web.xml file for the login servlet.
       </p>
     </section>
 
