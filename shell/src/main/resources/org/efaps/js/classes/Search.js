@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  * Author:          tmo
- * Revision:        $Rev: 212 $
- * Last Changed:    $Date: 2006-05-07 22:23:54 +0200 (Sun, 07 May 2006) $
- * Last Changed By: $Author: tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 importClass(Packages.org.efaps.db.Instance);
