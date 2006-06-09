@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db;
@@ -31,10 +34,12 @@ import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.Field;
 import org.efaps.db.query.WhereClauseAttrEqAttr;
-import org.efaps.db.query.WhereClauseAttrEqValue;
+import org.efaps.db.query.WhereClauseAttributeEqualValue;
 
 /**
  *
+ * @author tmo
+ * @version $Id$
  */
 public class SearchQuery extends AbstractQuery  {
 
@@ -145,7 +150,7 @@ this.type = type;
     if (attr==null)  {
 throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getName()+"'");
     }
-    getMainWhereClauses().add(new WhereClauseAttrEqValue(this, attr, _value));
+    getMainWhereClauses().add(new WhereClauseAttributeEqualValue(this, attr, _value));
   }
 
   /**
@@ -163,7 +168,7 @@ throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getNam
    * @param _value
    */
   public void addWhereAttrEqValue(Context _context, Attribute _attr, String _value)  {
-    getMainWhereClauses().add(new WhereClauseAttrEqValue(this, _attr, _value));
+    getMainWhereClauses().add(new WhereClauseAttributeEqualValue(this, _attr, _value));
   }
 
   /**
