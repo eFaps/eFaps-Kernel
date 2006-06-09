@@ -35,6 +35,9 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.Field;
 import org.efaps.db.query.WhereClauseAttrEqAttr;
 import org.efaps.db.query.WhereClauseAttributeEqualValue;
+import org.efaps.db.query.WhereClauseAttributeGreaterValue;
+import org.efaps.db.query.WhereClauseAttributeLessValue;
+import org.efaps.db.query.WhereClauseAttributeMatchValue;
 
 /**
  *
@@ -142,15 +145,58 @@ this.type = type;
 
   /**
    *
-   * @param _expr
-   * @param _value
+   * @param _context  eFaps context for this request
+   * @param _expr     expression to compare for equal
+   * @param _value    value to compare for equal
    */
-  public void addWhereExprEqValue(Context _context, String _expr, String _value) throws Exception  {
+  public void addWhereExprEqValue(final Context _context, final String _expr, final String _value) throws Exception  {
     Attribute attr = this.type.getAttribute(_expr);
     if (attr==null)  {
 throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getName()+"'");
     }
     getMainWhereClauses().add(new WhereClauseAttributeEqualValue(this, attr, _value));
+  }
+
+  /**
+   *
+   * @param _context  eFaps context for this request
+   * @param _expr     expression to compare for equal
+   * @param _value    value to compare for equal
+   */
+  public void addWhereExprMatchValue(final Context _context, final String _expr, final String _value) throws Exception  {
+    Attribute attr = this.type.getAttribute(_expr);
+    if (attr==null)  {
+throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getName()+"'");
+    }
+    getMainWhereClauses().add(new WhereClauseAttributeMatchValue(this, attr, _value));
+  }
+
+  /**
+   *
+   * @param _context  eFaps context for this request
+   * @param _expr     expression to compare for greater
+   * @param _value    value to compare for equal
+   */
+  public void addWhereExprGreaterValue(final Context _context, final String _expr, final String _value) throws Exception  {
+    Attribute attr = this.type.getAttribute(_expr);
+    if (attr==null)  {
+throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getName()+"'");
+    }
+    getMainWhereClauses().add(new WhereClauseAttributeGreaterValue(this, attr, _value));
+  }
+
+  /**
+   *
+   * @param _context  eFaps context for this request
+   * @param _expr     expression to compare for less
+   * @param _value    value to compare for equal
+   */
+  public void addWhereExprLessValue(final Context _context, final String _expr, final String _value) throws Exception  {
+    Attribute attr = this.type.getAttribute(_expr);
+    if (attr==null)  {
+throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getName()+"'");
+    }
+    getMainWhereClauses().add(new WhereClauseAttributeLessValue(this, attr, _value));
   }
 
   /**

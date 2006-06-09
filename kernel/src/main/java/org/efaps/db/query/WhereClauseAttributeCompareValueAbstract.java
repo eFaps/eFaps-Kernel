@@ -46,6 +46,34 @@ abstract class WhereClauseAttributeCompareValueAbstract extends WhereClause  {
     getSelType().add4Where(getAttr());
   }
 
+  /**
+   * @todo compare does not work if an attribute has more than one sql column!!
+   * @todo bugfixing for Apache derby!!! (because ID is hardcoded as number value...) see TODO comment
+   */
+  protected void appendWhereClause(final CompleteStatement _completeStatement,
+      final int _orderIndex, final String _operator)  {
+
+    if (_orderIndex<0 || getSelType().getOrderIndex()<_orderIndex)  {
+
+      String sqlColName = getAttr().getSqlColNames().get(0);
+
+      _completeStatement.appendWhereAnd();
+      _completeStatement
+          .appendWhere(getAttr().getTable().getSqlTable())
+          .appendWhere(getSelType().getTypeIndex())
+          .appendWhere(".")
+          .appendWhere(sqlColName)
+          .appendWhere(_operator);
+
+// TODO: bug-fixing wg. cloudescape
+if (getAttr().getLink()!=null || getAttr().getName().equals("ID"))  {
+     _completeStatement.appendWhere(getValue()).appendWhere("");
+} else  {
+     _completeStatement.appendWhere("'").appendWhere(getValue()).appendWhere("'");
+}
+    }
+  }
+
   ///////////////////////////////////////////////////////////////////////////
 
   /**

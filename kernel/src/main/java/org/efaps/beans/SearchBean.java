@@ -165,7 +165,7 @@ if (field.getProgramValue()==null)  {
 // das ist das problem!! deshalb null-pointer-exceptions!!
 //          query.addWhere(field, _request.getParameter(field.getName()));
 
-query.addWhereExprEqValue(context, field.getExpression(), value);
+query.addWhereExprMatchValue(context, field.getExpression(), value);
 
 } else  {
   field.getProgramValue().addSearchWhere(context, query, value);
