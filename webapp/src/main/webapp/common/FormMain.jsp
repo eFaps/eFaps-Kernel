@@ -73,7 +73,10 @@
   <html>
     <head>
     </head>
+    <link rel="StyleSheet" href="../styles/eFapsCalendar.css" type="text/css"/>
     <link rel="StyleSheet" href="../styles/eFapsDefault.css" type="text/css"/>
+    <script type="text/javascript">var eFapsCalenderPathImages = "../images/";</script>
+    <script type="text/javascript" src="../javascripts/eFapsCalendar.js"></script>
     <script type="text/javascript" src="../javascripts/eFapsToolbar.js"></script>
     <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
 
@@ -200,7 +203,7 @@
 
                 <%-- /** if the field is a group count field, store the value in the row group count variable,
                          (only if not create node or field is creatable) **/ --%>
-                <c:when test="${value.field.groupCount > 0 && (uiObject.createMode ne true or value.field.creatable)}">
+                <c:when test="${value.field.groupCount > 0 && (uiObject.createMode ne true or value.field.creatable)  && (uiObject.searchMode ne true or value.field.searchable)}">
                   <c:set var="rowGroupCount" value="${value.field.groupCount}"/>
                 </c:when>
 
