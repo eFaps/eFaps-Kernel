@@ -124,7 +124,7 @@ public class Insert extends Update {
 
       SQLTable mainTable = getType().getMainTable();
 
-      long id = executeOneStatement(_context, con, mainTable, getExpr4Tables().get(mainTable), null);
+      long id = executeOneStatement(_context, con, mainTable, getExpr4Tables().get(mainTable), 0);
 
       setInstance(new Instance(_context, getInstance().getType(), id));
 
@@ -132,7 +132,7 @@ public class Insert extends Update {
                                               : getExpr4Tables().entrySet())  {
         SQLTable table = entry.getKey();
         if ((table != mainTable) && !table.isReadOnly())  {
-          executeOneStatement(_context, con, table, entry.getValue(), getId());
+          executeOneStatement(_context, con, table, entry.getValue(), id);
         }
       }
 
@@ -153,26 +153,43 @@ public class Insert extends Update {
   }
 
   /**
+   * A new statement must be created an executed for one table. If the
+   * parameter '_id' is set to <code>0</code>, a new id is generated. If the
+   * JDBC driver supports method <code>getGeneratedKeys</code>, this method is
+   * used, otherwise method {@link org.efaps.db.databases#getNewId} is used
+   * to retrieve a new id value.
+   *
    * @param _context  context for this request
-   * @param _id       new created id, if null, the table is an autoincrement
-   *                  SQL table and the id is not set
-   * @return new created id if parameter <i>_id</i> is set to <code>null</code>
+   * @param _con      connection resource
+   * @param _table    sql table used to insert
+   * @param _expressions
+   * @param _id       new created id
+   * @return new created id if parameter <i>_id</i> is set to <code>0</code>
+   * @see #createOneStatement
    */
   private long executeOneStatement(final Context _context,
       final ConnectionResource _con, final SQLTable _table,
-      final Map _expressions, final String _id) throws EFapsException  {
+      final Map _expressions, final long _id) throws EFapsException  {
 
-    long ret = 0;
+    long ret = _id;
     PreparedStatement stmt = null;
     try {
-      stmt = createOneStatement(_context, _con, _table, _expressions, _id);
+      if ((ret == 0)
+          && !_con.getConnection().getMetaData().supportsGetGeneratedKeys())  {
+
+        ret = _context.getDbType().getNewId(_con.getConnection(),
+            _table.getSqlTable(), "ID");
+      }
+
+      stmt = createOneStatement(_context, _con, _table, _expressions, ret);
+
       int rows = stmt.executeUpdate();
       if (rows == 0)  {
         throw new EFapsException(getClass(), "executeOneStatement.NotInserted",
             _table.getName()
         );
       }
-      if (_id == null)  {
+      if (ret == 0)  {
         ResultSet rs = stmt.getGeneratedKeys();
         if (rs.next())  {
           ret = rs.getLong(1);
@@ -202,14 +219,14 @@ public class Insert extends Update {
    */
   private PreparedStatement createOneStatement(final Context _context,
       final ConnectionResource _con, final SQLTable _table,
-      final Map _expressions, final String _id) throws SQLException  {
+      final Map _expressions, final long _id) throws SQLException  {
 
     List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
     StringBuilder cmd = new StringBuilder();
     StringBuilder val = new StringBuilder();
     boolean first = true;
     cmd.append("insert into ").append(_table.getSqlTable()).append("(");
-    if (_id != null)  {
+    if (_id != 0)  {
       cmd.append(_table.getSqlColId());
       first = false;
     }
@@ -225,7 +242,7 @@ public class Insert extends Update {
       }
       cmd.append(entry.getKey());
 
-      AttributeTypeInterface attr = (AttributeTypeInterface)entry.getValue();
+      AttributeTypeInterface attr = (AttributeTypeInterface) entry.getValue();
       if (!attr.prepareUpdate(val))  {
         list.add(attr);
       }
@@ -235,7 +252,7 @@ public class Insert extends Update {
       val.append(",?");
     }
     cmd.append(") values (");
-    if (_id != null)  {
+    if (_id != 0)  {
       cmd.append(_id);
     }
     cmd.append("").append(val).append(")");
@@ -245,7 +262,7 @@ public class Insert extends Update {
     }
 
     PreparedStatement stmt;
-    if (_id == null)  {
+    if (_id == 0)  {
        stmt = _con.getConnection().prepareStatement(cmd.toString(), new String[]{"ID"});
     } else  {
        stmt = _con.getConnection().prepareStatement(cmd.toString());

@@ -158,4 +158,22 @@ public abstract class AbstractDatabase  {
    */
   public abstract void createTable(final Connection _con, final String _table,
           final String _parentTable) throws SQLException;
+
+  /**
+   * A new id for given column of a sql table is returned (e.g. with
+   * sequences). This abstract class always throws a SQLException, because for
+   * default, it is not needed to implemente (only if the JDBC drive does not
+   * implement method 'getGeneratedKeys' for java.sql.Statements).
+   *
+   * @param _con          sql connection
+   * @param _table        sql table for which a new id must returned
+   * @param _column       sql table column for which a new id must returned
+   * @throws SQLException always, because method itself is not implemented not
+   *         not allowed to call
+   */
+  public long getNewId(final Connection _con, final String _table,
+          final String _column)  throws SQLException  {
+    throw new SQLException("method 'getNewId' not imlemented");
+  }
 }
+
