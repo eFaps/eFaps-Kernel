@@ -95,7 +95,7 @@ System.out.println("  - Table '" + tableName + "'");
   }
 
   /**
-   * For the derby database, an eFaps sql table is created in this steps:
+   * For the PostgreSQL database, an eFaps sql table is created in this steps:
    * <ul>
    * <li>sql table itself with column <code>ID</code> and unique key on the
    *     column is created</li>
@@ -162,7 +162,6 @@ System.out.println("  - Table '" + tableName + "'");
 
     try  {
 
-      // create table itself
       StringBuilder cmd = new StringBuilder();
       cmd.append("select nextval('").append(_table).append("_").append(_column)
           .append("_SEQ')");
