@@ -120,9 +120,9 @@ try  {
     Type conType    = Type.get(conTypeId);
     Type toType     = Type.get(toTypeId);
     if (EFapsClassName.getEnum(conType.getName()) != null)  {
-        setLinkProperty(_context,
-            EFapsClassName.getEnum(conType.getName()), toId,
-            EFapsClassName.getEnum(toType.getName()), toName);
+      setLinkProperty(_context,
+          EFapsClassName.getEnum(conType.getName()), toId,
+          EFapsClassName.getEnum(toType.getName()), toName.trim());
     }
   }
   rs.close();
