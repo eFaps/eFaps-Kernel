@@ -43,6 +43,7 @@ import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.Collection;
 import org.efaps.admin.ui.Field;
+import org.efaps.db.query.CachedResult;
 import org.efaps.db.query.CompleteStatement;
 import org.efaps.db.query.WhereClause;
 import org.efaps.db.query.WhereClauseAttrEqAttr;
@@ -300,7 +301,7 @@ if (selectType.getIndexType()!=null)  {
 
   /////////////////////////////////////////////////////////////////////////////
 
-org.efaps.db.query.CachedResult cachedResult = null;
+private CachedResult cachedResult = null;
 
   /**
    * The instance method executes the query.
@@ -315,7 +316,7 @@ int incSelIndex = 0;
 //JoinRowSet jrs = _context.getDbType().createJoinRowSetInstance();
 /*oracle.jdbc.rowset.OracleJoinRowSet jrs = new oracle.jdbc.rowset.OracleJoinRowSet();*/
 
-this.cachedResult = new org.efaps.db.query.CachedResult();
+this.cachedResult = new CachedResult();
 
       for (JoinElement joinElement : getJoinElements())  {
 
@@ -340,14 +341,12 @@ if (incSelIndex == 0)  {
           }
         }
 
-        execute(_context, completeStatement);
-
-        cachedResult.populate(this.resultSet, joinElement.getMatchColumn());
+        executeOneCompleteStmt(_context, completeStatement, joinElement.getMatchColumn());
       }
 
 
 //      setResultSet(jrs);
-setResultSet(null);
+///setResultSet(null);
 
 
 //System.out.println("----getAllSelExprMap()="+getAllSelExprMap());
@@ -369,26 +368,30 @@ this.cachedResult.beforeFirst();
   }
 
   /**
-   * The instance method executes the query.
+   * The instance method executes exact one complete statement and populates
+   * the result in the cached result {@link #cachedResult}.
    *
-   * @param _context  context for this request
+   * @param _context      context for this request
+   * @param _complStmt    complete statement instance to execute
+   * @param _matchColumn  column in the complete statement (result set) used to
+   *                      as key to compare in the cached result
    */
-  private void execute(Context _context, CompleteStatement _completeStatement) throws EFapsException  {
+  private void executeOneCompleteStmt(final Context _context,
+          final CompleteStatement _complStmt,
+          final int _matchColumn) throws EFapsException  {
+
     ConnectionResource con = null;
     try  {
       con = _context.getConnectionResource();
 
       if (LOG.isTraceEnabled())  {
-        LOG.trace(_completeStatement.getStatement().toString());
+        LOG.trace(_complStmt.getStatement().toString());
       }
 
       Statement stmt = con.getConnection().createStatement();
-      ResultSet rs = stmt.executeQuery(_completeStatement.getStatement().toString());
+      ResultSet rs = stmt.executeQuery(_complStmt.getStatement().toString());
 
-CachedRowSet crs = _context.getDbType().createCachedRowSetInstance();
-
-      crs.populate(rs);
-      setResultSet(crs);
+      this.cachedResult.populate(rs, _matchColumn);
 
       rs.close();
       stmt.close();
@@ -404,7 +407,7 @@ CachedRowSet crs = _context.getDbType().createCachedRowSetInstance();
       }
 // TODO: exception eintragen!
 e.printStackTrace();
-throw new EFapsException(getClass(), "execute.Throwable");
+throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable");
     }
   }
 
@@ -428,22 +431,6 @@ throw new EFapsException(getClass(), "execute.Throwable");
   }
 
   /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance variable stores the statement instance for this query.
-   *
-   * @see #getStatement
-   * @see #setStatement
-   */
-  private Statement statement = null;
-
-  /**
-   * The instance variable stores the result set for this query.
-   *
-   * @see #getResultSet
-   * @see #setResultSet
-   */
-  private CachedRowSet resultSet = null;
 
   /**
    * The instance variable stores the order of the select types.
@@ -515,50 +502,6 @@ throw new EFapsException(getClass(), "execute.Throwable");
   private Map<Object,SelExpr2Attr> allOIDSelExprMap = new HashMap<Object,SelExpr2Attr>();
 
   /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the getter method for instance variable {@link #statement}.
-   *
-   * @return value of instance variable {@link #statement}
-   * @see #statement
-   * @see #setStatement
-   */
-/*  private Statement getStatement()   {
-    return this.statement;
-  }
-*/
-  /**
-   * This is the setter method for instance variable {@link #statement}.
-   *
-   * @param _statement new value for instance variable {@link #statement}
-   * @see #statement
-   * @see #getStatement
-   */
-/*  private void setStatement(Statement _statement)  {
-    this.statement = _statement;
-  }
-*/
-  /**
-   * This is the getter method for instance variable {@link #resultSet}.
-   *
-   * @return value of instance variable {@link #resultSet}
-   * @see #resultSet
-   * @see #setResultSet
-   */
-//  private CachedRowSet getResultSet()   {
-//    return this.resultSet;
-//  }
-
-  /**
-   * This is the setter method for instance variable {@link #resultSet}.
-   *
-   * @param _resultSet new value for instance variable {@link #resultSet}
-   * @see #resultSet
-   * @see #getResultSet
-   */
-  private void setResultSet(CachedRowSet _resultSet)  {
-    this.resultSet = _resultSet;
-  }
 
   /**
    * This is the getter method for instance variable {@link #selectTypesOrder}.

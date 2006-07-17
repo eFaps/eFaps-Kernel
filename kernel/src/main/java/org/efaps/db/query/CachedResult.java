@@ -90,13 +90,21 @@ public class CachedResult  {
   }
 
   /**
+   * All values in the result set are added to the cached result. The column in
+   * the result set specified with parameter <code>_keyIndex</code> is used to
+   * identify the row in the cached result. This column is compared to the key
+   * in the cached result.<br/>
+   * The method does not set the cursor of the result set to the first row! In
+   * other words, the method estimates that the result set is on the first row!
    *
+   * @param _rs       result set with values to add to this cached result instance
+   * @param _keyIndex index in the result set used as key to found the values
+   *                  in the cache
    */
   public void populate(final ResultSet _rs, final int _keyIndex) throws SQLException  {
     ResultSetMetaData metaData = _rs.getMetaData();
     int columnCount = metaData.getColumnCount();
 
-    _rs.beforeFirst();
     if (this.cache.size() == 0)  {
       while (_rs.next())  {
         List list = new ArrayList(columnCount);
