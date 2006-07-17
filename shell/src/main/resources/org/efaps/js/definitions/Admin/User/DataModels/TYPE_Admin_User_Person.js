@@ -23,47 +23,47 @@ with (TYPE)  {
   setParentType(new Type("Admin_User_Abstract"));
   with (addAttribute("FirstName"))  {
     setAttributeType("String");
-    setSQLTable("Admin_User_PersonTable");
+    setSQLTable("Admin_User_PersonSQLTable");
     setSQLColumn("FIRSTNAME");
   }
   with (addAttribute("LastName"))  {
     setAttributeType("String");
-    setSQLTable("Admin_User_PersonTable");
+    setSQLTable("Admin_User_PersonSQLTable");
     setSQLColumn("LASTNAME");
   }
   with (addAttribute("Email"))  {
     setAttributeType("String");
-    setSQLTable("Admin_User_PersonTable");
+    setSQLTable("Admin_User_PersonSQLTable");
     setSQLColumn("EMAIL");
   }
   with (addAttribute("Organisation"))  {
     setAttributeType("String");
-    setSQLTable("Admin_User_PersonTable");
+    setSQLTable("Admin_User_PersonSQLTable");
     setSQLColumn("ORG");
   }
   with (addAttribute("Url"))  {
     setAttributeType("String");
-    setSQLTable("Admin_User_PersonTable");
+    setSQLTable("Admin_User_PersonSQLTable");
     setSQLColumn("URL");
   }
   with (addAttribute("Phone"))  {
     setAttributeType("String");
-    setSQLTable("Admin_User_PersonTable");
+    setSQLTable("Admin_User_PersonSQLTable");
     setSQLColumn("PHONE");
   }
   with (addAttribute("Mobile"))  {
     setAttributeType("String");
-    setSQLTable("Admin_User_PersonTable");
+    setSQLTable("Admin_User_PersonSQLTable");
     setSQLColumn("MOBILE");
   }
   with (addAttribute("Fax"))  {
     setAttributeType("String");
-    setSQLTable("Admin_User_PersonTable");
+    setSQLTable("Admin_User_PersonSQLTable");
     setSQLColumn("FAX");
   }
   with (addAttribute("Password"))  {
     setAttributeType("Password");
-    setSQLTable("Admin_User_PersonTable");
+    setSQLTable("Admin_User_PersonSQLTable");
     setSQLColumn("PASSWORD");
   }
   addProperty("Form",                   "Admin_User_PersonForm");

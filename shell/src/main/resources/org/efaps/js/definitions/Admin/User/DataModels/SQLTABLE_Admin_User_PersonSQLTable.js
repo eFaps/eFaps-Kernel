@@ -19,18 +19,8 @@
  * Last Changed By: $Author$
  */
 
-with (TYPE)  {
-  setParentType(new Type("Admin_User_Abstract2Abstract"));
-  with (addAttribute("UserFromLink"))  {
-    setAttributeType("Link");
-    setTypeLink("Admin_User_Person");
-    setSQLTable("Admin_User_Abstract2AbstractSQLTable");
-    setSQLColumn("USERABSTRACTFROM");
-  }
-  with (addAttribute("UserToLink"))  {
-    setAttributeType("Link");
-    setTypeLink("Admin_User_Role");
-    setSQLTable("Admin_User_Abstract2AbstractSQLTable");
-    setSQLColumn("USERABSTRACTTO");
-  }
+with (SQLTABLE)  {
+  setSQLTable("USERPERSON");
+  setSQLColumnID("ID");
+  setParentSQLTable("Admin_User_AbstractSQLTable");
 }
