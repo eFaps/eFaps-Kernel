@@ -36,7 +36,7 @@
     The information is needed to implement the vendor specific database
     functionality (e.g. a delete of all or table column types).
   -->
-  <entry key="dbType">org.efaps.db.databases.OracleDatabase</entry>
+  <entry key="dbType">org.efaps.db.databases.PostgreSQLDatabase</entry>
 
   <!--
     Database JDBC parameters:
@@ -45,10 +45,10 @@
     - JDBC driver class name
     - JDBC url
   -->
-  <entry key="username">EFAPS</entry>
-  <entry key="password">EFAPS</entry>
-  <entry key="driverClassName">oracle.jdbc.driver.OracleDriver</entry>
-  <entry key="url">jdbc:oracle:thin:@(DESCRIPTION =(ADDRESS_LIST = (ADDRESS = (PROTOCOL = TCP)(HOST = 192.168.0.140)(PORT = 1521)))(CONNECT_DATA = (SERVICE_NAME = DB01)(SERVER = DEDICATED)))</entry>
+  <entry key="username">efaps</entry>
+  <entry key="password">efaps</entry>
+  <entry key="driverClassName">org.postgresql.Driver</entry>
+  <entry key="url">jdbc:postgresql://localhost:5432/postgres</entry>
 
   <entry key="factory">org.apache.commons.dbcp.BasicDataSourceFactory</entry>
   <entry key="maxActive">100</entry>
