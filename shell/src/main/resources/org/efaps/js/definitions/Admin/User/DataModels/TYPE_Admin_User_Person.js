@@ -67,6 +67,6 @@ with (TYPE)  {
     setSQLColumn("PASSWORD");
   }
   addProperty("Form",                   "Admin_User_PersonForm");
-  addProperty("Icon",                   "${ROOTURL}/servlet/image/eFapsAdminUserPerson");
+  addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_User_PersonImage");
   addProperty("Tree",                   "Admin_User_PersonTree");
 }

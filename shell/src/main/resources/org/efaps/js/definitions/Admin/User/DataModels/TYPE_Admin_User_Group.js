@@ -22,6 +22,6 @@
 with (TYPE)  {
   setParentType(new Type("Admin_User_Abstract"));
   addProperty("Form",                   "Admin_User_AbstractForm");
-  addProperty("Icon",                   "${ROOTURL}/servlet/image/eFapsAdminUserGroup");
+  addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_User_GroupImage");
   addProperty("Tree",                   "Admin_User_GroupTree");
 }
