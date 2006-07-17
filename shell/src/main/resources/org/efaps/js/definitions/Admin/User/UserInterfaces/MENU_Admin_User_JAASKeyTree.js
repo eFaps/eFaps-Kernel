@@ -20,8 +20,9 @@
  */
 
 with (MENU)  {
-  addChild(new Command("Admin_User_PersonMyDesk"));
-  addChild(new Command("Admin_User_RoleMyDesk"));
-  addChild(new Command("Admin_User_GroupMyDesk"));
-  addChild(new Command("Admin_User_JAASSystemMyDesk"));
+//  addProperty("Target",                 "content");
+//  addProperty("TargetMode",             "view");
+//  addTargetForm("Admin_User_AbstractForm");
+//  addTargetMenu("Admin_User_GroupTree_Menu");
+//  addChild(new Command("Admin_User_GroupTree_Persons"));
 }

@@ -19,9 +19,10 @@
  * Last Changed By: $Author$
  */
 
-with (MENU)  {
-  addChild(new Command("Admin_User_PersonMyDesk"));
-  addChild(new Command("Admin_User_RoleMyDesk"));
-  addChild(new Command("Admin_User_GroupMyDesk"));
-  addChild(new Command("Admin_User_JAASSystemMyDesk"));
+with (COMMAND)  {
+  addProperty("Target",                 "content");
+  addProperty("TargetExpand",           "Admin_User_JAASKey\\JAASSystemLink");
+  addProperty("TargetMode",             "view");
+  addIcon("Admin_User_JAASKeyListImage");
+  addTargetTable("Admin_User_JAASKeyTable");
 }

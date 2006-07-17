@@ -19,9 +19,11 @@
  * Last Changed By: $Author$
  */
 
-with (MENU)  {
-  addChild(new Command("Admin_User_PersonMyDesk"));
-  addChild(new Command("Admin_User_RoleMyDesk"));
-  addChild(new Command("Admin_User_GroupMyDesk"));
-  addChild(new Command("Admin_User_JAASSystemMyDesk"));
+with (COMMAND)  {
+  addProperty("Target",                 "content");
+  addProperty("TargetQueryTypes",       "Admin_User_JAASSystem");
+  addProperty("TargetShowCheckBoxes",   "true");
+  addIcon("Admin_User_JAASSystemImage");
+//  addTargetMenu("Admin_User_GroupMyDesk_Menu");
+  addTargetTable("Admin_User_JAASSystemTable");
 }

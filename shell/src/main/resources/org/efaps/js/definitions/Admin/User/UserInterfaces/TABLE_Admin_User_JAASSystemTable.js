@@ -19,9 +19,16 @@
  * Last Changed By: $Author$
  */
 
-with (MENU)  {
-  addChild(new Command("Admin_User_PersonMyDesk"));
-  addChild(new Command("Admin_User_RoleMyDesk"));
-  addChild(new Command("Admin_User_GroupMyDesk"));
-  addChild(new Command("Admin_User_JAASSystemMyDesk"));
+with (TABLE)  {
+  with (addField("name"))  {
+    addProperty("Expression",             "Name");
+    addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
+    addProperty("Label",                  "Admin_User_JAASSystem/Name.Label");
+    addProperty("ShowTypeIcon",           "true");
+  }
+  with (addField("buttonOpenInNewWindow"))  {
+    addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
+    addProperty("Target",                 "popup");
+    addIcon("eFapsActionNewWindow");
+  }
 }

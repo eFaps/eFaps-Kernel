@@ -190,7 +190,6 @@ function eFapsCreateAll()  {
   _eFapsCreateAllUpdatePassword();
 }
 
-
 function _eFapsCreateCreateTable(_con, _stmt, _text, _table, _parentTable, _array)  {
   _eFapsCreateLog("Table '" + _table + "'", _text);
   
@@ -310,14 +309,34 @@ function _eFapsCreateAllUserTables(_con, _stmt)  {
   _eFapsCreateCreateTable(_con, _stmt, "Abstract User", "USERABSTRACT", null,[
       ["TYPEID                "+TYPE_INTEGER+"                   not null"],
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["EXTERNALKEY           "+TYPE_STRING_SHORT+"(128)"],
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
       ["CREATED               "+TYPE_DATETIME+"                  not null"],
       ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
       ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
 ["STATUS  int  default 10001 not null"],
-      ["constraint USERABSTR_UK_NAME   unique(NAME)"],
-      ["constraint USERABSTR_UK_EXTKEY unique(EXTERNALKEY)"]
+      ["constraint USERABSTR_UK_NAME   unique(NAME)"]
+  ]);
+
+  _eFapsCreateCreateTable(_con, _stmt, "JAAS systems", "USERJAASSYSTEM", null,[
+      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+      ["CREATED               "+TYPE_DATETIME+"                  not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+      ["constraint USERJAASSYS_UK_NAME unique(NAME)"]
+  ]);
+
+  _eFapsCreateCreateTable(_con, _stmt, "Mapping to external JAAS systems", "USERJAASKEY", null,[
+      ["KEY                   "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+      ["CREATED               "+TYPE_DATETIME+"                  not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+      ["USERABSTRACT          "+TYPE_INTEGER+"                   not null"],
+      ["USERJAASSYSTEM        "+TYPE_INTEGER+"                   not null"],
+      ["constraint USRJAASKY_UK_SYSKEY unique(USERJAASSYSTEM,KEY)"],
+      ["constraint USRJAASKY_FK_USER   foreign key(USERABSTRACT)     references USERABSTRACT(ID)"],
+      ["constraint USRJAASKY_FK_SYSTEM foreign key(USERJAASSYSTEM)   references USERJAASSYSTEM(ID)"]
   ]);
 
   _eFapsCreateCreateTable(_con, _stmt, "Person object", "USERPERSON", "USERABSTRACT",[
@@ -826,6 +845,12 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     _exec(stmt, null, null, "insert into DMTYPE2POLICY       values (1,1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",10000,10000)");
 */
 
+    text = "Insert Type for 'Admin_User_JAASSystem' (only to store ID for type)";
+    var typeIdJAASSystem    = _eFapsCreateInsertType(stmt, text, "Admin_User_JAASSystem", null);
+
+    text = "Insert Type for 'Admin_User_JAASKey' (only to store ID for type)";
+    var typeIdJAASKey       = _eFapsCreateInsertType(stmt, text, "Admin_User_JAASKey", null);
+
     text = "Insert Type for 'Admin_User_Role' (only to store ID for type)";
     var typeIdRole          = _eFapsCreateInsertType(stmt, text, "Admin_User_Role", null);
 
@@ -839,12 +864,24 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     var typeIdPerson2Group  = _eFapsCreateInsertType(stmt, text, "Admin_User_Person2Group", null);
 
 
+    _exec(stmt, "View 'V_USERJAASKEY'", "view representing all JAAS keys",
+      "create view V_USERJAASKEY as "+
+        "select "+
+            "USERABSTRACT.ID     as USERID,"+
+            "USERABSTRACT.NAME   as USERNAME,"+
+            "USERJAASSYSTEM.ID   as JAASSYSID,"+
+            "USERJAASSYSTEM.NAME as JAASNAME,"+
+            "USERJAASKEY.KEY     as JAASKEY "+
+          "from USERABSTRACT,USERJAASKEY,USERJAASSYSTEM "+
+          "where USERABSTRACT.ID=USERJAASKEY.USERABSTRACT "+
+            "and USERJAASKEY.USERJAASSYSTEM=USERJAASSYSTEM.ID"
+    );
+
     _exec(stmt, "View 'V_USERPERSON'", "view representing all persons",
       "create view V_USERPERSON as "+
         "select "+
             "USERABSTRACT.ID,"+
             "USERABSTRACT.NAME,"+
-            "USERABSTRACT.EXTERNALKEY,"+
             "USERPERSON.FIRSTNAME,"+
             "USERPERSON.LASTNAME,"+
             "USERPERSON.EMAIL,"+
@@ -862,8 +899,7 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
       "create view V_USERROLE as "+
         "select "+
             "USERABSTRACT.ID,"+
-            "USERABSTRACT.NAME,"+
-            "USERABSTRACT.EXTERNALKEY "+
+            "USERABSTRACT.NAME "+
           "from USERABSTRACT "+
           "where USERABSTRACT.TYPEID="+typeIdRole
     );
@@ -872,8 +908,7 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
       "create view V_USERGROUP as "+
         "select "+
             "USERABSTRACT.ID,"+
-            "USERABSTRACT.NAME,"+
-            "USERABSTRACT.EXTERNALKEY "+
+            "USERABSTRACT.NAME "+
           "from USERABSTRACT "+
           "where USERABSTRACT.TYPEID="+typeIdGroup
     );

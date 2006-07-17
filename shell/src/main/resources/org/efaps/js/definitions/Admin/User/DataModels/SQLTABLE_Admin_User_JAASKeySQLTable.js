@@ -19,9 +19,7 @@
  * Last Changed By: $Author$
  */
 
-with (MENU)  {
-  addChild(new Command("Admin_User_PersonMyDesk"));
-  addChild(new Command("Admin_User_RoleMyDesk"));
-  addChild(new Command("Admin_User_GroupMyDesk"));
-  addChild(new Command("Admin_User_JAASSystemMyDesk"));
+with (SQLTABLE)  {
+  setSQLTable("USERJAASKEY");
+  setSQLColumnID("ID");
 }
