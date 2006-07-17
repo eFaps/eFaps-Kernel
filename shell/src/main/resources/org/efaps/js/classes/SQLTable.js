@@ -89,7 +89,7 @@ SQLTable.prototype.VARNAME     = new String("SQLTABLE");
 
 SQLTable.prototype.cleanup = function()  {
   this.cleanupProperties();
-  this.setSQLTable("-"+this.getName());
+  this.setSQLTable(("-" + this.getName()).substring(0, 34));
   this.setSQLColumnID("-");
   this.setSQLColumnType(null);
   this.setParentSQLTable(null);
@@ -99,7 +99,7 @@ SQLTable.prototype._create = function(_name)  {
   var insert = new Insert(Shell.context, "Admin_DataModel_SQLTable");
   insert.add(Shell.context, "Name", _name);
   insert.add(Shell.context, "SQLColumnID", "-");
-  insert.add(Shell.context, "SQLTable", "-" + _name);
+  insert.add(Shell.context, "SQLTable", ("-" + _name).substring(0, 34));
   insert.execute(Shell.context);
   this.instance = insert.getInstance();
 }
