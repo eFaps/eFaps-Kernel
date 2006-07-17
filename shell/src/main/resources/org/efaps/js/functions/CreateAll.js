@@ -659,6 +659,11 @@ function createAll()  {
 
     print("Standard Inserts");
 
+    _exec(stmt, "Insert JAAS System eFaps", null,
+      "insert into USERJAASSYSTEM(NAME, CREATOR, CREATED, MODIFIER, MODIFIED) "+
+          "values ('eFaps', 1, "+CURRENT_TIMESTAMP+", 1, "+CURRENT_TIMESTAMP+")"
+    );
+
     _exec(stmt, "Insert Administrator Person", null,
       "insert into USERABSTRACT(TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS) "+
           "values (-10000, 'Administrator', 1, "+CURRENT_TIMESTAMP+", 1, "+CURRENT_TIMESTAMP+", 10001)"
@@ -668,6 +673,10 @@ function createAll()  {
           "values (1,'The','Administrator','info@efaps.org','www.efaps.org', '')"
     );
 
+    _exec(stmt, "Assign Person Administrator to JAAS System eFaps", null,
+      "insert into USERJAASKEY(KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM) "+
+          "values ('Administrator', 1, "+CURRENT_TIMESTAMP+", 1, "+CURRENT_TIMESTAMP+",1,1)"
+    );
 
     _exec(stmt, "Insert Administrator Role",  null,
       "insert into USERABSTRACT(TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS) "+
