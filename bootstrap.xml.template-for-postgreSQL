@@ -33,21 +33,45 @@
     names could be used:
       - org.efaps.db.databases.DerbyDatabase
       - org.efaps.db.databases.OracleDatabase
+      - org.efaps.db.databases.PostgreSQLDatabase
     The information is needed to implement the vendor specific database
     functionality (e.g. a delete of all or table column types).
   -->
   <entry key="dbType">org.efaps.db.databases.PostgreSQLDatabase</entry>
 
   <!--
-    Database JDBC parameters:
-    - database user name
-    - database password
-    - JDBC driver class name
-    - JDBC url
+    This parameter defines the database user name.
   -->
   <entry key="username">efaps</entry>
+
+  <!--
+    This parameter defines the password of the database user name.
+  -->
   <entry key="password">efaps</entry>
+
+  <!--
+    This is the database JDBC driver class mame. The value should not be 
+    changed.
+  -->
   <entry key="driverClassName">org.postgresql.Driver</entry>
+
+  <!--
+    The PostgreSQL URL must be defined in one of the following forms:
+    - jdbc:postgresql:database
+    - jdbc:postgresql://host/database
+    - jdbc:postgresql://host:port/database
+    The parameters have the following meanings:
+    host
+        The host name of the server. Defaults to localhost. To specify an IPv6 
+        address your must enclose the host parameter with square brackets, for 
+        example:
+          jdbc:postgresql://[::1]:5740/accounting
+    port
+        The port number the server is listening on. Defaults to the PostgreSQL
+        standard port number (5432).
+    database
+        The database name. 
+  -->
   <entry key="url">jdbc:postgresql://localhost:5432/postgres</entry>
 
   <entry key="factory">org.apache.commons.dbcp.BasicDataSourceFactory</entry>

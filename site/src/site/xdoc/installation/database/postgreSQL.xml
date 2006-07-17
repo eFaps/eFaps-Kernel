@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<document>
+  <properties>
+    <title>Installation on Database PostgreSQL</title>
+  </properties>
+  <body>
+    <section name="Overview">
+      <p>Instead of the <a href="http://db.apache.org/derby/">Apache Derby
+         Database</a>, <a href="http://www.postgresql.org/">PostgreSQL
+         Database</a> could be used. All needed libraries and batch scripts
+         are included and could be used for first tests.</p>
+    </section>
+
+    <section name="Prerequisites">
+      <p><a href="http://www.postgresql.org/">PostgreSQL Database</a> must be
+      already installed. The database user 'efaps' is created and exists.</p>
+    </section>
+
+    <section name="Defining Bootstrap File">
+      <p>Copy file bootstrap.xml.template-for-postgreSQL to bootstrap.xml.
+      Change the database user, password and JDBC-URL (see the
+      <a href="http://www.postgresql.org/docs/manuals/">PostgreSQL Manual</a>
+      and the <a href="http://jdbc.postgresql.org/documentation/docs.html">
+      PostgreSQL JDBC Documententation</a> for more detailed information).</p>
+      <p>The PostgreSQL URL must be defined in one of the following forms:</p>
+      <ul>
+        <li>jdbc:postgresql:database</li>
+        <li>jdbc:postgresql://host/database</li>
+        <li>jdbc:postgresql://host:port/database</li>
+      </ul>
+      <p>The parameters have the following meanings:</p>
+      <dl>
+        <dt>host</dt><dd>The host name of the server. Defaults to localhost. To specify an IPv6
+        address your must enclose the host parameter with square brackets, for
+        example: <code>jdbc:postgresql://[::1]:5740/accounting</code></dd>
+        <dt>port</dt><dd>The port number the server is listening on. Defaults
+        to the PostgreSQL standard port number (5432).</dd>
+        <dt>database</dt><dd>The database name.</dd>
+      </dl>
+    </section>
+
+    <section name="Installing eFaps Data Model">
+      <p>Run 'shell.bat -create'.</p>
+    </section>
+
+  </body>
+</document>

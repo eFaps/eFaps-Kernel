@@ -64,7 +64,11 @@
     </menu>
     <menu name="Installation">
       <item name="Prerequisites"        href="/installation/prerequisite.html"/>
-      <item name="Derby DB"             href="/installation/derby.html"/>
+      <item name="Database"             href="/installation/database/index.html" collapse="true">
+        <item name="Derby"              href="/installation/database/derby.html"/>
+        <item name="Oracle"             href="/installation/database/oracle.html"/>
+        <item name="PostgreSQL"         href="/installation/database/postgreSQL.html"/>
+      </item>
       <item name="JAAS Authentication"  href="/installation/jaas.html"/>
     </menu>
 

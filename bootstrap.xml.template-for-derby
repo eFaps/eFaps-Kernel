@@ -33,6 +33,7 @@
     names could be used:
       - org.efaps.db.databases.DerbyDatabase
       - org.efaps.db.databases.OracleDatabase
+      - org.efaps.db.databases.PostgreSQLDatabase
     The information is needed to implement the vendor specific database
     functionality (e.g. a delete of all or table column types).
   -->
