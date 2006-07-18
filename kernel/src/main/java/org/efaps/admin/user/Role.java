@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.user;
@@ -27,9 +30,14 @@ import java.util.Hashtable;
 import java.util.Set;
 
 import org.efaps.db.Cache;
+import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 
-public class Role extends UserObject  {
+/**
+ * @author tmo
+ * @version $Id$
+ */
+public class Role extends UserObject implements CacheInterface  {
 
   /**
    * Create a new role instance. The method is used from the static method
@@ -37,7 +45,7 @@ public class Role extends UserObject  {
    *
    * @param _id
    */
-  private Role(long _id, String _name)  {
+  private Role(final long _id, final String _name)  {
     super(_id, _name);
   }
 
@@ -48,7 +56,7 @@ public class Role extends UserObject  {
    * @param _context context for this request
    * @see #getName
    */
-  public String getViewableName(Context _context)  {
+  public String getViewableName(final Context _context)  {
     return getName();
   }
 
@@ -61,7 +69,7 @@ public class Role extends UserObject  {
    * @see #persons
    * @see #getPersons
    */
-  public boolean hasChildPerson(Person _person) {
+  public boolean hasChildPerson(final Person _person) {
     boolean ret = false;
 
     if (getPersons().contains(_person))  {
@@ -77,7 +85,7 @@ public class Role extends UserObject  {
    * @see #persons
    * @see #isChildPerson
    */
-  void add(Person _person)  {
+  void add(final Person _person)  {
     getPersons().add(_person);
   }
 
@@ -116,7 +124,7 @@ public class Role extends UserObject  {
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  static public Role get(long _id) throws Exception  {
+  static public Role get(final long _id) throws Exception  {
     Role ret = getCache().get(_id);
     if (ret==null)  {
       Context context = new Context();
@@ -146,7 +154,7 @@ public class Role extends UserObject  {
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  static public Role get(String _name) throws Exception  {
+  static public Role get(final String _name) throws Exception  {
     Role ret = getCache().get(_name);
     if (ret==null)  {
       Context context = new Context();
@@ -187,7 +195,7 @@ public class Role extends UserObject  {
 
   static protected class RoleCache extends Cache<Role>  {
 
-    private Role readRole(Context _context, String _sql) throws Exception  {
+    private Role readRole(final Context _context, final String _sql) throws Exception  {
       Statement stmt = _context.getConnection().createStatement();
       Role ret = null;
       try  {
@@ -195,9 +203,8 @@ public class Role extends UserObject  {
         if (rs.next())  {
           long id =     rs.getLong(1);
           String name = rs.getString(2);
-          Role role = new Role(id, name);
-          this.add(role);
-          UserObject.addUserObject(role);
+          ret = new Role(id, name.trim());
+          this.add(ret);
         }
         rs.close();
       } catch (Exception e)  {

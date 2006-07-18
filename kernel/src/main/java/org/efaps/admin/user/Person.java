@@ -20,12 +20,10 @@
 
 package org.efaps.admin.user;
 
-import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -38,7 +36,11 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
-public class Person extends UserObject  {
+/**
+ * @author tmo
+ * @version $Id$
+ */
+public class Person extends UserObject implements CacheInterface  {
 
   /**
    * The constructor creates a new instance of class {@link Person} and sets
@@ -47,7 +49,7 @@ public class Person extends UserObject  {
    * @param _id     id of the person to set
    * @param _name   name of the person to set
    */
-  private Person(long _id, String _name)  {
+  private Person(final long _id, final String _name)  {
     super(_id, _name);
   }
 
@@ -61,11 +63,11 @@ public class Person extends UserObject  {
    * @return <i>true</i> if the person is the same person as this person,
    *         otherwise <i>false</i>
    */
-  public boolean hasChildPerson(Person _person)  {
+  public boolean hasChildPerson(final Person _person)  {
     return (_person.getId() == getId());
   }
 
-  public String getViewableName(Context _context)  {
+  public String getViewableName(final Context _context)  {
     return getName();
   }
 
@@ -81,7 +83,7 @@ public class Person extends UserObject  {
    * @see #roles
    * @see #getRoles
    */
-  private void add(Role _role)  {
+  private void add(final Role _role)  {
     getRoles().add(_role);
   }
 
@@ -93,9 +95,9 @@ public class Person extends UserObject  {
    * @param _passwd   password to check for this person
    * @return <i>true</i> if password is correct, otherwise <i>false</i>
    */
-  public boolean checkPassword(Context _context, String _passwd) throws Exception  {
+  public boolean checkPassword(final Context _context, final String _passwd) throws Exception  {
     boolean ret = false;
-/*
+
     Type type = Type.get("Admin_User_Person");
 
     Attribute attrPass = type.getAttribute("Password");
@@ -103,7 +105,30 @@ public class Person extends UserObject  {
     val.set(_context, _passwd);
     String encrPass = val.getViewableString(null);
 
-    SearchQuery query = new SearchQuery();
+/*    PreparedStatement stmt = null;
+    try  {
+      stmt = _context.getConnection().prepareStatement(
+          "select count(*) "+
+              "from V_USERPERSON "+
+              "where NAME=? and PASSWORD=?");
+      stmt.setString(1, getName());
+      stmt.setString(2, _passwd);
+      ResultSet rs = stmt.executeQuery();
+      if (rs.next() && (rs.getLong(1) == 1))  {
+        ret = true;
+      }
+      rs.close();
+    } catch (Exception e)  {
+e.printStackTrace();
+      throw e;
+    } finally  {
+      if (stmt != null)  {
+        stmt.close();
+      }
+    }
+*/
+ret = true;
+/*    SearchQuery query = new SearchQuery();
     query.setQueryTypes(_context, "Admin_User_Person");
     query.add(attrPass);
     query.addWhereExprEqValue(_context, "Name",     getName());
@@ -114,7 +139,6 @@ public class Person extends UserObject  {
       ret = true;
     }
 */
-ret=true;
     return ret;
   }
 
@@ -125,14 +149,14 @@ ret=true;
    * @param _context    context for this request
    * @param _newPasswd  new password to set for this user
    */
-  public void setPassword(Context _context, String _newPasswd) throws Exception  {
+  public void setPassword(final Context _context, final String _newPasswd) throws Exception  {
     Type type = Type.get("Admin_User_Person");
 
-    if (_newPasswd.length()==0)  {
+    if (_newPasswd.length() == 0)  {
       throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd.length());
     }
     Attribute attrPass = type.getAttribute("Password");
-    Update update = new Update(_context, type, ""+getId());
+    Update update = new Update(_context, type, "" + getId());
     update.add(_context, attrPass, _newPasswd);
     update.execute(_context);
   }
@@ -145,25 +169,25 @@ ret=true;
    * @param _context  context for this request
    * @see #readRoles4Persons
    */
-  protected void readFromDB(Context _context) throws Exception  {
+  protected void readFromDB(final Context _context) throws Exception  {
     readFromDBAttributes(_context);
     readFromDBRoles(_context);
   }
 
-  private void readFromDBAttributes(Context _context) throws Exception  {
+  private void readFromDBAttributes(final Context _context) throws Exception  {
     Statement stmt = _context.getConnection().createStatement();
     try  {
       ResultSet rs = stmt.executeQuery(
-          "select "+
-              "V_USERPERSON.EMAIL,"+
-              "V_USERPERSON.FIRSTNAME,"+
-              "V_USERPERSON.LASTNAME,"+
-              "V_USERPERSON.ORG,"+
-              "V_USERPERSON.URL,"+
-              "V_USERPERSON.PHONE,"+
-              "V_USERPERSON.FAX "+
-          "from V_USERPERSON "+
-          "where V_USERPERSON.ID="+getId()
+          "select " +
+              "V_USERPERSON.EMAIL," +
+              "V_USERPERSON.FIRSTNAME," +
+              "V_USERPERSON.LASTNAME," +
+              "V_USERPERSON.ORG," +
+              "V_USERPERSON.URL," +
+              "V_USERPERSON.PHONE," +
+              "V_USERPERSON.FAX " +
+          "from V_USERPERSON " +
+          "where V_USERPERSON.ID=" + getId()
       );
       if (rs.next())  {
         setEmail(rs.getString(1));
@@ -182,14 +206,14 @@ e.printStackTrace();
     }
   }
 
-  private void readFromDBRoles(Context _context) throws Exception  {
+  private void readFromDBRoles(final Context _context) throws Exception  {
     Statement stmt = _context.getConnection().createStatement();
     try  {
       ResultSet rs = stmt.executeQuery(
-          "select "+
-              "V_USERPERSON2ROLE.USERABSTRACTFROM "+
-          "from V_USERPERSON2ROLE "+
-          "where V_USERPERSON2ROLE.USERABSTRACTTO="+getId()
+          "select " +
+              "V_USERPERSON2ROLE.USERABSTRACTFROM " +
+          "from V_USERPERSON2ROLE " +
+          "where V_USERPERSON2ROLE.USERABSTRACTTO=" + getId()
       );
       while (rs.next())  {
         Role role = Role.get(rs.getLong(1));
@@ -259,7 +283,7 @@ e.printStackTrace();
    * @see #getRoles
    * @see #add(Role)
    */
-  private Set<Role> roles = new HashSet<Role>();
+  private Set < Role > roles = new HashSet < Role > ();
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -274,7 +298,7 @@ e.printStackTrace();
     return this.email;
   }
 
-  private void setEmail(String _email)  {
+  private void setEmail(final String _email)  {
     this.email = _email;
   }
 
@@ -296,7 +320,7 @@ e.printStackTrace();
    * @see #firstName
    * @see #getFirstName
    */
-  private void setFirstName(String _firstName)  {
+  private void setFirstName(final String _firstName)  {
     this.firstName = _firstName;
   }
 
@@ -318,7 +342,7 @@ e.printStackTrace();
    * @see #lastName
    * @see #getLastName
    */
-  private void setLastName(String _lastName)  {
+  private void setLastName(final String _lastName)  {
     this.lastName = _lastName;
   }
 
@@ -333,7 +357,7 @@ e.printStackTrace();
     return this.org;
   }
 
-  private void setOrganisation(String _org)  {
+  private void setOrganisation(final String _org)  {
     this.org = _org;
   }
 
@@ -348,7 +372,7 @@ e.printStackTrace();
     return this.phone;
   }
 
-  private void setPhone(String _phone)  {
+  private void setPhone(final String _phone)  {
     this.phone = _phone;
   }
 
@@ -363,7 +387,7 @@ e.printStackTrace();
     return this.fax;
   }
 
-  private void setFAX(String _fax)  {
+  private void setFAX(final String _fax)  {
     this.fax = _fax;
   }
 
@@ -378,7 +402,7 @@ e.printStackTrace();
     return this.url;
   }
 
-  private void setURL(String _url)  {
+  private void setURL(final String _url)  {
     this.url = _url;
   }
 
@@ -389,7 +413,7 @@ e.printStackTrace();
    * @see #roles
    * @see #add(Role)
    */
-  public Set<Role> getRoles()  {
+  public Set < Role > getRoles()  {
     return this.roles;
   }
 
@@ -403,17 +427,17 @@ e.printStackTrace();
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  static public Person get(long _id) throws Exception  {
+  static public Person get(final long _id) throws Exception  {
     Person ret = getCache().get(_id);
-    if (ret==null)  {
+    if (ret == null)  {
       Context context = new Context();
       try  {
         ret = getCache().readPerson(context,
-            "select "+
-              "V_USERPERSON.ID,"+
-              "V_USERPERSON.NAME "+
-            "from V_USERPERSON "+
-            "where V_USERPERSON.ID="+_id
+            "select " +
+              "V_USERPERSON.ID," +
+              "V_USERPERSON.NAME " +
+            "from V_USERPERSON " +
+            "where V_USERPERSON.ID=" + _id
         );
       } catch (Throwable e)  {
         throw new Exception(e);
@@ -433,25 +457,23 @@ e.printStackTrace();
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  static public Person get(String _name) throws Exception  {
+  static public Person get(final String _name) throws Exception  {
     Person ret = getCache().get(_name);
-    if (ret==null)  {
+    if (ret == null)  {
       Context context = new Context();
-System.out.println("----------------------------- read person");
       try  {
         ret = getCache().readPerson(context,
-            "select "+
-              "V_USERPERSON.ID,"+
-              "V_USERPERSON.NAME "+
-            "from V_USERPERSON "+
-            "where V_USERPERSON.NAME='"+_name+"'"
+            "select " +
+              "V_USERPERSON.ID," +
+              "V_USERPERSON.NAME " +
+            "from V_USERPERSON " +
+            "where V_USERPERSON.NAME='" + _name + "'"
         );
       } catch (Throwable e)  {
         throw new Exception(e);
       } finally  {
         context.close();
       }
-System.out.println("----------------------------- person.result = "+ret);
     }
     return ret;
   }
@@ -474,9 +496,9 @@ System.out.println("----------------------------- person.result = "+ret);
 
   /////////////////////////////////////////////////////////////////////////////
 
-  static protected class PersonCache extends Cache<Person>  {
+  static protected class PersonCache extends Cache < Person >  {
 
-    private Person readPerson(Context _context, String _sql) throws Exception  {
+    private Person readPerson(final Context _context, final String _sql) throws Exception  {
       Statement stmt = _context.getConnection().createStatement();
       Person ret = null;
       try  {

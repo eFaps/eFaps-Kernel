@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.user;
 
 import org.efaps.admin.AdminObject;
-import org.efaps.db.Cache;
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 
-public abstract class UserObject extends AdminObject implements CacheInterface  {
+/**
+ * @author tmo
+ * @version $Id$
+ */
+public abstract class UserObject extends AdminObject  {
 
   /**
    * Constructor to set the id and name of the user object.
@@ -30,7 +35,7 @@ public abstract class UserObject extends AdminObject implements CacheInterface  
    * @param _id         id to set
    * @param _name name  to set
    */
-  protected UserObject(long _id, String _name)  {
+  protected UserObject(final long _id, final String _name)  {
     super(_id, _name);
   }
 
@@ -46,7 +51,7 @@ public abstract class UserObject extends AdminObject implements CacheInterface  
    * @see #persons
    * @see #getPersons
    */
-  abstract public boolean hasChildPerson(Person _person);
+  abstract public boolean hasChildPerson(final Person _person);
 
   /**
    * Checks, if the context user is assigned to this user object. The instance
@@ -55,71 +60,41 @@ public abstract class UserObject extends AdminObject implements CacheInterface  
    * @param _context context for this request
    * @see #hasChildPerson
    */
-  public boolean isAssigned(Context _context)  {
+  public boolean isAssigned(final Context _context)  {
     return hasChildPerson(_context.getPerson());
   }
 
   /////////////////////////////////////////////////////////////////////////////
 
   /**
-   * Returns for given parameter <i>_id</i> the instance of class {@link Role}.
+   * Returns for given parameter <i>_id</i> the instance of class
+   * {@link UserObject}.
    *
    * @param _id id to search in the cache
-   * @return instance of class {@link Role}
-   * @see #getCache
+   * @return instance of class {@link UserObject}
    */
-  static public UserObject getUserObject(Context _context, long _id)  {
-    return getUserObjectCache().get(_id);
+  static public UserObject getUserObject(final Context _context,
+                                         final long _id) throws Exception  {
+    UserObject ret = Role.get(_id);
+    if (ret == null)  {
+      ret = Person.get(_id);
+    }
+    return ret;
   }
 
   /**
    * Returns for given parameter <i>_name</i> the instance of class
-   * {@link Role}.
+   * {@link UserObject}.
    *
    * @param _name name to search in the cache
-   * @return instance of class {@link Role}
-   * @see #getCache
+   * @return instance of class {@link UserObject}
    */
-  static public UserObject getUserObject(Context _context, String _name)  {
-    return getUserObjectCache().get(_name);
-  }
-
-  /**
-   * The static method adds a user object to the cache.
-   *
-   * @param _userObject user object to add to the user object cache.
-   */
-  static protected void addUserObject(UserObject _userObject)  {
-    getUserObjectCache().add(_userObject);
-  }
-
-  /**
-   * Static getter method for the type hashtable {@link #cache}.
-   *
-   * @return value of static variable {@link #cache}
-   */
-  static private UserObjectCache getUserObjectCache()  {
-    return cache;
-  }
-
-  /**
-   * Static setter method for the cache variable {@link #cache}.
-   *
-   * @param _cache new value of static variable {@link #cache}
-   */
-  static private void setUserObjectCache(UserObjectCache _cache)  {
-    cache = _cache;
-  }
-
-  /**
-   * Stores all instances of this class {@link UserObject}.
-   *
-   * @see #getCache
-   */
-  static private UserObjectCache cache = new UserObjectCache();
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  static protected class UserObjectCache extends Cache<UserObject>  {
+  static public UserObject getUserObject(final Context _context,
+                                         final String _name) throws Exception  {
+    UserObject ret = Role.get(_name);
+    if (ret == null)  {
+      ret = Person.get(_name);
+    }
+    return ret;
   }
 }
