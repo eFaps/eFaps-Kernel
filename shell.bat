@@ -57,8 +57,7 @@ set CP=%CP%;%shellPathLib%\commons-collections-2.1.jar
 
 REM Database Driver
 set CP=%CP%;%shellPathLib%\derbyclient-10.1.2.1.jar
-
-
+set CP=%CP%;%shellPathLib%\postgresql-8.1-407.jdbc3.jar
 
 REM used for stores
 REM set CP=%CP%;%derbyLibPath%\commons-vfs-20050307052300.jar
