@@ -53,6 +53,11 @@ function Command(_name)  {
   this._writeLinks        = UIAbstract.prototype._writeLinks;
   this.cleanupLinks       = UIAbstract.prototype.cleanupLinks;
 
+  // add access methods
+  this._writeAccess       = UIAbstract.prototype._writeAccess;
+  this.addRole            = UIAbstract.prototype.addRole;
+  this.cleanupAccess      = UIAbstract.prototype.cleanupAccess;
+
   // add common methods
   this._writeHeader       = Abstract.prototype._writeHeader;
 }
@@ -111,6 +116,7 @@ Command.prototype.addTargetTable = function(_object)  {
 Command.prototype.cleanup = function()  {
   this.cleanupProperties();
   this.cleanupLinks();
+  this.cleanupAccess();
 }
 
 Command.prototype.update = function(_fileName, _objName)  {
