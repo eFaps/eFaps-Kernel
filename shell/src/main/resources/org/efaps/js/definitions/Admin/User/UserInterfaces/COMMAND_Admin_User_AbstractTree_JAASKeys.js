@@ -27,4 +27,5 @@ with (COMMAND)  {
   addIcon("Admin_User_JAASKeyListImage");
 //  addTargetMenu("Admin_User_PersonTree_Roles_Menu");
   addTargetTable("Admin_User_JAASKeyTable");
+  addRole("Administration");
 }

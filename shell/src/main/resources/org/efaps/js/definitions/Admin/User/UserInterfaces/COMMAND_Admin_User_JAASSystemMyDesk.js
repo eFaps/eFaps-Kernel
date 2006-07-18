@@ -26,4 +26,5 @@ with (COMMAND)  {
   addIcon("Admin_User_JAASSystemImage");
 //  addTargetMenu("Admin_User_GroupMyDesk_Menu");
   addTargetTable("Admin_User_JAASSystemTable");
+  addRole("Administration");
 }
