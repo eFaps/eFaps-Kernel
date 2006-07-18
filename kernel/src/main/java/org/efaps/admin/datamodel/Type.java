@@ -80,8 +80,11 @@ public class Type extends DataModelObject  {
    *
    * @param _name   name of the instance
    */
-  protected Type(final long _id, final String _name)  {
+  private Type(final long _id, final String _name) throws Exception  {
     super(_id, _name);
+    Attribute typeAttr = new Attribute(0, "Type", "");
+    typeAttr.setAttributeType(AttributeType.get("Type"));
+    addAttribute(typeAttr);
   }
 
   /**
