@@ -85,6 +85,7 @@ public class Person extends UserObject implements CacheInterface  {
    */
   private void add(final Role _role)  {
     getRoles().add(_role);
+    _role.add(this);
   }
 
   /**
@@ -211,9 +212,9 @@ e.printStackTrace();
     try  {
       ResultSet rs = stmt.executeQuery(
           "select " +
-              "V_USERPERSON2ROLE.USERABSTRACTFROM " +
+              "V_USERPERSON2ROLE.USERABSTRACTTO " +
           "from V_USERPERSON2ROLE " +
-          "where V_USERPERSON2ROLE.USERABSTRACTTO=" + getId()
+          "where V_USERPERSON2ROLE.USERABSTRACTFROM=" + getId()
       );
       while (rs.next())  {
         Role role = Role.get(rs.getLong(1));
