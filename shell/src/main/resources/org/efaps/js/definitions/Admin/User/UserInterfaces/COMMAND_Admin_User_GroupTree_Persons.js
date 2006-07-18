@@ -24,5 +24,5 @@ with (COMMAND)  {
   addProperty("TargetExpand",           "Admin_User_Person2Group\\UserToLink.UserFromLink");
   addProperty("TargetMode",             "view");
   addIcon("Admin_User_PersonListImage");
-  addTargetTable("Admin_User_PersonList");
+  addTargetTable("Admin_User_PersonTable");
 }

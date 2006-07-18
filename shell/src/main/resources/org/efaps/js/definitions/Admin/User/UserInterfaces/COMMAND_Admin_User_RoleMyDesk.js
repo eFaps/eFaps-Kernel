@@ -25,5 +25,5 @@ with (COMMAND)  {
   addProperty("TargetShowCheckBoxes",   "true");
   addIcon("Admin_User_RoleImage");
   addTargetMenu("Admin_User_RoleMyDesk_Menu");
-  addTargetTable("Admin_User_AbstractList");
+  addTargetTable("Admin_User_AbstractTable");
 }

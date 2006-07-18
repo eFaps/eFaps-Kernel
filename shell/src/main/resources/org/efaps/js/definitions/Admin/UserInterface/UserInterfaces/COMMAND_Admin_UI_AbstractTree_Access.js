@@ -26,5 +26,5 @@ with (COMMAND)  {
 //  addProperty("TargetShowCheckBoxes",   "true");
 //  addIcon("Admin_PropertyListImage");
 //  addTargetMenu("Admin_UI_AbstractTree_Properties_Menu");
-  addTargetTable("Admin_User_AbstractList");
+  addTargetTable("Admin_User_AbstractTable");
 }
