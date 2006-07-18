@@ -19,14 +19,12 @@
  * Last Changed By: $Author$
  */
 
-with (MENU)  {
+with (COMMAND)  {
   addProperty("Target",                 "content");
+  addProperty("TargetExpand",           "Admin_UI_Access\\UILink.UserLink");
   addProperty("TargetMode",             "view");
-  addTargetForm("Admin_UI_AbstractForm");
-  addTargetMenu("Admin_UI_CommandTree_Menu");
-  addChild(new Command("Admin_UI_CommandTree_Parents"));
-  addChild(new Command("Admin_UI_AbstractTree_Properties"));
-  addChild(new Command("Admin_UI_CommandTree_Links"));
-  addChild(new Command("Admin_UI_DirectTree_Used"));
-  addChild(new Command("Admin_UI_AbstractTree_Access"));
+//  addProperty("TargetShowCheckBoxes",   "true");
+//  addIcon("Admin_PropertyListImage");
+//  addTargetMenu("Admin_UI_AbstractTree_Properties_Menu");
+  addTargetTable("Admin_User_AbstractList");
 }

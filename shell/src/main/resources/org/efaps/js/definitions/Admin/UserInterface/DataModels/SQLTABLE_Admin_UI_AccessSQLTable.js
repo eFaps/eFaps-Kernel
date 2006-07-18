@@ -19,14 +19,7 @@
  * Last Changed By: $Author$
  */
 
-with (MENU)  {
-  addProperty("Target",                 "content");
-  addProperty("TargetMode",             "view");
-  addTargetForm("Admin_UI_AbstractForm");
-  addTargetMenu("Admin_UI_CommandTree_Menu");
-  addChild(new Command("Admin_UI_CommandTree_Parents"));
-  addChild(new Command("Admin_UI_AbstractTree_Properties"));
-  addChild(new Command("Admin_UI_CommandTree_Links"));
-  addChild(new Command("Admin_UI_DirectTree_Used"));
-  addChild(new Command("Admin_UI_AbstractTree_Access"));
+with (SQLTABLE)  {
+  setSQLTable("UIACCESS");
+  setSQLColumnID("ID");
 }
