@@ -48,7 +48,7 @@ public class VFSStoreFactoryBean extends DefaultFileSystemManager  {
   /**
    * Property Name defined on the type for the virtual file system name.
    */
-  private final static String PROPERY_STORENAME  = "StoreVFSName";
+  private final static String PROPERTY_STORENAME  = "StoreVFSName";
 
   /**
    * The base name of this VFS store is stored in this instance string.
@@ -160,7 +160,7 @@ public class VFSStoreFactoryBean extends DefaultFileSystemManager  {
 
       Context context = (Context) initialContext.lookup("java:comp/env");
 
-      ret = (VFSStoreFactoryBean) context.lookup(_type.getProperty(PROPERY_STORENAME));
+      ret = (VFSStoreFactoryBean) context.lookup(_type.getProperty(PROPERTY_STORENAME));
 
     } catch (Throwable e)  {
       e.printStackTrace();
@@ -174,7 +174,7 @@ public class VFSStoreFactoryBean extends DefaultFileSystemManager  {
           + "'" + _type.getName() + "'");
       throw new EFapsException(VFSStoreFactoryBean.class,
           "getFileProvider.doesNotExists",
-          _type.getName(), _type.getProperty(PROPERY_STORENAME));
+          _type.getName(), _type.getProperty(PROPERTY_STORENAME));
     }
 
     return ret;
