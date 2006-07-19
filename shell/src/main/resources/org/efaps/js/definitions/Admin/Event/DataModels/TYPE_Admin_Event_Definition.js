@@ -23,13 +23,13 @@ with (TYPE)  {
   setParentType(new Type("Admin_Abstract"));
   with (addAttribute("IndexPosition"))  {
     setAttributeType("Integer");
-    setSQLTable("Admin_Event_DefinitionTable");
+    setSQLTable("Admin_Event_DefinitionSQLTable");
     setSQLColumn("INDEXPOS");
   }
   with (addAttribute("Abstract"))  {
     setAttributeType("Link");
     setTypeLink("Admin_Abstract");
-    setSQLTable("Admin_Event_DefinitionTable");
+    setSQLTable("Admin_Event_DefinitionSQLTable");
     setSQLColumn("ABSTRACT");
   }
 }

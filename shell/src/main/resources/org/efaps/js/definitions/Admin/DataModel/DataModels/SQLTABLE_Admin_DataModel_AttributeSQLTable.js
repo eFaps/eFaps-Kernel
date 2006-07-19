@@ -20,7 +20,7 @@
  */
 
 with (SQLTABLE)  {
-  setSQLTable("EVENTDEF");
+  setSQLTable("DMATTRIBUTE");
   setSQLColumnID("ID");
-  setParentSQLTable("Admin_AbstractTable");
+  setParentSQLTable("Admin_AbstractSQLTable");
 }

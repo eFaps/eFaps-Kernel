@@ -47,5 +47,4 @@ function eFapsUpdateDataModel()  {
 
   Shell.transactionManager.commit();
   context.close();
-
 }

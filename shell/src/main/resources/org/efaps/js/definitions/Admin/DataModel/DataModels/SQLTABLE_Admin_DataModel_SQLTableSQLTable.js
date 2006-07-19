@@ -20,7 +20,7 @@
  */
 
 with (SQLTABLE)  {
-  setSQLTable("UIFILE");
+  setSQLTable("DMTABLE");
   setSQLColumnID("ID");
   setParentSQLTable("Admin_AbstractSQLTable");
 }

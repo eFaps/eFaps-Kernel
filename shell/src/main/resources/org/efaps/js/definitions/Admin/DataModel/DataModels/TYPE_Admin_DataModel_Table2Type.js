@@ -19,8 +19,27 @@
  * Last Changed By: $Author$
  */
 
-with (SQLTABLE)  {
-  setSQLTable("UIFILE");
-  setSQLColumnID("ID");
-  setParentSQLTable("Admin_AbstractSQLTable");
+with (TYPE)  {
+  with (addAttribute("OID"))  {
+    setAttributeType("OID");
+    setSQLTable("Admin_DataModel_Table2TypeSQLView");
+    setSQLColumn("ID");
+  }
+  with (addAttribute("ID"))  {
+    setAttributeType("Integer");
+    setSQLTable("Admin_DataModel_Table2TypeSQLView");
+    setSQLColumn("ID");
+  }
+  with (addAttribute("FromTable"))  {
+    setAttributeType("Link");
+    setTypeLink("Admin_DataModel_SQLTable");
+    setSQLTable("Admin_DataModel_Table2TypeSQLView");
+    setSQLColumn("FROMID");
+  }
+  with (addAttribute("ToType"))  {
+    setAttributeType("Link");
+    setTypeLink("Admin_DataModel_Type");
+    setSQLTable("Admin_DataModel_Table2TypeSQLView");
+    setSQLColumn("TOID");
+  }
 }

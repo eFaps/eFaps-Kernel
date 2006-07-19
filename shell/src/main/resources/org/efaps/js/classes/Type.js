@@ -143,9 +143,8 @@ Type.prototype.addAttribute = function(_name)  {
     var insert = new Insert(Shell.getContext(), "Admin_DataModel_Attribute");
     insert.add(Shell.getContext(), "ParentType", this.getId());
     insert.add(Shell.getContext(), "Name", _name);
-//  attr.AttributeType  = (new EFapsInstance("Admin_DataModel_AttributeType", "String")).ID;
-    insert.add(Shell.getContext(), "AttributeType", 99);
-    insert.add(Shell.getContext(), "Table", (new SQLTable("Admin_AbstractTable")).getId());
+    insert.add(Shell.getContext(), "AttributeType", (new DMAttributeType("Type")).getId());
+    insert.add(Shell.getContext(), "Table", (new SQLTable("Admin_AbstractSQLTable")).getId());
     insert.add(Shell.getContext(), "SQLColumn", "-"+_name);
     insert.execute(Shell.getContext());
 

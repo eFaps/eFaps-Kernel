@@ -22,57 +22,57 @@
 with (TYPE)  {
   with (addAttribute("OID"))  {
     setAttributeType("OID");
-    setSQLTable("Admin_DataModel_AttributeTypeTable");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("ID");
   }
   with (addAttribute("ID"))  {
     setAttributeType("Integer");
-    setSQLTable("Admin_DataModel_AttributeTypeTable");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("ID");
   }
   with (addAttribute("Name"))  {
     setAttributeType("String");
-    setSQLTable("Admin_DataModel_AttributeTypeTable");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("NAME");
   }
   with (addAttribute("Creator"))  {
     setAttributeType("CreatorLink");
-    setSQLTable("Admin_DataModel_AttributeTypeTable");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("CREATOR");
   }
   with (addAttribute("Created"))  {
     setAttributeType("Created");
-    setSQLTable("Admin_DataModel_AttributeTypeTable");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("CREATED");
   }
   with (addAttribute("Modifier"))  {
     setAttributeType("ModifierLink");
-    setSQLTable("Admin_DataModel_AttributeTypeTable");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("MODIFIER");
   }
   with (addAttribute("Modified"))  {
     setAttributeType("Modified");
-    setSQLTable("Admin_DataModel_AttributeTypeTable");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("MODIFIED");
   }
   with (addAttribute("Classname"))  {
     setAttributeType("String");
-    setSQLTable("Admin_DataModel_AttributeTypeTable");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("CLASSNAME");
   }
   with (addAttribute("ClassnameUI"))  {
     setAttributeType("String");
-    setSQLTable("Admin_DataModel_AttributeTypeTable");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("CLASSNAMEUI");
   }
   with (addAttribute("AlwaysUpdate"))  {
     setAttributeType("Boolean");
-    setSQLTable("Admin_DataModel_AttributeTypeTable");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("ALWAYSUPDATE");
   }
   with (addAttribute("CreateUpdate"))  {
     setAttributeType("Boolean");
-    setSQLTable("Admin_DataModel_AttributeTypeTable");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("CREATEUPDATE");
   }
   addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_DataModel_AttributeTypeImage");

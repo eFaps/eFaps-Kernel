@@ -23,31 +23,31 @@ with (TYPE)  {
   setParentType(new Type("Admin_DataModel_Abstract"));
   with (addAttribute("SQLColumn"))  {
     setAttributeType("String");
-    setSQLTable("Admin_DataModel_AttributeTable");
+    setSQLTable("Admin_DataModel_AttributeSQLTable");
     setSQLColumn("SQLCOLUMN");
   }
   with (addAttribute("Table"))  {
     setAttributeType("Link");
     setTypeLink("Admin_DataModel_SQLTable");
-    setSQLTable("Admin_DataModel_AttributeTable");
+    setSQLTable("Admin_DataModel_AttributeSQLTable");
     setSQLColumn("DMTABLE");
   }
   with (addAttribute("ParentType"))  {
     setAttributeType("Link");
     setTypeLink("Admin_DataModel_Type");
-    setSQLTable("Admin_DataModel_AttributeTable");
+    setSQLTable("Admin_DataModel_AttributeSQLTable");
     setSQLColumn("DMTYPE");
   }
   with (addAttribute("AttributeType"))  {
     setAttributeType("Link");
     setTypeLink("Admin_DataModel_AttributeType");
-    setSQLTable("Admin_DataModel_AttributeTable");
+    setSQLTable("Admin_DataModel_AttributeSQLTable");
     setSQLColumn("DMATTRIBUTETYPE");
   }
   with (addAttribute("TypeLink"))  {
     setAttributeType("Link");
     setTypeLink("Admin_DataModel_Type");
-    setSQLTable("Admin_DataModel_AttributeTable");
+    setSQLTable("Admin_DataModel_AttributeSQLTable");
     setSQLColumn("DMTYPELINK");
   }
   addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_DataModel_AttributeImage");

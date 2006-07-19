@@ -23,13 +23,13 @@ with (TYPE)  {
   setParentType(new Type("Admin_DataModel_Abstract"));
   with (addAttribute("SQLCacheExpr"))  {
     setAttributeType("String");
-    setSQLTable("Admin_DataModel_TypeTable");
+    setSQLTable("Admin_DataModel_TypeSQLTable");
     setSQLColumn("SQLCACHEEXPR");
   }
   with (addAttribute("ParentType"))  {
     setAttributeType("Link");
     setTypeLink("Admin_DataModel_Type");
-    setSQLTable("Admin_DataModel_TypeTable");
+    setSQLTable("Admin_DataModel_TypeSQLTable");
     setSQLColumn("PARENTDMTYPE");
   }
   addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_DataModel_TypeImage");
