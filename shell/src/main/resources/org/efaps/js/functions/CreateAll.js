@@ -359,11 +359,13 @@ function _eFapsCreateAllUserTables(_con, _stmt)  {
       ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
       ["USERABSTRACTFROM      "+TYPE_INTEGER+"                   not null"],
       ["USERABSTRACTTO        "+TYPE_INTEGER+"                   not null"],
-      ["constraint USRABS2ABS_UK_FRTO  unique(USERABSTRACTFROM,USERABSTRACTTO)"],
+      ["USERJAASSYSTEM        "+TYPE_INTEGER+"                   not null"],
+      ["constraint USRABS2ABS_UK_FRTO  unique(USERABSTRACTFROM,USERABSTRACTTO,USERJAASSYSTEM)"],
       ["constraint USRABS2ABS_FK_CRTR  foreign key(CREATOR)          references USERABSTRACT(ID)"],
       ["constraint USRABS2ABS_FK_MDFR  foreign key(MODIFIER)         references USERABSTRACT(ID)"],
       ["constraint USRABS2ABS_FK_FROM  foreign key(USERABSTRACTFROM) references USERABSTRACT(ID)"],
-      ["constraint USRABS2ABS_FK_TO    foreign key(USERABSTRACTTO)   references USERABSTRACT(ID)"]
+      ["constraint USRABS2ABS_FK_TO    foreign key(USERABSTRACTTO)   references USERABSTRACT(ID)"],
+      ["constraint USRABS2ABS_FK_SYSTM foreign key(USERJAASSYSTEM)   references USERJAASSYSTEM(ID)"]
   ]);
 }
 
@@ -684,8 +686,8 @@ function createAll()  {
     );
 
     _exec(stmt, "Connect Administrator Person to Role Administration", null,
-      "insert into USERABSTRACT2ABSTRACT(TYPEID,CREATOR,CREATED,MODIFIER,MODIFIED,USERABSTRACTFROM,USERABSTRACTTO) "+
-          "values (-12000, 1, "+CURRENT_TIMESTAMP+", 1, "+CURRENT_TIMESTAMP+", 1, 2)"
+      "insert into USERABSTRACT2ABSTRACT(TYPEID,CREATOR,CREATED,MODIFIER,MODIFIED,USERABSTRACTFROM,USERABSTRACTTO,USERJAASSYSTEM) "+
+          "values (-12000, 1, "+CURRENT_TIMESTAMP+", 1, "+CURRENT_TIMESTAMP+", 1, 2, 1)"
     );
 
     var text = "Insert all access types";
@@ -747,8 +749,6 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLColumnID',      'SQLCOLUMNID',      100, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLColumnType',    'SQLCOLUMNTYPE',    100, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'DMTableMain',      'DMTABLEMAIN',      400, typeIdSQLTable);
-    _eFapsCreateInsertProp(stmt, typeIdSQLTable, "Tree", "Admin_DataModel_SQLTableTree");
-    _eFapsCreateInsertProp(stmt, typeIdSQLTable, "Icon", "${ROOTURL}/servlet/image/eFapsAdminDataModelSQLTable");
 
     /////////////////////////////////////////
     // insert 'type' 
@@ -760,8 +760,6 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     var typeIdType = _eFapsCreateInsertType(stmt, text, "Admin_DataModel_Type", typeIdAbstract);
     _eFapsCreateInsertAttr(stmt, sqlTableIdType, typeIdType, 'SQLCacheExpr',     'SQLCACHEEXPR',     100, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdType, typeIdType, 'ParentType',       'PARENTDMTYPE',     400, typeIdType);
-    _eFapsCreateInsertProp(stmt, typeIdType, "Tree", "Admin_DataModel_TypeTree");
-    _eFapsCreateInsertProp(stmt, typeIdType, "Icon", "${ROOTURL}/servlet/image/eFapsAdminDataModelType");
 
     /////////////////////////////////////////
     // insert 'attribute type' 
@@ -774,16 +772,10 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'OID',              'ID',               111, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'ID',               'ID',               210, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Name',             'NAME',             100, null);
-    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Creator',          'CREATOR',          411, null);
-    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Created',          'CREATED',          331, null);
-    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Modifier',         'MODIFIER',         412, null);
-    _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Modified',         'MODIFIED',         332, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Classname',        'CLASSNAME',        100, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'ClassnameUI',      'CLASSNAMEUI',      100, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'AlwaysUpdate',     'ALWAYSUPDATE',     290, null);
     _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'CreateUpdate',     'CREATEUPDATE',     290, null);
-    _eFapsCreateInsertProp(stmt, typeIdAttrType, "Tree", "Admin_DataModel_AttributeTypeTree");
-    _eFapsCreateInsertProp(stmt, typeIdAttrType, "Icon", "${ROOTURL}/servlet/image/eFapsAdminDataModelAttributeType");
 
     /////////////////////////////////////////
     // insert 'attribute' 
@@ -798,8 +790,6 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'AttributeType',     'DMATTRIBUTETYPE', 400, typeIdAttrType);
     _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'TypeLink',          'DMTYPELINK',      400, typeIdType);
     _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'SQLColumn',         'SQLCOLUMN',       100, null);
-    _eFapsCreateInsertProp(stmt, typeIdAttr, "Tree", "Admin_DataModel_AttributeTree");
-    _eFapsCreateInsertProp(stmt, typeIdAttr, "Icon", "${ROOTURL}/servlet/image/eFapsAdminDataModelAttribute");
 
     /////////////////////////////////////////
     // insert 'admin property' 
@@ -874,7 +864,7 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
 
 
     _exec(stmt, "View 'V_USERJAASKEY'", "view representing all JAAS keys",
-      "create view V_USERJAASKEY as "+
+      "create or replace view V_USERJAASKEY as "+
         "select "+
             "USERABSTRACT.ID     as USERID,"+
             "USERABSTRACT.NAME   as USERNAME,"+
@@ -887,7 +877,7 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     );
 
     _exec(stmt, "View 'V_USERPERSON'", "view representing all persons",
-      "create view V_USERPERSON as "+
+      "create or replace view V_USERPERSON as "+
         "select "+
             "USERABSTRACT.ID,"+
             "USERABSTRACT.NAME,"+
@@ -905,16 +895,16 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     );
 
     _exec(stmt, "View 'V_USERROLE'", "view representing all roles",
-      "create view V_USERROLE as "+
-        "select "+
-            "USERABSTRACT.ID,"+
-            "USERABSTRACT.NAME "+
-          "from USERABSTRACT "+
-          "where USERABSTRACT.TYPEID="+typeIdRole
+      "create or replace view V_USERROLE as "
+        + "select "
+        +       "USERABSTRACT.ID,"
+        +       "USERABSTRACT.NAME "
+        +   "from USERABSTRACT "
+        +   "where USERABSTRACT.TYPEID=" + typeIdRole
     );
 
     _exec(stmt, "View 'V_USERGROUP'", "view representing all groups",
-      "create view V_USERGROUP as "+
+      "create or replace view V_USERGROUP as "+
         "select "+
             "USERABSTRACT.ID,"+
             "USERABSTRACT.NAME "+
@@ -923,17 +913,17 @@ _eFapsCreateAllInsertAttributeTypes(stmt);
     );
 
     _exec(stmt, "View 'V_USERPERSON2ROLE'", "view representing connection between person and role",
-      "create view V_USERPERSON2ROLE as "+
-        "select "+
-            "USERABSTRACT2ABSTRACT.ID,"+
-            "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"+
-            "USERABSTRACT2ABSTRACT.USERABSTRACTTO "+
-          "from USERABSTRACT2ABSTRACT "+
-          "where USERABSTRACT2ABSTRACT.TYPEID="+typeIdPerson2Role
+      "create or replace view V_USERPERSON2ROLE as "
+        + "select "
+        +       "USERABSTRACT2ABSTRACT.ID,"
+        +       "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"
+        +       "USERABSTRACT2ABSTRACT.USERABSTRACTTO "
+        +   "from USERABSTRACT2ABSTRACT "
+        +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Role 
     );
 
     _exec(stmt, "View 'V_USERPERSON2GROUP'", "view representing connection between person and group",
-      "create view V_USERPERSON2GROUP as "+
+      "create or replace view V_USERPERSON2GROUP as "+
         "select "+
             "USERABSTRACT2ABSTRACT.ID,"+
             "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"+

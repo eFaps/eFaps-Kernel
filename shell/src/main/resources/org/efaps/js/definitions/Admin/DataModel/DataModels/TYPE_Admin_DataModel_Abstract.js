@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Author:          tmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
 
-with (COMMAND)  {
-  addProperty("Target",                 "content");
-  addProperty("TargetQueryTypes",       "Admin_DataModel_SQLTable");
-  addIcon("Admin_DataModel_SQLTableImage");
-  addTargetTable("Admin_DataModel_SQLTableList");
-  addRole("Administration");
+with (TYPE)  {
+  setParentType(new Type("Admin_Abstract"));
 }

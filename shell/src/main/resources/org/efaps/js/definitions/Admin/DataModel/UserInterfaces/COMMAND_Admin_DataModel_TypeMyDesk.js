@@ -21,7 +21,7 @@
 with (COMMAND)  {
   addProperty("Target",                 "content");
   addProperty("TargetQueryTypes",       "Admin_DataModel_Type");
-  addIcon("eFapsAdminDataModelType");
+  addIcon("Admin_DataModel_TypeImage");
   addTargetTable("Admin_DataModel_TypeList");
   addRole("Administration");
 }

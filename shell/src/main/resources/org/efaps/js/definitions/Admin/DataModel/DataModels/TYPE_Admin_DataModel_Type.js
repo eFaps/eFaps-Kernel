@@ -13,15 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Author:          tmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
 
-with (COMMAND)  {
-  addProperty("Target",                 "content");
-  addProperty("TargetQueryTypes",       "Admin_DataModel_SQLTable");
-  addIcon("Admin_DataModel_SQLTableImage");
-  addTargetTable("Admin_DataModel_SQLTableList");
-  addRole("Administration");
+with (TYPE)  {
+  setParentType(new Type("Admin_DataModel_Abstract"));
+  with (addAttribute("SQLCacheExpr"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_DataModel_TypeTable");
+    setSQLColumn("SQLCACHEEXPR");
+  }
+  with (addAttribute("ParentType"))  {
+    setAttributeType("Link");
+    setTypeLink("Admin_DataModel_Type");
+    setSQLTable("Admin_DataModel_TypeTable");
+    setSQLColumn("PARENTDMTYPE");
+  }
+  addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_DataModel_TypeImage");
+  addProperty("Tree",                   "Admin_DataModel_TypeTree");
 }
