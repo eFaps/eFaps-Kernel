@@ -106,14 +106,14 @@ public class Person extends UserObject implements CacheInterface  {
     val.set(_context, _passwd);
     String encrPass = val.getViewableString(null);
 
-/*    PreparedStatement stmt = null;
+    PreparedStatement stmt = null;
     try  {
       stmt = _context.getConnection().prepareStatement(
           "select count(*) "+
               "from V_USERPERSON "+
               "where NAME=? and PASSWORD=?");
       stmt.setString(1, getName());
-      stmt.setString(2, _passwd);
+      stmt.setString(2, encrPass);
       ResultSet rs = stmt.executeQuery();
       if (rs.next() && (rs.getLong(1) == 1))  {
         ret = true;
@@ -127,19 +127,7 @@ e.printStackTrace();
         stmt.close();
       }
     }
-*/
-ret = true;
-/*    SearchQuery query = new SearchQuery();
-    query.setQueryTypes(_context, "Admin_User_Person");
-    query.add(attrPass);
-    query.addWhereExprEqValue(_context, "Name",     getName());
-    query.addWhereExprEqValue(_context, "Password", encrPass);
-//    query.addWhere(type.getAttribute("Status"), "10001");
-    query.execute(_context);
-    if (query.next())  {
-      ret = true;
-    }
-*/
+
     return ret;
   }
 

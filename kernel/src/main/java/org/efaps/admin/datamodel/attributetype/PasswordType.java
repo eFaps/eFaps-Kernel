@@ -31,7 +31,8 @@ import org.efaps.db.Context;
 import org.efaps.admin.ui.Field;
 
 /**
- *
+ * @author grs, tmo
+ * @version $Id$
  */
 public class PasswordType extends StringType  {
 
@@ -60,15 +61,23 @@ public class PasswordType extends StringType  {
    * @exception EcfException if an error occurs
    */
   private String getEncryptPassword(String _password)  {
+    String ret = null;
+
     byte[] encryptedPassword = null;
     try{
       MessageDigest md = MessageDigest.getInstance("SHA-1");
       md.update("eFaps".getBytes());
       encryptedPassword = md.digest(_password.getBytes());
 
+      StringBuffer convert = new StringBuffer();
+      for (int i = 0; i < encryptedPassword.length; i++)  {
+        convert.append(Integer.toHexString(encryptedPassword[i]));
+      }
+      ret = convert.toString();
+
     } catch(NoSuchAlgorithmException e)  {
 e.printStackTrace();
     }
-    return (encryptedPassword==null ? null : new String(encryptedPassword));
+    return ret;
   }
 }
