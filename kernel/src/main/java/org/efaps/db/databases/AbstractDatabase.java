@@ -146,6 +146,16 @@ public abstract class AbstractDatabase  {
   public abstract void deleteAll(final Connection _con) throws SQLException;
 
   /**
+   * The method tests, if the given view exists.
+   *
+   * @param _con      sql connection
+   * @param _viewName name of view to test
+   * @return <i>true</i> if view exists, otherwise <i>false</i>
+   */
+  public abstract boolean existsView(final Connection _con,
+          final String _viewName) throws SQLException;
+
+  /**
    * A new sql table with column <code>ID</code> is created. If no parent table
    * is given (set to <i>null</i>), the column <code>ID</code> of the table is
    * automatically incremented, otherwise a foreign key to the parent table on

@@ -74,12 +74,12 @@ System.out.println("Remove Tables");
       // cascade drops all views, sequences
 //    print("Remove Tables");
       ResultSet rs = stmtSel.executeQuery(
-          "select c.relname "
-              + "FROM pg_class c,pg_roles r "
-              + "WHERE c.relkind='r' "
-                  + "AND c.relowner=r.oid "
-                  + "AND r.rolname=user "
-              + "ORDER BY c.relname"
+          "select c.RELNAME "
+              + "from PG_CLASS c,PG_ROLES r "
+              + "where c.RELKIND='r' "
+                  + "and c.RELOWNER=r.oid "
+                  + "and r.ROLNAME=user "
+              + "order by c.RELNAME"
       );
       while (rs.next())  {
         String tableName = rs.getString(1);
@@ -92,6 +92,38 @@ System.out.println("  - Table '" + tableName + "'");
       stmtSel.close();
       stmtExec.close();
     }
+  }
+
+  /**
+   * The method tests, if the given view exists.
+   *
+   * @param _con      sql connection
+   * @param _viewName name of view to test
+   * @return <i>true</i> if view exists, otherwise <i>false</i>
+   */
+  public boolean existsView(final Connection _con,
+                            final String _viewName) throws SQLException  {
+    boolean ret = false;
+
+    Statement stmt = _con.createStatement();
+
+    try  {
+      ResultSet rs = stmt.executeQuery(
+          "select c.RELNAME "
+              + "from PG_CLASS c,PG_ROLES r "
+              + "where c.RELNAME='" + _viewName.toLowerCase() + "'"
+                  + "and c.RELKIND='v' "
+                  + "and c.RELOWNER=r.oid "
+                  + "and r.ROLNAME=user"
+      );
+      if (rs.next())  {
+        ret = true;
+      }
+      rs.close();
+    } finally  {
+      stmt.close();
+    }
+    return ret;
   }
 
   /**
