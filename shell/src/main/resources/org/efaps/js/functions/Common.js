@@ -19,6 +19,8 @@
  * Last Changed By: $Author$
  */
 
+importClass(Packages.org.efaps.db.Context);
+
 /**
  * Write out some log stuff. The format is:
  * <ul>
@@ -59,4 +61,45 @@ function eFapsCommonSQLTableUpdate(_con, _stmt, _text, _table, _array)  {
   for (var i=0; i<_array.length; i++)  {
     _stmt.execute("alter table " + _table + " add " + _array[i]);
   }
+}
+
+/**
+ * Insert a version information for an application stored in the database used 
+ * to update DML information in the database.
+ *
+ * @param _name     application name for which the version is inserted
+ * @param _version  new version number to insert
+ */
+function eFapsCommonVersionInsert(_con, _stmt, _name, _version)  {
+  eFapsCommonLog("Update application '" + _name + "'", "new version " + _version);
+  _stmt.execute(
+      "insert into COMMONVERSION "
+        +   "(NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
+        +   "values ('" + _name + "'," + _version + "," 
+                + "1," + Context.getDbType().getCurrentTimeStamp() + ","
+                + "1," + Context.getDbType().getCurrentTimeStamp()
+                + ")"
+  );
+}
+
+/**
+ * Returns for the given application name the current installed version.
+ *
+ * @param _name   application name for which the version should returned
+ */
+function eFapsCommonVersionGet(_con, _stmt, _name)  {
+  var ret = 0;
+
+  if (Context.getDbType().existsView(_con, "V_COMMONVERSION"))  {
+    var rs = _stmt.executeQuery(
+        "select VERSION "
+          +     "from V_COMMONVERSION "
+          +     "where NAME='" + _name + "'"
+    );
+    if (rs.next())  {
+      ret= rs.getLong(1);
+    }
+    rs.close();
+  }
+  return ret;
 }

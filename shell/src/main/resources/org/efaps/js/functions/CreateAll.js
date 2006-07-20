@@ -840,6 +840,27 @@ function _eFapsCreateCommonTablesStep3(_con, _stmt)  {
   eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "ABSTRACT", [
       ["constraint ABSTR_FK_TYPEID foreign key(TYPEID) references DMTYPE(ID)"]
   ]);
+
+  eFapsCommonSQLTableCreate(_con, _stmt, "Common Version Table", "COMMONVERSION", null,[
+      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["REVISION              "+TYPE_INTEGER+"                   not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+      ["CREATED               "+TYPE_DATETIME+"                  not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+      ["constraint COMVER_UK_NAMEREV   unique(NAME,REVISION)"],
+      ["constraint COMVER_FK_CRTR      foreign key(CREATOR)      references USERPERSON(ID)"],
+      ["constraint COMVER_FK_MDFR      foreign key(MODIFIER)     references USERPERSON(ID)"]
+  ]);
+
+  _exec(_stmt, "View 'V_COMMONVERSION'", "view representing all versions",
+    "create view V_COMMONVERSION as "
+      + "select "
+      +         "NAME,"
+      +         "max(REVISION) as VERSION "
+      +     "from COMMONVERSION "
+      +     "group by NAME"
+  );
 }
 
 /**
@@ -975,19 +996,23 @@ function createAll()  {
     var con = context.getConnection();
     var stmt = con.createStatement();
 
-    ///////////////////////////////////////////////////////////////////////////////
+    if (eFapsCommonVersionGet(con,stmt) < 1)  {
+      _eFapsCreateUserTablesStep1     (con, stmt);
+      _eFapsCreateCommonTablesStep1   (con, stmt);
+      _eFapsCreateLifeCycleTablesStep1(con, stmt);
+      _eFapsCreateDataModelTablesStep1(con, stmt);
+      _eFapsCreateUITablesStep1       (con, stmt);
+      _eFapsCreateCommonTablesStep2   (con, stmt);
+      _eFapsCreateDataModelTablesStep2(con, stmt);
+      _eFapsCreateUserTablesStep2     (con, stmt);
+      _eFapsCreateCommonTablesStep3   (con, stmt);
+      _eFapsCreateEventTablesStep3    (con, stmt);
+      eFapsCommonVersionInsert(con, stmt, "eFaps", 1);
+    }
 
-    _eFapsCreateUserTablesStep1     (con, stmt);
-    _eFapsCreateCommonTablesStep1   (con, stmt);
-    _eFapsCreateLifeCycleTablesStep1(con, stmt);
-    _eFapsCreateDataModelTablesStep1(con, stmt);
-    _eFapsCreateUITablesStep1       (con, stmt);
-    _eFapsCreateCommonTablesStep2   (con, stmt);
-    _eFapsCreateDataModelTablesStep2(con, stmt);
-    _eFapsCreateUserTablesStep2     (con, stmt);
-    _eFapsCreateCommonTablesStep3   (con, stmt);
-    _eFapsCreateEventTablesStep3    (con, stmt);
-
+    if (eFapsCommonVersionGet(con,stmt) < 2)  {
+print("Install VERSION 2 ---------------------");
+    }
 _eFapsCreateAllTeamCenterTables(con, stmt);
 
     stmt.close();
