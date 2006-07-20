@@ -132,7 +132,7 @@ print(e);
 function importImage(_fileName)  {
   var file = new Packages.java.io.File(_fileName);
   var fileName = new Packages.java.lang.String(file.getName());
-  if (fileName.startsWith(Image.prototype.FILE_PREFIX) && fileName.endsWith(".gif"))  {
+  if (fileName.startsWith(Image.prototype.FILE_PREFIX) && (fileName.endsWith(".gif") || fileName.endsWith(".png")))  {
     var objName = new String(fileName.substring(Image.prototype.FILE_PREFIX.length(), fileName.length()-4));
     print("Import Image '"+objName+"'");
     var imp = new Image(objName);
