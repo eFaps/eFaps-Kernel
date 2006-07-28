@@ -22,6 +22,8 @@ package org.efaps.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -41,8 +43,11 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Person;
+import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 
 /**
  * The servlet logs in a user with name and password. The name and password is
@@ -205,8 +210,39 @@ public class LoginServlet extends HttpServlet  {
       LoginContext login = new LoginContext(this.application,
               new LoginCallBackHandler(_name, _passwd));
       login.login();
+
+
+JAASSystem system = JAASSystem.getJAASSystem("eFaps");
+
+Set users = login.getSubject().getPrincipals(org.efaps.jaas.UserPrincipal.class);
+if (users.size() > 1)  {
+// TODO: => FEHLER weil mehr ein user
+}
+System.out.println("---------------------->users="+users);
+org.efaps.jaas.UserPrincipal user = (org.efaps.jaas.UserPrincipal) users.toArray()[0];
+// TODO: was passiert wenn person nicht ex.
+Person person = Person.get(user.getName());
+person.getRoles().clear();
+
+      Set rolesJaas = login.getSubject().getPrincipals(org.efaps.jaas.RolePrincipal.class);
+      Set < Role > rolesEfaps = new HashSet < Role > ();
+      for (Object roleObj : rolesJaas)  {
+        org.efaps.jaas.RolePrincipal role = (org.efaps.jaas.RolePrincipal) roleObj;
+      // TODO: get Role by JAAS key
+        Role roleEfaps = Role.get(role.getName());
+        if (roleEfaps != null)  {
+          rolesEfaps.add(roleEfaps);
+        }
+      }
+System.out.println("rolesEfaps="+rolesEfaps);
+person.setRoles(null, system, rolesEfaps);
+
       ret = true;
+    } catch (EFapsException e)  {
+e.printStackTrace();
+      LOG.error("login failed for '" + _name + "'", e);
     } catch (LoginException e)  {
+e.printStackTrace();
       LOG.error("login failed for '" + _name + "'", e);
     }
     return ret;
@@ -264,6 +300,45 @@ public class LoginServlet extends HttpServlet  {
               (_callbacks[i], "Unrecognized Callback");
         }
       }
+    }
+  }
+
+  private class JAASConfiguration  {
+
+    /**
+     *
+     */
+    private String name = null;
+
+    /**
+     *
+     */
+    private String userClass = null;
+
+    /**
+     *
+     */
+    private String roleClass = null;
+
+    /**
+     *
+     */
+    private String nameMethod = null;
+
+    public void setName(final String _name)  {
+      this.name = _name;
+    }
+
+    public void setUserClass(final String _userClass)  {
+      this.userClass = _userClass;
+    }
+
+    public void setRoleClass(final String _roleClass)  {
+      this.roleClass = _roleClass;
+    }
+
+    public void setNameMethod(final String _nameMethod)  {
+      this.nameMethod = _nameMethod;
     }
   }
 }

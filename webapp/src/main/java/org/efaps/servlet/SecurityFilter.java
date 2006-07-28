@@ -25,18 +25,22 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
@@ -162,7 +166,8 @@ String uri = httpRequest.getRequestURI();
       String userName = (String)httpRequest.getSession().getAttribute(SESSIONPARAM_LOGIN_NAME);
       test(userName, httpRequest, _response, _chain);
     } else if (this.exludeUris.contains(uri))  {
-      _chain.doFilter(_request, _response);
+//      _chain.doFilter(_request, _response);
+doFilterWithoutLogin(_request, _response, _chain);
     } else  {
       String markUrl = httpRequest.getRequestURI();
       if (httpRequest.getQueryString() != null)  {
@@ -172,6 +177,58 @@ String uri = httpRequest.getRequestURI();
       _request.getRequestDispatcher(this.notLoggedInForward).forward(_request, _response);
     }
   }
+
+
+  private void doFilterWithoutLogin(final ServletRequest _request,
+          final ServletResponse _response,
+          final FilterChain _chain) throws IOException, ServletException  {
+
+  Context context = null;
+  try  {
+    transactionManager.begin();
+    Locale locale = null;
+    if (_request instanceof HttpServletRequest)  {
+      locale = ((HttpServletRequest)_request).getLocale();
+    }
+    context = new Context(transactionManager.getTransaction(), null, locale);
+    Context.setThreadContext(context);
+  } catch (org.efaps.util.EFapsException e)  {
+    throw new ServletException(e);
+  } catch (SystemException e)  {
+    throw new ServletException(e);
+  } catch (NotSupportedException e)  {
+    throw new ServletException(e);
+  }
+
+  // TODO: is a open sql connection in the context returned automatically?
+  try  {
+    boolean ok = false;
+    try {
+      _chain.doFilter(_request, _response);
+      ok = true;
+    } finally  {
+
+      if (ok && context.allConnectionClosed()
+          && (transactionManager.getStatus() == Status.STATUS_ACTIVE))  {
+
+        transactionManager.commit();
+      } else  {
+        transactionManager.rollback();
+      }
+    }
+  } catch (RollbackException e)  {
+    throw new ServletException(e);
+  } catch (HeuristicRollbackException e)  {
+    throw new ServletException(e);
+  } catch (HeuristicMixedException e)  {
+    throw new ServletException(e);
+  } catch (javax.transaction.SystemException e)  {
+    throw new ServletException(e);
+  } finally  {
+    context.close();
+  }
+}
+
 
   public void test(final String _userName, final HttpServletRequest _httpRequest, ServletResponse _response, FilterChain _chain) throws IOException, ServletException  {
 

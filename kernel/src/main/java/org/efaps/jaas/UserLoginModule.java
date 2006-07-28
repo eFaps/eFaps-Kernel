@@ -20,6 +20,7 @@ package org.efaps.jaas;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Map;
+import java.util.Set;
 
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
@@ -34,8 +35,11 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Person;
+import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 
 /**
  *
@@ -45,7 +49,13 @@ public class UserLoginModule implements LoginModule  {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private static Log log = LogFactory.getLog(UserLoginModule.class);
+  private final static Log LOG = LogFactory.getLog(UserLoginModule.class);
+
+  /**
+   * The string stores the name of the JAAS system. The default value is
+   * <b>eFaps</b>, but could changed with {@link #setJaasSystem}
+   */
+  private String jaasSystem = "eFaps";
 
   /**
    * Has our own <code>commit()</code> returned successfully?
@@ -70,7 +80,7 @@ public class UserLoginModule implements LoginModule  {
       final CallbackHandler _callbackHandler, final Map<String,?> _sharedState,
       final Map<String,?> _options)  {
 
-    log.debug("Init");
+    LOG.debug("Init");
     this.subject          = _subject;
     this.callbackHandler  = _callbackHandler;
     this.sharedState      = _sharedState;
@@ -110,7 +120,7 @@ System.out.println("UserLoginModule.login");
 
     this.principal = new UserPrincipal(userName);
 
-    log.debug("login " + userName + " " + this.principal);
+    LOG.debug("login " + userName + " " + this.principal);
 
     return true;
   }
@@ -130,9 +140,25 @@ System.out.println("UserLoginModule.commit");
     // Add our Principal to the Subject if needed
     if (!this.subject.getPrincipals().contains(this.principal))  {
       this.subject.getPrincipals().add(this.principal);
-this.subject.getPrincipals().add(new RolePrincipal("manager"));
-this.subject.getPrincipals().add(new RolePrincipal("admin"));
-this.subject.getPrincipals().add(new RolePrincipal("manager2"));
+
+      try  {
+        Context context = Context.getThreadContext();
+        Person person = Person.get(this.principal.getName());
+        if (person != null)  {
+          JAASSystem jaasSystem = JAASSystem.getJAASSystem(this.jaasSystem);
+          Set < Role > roles = person.getRolesFromDB(context, jaasSystem);
+System.out.println("found roles="+roles);
+          for (Role role : roles)  {
+            this.subject.getPrincipals().add(new RolePrincipal(role.getName()));
+          }
+        }
+      } catch (EFapsException e)  {
+e.printStackTrace();
+        LOG.warn("assign of roles to user '" + this.principal.getName()
+                                                        + "' not possible", e);
+// TODO: throw LoginException
+//        throw new LoginException(e);
+      }
     }
 
     this.committed = true;
@@ -145,7 +171,7 @@ this.subject.getPrincipals().add(new RolePrincipal("manager2"));
   public final boolean abort()  {
     boolean ret = false;
 
-    log.debug("Abort of " + this.principal);
+    LOG.debug("Abort of " + this.principal);
 
     // If our authentication was successful, just return false
     if (this.principal != null)  {
@@ -165,7 +191,7 @@ this.subject.getPrincipals().add(new RolePrincipal("manager2"));
    * @return always <i>true</i>
    */
   public final boolean logout()  {
-    log.debug("Logout of " + this.principal);
+    LOG.debug("Logout of " + this.principal);
 
     subject.getPrincipals().remove(principal);
     this.committed = false;
@@ -194,10 +220,24 @@ this.subject.getPrincipals().add(new RolePrincipal("manager2"));
         ret = person.checkPassword(context, _passwd);
       }
     } catch (Throwable e)  {
-      log.warn("Check  of login failed for user '" + _name + "'", e);
+// TODO: throw LoginContext
+e.printStackTrace();
+      LOG.warn("Check  of login failed for user '" + _name + "'", e);
     } finally  {
-      context.close();
+      if (context != null)  {
+        context.close();
+      }
     }
     return ret;
+  }
+
+  /**
+   * This is the setter method for {@link #jaasSystem}.
+   *
+   * @param _jaasSystem new value for the name of the JAAS system
+   * @see #jaasSystem
+   */
+  public void setJaasSystem(final String _jaasSystem)  {
+    this.jaasSystem = _jaasSystem;
   }
 }

@@ -23,8 +23,12 @@ package org.efaps.admin.user;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
@@ -34,6 +38,7 @@ import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
+import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
 /**
@@ -41,6 +46,11 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class Person extends UserObject implements CacheInterface  {
+
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(Person.class);
 
   /**
    * The constructor creates a new instance of class {@link Person} and sets
@@ -85,7 +95,17 @@ public class Person extends UserObject implements CacheInterface  {
    */
   private void add(final Role _role)  {
     getRoles().add(_role);
-    _role.add(this);
+  }
+
+  /**
+   * Tests, if the given role is assigned to this person.
+   *
+   * @param _role role to test
+   * @return <i>true</i> if role is assigned to this person, otherwise
+   *         <i>false</i>
+   */
+  public boolean isAssigned(final Role _role)  {
+    return getRoles().contains(_role);
   }
 
   /**
@@ -158,12 +178,12 @@ e.printStackTrace();
    * @param _context  context for this request
    * @see #readRoles4Persons
    */
-  protected void readFromDB(final Context _context) throws Exception  {
+  protected void readFromDB(final Context _context) throws SQLException  {
     readFromDBAttributes(_context);
-    readFromDBRoles(_context);
+//    readFromDBRoles(_context);
   }
 
-  private void readFromDBAttributes(final Context _context) throws Exception  {
+  private void readFromDBAttributes(final Context _context) throws SQLException  {
     Statement stmt = _context.getConnection().createStatement();
     try  {
       ResultSet rs = stmt.executeQuery(
@@ -187,15 +207,12 @@ e.printStackTrace();
         setPhone(rs.getString(6));
         setFAX(rs.getString(7));
       }
-    } catch (Exception e)  {
-e.printStackTrace();
-      throw e;
     } finally  {
       stmt.close();
     }
   }
 
-  private void readFromDBRoles(final Context _context) throws Exception  {
+/*  private void readFromDBRoles(final Context _context) throws SQLException  {
     Statement stmt = _context.getConnection().createStatement();
     try  {
       ResultSet rs = stmt.executeQuery(
@@ -207,16 +224,92 @@ e.printStackTrace();
       while (rs.next())  {
         Role role = Role.get(rs.getLong(1));
         add(role);
-        role.add(this);
       }
       rs.close();
-    } catch (Exception e)  {
-e.printStackTrace();
-      throw e;
     } finally  {
       stmt.close();
     }
   }
+*/
+
+  /**
+   * The method reads directly from the database all stores roles for the this
+   * person. The found roles are returned as instance of {@link java.util.Set}.
+   *
+   * @param _context    eFaps context for this request
+   * @return set of all found roles for all JAAS systems
+   * @see #getRolesFromDB(Context,JAASSystem);
+   */
+  public Set < Role > getRolesFromDB(
+                        final Context _context) throws EFapsException  {
+
+    return getRolesFromDB(_context, null);
+  }
+
+  /**
+   * The method reads directly from the database all stores roles for the this
+   * person. The found roles are returned as instance of {@link java.util.Set}.
+   *
+   * @param _context    eFaps context for this request
+   * @param _jaasSystem JAAS system for which the roles must get from database
+   *                    (if value is null, all roles independed from the
+   *                    related JAAS system are returned)
+   * @return set of all found roles for given JAAS system
+   */
+  public Set < Role > getRolesFromDB(
+                        final Context _context,
+                        final JAASSystem _jaasSystem) throws EFapsException  {
+
+    Set < Role > ret = new HashSet < Role > ();
+    ConnectionResource rsrc = null;
+    try  {
+      rsrc = _context.getConnectionResource();
+
+      Statement stmt = null;
+
+      try  {
+        StringBuilder cmd = new StringBuilder();
+        cmd.append("select ")
+           .append(   "USERABSTRACTTO ")
+           .append(   "from V_USERPERSON2ROLE ")
+           .append(   "where USERABSTRACTFROM=").append(getId());
+
+        if (_jaasSystem != null)  {
+          cmd.append(" and JAASSYSID=").append(_jaasSystem.getId());
+        }
+
+        stmt = rsrc.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery(cmd.toString());
+        while (rs.next())  {
+          ret.add(Role.get(rs.getLong(1)));
+        }
+        rs.close();
+
+      } catch (SQLException e)  {
+        throw new EFapsException(getClass(), "getRolesFromDB.SQLException",
+                                                                e, getName());
+      } finally  {
+        try  {
+          stmt.close();
+        } catch (SQLException e)  {
+        }
+      }
+
+      rsrc.commit();
+    } finally  {
+      if ((rsrc != null) && rsrc.isOpened())  {
+        rsrc.abort();
+      }
+    }
+    return ret;
+  }
+
+// TODO: update database with depending roles
+public void setRoles(final Context _context, final JAASSystem _jaasSystem, final Set < Role > _roles)  {
+  for (Role role : _roles)  {
+    add(role);
+  }
+}
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -408,7 +501,7 @@ e.printStackTrace();
 
   /////////////////////////////////////////////////////////////////////////////
 
-  /**
+ /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Person}.
    *
    * @param _id id to search in the cache
@@ -416,7 +509,7 @@ e.printStackTrace();
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  static public Person get(final long _id) throws Exception  {
+  static public Person get(final long _id) throws EFapsException  {
     Person ret = getCache().get(_id);
     if (ret == null)  {
       Context context = new Context();
@@ -428,8 +521,6 @@ e.printStackTrace();
             "from V_USERPERSON " +
             "where V_USERPERSON.ID=" + _id
         );
-      } catch (Throwable e)  {
-        throw new Exception(e);
       } finally  {
         context.close();
       }
@@ -446,7 +537,7 @@ e.printStackTrace();
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  static public Person get(final String _name) throws Exception  {
+  static public Person get(final String _name) throws EFapsException  {
     Person ret = getCache().get(_name);
     if (ret == null)  {
       Context context = new Context();
@@ -458,8 +549,6 @@ e.printStackTrace();
             "from V_USERPERSON " +
             "where V_USERPERSON.NAME='" + _name + "'"
         );
-      } catch (Throwable e)  {
-        throw new Exception(e);
       } finally  {
         context.close();
       }
@@ -487,24 +576,31 @@ e.printStackTrace();
 
   static protected class PersonCache extends Cache < Person >  {
 
-    private Person readPerson(final Context _context, final String _sql) throws Exception  {
-      Statement stmt = _context.getConnection().createStatement();
+    private Person readPerson(final Context _context, final String _sql) throws EFapsException  {
+      Statement stmt = null;
       Person ret = null;
       try  {
+        stmt = _context.getConnection().createStatement();;
         ResultSet rs = stmt.executeQuery(_sql);
         if (rs.next())  {
-          long id =             rs.getLong(1);
-          String name =         rs.getString(2);
+          long id =     rs.getLong(1);
+          String name = rs.getString(2);
           ret = new Person(id, name.trim());
           this.add(ret);
           ret.readFromDB(_context);
         }
         rs.close();
-      } catch (Exception e)  {
-e.printStackTrace();
-        throw e;
+      } catch (SQLException e)  {
+// TODO: throw of EFapsException
+        LOG.warn("close of SQL statement not possible", e);
       } finally  {
-        stmt.close();
+        if (stmt != null)  {
+          try  {
+            stmt.close();
+          } catch (SQLException e)  {
+            LOG.warn("close of SQL statement not possible", e);
+          }
+        }
       }
       return ret;
     }

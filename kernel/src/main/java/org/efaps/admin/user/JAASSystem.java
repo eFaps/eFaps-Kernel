@@ -20,18 +20,13 @@
 
 package org.efaps.admin.user;
 
-import java.io.Serializable;
-import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.AdminObject;
 import org.efaps.db.Cache;
 import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
@@ -41,62 +36,43 @@ import org.efaps.db.transaction.ConnectionResource;
  * @author tmo
  * @version $Id$
  */
-public class Role extends UserObject implements CacheInterface  {
+public class JAASSystem extends AdminObject implements CacheInterface  {
 
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(Role.class);
+  private static final Log LOG = LogFactory.getLog(JAASSystem.class);
 
   /**
-   * This is the sql select statement to select all roles from the database.
+   * This is the sql select statement to select all JAAS systems from the
+   * database.
    */
   private static final String SQL_SELECT  = "select "
                                                 + "ID,"
                                                 + "NAME "
-                                              + "from V_USERROLE";
+                                              + "from V_USERJAASSYSTEM";
 
   /**
-   * Stores all instances of class {@link Role}.
+   * Stores all instances of class {@link JAASSystem}.
    *
    * @see #getCache
    */
-  private static final Cache <Role > cache = new Cache < Role > ();
+  private static final Cache < JAASSystem > cache = new Cache < JAASSystem > ();
 
   /**
-   * Create a new role instance. The method is used from the static method
-   * {@link #readRoles} to read all roles from the database.
+   * Constructor to set the id and name of the user object.
    *
-   * @param _id
+   * @param _id         id to set
+   * @param _name name  to set
    */
-  private Role(final long _id, final String _name)  {
+  private JAASSystem(final long _id, final String _name)  {
     super(_id, _name);
   }
 
-  /**
-   * Returns the viewable name of the role. The method {@link #getName} is
-   * used for the viewing name.
-   *
-   * @param _context context for this request
-   * @see #getName
-   */
-  public String getViewableName(final Context _context)  {
-    return getName();
-  }
-
-  /**
-   * Checks, if the given person is assigned to this role.
-   *
-   * @param _person person to test
-   * @return <i>true</i> if the person is assigned to this role, otherwise
-   *         <i>false</i>
-   * @see #persons
-   * @see #getPersons
-   */
-  public boolean hasChildPerson(final Person _person) {
-// TODO: child roles
-    return _person.isAssigned(this);
-  }
+// TODO: this is needed anymore??
+public String getViewableName(final Context _context)  {
+return getName();
+}
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -120,8 +96,9 @@ public class Role extends UserObject implements CacheInterface  {
           long id =             rs.getLong(1);
           String name =         rs.getString(2).trim();
 
-          LOG.debug("read role '" + name + "' (id = " + id + ")");
-          cache.add(new Role(id, name));
+          LOG.debug("read JAAS System '" + name + "' (id = " + id + ")");
+
+          cache.add(new JAASSystem(id, name));
         }
         rs.close();
 
@@ -141,38 +118,24 @@ public class Role extends UserObject implements CacheInterface  {
   }
 
   /**
-   * Returns for given parameter <i>_id</i> the instance of class {@link Role}.
+   * Returns for given parameter <i>_id</i> the instance of class
+   * {@link JAASSystem}.
    *
    * @param _id id to search in the cache
-   * @return instance of class {@link Role}
-   * @see #getCache
-   * @todo rewrite to use context instance
+   * @return instance of class {@link JAASSystem}
    */
-  public static Role get(final long _id)  {
+  static public JAASSystem getJAASSystem(final long _id)  {
     return cache.get(_id);
   }
 
   /**
    * Returns for given parameter <i>_name</i> the instance of class
-   * {@link Role}.
+   * {@link JAASSystem}.
    *
    * @param _name name to search in the cache
-   * @return instance of class {@link Role}
-   * @see #getCache
-   * @todo rewrite to use context instance
+   * @return instance of class {@link JAASSystem}
    */
-  public static Role get(final String _name)  {
+  static public JAASSystem getJAASSystem(final String _name)  {
     return cache.get(_name);
   }
-
-  /**
-   * Static getter method for the role {@link #cache}.
-   *
-   * @return value of static variable {@link #cache}
-   * @see #cache
-   */
-  static public Cache < Role > getCache()  {
-    return cache;
-  }
-
 }

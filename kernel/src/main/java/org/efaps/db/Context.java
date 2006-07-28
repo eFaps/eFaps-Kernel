@@ -110,7 +110,7 @@ protected static DataSource getDataSource()  {
   /**
    * Default constructor used to get a SQL connection to the database.
    */
-  public Context() throws NamingException, SQLException  {
+  public Context() throws EFapsException  {
     this((Person)null, (Locale)null);
   }
 
@@ -119,7 +119,7 @@ protected static DataSource getDataSource()  {
    *
    * @see #person
    */
-  public Context(final Person _person) throws NamingException, SQLException  {
+  public Context(final Person _person) throws EFapsException  {
     this(_person, (Locale)null);
   }
 
@@ -129,18 +129,23 @@ protected static DataSource getDataSource()  {
    * @see #person
    * @see #locale
    */
-  public Context(final Person _person, final Locale _locale) throws NamingException,SQLException  {
+  public Context(final Person _person, final Locale _locale) throws EFapsException  {
 System.out.println("--------------------------------- new context");
 //    InitialContext initCtx = new InitialContext();
 //    javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
 //    DataSource ds = (DataSource) envCtx.lookup("jdbc/eFaps");
 //    setConnection(ds.getConnection());
+try  {
     setConnection(getDataSource().getConnection());
-getConnection().setAutoCommit(true);
+    getConnection().setAutoCommit(true);
+} catch (SQLException e)  {
+// TODO: LOG + Exception
+e.printStackTrace();
+}
 setPerson(_person);
 setLocale(_locale);
 
-System.out.println("++++++++++++++++++++++++++ connection.closed=" + getConnection().isClosed()+":_locale="+_locale);
+//System.out.println("++++++++++++++++++++++++++ connection.closed=" + getConnection().isClosed()+":_locale="+_locale);
 
   }
 
@@ -151,14 +156,19 @@ private Transaction transaction = null;
    * @see #person
    * @see #locale
    */
-  public Context(final Transaction _transaction, final Person _person, final Locale _locale) throws NamingException,SQLException  {
+  public Context(final Transaction _transaction, final Person _person, final Locale _locale) throws EFapsException  {
 System.out.println("--------------------------------- new context");
+try  {
 this.transaction = _transaction;
     setConnection(getDataSource().getConnection());
-getConnection().setAutoCommit(true);
+  getConnection().setAutoCommit(true);
+} catch (SQLException e)  {
+// TODO: LOG + Exception
+e.printStackTrace();
+}
 setPerson(_person);
 setLocale(_locale);
-System.out.println("++++++++++++++++++++++++++ connection.closed=" + getConnection().isClosed()+":_locale="+_locale);
+//System.out.println("++++++++++++++++++++++++++ connection.closed=" + getConnection().isClosed()+":_locale="+_locale);
   }
 
 
