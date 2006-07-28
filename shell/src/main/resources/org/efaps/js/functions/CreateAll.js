@@ -442,6 +442,14 @@ function _eFapsCreateUserTablesStep2(_con, _stmt)  {
         ["constraint USRABS2ABS_FK_TYPEID foreign key(TYPEID) references DMTYPE(ID)"]
     ]);
 
+    _exec(_stmt, "View 'V_USERJAASSYSTEM'", "view representing all JAAS system",
+      "create or replace view V_USERJAASSYSTEM as "
+        + "select "
+        +     "ID,"
+        +     "NAME "
+        +   "from USERJAASSYSTEM"
+    );
+
     _exec(_stmt, "View 'V_USERJAASKEY'", "view representing all JAAS keys",
       "create or replace view V_USERJAASKEY as "+
         "select "+
@@ -496,19 +504,25 @@ function _eFapsCreateUserTablesStep2(_con, _stmt)  {
         + "select "
         +       "USERABSTRACT2ABSTRACT.ID,"
         +       "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"
-        +       "USERABSTRACT2ABSTRACT.USERABSTRACTTO "
-        +   "from USERABSTRACT2ABSTRACT "
-        +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Role 
+        +       "USERABSTRACT2ABSTRACT.USERABSTRACTTO,"
+        +       "USERJAASSYSTEM.ID as JAASSYSID,"
+        +       "USERJAASSYSTEM.NAME as JAASNAME "
+        +   "from USERABSTRACT2ABSTRACT,USERJAASSYSTEM "
+        +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Role + " "
+        +       "and USERABSTRACT2ABSTRACT.USERJAASSYSTEM=USERJAASSYSTEM.ID"
     );
 
     _exec(_stmt, "View 'V_USERPERSON2GROUP'", "view representing connection between person and group",
-      "create or replace view V_USERPERSON2GROUP as "+
-        "select "+
-            "USERABSTRACT2ABSTRACT.ID,"+
-            "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"+
-            "USERABSTRACT2ABSTRACT.USERABSTRACTTO "+
-          "from USERABSTRACT2ABSTRACT "+
-          "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Group
+      "create or replace view V_USERPERSON2GROUP as "
+        + "select "
+        +       "USERABSTRACT2ABSTRACT.ID,"
+        +       "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"
+        +       "USERABSTRACT2ABSTRACT.USERABSTRACTTO,"
+        +       "USERJAASSYSTEM.ID as JAASSYSID,"
+        +       "USERJAASSYSTEM.NAME as JAASNAME "
+        +   "from USERABSTRACT2ABSTRACT,USERJAASSYSTEM "
+        +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Group + " "
+        +       "and USERABSTRACT2ABSTRACT.USERJAASSYSTEM=USERJAASSYSTEM.ID"
     );
 }
 
