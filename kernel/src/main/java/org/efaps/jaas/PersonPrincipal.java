@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.jaas;
@@ -21,15 +24,35 @@ package org.efaps.jaas;
  * The class implements the {@link java.security.Principal} interface for a
  * user. The class is used from the {@link UserLoginModule} class to implement
  * a JAAS login module and set the user principals.
+ *
+ * @author tmo
+ * @version $Id$
  */
-public final class UserPrincipal extends AbstractPrincipal  {
+public final class PersonPrincipal extends AbstractPrincipal  {
 
   /**
    * Constructor used to create a new user principal instance.
    *
    * @param _name name of the user
    */
-  UserPrincipal(final String _name)  {
+  PersonPrincipal(final String _name)  {
     super(_name);
+  }
+
+  /**
+   * Compares this principal to the specified object.
+   *
+   * @param _another object to compare to this principle
+   * @return returns <i>true</i> if the other object is from this class and
+   *         has the same name (method equals is used), otherwise <i>false</i>
+   */
+  public boolean equals(final Object _another)  {
+    boolean ret = false;
+    if (_another instanceof PersonPrincipal
+        && ((PersonPrincipal) _another).getName().equals(getName()))  {
+
+      ret = true;
+    }
+    return ret;
   }
 }

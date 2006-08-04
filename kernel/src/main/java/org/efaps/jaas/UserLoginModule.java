@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.jaas;
@@ -35,14 +38,16 @@ import javax.security.auth.Subject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.user.Group;
 import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
-import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
  *
+ * @author tmo
+ * @version $Id$
  */
 public class UserLoginModule implements LoginModule  {
 
@@ -118,7 +123,7 @@ System.out.println("UserLoginModule.login");
       throw new FailedLoginException("Username or password is incorrect");
     }
 
-    this.principal = new UserPrincipal(userName);
+    this.principal = new PersonPrincipal(userName);
 
     LOG.debug("login " + userName + " " + this.principal);
 
@@ -126,10 +131,13 @@ System.out.println("UserLoginModule.login");
   }
 
   /**
+   * Adds the principal person and all found roles for the given JAAS system
+   * {@link #jaasSystem} related to the person.
    *
+   * @return <i>true</i> if authentification was successful,
+   *         otherwise <i>false</i>
    */
   public final boolean commit() throws LoginException  {
-System.out.println("UserLoginModule.commit");
     boolean ret = true;
 
     // If authentication was not successful, just return false
@@ -137,24 +145,26 @@ System.out.println("UserLoginModule.commit");
       return (false);
     }
 
-    // Add our Principal to the Subject if needed
+    // Add our Principal and Related Roles to the Subject if needed
     if (!this.subject.getPrincipals().contains(this.principal))  {
       this.subject.getPrincipals().add(this.principal);
 
       try  {
-        Context context = Context.getThreadContext();
-        Person person = Person.get(this.principal.getName());
+        JAASSystem jaasSystem = JAASSystem.getJAASSystem(this.jaasSystem);
+        Person person = Person.getWithJAASKey(jaasSystem, this.principal.getName());
         if (person != null)  {
-          JAASSystem jaasSystem = JAASSystem.getJAASSystem(this.jaasSystem);
-          Set < Role > roles = person.getRolesFromDB(context, jaasSystem);
-System.out.println("found roles="+roles);
+          Set < Role > roles = person.getRolesFromDB(jaasSystem);
           for (Role role : roles)  {
             this.subject.getPrincipals().add(new RolePrincipal(role.getName()));
+          }
+          Set < Group > groups = person.getGroupsFromDB(jaasSystem);
+          for (Group group : groups)  {
+            this.subject.getPrincipals().add(new GroupPrincipal(group.getName()));
           }
         }
       } catch (EFapsException e)  {
 e.printStackTrace();
-        LOG.warn("assign of roles to user '" + this.principal.getName()
+        LOG.error("assign of roles to user '" + this.principal.getName()
                                                         + "' not possible", e);
 // TODO: throw LoginException
 //        throw new LoginException(e);
@@ -212,21 +222,15 @@ e.printStackTrace();
    */
   private boolean checkLogin(final String _name, final String _passwd)  {
     boolean ret = false;
-    Context context = null;
     try  {
-      context = new Context();
       if (_name != null)  {
         Person person = Person.get(_name);
-        ret = person.checkPassword(context, _passwd);
+        ret = person.checkPassword(_passwd);
       }
     } catch (Throwable e)  {
 // TODO: throw LoginContext
 e.printStackTrace();
-      LOG.warn("Check  of login failed for user '" + _name + "'", e);
-    } finally  {
-      if (context != null)  {
-        context.close();
-      }
+      LOG.error("Check  of login failed for user '" + _name + "'", e);
     }
     return ret;
   }

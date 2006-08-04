@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,12 @@
 
 package org.efaps.admin.user;
 
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,8 +53,46 @@ public class JAASSystem extends AdminObject implements CacheInterface  {
    */
   private static final String SQL_SELECT  = "select "
                                                 + "ID,"
-                                                + "NAME "
+                                                + "NAME,"
+                                                + "CLASSNAMEPERSON,"
+                                                + "METHODPERSONKEY,"
+                                                + "METHODPERSONNAME,"
+                                                + "CLASSNAMEROLE,"
+                                                + "METHODROLEKEY,"
+                                                + "CLASSNAMEGROUP,"
+                                                + "METHODGROUPKEY "
                                               + "from V_USERJAASSYSTEM";
+
+  /**
+   * The class used as princple for persons for this JAAS system is stored
+   * in this instance variable.
+   *
+   * @see #getPersonJAASPrincipleClass
+   */
+  private Class personJAASPrincipleClass = null;
+
+private Method personMethodKey = null;
+private Method personMethodName = null;
+
+  /**
+   * The class used as princple for roles for this JAAS system is stored
+   * in this instance variable.
+   *
+   * @see #getRoleJAASPrincipleClass
+   */
+  private Class roleJAASPrincipleClass = null;
+
+private Method roleMethodKey = null;
+
+  /**
+   * The class used as princple for groups for this JAAS system is stored
+   * in this instance variable.
+   *
+   * @see #getGroupJAASPrincipleClass
+   */
+  private Class groupJAASPrincipleClass = null;
+
+private Method groupMethodKey = null;
 
   /**
    * Stores all instances of class {@link JAASSystem}.
@@ -75,11 +117,100 @@ return getName();
 }
 
   /////////////////////////////////////////////////////////////////////////////
+  // getter and setter methods
+
+  /**
+   * This is the getter method for instance variable
+   * {@link #personJAASPrincipleClass}.
+   *
+   * @return the value of the instance variable
+   *         {@link #personJAASPrincipleClass}.
+   * @see #personJAASPrincipleClass
+   */
+  public Class getPersonJAASPrincipleClass()  {
+    return this.personJAASPrincipleClass;
+  }
+
+  /**
+   * This is the getter method for instance variable
+   * {@link #personMethodKey}.
+   *
+   * @return the value of the instance variable
+   *         {@link #personMethodKey}.
+   * @see #personMethodKey
+   */
+  public Method getPersonMethodKey()  {
+    return this.personMethodKey;
+  }
+
+  /**
+   * This is the getter method for instance variable
+   * {@link #personMethodName}.
+   *
+   * @return the value of the instance variable
+   *         {@link #personMethodName}.
+   * @see #personMethodName
+   */
+  public Method getPersonMethodName()  {
+    return this.personMethodName;
+  }
+
+  /**
+   * This is the getter method for instance variable
+   * {@link #roleJAASPrincipleClass}.
+   *
+   * @return the value of the instance variable
+   *         {@link #roleJAASPrincipleClass}.
+   * @see #roleJAASPrincipleClass
+   */
+  public Class getRoleJAASPrincipleClass()  {
+    return this.roleJAASPrincipleClass;
+  }
+
+  /**
+   * This is the getter method for instance variable
+   * {@link #roleMethodKey}.
+   *
+   * @return the value of the instance variable
+   *         {@link #roleMethodKey}.
+   * @see #roleMethodKey
+   */
+  public Method getRoleMethodKey()  {
+    return this.roleMethodKey;
+  }
+
+  /**
+   * This is the getter method for instance variable
+   * {@link #groupJAASPrincipleClass}.
+   *
+   * @return the value of the instance variable
+   *         {@link #groupJAASPrincipleClass}.
+   * @see #groupJAASPrincipleClass
+   */
+  public Class getGroupJAASPrincipleClass()  {
+    return this.groupJAASPrincipleClass;
+  }
+
+  /**
+   * This is the getter method for instance variable
+   * {@link #groupMethodKey}.
+   *
+   * @return the value of the instance variable
+   *         {@link #groupMethodKey}.
+   * @see #groupMethodKey
+   */
+  public Method getGroupMethodKey()  {
+    return this.groupMethodKey;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static methods
 
   /**
    * Initialise the cache of JAAS systems.
    *
    * @param _context  eFaps context for this request
+   * @see #getMethod
    */
   public static void initialise(final Context _context) throws Exception  {
     ConnectionResource con = null;
@@ -93,12 +224,48 @@ return getName();
 
         ResultSet rs = stmt.executeQuery(SQL_SELECT);
         while (rs.next())  {
-          long id =             rs.getLong(1);
-          String name =         rs.getString(2).trim();
+          long id =                 rs.getLong(1);
+          String name =             rs.getString(2).trim();
+          String personClassName =  rs.getString(3);
+          String personMethodKey =  rs.getString(4);
+          String personMethodName = rs.getString(5);
+          String roleClassName =    rs.getString(6);
+          String roleMethodKey =    rs.getString(7);
+          String groupClassName =   rs.getString(8);
+          String groupMethodKey =   rs.getString(9);
 
           LOG.debug("read JAAS System '" + name + "' (id = " + id + ")");
 
-          cache.add(new JAASSystem(id, name));
+          try  {
+            JAASSystem system = new JAASSystem(id, name);
+            system.personJAASPrincipleClass = Class.forName(personClassName.trim());
+            system.personMethodKey = getMethod(system.personJAASPrincipleClass, personMethodKey, "person key", name, id);
+            system.personMethodName = getMethod(system.personJAASPrincipleClass, personMethodName, "person name", name, id);
+
+            if (roleClassName != null)  {
+              system.roleJAASPrincipleClass   = Class.forName(roleClassName.trim());
+              system.roleMethodKey = getMethod(system.roleJAASPrincipleClass, roleMethodKey, "role key", name, id);
+            }
+            if (groupClassName != null)  {
+              system.groupJAASPrincipleClass  = Class.forName(groupClassName.trim());
+              system.groupMethodKey = getMethod(system.groupJAASPrincipleClass, groupMethodKey, "group key", name, id);
+            }
+
+            if (   (system.personMethodKey != null)
+                && (system.personMethodName != null)
+                && ((system.roleJAASPrincipleClass == null)
+                    || (   (system.roleJAASPrincipleClass != null)
+                        && (system.roleMethodKey != null)))
+                && ((system.groupJAASPrincipleClass == null)
+                    || (   (system.groupJAASPrincipleClass != null)
+                        && (system.groupMethodKey != null))))  {
+
+              cache.add(system);
+            }
+          } catch (ClassNotFoundException e)  {
+            LOG.error("could not get a class for JAAS System '" + name + "' "
+                                                      + "(id = " + id + ")", e);
+          }
         }
         rs.close();
 
@@ -118,13 +285,61 @@ return getName();
   }
 
   /**
+   * Returns for the given method name the method found in the given class.
+   * The found method is tested, if the method is returning string and has no
+   * parameters.<br/>
+   * If the checkes fails or the method is not found, an error log is written
+   * and <code>null</code> is returned.
+   *
+   * @param _class    class on which the method is searched
+   * @param _method   method name
+   * @param _type     text string for which the method is searched
+   * @param _jaasName name of the JAAS system
+   * @param _jaasId   id of the JAAS system
+   * @return found method, or <code>null</null> if no method found
+   * @see #initialise
+   */
+  private static Method getMethod(final Class _class,
+                                  final String _method,
+                                  final String _type,
+                                  final String _jaasName,
+                                  final long _jaasId)  {
+    Method ret = null;
+
+    if (_method != null)  {
+      try  {
+        ret = _class.getMethod(_method.trim(), null);
+      } catch (NoSuchMethodException e)  {
+        LOG.error("could not get a " + _type + " method for "
+            + "JAAS System '" + _jaasName + "' (id = " + _jaasId + ")", e);
+      } catch (SecurityException e)  {
+        LOG.error("could not get a " + _type + " method for "
+            + "JAAS System '" + _jaasName + "' (id = " + _jaasId + ")", e);
+      }
+      if (!ret.getReturnType().equals(String.class))  {
+        LOG.error("could not get a " + _type + " method returning "
+            + "java.lang.String for JAAS System '" + _jaasName + "' "
+            + "(id = " + _jaasId + ")");
+        ret = null;
+      } else if ((ret.getParameterTypes() != null)
+              && (ret.getParameterTypes().length > 0))  {
+        LOG.error("could not get a " + _type + " method returning "
+            + "java.lang.String for JAAS System '" + _jaasName + "' "
+            + "(id = " + _jaasId + ")");
+        ret = null;
+      }
+    }
+    return ret;
+  }
+
+  /**
    * Returns for given parameter <i>_id</i> the instance of class
    * {@link JAASSystem}.
    *
    * @param _id id to search in the cache
    * @return instance of class {@link JAASSystem}
    */
-  static public JAASSystem getJAASSystem(final long _id)  {
+  public static JAASSystem getJAASSystem(final long _id)  {
     return cache.get(_id);
   }
 
@@ -135,7 +350,22 @@ return getName();
    * @param _name name to search in the cache
    * @return instance of class {@link JAASSystem}
    */
-  static public JAASSystem getJAASSystem(final String _name)  {
+  public static JAASSystem getJAASSystem(final String _name)  {
     return cache.get(_name);
+  }
+
+  /**
+   * Returns all cached JAAS system in a set.
+   *
+   * @return set of all loaded and cached JAAS systems
+   */
+  public static Set < JAASSystem > getAllJAASSystems()  {
+    Set < JAASSystem > ret = new HashSet < JAASSystem > ();
+    for (Map.Entry < Long, JAASSystem > entry
+            : cache.getCache4Id().entrySet())  {
+
+      ret.add(entry.getValue());
+    }
+    return ret;
   }
 }

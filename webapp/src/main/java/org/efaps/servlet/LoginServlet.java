@@ -22,6 +22,7 @@ package org.efaps.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -211,31 +212,76 @@ public class LoginServlet extends HttpServlet  {
               new LoginCallBackHandler(_name, _passwd));
       login.login();
 
-
-JAASSystem system = JAASSystem.getJAASSystem("eFaps");
-
-Set users = login.getSubject().getPrincipals(org.efaps.jaas.UserPrincipal.class);
-if (users.size() > 1)  {
-// TODO: => FEHLER weil mehr ein user
-}
+      Person person = null;
+      for (JAASSystem system : JAASSystem.getAllJAASSystems())  {
+        Set users = login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
 System.out.println("---------------------->users="+users);
-org.efaps.jaas.UserPrincipal user = (org.efaps.jaas.UserPrincipal) users.toArray()[0];
-// TODO: was passiert wenn person nicht ex.
-Person person = Person.get(user.getName());
-person.getRoles().clear();
+        for (Object persObj : users)  {
+          try  {
+            String persKey = (String) system.getPersonMethodKey().invoke(
+                                                              persObj, null);
 
-      Set rolesJaas = login.getSubject().getPrincipals(org.efaps.jaas.RolePrincipal.class);
-      Set < Role > rolesEfaps = new HashSet < Role > ();
-      for (Object roleObj : rolesJaas)  {
-        org.efaps.jaas.RolePrincipal role = (org.efaps.jaas.RolePrincipal) roleObj;
-      // TODO: get Role by JAAS key
-        Role roleEfaps = Role.get(role.getName());
-        if (roleEfaps != null)  {
-          rolesEfaps.add(roleEfaps);
+            Person foundPerson = Person.getWithJAASKey(system, persKey);
+            if (foundPerson == null)  {
+// TODO: JAASKey for person must be added!!!
+            } else if (person == null)  {
+              person = foundPerson;
+            } else if (person.getId() != foundPerson.getId()) {
+              LOG.error("For JAAS system " + system.getName() + " "
+                          + "person with key '" + persKey + "' is not unique!"
+                          + "Have found person '" + person.getName() + "' "
+                          + "(id = " + person.getId() + ") and person "
+                          + "'" + foundPerson.getName() + "' "
+                          + "(id = " + foundPerson.getId() + ").");
+// TODO: throw exception!!
+            }
+          } catch (IllegalAccessException e)  {
+            LOG.error("could not execute person key method for system "
+                                                  + system.getName(), e);
+// TODO: throw exception!!
+          } catch (IllegalArgumentException e)  {
+            LOG.error("could not execute person key method for system "
+                                                  + system.getName(), e);
+// TODO: throw exception!!
+          } catch (InvocationTargetException e)  {
+            LOG.error("could not execute person key method for system "
+                                                  + system.getName(), e);
+// TODO: throw exception!!
+          }
         }
       }
-System.out.println("rolesEfaps="+rolesEfaps);
-person.setRoles(null, system, rolesEfaps);
+
+// TODO: was passiert wenn person nicht ex.
+
+      person.cleanUp();
+
+      for (JAASSystem system : JAASSystem.getAllJAASSystems())  {
+        if (system.getRoleJAASPrincipleClass() != null)  {
+          Set rolesJaas = login.getSubject().getPrincipals(
+                                        system.getRoleJAASPrincipleClass());
+          Set < Role > rolesEfaps = new HashSet < Role > ();
+          for (Object roleObj : rolesJaas)  {
+            try  {
+              String roleKey = (String) system.getRoleMethodKey().invoke(
+                                                                roleObj, null);
+              Role roleEfaps = Role.getWithJAASKey(system, roleKey);
+              if (roleEfaps != null)  {
+                rolesEfaps.add(roleEfaps);
+              }
+            } catch (IllegalAccessException e)  {
+              LOG.error("could not execute role key method for system "
+                                                    + system.getName(), e);
+            } catch (IllegalArgumentException e)  {
+              LOG.error("could not execute role key method for system "
+                                                    + system.getName(), e);
+            } catch (InvocationTargetException e)  {
+              LOG.error("could not execute role key method for system "
+                                                    + system.getName(), e);
+            }
+          }
+          person.setRoles(system, rolesEfaps);
+        }
+      }
 
       ret = true;
     } catch (EFapsException e)  {

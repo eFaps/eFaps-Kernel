@@ -311,6 +311,13 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
       ["CREATED               "+TYPE_DATETIME+"                  not null"],
       ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
       ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+      ["CLASSNAMEPERSON       "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["CLASSNAMEROLE         "+TYPE_STRING_SHORT+"(128)"],
+      ["CLASSNAMEGROUP        "+TYPE_STRING_SHORT+"(128)"],
+      ["METHODPERSONKEY       "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["METHODPERSONNAME      "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["METHODROLEKEY         "+TYPE_STRING_SHORT+"(128)"],
+      ["METHODGROUPKEY        "+TYPE_STRING_SHORT+"(128)"],
       ["constraint USERJAASSYS_UK_NAME unique(NAME)"]
   ]);
 
@@ -357,8 +364,24 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
   ]);
 
   _exec(_stmt, "Insert JAAS System eFaps", null,
-    "insert into USERJAASSYSTEM(NAME, CREATOR, CREATED, MODIFIER, MODIFIED) "+
-        "values ('eFaps', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ")"
+    "insert into USERJAASSYSTEM(NAME, CREATOR, CREATED, MODIFIER, MODIFIED, "
+            + "CLASSNAMEPERSON,"
+            + "CLASSNAMEROLE,"
+            + "CLASSNAMEGROUP,"
+            + "METHODPERSONKEY,"
+            + "METHODPERSONNAME,"
+            + "METHODROLEKEY,"
+            + "METHODGROUPKEY"
+            + ") "+
+        "values ('eFaps', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", "
+            + "'org.efaps.jaas.PersonPrincipal',"
+            + "'org.efaps.jaas.RolePrincipal',"
+            + "'org.efaps.jaas.GroupPrincipal',"
+            + "'getName',"
+            + "'getName',"
+            + "'getName',"
+            + "'getName'"
+            + ")"
   );
 
   _exec(_stmt, "Insert Administrator Person", null,
@@ -372,12 +395,17 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
 
   _exec(_stmt, "Assign Person Administrator to JAAS System eFaps", null,
     "insert into USERJAASKEY(KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM) "+
-        "values ('Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ",1,1)"
+        "values ('Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 1, 1)"
   );
 
   _exec(_stmt, "Insert Administrator Role",  null,
     "insert into USERABSTRACT(TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS) "+
         "values (-11000, 'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 10001)"
+  );
+
+  _exec(_stmt, "Assign Role Administration to JAAS System eFaps", null,
+    "insert into USERJAASKEY(KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM) "+
+        "values ('Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 2, 1)"
   );
 
   _exec(_stmt, "Connect Administrator Person to Role Administration", null,
@@ -446,40 +474,47 @@ function _eFapsCreateUserTablesStep2(_con, _stmt)  {
       "create or replace view V_USERJAASSYSTEM as "
         + "select "
         +     "ID,"
-        +     "NAME "
+        +     "NAME,"
+        +     "CLASSNAMEPERSON,"
+        +     "CLASSNAMEROLE,"
+        +     "CLASSNAMEGROUP,"
+        +     "METHODPERSONKEY,"
+        +     "METHODPERSONNAME,"
+        +     "METHODROLEKEY,"
+        +     "METHODGROUPKEY "
         +   "from USERJAASSYSTEM"
     );
 
-    _exec(_stmt, "View 'V_USERJAASKEY'", "view representing all JAAS keys",
-      "create or replace view V_USERJAASKEY as "+
-        "select "+
-            "USERABSTRACT.ID     as USERID,"+
-            "USERABSTRACT.NAME   as USERNAME,"+
-            "USERJAASSYSTEM.ID   as JAASSYSID,"+
-            "USERJAASSYSTEM.NAME as JAASNAME,"+
-            "USERJAASKEY.KEY     as JAASKEY "+
-          "from USERABSTRACT,USERJAASKEY,USERJAASSYSTEM "+
-          "where USERABSTRACT.ID=USERJAASKEY.USERABSTRACT "+
-            "and USERJAASKEY.USERJAASSYSTEM=USERJAASSYSTEM.ID"
+    _exec(_stmt, "View 'V_USERPERSON'", "view representing all persons",
+      "create or replace view V_USERPERSON as "
+        + "select "
+        +       "USERABSTRACT.ID,"
+        +       "USERABSTRACT.NAME,"
+        +       "USERPERSON.FIRSTNAME,"
+        +       "USERPERSON.LASTNAME,"
+        +       "USERPERSON.EMAIL,"
+        +       "USERPERSON.ORG,"
+        +       "USERPERSON.URL,"
+        +       "USERPERSON.PHONE,"
+        +       "USERPERSON.MOBILE,"
+        +       "USERPERSON.FAX,"
+        +       "USERPERSON.PASSWORD "
+        +   "from USERABSTRACT,USERPERSON "
+        +   "where USERABSTRACT.ID=USERPERSON.ID"
     );
 
-    _exec(_stmt, "View 'V_USERPERSON'", "view representing all persons",
-      "create or replace view V_USERPERSON as "+
-        "select "+
-            "USERABSTRACT.ID,"+
-            "USERABSTRACT.NAME,"+
-            "USERPERSON.FIRSTNAME,"+
-            "USERPERSON.LASTNAME,"+
-            "USERPERSON.EMAIL,"+
-            "USERPERSON.ORG,"+
-            "USERPERSON.URL,"+
-            "USERPERSON.PHONE,"+
-            "USERPERSON.MOBILE,"+
-            "USERPERSON.FAX,"+
-            "USERPERSON.PASSWORD "+
-          "from USERABSTRACT,USERPERSON "+
-          "where USERABSTRACT.ID=USERPERSON.ID"
+    _exec(_stmt, "View 'V_USERPERSONJASSKEY'", "view representing all persons related to the JAAS keys",
+      "create or replace view V_USERPERSONJASSKEY as "
+        + "select "
+        +       "USERABSTRACT.ID,"
+        +       "USERABSTRACT.NAME,"
+        +       "USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
+        +       "USERJAASKEY.KEY as JAASKEY "
+        +   "from USERABSTRACT,USERJAASKEY "
+        +   "where USERABSTRACT.TYPEID=" + typeIdPerson + " "
+        +       "and USERABSTRACT.ID=USERJAASKEY.USERABSTRACT"
     );
+
 
     _exec(_stmt, "View 'V_USERROLE'", "view representing all roles",
       "create or replace view V_USERROLE as "
@@ -488,6 +523,18 @@ function _eFapsCreateUserTablesStep2(_con, _stmt)  {
         +       "USERABSTRACT.NAME "
         +   "from USERABSTRACT "
         +   "where USERABSTRACT.TYPEID=" + typeIdRole
+    );
+
+    _exec(_stmt, "View 'V_USERROLEJASSKEY'", "view representing all roles related to the JAAS keys",
+      "create or replace view V_USERROLEJASSKEY as "
+        + "select "
+        +       "USERABSTRACT.ID,"
+        +       "USERABSTRACT.NAME,"
+        +       "USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
+        +       "USERJAASKEY.KEY as JAASKEY "
+        +   "from USERABSTRACT,USERJAASKEY "
+        +   "where USERABSTRACT.TYPEID=" + typeIdRole + " "
+        +       "and USERABSTRACT.ID=USERJAASKEY.USERABSTRACT"
     );
 
     _exec(_stmt, "View 'V_USERGROUP'", "view representing all groups",
@@ -499,30 +546,38 @@ function _eFapsCreateUserTablesStep2(_con, _stmt)  {
           "where USERABSTRACT.TYPEID="+typeIdGroup
     );
 
-    _exec(_stmt, "View 'V_USERPERSON2ROLE'", "view representing connection between person and role",
+    _exec(_stmt, "View 'V_USERGROUPJASSKEY'", "view representing all groups related to the JAAS keys",
+      "create or replace view V_USERGROUPJASSKEY as "
+        + "select "
+        +       "USERABSTRACT.ID,"
+        +       "USERABSTRACT.NAME,"
+        +       "USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
+        +       "USERJAASKEY.KEY as JAASKEY "
+        +   "from USERABSTRACT,USERJAASKEY "
+        +   "where USERABSTRACT.TYPEID=" + typeIdGroup + " "
+        +       "and USERABSTRACT.ID=USERJAASKEY.USERABSTRACT"
+    );
+
+    _exec(_stmt, "View 'V_USERPERSON2ROLE'", "view representing connection between person and role depending on JAAS systems",
       "create or replace view V_USERPERSON2ROLE as "
         + "select "
         +       "USERABSTRACT2ABSTRACT.ID,"
         +       "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"
         +       "USERABSTRACT2ABSTRACT.USERABSTRACTTO,"
-        +       "USERJAASSYSTEM.ID as JAASSYSID,"
-        +       "USERJAASSYSTEM.NAME as JAASNAME "
-        +   "from USERABSTRACT2ABSTRACT,USERJAASSYSTEM "
-        +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Role + " "
-        +       "and USERABSTRACT2ABSTRACT.USERJAASSYSTEM=USERJAASSYSTEM.ID"
+        +       "USERABSTRACT2ABSTRACT.USERJAASSYSTEM as JAASSYSID "
+        +   "from USERABSTRACT2ABSTRACT "
+        +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Role
     );
 
-    _exec(_stmt, "View 'V_USERPERSON2GROUP'", "view representing connection between person and group",
+    _exec(_stmt, "View 'V_USERPERSON2GROUP'", "view representing connection between person and group depending on JAAS systems",
       "create or replace view V_USERPERSON2GROUP as "
         + "select "
         +       "USERABSTRACT2ABSTRACT.ID,"
         +       "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"
         +       "USERABSTRACT2ABSTRACT.USERABSTRACTTO,"
-        +       "USERJAASSYSTEM.ID as JAASSYSID,"
-        +       "USERJAASSYSTEM.NAME as JAASNAME "
-        +   "from USERABSTRACT2ABSTRACT,USERJAASSYSTEM "
-        +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Group + " "
-        +       "and USERABSTRACT2ABSTRACT.USERJAASSYSTEM=USERJAASSYSTEM.ID"
+        +       "USERABSTRACT2ABSTRACT.USERJAASSYSTEM as JAASSYSID "
+        +   "from USERABSTRACT2ABSTRACT "
+        +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Group
     );
 }
 

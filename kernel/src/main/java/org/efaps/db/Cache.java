@@ -36,9 +36,14 @@ import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.ui.UserInterfaceObject;
+import org.efaps.admin.user.Group;
+import org.efaps.admin.user.JAASSystem;
+import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 
 /**
+ * @author tmo
+ * @version $Id$
  */
 public class Cache<K extends CacheInterface>  {
 
@@ -155,6 +160,9 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
         cache.getCache4Id().clear();
         cache.getCache4Name().clear();
       }
+      JAASSystem.initialise(_context);
+      Role.initialise(_context);
+      Group.initialise(_context);
       AttributeType.initialise(_context);
       SQLTable.initialise(_context);
       Type.initialise(_context);

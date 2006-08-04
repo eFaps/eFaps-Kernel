@@ -43,6 +43,8 @@ import org.efaps.servlet.RequestHandler;
 
 /**
  *
+ * @author tmo
+ * @version $Id$
  */
 public abstract class CommandAbstract extends UserInterfaceObject  {
 
@@ -123,7 +125,7 @@ public abstract class CommandAbstract extends UserInterfaceObject  {
       Iterator iter = getAccess().iterator();
       while (iter.hasNext())  {
         Role role = (Role)iter.next();
-        if (_context.getPerson().getRoles().contains(role))  {
+        if (_context.getPerson().isAssigned(role))  {
           ret = true;
           break;
         }

@@ -1,5 +1,27 @@
+/*
+ * Copyright 2006 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Author:          tmo
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
+
 importClass(Packages.org.efaps.db.Instance);
 importClass(Packages.org.efaps.db.SearchQuery);
+importClass(Packages.org.efaps.db.Insert);
 
 function Role(_name)  {
   var query = new SearchQuery();
@@ -74,6 +96,33 @@ Role.prototype.FILE_PREFIX = new String("ROLE_");
  * Name of the variable used in update scripts.
  */
 Role.prototype.VARNAME     = new String("ROLE");
+
+///////////////////////////////////////////////////////////////////////////////
+// to update the JAAS keys for roles
+
+/**
+ * @param _jaasSystem name of the JAAS system for which the key is added
+ * @param _jaasKey    key in the JAAS system for this role
+ */
+Role.prototype.addJAASKey(_jaasSystem, _jaasKey)  {
+  var query = new SearchQuery();
+  query.setQueryTypes(Shell.getContext(), "Admin_User_JAASSystem");
+  query.addWhereExprEqValue(Shell.getContext(), "Name", _jaasSystem);
+  query.addSelect(Shell.getContext(), "ID");
+  query.execute(Shell.getContext());
+  if (query.next())  {
+    var jaasSystemId = query.get(Shell.getContext(), "ID");
+  }
+  query.close();
+
+  if (jaasSystemId)  {
+    var insert = new Insert(Shell.getContext(), "Admin_User_JAASKey");
+    insert.add(Shell.getContext(), "Key", _jaasKey);
+    insert.add(Shell.getContext(), "UserLink", this.getId());
+    insert.add(Shell.getContext(), "JAASSystemLink", jaasSystemId);
+    insert.execute(Shell.getContext());
+  }
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // common methods
