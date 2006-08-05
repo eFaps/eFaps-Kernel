@@ -104,7 +104,7 @@ Role.prototype.VARNAME     = new String("ROLE");
  * @param _jaasSystem name of the JAAS system for which the key is added
  * @param _jaasKey    key in the JAAS system for this role
  */
-Role.prototype.addJAASKey(_jaasSystem, _jaasKey)  {
+Role.prototype.addJAASKey = function(_jaasSystem, _jaasKey)  {
   var query = new SearchQuery();
   query.setQueryTypes(Shell.getContext(), "Admin_User_JAASSystem");
   query.addWhereExprEqValue(Shell.getContext(), "Name", _jaasSystem);
