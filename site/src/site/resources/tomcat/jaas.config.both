@@ -1,0 +1,8 @@
+eFaps {
+  org.efaps.jaas.efaps.UserLoginModule 
+          SUFFICIENT
+          jaasSystem="eFaps";
+  org.efaps.jaas.xml.XMLUserLoginModule
+          SUFFICIENT
+          xmlFileName="[PATHTO]/efaps-users.xml";
+};
