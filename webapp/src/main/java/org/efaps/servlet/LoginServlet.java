@@ -251,7 +251,36 @@ System.out.println("---------------------->users="+users);
         }
       }
 
-// TODO: was passiert wenn person nicht ex.
+if (person == null)  {
+  for (JAASSystem system : JAASSystem.getAllJAASSystems())  {
+    Set users = login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
+    for (Object persObj : users)  {
+      try  {
+        String persKey = (String) system.getPersonMethodKey().invoke(
+                                                          persObj, null);
+
+        if (person == null)  {
+          person = Person.createPerson(system, persKey, persKey);
+        } else  {
+          person.assignToJAASSystem(system, persKey);
+        }
+
+      } catch (IllegalAccessException e)  {
+        LOG.error("could not execute person key method for system "
+                                              + system.getName(), e);
+// TODO: throw exception!!
+      } catch (IllegalArgumentException e)  {
+        LOG.error("could not execute person key method for system "
+                                              + system.getName(), e);
+// TODO: throw exception!!
+      } catch (InvocationTargetException e)  {
+        LOG.error("could not execute person key method for system "
+                                              + system.getName(), e);
+// TODO: throw exception!!
+      }
+    }
+  }
+}
 
       person.cleanUp();
 

@@ -374,9 +374,9 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
             + "METHODGROUPKEY"
             + ") "+
         "values ('eFaps', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", "
-            + "'org.efaps.jaas.PersonPrincipal',"
-            + "'org.efaps.jaas.RolePrincipal',"
-            + "'org.efaps.jaas.GroupPrincipal',"
+            + "'org.efaps.jaas.efaps.PersonPrincipal',"
+            + "'org.efaps.jaas.efaps.RolePrincipal',"
+            + "'org.efaps.jaas.efaps.GroupPrincipal',"
             + "'getName',"
             + "'getName',"
             + "'getName',"

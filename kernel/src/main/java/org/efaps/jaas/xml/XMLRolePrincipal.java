@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.jaas;
+package org.efaps.jaas.xml;
 
 /**
  * The class implements the {@link java.security.Principal} interface for a
@@ -28,31 +28,14 @@ package org.efaps.jaas;
  * @author tmo
  * @version $Id$
  */
-public final class RolePrincipal extends AbstractPrincipal  {
+public final class XMLRolePrincipal extends XMLAbstractPrincipal  {
 
   /**
    * Constructor used to create a new role principal instance.
    *
    * @param _name name of the user
    */
-  RolePrincipal(final String _name)  {
-    super(_name);
-  }
-
-  /**
-   * Compares this principal to the specified object.
-   *
-   * @param _another object to compare to this principle
-   * @return returns <i>true</i> if the other object is from this class and
-   *         has the same name (method equals is used), otherwise <i>false</i>
-   */
-  public boolean equals(final Object _another)  {
-    boolean ret = false;
-    if (_another instanceof RolePrincipal
-        && ((RolePrincipal) _another).getName().equals(getName()))  {
-
-      ret = true;
-    }
-    return ret;
+  XMLRolePrincipal(final String _name)  {
+    setName(_name);
   }
 }

@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.jaas;
+package org.efaps.jaas.efaps;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -67,11 +67,16 @@ public class UserLoginModule implements LoginModule  {
    */
   private boolean committed = false;
 
+  /**
+   * The subject is stored from the initialize method to store all single
+   * entities for the person logging in.
+   */
+  private Subject subject = null;
+
   // initial state
-  private Subject             subject;
-  private CallbackHandler     callbackHandler;
-  private Map<String,?>       sharedState;
-  private Map<String,?>       options;
+  private CallbackHandler   callbackHandler;
+
+  private Map < String,? >  options;
 
   private Principal principal = null;
 
@@ -82,27 +87,45 @@ public class UserLoginModule implements LoginModule  {
    * @param _options
    */
   public final void initialize(final Subject _subject,
-      final CallbackHandler _callbackHandler, final Map<String,?> _sharedState,
-      final Map<String,?> _options)  {
+                               final CallbackHandler _callbackHandler,
+                               final Map < String, ? > _sharedState,
+                               final Map < String, ? > _options)  {
 
-    LOG.debug("Init");
-    this.subject          = _subject;
-    this.callbackHandler  = _callbackHandler;
-    this.sharedState      = _sharedState;
-    this.options          = _options;
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("Init");
+    }
+    this.subject = _subject;
+    this.callbackHandler = _callbackHandler;
+
+    String jaasSystem = (String)_options.get("jaasSystem");
+    if (jaasSystem != null)  {
+      this.jaasSystem = jaasSystem;
+    }
   }
 
+// TODO: Rework description
   /**
+   * The instance method checks if for the given user the password is correct
+   * and the person is active (status equals 10001).<br/>
+   * All exceptions which could be thrown from the test are catched. Instead
+   * a <i>false</i> is returned.
+   *
+   * @param _name   name of the person name to check
+   * @param _passwd password of the person to check
+   * @return <i>true</i> if user name and password is correct and exists,
+   *         otherwise <i>false</i> is returned
    * @return <i>true</i> if login is allowed and user name with password is
    *         correct
    * @throws FailedLoginException if login is not allowed with given user name
    *         and password (if user does not exists or password is not correct)
    * @throws LoginException if an error occurs while calling the callback
    *         handler or the {@link #checkLogin} method
-   * @see #checkLogin
+   * @throws LoginException if user or password could not be get from the
+   *         callback handler
    */
   public final boolean login() throws LoginException  {
-System.out.println("UserLoginModule.login");
+    boolean ret = false;
+
     Callback[] callbacks = new Callback[2];
     callbacks[0] = new NameCallback("Username: ");
     callbacks[1] = new PasswordCallback("Password: ", false);
@@ -114,20 +137,33 @@ System.out.println("UserLoginModule.login");
       userName = ((NameCallback) callbacks[0]).getName();
       password = new String(((PasswordCallback) callbacks[1]).getPassword());
     } catch (IOException e)  {
+      LOG.error("login failed for user '" + userName + "'", e);
       throw new LoginException(e.toString());
     } catch (UnsupportedCallbackException e)  {
+      LOG.error("login failed for user '" + userName + "'", e);
       throw new LoginException(e.toString());
     }
 
-    if (!checkLogin(userName, password))  {
-      throw new FailedLoginException("Username or password is incorrect");
+    if (userName != null)  {
+      try  {
+        Person person = Person.getWithJAASKey(
+                            JAASSystem.getJAASSystem(this.jaasSystem), userName);
+        if (person != null)  {
+          if (!person.checkPassword(password))  {
+            throw new FailedLoginException("Username or password is incorrect");
+          }
+          ret = true;
+          this.principal = new PersonPrincipal(userName);
+          if (LOG.isDebugEnabled())  {
+            LOG.debug("login " + userName + " " + this.principal);
+          }
+        }
+      } catch (EFapsException e)  {
+        LOG.error("login failed for user '" + userName + "'", e);
+        throw new LoginException(e.toString());
+      }
     }
-
-    this.principal = new PersonPrincipal(userName);
-
-    LOG.debug("login " + userName + " " + this.principal);
-
-    return true;
+    return ret;
   }
 
   /**
@@ -181,14 +217,16 @@ e.printStackTrace();
   public final boolean abort()  {
     boolean ret = false;
 
-    LOG.debug("Abort of " + this.principal);
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("Abort of " + this.principal);
+    }
 
     // If our authentication was successful, just return false
     if (this.principal != null)  {
 
       // Clean up if overall authentication failed
       if (this.committed)  {
-        subject.getPrincipals().remove(principal);
+        this.subject.getPrincipals().remove(principal);
       }
       this.committed = false;
       this.principal = null;
@@ -201,47 +239,13 @@ e.printStackTrace();
    * @return always <i>true</i>
    */
   public final boolean logout()  {
-    LOG.debug("Logout of " + this.principal);
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("Logout of " + this.principal);
+    }
 
-    subject.getPrincipals().remove(principal);
+    this.subject.getPrincipals().remove(this.principal);
     this.committed = false;
     this.principal = null;
     return true;
-  }
-
-  /**
-   * The instance method checks if for the given user the password is correct
-   * and the person is active (status equals 10001).<br/>
-   * All exceptions which could be thrown from the test are catched. Instead
-   * a <i>false</i> is returned.
-   *
-   * @param _name   name of the person name to check
-   * @param _passwd password of the person to check
-   * @return <i>true</i> if user name and password is correct and exists,
-   *         otherwise <i>false</i> is returned
-   */
-  private boolean checkLogin(final String _name, final String _passwd)  {
-    boolean ret = false;
-    try  {
-      if (_name != null)  {
-        Person person = Person.get(_name);
-        ret = person.checkPassword(_passwd);
-      }
-    } catch (Throwable e)  {
-// TODO: throw LoginContext
-e.printStackTrace();
-      LOG.error("Check  of login failed for user '" + _name + "'", e);
-    }
-    return ret;
-  }
-
-  /**
-   * This is the setter method for {@link #jaasSystem}.
-   *
-   * @param _jaasSystem new value for the name of the JAAS system
-   * @see #jaasSystem
-   */
-  public void setJaasSystem(final String _jaasSystem)  {
-    this.jaasSystem = _jaasSystem;
   }
 }

@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.jaas;
+package org.efaps.jaas.efaps;
 
 /**
  * The class implements the {@link java.security.Principal} interface for a

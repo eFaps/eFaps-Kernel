@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.jaas;
+package org.efaps.jaas.efaps;
 
 import java.io.Serializable;
 import java.security.Principal;

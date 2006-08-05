@@ -18,24 +18,24 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.jaas;
+package org.efaps.jaas.efaps;
 
 /**
  * The class implements the {@link java.security.Principal} interface for a
  * user. The class is used from the {@link UserLoginModule} class to implement
- * a JAAS login module and set the group principals.
+ * a JAAS login module and set the role principals.
  *
  * @author tmo
  * @version $Id$
  */
-public final class GroupPrincipal extends AbstractPrincipal  {
+public final class RolePrincipal extends AbstractPrincipal  {
 
   /**
-   * Constructor used to create a new group principal instance.
+   * Constructor used to create a new role principal instance.
    *
    * @param _name name of the user
    */
-  GroupPrincipal(final String _name)  {
+  RolePrincipal(final String _name)  {
     super(_name);
   }
 
@@ -48,8 +48,8 @@ public final class GroupPrincipal extends AbstractPrincipal  {
    */
   public boolean equals(final Object _another)  {
     boolean ret = false;
-    if (_another instanceof GroupPrincipal
-        && ((GroupPrincipal) _another).getName().equals(getName()))  {
+    if (_another instanceof RolePrincipal
+        && ((RolePrincipal) _another).getName().equals(getName()))  {
 
       ret = true;
     }
