@@ -30,6 +30,9 @@ import org.efaps.db.Context;
 
 /**
  *
+ *
+ * @author tmo
+ * @version $Id$
  */
 public abstract class AdminObject implements CacheInterface  {
 
@@ -41,6 +44,7 @@ public abstract class AdminObject implements CacheInterface  {
 
     USER_PERSON("Admin_User_Person"),
     USER_ROLE("Admin_User_Role"),
+    USER_JAASKEY("Admin_User_JAASKey"),
 
     LIFECYCLE_POLICY("Admin_LifeCycle_Policy"),
     LIFECYCLE_STATUS("Admin_LifeCycle_Status"),
