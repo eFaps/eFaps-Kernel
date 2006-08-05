@@ -941,9 +941,8 @@ type.readFromDB4Properties(_context);
    *
    * @return instance of class {@link Type}
    */
-  public static Type get(final long _id) throws Exception  {
-    Type type = getTypeCache().get(_id);
-    return type;
+  public static Type get(final long _id)  {
+    return getTypeCache().get(_id);
   }
 
   /**
@@ -951,9 +950,8 @@ type.readFromDB4Properties(_context);
    *
    * @return instance of class {@link Type}
    */
-  public static Type get(final String _name) throws Exception  {
-    Type type = getTypeCache().get(_name);
-    return type;
+  public static Type get(final String _name)  {
+    return getTypeCache().get(_name);
   }
 
   /**
@@ -971,63 +969,4 @@ type.readFromDB4Properties(_context);
    * @see #get
    */
   private static Cache < Type > typeCache = new Cache < Type > ();
-
-  /////////////////////////////////////////////////////////////////////////////
-
-/*  static protected class TypeCache extends Cache<Type>  {
-
-    private Type readType4Statement(Context _context, String _statement) throws Exception  {
-      Type type = null;
-      Statement stmt = _context.getConnection().createStatement();
-      try  {
-        ResultSet rs = stmt.executeQuery(_statement);
-        while (rs.next())  {
-          long id =               rs.getLong(1);
-          String name =           rs.getString(2).trim();
-          long parentTypeId =     rs.getLong(3);
-          String sqlCacheExpr =   rs.getString(4);
-          sqlCacheExpr = (sqlCacheExpr!=null ? sqlCacheExpr.trim() : null);
-
-          type = new Type(id, name);
-if (id==1000)  {
-  type.setCache(Person.getCache());
-} else if (id==1100)  {
-  type.setCache(Role.getCache());
-} else if (id==1200)  {
-  type.setCache(Policy.getCache());
-} else if (id==1220)  {
-  type.setCache(Status.getCache());
-}
-
-Attribute attr = new Attribute(0, "Type");
-attr.setAttributeType(AttributeType.get("Type"));
-type.add(attr);
-
-          this.add(type);
-          if (parentTypeId!=0)  {
-            type.setParentType(Type.get(_context, parentTypeId));
-            type.getParentType().addChildType(type);
-          }
-          if (sqlCacheExpr!=null)  {
-//System.out.println("type.readCache for '"+name+"'");
-            type.readCache(_context, sqlCacheExpr);
-          }
-
-          type.readDBParentIds(_context);
-          type.readDBAttributes(_context);
-          type.readDBPolicies(_context);
-          type.readFromDB4Properties(_context);
-          type.readDBChilds(_context);
-          type.readDBLinks(_context);
-        }
-        rs.close();
-      } catch (Exception e)  {
-e.printStackTrace();
-      } finally  {
-        stmt.close();
-      }
-      return type;
-    }
-  }
-*/
 }
