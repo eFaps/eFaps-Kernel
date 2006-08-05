@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,7 +37,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Cache;
 import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
-import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -46,6 +46,9 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class Person extends UserObject implements CacheInterface  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
 
   /**
    * Logging instance used to give logging information of this class.
@@ -57,7 +60,10 @@ public class Person extends UserObject implements CacheInterface  {
    *
    * @see #getCache
    */
-  private final static PersonCache cache = new PersonCache();
+  private final static Cache < Person > cache = new Cache < Person > ();
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
    * HashSet instance variale to hold all roles for this person.
@@ -75,6 +81,66 @@ public class Person extends UserObject implements CacheInterface  {
   private final Set < Group > groups = new HashSet < Group > ();
 
   /**
+   * The email adresse of this person is stored in this instance variable.
+   *
+   * @see #getEmail
+   * @see #setEmail
+   */
+  private String  email = null;
+
+  /**
+   * The instance variable stores the first name of the person.
+   *
+   * @see #getFirstName
+   * @see #setFirstName
+   */
+  private String firstName = null;
+
+  /**
+   * The instance variable stores the last name of the person.
+   *
+   * @see #getLastName
+   * @see #setLastName
+   */
+  private String lastName = null;
+
+  /**
+   * The organisation of this person is store in this instance variable.
+   *
+   * @see #getOrganisation
+   * @see #setOrganisation
+   */
+  private String organisation = null;
+
+  /**
+   * The office phone number of this person is stored in this instance
+   * variable.
+   *
+   * @see #getPhone
+   * @see #setPhone
+   */
+  private String phone = null;
+
+  /**
+   * The office fax number of this person is stored in this instance variable.
+   *
+   * @see #getFAX
+   * @see #setFAX
+   */
+  private String fax = null;
+
+  /**
+   * The url of this person is stored in this instance variable.
+   *
+   * @see #getURL
+   * @see #setURL
+   */
+  private String url = null;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors
+
+  /**
    * The constructor creates a new instance of class {@link Person} and sets
    * the {@link #name} and {@link #id}.
    *
@@ -86,6 +152,7 @@ public class Person extends UserObject implements CacheInterface  {
   }
 
   /////////////////////////////////////////////////////////////////////////////
+  // methods
 
   /**
    * Checks, if the given person is assigned to this user object. Here it is
@@ -101,11 +168,6 @@ public class Person extends UserObject implements CacheInterface  {
 
   public String getViewableName(final Context _context)  {
     return getName();
-  }
-
-  public String toString()  {
-    return "[" + super.toString()
-      + " id=" + getId() + "]";
   }
 
   /**
@@ -168,42 +230,55 @@ public class Person extends UserObject implements CacheInterface  {
    * @param _passwd   password to check for this person
    * @return <i>true</i> if password is correct, otherwise <i>false</i>
    */
-// TODO: rework! user connection resource!
-  public boolean checkPassword(final String _passwd) throws Exception  {
+  public boolean checkPassword(final String _passwd) throws EFapsException  {
     boolean ret = false;
-
-    Context context = Context.getThreadContext();
-
-    Type type = Type.get("Admin_User_Person");
-
-    Attribute attrPass = type.getAttribute("Password");
-    AttributeTypeInterface val = attrPass.newInstance();
-    val.set(context, _passwd);
-    String encrPass = val.getViewableString(null);
-
-    PreparedStatement stmt = null;
+    ConnectionResource rsrc = null;
     try  {
-      stmt = context.getConnection().prepareStatement(
-          "select count(*) "+
-              "from V_USERPERSON "+
-              "where NAME=? and PASSWORD=?");
-      stmt.setString(1, getName());
-      stmt.setString(2, encrPass);
-      ResultSet rs = stmt.executeQuery();
-      if (rs.next() && (rs.getLong(1) == 1))  {
-        ret = true;
+      Context context = Context.getThreadContext();
+      rsrc = context.getConnectionResource();
+
+      PreparedStatement stmt = null;
+
+      Type type = Type.get(EFapsClassName.USER_PERSON.name);
+
+      Attribute attrPass = type.getAttribute("Password");
+      AttributeTypeInterface val = attrPass.newInstance();
+      val.set(context, _passwd);
+      String encrPass = val.getViewableString(null);
+
+      try  {
+        stmt = context.getConnection().prepareStatement(
+            "select count(*) "+
+                "from V_USERPERSON "+
+                "where NAME=? and PASSWORD=?");
+        stmt.setString(1, getName());
+        stmt.setString(2, encrPass);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next() && (rs.getLong(1) == 1))  {
+          ret = true;
+        }
+        rs.close();
+      } catch (SQLException e)  {
+        LOG.error("password check failed for person '" + getName() + "'", e);
+// TODO: Exception in properties
+        throw new EFapsException(getClass(), "checkPassword.SQLException",
+                                                                e, getName());
+      } finally  {
+        try  {
+          if (stmt != null)  {
+            stmt.close();
+          }
+        } catch (SQLException e)  {
+        }
       }
-      rs.close();
-    } catch (Exception e)  {
-e.printStackTrace();
-      throw e;
+      rsrc.commit();
     } finally  {
-      if (stmt != null)  {
-        stmt.close();
+      if ((rsrc != null) && rsrc.isOpened())  {
+        rsrc.abort();
       }
     }
-
     return ret;
+
   }
 
   /**
@@ -214,7 +289,7 @@ e.printStackTrace();
    * @param _newPasswd  new password to set for this user
    */
   public void setPassword(final Context _context, final String _newPasswd) throws Exception  {
-    Type type = Type.get("Admin_User_Person");
+    Type type = Type.get(EFapsClassName.USER_PERSON.name);
 
     if (_newPasswd.length() == 0)  {
       throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd.length());
@@ -225,44 +300,146 @@ e.printStackTrace();
     update.execute(_context);
   }
 
+  /**
+   * Assign this person to the given JAAS system under the given JAAS key.
+   *
+   * @param _jaasSystem   JAAS system to which the person is assigned
+   * @param _jaasKey      key under which the person is know in the JAAS system
+   */
+  public void assignToJAASSystem(final JAASSystem _jaasSystem,
+                                 final String _jaasKey) throws EFapsException  {
+
+    ConnectionResource rsrc = null;
+    try  {
+      Context context = Context.getThreadContext();
+      rsrc = context.getConnectionResource();
+      Type keyType = Type.get(EFapsClassName.USER_JAASKEY.name);
+
+      PreparedStatement stmt = null;
+      try  {
+        StringBuilder cmd = new StringBuilder();
+
+        long keyId = 0;
+        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
+          keyId = context.getDbType().getNewId(rsrc.getConnection(),
+                          keyType.getMainTable().getSqlTable(), "ID");
+          cmd.append("insert into ").append(keyType.getMainTable().getSqlTable())
+             .append(   "(ID,KEY,CREATOR,CREATED,MODIFIER,MODIFIED,USERABSTRACT,USERJAASSYSTEM) ")
+             .append(   "values (").append(keyId).append(",");
+        } else  {
+          cmd.append("insert into ").append(keyType.getMainTable().getSqlTable())
+             .append(   "(KEY,CREATOR,CREATED,MODIFIER,MODIFIED,USERABSTRACT,USERJAASSYSTEM) ")
+             .append(   "values (");
+        }
+        cmd
+           .append("'").append(_jaasKey).append("',")
+           .append("1,")
+           .append(Context.getDbType().getCurrentTimeStamp()).append(",")
+           .append("1,")
+           .append(Context.getDbType().getCurrentTimeStamp()).append(",")
+           .append(getId()).append(",")
+           .append(_jaasSystem.getId()).append(")");
+        stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+        int rows = stmt.executeUpdate();
+        if (rows == 0)  {
+// TODO: exception in properties
+          LOG.error("could not execute '" + cmd.toString() + "' "
+                  + "for JAAS system " + "'" + _jaasSystem.getName() + "' "
+                  + "person with key '" + _jaasKey + "' and "
+                  + "user name '" + getName() + "'");
+          throw new EFapsException(Person.class,
+                  "assignToJAASSystem.NotInserted",
+                  _jaasSystem.getName(), _jaasKey, getName());
+        }
+      } catch (SQLException e)  {
+  // TODO: exception in properties
+        LOG.error("could not assign for JAAS system "
+                + "'" + _jaasSystem.getName() + "' person with key "
+                + "'" + _jaasKey + "' and user name '" + getName() + "'", e);
+        throw new EFapsException(Person.class,
+                "assignToJAASSystem.SQLException",
+                e, _jaasSystem.getName(), _jaasKey, getName());
+      } finally  {
+        try  {
+          stmt.close();
+        } catch (SQLException e)  {
+        }
+      }
+
+      rsrc.commit();
+    } finally  {
+      if ((rsrc != null) && rsrc.isOpened())  {
+        rsrc.abort();
+      }
+    }
+  }
+
   /////////////////////////////////////////////////////////////////////////////
 
   /**
    * The instance method reads all information from the database.
    *
-   * @param _context  context for this request
-   * @see #readRoles4Persons
+   * @see #readFromDBAttributes
    */
-  protected void readFromDB(final Context _context) throws SQLException  {
-    readFromDBAttributes(_context);
+  protected void readFromDB() throws EFapsException  {
+    readFromDBAttributes();
   }
 
-  private void readFromDBAttributes(final Context _context) throws SQLException  {
-    Statement stmt = _context.getConnection().createStatement();
+  /**
+   * All attributes from this person are read from the database.
+   *
+   * @throws EFapsException if the attributes for this person could not be
+   *         read
+   */
+  private void readFromDBAttributes() throws EFapsException  {
+    ConnectionResource rsrc = null;
     try  {
-      ResultSet rs = stmt.executeQuery(
-          "select " +
-              "V_USERPERSON.EMAIL," +
-              "V_USERPERSON.FIRSTNAME," +
-              "V_USERPERSON.LASTNAME," +
-              "V_USERPERSON.ORG," +
-              "V_USERPERSON.URL," +
-              "V_USERPERSON.PHONE," +
-              "V_USERPERSON.FAX " +
-          "from V_USERPERSON " +
-          "where V_USERPERSON.ID=" + getId()
-      );
-      if (rs.next())  {
-        setEmail(rs.getString(1));
-        setFirstName(rs.getString(2));
-        setLastName(rs.getString(3));
-        setOrganisation(rs.getString(4));
-        setURL(rs.getString(5));
-        setPhone(rs.getString(6));
-        setFAX(rs.getString(7));
+      rsrc = Context.getThreadContext().getConnectionResource();
+      Statement stmt = null;
+      try  {
+        stmt = rsrc.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery(
+            "select " +
+                "V_USERPERSON.EMAIL," +
+                "V_USERPERSON.FIRSTNAME," +
+                "V_USERPERSON.LASTNAME," +
+                "V_USERPERSON.ORG," +
+                "V_USERPERSON.URL," +
+                "V_USERPERSON.PHONE," +
+                "V_USERPERSON.FAX " +
+            "from V_USERPERSON " +
+            "where V_USERPERSON.ID=" + getId()
+        );
+        if (rs.next())  {
+          setEmail(rs.getString(1));
+          setFirstName(rs.getString(2));
+          setLastName(rs.getString(3));
+          setOrganisation(rs.getString(4));
+          setURL(rs.getString(5));
+          setPhone(rs.getString(6));
+          setFAX(rs.getString(7));
+        }
+        rs.close();
+      } catch (SQLException e)  {
+        LOG.error("read attributes for person with SQL statement is not "
+                  + "possible", e);
+// TODO: exception in properties
+        throw new EFapsException(Person.class,
+                "readFromDBAttributes.SQLException", e, getName(), getId());
+      } finally  {
+        try  {
+          if (stmt != null)  {
+            stmt.close();
+          }
+        } catch (SQLException e)  {
+          LOG.error("close of SQL statement is not possible", e);
+        }
       }
+      rsrc.commit();
     } finally  {
-      stmt.close();
+      if ((rsrc != null) && rsrc.isOpened())  {
+        rsrc.abort();
+      }
     }
   }
 
@@ -334,6 +511,110 @@ e.printStackTrace();
     return ret;
   }
 
+// TODO: Description
+public void setRoles(final JAASSystem _jaasSystem, final Set < Role > _roles) throws EFapsException  {
+  Context context = Context.getThreadContext();
+
+  if (_jaasSystem == null)  {
+// TODO: throw exception
+  }
+  if (_roles == null)  {
+// TODO: throw exception
+  }
+
+  for (Role role : _roles)  {
+    add(role);
+  }
+
+  Set < Role > rolesInDb = getRolesFromDB(_jaasSystem);
+
+  for (Role role : _roles)  {
+    if (!rolesInDb.contains(role))  {
+      addRoleInDb(context, _jaasSystem, role);
+    }
+  }
+
+  for (Role role : rolesInDb)  {
+    if (!_roles.contains(role))  {
+      removeRoleInDb(context, _jaasSystem, role);
+    }
+  }
+}
+
+// TODO: Description
+private void addRoleInDb(final Context _context, final JAASSystem _jaasSystem, final Role _role) throws EFapsException  {
+  ConnectionResource rsrc = null;
+  try  {
+    rsrc = _context.getConnectionResource();
+
+    Statement stmt = null;
+    try  {
+      StringBuilder cmd = new StringBuilder();
+      cmd.append("insert into V_USERPERSON2ROLE")
+         .append(   "(USERABSTRACTFROM,USERABSTRACTTO,JAASSYSID) ")
+         .append(   "values (").append(getId()).append(",")
+                               .append(_role.getId()).append(",")
+                               .append(_jaasSystem.getId()).append(")");
+
+      stmt = rsrc.getConnection().createStatement();
+      stmt.executeUpdate(cmd.toString());
+
+    } catch (SQLException e)  {
+// TODO: exception in properties
+      throw new EFapsException(getClass(), "addRoleInDb.SQLException",
+                                                              e, getName());
+    } finally  {
+      try  {
+        stmt.close();
+      } catch (SQLException e)  {
+      }
+    }
+
+    rsrc.commit();
+  } finally  {
+    if ((rsrc != null) && rsrc.isOpened())  {
+      rsrc.abort();
+    }
+  }
+}
+
+// TODO: Description
+private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem, final Role _role) throws EFapsException  {
+  ConnectionResource rsrc = null;
+  try  {
+    rsrc = _context.getConnectionResource();
+
+    Statement stmt = null;
+
+    try  {
+      StringBuilder cmd = new StringBuilder();
+      cmd.append("delete from V_USERPERSON2ROLE ")
+         .append(   "where JAASSYSID=").append(_jaasSystem.getId()).append(" ")
+         .append(         "and USERABSTRACTTO=").append(_role.getId()).append(" ")
+         .append(         "and USERABSTRACTFROM=").append(getId());
+
+      stmt = rsrc.getConnection().createStatement();
+      stmt.executeUpdate(cmd.toString());
+
+    } catch (SQLException e)  {
+// TODO: exception in properties
+      throw new EFapsException(getClass(), "removeRoleInDb.SQLException",
+                                                              e, getName());
+    } finally  {
+      try  {
+        stmt.close();
+      } catch (SQLException e)  {
+      }
+    }
+
+    rsrc.commit();
+  } finally  {
+    if ((rsrc != null) && rsrc.isOpened())  {
+      rsrc.abort();
+    }
+  }
+}
+
   /**
    * The method reads directly from the database all stores groups for the this
    * person. The found groups are returned as instance of {@link java.util.Set}.
@@ -391,157 +672,8 @@ e.printStackTrace();
     return ret;
   }
 
-// TODO: update database with depending roles
-public void setRoles(final JAASSystem _jaasSystem, final Set < Role > _roles) throws EFapsException  {
-  Context context = Context.getThreadContext();
-
-  if (_jaasSystem == null)  {
-// TODO: throw exception
-  }
-  if (_roles == null)  {
-// TODO: throw exception
-  }
-
-  for (Role role : _roles)  {
-    add(role);
-  }
-
-  Set < Role > rolesInDb = getRolesFromDB(_jaasSystem);
-
-  for (Role role : _roles)  {
-    if (!rolesInDb.contains(role))  {
-      addRoleInDb(context, _jaasSystem, role);
-    }
-  }
-
-  for (Role role : rolesInDb)  {
-    if (!_roles.contains(role))  {
-      removeRoleInDb(context, _jaasSystem, role);
-    }
-  }
-}
-
-private void addRoleInDb(final Context _context, final JAASSystem _jaasSystem, final Role _role) throws EFapsException  {
-  ConnectionResource rsrc = null;
-  try  {
-    rsrc = _context.getConnectionResource();
-
-    Statement stmt = null;
-    try  {
-      StringBuilder cmd = new StringBuilder();
-      cmd.append("insert into V_USERPERSON2ROLE")
-         .append(   "(USERABSTRACTFROM,USERABSTRACTTO,JAASSYSID) ")
-         .append(   "values (").append(getId()).append(",")
-                               .append(_role.getId()).append(",")
-                               .append(_jaasSystem.getId()).append(")");
-
-      stmt = rsrc.getConnection().createStatement();
-      stmt.executeUpdate(cmd.toString());
-
-    } catch (SQLException e)  {
-// TODO: exception in properties
-      throw new EFapsException(getClass(), "addRoleInDb.SQLException",
-                                                              e, getName());
-    } finally  {
-      try  {
-        stmt.close();
-      } catch (SQLException e)  {
-      }
-    }
-
-    rsrc.commit();
-  } finally  {
-    if ((rsrc != null) && rsrc.isOpened())  {
-      rsrc.abort();
-    }
-  }
-}
-
-private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem, final Role _role) throws EFapsException  {
-  ConnectionResource rsrc = null;
-  try  {
-    rsrc = _context.getConnectionResource();
-
-    Statement stmt = null;
-
-    try  {
-      StringBuilder cmd = new StringBuilder();
-      cmd.append("delete from V_USERPERSON2ROLE ")
-         .append(   "where JAASSYSID=").append(_jaasSystem.getId()).append(" ")
-         .append(         "and USERABSTRACTTO=").append(_role.getId()).append(" ")
-         .append(         "and USERABSTRACTFROM=").append(getId());
-
-      stmt = rsrc.getConnection().createStatement();
-      stmt.executeUpdate(cmd.toString());
-
-    } catch (SQLException e)  {
-// TODO: exception in properties
-      throw new EFapsException(getClass(), "removeRoleInDb.SQLException",
-                                                              e, getName());
-    } finally  {
-      try  {
-        stmt.close();
-      } catch (SQLException e)  {
-      }
-    }
-
-    rsrc.commit();
-  } finally  {
-    if ((rsrc != null) && rsrc.isOpened())  {
-      rsrc.abort();
-    }
-  }
-}
-
   /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * @see #getEmail
-   * @see #setEmail
-   */
-  private String  email;
-
-  /**
-   * The instance variable stores the first name of the person.
-   *
-   * @see #getFirstName
-   * @see #setFirstName
-   */
-  private String firstName = null;
-
-  /**
-   * The instance variable stores the last name of the person.
-   *
-   * @see #getLastName
-   * @see #setLastName
-   */
-  private String lastName = null;
-
-  /**
-   * @see #getOrganisation
-   * @see #setOrganisation
-   */
-  private String  org;
-
-  /**
-   * @see #getPhone
-   * @see #setPhone
-   */
-  private String  phone;
-
-  /**
-   * @see #getFAX
-   * @see #setFAX
-   */
-  private String  fax;
-
-  /**
-   * @see #getURL
-   * @see #setURL
-   */
-  private String  url;
-
-  /////////////////////////////////////////////////////////////////////////////
+  // getter and setter methods
 
   /**
    * This is the getter method for instance variable {@link #email}.
@@ -554,6 +686,13 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
     return this.email;
   }
 
+  /**
+   * This is the setter method for instance variable {@link #email}.
+   *
+   * @param _lastName new value for instance variable {@link #email}.
+   * @see #email
+   * @see #getEmail
+   */
   private void setEmail(final String _email)  {
     this.email = _email;
   }
@@ -603,18 +742,25 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
   }
 
   /**
-   * This is the getter method for instance variable {@link #org}.
+   * This is the getter method for instance variable {@link #organisation}.
    *
-   * @return the value of the instance variable {@link #org}.
-   * @see #org
+   * @return the value of the instance variable {@link #organisation}.
+   * @see #organisation
    * @see #setOrganisation
    */
   public String getOrganisation()  {
-    return this.org;
+    return this.organisation;
   }
 
-  private void setOrganisation(final String _org)  {
-    this.org = _org;
+  /**
+   * This is the setter method for instance variable {@link #organisation}.
+   *
+   * @param _lastName new value for instance variable {@link #organisation}.
+   * @see #organisation
+   * @see #getOrganisation
+   */
+  private void setOrganisation(final String _organisation)  {
+    this.organisation = _organisation;
   }
 
   /**
@@ -628,6 +774,13 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
     return this.phone;
   }
 
+  /**
+   * This is the setter method for instance variable {@link #phone}.
+   *
+   * @param _lastName new value for instance variable {@link #phone}.
+   * @see #phone
+   * @see #getPhone
+   */
   private void setPhone(final String _phone)  {
     this.phone = _phone;
   }
@@ -643,6 +796,13 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
     return this.fax;
   }
 
+  /**
+   * This is the setter method for instance variable {@link #fax}.
+   *
+   * @param _lastName new value for instance variable {@link #fax}.
+   * @see #fax
+   * @see #getFAX
+   */
   private void setFAX(final String _fax)  {
     this.fax = _fax;
   }
@@ -658,35 +818,58 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
     return this.url;
   }
 
+  /**
+   * This is the setter method for instance variable {@link #url}.
+   *
+   * @param _lastName new value for instance variable {@link #url}.
+   * @see #url
+   * @see #getURL
+   */
   private void setURL(final String _url)  {
     this.url = _url;
   }
 
+  /**
+   * Returns a string representation of this person.
+   *
+   * @return string representation of this person
+   */
+  public String toString()  {
+    return new ToStringBuilder(this)
+        .appendSuper(super.toString())
+        .append("email",        this.email)
+        .append("first name",   this.firstName)
+        .append("last name",    this.lastName)
+        .append("organisation", this.organisation)
+        .append("phone",        this.phone)
+        .append("fax",          this.fax)
+        .append("url",          this.url)
+        .append("roles",        this.roles)
+        .append("groups",       this.groups)
+        .toString();
+  }
+
   /////////////////////////////////////////////////////////////////////////////
+  // static methods
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Person}.
    *
    * @param _id id to search in the cache
    * @return instance of class {@link Person}
-   * @see #getCache
-   * @todo rewrite to use context instance
+   * @see #cache
+   * @see #getFromDB
    */
-  static public Person get(final long _id) throws EFapsException  {
+  public static Person get(final long _id) throws EFapsException  {
     Person ret = getCache().get(_id);
     if (ret == null)  {
-      Context context = new Context();
-      try  {
-        ret = getCache().readPerson(context,
-            "select " +
-              "V_USERPERSON.ID," +
-              "V_USERPERSON.NAME " +
-            "from V_USERPERSON " +
-            "where V_USERPERSON.ID=" + _id
-        );
-      } finally  {
-        context.close();
-      }
+      ret = getFromDB(
+          "select " +
+            "V_USERPERSON.ID," +
+            "V_USERPERSON.NAME " +
+          "from V_USERPERSON " +
+          "where V_USERPERSON.ID=" + _id
+      );
     }
     return ret;
   }
@@ -697,24 +880,76 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
    *
    * @param _name name to search in the cache
    * @return instance of class {@link Person}
-   * @see #getCache
-   * @todo rewrite to use context instance
+   * @see #cache
+   * @see #getFromDB
    */
-  static public Person get(final String _name) throws EFapsException  {
+  public static Person get(final String _name) throws EFapsException  {
     Person ret = getCache().get(_name);
     if (ret == null)  {
-      Context context = new Context();
+      ret = getFromDB(
+          "select " +
+            "V_USERPERSON.ID," +
+            "V_USERPERSON.NAME " +
+          "from V_USERPERSON " +
+          "where V_USERPERSON.NAME='" + _name + "'"
+      );
+    }
+    return ret;
+  }
+
+  /**
+   * The static method reads with the help of given sql statement the id and
+   * name of the person, creates a new person instance, adds the instance to
+   * the cache and read all related information for the person instance with
+   * {@link #readFromDB}.
+   *
+   * @param _sql  sql statement used to get the person from database
+   * @return person instance with the found values from database
+   * @see #get(long)
+   * @see #get(String)
+   * @see #readFromDB
+   */
+  private static Person getFromDB(final String _sql) throws EFapsException  {
+    Person ret = null;
+    ConnectionResource rsrc = null;
+    try  {
+      rsrc = Context.getThreadContext().getConnectionResource();
+
+      Statement stmt = null;
+
       try  {
-        ret = getCache().readPerson(context,
-            "select " +
-              "V_USERPERSON.ID," +
-              "V_USERPERSON.NAME " +
-            "from V_USERPERSON " +
-            "where V_USERPERSON.NAME='" + _name + "'"
-        );
+        stmt = rsrc.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery(_sql);
+        if (rs.next())  {
+          long id =     rs.getLong(1);
+          String name = rs.getString(2);
+          ret = new Person(id, name.trim());
+          getCache().add(ret);
+        }
+        rs.close();
+      } catch (SQLException e)  {
+        LOG.error("search for person with SQL statement "
+                + "'" + _sql + "' is not possible", e);
+// TODO: exception in properties
+        throw new EFapsException(Person.class,
+                "getFromDB.SQLException", e, _sql);
       } finally  {
-        context.close();
+        try  {
+          if (stmt != null)  {
+            stmt.close();
+          }
+        } catch (SQLException e)  {
+          LOG.error("close of SQL statement is not possible", e);
+        }
       }
+      rsrc.commit();
+    } finally  {
+      if ((rsrc != null) && rsrc.isOpened())  {
+        rsrc.abort();
+      }
+    }
+    if (ret != null)  {
+      ret.readFromDB();
     }
     return ret;
   }
@@ -731,7 +966,7 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
    *         is not found
    * @see #get(long)
    */
-  static public Person getWithJAASKey(final JAASSystem _jaasSystem, final String _jaasKey) throws EFapsException  {
+  public static Person getWithJAASKey(final JAASSystem _jaasSystem, final String _jaasKey) throws EFapsException  {
     long personId = 0;
     ConnectionResource rsrc = null;
     try  {
@@ -776,46 +1011,121 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
     return get(personId);
   }
 
+// TODO: Description
+  /**
+   *
+   * @param _jaasSystem   JAAS system which want to creaet a new person in
+   *                      eFaps
+   * @param _jaasKey      key of the person in the JAAS system
+   * @param _userName     name in the eFaps system (used as proposal, it's
+   *                      tested for uniqueness and changed if needed!)
+   * @return new created person
+   * @throws EFapsException if person not creatable
+   * @see #assignToJAASSystem
+   */
+  public static Person createPerson(final JAASSystem _jaasSystem,
+                                    final String _jaasKey,
+                                    final String _userName) throws EFapsException  {
+
+    long persId = 0;
+    Type persType = Type.get(EFapsClassName.USER_PERSON.name);
+    ConnectionResource rsrc = null;
+    try  {
+      Context context = Context.getThreadContext();
+
+      rsrc = context.getConnectionResource();
+
+      PreparedStatement stmt = null;
+      try  {
+        StringBuilder cmd = new StringBuilder();
+
+// TODO: check for uniqueness!
+// TODO: hard coded mofifier and creator
+        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
+          persId = context.getDbType().getNewId(rsrc.getConnection(),
+                          persType.getMainTable().getSqlTable(), "ID");
+          cmd.append("insert into ").append(persType.getMainTable().getSqlTable())
+             .append(   "(ID,TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ")
+             .append(   "values (").append(persId).append(",");
+        } else  {
+          cmd.append("insert into ").append(persType.getMainTable().getSqlTable())
+             .append(   "(TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ")
+             .append(   "values (");
+        }
+        cmd
+           .append(persType.getId()).append(",")
+           .append("'").append(_userName).append("',")
+           .append("1,")
+           .append(Context.getDbType().getCurrentTimeStamp()).append(",")
+           .append("1,")
+           .append(Context.getDbType().getCurrentTimeStamp()).append(")");
+
+        stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+        int rows = stmt.executeUpdate();
+        if (rows == 0)  {
+// TODO: exception in properties
+          LOG.error("could not execute '" + cmd.toString() + "' "
+                  + "for JAAS system " + "'" + _jaasSystem.getName() + "' "
+                  + "person with key '" + _jaasKey + "' and "
+                  + "user name '" + _userName + "'");
+          throw new EFapsException(Person.class, "createPerson.NotInserted",
+                                   _jaasSystem.getName(), _jaasKey, _userName);
+        }
+        if (persId == 0)  {
+          ResultSet rs = stmt.getGeneratedKeys();
+          if (rs.next())  {
+            persId = rs.getLong(1);
+          }
+        }
+
+        stmt.close();
+
+        cmd = new StringBuilder();
+        cmd.append("insert into USERPERSON")
+           .append(   "(ID,FIRSTNAME,LASTNAME,EMAIL) ")
+           .append(   "values (").append(persId).append(",'-','-','-')");
+        stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+        rows = stmt.executeUpdate();
+        if (rows == 0)  {
+          LOG.error("could not execute '" + cmd.toString() + "' "
+                  + "for JAAS system " + "'" + _jaasSystem.getName() + "' "
+                  + "person with key '" + _jaasKey + "' and "
+                  + "user name '" + _userName + "'");
+          throw new EFapsException(Person.class, "createPerson.NotInserted",
+                                   _jaasSystem.getName(), _jaasKey, _userName);
+        }
+
+      } catch (SQLException e)  {
+// TODO: exception in properties
+        LOG.error("could not create for JAAS system "
+                + "'" + _jaasSystem.getName() + "' person with key "
+                + "'" + _jaasKey + "' and user name '" + _userName + "'", e);
+        throw new EFapsException(Person.class, "createPerson.SQLException",
+                          e, _jaasSystem.getName(), _jaasKey, _userName);
+      } finally  {
+        try  {
+          stmt.close();
+        } catch (SQLException e)  {
+        }
+      }
+      rsrc.commit();
+    } finally  {
+      if ((rsrc != null) && rsrc.isOpened())  {
+        rsrc.abort();
+      }
+    }
+
+    Person ret = get(persId);
+    ret.assignToJAASSystem(_jaasSystem, _jaasKey);
+    return ret;
+  }
+
   /**
    * Static getter method for the type hashtable {@link #cache}.
    *
    * @return value of static variable {@link #cache}
    */
-  static public PersonCache getCache()  {
+  public static Cache < Person > getCache()  {
     return cache;
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  static protected class PersonCache extends Cache < Person >  {
-
-    private Person readPerson(final Context _context, final String _sql) throws EFapsException  {
-      Statement stmt = null;
-      Person ret = null;
-      try  {
-        stmt = _context.getConnection().createStatement();;
-        ResultSet rs = stmt.executeQuery(_sql);
-        if (rs.next())  {
-          long id =     rs.getLong(1);
-          String name = rs.getString(2);
-          ret = new Person(id, name.trim());
-          this.add(ret);
-          ret.readFromDB(_context);
-        }
-        rs.close();
-      } catch (SQLException e)  {
-// TODO: throw of EFapsException
-        LOG.error("close of SQL statement not possible", e);
-      } finally  {
-        if (stmt != null)  {
-          try  {
-            stmt.close();
-          } catch (SQLException e)  {
-            LOG.error("close of SQL statement not possible", e);
-          }
-        }
-      }
-      return ret;
-    }
   }
 }
