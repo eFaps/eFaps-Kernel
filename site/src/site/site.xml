@@ -69,7 +69,12 @@
         <item name="Oracle"             href="/installation/database/oracle.html"/>
         <item name="PostgreSQL"         href="/installation/database/postgreSQL.html"/>
       </item>
-      <item name="JAAS Authentication"  href="/installation/jaas.html"/>
+      <item name="JAAS Authentication"  href="/installation/jaas/index.html" collapse="true">
+        <item name="Configuration File" href="/installation/jaas/configuration.html"/>
+        <item name="JAAS Systems"       href="/installation/jaas/jaassystems.html"/>
+        <item name="eFaps Module"       href="/installation/jaas/efaps.html"/>
+        <item name="XML Module"         href="/installation/jaas/xml.html"/>
+      </item>
     </menu>
 
     ${reports}

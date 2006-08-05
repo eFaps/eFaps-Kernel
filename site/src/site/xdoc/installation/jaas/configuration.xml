@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<document>
+  <properties>
+    <title>JAAS Configuration File</title>
+  </properties>
+  <body>
+    <section name="JAAS Configuration File">
+      <p>
+        The JAAS authentication must be first configured that eFaps could use a JAAS authentification. The name of the application should be <b>eFaps</b>. First a configuration file defined the JAAS login module must be created:
+      </p>
+      <source>eFaps {
+   [ModuleClass] [Flag] [ModuleOptions];
+   [ModuleClass] [Flag] [ModuleOptions];
+                   :
+};</source>
+
+      <p>
+        The module class value controls how the user is authentificated. eFaps include two out of the box implementations which could be used:
+      </p>
+      <dl>
+        <dt><a href="efaps.html">org.efaps.jaas.efaps.UserLoginModule</a></dt><dd>The login module uses eFaps for authetification.</dd>
+        <dt><a href="xml.html">org.efaps.jaas.xml.XMLUserLoginModule</a></dt><dd>The login module uses a XML file with user name, password, related roles and groups for autentification.</dd>
+      </dl>
+
+      <p>
+        The Flag value controls the overall behavior as authentication proceeds down the stack. The following represents a description of the valid values for Flag and their respective semantics:
+      </p>
+      <dl>
+        <dt>REQUIRED</dt><dd>The LoginModule is required to succeed. If it succeeds or fails, authentication still continues to proceed down the LoginModule list.</dd>
+        <dt>REQUISITE</dt><dd>The LoginModule is required to succeed. If it succeeds, authentication continues down the LoginModule list. If it fails, control immediately returns to the application (authentication does not proceed down the LoginModule list).</dd>
+        <dt>SUFFICIENT</dt><dd>The LoginModule is not required to succeed.  If it does succeed, control immediately returns to the application (authentication does not proceed down the LoginModule list). If it fails, authentication continues down the LoginModule list.</dd>
+        <dt>OPTIONAL</dt><dd>The LoginModule is not required to succeed.  If it succeeds or fails, authentication still continues to proceed down the LoginModule list.</dd>
+      </dl>
+      <p>
+        The overall authentication succeeds only if all Required and Requisite LoginModules succeed. If a Sufficient LoginModule is configured and succeeds, then only the Required and Requisite LoginModules prior to that Sufficient LoginModule need to have succeeded for the overall authentication to succeed. If no Required or Requisite LoginModules are configured for an application, then at least one Sufficient or Optional LoginModule must succeed.
+      </p>
+      <p>
+        The module options depends on the implementation of the login module and are used to configure individual the login modules. The module options is a space separated list of LoginModule-specific values which are passed directly to the underlying LoginModules. Options are defined by the LoginModule itself, and control the behavior within it. For example, a LoginModule may define options to support debugging/testing capabilities. The correct way to specify options in the Configuration is by using the following key-value pairing: <code>debug="true"</code>. The key and value should be separated by an 'equals' symbol, and the value should be surrounded by double quotes. If a String in the form, <code>${system.property}</code>, occurs in the value, it will be expanded to the value of the system property. Note that there is no limit to the number of options a LoginModule may define!
+      </p>
+    </section>
+
+    <section name="Template Examples">
+      <p>
+        See following templates for an example for JAAS configuration files:
+      </p>
+      <ul>
+        <li>
+          <a href="../../tomcat/jaas-eFaps.config">eFaps login module implementation</a>:
+<source>eFaps {
+  org.efaps.jaas.efaps.UserLoginModule
+          REQUIRED
+          jaasSystem="eFaps";
+};</source>
+        </li>
+        <li>
+          <a href="../../tomcat/jaas-xml.config">login module with persons defined in a xml file</a>:
+<source>eFaps {
+  org.efaps.jaas.xml.XMLUserLoginModule
+          REQUIRED
+          xmlFileName="[PATHTO]/efaps-users.xml";
+};</source>
+        </li>
+        <li>
+          <a href="../../tomcat/jaas-both.config">efaps and xml login modules</a>:
+<source>eFaps {
+  org.efaps.jaas.efaps.UserLoginModule
+          SUFFICIENT
+          jaasSystem="eFaps";
+  org.efaps.jaas.xml.XMLUserLoginModule
+          SUFFICIENT
+          xmlFileName="[PATHTO]/efaps-users.xml";
+};</source>
+         </li>
+      </ul>
+    </section>
+
+    <section name="References">
+      <ul>
+        <li><a href="http://java.sun.com/j2se/1.4.2/docs/guide/security/jaas/JAASRefGuide.html">JavaTM Authentication and Authorization Service (JAAS) Reference Guide for the JavaTM 2 SDK, Standard Edition, v 1.4</a></li>
+      </ul>
+    </section>
+
+  </body>
+</document>

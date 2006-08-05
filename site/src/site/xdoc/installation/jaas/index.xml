@@ -35,11 +35,8 @@
     </section>
     <section name="Tomcat Configuration">
       <p>
-        The JAAS authentication must be first configured that eFaps could use a JAAS authentification. The name of the application should be <b>eFaps</b>. First a configuration file defined the JAAS login module must be created (e.g. in <code>%CATALINA_HOME%/conf/jaas.config</code>):
+        First a <a href="configuration.html">configuration</a> file defining the JAAS login module must be created and copied e.g. to <code>%CATALINA_HOME%/conf/jaas.config</code>.
       </p>
-      <source>eFaps {
-   org.efaps.jaas.UserLoginModule REQUIRED;
-};</source>
       <p>
         Then Java must be informed about the JAAS configuration file. This is done with the Java system property <code>java.security.auth.login.config</code> (the value is the JAAS configuration file URL). This could be done e.g. with changeing the <code>startup.bat</code> shell script in the Tomcat binary directory (found under <code>%CATALINA_HOME%/bin/startup.bat</code>):
       </p>
@@ -48,7 +45,7 @@
       </p>
       <source>set CATALINA_OPTS=-Djava.security.auth.login.config=%CATALINA_HOME%\conf\jaas.config</source>
       <p>
-        Then Java knows about which login module is used by eFaps.
+        So Java knows about which login module is used by eFaps and is automatically set when tomcat is started.
       </p>
     </section>
 
