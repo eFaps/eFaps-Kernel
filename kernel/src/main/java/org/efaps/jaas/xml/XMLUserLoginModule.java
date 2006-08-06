@@ -263,18 +263,25 @@ public class XMLUserLoginModule implements LoginModule  {
       digester.addObjectCreate("persons", ArrayList.class);
       digester.addObjectCreate("persons/person", XMLPersonPrincipal.class);
       digester.addSetNext("persons/person", "add");
+
       digester.addCallMethod("persons/person/name", "setName", 1);
       digester.addCallParam("persons/person/name", 0);
+
       digester.addCallMethod("persons/person/password", "setPassword", 1);
-      digester.addCallParam("persons/person/firstName", 0);
-      digester.addCallMethod("persons/person/firstName", "setFirstName", 1);
-      digester.addCallParam("persons/person/lastName", 0);
-      digester.addCallMethod("persons/person/lastName", "setLastName", 1);
-      digester.addCallParam("persons/person/email", 0);
-      digester.addCallMethod("persons/person/email", "setEmail", 1);
       digester.addCallParam("persons/person/password", 0);
+
+      digester.addCallMethod("persons/person/firstName", "setFirstName", 1);
+      digester.addCallParam("persons/person/firstName", 0);
+
+      digester.addCallMethod("persons/person/lastName", "setLastName", 1);
+      digester.addCallParam("persons/person/lastName", 0);
+
+      digester.addCallMethod("persons/person/email", "setEmail", 1);
+      digester.addCallParam("persons/person/email", 0);
+
       digester.addCallMethod("persons/person/role", "addRole", 1);
       digester.addCallParam("persons/person/role", 0);
+
       digester.addCallMethod("persons/person/group", "addGroup", 1);
       digester.addCallParam("persons/person/group", 0);
 
