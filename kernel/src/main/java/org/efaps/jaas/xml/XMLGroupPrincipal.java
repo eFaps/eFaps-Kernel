@@ -22,7 +22,7 @@ package org.efaps.jaas.xml;
 
 /**
  * The class implements the {@link java.security.Principal} interface for a
- * user. The class is used from the {@link UserLoginModule} class to implement
+ * group. The class is used from the {@link XMLUserLoginModule} class to implement
  * a JAAS login module and set the group principals.
  *
  * @author tmo

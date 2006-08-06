@@ -26,6 +26,11 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
+ * The class implements the {@link java.security.Principal} interface for a
+ * person. The class is used from the {@link XMLUserLoginModule} class to implement
+ * a JAAS login module and set the person principals.<br/>
+ * A person principal instance stores also all found {@link #groups} and
+ * {@link #roles}.
  *
  * @author tmo
  * @version $Id$
@@ -42,6 +47,30 @@ public class XMLPersonPrincipal extends XMLAbstractPrincipal  {
    * @see #setPassword
    */
   private String password = null;
+
+  /***
+   * The first name of this person is stored in this instance variable.
+   *
+   * @see #getFirstName
+   * @see #setFirstName
+   */
+  private String firstName = null;
+
+  /***
+   * The last name of this person is stored in this instance variable.
+   *
+   * @see #getLastName
+   * @see #setLastName
+   */
+  private String lastName = null;
+
+  /***
+   * The email adresse of this person is stored in this instance variable.
+   *
+   * @see #getEmail
+   * @see #setEmail
+   */
+  private String email = null;
 
   /**
    * All groups assign to this person are stored in this instance variable.
@@ -104,12 +133,87 @@ public class XMLPersonPrincipal extends XMLAbstractPrincipal  {
    * {@link #password}. The method must be public, because it is set from the
    * XML to bean converter in {@link XMLUserLoginModule}.
    *
-   * @param _password new name to set for this principal
+   * @param _password new name to set for this person principal
    * @see #password
    * @see #getPassword
    */
   public void setPassword(final String _password) {
     this.password = _password;
+  }
+
+  /**
+   * Returns the first name of this person principal stored in instance variable
+   * {@link #firstName}.
+   *
+   * @return name of this person principal
+   * @see #firstName
+   * @see #setFirstName
+   */
+  public String getFirstName() {
+    return this.firstName;
+  }
+
+  /**
+   * Sets the first name of this person principal stored in instance variable
+   * {@link #firstName}. The method must be public, because it is set from the
+   * XML to bean converter in {@link XMLUserLoginModule}.
+   *
+   * @param _firstName new first name to set for this person principal
+   * @see #firstName
+   * @see #getFirstName
+   */
+  public void setFirstName(final String _firstName) {
+    this.firstName = _firstName;
+  }
+
+  /**
+   * Returns the last name of this person principal stored in instance variable
+   * {@link #lastName}.
+   *
+   * @return name of this person principal
+   * @see #lastName
+   * @see #setLastName
+   */
+  public String getLastName() {
+    return this.lastName;
+  }
+
+  /**
+   * Sets the last name of this person principal stored in instance variable
+   * {@link #lastNaem}. The method must be public, because it is set from the
+   * XML to bean converter in {@link XMLUserLoginModule}.
+   *
+   * @param _lastName new last name to set for this person principal
+   * @see #lastName
+   * @see #getLastName
+   */
+  public void setLastName(final String _lastName) {
+    this.lastName = _lastName;
+  }
+
+  /**
+   * Returns the email of this person principal stored in instance variable
+   * {@link #email}.
+   *
+   * @return email adress of this person principal
+   * @see #email
+   * @see #setEmail
+   */
+  public String getEmail() {
+    return this.email;
+  }
+
+  /**
+   * Sets the email adress of this person principal stored in instance variable
+   * {@link #email}. The method must be public, because it is set from the
+   * XML to bean converter in {@link XMLUserLoginModule}.
+   *
+   * @param _email new email adress to set for this person principal
+   * @see #email
+   * @see #getEmail
+   */
+  public void setEmail(final String _email) {
+    this.email = _email;
   }
 
   /**
@@ -142,9 +246,12 @@ public class XMLPersonPrincipal extends XMLAbstractPrincipal  {
   public String toString()  {
     return new ToStringBuilder(this)
         .appendSuper(super.toString())
-        .append("password", getPassword())
-        .append("roles", getRoles())
-        .append("groups", getGroups())
+        .append("firstName",  getFirstName())
+        .append("lastName",   getLastName())
+        .append("email",      getEmail())
+        .append("password",   getPassword())
+        .append("roles",      getRoles())
+        .append("groups",     getGroups())
         .toString();
   }
 }

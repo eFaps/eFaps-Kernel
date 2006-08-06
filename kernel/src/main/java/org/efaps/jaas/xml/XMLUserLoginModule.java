@@ -87,6 +87,7 @@ public class XMLUserLoginModule implements LoginModule  {
   /////////////////////////////////////////////////////////////////////////////
   // methods
 
+// TODO: description
   /**
    * @param _subject
    * @param _callbackHandler
@@ -105,6 +106,7 @@ public class XMLUserLoginModule implements LoginModule  {
     readPersons((String)_options.get("xmlFileName"));
   }
 
+// TODO: description
   /**
    * @return <i>true</i> if login is allowed and user name with password is
    *         correct
@@ -191,9 +193,11 @@ public class XMLUserLoginModule implements LoginModule  {
     return ret;
   }
 
+// TODO: description
   /**
    * An abort for this login module works like the {@link #logout} method.
    *
+   * @see #logout
    */
   public final boolean abort()  {
     boolean ret = false;
@@ -244,15 +248,13 @@ public class XMLUserLoginModule implements LoginModule  {
     return ret;
   }
 
-
-
   /**
    * The name of the xml is store in this instance variable. The xlm file holds
    * all allowed persons and their related roles and groups.
+   *
+   * @param _fileName name of the XML file with the user data
    */
-//  private String xmlFileName = null;
-
-  public void readPersons(final String _fileName)  {
+  private void readPersons(final String _fileName)  {
     try  {
       File _file = new File(_fileName);
 
@@ -264,6 +266,12 @@ public class XMLUserLoginModule implements LoginModule  {
       digester.addCallMethod("persons/person/name", "setName", 1);
       digester.addCallParam("persons/person/name", 0);
       digester.addCallMethod("persons/person/password", "setPassword", 1);
+      digester.addCallParam("persons/person/firstName", 0);
+      digester.addCallMethod("persons/person/firstName", "setFirstName", 1);
+      digester.addCallParam("persons/person/lastName", 0);
+      digester.addCallMethod("persons/person/lastName", "setLastName", 1);
+      digester.addCallParam("persons/person/email", 0);
+      digester.addCallMethod("persons/person/email", "setEmail", 1);
       digester.addCallParam("persons/person/password", 0);
       digester.addCallMethod("persons/person/role", "addRole", 1);
       digester.addCallParam("persons/person/role", 0);
