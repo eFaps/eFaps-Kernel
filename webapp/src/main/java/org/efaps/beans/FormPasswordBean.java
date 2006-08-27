@@ -73,7 +73,7 @@ System.out.println("FormPasswordBean.processUpdate");
     String newPasswd1 = getRequest().getParameter("NewPassword1");
     String newPasswd2 = getRequest().getParameter("NewPassword2");
 
-    boolean bck = _context.getPerson().checkPassword(_context, oldPasswd);
+    boolean bck = _context.getPerson().checkPassword(oldPasswd);
     if (!bck)  {
       throw new EFapsException(getClass(), "WrongPassword");
     }
