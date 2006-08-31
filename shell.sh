@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 # Author:          tmo
-# Revision:        $Rev: 264 $
-# Last Changed:    $Date: 2006-07-18 12:17:07 +0200 (Di, 18 Jul 2006) $
-# Last Changed By: $Author: tmo $
+# Revision:        $Rev$
+# Last Changed:    $Date$
+# Last Changed By: $Author$
 #
 # --------------------------------------------------------------------------
 
