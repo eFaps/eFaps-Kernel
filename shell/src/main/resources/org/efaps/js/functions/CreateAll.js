@@ -64,11 +64,9 @@ function _eFapsCreateAllUpdatePassword()  {
   try  {
     Shell.transactionManager.begin();
 
-    var p = Person.get("Administrator");
-    var c = new Context(Shell.transactionManager.getTransaction(), p, null);
-    Context.setThreadContext(c);
-
-    p.setPassword(c, "Administrator");
+    var c = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
+    Shell.setContext(context);
+    c.getPerson().setPassword(c, "Administrator");
     print("  - Done");
     Shell.transactionManager.commit();
     c.close();
@@ -141,8 +139,7 @@ function eFapsCreateAll()  {
   reloadCache();
 
   Shell.transactionManager.begin();
-  var context = new Context(Shell.transactionManager.getTransaction(), Packages.org.efaps.admin.user.Person.get("Administrator"), null);
-  Context.setThreadContext(context);
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
   _eFapsCreateAllImportDataModel();
   Shell.transactionManager.commit();
@@ -152,8 +149,7 @@ function eFapsCreateAll()  {
   reloadCache();
 
   Shell.transactionManager.begin();
-  var context = new Context(Shell.transactionManager.getTransaction(), Packages.org.efaps.admin.user.Person.get("Administrator"), null);
-  Context.setThreadContext(context);
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
   _eFapsCreateAllImportUserInterface();
   Shell.transactionManager.commit();
