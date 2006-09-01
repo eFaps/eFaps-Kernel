@@ -20,11 +20,8 @@
  */
 
 with (COMMAND)  {
-  addProperty("Target",                 "content");
-  addProperty("TargetQueryTypes",       "Admin_User_JAASSystem");
-  addProperty("TargetShowCheckBoxes",   "true");
-  addIcon("Admin_User_JAASSystemImage");
-  addTargetMenu("Admin_User_JAASSystemMyDesk_Menu");
-  addTargetTable("Admin_User_JAASSystemTable");
-  addRole("Administration");
+  addProperty("Target",                 "popup");
+  addProperty("TargetCreateType",       "Admin_User_JAASSystem");
+  addProperty("TargetMode",             "create");
+  addTargetForm("Admin_User_JAASSystemForm");
 }

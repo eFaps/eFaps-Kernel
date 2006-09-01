@@ -75,4 +75,81 @@ with (FORM)  {
     addProperty("Expression",             "Modified");
     addProperty("Searchable",             "true");
   }
+  with (addField("ClassNamePerson"))  {
+    addProperty("Columns",                "80");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "ClassNamePerson");
+    addProperty("Required",               "true");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("MethodNamePersonKey"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNamePersonKey");
+    addProperty("Required",               "true");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("MethodNamePersonName"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNamePersonName");
+    addProperty("Required",               "true");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("MethodNamePersonFirstName"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNamePersonFirstName");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("MethodNamePersonLastName"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNamePersonLastName");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("MethodNamePersonEmail"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNamePersonEmail");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("ClassNameRole"))  {
+    addProperty("Columns",                "80");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "ClassNameRole");
+    addProperty("Required",               "false");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("MethodNameRoleKey"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNameRoleKey");
+    addProperty("Required",               "false");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("ClassNameGroup"))  {
+    addProperty("Columns",                "80");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "ClassNameGroup");
+    addProperty("Required",               "false");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("MethodNameGroupKey"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNameGroupKey");
+    addProperty("Required",               "false");
+    addProperty("Searchable",             "true");
+  }
 }

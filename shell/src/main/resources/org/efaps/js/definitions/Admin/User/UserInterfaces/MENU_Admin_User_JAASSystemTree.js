@@ -23,6 +23,6 @@ with (MENU)  {
   addProperty("Target",                 "content");
   addProperty("TargetMode",             "view");
   addTargetForm("Admin_User_JAASSystemForm");
-//  addTargetMenu("Admin_User_GroupTree_Menu");
+  addTargetMenu("Admin_User_JAASSystemTree_Menu");
   addChild(new Command("Admin_User_JAASSystemTree_Keys"));
 }
