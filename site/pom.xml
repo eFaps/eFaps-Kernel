@@ -172,7 +172,7 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>taglist-maven-plugin</artifactId>
         <configuration>
-        <tags>TODO, @todo, @deprecated</tags>
+        <!-- tags>TODO, @todo, @deprecated</tags -->
         </configuration>
       </plugin>
 
