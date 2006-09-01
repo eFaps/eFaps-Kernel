@@ -415,9 +415,7 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
   public static Context newThreadContext(final Transaction _transaction)
       throws EFapsException  {
 
-    Context context = new Context(_transaction, null, null);
-    setThreadContext(context);
-    return context;
+    return newThreadContext(_transaction, null, null);
   }
 
   /**
@@ -430,12 +428,30 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
    * @see #threadContext
    */
   public static Context newThreadContext(final Transaction _transaction, 
-                                      final String _userName)
-                          throws EFapsException  {
+                        final String _userName)
+                throws EFapsException  {
+    return newThreadContext(_transaction, _userName, null);
+  }
+
+  /**
+   * For current thread a new context object must be created
+   *
+   * @param _transaction  transaction of the new thread
+   * @param _userName     name of current user to set
+   * @return new context of thread
+   * @throws EFapsException if current thread context is alread set
+   * @see #threadContext
+   */
+  public static Context newThreadContext(final Transaction _transaction, 
+                        final String _userName, final Locale _locale)
+                throws EFapsException  {
 
     Context context = new Context(_transaction, null, null);
     setThreadContext(context);
-    context.setPerson(Person.get(_userName));
+    if (_userName != null)  {
+      context.setPerson(Person.get(_userName));
+    }
+    context.setLocale(_locale);
     return context;
   }
 

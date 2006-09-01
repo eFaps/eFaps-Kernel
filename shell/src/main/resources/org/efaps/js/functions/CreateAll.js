@@ -65,7 +65,7 @@ function _eFapsCreateAllUpdatePassword()  {
     Shell.transactionManager.begin();
 
     var c = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-    Shell.setContext(context);
+    Shell.setContext(c);
     c.getPerson().setPassword(c, "Administrator");
     print("  - Done");
     Shell.transactionManager.commit();
@@ -312,6 +312,9 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
       ["CLASSNAMEGROUP        "+TYPE_STRING_SHORT+"(128)"],
       ["METHODPERSONKEY       "+TYPE_STRING_SHORT+"(128)         not null"],
       ["METHODPERSONNAME      "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["METHODPERSONFIRSTNAME "+TYPE_STRING_SHORT+"(128)"],
+      ["METHODPERSONLASTNAME  "+TYPE_STRING_SHORT+"(128)"],
+      ["METHODPERSONEMAIL     "+TYPE_STRING_SHORT+"(128)"],
       ["METHODROLEKEY         "+TYPE_STRING_SHORT+"(128)"],
       ["METHODGROUPKEY        "+TYPE_STRING_SHORT+"(128)"],
       ["constraint USERJAASSYS_UK_NAME unique(NAME)"]
@@ -476,6 +479,9 @@ function _eFapsCreateUserTablesStep2(_con, _stmt)  {
         +     "CLASSNAMEGROUP,"
         +     "METHODPERSONKEY,"
         +     "METHODPERSONNAME,"
+        +     "METHODPERSONFIRSTNAME,"
+        +     "METHODPERSONLASTNAME,"
+        +     "METHODPERSONEMAIL,"
         +     "METHODROLEKEY,"
         +     "METHODGROUPKEY "
         +   "from USERJAASSYSTEM"

@@ -45,6 +45,8 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.slide.transaction.SlideTransactionManager;
 
 import org.efaps.db.Context;
@@ -54,6 +56,11 @@ import org.efaps.admin.user.Person;
  *
  */
 public class SecurityFilter implements Filter  {
+
+  /**
+   * Logging instance used in this class.
+   */
+  private final static Log LOG = LogFactory.getLog(SecurityFilter.class);
 
   /**
    * Name of the session variable for the login name.
@@ -161,13 +168,12 @@ String uri = httpRequest.getRequestURI();
 
     if (httpRequest.getAuthType()!=null && httpRequest.getAuthType().equals(HttpServletRequest.BASIC_AUTH))  {
       String userName = httpRequest.getUserPrincipal().getName();
-      test(userName, httpRequest, _response, _chain);
+      doFilter(userName, httpRequest, _response, _chain);
     } else if (isLoggedIn(httpRequest))  {
       String userName = (String)httpRequest.getSession().getAttribute(SESSIONPARAM_LOGIN_NAME);
-      test(userName, httpRequest, _response, _chain);
+      doFilter(userName, httpRequest, _response, _chain);
     } else if (this.exludeUris.contains(uri))  {
-//      _chain.doFilter(_request, _response);
-doFilterWithoutLogin(_request, _response, _chain);
+      doFilter(null, _request, _response, _chain);
     } else  {
       String markUrl = httpRequest.getRequestURI();
       if (httpRequest.getQueryString() != null)  {
@@ -179,121 +185,80 @@ doFilterWithoutLogin(_request, _response, _chain);
   }
 
 
-  private void doFilterWithoutLogin(final ServletRequest _request,
-          final ServletResponse _response,
-          final FilterChain _chain) throws IOException, ServletException  {
-
-  Context context = null;
-  try  {
-    transactionManager.begin();
-    Locale locale = null;
-    if (_request instanceof HttpServletRequest)  {
-      locale = ((HttpServletRequest)_request).getLocale();
-    }
-    context = new Context(transactionManager.getTransaction(), null, locale);
-    Context.setThreadContext(context);
-  } catch (org.efaps.util.EFapsException e)  {
-    throw new ServletException(e);
-  } catch (SystemException e)  {
-    throw new ServletException(e);
-  } catch (NotSupportedException e)  {
-    throw new ServletException(e);
-  }
-
-  // TODO: is a open sql connection in the context returned automatically?
-  try  {
-    boolean ok = false;
-    try {
-      _chain.doFilter(_request, _response);
-      ok = true;
-    } finally  {
-
-      if (ok && context.allConnectionClosed()
-          && (transactionManager.getStatus() == Status.STATUS_ACTIVE))  {
-
-        transactionManager.commit();
-      } else  {
-        transactionManager.rollback();
+  /**
+   * @param _userName   name of the logged in user (or null if current user is 
+   *                                                not logged in
+   * @param _request    servlet request
+   * @param _response   servlet response
+   * @param _chain      filter chain
+   */
+  private void doFilter(
+            final String _userName,
+            final ServletRequest _request,
+            final ServletResponse _response,
+            final FilterChain _chain) throws IOException, ServletException  {
+  
+    Context context = null;
+    try  {
+      transactionManager.begin();
+      Locale locale = null;
+      if (_request instanceof HttpServletRequest)  {
+        locale = ((HttpServletRequest)_request).getLocale();
       }
+      context = Context.newThreadContext(transactionManager.getTransaction(), 
+                                         _userName, locale);
+    } catch (org.efaps.util.EFapsException e)  {
+      throw new ServletException(e);
+    } catch (SystemException e)  {
+      throw new ServletException(e);
+    } catch (NotSupportedException e)  {
+      throw new ServletException(e);
     }
-  } catch (RollbackException e)  {
-    throw new ServletException(e);
-  } catch (HeuristicRollbackException e)  {
-    throw new ServletException(e);
-  } catch (HeuristicMixedException e)  {
-    throw new ServletException(e);
-  } catch (javax.transaction.SystemException e)  {
-    throw new ServletException(e);
-  } finally  {
-    context.close();
-  }
-}
-
-
-  public void test(final String _userName, final HttpServletRequest _httpRequest, ServletResponse _response, FilterChain _chain) throws IOException, ServletException  {
-
-System.out.println("############################################################################### logged in start="+Thread.currentThread().getId());
-Context context = null;
-try  {
-  transactionManager.begin();
-  Person person = (_userName == null ? null : Person.get(_userName));
-  context = new Context(transactionManager.getTransaction(), person, _httpRequest.getLocale());
-  Context.setThreadContext(context);
-} catch (SystemException e)  {
-  throw new ServletException(e);
-} catch (NotSupportedException e)  {
-  throw new ServletException(e);
-} catch (Exception e)  {
-e.printStackTrace();
-}
-// TODO: is a open sql connection in the context returned automatically?
-      try  {
-boolean ok = false;
-try {
-        _chain.doFilter(_httpRequest, _response);
+  
+    // TODO: is a open sql connection in the context returned automatically?
+    try  {
+      boolean ok = false;
+      try {
+        _chain.doFilter(_request, _response);
         ok = true;
-} finally  {
-
-  if (ok && context.allConnectionClosed()
-      && (transactionManager.getStatus() == Status.STATUS_ACTIVE))  {
-
-System.out.println("###############################################################################1 transaction commit");
-    transactionManager.commit();
-  } else  {
-System.out.println("###############################################################################2 transaction rollback");
-    if (transactionManager.getStatus() == Status.STATUS_MARKED_ROLLBACK)  {
-System.out.println("                                                                                 rollback status");
-// TODO: throw of Exception is not a good idea... if an exception is thrown in the try code, this exception is overwritten!
-//          throw new ServletException("transaction in undefined status");
-    } else if (!context.allConnectionClosed())  {
-System.out.println("                                                                                 not all connection closed");
-    } else  {
-System.out.println("                                                                                 undefined");
-    }
-    transactionManager.rollback();
-  }
-}
-
-      } catch (IOException e)  {
-// TODO: log of exception!
-System.out.println("############################################################################### SercurityFilter-Exception:");
-e.printStackTrace();
-        throw e;
-      } catch (ServletException e)  {
-// TODO: log of exception!
-System.out.println("############################################################################### SercurityFilter-Exception:");
-e.printStackTrace();
-        throw e;
-      } catch (Throwable e)  {
-// TODO: log of exception!
-System.out.println("############################################################################### SercurityFilter-Exception:");
-e.printStackTrace();
-        throw new ServletException(e);
       } finally  {
-        context.close();
+  
+        if (ok && context.allConnectionClosed()
+            && (transactionManager.getStatus() == Status.STATUS_ACTIVE))  {
+  
+          transactionManager.commit();
+        } else  {
+          if (transactionManager.getStatus() == Status.STATUS_MARKED_ROLLBACK)  {
+            LOG.error("transaction is marked to roll back");
+  // TODO: throw of Exception is not a good idea... if an exception is thrown in the try code, this exception is overwritten!
+  //          throw new ServletException("transaction in undefined status");
+          } else if (!context.allConnectionClosed())  {
+            LOG.error("not all connection to database are closed");
+          } else  {
+            LOG.error("transaction manager in undefined status");
+          }
+          transactionManager.rollback();
+        }
       }
-
-System.out.println("############################################################################### logged in end="+Thread.currentThread().getId());
+    } catch (RollbackException e)  {
+e.printStackTrace();
+      LOG.error(e);
+      throw new ServletException(e);
+    } catch (HeuristicRollbackException e)  {
+e.printStackTrace();
+      LOG.error(e);
+      throw new ServletException(e);
+    } catch (HeuristicMixedException e)  {
+e.printStackTrace();
+      LOG.error(e);
+      throw new ServletException(e);
+    } catch (javax.transaction.SystemException e)  {
+e.printStackTrace();
+      LOG.error(e);
+      throw new ServletException(e);
+    } finally  {
+      context.close();
+    }
   }
 
   /**

@@ -23,6 +23,7 @@ package org.efaps.admin.user;
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -57,6 +58,9 @@ public class JAASSystem extends AdminObject implements CacheInterface  {
                                                 + "CLASSNAMEPERSON,"
                                                 + "METHODPERSONKEY,"
                                                 + "METHODPERSONNAME,"
+                                                + "METHODPERSONFIRSTNAME,"
+                                                + "METHODPERSONLASTNAME,"
+                                                + "METHODPERSONEMAIL,"
                                                 + "CLASSNAMEROLE,"
                                                 + "METHODROLEKEY,"
                                                 + "CLASSNAMEGROUP,"
@@ -71,8 +75,22 @@ public class JAASSystem extends AdminObject implements CacheInterface  {
    */
   private Class personJAASPrincipleClass = null;
 
-private Method personMethodKey = null;
-private Method personMethodName = null;
+  /**
+   * @see #getPersonMethodKey
+   */
+  private Method personMethodKey = null;
+
+  /**
+   * @see #getPersonMethodName
+   */
+  private Method personMethodName = null;
+
+  /**
+   *
+   */
+  private final Map < Person.AttrName, Method > personMethodAttributes
+                              = new HashMap < Person.AttrName, Method > ();
+
 
   /**
    * The class used as princple for roles for this JAAS system is stored
@@ -82,7 +100,10 @@ private Method personMethodName = null;
    */
   private Class roleJAASPrincipleClass = null;
 
-private Method roleMethodKey = null;
+  /**
+   * @see #getRoleMethodKey
+   */
+  private Method roleMethodKey = null;
 
   /**
    * The class used as princple for groups for this JAAS system is stored
@@ -92,7 +113,10 @@ private Method roleMethodKey = null;
    */
   private Class groupJAASPrincipleClass = null;
 
-private Method groupMethodKey = null;
+  /**
+   * @see #getGroupMethodKey
+   */
+  private Method groupMethodKey = null;
 
   /**
    * Stores all instances of class {@link JAASSystem}.
@@ -153,6 +177,18 @@ return getName();
    */
   public Method getPersonMethodName()  {
     return this.personMethodName;
+  }
+
+  /**
+   * This is the getter method for instance variable
+   * {@link #personMethodAttributes}.
+   *
+   * @return the value of the instance variable
+   *         {@link #personMethodAttributes}.
+   * @see #personMethodAttributes
+   */
+  public Map < Person.AttrName, Method > getPersonMethodAttributes()  {
+    return this.personMethodAttributes;
   }
 
   /**
@@ -224,29 +260,45 @@ return getName();
 
         ResultSet rs = stmt.executeQuery(SQL_SELECT);
         while (rs.next())  {
-          long id =                 rs.getLong(1);
-          String name =             rs.getString(2).trim();
-          String personClassName =  rs.getString(3);
-          String personMethodKey =  rs.getString(4);
-          String personMethodName = rs.getString(5);
-          String roleClassName =    rs.getString(6);
-          String roleMethodKey =    rs.getString(7);
-          String groupClassName =   rs.getString(8);
-          String groupMethodKey =   rs.getString(9);
+          long id                       = rs.getLong(1);
+          String name                   = rs.getString(2).trim();
+          String personClassName        = rs.getString(3);
+          String personMethodKey        = rs.getString(4);
+          String personMethodName       = rs.getString(5);
+          String personMethodFirstName  = rs.getString(6);
+          String personMethodLastName   = rs.getString(7);
+          String personMethodEmail      = rs.getString(8);
+          String roleClassName          = rs.getString(9);
+          String roleMethodKey          = rs.getString(10);
+          String groupClassName         = rs.getString(11);
+          String groupMethodKey         = rs.getString(12);
 
           LOG.debug("read JAAS System '" + name + "' (id = " + id + ")");
 
           try  {
             JAASSystem system = new JAASSystem(id, name);
             system.personJAASPrincipleClass = Class.forName(personClassName.trim());
-            system.personMethodKey = getMethod(system.personJAASPrincipleClass, personMethodKey, "person key", name, id);
-            system.personMethodName = getMethod(system.personJAASPrincipleClass, personMethodName, "person name", name, id);
+            system.personMethodKey        = getMethod(system.personJAASPrincipleClass, personMethodKey,       "person key",         name, id);
+            system.personMethodName       = getMethod(system.personJAASPrincipleClass, personMethodName,      "person name",        name, id);
 
-            if (roleClassName != null)  {
+            Method method = getMethod(system.personJAASPrincipleClass, personMethodFirstName, "person first name",  name, id);
+            if (method != null)  {
+              system.personMethodAttributes.put(Person.AttrName.FirstName, method);
+            }
+            method = getMethod(system.personJAASPrincipleClass, personMethodLastName, "person last name",  name, id);
+            if (method != null)  {
+              system.personMethodAttributes.put(Person.AttrName.LastName, method);
+            }
+            method = getMethod(system.personJAASPrincipleClass, personMethodEmail, "person email",  name, id);
+            if (method != null)  {
+              system.personMethodAttributes.put(Person.AttrName.Email, method);
+            }
+
+            if ((roleClassName != null) && (roleClassName.trim().length() > 0))  {
               system.roleJAASPrincipleClass   = Class.forName(roleClassName.trim());
               system.roleMethodKey = getMethod(system.roleJAASPrincipleClass, roleMethodKey, "role key", name, id);
             }
-            if (groupClassName != null)  {
+            if ((groupClassName != null) && (groupClassName.trim().length() > 0))  {
               system.groupJAASPrincipleClass  = Class.forName(groupClassName.trim());
               system.groupMethodKey = getMethod(system.groupJAASPrincipleClass, groupMethodKey, "group key", name, id);
             }
@@ -306,7 +358,7 @@ return getName();
                                   final long _jaasId)  {
     Method ret = null;
 
-    if (_method != null)  {
+    if ((_method != null) && (_method.trim().length() > 0))  {
       try  {
         ret = _class.getMethod(_method.trim(), null);
       } catch (NoSuchMethodException e)  {

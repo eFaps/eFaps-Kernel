@@ -23,7 +23,9 @@ package org.efaps.servlet;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.security.auth.callback.Callback;
@@ -223,7 +225,8 @@ System.out.println("---------------------->users="+users);
 
             Person foundPerson = Person.getWithJAASKey(system, persKey);
             if (foundPerson == null)  {
-// TODO: JAASKey for person must be added!!!
+// TODO: muss noch gemacht werden!!! da funkt halt was nicht...
+//                person.assignToJAASSystem(system, persKey);
             } else if (person == null)  {
               person = foundPerson;
             } else if (person.getId() != foundPerson.getId()) {
@@ -258,29 +261,65 @@ if (person == null)  {
       try  {
         String persKey = (String) system.getPersonMethodKey().invoke(
                                                           persObj, null);
+        String persName = (String) system.getPersonMethodName().invoke(
+                                                          persObj, null);
 
         if (person == null)  {
-          person = Person.createPerson(system, persKey, persKey);
+          person = Person.createPerson(system, persKey, persName);
         } else  {
           person.assignToJAASSystem(system, persKey);
         }
 
       } catch (IllegalAccessException e)  {
-        LOG.error("could not execute person key method for system "
+        LOG.error("could not execute a person method for system "
                                               + system.getName(), e);
 // TODO: throw exception!!
       } catch (IllegalArgumentException e)  {
-        LOG.error("could not execute person key method for system "
+        LOG.error("could not execute a person method for system "
                                               + system.getName(), e);
 // TODO: throw exception!!
       } catch (InvocationTargetException e)  {
-        LOG.error("could not execute person key method for system "
+        LOG.error("could not execute a person method for system "
                                               + system.getName(), e);
 // TODO: throw exception!!
       }
     }
   }
 }
+
+if (person != null)  {
+
+
+  // update person
+  for (JAASSystem system : JAASSystem.getAllJAASSystems())  {
+    Set users = login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
+    for (Object persObj : users)  {
+      try  {
+        for (Map.Entry < Person.AttrName, Method > entry: system.getPersonMethodAttributes().entrySet())  {
+          person.updateAttrValue(
+              entry.getKey(),
+              (String) entry.getValue().invoke(persObj, null)
+          );
+        }
+
+      } catch (IllegalAccessException e)  {
+        LOG.error("could not execute a person method for system "
+                                              + system.getName(), e);
+// TODO: throw exception!!
+      } catch (IllegalArgumentException e)  {
+        LOG.error("could not execute a person method for system "
+                                              + system.getName(), e);
+// TODO: throw exception!!
+      } catch (InvocationTargetException e)  {
+        LOG.error("could not execute a person method for system "
+                                              + system.getName(), e);
+// TODO: throw exception!!
+      }
+    }
+  }
+  person.commitAttrValuesInDB();
+
+
 
       person.cleanUp();
 
@@ -313,6 +352,7 @@ if (person == null)  {
       }
 
       ret = true;
+}
     } catch (EFapsException e)  {
 e.printStackTrace();
       LOG.error("login failed for '" + _name + "'", e);

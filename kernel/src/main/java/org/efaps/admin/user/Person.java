@@ -24,7 +24,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -46,6 +48,38 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class Person extends UserObject implements CacheInterface  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // enum definitions
+
+  /**
+   * Enum for all known and updated attributes from a person. Only this cuold
+   * be defined which are in the SQL table USERPERSON.
+   */
+  public enum AttrName  {
+    /** Attribute Name for the  First Name of the person. */
+    FirstName("FIRSTNAME"),
+    /** Attribute Name for the  Last Name of the person. */
+    LastName("LASTNAME"),
+    /** Attribute Name for the  Email Adresse of the person. */
+    Email("EMAIL"),
+    /** Attribute Name for the  Organisation of the person. */
+    Organisation("ORG"),
+    /** Attribute Name for the  URL of the person. */
+    URL("URL"),
+    /** Attribute Name for the  Phone Number of the person. */
+    Phone("PHONE"),
+    /** Attribute Name for the  Fax Number of the person. */
+    Fax("FAX");
+
+    /** The name of the depending SQL column for an attribute name */
+    public final String sqlColumn;
+
+    private AttrName(final String _sqlColumn)  {
+      this.sqlColumn = _sqlColumn;
+    }
+
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
@@ -81,61 +115,25 @@ public class Person extends UserObject implements CacheInterface  {
   private final Set < Group > groups = new HashSet < Group > ();
 
   /**
-   * The email adresse of this person is stored in this instance variable.
+   * The map is used to store all attribute values depending on attribute
+   * names defined in {@link #AttrName}.
    *
-   * @see #getEmail
-   * @see #setEmail
+   * @see #setAttrValue
+   * @see #updateAttrValue
+   * @see #AttrName
    */
-  private String  email = null;
+  private final Map < AttrName, String > attrValues
+                                          = new HashMap < AttrName, String > ();
 
   /**
-   * The instance variable stores the first name of the person.
+   * The map is used to store information about updates on attribute values.
+   * This information is needed if the database must be updated.
    *
-   * @see #getFirstName
-   * @see #setFirstName
+   * @see #updateAttrValue
+   * @see #commitAttrValuesInDB
+   * @see #AttrName
    */
-  private String firstName = null;
-
-  /**
-   * The instance variable stores the last name of the person.
-   *
-   * @see #getLastName
-   * @see #setLastName
-   */
-  private String lastName = null;
-
-  /**
-   * The organisation of this person is store in this instance variable.
-   *
-   * @see #getOrganisation
-   * @see #setOrganisation
-   */
-  private String organisation = null;
-
-  /**
-   * The office phone number of this person is stored in this instance
-   * variable.
-   *
-   * @see #getPhone
-   * @see #setPhone
-   */
-  private String phone = null;
-
-  /**
-   * The office fax number of this person is stored in this instance variable.
-   *
-   * @see #getFAX
-   * @see #setFAX
-   */
-  private String fax = null;
-
-  /**
-   * The url of this person is stored in this instance variable.
-   *
-   * @see #getURL
-   * @see #setURL
-   */
-  private String url = null;
+  private final Set < AttrName > attrUpdated = new HashSet < AttrName > ();
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
@@ -220,6 +218,148 @@ public class Person extends UserObject implements CacheInterface  {
   public void cleanUp()  {
     this.roles.clear();
     this.groups.clear();
+  }
+
+  /**
+   * The method sets the attribute values in the cache for given attribute name
+   * to given new attribute value.
+   *
+   * @param _attrName name of attribute to set
+   * @param _value    new value to set
+   * @see #attrValues
+   */
+  private void setAttrValue(final AttrName _attrName, final String _value)  {
+    synchronized (attrValues)  {
+      this.attrValues.put(_attrName, _value);
+    }
+  }
+
+  /**
+   * Returns for given attribute name the value in the cache.
+   *
+   * @param _attrName name of attribute for which the value must returned
+   * @return attribute value of given attribute name
+   */
+  public String getAttrValue(final AttrName _attrName)  {
+    return this.attrValues.get(_attrName);
+  }
+
+  /**
+   * @return attribute value of first name
+   */
+  public String getFirstName()  {
+    return this.attrValues.get(AttrName.FirstName);
+  }
+
+  /**
+   * @return attribute value of last name
+   */
+  public String getLastName()  {
+    return this.attrValues.get(AttrName.LastName);
+  }
+
+  /**
+   * @return attribute value of email
+   */
+  public String getEmail()  {
+    return this.attrValues.get(AttrName.Email);
+  }
+
+  /**
+   * Updates a value for an attribute in the cache and marks then as modified.
+   * Only after calling method {@link #commitAttrValuesInDB} the updated attribute
+   * value is stored in the database!
+   *
+   * @param _attrName name of attribute to update
+   * @param _value    new value to set
+   * @see #attrUpdated
+   * @see #attrValues
+   */
+  public void updateAttrValue(final AttrName _attrName, final String _value)  {
+    synchronized (attrUpdated)  {
+      synchronized (attrValues)  {
+        this.attrValues.put(_attrName, _value);
+      }
+      this.attrUpdated.add(_attrName);
+    }
+  }
+
+  /**
+   * Commits update attribute defined in {@link #attrUpdated} with method
+   * {@link #updateAttrValue} to the database. After database update,
+   * {@link #attrUpdated} is cleared.
+   *
+   * @see #attrUpdated
+   * @see #attrValues
+   * @see #updateAttrValue
+   */
+  public void commitAttrValuesInDB() throws EFapsException {
+    synchronized (this.attrUpdated)  {
+      if (this.attrUpdated.size() > 0)  {
+
+        ConnectionResource rsrc = null;
+        try  {
+          Context context = Context.getThreadContext();
+          rsrc = context.getConnectionResource();
+
+          StringBuilder cmd = new StringBuilder();
+          PreparedStatement stmt = null;
+          try  {
+            cmd.append("update USERPERSON set ");
+            boolean first = true;
+            for (AttrName attrName : this.attrUpdated)  {
+              if (first)  {
+                first = false;
+              } else  {
+                cmd.append(",");
+              }
+              cmd.append(attrName.sqlColumn).append("=?");
+            }
+            cmd.append(" where ID=").append(getId());
+            stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+
+            int col = 1;
+            for (AttrName attrName : this.attrUpdated)  {
+              stmt.setString(col, this.attrValues.get(attrName));
+              col++;
+            }
+
+            int rows = stmt.executeUpdate();
+            if (rows == 0)  {
+// TODO: exception in properties
+              LOG.error("could not update '" + cmd.toString() + "' "
+                      + "person with user name '" + getName() + "' "
+                      + "(id = " + getId() + ")");
+              throw new EFapsException(Person.class,
+                      "commitAttrValuesInDB.NotUpdated",
+                      cmd.toString(), getName(), getId());
+            }
+// TODO: update modified date
+
+          } catch (SQLException e)  {
+// TODO: exception in properties
+            LOG.error("could not update '" + cmd.toString() + "' "
+                      + "person with user name '" + getName() + "' "
+                      + "(id = " + getId() + ")", e);
+            throw new EFapsException(Person.class,
+                    "commitAttrValuesInDB.SQLException",
+                    e, cmd.toString(), getName(), getId());
+          } finally  {
+            try  {
+              stmt.close();
+            } catch (SQLException e)  {
+            }
+          }
+
+          rsrc.commit();
+        } finally  {
+          if ((rsrc != null) && rsrc.isOpened())  {
+            rsrc.abort();
+          }
+        }
+        this.attrUpdated.clear();
+      }
+    }
   }
 
   /**
@@ -398,26 +538,20 @@ public class Person extends UserObject implements CacheInterface  {
       Statement stmt = null;
       try  {
         stmt = rsrc.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(
-            "select " +
-                "V_USERPERSON.EMAIL," +
-                "V_USERPERSON.FIRSTNAME," +
-                "V_USERPERSON.LASTNAME," +
-                "V_USERPERSON.ORG," +
-                "V_USERPERSON.URL," +
-                "V_USERPERSON.PHONE," +
-                "V_USERPERSON.FAX " +
-            "from V_USERPERSON " +
-            "where V_USERPERSON.ID=" + getId()
-        );
+
+        StringBuilder cmd = new StringBuilder("select ");
+        for (AttrName attrName : AttrName.values())  {
+          cmd.append(attrName.sqlColumn).append(",");
+        }
+        cmd.append("0 as DUMMY ")
+           .append("from V_USERPERSON ")
+           .append("where V_USERPERSON.ID=").append(getId());
+
+        ResultSet rs = stmt.executeQuery(cmd.toString());
         if (rs.next())  {
-          setEmail(rs.getString(1));
-          setFirstName(rs.getString(2));
-          setLastName(rs.getString(3));
-          setOrganisation(rs.getString(4));
-          setURL(rs.getString(5));
-          setPhone(rs.getString(6));
-          setFAX(rs.getString(7));
+          for (AttrName attrName : AttrName.values())  {
+            setAttrValue(attrName, rs.getString(attrName.sqlColumn));
+          }
         }
         rs.close();
       } catch (SQLException e)  {
@@ -672,162 +806,11 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
     return ret;
   }
 
+
+
+
   /////////////////////////////////////////////////////////////////////////////
   // getter and setter methods
-
-  /**
-   * This is the getter method for instance variable {@link #email}.
-   *
-   * @return the value of the instance variable {@link #email}.
-   * @see #email
-   * @see #setEmail
-   */
-  public String getEmail()  {
-    return this.email;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #email}.
-   *
-   * @param _lastName new value for instance variable {@link #email}.
-   * @see #email
-   * @see #getEmail
-   */
-  private void setEmail(final String _email)  {
-    this.email = _email;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #firstName}.
-   *
-   * @return the value of the instance variable {@link #firstName}.
-   * @see #firstName
-   * @see #setFirstName
-   */
-  public String getFirstName()  {
-    return this.firstName;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #firstName}.
-   *
-   * @param _firstName new value for instance variable {@link #firstName}.
-   * @see #firstName
-   * @see #getFirstName
-   */
-  private void setFirstName(final String _firstName)  {
-    this.firstName = _firstName;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #lastName}.
-   *
-   * @return the value of the instance variable {@link #lastName}.
-   * @see #lastName
-   * @see #setLastName
-   */
-  public String getLastName()  {
-    return this.lastName;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #lastName}.
-   *
-   * @param _lastName new value for instance variable {@link #lastName}.
-   * @see #lastName
-   * @see #getLastName
-   */
-  private void setLastName(final String _lastName)  {
-    this.lastName = _lastName;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #organisation}.
-   *
-   * @return the value of the instance variable {@link #organisation}.
-   * @see #organisation
-   * @see #setOrganisation
-   */
-  public String getOrganisation()  {
-    return this.organisation;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #organisation}.
-   *
-   * @param _lastName new value for instance variable {@link #organisation}.
-   * @see #organisation
-   * @see #getOrganisation
-   */
-  private void setOrganisation(final String _organisation)  {
-    this.organisation = _organisation;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #phone}.
-   *
-   * @return the value of the instance variable {@link #phone}.
-   * @see #phone
-   * @see #setPhone
-   */
-  public String getPhone()  {
-    return this.phone;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #phone}.
-   *
-   * @param _lastName new value for instance variable {@link #phone}.
-   * @see #phone
-   * @see #getPhone
-   */
-  private void setPhone(final String _phone)  {
-    this.phone = _phone;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #fax}.
-   *
-   * @return the value of the instance variable {@link #fax}.
-   * @see #fax
-   * @see #setFax
-   */
-  public String getFAX()  {
-    return this.fax;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #fax}.
-   *
-   * @param _lastName new value for instance variable {@link #fax}.
-   * @see #fax
-   * @see #getFAX
-   */
-  private void setFAX(final String _fax)  {
-    this.fax = _fax;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #url}.
-   *
-   * @return the value of the instance variable {@link #url}.
-   * @see #url
-   * @see #setUrl
-   */
-  public String getURL()  {
-    return this.url;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #url}.
-   *
-   * @param _lastName new value for instance variable {@link #url}.
-   * @see #url
-   * @see #getURL
-   */
-  private void setURL(final String _url)  {
-    this.url = _url;
-  }
 
   /**
    * Returns a string representation of this person.
@@ -837,13 +820,7 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
   public String toString()  {
     return new ToStringBuilder(this)
         .appendSuper(super.toString())
-        .append("email",        this.email)
-        .append("first name",   this.firstName)
-        .append("last name",    this.lastName)
-        .append("organisation", this.organisation)
-        .append("phone",        this.phone)
-        .append("fax",          this.fax)
-        .append("url",          this.url)
+        .append("attrValues",   this.attrValues)
         .append("roles",        this.roles)
         .append("groups",       this.groups)
         .toString();
