@@ -55,6 +55,56 @@ with (TYPE)  {
     setSQLTable("Admin_User_JAASSystemSQLTable");
     setSQLColumn("MODIFIED");
   }
+  with (addAttribute("ClassNamePerson"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("CLASSNAMEPERSON");
+  }
+  with (addAttribute("MethodNamePersonKey"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODPERSONKEY");
+  }
+  with (addAttribute("MethodNamePersonName"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODPERSONNAME");
+  }
+  with (addAttribute("MethodNamePersonFirstName"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODPERSONFIRSTNAME");
+  }
+  with (addAttribute("MethodNamePersonLastName"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODPERSONLASTNAME");
+  }
+  with (addAttribute("MethodNamePersonEmail"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODPERSONEMAIL");
+  }
+  with (addAttribute("ClassNameRole"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("CLASSNAMEROLE");
+  }
+  with (addAttribute("MethodNameRoleKey"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODROLEKEY");
+  }
+  with (addAttribute("ClassNameGroup"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("CLASSNAMEGROUP");
+  }
+  with (addAttribute("MethodNameGroupKey"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODGROUPKEY");
+  }
   addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_User_JAASSystemImage");
   addProperty("Tree",                   "Admin_User_JAASSystemTree");
 }
