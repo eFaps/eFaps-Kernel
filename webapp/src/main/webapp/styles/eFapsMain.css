@@ -78,16 +78,16 @@ td.eFapsMainTableRowMenu {
 	border-width: 1px; 
 	border-style: solid; 
 	background-color: #dadada;
-	height:20px;
+	height: 25px;
 }
 
 /**
  * Content Row in the Main JSP page
  */
 td.eFapsMainTableRowContent {
-	padding:0px; 
-	margin:0px; 
-	text-align:left; 
+	padding: 0px; 
+	margin: 0px; 
+	text-align: left; 
 	border:0px none transparent ;
 }
 
