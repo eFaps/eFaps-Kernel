@@ -22,20 +22,7 @@ package org.efaps.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.callback.TextOutputCallback;
-import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -46,10 +33,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Person;
-import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
+import org.efaps.jaas.LoginHandler;
 import org.efaps.util.EFapsException;
 
 /**
@@ -88,14 +74,6 @@ public class LoginServlet extends HttpServlet  {
   final private static String PARAM_PASSWORD =        "password";
 
   /**
-   * The name of the application used to create a new login context.
-   *
-   * @see #checkLogin
-   * @see #init
-   */
-  private String application = "eFaps";
-
-  /**
    * The forward URL used if the login is correct and the next page must be
    * shown.
    *
@@ -103,6 +81,12 @@ public class LoginServlet extends HttpServlet  {
    * @see #doGet
    */
   private String forwardURL = "${COMMONURL}/Main.jsf";
+
+  /**
+   * @see #init
+   * @see #doGet
+   */
+  private LoginHandler loginHandler = null;
 
   /**
    * The login servlet is initialised. The application name in
@@ -119,9 +103,7 @@ public class LoginServlet extends HttpServlet  {
     super.init(_config);
 
     String applInit = _config.getInitParameter(INIT_PARAM_APPLICATION);
-    if (applInit != null)  {
-      this.application = applInit;
-    }
+    this.loginHandler = new LoginHandler(applInit);
 
     String forwInit = _config.getInitParameter(INIT_PARAM_FORWARD_URL);
     if (forwInit != null)  {
@@ -138,7 +120,6 @@ public class LoginServlet extends HttpServlet  {
    *
    * @param _req request variable
    * @param _res response variable
-   * @see #checkLogin
    */
   protected void doGet(final HttpServletRequest _req, final HttpServletResponse _res) throws ServletException, IOException  {
     PrintWriter out = _res.getWriter();
@@ -146,7 +127,7 @@ public class LoginServlet extends HttpServlet  {
     String name = _req.getParameter(PARAM_USERNAME);
     String passwd = _req.getParameter(PARAM_PASSWORD);
 
-    if (checkLogin(name, passwd))  {
+    if (loginHandler.checkLogin(name, passwd) != null)  {
       HttpSession session = _req.getSession(true);
       session.setAttribute(SecurityFilter.SESSIONPARAM_LOGIN_NAME, name);
 
@@ -196,264 +177,6 @@ public class LoginServlet extends HttpServlet  {
       throw new ServletException(e);
     } finally  {
       pW.close();
-    }
-  }
-
-  /**
-   * The instance method checks if for the given user the password is correct.
-   * The test itself is done with
-   *
-   * @param _name   name of the person name to check
-   * @param _passwd password of the person to check
-   * @see #checkLogin
-   */
-  protected boolean checkLogin(final String _name, final String _passwd)  {
-    boolean ret = false;
-    try  {
-      LoginContext login = new LoginContext(this.application,
-              new LoginCallBackHandler(_name, _passwd));
-      login.login();
-
-      Person person = null;
-      for (JAASSystem system : JAASSystem.getAllJAASSystems())  {
-        Set users = login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
-System.out.println("---------------------->users="+users);
-        for (Object persObj : users)  {
-          try  {
-            String persKey = (String) system.getPersonMethodKey().invoke(
-                                                              persObj, null);
-
-            Person foundPerson = Person.getWithJAASKey(system, persKey);
-            if (foundPerson == null)  {
-// TODO: muss noch gemacht werden!!! da funkt halt was nicht...
-//                person.assignToJAASSystem(system, persKey);
-            } else if (person == null)  {
-              person = foundPerson;
-            } else if (person.getId() != foundPerson.getId()) {
-              LOG.error("For JAAS system " + system.getName() + " "
-                          + "person with key '" + persKey + "' is not unique!"
-                          + "Have found person '" + person.getName() + "' "
-                          + "(id = " + person.getId() + ") and person "
-                          + "'" + foundPerson.getName() + "' "
-                          + "(id = " + foundPerson.getId() + ").");
-// TODO: throw exception!!
-            }
-          } catch (IllegalAccessException e)  {
-            LOG.error("could not execute person key method for system "
-                                                  + system.getName(), e);
-// TODO: throw exception!!
-          } catch (IllegalArgumentException e)  {
-            LOG.error("could not execute person key method for system "
-                                                  + system.getName(), e);
-// TODO: throw exception!!
-          } catch (InvocationTargetException e)  {
-            LOG.error("could not execute person key method for system "
-                                                  + system.getName(), e);
-// TODO: throw exception!!
-          }
-        }
-      }
-
-if (person == null)  {
-  for (JAASSystem system : JAASSystem.getAllJAASSystems())  {
-    Set users = login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
-    for (Object persObj : users)  {
-      try  {
-        String persKey = (String) system.getPersonMethodKey().invoke(
-                                                          persObj, null);
-        String persName = (String) system.getPersonMethodName().invoke(
-                                                          persObj, null);
-
-        if (person == null)  {
-          person = Person.createPerson(system, persKey, persName);
-        } else  {
-          person.assignToJAASSystem(system, persKey);
-        }
-
-      } catch (IllegalAccessException e)  {
-        LOG.error("could not execute a person method for system "
-                                              + system.getName(), e);
-// TODO: throw exception!!
-      } catch (IllegalArgumentException e)  {
-        LOG.error("could not execute a person method for system "
-                                              + system.getName(), e);
-// TODO: throw exception!!
-      } catch (InvocationTargetException e)  {
-        LOG.error("could not execute a person method for system "
-                                              + system.getName(), e);
-// TODO: throw exception!!
-      }
-    }
-  }
-}
-
-if (person != null)  {
-
-
-  // update person
-  for (JAASSystem system : JAASSystem.getAllJAASSystems())  {
-    Set users = login.getSubject().getPrincipals(system.getPersonJAASPrincipleClass());
-    for (Object persObj : users)  {
-      try  {
-        for (Map.Entry < Person.AttrName, Method > entry: system.getPersonMethodAttributes().entrySet())  {
-          person.updateAttrValue(
-              entry.getKey(),
-              (String) entry.getValue().invoke(persObj, null)
-          );
-        }
-
-      } catch (IllegalAccessException e)  {
-        LOG.error("could not execute a person method for system "
-                                              + system.getName(), e);
-// TODO: throw exception!!
-      } catch (IllegalArgumentException e)  {
-        LOG.error("could not execute a person method for system "
-                                              + system.getName(), e);
-// TODO: throw exception!!
-      } catch (InvocationTargetException e)  {
-        LOG.error("could not execute a person method for system "
-                                              + system.getName(), e);
-// TODO: throw exception!!
-      }
-    }
-  }
-  person.commitAttrValuesInDB();
-
-
-
-      person.cleanUp();
-
-      for (JAASSystem system : JAASSystem.getAllJAASSystems())  {
-        if (system.getRoleJAASPrincipleClass() != null)  {
-          Set rolesJaas = login.getSubject().getPrincipals(
-                                        system.getRoleJAASPrincipleClass());
-          Set < Role > rolesEfaps = new HashSet < Role > ();
-          for (Object roleObj : rolesJaas)  {
-            try  {
-              String roleKey = (String) system.getRoleMethodKey().invoke(
-                                                                roleObj, null);
-              Role roleEfaps = Role.getWithJAASKey(system, roleKey);
-              if (roleEfaps != null)  {
-                rolesEfaps.add(roleEfaps);
-              }
-            } catch (IllegalAccessException e)  {
-              LOG.error("could not execute role key method for system "
-                                                    + system.getName(), e);
-            } catch (IllegalArgumentException e)  {
-              LOG.error("could not execute role key method for system "
-                                                    + system.getName(), e);
-            } catch (InvocationTargetException e)  {
-              LOG.error("could not execute role key method for system "
-                                                    + system.getName(), e);
-            }
-          }
-          person.setRoles(system, rolesEfaps);
-        }
-      }
-
-      ret = true;
-}
-    } catch (EFapsException e)  {
-e.printStackTrace();
-      LOG.error("login failed for '" + _name + "'", e);
-    } catch (LoginException e)  {
-e.printStackTrace();
-      LOG.error("login failed for '" + _name + "'", e);
-    }
-    return ret;
-  }
-
-
-  private class LoginCallBackHandler implements CallbackHandler  {
-
-    /**
-     * The user name to test is stored in this instance variable.
-     */
-    private final String name;
-
-    /**
-     * The password used from the user is stored in this instance variable.
-     */
-    private final String password;
-
-    /**
-     * Constructor initialising the name and password in this callback
-     * handler.
-     *
-     * @see #name
-     * @see #password
-     */
-    private LoginCallBackHandler(final String _name, final String _passwd)  {
-      this.name = _name;
-      this.password = _passwd;
-    }
-
-    /**
-     * The handler sets for instances of {@link NameCallBack} the given
-     * {@link #name} and for instances of {@link PasswordCallBack} the given
-     * {@link #password}. {@link TextOutputCallBack} instances are ignored.
-     *
-     * @param _callbacks callback instances to handle
-     * @throws UnsupportedCallbackException for all {@link Callback}
-     *         instances which are not {@link NameCallBack},
-     *         {@link PasswordCallBack} or {@link TextOutputCallBack}.
-     */
-    public void handle(final Callback[] _callbacks)
-      throws IOException, UnsupportedCallbackException {
-
-      for (int i = 0; i < _callbacks.length; i++) {
-        if (_callbacks[i] instanceof TextOutputCallback) {
-          // do nothing, TextOutputCallBack's are ignored!
-        } else if (_callbacks[i] instanceof NameCallback) {
-          NameCallback nc = (NameCallback) _callbacks[i];
-          nc.setName(this.name);
-        } else if (_callbacks[i] instanceof PasswordCallback) {
-          PasswordCallback pc = (PasswordCallback)_callbacks[i];
-          pc.setPassword(this.password.toCharArray());
-        } else {
-          throw new UnsupportedCallbackException
-              (_callbacks[i], "Unrecognized Callback");
-        }
-      }
-    }
-  }
-
-  private class JAASConfiguration  {
-
-    /**
-     *
-     */
-    private String name = null;
-
-    /**
-     *
-     */
-    private String userClass = null;
-
-    /**
-     *
-     */
-    private String roleClass = null;
-
-    /**
-     *
-     */
-    private String nameMethod = null;
-
-    public void setName(final String _name)  {
-      this.name = _name;
-    }
-
-    public void setUserClass(final String _userClass)  {
-      this.userClass = _userClass;
-    }
-
-    public void setRoleClass(final String _roleClass)  {
-      this.roleClass = _roleClass;
-    }
-
-    public void setNameMethod(final String _nameMethod)  {
-      this.nameMethod = _nameMethod;
     }
   }
 }
