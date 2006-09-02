@@ -23,9 +23,39 @@
 #
 # --------------------------------------------------------------------------
 
-BOOTSTRAP=$PWD/bootstrap.xml
+# OS specific support
+cygwin=false
+os400=false
+darwin=false
+case "`uname`" in
+CYGWIN*) cygwin=true;;
+OS400*) os400=true;;
+Darwin*) darwin=true;;
+esac
 
-shellPath=$PWD/shell/target
+# resolve links - $0 may be a softlink
+PRG="$0"
+
+while [ -h "$PRG" ]; do
+  ls=`ls -ld "$PRG"`
+  link=`expr "$ls" : '.*-> \(.*\)$'`
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=`dirname "$PRG"`/"$link"
+  fi
+done
+
+# Get standard environment variables
+PRGDIR=`dirname "$PRG"`
+
+# Only set EFAPS_HOME if not already set
+[ -z "$EFAPS_HOME" ] && EFAPS_HOME=`cd "$PRGDIR" ; pwd`
+
+# bootstrap file
+BOOTSTRAP=$EFAPS_HOME/bootstrap.xml
+
+shellPath=$EFAPS_HOME/shell/target
 shellPathLib=$shellPath/eFaps-Shell-1.0-SNAPSHOT/WEB-INF/lib
 
 CP=.
@@ -63,6 +93,13 @@ CP=$CP:$shellPathLib/postgresql-8.1-407.jdbc3.jar
 # set CP=%CP%;%derbyLibPath%/commons-vfs-20050307052300.jar
 # database driver
 # set CP=%CP%;%JH%/oracle-drivers/ojdbc14_g.jar
+
+# For Cygwin, switch paths to Windows format before running java
+if $cygwin; then
+  EFAPS_HOME=`cygpath --absolute --windows "$EFAPS_HOME"`
+  BOOTSTRAP=`cygpath --absolute --windows "$BOOTSTRAP"`
+  CP=`cygpath --path --windows "$CP"`
+fi
 
 echo Classpath:
 echo ~~~~~~~~~~
