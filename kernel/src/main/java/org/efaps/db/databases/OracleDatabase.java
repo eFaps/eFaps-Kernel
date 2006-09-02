@@ -127,7 +127,7 @@ public class OracleDatabase extends AbstractDatabase  {
 
     try  {
       ResultSet rs = stmt.executeQuery(
-            "select t.TABLENAME "
+            "select VIEW_NAME "
                 + "from USER_VIEWS "
                 + "where VIEW_NAME='" + _viewName.toUpperCase() + "'"
       );
