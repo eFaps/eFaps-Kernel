@@ -1037,7 +1037,13 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
            .append("1,")
            .append(Context.getDbType().getCurrentTimeStamp()).append(")");
 
-        stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+        if (persId == 0)  {
+          stmt = rsrc.getConnection().prepareStatement(cmd.toString(), 
+                                                       new String[]{"ID"});
+        } else  {
+          stmt = rsrc.getConnection().prepareStatement(cmd.toString());
+        }
+          
         int rows = stmt.executeUpdate();
         if (rows == 0)  {
 // TODO: exception in properties
