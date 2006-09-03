@@ -44,6 +44,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
+import org.efaps.jaas.ActionCallback;
+
 /***
  *
  * @author tmo
@@ -51,10 +53,21 @@ import org.xml.sax.SAXException;
  */
 public class XMLUserLoginModule implements LoginModule  {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
   /**
    * Logging instance used to give logging information of this class.
    */
   private final static Log LOG = LogFactory.getLog(XMLUserLoginModule.class);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * Stores the mode in which mode the login module is called.
+   */
+  private ActionCallback.Mode mode = ActionCallback.Mode.Undefined;
 
   /**
    * The subject is stored from the initialize method to store all single
@@ -126,36 +139,53 @@ public class XMLUserLoginModule implements LoginModule  {
   public final boolean login() throws LoginException  {
     boolean ret = false;
 
-    Callback[] callbacks = new Callback[2];
-    callbacks[0] = new NameCallback("Username: ");
-    callbacks[1] = new PasswordCallback("Password: ", false);
+    Callback[] callbacks = new Callback[3];
+    callbacks[0] = new ActionCallback();
+    callbacks[1] = new NameCallback("Username: ");
+    callbacks[2] = new PasswordCallback("Password: ", false);
     // Interact with the user to retrieve the username and password
     String userName = null;
     String password = null;
     try  {
       this.callbackHandler.handle(callbacks);
-      userName = ((NameCallback) callbacks[0]).getName();
-      password = new String(((PasswordCallback) callbacks[1]).getPassword());
+      this.mode = ((ActionCallback) callbacks[0]).getMode();
+      userName = ((NameCallback) callbacks[1]).getName();
+      if (((PasswordCallback) callbacks[2]).getPassword() != null)  {
+        password = new String(((PasswordCallback) callbacks[2]).getPassword());
+      }
     } catch (IOException e)  {
       throw new LoginException(e.toString());
     } catch (UnsupportedCallbackException e)  {
       throw new LoginException(e.toString());
     }
 
-    this.person = this.allPersons.get(userName);
-    if (this.person != null)  {
-      if ((password == null)
-          || ((password != null)
-              && !password.equals(this.person.getPassword())))  {
-
-        LOG.error("person '" + this.person + "' tried to log in with wrong password");
-        this.person = null;
-        throw new FailedLoginException("Username or password is incorrect");
-      }
-      if (LOG.isDebugEnabled())  {
-        LOG.debug("log in of '" + this.person + "'");
-      }
+    if (this.mode == ActionCallback.Mode.AllPersons)  {
       ret = true;
+    } else if (this.mode == ActionCallback.Mode.PersonInformation)  {
+      this.person = this.allPersons.get(userName);
+      if (this.person != null)  {
+        if (LOG.isDebugEnabled())  {
+          LOG.debug("found '" + this.person + "'");
+        }
+        ret = true;
+      }
+    } else  {
+      this.person = this.allPersons.get(userName);
+      if (this.person != null)  {
+        if ((password == null)
+            || ((password != null)
+                && !password.equals(this.person.getPassword())))  {
+  
+          LOG.error("person '" + this.person + "' tried to log in with wrong password");
+          this.person = null;
+          throw new FailedLoginException("Username or password is incorrect");
+        }
+        if (LOG.isDebugEnabled())  {
+          LOG.debug("log in of '" + this.person + "'");
+        }
+        this.mode = ActionCallback.Mode.Login;
+        ret = true;
+      }
     }
 
     return ret;
@@ -173,7 +203,18 @@ public class XMLUserLoginModule implements LoginModule  {
   public final boolean commit() throws LoginException  {
     boolean ret = false;
 
-    if (this.person != null)  {
+    if (this.mode == ActionCallback.Mode.AllPersons)  {
+      for (XMLPersonPrincipal person : this.allPersons.values())  {
+        if (!this.subject.getPrincipals().contains(person))  {
+          if (LOG.isDebugEnabled())  {
+            LOG.debug("commit person '" + person + "'");
+          }
+          this.subject.getPrincipals().add(person);
+        }
+      }
+      this.committed = true;
+      ret = true;
+    } else if (this.person != null)  {
       if (LOG.isDebugEnabled())  {
         LOG.debug("commit of '" + this.person + "'");
       }

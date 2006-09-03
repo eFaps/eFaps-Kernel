@@ -110,8 +110,9 @@ public class LoginHandler  {
   public Person checkLogin(final String _name, final String _passwd)  {
     Person person = null;
     try  {
-      LoginContext login = new LoginContext(this.application,
-              new LoginCallBackHandler(_name, _passwd));
+      LoginContext login = new LoginContext(getApplication(),
+              new LoginCallbackHandler(ActionCallback.Mode.Login, 
+                                       _name, _passwd));
       login.login();
 
       person = getPerson(login);
@@ -129,10 +130,8 @@ public class LoginHandler  {
         updateRoles(login, person);
       }
     } catch (EFapsException e)  {
-e.printStackTrace();
       LOG.error("login failed for '" + _name + "'", e);
     } catch (LoginException e)  {
-e.printStackTrace();
       LOG.error("login failed for '" + _name + "'", e);
     }
     return person;
@@ -155,7 +154,7 @@ e.printStackTrace();
     for (JAASSystem system : JAASSystem.getAllJAASSystems())  {
       Set users = _login.getSubject()
                         .getPrincipals(system.getPersonJAASPrincipleClass());
-System.out.println("---------------------->users="+users);
+
       for (Object persObj : users)  {
         try  {
           String persKey = (String) system.getPersonMethodKey().invoke(
@@ -328,12 +327,28 @@ System.out.println("---------------------->users="+users);
     }
   }
   
+  //////////////////////////////////////////////////////////////////////////////
+  // instance getter and setter methods
+  
+  /**
+   * This is the getter method for instance variable {@link #application}.
+   *
+   * @return the value of the instance variable {@link #application}.
+   * @see #application
+   */
+  public String getApplication()  {
+    return this.application;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // internal classes
+
   /**
    * Class used to handle the call to the JAAS login handler. It's used to 
    * return the name and password on request from the implementing login 
    * modules.
    */
-  protected class LoginCallBackHandler implements CallbackHandler  {
+  protected class LoginCallbackHandler implements CallbackHandler  {
 
     /**
      * The user name to test is stored in this instance variable.
@@ -344,15 +359,28 @@ System.out.println("---------------------->users="+users);
      * The password used from the user is stored in this instance variable.
      */
     private final String password;
+    
+    /**
+     * The action mode for which the login must be made is stored in this 
+     * instance variable (e.g. login, information about all persons, etc.)
+     */
+    private final ActionCallback.Mode mode;
 
     /**
-     * Constructor initialising the name and password in this callback
+     * Constructor initialising the action, name and password in this callback
      * handler.
      *
+     * @param _action defines action for which the  login is made
+     * @param _name   name of the login user
+     * @param _passwd password of the login user
+     * @see #action
      * @see #name
      * @see #password
      */
-    private LoginCallBackHandler(final String _name, final String _passwd)  {
+    protected LoginCallbackHandler(final ActionCallback.Mode _mode,
+                                   final String _name, 
+                                   final String _passwd)  {
+      this.mode = _mode;
       this.name = _name;
       this.password = _passwd;
     }
@@ -371,14 +399,19 @@ System.out.println("---------------------->users="+users);
       throws IOException, UnsupportedCallbackException {
 
       for (int i = 0; i < _callbacks.length; i++) {
-        if (_callbacks[i] instanceof TextOutputCallback) {
-          // do nothing, TextOutputCallBack's are ignored!
+        if (_callbacks[i] instanceof ActionCallback) {
+          ActionCallback ac = (ActionCallback) _callbacks[i];
+          ac.setMode(this.mode);
         } else if (_callbacks[i] instanceof NameCallback) {
           NameCallback nc = (NameCallback) _callbacks[i];
           nc.setName(this.name);
         } else if (_callbacks[i] instanceof PasswordCallback) {
-          PasswordCallback pc = (PasswordCallback)_callbacks[i];
-          pc.setPassword(this.password.toCharArray());
+          if (this.password != null)  {
+            PasswordCallback pc = (PasswordCallback)_callbacks[i];
+            pc.setPassword(this.password.toCharArray());
+          }
+        } else if (_callbacks[i] instanceof TextOutputCallback) {
+          // do nothing, TextOutputCallBack's are ignored!
         } else {
           throw new UnsupportedCallbackException
               (_callbacks[i], "Unrecognized Callback");

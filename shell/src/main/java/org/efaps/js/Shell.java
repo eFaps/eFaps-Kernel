@@ -68,12 +68,15 @@ public class Shell {
 // read input arguments
 boolean create = false;
 boolean shell = false;
+boolean importPersons = false;
 String bootstrap = null;
 for (int i=0; i<_args.length; i++)  {
   if (_args[i].equals("-bootstrap"))  {
     bootstrap = _args[++i];
   } else if (_args[i].equals("-create"))  {
     create = true;
+  } else if (_args[i].equals("-importPersons"))  {
+    importPersons = true;
   } else if (_args[i].equals("-shell"))  {
     shell = true;
   } else  {
@@ -132,12 +135,18 @@ context = new Context();
 
 if (create)  {
   StringReader reader = new StringReader("eFapsCreateAll();");
-try {
-  Main.evaluateScript(cx, Main.getGlobal(), reader, null, "<stdin>", 0, null);
-} catch (Throwable e)  {
-  e.printStackTrace();
-}
-
+  try {
+    Main.evaluateScript(cx, Main.getGlobal(), reader, null, "<stdin>", 0, null);
+  } catch (Throwable e)  {
+    e.printStackTrace();
+  }
+} else if (importPersons)  {
+  StringReader reader = new StringReader("eFapsImportPersons();");
+  try {
+    Main.evaluateScript(cx, Main.getGlobal(), reader, null, "<stdin>", 0, null);
+  } catch (Throwable e)  {
+    e.printStackTrace();
+  }
 } else if (shell)  {
   context = new Context(Person.get("Administrator"));
   int result = Main.exec(new String[0]);
