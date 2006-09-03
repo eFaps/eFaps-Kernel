@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#--------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 #
 # Copyright 2006 The eFaps Team
 #
@@ -21,7 +21,18 @@
 # Last Changed:    $Date$
 # Last Changed By: $Author$
 #
-# --------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+# Script to run the eFaps shell
+#
+# Environment Variable Prequisites
+#
+#   EFAPS_HOME      (Optional) May point at your eFaps "build" directory.
+#
+#   EFAPS_OPTS      (Optional) Java runtime options when the shell is executed.
+#
+#   EFAPS_CLASSPATH (Optional) Java class path options used the shell is 
+#                   executed.
+# -----------------------------------------------------------------------------
 
 # OS specific support
 cygwin=false
@@ -70,6 +81,10 @@ CP=$CP:$shellPathLib/js-1.6R1.jar
 # Logging
 CP=$CP:$shellPathLib/commons-logging-1.0.4.jar
 
+# digester to read xml files
+CP=$CP:$shellPathLib/commons-digester-1.6.jar
+CP=$CP:$shellPathLib/commons-beanutils-1.6.jar
+
 # used for toString methods
 CP=$CP:$shellPathLib/commons-lang-2.1.jar
 
@@ -94,6 +109,9 @@ CP=$CP:$shellPathLib/postgresql-8.1-407.jdbc3.jar
 # database driver
 # set CP=%CP%;%JH%/oracle-drivers/ojdbc14_g.jar
 
+# add external defined class paths
+[ -z "$EFAPS_CLASSPATH" ] & CP=$EFAPS_CLASSPATH:$CP
+
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
   EFAPS_HOME=`cygpath --absolute --windows "$EFAPS_HOME"`
@@ -105,4 +123,4 @@ echo Classpath:
 echo ~~~~~~~~~~
 echo $CP
 
-java -classpath $CP org.efaps.js.Shell -bootstrap $BOOTSTRAP $1 $2 $3 $4 $5 $6 $7 $8 $9
+java $EFAPS_OPTS -classpath $CP org.efaps.js.Shell -bootstrap $BOOTSTRAP $1 $2 $3 $4 $5 $6 $7 $8 $9
