@@ -19,17 +19,21 @@
  * Last Changed By: $Author$
  */
 
+importClass(Packages.org.efaps.db.Cache);
+importClass(Packages.org.efaps.db.Context);
+
 /**
  * Reloades the complete eFaps cache.
  */
 function reloadCache()  {
   try  {
     Shell.transactionManager.begin();
-    var context = new Context(Shell.transactionManager.getTransaction(), null, null);
-    Context.setThreadContext(context);
-    Packages.org.efaps.db.Cache.reloadCache(context);
+    var context = new Context.newThreadContext(
+                                    Shell.transactionManager.getTransaction());
+    Cache.reloadCache(context);
     Shell.transactionManager.rollback();
     context.close();
+
   } catch (e)  {
     print(e);
   }
