@@ -89,7 +89,7 @@
       <scope>compile</scope>
     </dependency>
 
-      <!-- used for toString methods -->
+    <!-- used for toString methods -->
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
