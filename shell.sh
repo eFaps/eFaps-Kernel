@@ -78,7 +78,8 @@ CP=$CP:$shellPathLib/eFaps-Kernel-1.0-SNAPSHOT.jar
 # Mozillas JavaScript
 CP=$CP:$shellPathLib/js-1.6R1.jar
 
-# Logging
+# Logging with log4j
+CP=$CP:$shellPathLib/log4j-1.2.9.jar
 CP=$CP:$shellPathLib/commons-logging-1.0.4.jar
 
 # digester to read xml files

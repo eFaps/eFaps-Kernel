@@ -78,11 +78,25 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- For Logging -->
+    <!-- For Logging with Log4J -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.9</version>
+      <scope>package</scope>
+    </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.0.4</version>
+      <scope>package</scope>
+    </dependency>
+
+    <!-- For reading XML files -->
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>1.6</version>
       <scope>package</scope>
     </dependency>
 
