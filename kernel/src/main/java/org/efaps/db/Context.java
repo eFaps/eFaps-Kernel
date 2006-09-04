@@ -48,6 +48,9 @@ import org.efaps.util.EFapsException;
  */
 public class Context {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
   /**
    * Static variable storing the database type.
    */
@@ -57,7 +60,13 @@ public class Context {
    * Each thread has his own context object. The value is automatically
    * assigned from the filter class.
    */
-  private static ThreadLocal<Context>threadContext = new ThreadLocal<Context>();
+  private static ThreadLocal < Context > threadContext 
+                                      = new ThreadLocal < Context > ();
+
+  private static DataSource dataSource = null;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
    * The instance variable stores all open instances of {@link StoreResource}.
@@ -66,34 +75,6 @@ public class Context {
    * @see #getStoreResource(Type,long)
    */
   private Set < StoreResource > storeStore = new HashSet < StoreResource > ();
-
-
-
-  public static void setDbType(AbstractDatabase _dbType) throws ClassNotFoundException, IllegalAccessException {
-    dbType = _dbType;
-  }
-
-  /**
-   * Returns the database type of the default connection (database where the
-   * data model definition is stored).
-   *
-   * @see #dbType
-   */
-  public static AbstractDatabase getDbType()  {
-    return dbType;
-  }
-
-
-private static DataSource dataSource = null;
-
-public static void setDataSource(final DataSource _dataSource)  {
-  dataSource = _dataSource;
-}
-
-protected static DataSource getDataSource()  {
-  return dataSource;
-}
-
 
   /**
    * Stores all created connection resources.
@@ -106,6 +87,34 @@ protected static DataSource getDataSource()  {
    */
   private Stack<ConnectionResource> connectionStack =
                                       new Stack<ConnectionResource>();
+
+  private Transaction transaction = null;
+
+  /**
+   * This is the instance variable for the SQL Connection to the database.
+   *
+   * @see #getConnection
+   * @see #setConnection
+   */
+  private Connection connection = null;
+
+  /**
+   * This instance variable represents the user name of the context.
+   */
+  private Person person = null;
+
+  /**
+   * The instance variable stores the locale object defined by the user
+   * interface (locale object of the current logged in eFaps user).
+   * The information is needed to create localised information within eFaps.
+   *
+   * @see #getLocale
+   * @see #setLocale
+   */
+  private Locale locale = null;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
 
   /**
    * Default constructor used to get a SQL connection to the database.
@@ -149,7 +158,6 @@ setLocale(_locale);
 
   }
 
-private Transaction transaction = null;
   /**
    * Constructor for
    *
@@ -182,6 +190,9 @@ System.out.println("--------------------------------- context.finalize connectio
     } catch (Exception e)  {
     }
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * The method tests if all resources (JDBC connection and store resources)
@@ -366,6 +377,106 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
   }
 
   /**
+   * If a person is assigned to this context, the id of this person is 
+   * returned. Otherwise the default person id value is returned. The method
+   * guarantees to return value which is valid!<br/>
+   * The value could be used e.g. if a a value is inserted into the database
+   * and the person id is needed for the creator and / or modifier.
+   *
+   * @return person id of current person or default person id value
+   */
+  public long getPersonId()  {
+    long ret = 1;
+    
+    if (this.person != null)  {
+      ret = this.person.getId();
+    }
+    return ret;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance getter and setter methods
+
+  /**
+   * This is the getter method for instance variable {@link #connection}.
+   *
+   * @return value of instance variable {@link #connection}
+   * @see #connection
+   * @see #setConnection
+   */
+  public final Connection getConnection()  {
+    return this.connection;
+  }
+
+  /**
+   * This is the setter method for instance variable {@link #connection}.
+   *
+   * @param _connection new value for instance variable {@link #connection}
+   * @see #connection
+   * @see #getConnection
+   */
+  private void setConnection(final Connection _connection)  {
+    this.connection = _connection;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #transaction}.
+   *
+   * @return value of instance variable {@link #transaction}
+   * @see #transaction
+   */
+  public final Transaction getTransaction()  {
+    return this.transaction;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #person}.
+   *
+   * @return value of instance variable {@link #person}
+   * @see #person
+   * @see #setPerson
+   */
+  public final Person getPerson()  {
+    return this.person;
+  }
+
+  /**
+   * This is the setter method for instance variable {@link #person}.
+   *
+   * @param _person new value for instance variable {@link #person}
+   * @see #person
+   * @see #getPerson
+   */
+  private void setPerson(final Person _person)  {
+    this.person = _person;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #locale}.
+   *
+   * @return value of instance variable {@link #locale}
+   * @see #locale
+   * @see #setLocale
+   */
+  public final Locale getLocale()  {
+    return this.locale;
+  }
+
+  /**
+   * This is the setter method for instance variable {@link #locale}.
+   *
+   * @param _locale new value for instance variable {@link #locale}
+   * @see #locale
+   * @see #getLocale
+   */
+  private void setLocale(final Locale _locale)  {
+    this.locale = _locale;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static methods
+
+  /**
    * The method checks if for the current thread a context object is defined.
    * This found context object is returned.
    *
@@ -456,105 +567,27 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
   }
 
   /////////////////////////////////////////////////////////////////////////////
+  // static getter and setter methods
 
-  /**
-   * This is the instance variable for the SQL Connection to the database.
-   *
-   * @see #getConnection
-   * @see #setConnection
-   */
-  private Connection connection = null;
-
-  /**
-   * This instance variable represents the user name of the context.
-   */
-  private Person person = null;
-
-  /**
-   * The instance variable stores the locale object defined by the user
-   * interface (locale object of the current logged in eFaps user).
-   * The information is needed to create localised information within eFaps.
-   *
-   * @see #getLocale
-   * @see #setLocale
-   */
-  private Locale locale = null;
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the getter method for instance variable {@link #connection}.
-   *
-   * @return value of instance variable {@link #connection}
-   * @see #connection
-   * @see #setConnection
-   */
-  public final Connection getConnection()  {
-    return this.connection;
+  public static void setDbType(AbstractDatabase _dbType) throws ClassNotFoundException, IllegalAccessException {
+    dbType = _dbType;
   }
 
   /**
-   * This is the setter method for instance variable {@link #connection}.
+   * Returns the database type of the default connection (database where the
+   * data model definition is stored).
    *
-   * @param _connection new value for instance variable {@link #connection}
-   * @see #connection
-   * @see #getConnection
+   * @see #dbType
    */
-  private void setConnection(final Connection _connection)  {
-    this.connection = _connection;
+  public static AbstractDatabase getDbType()  {
+    return dbType;
   }
 
-  /**
-   * This is the getter method for instance variable {@link #transaction}.
-   *
-   * @return value of instance variable {@link #transaction}
-   * @see #transaction
-   */
-  public final Transaction getTransaction()  {
-    return this.transaction;
+  public static void setDataSource(final DataSource _dataSource)  {
+    dataSource = _dataSource;
   }
-
-  /**
-   * This is the getter method for instance variable {@link #person}.
-   *
-   * @return value of instance variable {@link #person}
-   * @see #person
-   * @see #setPerson
-   */
-  public final Person getPerson()  {
-    return this.person;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #person}.
-   *
-   * @param _person new value for instance variable {@link #person}
-   * @see #person
-   * @see #getPerson
-   */
-  private void setPerson(final Person _person)  {
-    this.person = _person;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #locale}.
-   *
-   * @return value of instance variable {@link #locale}
-   * @see #locale
-   * @see #setLocale
-   */
-  public final Locale getLocale()  {
-    return this.locale;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #locale}.
-   *
-   * @param _locale new value for instance variable {@link #locale}
-   * @see #locale
-   * @see #getLocale
-   */
-  private void setLocale(final Locale _locale)  {
-    this.locale = _locale;
+  
+  protected static DataSource getDataSource()  {
+    return dataSource;
   }
 }
