@@ -38,7 +38,15 @@ public abstract class AbstractMethod  {
    * @todo remove Exception
    * @todo description
    */
-  public abstract void doMethod() throws EFapsException,Exception;
+  public void execute() throws EFapsException,Exception  {
+    doMethod();
+  }
+
+  /**
+   * @todo remove Exception
+   * @todo description
+   */
+  protected abstract void doMethod() throws EFapsException,Exception;
 
   /**
    * @todo remove Exception

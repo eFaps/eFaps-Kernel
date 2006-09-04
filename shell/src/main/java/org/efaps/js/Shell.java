@@ -44,7 +44,6 @@ import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.shell.method.AbstractMethod;
-import org.efaps.shell.method.ImportPersonsMethod;
 
 /**
  * The shell program.
@@ -129,6 +128,33 @@ DataSource ds = (DataSource)of.getObjectInstance(ref, null, null, null);
 Context.setDataSource(ds);
 
 
+
+
+context = new Context();
+
+
+if (create)  {
+  try {
+    AbstractMethod method = new org.efaps.shell.method.CreateMethod();
+    method.execute();
+  } catch (Throwable e)  {
+    e.printStackTrace();
+  }
+} else if (importPersons)  {
+  try {
+    AbstractMethod method = new org.efaps.shell.method.ImportPersonsMethod();
+    method.execute();
+  } catch (Throwable e)  {
+    e.printStackTrace();
+  }
+} else if (shell)  {
+  try {
+    AbstractMethod method = new org.efaps.shell.method.ShellMethod();
+    method.execute();
+  } catch (Throwable e)  {
+    e.printStackTrace();
+  }
+} else  {
 org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
 
 Global global = Main.getGlobal();
@@ -139,32 +165,7 @@ ClassLoader classLoader = Shell.class.getClassLoader();
 Reader in = new InputStreamReader(classLoader.getResourceAsStream("org/efaps/js/Init.js"));
 Main.evaluateScript(cx, global, in, null, "Init", 1, null);
 
-
-context = new Context();
-
-
-if (create)  {
-  StringReader reader = new StringReader("eFapsCreateAll();");
-  try {
-    Main.evaluateScript(cx, Main.getGlobal(), reader, null, "<stdin>", 0, null);
-  } catch (Throwable e)  {
-    e.printStackTrace();
-  }
-} else if (importPersons)  {
-  try {
-    AbstractMethod method = new ImportPersonsMethod();
-    method.doMethod();
-  } catch (Throwable e)  {
-    e.printStackTrace();
-  }
-} else if (shell)  {
-  context = new Context(Person.get("Administrator"));
-  int result = Main.exec(new String[0]);
-  if (result != 0)  {
-    System.exit(result);
-  }
-} else  {
-  context = new Context(Person.get("Administrator"));
+context = new Context(Person.get("Administrator"));
   StringReader reader = new StringReader("shell()");
   Main.evaluateScript(cx, Main.getGlobal(), reader, null, "<stdin>", 0, null);
 }
