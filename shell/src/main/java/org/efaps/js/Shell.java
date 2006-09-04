@@ -43,9 +43,15 @@ import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
+import org.efaps.shell.method.AbstractMethod;
+import org.efaps.shell.method.ImportPersonsMethod;
 
 /**
  * The shell program.
+ *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class Shell {
 
@@ -62,6 +68,10 @@ public class Shell {
    * create a new Context and associate it with the current thread.
    * Then set up the execution environment and begin to
    * execute scripts.
+   *
+   * @todo using org.efaps.shell.method.* classes as parameter definitions
+   *       (first letter of class name in lower case and withou Method at the 
+   *       end)
    */
   public static void main(String _args[]) throws Exception  {
 
@@ -141,9 +151,9 @@ if (create)  {
     e.printStackTrace();
   }
 } else if (importPersons)  {
-  StringReader reader = new StringReader("eFapsImportPersons();");
   try {
-    Main.evaluateScript(cx, Main.getGlobal(), reader, null, "<stdin>", 0, null);
+    AbstractMethod method = new ImportPersonsMethod();
+    method.doMethod();
   } catch (Throwable e)  {
     e.printStackTrace();
   }
