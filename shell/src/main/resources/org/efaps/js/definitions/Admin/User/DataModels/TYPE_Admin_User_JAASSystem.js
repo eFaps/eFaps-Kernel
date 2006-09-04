@@ -85,6 +85,31 @@ with (TYPE)  {
     setSQLTable("Admin_User_JAASSystemSQLTable");
     setSQLColumn("METHODPERSONEMAIL");
   }
+  with (addAttribute("MethodNamePersonOrganisation"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODPERSONORG");
+  }
+  with (addAttribute("MethodNamePersonUrl"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODPERSONURL");
+  }
+  with (addAttribute("MethodNamePersonPhone"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODPERSONPHONE");
+  }
+  with (addAttribute("MethodNamePersonMobile"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODPERSONMOBILE");
+  }
+  with (addAttribute("MethodNamePersonFax"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("METHODPERSONFAX");
+  }
   with (addAttribute("ClassNameRole"))  {
     setAttributeType("String");
     setSQLTable("Admin_User_JAASSystemSQLTable");

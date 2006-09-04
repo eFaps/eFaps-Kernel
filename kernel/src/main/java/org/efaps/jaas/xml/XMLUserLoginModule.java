@@ -320,6 +320,21 @@ public class XMLUserLoginModule implements LoginModule  {
       digester.addCallMethod("persons/person/email", "setEmail", 1);
       digester.addCallParam("persons/person/email", 0);
 
+      digester.addCallMethod("persons/person/organisation", "setOrganisation", 1);
+      digester.addCallParam("persons/person/organisation", 0);
+
+      digester.addCallMethod("persons/person/url", "setUrl", 1);
+      digester.addCallParam("persons/person/url", 0);
+
+      digester.addCallMethod("persons/person/phone", "setPhone", 1);
+      digester.addCallParam("persons/person/phone", 0);
+
+      digester.addCallMethod("persons/person/mobile", "setMobile", 1);
+      digester.addCallParam("persons/person/mobile", 0);
+
+      digester.addCallMethod("persons/person/fax", "setFax", 1);
+      digester.addCallParam("persons/person/fax", 0);
+
       digester.addCallMethod("persons/person/role", "addRole", 1);
       digester.addCallParam("persons/person/role", 0);
 

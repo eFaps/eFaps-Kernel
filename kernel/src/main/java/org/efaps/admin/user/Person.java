@@ -69,6 +69,8 @@ public class Person extends UserObject implements CacheInterface  {
     URL("URL"),
     /** Attribute Name for the  Phone Number of the person. */
     Phone("PHONE"),
+    /** Attribute Name for the  Mobile Number of the person. */
+    Mobile("MOBILE"),
     /** Attribute Name for the  Fax Number of the person. */
     Fax("FAX");
 

@@ -120,6 +120,41 @@ with (FORM)  {
     addProperty("Expression",             "MethodNamePersonEmail");
     addProperty("Searchable",             "true");
   }
+  with (addField("MethodNamePersonOrganisation"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNamePersonOrganisation");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("MethodNamePersonUrl"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNamePersonUrl");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("MethodNamePersonPhone"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNamePersonPhone");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("MethodNamePersonMobile"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNamePersonMobile");
+    addProperty("Searchable",             "true");
+  }
+  with (addField("MethodNamePersonFax"))  {
+    addProperty("Columns",                "40");
+    addProperty("Creatable",              "true");
+    addProperty("Editable",               "true");
+    addProperty("Expression",             "MethodNamePersonFax");
+    addProperty("Searchable",             "true");
+  }
   with (addField("ClassNameRole"))  {
     addProperty("Columns",                "80");
     addProperty("Creatable",              "true");

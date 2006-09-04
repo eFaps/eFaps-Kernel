@@ -61,6 +61,11 @@ public class JAASSystem extends AdminObject implements CacheInterface  {
                                                 + "METHODPERSONFIRSTNAME,"
                                                 + "METHODPERSONLASTNAME,"
                                                 + "METHODPERSONEMAIL,"
+                                                + "METHODPERSONORG,"
+                                                + "METHODPERSONURL,"
+                                                + "METHODPERSONPHONE,"
+                                                + "METHODPERSONMOBILE,"
+                                                + "METHODPERSONFAX,"
                                                 + "CLASSNAMEROLE,"
                                                 + "METHODROLEKEY,"
                                                 + "CLASSNAMEGROUP,"
@@ -268,10 +273,15 @@ return getName();
           String personMethodFirstName  = rs.getString(6);
           String personMethodLastName   = rs.getString(7);
           String personMethodEmail      = rs.getString(8);
-          String roleClassName          = rs.getString(9);
-          String roleMethodKey          = rs.getString(10);
-          String groupClassName         = rs.getString(11);
-          String groupMethodKey         = rs.getString(12);
+          String personMethodOrg        = rs.getString(9);
+          String personMethodUrl        = rs.getString(10);
+          String personMethodPhone      = rs.getString(11);
+          String personMethodMobile     = rs.getString(12);
+          String personMethodFax        = rs.getString(13);
+          String roleClassName          = rs.getString(14);
+          String roleMethodKey          = rs.getString(15);
+          String groupClassName         = rs.getString(16);
+          String groupMethodKey         = rs.getString(17);
 
           LOG.debug("read JAAS System '" + name + "' (id = " + id + ")");
 
@@ -292,6 +302,26 @@ return getName();
             method = getMethod(system.personJAASPrincipleClass, personMethodEmail, "person email",  name, id);
             if (method != null)  {
               system.personMethodAttributes.put(Person.AttrName.Email, method);
+            }
+            method = getMethod(system.personJAASPrincipleClass, personMethodOrg, "person organisation",  name, id);
+            if (method != null)  {
+              system.personMethodAttributes.put(Person.AttrName.Organisation, method);
+            }
+            method = getMethod(system.personJAASPrincipleClass, personMethodUrl, "person URL",  name, id);
+            if (method != null)  {
+              system.personMethodAttributes.put(Person.AttrName.URL, method);
+            }
+            method = getMethod(system.personJAASPrincipleClass, personMethodPhone, "person phone number",  name, id);
+            if (method != null)  {
+              system.personMethodAttributes.put(Person.AttrName.Phone, method);
+            }
+            method = getMethod(system.personJAASPrincipleClass, personMethodMobile, "person mobile number",  name, id);
+            if (method != null)  {
+              system.personMethodAttributes.put(Person.AttrName.Mobile, method);
+            }
+            method = getMethod(system.personJAASPrincipleClass, personMethodFax, "person fax number",  name, id);
+            if (method != null)  {
+              system.personMethodAttributes.put(Person.AttrName.Fax, method);
             }
 
             if ((roleClassName != null) && (roleClassName.trim().length() > 0))  {

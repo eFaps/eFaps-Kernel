@@ -315,6 +315,11 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
       ["METHODPERSONFIRSTNAME "+TYPE_STRING_SHORT+"(128)"],
       ["METHODPERSONLASTNAME  "+TYPE_STRING_SHORT+"(128)"],
       ["METHODPERSONEMAIL     "+TYPE_STRING_SHORT+"(128)"],
+      ["METHODPERSONORG       "+TYPE_STRING_SHORT+"(128)"],
+      ["METHODPERSONURL       "+TYPE_STRING_SHORT+"(128)"],
+      ["METHODPERSONPHONE     "+TYPE_STRING_SHORT+"(128)"],
+      ["METHODPERSONMOBILE    "+TYPE_STRING_SHORT+"(128)"],
+      ["METHODPERSONFAX       "+TYPE_STRING_SHORT+"(128)"],
       ["METHODROLEKEY         "+TYPE_STRING_SHORT+"(128)"],
       ["METHODGROUPKEY        "+TYPE_STRING_SHORT+"(128)"],
       ["constraint USERJAASSYS_UK_NAME unique(NAME)"]
@@ -483,6 +488,11 @@ function _eFapsCreateUserTablesStep2(_con, _stmt)  {
         +     "METHODPERSONFIRSTNAME,"
         +     "METHODPERSONLASTNAME,"
         +     "METHODPERSONEMAIL,"
+        +     "METHODPERSONORG,"
+        +     "METHODPERSONURL,"
+        +     "METHODPERSONPHONE,"
+        +     "METHODPERSONMOBILE,"
+        +     "METHODPERSONFAX,"
         +     "METHODROLEKEY,"
         +     "METHODGROUPKEY "
         +   "from USERJAASSYSTEM"
