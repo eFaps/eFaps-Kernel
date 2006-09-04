@@ -66,6 +66,11 @@ with (TYPE)  {
     setSQLTable("Admin_User_PersonSQLTable");
     setSQLColumn("PASSWORD");
   }
+  with (addAttribute("LastLogin"))  {
+    setAttributeType("DateTime");
+    setSQLTable("Admin_User_PersonSQLTable");
+    setSQLColumn("LASTLOGIN");
+  }
   addProperty("Form",                   "Admin_User_PersonForm");
   addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_User_PersonImage");
   addProperty("Tree",                   "Admin_User_PersonTree");

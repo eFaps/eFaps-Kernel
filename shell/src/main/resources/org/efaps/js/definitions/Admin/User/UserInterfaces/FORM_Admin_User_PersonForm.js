@@ -35,6 +35,12 @@ with (FORM)  {
     addProperty("Required",               "true");
     addProperty("Searchable",             "true");
   }
+  with (addField("lastlogin"))  {
+    addProperty("Creatable",              "false");
+    addProperty("Editable",               "false");
+    addProperty("Expression",             "LastLogin");
+    addProperty("Searchable",             "true");
+  }
   with (addField("createGroup"))  {
     addProperty("Creatable",              "false");
     addProperty("Searchable",             "false");

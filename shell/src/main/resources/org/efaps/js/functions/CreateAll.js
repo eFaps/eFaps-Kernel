@@ -342,7 +342,8 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
       ["PHONE                 "+TYPE_STRING_SHORT+"(32)"],
       ["MOBILE                "+TYPE_STRING_SHORT+"(32)"],
       ["FAX                   "+TYPE_STRING_SHORT+"(32)"],
-      ["PASSWORD              "+TYPE_STRING_SHORT+"(128)"]
+      ["PASSWORD              "+TYPE_STRING_SHORT+"(128)"],
+      ["LASTLOGIN             "+TYPE_DATETIME]
   ]);
 
   eFapsCommonSQLTableCreate(_con, _stmt, "Connection between Abstract User and Abstract User", "USERABSTRACT2ABSTRACT", null,[

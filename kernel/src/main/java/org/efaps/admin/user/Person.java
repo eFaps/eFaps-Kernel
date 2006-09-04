@@ -771,6 +771,63 @@ public class Person extends UserObject implements CacheInterface  {
                                _group);
   }
 
+  /**
+   * Update the last login date of this person to current timestamp.
+   *
+   * @throws EFapsException if the last login information could not be updated
+   */
+  public void updateLastLogin() throws EFapsException  {
+    ConnectionResource rsrc = null;
+    try  {
+      Context context = Context.getThreadContext();
+      rsrc = context.getConnectionResource();
+
+      Statement stmt = null;
+      StringBuilder cmd = new StringBuilder();
+      try  {
+
+        cmd.append("update USERPERSON ")
+           .append(    "set LASTLOGIN=")
+              .append(context.getDbType().getCurrentTimeStamp()).append(" ")
+           .append("where ID=").append(getId());
+        stmt = rsrc.getConnection().createStatement();
+        int rows = stmt.executeUpdate(cmd.toString());
+        if (rows == 0)  {
+// TODO: exception in properties
+          LOG.error("could not execute '" + cmd.toString() + "' "
+                  + "to update last login information "
+                  + "for person '" + toString() + "'");
+          throw new EFapsException(getClass(),
+                                   "updateLastLogin.NotUpdated",
+                                   cmd.toString(),
+                                   getName());
+        }
+      } catch (SQLException e)  {
+// TODO: exception in properties
+        LOG.error("could not execute '" + cmd.toString() + "' "
+                + "to update last login information "
+                + "for person '" + toString() + "'", e);
+        throw new EFapsException(getClass(), 
+                                 "updateLastLogin.SQLException",
+                                 e, 
+                                 cmd.toString(),
+                                 getName());
+      } finally  {
+        try  {
+          if (stmt != null)  {
+            stmt.close();
+          }
+        } catch (SQLException e)  {
+        }
+      }
+      rsrc.commit();
+    } finally  {
+      if ((rsrc != null) && rsrc.isOpened())  {
+        rsrc.abort();
+      }
+    }
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // getter and setter methods
 

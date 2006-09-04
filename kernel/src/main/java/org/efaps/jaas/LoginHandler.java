@@ -98,7 +98,9 @@ public class LoginHandler  {
 
   /**
    * The instance method checks if for the given user the password is correct.
-   * The test itself is done with the JAAS module from Java.
+   * The test itself is done with the JAAS module from Java.<br/>
+   * If a person is found and successfully logged in, the last login 
+   * information from the person is updated to current timestamp.
    *
    * @param _name   name of the person name to check
    * @param _passwd password of the person to check
@@ -131,6 +133,8 @@ public class LoginHandler  {
 
         updateRoles(login, person);
         updateGroups(login, person);
+        
+        person.updateLastLogin();
       }
     } catch (EFapsException e)  {
       LOG.error("login failed for '" + _name + "'", e);
