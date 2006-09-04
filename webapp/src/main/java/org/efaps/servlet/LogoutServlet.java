@@ -32,7 +32,7 @@ import javax.servlet.http.HttpSession;
  * The servlet logs out from the current eFaps application.
  *
  * @author tmo
- * @version $Rev$
+ * @version $Id$
  */
 public class LogoutServlet extends HttpServlet  {
 
@@ -48,6 +48,7 @@ public class LogoutServlet extends HttpServlet  {
   protected void doGet(final HttpServletRequest _req, final HttpServletResponse _res) throws ServletException, IOException  {
     HttpSession session = _req.getSession(true);
     session.removeAttribute(SecurityFilter.SESSIONPARAM_LOGIN_NAME);
+    session.removeAttribute(SecurityFilter.SESSIONPARAM_LOGIN_FORWARD);
     _res.setContentType("text/html");
     _res.sendRedirect(RequestHandler.replaceMacrosInUrl("${ROOTURL}"));
   }

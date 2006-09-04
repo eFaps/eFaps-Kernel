@@ -53,9 +53,13 @@ import org.efaps.db.Context;
 import org.efaps.admin.user.Person;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
  */
 public class SecurityFilter implements Filter  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
 
   /**
    * Logging instance used in this class.
@@ -77,6 +81,9 @@ public class SecurityFilter implements Filter  {
    * The string is name of the parameter used to define the url login page.
    */
   final public static String INIT_PARAM_URL_LOGIN_PAGE = "urlLoginPage";
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
    *
@@ -145,6 +152,7 @@ A typical implementation of this method would follow the following pattern:-
 4. b) or not pass on the request/response pair to the next entity in the filter chain to block the request processing
 5. Directly set headers on the response after invocation of the next entity in ther filter chain.
    *
+   * @todo remove hard coded proof of the MenuTree.jsp to set the forwarding url
    */
   public void doFilter(ServletRequest _request, ServletResponse _response,
                      FilterChain _chain) throws IOException, ServletException  {
@@ -175,11 +183,14 @@ String uri = httpRequest.getRequestURI();
     } else if (this.exludeUris.contains(uri))  {
       doFilter(null, _request, _response, _chain);
     } else  {
-      String markUrl = httpRequest.getRequestURI();
-      if (httpRequest.getQueryString() != null)  {
-        markUrl += "?" + httpRequest.getQueryString();
+
+      if (httpRequest.getRequestURI().endsWith("common/MenuTree.jsp"))  {
+        String markUrl = httpRequest.getRequestURI();
+        if (httpRequest.getQueryString() != null)  {
+          markUrl += "?" + httpRequest.getQueryString();
+        }
+        httpRequest.getSession().setAttribute(SESSIONPARAM_LOGIN_FORWARD, markUrl);
       }
-      httpRequest.getSession().setAttribute(SESSIONPARAM_LOGIN_FORWARD, markUrl);
       _request.getRequestDispatcher(this.notLoggedInForward).forward(_request, _response);
     }
   }
