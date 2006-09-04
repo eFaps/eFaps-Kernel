@@ -37,8 +37,13 @@ set CP=%CP%;%shellPathLib%\eFaps-Kernel-1.0-SNAPSHOT.jar
 REM Mozillas JavaScript
 set CP=%CP%;%shellPathLib%\js-1.6R1.jar
 
-REM Logging
+REM Logging with log4j
+set CP=%CP%:%shellPathLib%\log4j-1.2.9.jar
 set CP=%CP%;%shellPathLib%\commons-logging-1.0.4.jar
+
+Rem digester to read xml files
+set CP=%CP%:%shellPathLib%\commons-digester-1.6.jar
+set CP=%CP%:%shellPathLib%\commons-beanutils-1.6.jar
 
 REM used for toString methods
 set CP=%CP%;%shellPathLib%\commons-lang-2.1.jar
