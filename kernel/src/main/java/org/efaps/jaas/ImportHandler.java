@@ -192,6 +192,12 @@ public class ImportHandler extends LoginHandler  {
    * Each user name is written as debug information to the log file.<br/>
    * If an exception is thrown inside called methods, the exceptions are only
    * written to the log as errors.
+   *
+   * @see LoginHandler#getPerson
+   * @see LoginHandler#createPerson
+   * @see LoginHandler#updatePerson
+   * @see LoginHandler#updateRoles
+   * @see LoginHandler#updateGroups
    */
   protected void updatePersons()  {
     for (PersonMapper persMapper : this.persMappers)  {
@@ -218,6 +224,7 @@ System.out.println("update person '" + persMapper.name + "'");
           person.cleanUp();
   
           updateRoles(login, person);
+          updateGroups(login, person);
         }
       } catch (EFapsException e)  {
         LOG.error("update failed for '" + persMapper.name + "'", e);

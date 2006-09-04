@@ -39,6 +39,7 @@ import javax.security.auth.login.LoginException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.user.Group;
 import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
@@ -106,6 +107,7 @@ public class LoginHandler  {
    * @see #createPerson
    * @see #updatePerson
    * @see #updateRoles
+   * @see #updateGroups
    */
   public Person checkLogin(final String _name, final String _passwd)  {
     Person person = null;
@@ -128,6 +130,7 @@ public class LoginHandler  {
         person.cleanUp();
 
         updateRoles(login, person);
+        updateGroups(login, person);
       }
     } catch (EFapsException e)  {
       LOG.error("login failed for '" + _name + "'", e);
@@ -327,6 +330,48 @@ public class LoginHandler  {
     }
   }
   
+  /**
+   * The groups of the given person are updated with the information from the
+   * JAAS login context.
+   *
+   * @param _login  JAAS login context
+   * @param _person person for which the groups must be updated
+   * @throws EFapsException if a method of the principals inside the JAAS login 
+   *         contexts could not be executed or the groups for the given person
+   *         could not be set.
+   */
+  protected void updateGroups(final LoginContext _login, 
+                             final Person _person) throws EFapsException  {
+
+    for (JAASSystem system : JAASSystem.getAllJAASSystems())  {
+      if (system.getGroupJAASPrincipleClass() != null)  {
+        Set groupsJaas = _login.getSubject()
+                              .getPrincipals(system.getGroupJAASPrincipleClass());
+        Set < Group > groupsEfaps = new HashSet < Group > ();
+        for (Object groupObj : groupsJaas)  {
+          try  {
+            String groupKey = (String) system.getGroupMethodKey().invoke(
+                                                              groupObj, null);
+            Group groupEfaps = Group.getWithJAASKey(system, groupKey);
+            if (groupEfaps != null)  {
+              groupsEfaps.add(groupEfaps);
+            }
+          } catch (IllegalAccessException e)  {
+            LOG.error("could not execute group key method for system "
+                                                  + system.getName(), e);
+          } catch (IllegalArgumentException e)  {
+            LOG.error("could not execute group key method for system "
+                                                  + system.getName(), e);
+          } catch (InvocationTargetException e)  {
+            LOG.error("could not execute group key method for system "
+                                                  + system.getName(), e);
+          }
+        }
+        _person.setGroups(system, groupsEfaps);
+      }
+    }
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
   

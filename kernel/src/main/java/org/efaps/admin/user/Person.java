@@ -150,7 +150,7 @@ public class Person extends UserObject implements CacheInterface  {
   }
 
   /////////////////////////////////////////////////////////////////////////////
-  // methods
+  // instance methods
 
   /**
    * Checks, if the given person is assigned to this user object. Here it is
@@ -440,80 +440,6 @@ public class Person extends UserObject implements CacheInterface  {
     update.execute(_context);
   }
 
-  /**
-   * Assign this person to the given JAAS system under the given JAAS key.
-   *
-   * @param _jaasSystem   JAAS system to which the person is assigned
-   * @param _jaasKey      key under which the person is know in the JAAS system
-   */
-  public void assignToJAASSystem(final JAASSystem _jaasSystem,
-                                 final String _jaasKey) throws EFapsException  {
-
-    ConnectionResource rsrc = null;
-    try  {
-      Context context = Context.getThreadContext();
-      rsrc = context.getConnectionResource();
-      Type keyType = Type.get(EFapsClassName.USER_JAASKEY.name);
-
-      PreparedStatement stmt = null;
-      try  {
-        StringBuilder cmd = new StringBuilder();
-
-        long keyId = 0;
-        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
-          keyId = context.getDbType().getNewId(rsrc.getConnection(),
-                          keyType.getMainTable().getSqlTable(), "ID");
-          cmd.append("insert into ").append(keyType.getMainTable().getSqlTable())
-             .append(   "(ID,KEY,CREATOR,CREATED,MODIFIER,MODIFIED,USERABSTRACT,USERJAASSYSTEM) ")
-             .append(   "values (").append(keyId).append(",");
-        } else  {
-          cmd.append("insert into ").append(keyType.getMainTable().getSqlTable())
-             .append(   "(KEY,CREATOR,CREATED,MODIFIER,MODIFIED,USERABSTRACT,USERJAASSYSTEM) ")
-             .append(   "values (");
-        }
-        cmd
-           .append("'").append(_jaasKey).append("',")
-           .append("1,")
-           .append(Context.getDbType().getCurrentTimeStamp()).append(",")
-           .append("1,")
-           .append(Context.getDbType().getCurrentTimeStamp()).append(",")
-           .append(getId()).append(",")
-           .append(_jaasSystem.getId()).append(")");
-        stmt = rsrc.getConnection().prepareStatement(cmd.toString());
-        int rows = stmt.executeUpdate();
-        if (rows == 0)  {
-// TODO: exception in properties
-          LOG.error("could not execute '" + cmd.toString() + "' "
-                  + "for JAAS system " + "'" + _jaasSystem.getName() + "' "
-                  + "person with key '" + _jaasKey + "' and "
-                  + "user name '" + getName() + "'");
-          throw new EFapsException(Person.class,
-                  "assignToJAASSystem.NotInserted",
-                  _jaasSystem.getName(), _jaasKey, getName());
-        }
-      } catch (SQLException e)  {
-  // TODO: exception in properties
-        LOG.error("could not assign for JAAS system "
-                + "'" + _jaasSystem.getName() + "' person with key "
-                + "'" + _jaasKey + "' and user name '" + getName() + "'", e);
-        throw new EFapsException(Person.class,
-                "assignToJAASSystem.SQLException",
-                e, _jaasSystem.getName(), _jaasKey, getName());
-      } finally  {
-        try  {
-          stmt.close();
-        } catch (SQLException e)  {
-        }
-      }
-
-      rsrc.commit();
-    } finally  {
-      if ((rsrc != null) && rsrc.isOpened())  {
-        rsrc.abort();
-      }
-    }
-  }
-
   /////////////////////////////////////////////////////////////////////////////
 
   /**
@@ -585,7 +511,6 @@ public class Person extends UserObject implements CacheInterface  {
    * @see #getRolesFromDB(JAASSystem);
    */
   public Set < Role > getRolesFromDB() throws EFapsException  {
-
     return getRolesFromDB((JAASSystem) null);
   }
 
@@ -645,109 +570,77 @@ public class Person extends UserObject implements CacheInterface  {
     return ret;
   }
 
-// TODO: Description
-public void setRoles(final JAASSystem _jaasSystem, final Set < Role > _roles) throws EFapsException  {
-  Context context = Context.getThreadContext();
-
-  if (_jaasSystem == null)  {
-// TODO: throw exception
-  }
-  if (_roles == null)  {
-// TODO: throw exception
-  }
-
-  for (Role role : _roles)  {
-    add(role);
-  }
-
-  Set < Role > rolesInDb = getRolesFromDB(_jaasSystem);
-
-  for (Role role : _roles)  {
-    if (!rolesInDb.contains(role))  {
-      addRoleInDb(context, _jaasSystem, role);
+  /**
+   * The depending roles for the user are set for the given JAAS system.
+   * All roles are added to the loaded roles in the cache of this person.
+   *
+   * @param _jaasSystem JAAS system for which the roles are set
+   * @param _roles      set of roles to set for the JAAS system
+   * @see #assignRoleInDb
+   * @see #unassignRoleInDb
+   * @throws EFapsException from calling methods
+   */
+  public void setRoles(final JAASSystem _jaasSystem, 
+                       final Set < Role > _roles) throws EFapsException  {
+    
+    if (_jaasSystem == null)  {
+  // TODO: throw exception
     }
-  }
-
-  for (Role role : rolesInDb)  {
-    if (!_roles.contains(role))  {
-      removeRoleInDb(context, _jaasSystem, role);
+    if (_roles == null)  {
+  // TODO: throw exception
     }
-  }
-}
-
-// TODO: Description
-private void addRoleInDb(final Context _context, final JAASSystem _jaasSystem, final Role _role) throws EFapsException  {
-  ConnectionResource rsrc = null;
-  try  {
-    rsrc = _context.getConnectionResource();
-
-    Statement stmt = null;
-    try  {
-      StringBuilder cmd = new StringBuilder();
-      cmd.append("insert into V_USERPERSON2ROLE")
-         .append(   "(USERABSTRACTFROM,USERABSTRACTTO,JAASSYSID) ")
-         .append(   "values (").append(getId()).append(",")
-                               .append(_role.getId()).append(",")
-                               .append(_jaasSystem.getId()).append(")");
-
-      stmt = rsrc.getConnection().createStatement();
-      stmt.executeUpdate(cmd.toString());
-
-    } catch (SQLException e)  {
-// TODO: exception in properties
-      throw new EFapsException(getClass(), "addRoleInDb.SQLException",
-                                                              e, getName());
-    } finally  {
-      try  {
-        stmt.close();
-      } catch (SQLException e)  {
+  
+    for (Role role : _roles)  {
+      add(role);
+    }
+  
+    // current roles
+    Set < Role > rolesInDb = getRolesFromDB(_jaasSystem);
+  
+    // compare new roles with current roles (add missing roles)
+    for (Role role : _roles)  {
+      if (!rolesInDb.contains(role))  {
+        assignRoleInDb(_jaasSystem, role);
       }
     }
-
-    rsrc.commit();
-  } finally  {
-    if ((rsrc != null) && rsrc.isOpened())  {
-      rsrc.abort();
-    }
-  }
-}
-
-// TODO: Description
-private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem, final Role _role) throws EFapsException  {
-  ConnectionResource rsrc = null;
-  try  {
-    rsrc = _context.getConnectionResource();
-
-    Statement stmt = null;
-
-    try  {
-      StringBuilder cmd = new StringBuilder();
-      cmd.append("delete from V_USERPERSON2ROLE ")
-         .append(   "where JAASSYSID=").append(_jaasSystem.getId()).append(" ")
-         .append(         "and USERABSTRACTTO=").append(_role.getId()).append(" ")
-         .append(         "and USERABSTRACTFROM=").append(getId());
-
-      stmt = rsrc.getConnection().createStatement();
-      stmt.executeUpdate(cmd.toString());
-
-    } catch (SQLException e)  {
-// TODO: exception in properties
-      throw new EFapsException(getClass(), "removeRoleInDb.SQLException",
-                                                              e, getName());
-    } finally  {
-      try  {
-        stmt.close();
-      } catch (SQLException e)  {
+  
+    // compare current roles with new roles (remove roles which are to much)
+    for (Role role : rolesInDb)  {
+      if (!_roles.contains(role))  {
+        unassignRoleInDb(_jaasSystem, role);
       }
     }
-
-    rsrc.commit();
-  } finally  {
-    if ((rsrc != null) && rsrc.isOpened())  {
-      rsrc.abort();
-    }
   }
-}
+
+  /**
+   * For this person, a role is assigned for the given JAAS system.
+   *
+   * @param _jaasSystem   JAAS system for which the role is assigned
+   * @param _role         role to assign
+   * @see UserObject#assignToUserObjectInDb
+   */
+  public void assignRoleInDb(final JAASSystem _jaasSystem, 
+                             final Role _role) throws EFapsException  {
+
+    assignToUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2ROLE.name),
+                           _jaasSystem,
+                           _role);
+  }
+
+  /**
+   * The given role is unassigned for the given JAAS system from this person.
+   *
+   * @param _jaasSystem   JAAS system for which the role is assigned
+   * @param _role         role to unassign
+   * @see UserObject#unassignFromUserObjectInDb
+   */
+  public void unassignRoleInDb(final JAASSystem _jaasSystem, 
+                               final Role _role) throws EFapsException  {
+
+    unassignFromUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2ROLE.name),
+                               _jaasSystem,
+                               _role);
+  }
 
   /**
    * The method reads directly from the database all stores groups for the this
@@ -806,8 +699,77 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
     return ret;
   }
 
+  /**
+   * The depending groups for the user are set for the given JAAS system.
+   * All groups are added to the loaded groups in the cache of this person.
+   *
+   * @param _jaasSystem JAAS system for which the roles are set
+   * @param _groups     set of groups to set for the JAAS system
+   * @see #assignGroupInDb
+   * @see #unassignGroupInDb
+   * @throws EFapsException from calling methods
+   */
+  public void setGroups(final JAASSystem _jaasSystem, 
+                       final Set < Group > _groups) throws EFapsException  {
+    
+    if (_jaasSystem == null)  {
+  // TODO: throw exception
+    }
+    if (_groups == null)  {
+  // TODO: throw exception
+    }
+  
+    for (Group group : _groups)  {
+      add(group);
+    }
+  
+    // current groups
+    Set < Group > groupsInDb = getGroupsFromDB(_jaasSystem);
+  
+    // compare new roles with current groups (add missing groups)
+    for (Group group : _groups)  {
+      if (!groupsInDb.contains(group))  {
+        assignGroupInDb(_jaasSystem, group);
+      }
+    }
+  
+    // compare current roles with new groups (remove groups which are to much)
+    for (Group group : groupsInDb)  {
+      if (!_groups.contains(group))  {
+        unassignGroupInDb(_jaasSystem, group);
+      }
+    }
+  }
 
+  /**
+   * For this person, a group is assigned for the given JAAS system.
+   *
+   * @param _jaasSystem   JAAS system for which the role is assigned
+   * @param _group        group to assign
+   * @see UserObject#assignToUserObjectInDb
+   */
+  public void assignGroupInDb(final JAASSystem _jaasSystem, 
+                              final Group _group) throws EFapsException  {
 
+    assignToUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2GROUP.name),
+                           _jaasSystem,
+                           _group);
+  }
+
+  /**
+   * The given group is unassigned for the given JAAS system from this person.
+   *
+   * @param _jaasSystem   JAAS system for which the role is assigned
+   * @param _group        group to unassign
+   * @see UserObject#unassignFromUserObjectInDb
+   */
+  public void unassignGroupInDb(final JAASSystem _jaasSystem, 
+                                final Group _group) throws EFapsException  {
+
+    unassignFromUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2GROUP.name),
+                               _jaasSystem,
+                               _group);
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // getter and setter methods
@@ -1032,9 +994,9 @@ private void removeRoleInDb(final Context _context, final JAASSystem _jaasSystem
         cmd
            .append(persType.getId()).append(",")
            .append("'").append(_userName).append("',")
-           .append("1,")
+           .append(context.getPersonId()).append(",")
            .append(Context.getDbType().getCurrentTimeStamp()).append(",")
-           .append("1,")
+           .append(context.getPersonId()).append(",")
            .append(Context.getDbType().getCurrentTimeStamp()).append(")");
 
         if (persId == 0)  {

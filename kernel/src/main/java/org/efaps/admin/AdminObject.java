@@ -42,9 +42,16 @@ public abstract class AdminObject implements CacheInterface  {
   public enum EFapsClassName  {
     DATAMODEL_TYPE("Admin_DataModel_Type"),
 
+    USER_ABSTRACT("Admin_User_Abstract"),
     USER_PERSON("Admin_User_Person"),
     USER_ROLE("Admin_User_Role"),
+    USER_GROUP("Admin_User_Group"),
     USER_JAASKEY("Admin_User_JAASKey"),
+    USER_JAASSYSTEM("Admin_User_JAASSystem"),
+
+    USER_ABSTRACT2ABSTRACT("Admin_User_Abstract2Abstract"),
+    USER_PERSON2ROLE("Admin_User_Person2Role"),
+    USER_PERSON2GROUP("Admin_User_Person2Group"),
 
     LIFECYCLE_POLICY("Admin_LifeCycle_Policy"),
     LIFECYCLE_STATUS("Admin_LifeCycle_Status"),
