@@ -18,8 +18,16 @@
  * Last Changed By: $Author$
  */
 
-with (MENU)  {
-  addChild(new Command("Admin_LifeCycle_PolicyMyDesk"));
-  addChild(new Command("Admin_LifeCycle_AccessTypeMyDesk"));
-  addChild(new Command("Admin_LifeCycle_AccessSetMyDesk"));
+with (TABLE)  {
+  with (addField("name"))  {
+    addProperty("Expression",             "Name");
+    addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
+    addProperty("Label",                  "Admin_LifeCycle_AccessSet/Name.Label");
+    addProperty("ShowTypeIcon",           "true");
+  }
+  with (addField("buttonOpenInNewWindow"))  {
+    addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
+    addProperty("Target",                 "popup");
+    addIcon("eFapsActionNewWindow");
+  }
 }

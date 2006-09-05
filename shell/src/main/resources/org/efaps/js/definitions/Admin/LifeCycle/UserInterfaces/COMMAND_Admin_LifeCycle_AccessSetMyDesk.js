@@ -18,8 +18,12 @@
  * Last Changed By: $Author$
  */
 
-with (MENU)  {
-  addChild(new Command("Admin_LifeCycle_PolicyMyDesk"));
-  addChild(new Command("Admin_LifeCycle_AccessTypeMyDesk"));
-  addChild(new Command("Admin_LifeCycle_AccessSetMyDesk"));
+with (COMMAND)  {
+  addProperty("Target",                 "content");
+  addProperty("TargetQueryTypes",       "Admin_LifeCycle_AccessSet");
+  addProperty("TargetShowCheckBoxes",   "true");
+//  addIcon("eFapsAdminLifeCycleAccessType");
+  addTargetMenu("Admin_LifeCycle_AccessSetMyDesk_Menu");
+  addTargetTable("Admin_LifeCycle_AccessSetTable");
+  addRole("Administration");
 }

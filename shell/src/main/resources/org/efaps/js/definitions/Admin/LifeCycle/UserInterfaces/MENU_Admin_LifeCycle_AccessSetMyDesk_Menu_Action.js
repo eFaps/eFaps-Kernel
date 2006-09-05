@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Author:          tmo
  * Revision:        $Rev$
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
 
 with (MENU)  {
-  addChild(new Command("Admin_LifeCycle_PolicyMyDesk"));
-  addChild(new Command("Admin_LifeCycle_AccessTypeMyDesk"));
-  addChild(new Command("Admin_LifeCycle_AccessSetMyDesk"));
+  addChild(new Command("Admin_LifeCycle_AccessSetMyDesk_Menu_Action_Create"));
+  addChild(new Command("Admin_LifeCycle_AccessSetMyDesk_Menu_Action_Delete"));
 }
