@@ -960,6 +960,7 @@ function _eFapsCreateLifeCycleTablesStep1(_con, _stmt)  {
 
   eFapsCommonSQLTableCreate(_con, _stmt, "Access Sets", "LCACCESSSET", null,[
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["REVISION              "+TYPE_STRING_SHORT+"(10)"],
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
       ["CREATED               "+TYPE_DATETIME+"                  not null"],
       ["MODIFIER              "+TYPE_INTEGER+"                   not null"],

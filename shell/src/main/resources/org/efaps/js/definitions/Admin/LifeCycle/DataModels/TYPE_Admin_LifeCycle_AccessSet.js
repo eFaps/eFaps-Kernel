@@ -35,6 +35,11 @@ with (TYPE)  {
     setSQLTable("Admin_LifeCycle_AccessSetSQLTable");
     setSQLColumn("NAME");
   }
+  with (addAttribute("Revision"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_LifeCycle_AccessSetSQLTable");
+    setSQLColumn("REVISION");
+  }
   with (addAttribute("Creator"))  {
     setAttributeType("CreatorLink");
     setSQLTable("Admin_LifeCycle_AccessSetSQLTable");
