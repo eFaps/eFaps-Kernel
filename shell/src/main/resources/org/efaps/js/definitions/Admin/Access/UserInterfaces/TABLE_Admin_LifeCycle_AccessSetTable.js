@@ -25,6 +25,10 @@ with (TABLE)  {
     addProperty("Label",                  "Admin_LifeCycle_AccessSet/Name.Label");
     addProperty("ShowTypeIcon",           "true");
   }
+  with (addField("revision"))  {
+    addProperty("Expression",             "Revision");
+    addProperty("Label",                  "Admin_LifeCycle_AccessSet/Revision.Label");
+  }
   with (addField("buttonOpenInNewWindow"))  {
     addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
     addProperty("Target",                 "popup");
