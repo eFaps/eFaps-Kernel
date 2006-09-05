@@ -27,13 +27,6 @@ with (FORM)  {
     addProperty("Searchable",             "false");
     addProperty("ShowTypeIcon",           "true");
   }
-  with (addField("id"))  {
-    addProperty("Columns",                "20");
-    addProperty("Creatable",              "false");
-    addProperty("Editable",               "false");
-    addProperty("Expression",             "ID");
-    addProperty("Searchable",             "true");
-  }
   with (addField("name"))  {
     addProperty("Columns",                "20");
     addProperty("Creatable",              "true");
