@@ -988,7 +988,7 @@ function _eFapsCreateLifeCycleTablesStep1(_con, _stmt)  {
 }
 
 /**
- * The private functions creates all lifecycle tables
+ * The private functions creates all access tables
  *
  * @param _stmt SQL statement to work on
  */
