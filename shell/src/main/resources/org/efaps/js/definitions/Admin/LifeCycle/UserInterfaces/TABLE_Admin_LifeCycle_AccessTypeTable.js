@@ -18,10 +18,16 @@
  * Last Changed By: $Author$
  */
 
-with (COMMAND)  {
-  addProperty("Target",                 "content");
-  addProperty("TargetQueryTypes",       "Admin_LifeCycle_AccessType");
-  addIcon("eFapsAdminLifeCycleAccessType");
-  addTargetTable("Admin_LifeCycle_AccessTypeTable");
-  addRole("Administration");
+with (TABLE)  {
+  with (addField("id"))  {
+    addProperty("Expression",             "ID");
+    addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
+    addProperty("Label",                  "Admin_LifeCycle_AccessType/ID.Label");
+  }
+  with (addField("name"))  {
+    addProperty("Expression",             "Name");
+    addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
+    addProperty("Label",                  "Admin_LifeCycle_AccessType/Name.Label");
+    addProperty("ShowTypeIcon",           "true");
+  }
 }
