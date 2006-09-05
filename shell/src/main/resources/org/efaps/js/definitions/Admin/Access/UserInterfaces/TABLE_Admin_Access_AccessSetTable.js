@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:347 $
+ * Last Changed:    $Date:2006-09-06 00:08:24 +0200 (Mi, 06 Sep 2006) $
+ * Last Changed By: $Author:tmo $
  */
 
 with (TABLE)  {
   with (addField("name"))  {
     addProperty("Expression",             "Name");
     addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
-    addProperty("Label",                  "Admin_LifeCycle_AccessSet/Name.Label");
+    addProperty("Label",                  "Admin_Access_AccessSet/Name.Label");
     addProperty("ShowTypeIcon",           "true");
   }
   with (addField("revision"))  {
     addProperty("Expression",             "Revision");
-    addProperty("Label",                  "Admin_LifeCycle_AccessSet/Revision.Label");
+    addProperty("Label",                  "Admin_Access_AccessSet/Revision.Label");
   }
   with (addField("buttonOpenInNewWindow"))  {
     addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");

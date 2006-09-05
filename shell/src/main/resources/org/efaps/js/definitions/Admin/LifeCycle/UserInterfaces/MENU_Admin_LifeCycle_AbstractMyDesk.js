@@ -21,5 +21,4 @@
 with (MENU)  {
   addChild(new Command("Admin_LifeCycle_PolicyMyDesk"));
   addChild(new Command("Admin_LifeCycle_AccessTypeMyDesk"));
-  addChild(new Command("Admin_LifeCycle_AccessSetMyDesk"));
 }

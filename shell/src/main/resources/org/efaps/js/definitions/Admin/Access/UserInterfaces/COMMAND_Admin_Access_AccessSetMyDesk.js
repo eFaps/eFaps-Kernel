@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:347 $
+ * Last Changed:    $Date:2006-09-06 00:08:24 +0200 (Mi, 06 Sep 2006) $
+ * Last Changed By: $Author:tmo $
  */
 
 with (COMMAND)  {
   addProperty("Target",                 "content");
-  addProperty("TargetQueryTypes",       "Admin_LifeCycle_AccessSet");
+  addProperty("TargetQueryTypes",       "Admin_Access_AccessSet");
   addProperty("TargetShowCheckBoxes",   "true");
-//  addIcon("eFapsAdminLifeCycleAccessType");
-  addTargetMenu("Admin_LifeCycle_AccessSetMyDesk_Menu");
-  addTargetTable("Admin_LifeCycle_AccessSetTable");
+//  addIcon("eFapsAdminAccessAccessType");
+  addTargetMenu("Admin_Access_AccessSetMyDesk_Menu");
+  addTargetTable("Admin_Access_AccessSetTable");
   addRole("Administration");
 }

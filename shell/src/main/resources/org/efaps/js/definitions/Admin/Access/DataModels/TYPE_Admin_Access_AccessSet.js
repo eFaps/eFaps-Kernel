@@ -14,52 +14,52 @@
  * limitations under the License.
  *
  * Author:          tmo
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:347 $
+ * Last Changed:    $Date:2006-09-06 00:08:24 +0200 (Mi, 06 Sep 2006) $
+ * Last Changed By: $Author:tmo $
  */
 
 with (TYPE)  {
   with (addAttribute("OID"))  {
     setAttributeType("OID");
-    setSQLTable("Admin_LifeCycle_AccessSetSQLTable");
+    setSQLTable("Admin_Access_AccessSetSQLTable");
     setSQLColumn("ID");
   }
   with (addAttribute("ID"))  {
     setAttributeType("Integer");
-    setSQLTable("Admin_LifeCycle_AccessSetSQLTable");
+    setSQLTable("Admin_Access_AccessSetSQLTable");
     setSQLColumn("ID");
   }
   with (addAttribute("Name"))  {
     setAttributeType("String");
-    setSQLTable("Admin_LifeCycle_AccessSetSQLTable");
+    setSQLTable("Admin_Access_AccessSetSQLTable");
     setSQLColumn("NAME");
   }
   with (addAttribute("Revision"))  {
     setAttributeType("String");
-    setSQLTable("Admin_LifeCycle_AccessSetSQLTable");
+    setSQLTable("Admin_Access_AccessSetSQLTable");
     setSQLColumn("REVISION");
   }
   with (addAttribute("Creator"))  {
     setAttributeType("CreatorLink");
-    setSQLTable("Admin_LifeCycle_AccessSetSQLTable");
+    setSQLTable("Admin_Access_AccessSetSQLTable");
     setSQLColumn("CREATOR");
   }
   with (addAttribute("Created"))  {
     setAttributeType("Created");
-    setSQLTable("Admin_LifeCycle_AccessSetSQLTable");
+    setSQLTable("Admin_Access_AccessSetSQLTable");
     setSQLColumn("CREATED");
   }
   with (addAttribute("Modifier"))  {
     setAttributeType("ModifierLink");
-    setSQLTable("Admin_LifeCycle_AccessSetSQLTable");
+    setSQLTable("Admin_Access_AccessSetSQLTable");
     setSQLColumn("MODIFIER");
   }
   with (addAttribute("Modified"))  {
     setAttributeType("Modified");
-    setSQLTable("Admin_LifeCycle_AccessSetSQLTable");
+    setSQLTable("Admin_Access_AccessSetSQLTable");
     setSQLColumn("MODIFIED");
   }
 //  addProperty("Icon",                   "${ROOTURL}/servlet/image/eFapsAdminLifeCycleAccessType");
-  addProperty("Tree",                   "Admin_LifeCycle_AccessSetTree");
+  addProperty("Tree",                   "Admin_Access_AccessSetTree");
 }

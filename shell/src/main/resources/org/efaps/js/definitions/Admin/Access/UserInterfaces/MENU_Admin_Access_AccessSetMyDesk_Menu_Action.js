@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  * Author:          tmo
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:347 $
+ * Last Changed:    $Date:2006-09-06 00:08:24 +0200 (Mi, 06 Sep 2006) $
+ * Last Changed By: $Author:tmo $
  */
 
 with (MENU)  {
-  addChild(new Command("Admin_LifeCycle_AccessSetMyDesk_Menu_Action_Create"));
-  addChild(new Command("Admin_LifeCycle_AccessSetMyDesk_Menu_Action_Delete"));
+  addChild(new Command("Admin_Access_AccessSetMyDesk_Menu_Action_Create"));
+  addChild(new Command("Admin_Access_AccessSetMyDesk_Menu_Action_Delete"));
 }

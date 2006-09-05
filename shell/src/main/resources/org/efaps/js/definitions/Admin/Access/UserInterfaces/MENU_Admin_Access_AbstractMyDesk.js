@@ -13,15 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Author:          tmo
- * Revision:        $Rev:347 $
- * Last Changed:    $Date:2006-09-06 00:08:24 +0200 (Mi, 06 Sep 2006) $
- * Last Changed By: $Author:tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
-with (COMMAND)  {
-  addProperty("Target",                 "popup");
-  addProperty("TargetCreateType",       "Admin_Access_AccessSet");
-  addProperty("TargetMode",             "create");
-  addTargetForm("Admin_Access_AccessSetForm");
+with (MENU)  {
+  addChild(new Command("Admin_Access_AccessSetMyDesk"));
 }

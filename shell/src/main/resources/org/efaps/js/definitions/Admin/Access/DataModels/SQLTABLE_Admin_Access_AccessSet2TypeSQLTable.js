@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  * Author:          tmo
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:347 $
+ * Last Changed:    $Date:2006-09-06 00:08:24 +0200 (Mi, 06 Sep 2006) $
+ * Last Changed By: $Author:tmo $
  */
 
 with (SQLTABLE)  {
-  setSQLTable("LCACCESSSET2TYPE");
+  setSQLTable("ACCESSSET2TYPE");
   setSQLColumnID("ID");
 }
