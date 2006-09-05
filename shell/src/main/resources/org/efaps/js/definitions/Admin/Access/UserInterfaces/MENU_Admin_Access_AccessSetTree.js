@@ -24,5 +24,5 @@ with (MENU)  {
   addProperty("TargetMode",             "view");
   addTargetForm("Admin_Access_AccessSetForm");
   addTargetMenu("Admin_Access_AccessSetTree_Menu");
-  addChild(new Command("Admin_Access_AccessSetTree_Access"));
+  addChild(new Command("Admin_Access_AccessSetTree_AccessTypes"));
 }
