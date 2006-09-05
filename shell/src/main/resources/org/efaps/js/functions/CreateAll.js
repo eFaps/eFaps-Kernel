@@ -958,6 +958,29 @@ function _eFapsCreateLifeCycleTablesStep1(_con, _stmt)  {
     ")"
   );
 
+  eFapsCommonSQLTableCreate(_con, _stmt, "Access Sets", "LCACCESSSET", null,[
+      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+      ["CREATED               "+TYPE_DATETIME+"                  not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+      ["constraint LCACSST_UNIQUE      unique(NAME)"],
+      ["constraint LCACSST_FK_CRTR     foreign key(CREATOR)      references USERPERSON(ID)"],
+      ["constraint LCACSST_FK_MDFR     foreign key(MODIFIER)     references USERPERSON(ID)"]
+  ]);
+
+  eFapsCommonSQLTableCreate(_con, _stmt, "Link from Access Sets to Access Types", "LCACCESSSET2TYPE", null,[
+      ["LCACCESSSET           "+TYPE_INTEGER+"                   not null"],
+      ["LCACCESSTYPE          "+TYPE_INTEGER+"                   not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+      ["CREATED               "+TYPE_DATETIME+"                  not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+      ["constraint LCACSST2TP_UNIQUE   unique(LCACCESSSET,LCACCESSTYPE)"],
+      ["constraint LCACSST2TP_FK_CRTR  foreign key(CREATOR)      references USERPERSON(ID)"],
+      ["constraint LCACSST2TP_FK_MDFR  foreign key(MODIFIER)     references USERPERSON(ID)"]
+  ]);
+
   eFapsCommonSQLTableCreate(_con, _stmt, "Access Itself", "LCSTATUSACCESS", null,[
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
