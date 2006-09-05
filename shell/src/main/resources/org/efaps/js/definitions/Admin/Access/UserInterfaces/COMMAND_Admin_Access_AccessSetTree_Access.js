@@ -19,10 +19,12 @@
  * Last Changed By: $Author$
  */
 
-with (MENU)  {
+with (COMMAND)  {
   addProperty("Target",                 "content");
+  addProperty("TargetExpand",           "Admin_Access_AccessSet2Type\\AccessSetLink.AccessTypeLink");
   addProperty("TargetMode",             "view");
-  addTargetForm("Admin_Access_AccessSetForm");
-  addTargetMenu("Admin_Access_AccessSetTree_Menu");
-  addChild(new Command("Admin_Access_AccessSetTree_Access"));
+  addProperty("TargetShowCheckBoxes",   "true");
+//  addIcon("Admin_User_GroupListImage");
+//  addTargetMenu("Admin__PersonTree_Groups_Menu");
+  addTargetTable("Admin_LifeCycle_AccessTypeTable");
 }
