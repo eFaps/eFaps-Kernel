@@ -19,7 +19,7 @@
  * Last Changed By: $Author$
  */
 
-with (SEARCH)  {
-  addChild(new Menu("Admin_Access_AccessSetTree_AccessTypes_Menu_AddExisting_Action"));
+with (MENU)  {
+  addChild(new Command("Admin_Access_AccessSetTree_AccessTypes_Menu_Action_AddExisting_Search_Action_AccessTypes"));
 }
 
