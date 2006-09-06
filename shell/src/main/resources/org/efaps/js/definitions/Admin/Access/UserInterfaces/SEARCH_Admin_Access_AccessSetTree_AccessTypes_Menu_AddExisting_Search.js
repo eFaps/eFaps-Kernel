@@ -14,17 +14,12 @@
  * limitations under the License.
  *
  * Author:          tmo
- * Revision:        $Rev:354 $
- * Last Changed:    $Date:2006-09-06 01:13:53 +0200 (Mi, 06 Sep 2006) $
- * Last Changed By: $Author:tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
-with (COMMAND)  {
-  addProperty("Target",                 "content");
-  addProperty("TargetExpand",           "Admin_Access_AccessSet2Type\\AccessSetLink.AccessTypeLink");
-  addProperty("TargetMode",             "view");
-  addProperty("TargetShowCheckBoxes",   "true");
-//  addIcon("Admin_User_GroupListImage");
-  addTargetMenu("Admin_Access_AccessSetTree_AccessTypes_Menu");
-  addTargetTable("Admin_LifeCycle_AccessTypeTable");
+with (SEARCH)  {
+  addChild(new Menu("Admin_Access_AccessSetTree_AccessTypes_Menu_AddExisting_Action"));
 }
+

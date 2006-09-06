@@ -20,11 +20,6 @@
  */
 
 with (COMMAND)  {
-  addProperty("Target",                 "content");
-  addProperty("TargetExpand",           "Admin_Access_AccessSet2Type\\AccessSetLink.AccessTypeLink");
-  addProperty("TargetMode",             "view");
-  addProperty("TargetShowCheckBoxes",   "true");
-//  addIcon("Admin_User_GroupListImage");
-  addTargetMenu("Admin_Access_AccessSetTree_AccessTypes_Menu");
-  addTargetTable("Admin_LifeCycle_AccessTypeTable");
+  addProperty("Target",                 "popup");
+  addTargetSearch("Admin_Access_AccessSetTree_AccessTypes_Menu_Action_AddExisting_Search");
 }
