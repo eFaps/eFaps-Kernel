@@ -1,3 +1,24 @@
+/*
+ * Copyright 2006 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Author:          tmo
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
+
 eFapsMenu.prototype.imageBullet = "/eFaps/images/eFapsButtonSmallDefault.gif";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -833,28 +854,23 @@ function checkFormForRequirements(_form)
   var errorMsg = "";
 
   //ermittle die formulartabelle
-  while (i < tables.length && formTable == null)
-  {
-    if(tables[i].className == "eFapsForm")
-    {
+  while ((i < tables.length) && (formTable == null))  {
+    if(tables[i].className == "eFapsForm")  {
       formTable = tables[i];
     }
+    i++;
   }
 
-  if (formTable != null)
-  {
+  if (formTable != null)  {
     var tableRows = formTable.getElementsByTagName("tr");
     var rowFields = new Array();
     var fieldInputs = new Array();
 
-	for (i = tableRows.length-1; i >= 0; i--)
-    {
+    for (i = tableRows.length-1; i >= 0; i--)  {
       rowFields = tableRows[i].getElementsByTagName("td");
-      if (rowFields.length > 1)
-      {
-        if (rowFields[0].className == "eFapsFormLabelRequired")
-        {
-		  //checke 'input' felder die einen text enthalten können
+      if (rowFields.length > 1)  {
+        if (rowFields[0].className == "eFapsFormLabelRequired")  {
+          //checke 'input' felder die einen text enthalten können
           fieldInputs = rowFields[1].getElementsByTagName("input");
           if (fieldInputs.length > 0 &&
             (fieldInputs[0].type == null || fieldInputs[0].type == "" || 
@@ -869,8 +885,8 @@ function checkFormForRequirements(_form)
             }
           }
 
-		  //checke 'textarea' felder
-		  fieldInputs = rowFields[1].getElementsByTagName("textarea");
+          // check fields of type 'textarea'
+          fieldInputs = rowFields[1].getElementsByTagName("textarea");
           if (fieldInputs.length > 0 &&
             (fieldInputs[0].value == null || fieldInputs[0].value == ""))
           {
@@ -878,10 +894,9 @@ function checkFormForRequirements(_form)
             fieldInputs[0].focus();
           }
 
-		  //checke 'selection' felder
+          // check fields of type 'select'
           fieldInputs = rowFields[1].getElementsByTagName("select");
-          if (fieldInputs.length > 0)
-          {
+          if (fieldInputs.length > 0)  {
             var selectionOptions = fieldInputs[0].options;
             var hasQualifiedSelection = false;
             for (var j = 0; j < selectionOptions.length && !hasQualifiedSelection; j++)
