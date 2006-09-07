@@ -42,7 +42,7 @@ set CP=%CP%;%shellPathLib%\log4j-1.2.9.jar
 set CP=%CP%;%shellPathLib%\commons-logging-1.0.4.jar
 
 Rem digester to read xml files
-set CP=%CP%;%shellPathLib%\commons-digester-1.6.jar
+set CP=%CP%;%shellPathLib%\commons-digester-1.7.jar
 set CP=%CP%;%shellPathLib%\commons-beanutils-1.6.jar
 
 REM used for toString methods

@@ -83,7 +83,7 @@ CP=$CP:$shellPathLib/log4j-1.2.9.jar
 CP=$CP:$shellPathLib/commons-logging-1.0.4.jar
 
 # digester to read xml files
-CP=$CP:$shellPathLib/commons-digester-1.6.jar
+CP=$CP:$shellPathLib/commons-digester-1.7.jar
 CP=$CP:$shellPathLib/commons-beanutils-1.6.jar
 
 # used for toString methods
