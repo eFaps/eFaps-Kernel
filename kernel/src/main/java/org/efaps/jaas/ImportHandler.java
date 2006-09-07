@@ -201,7 +201,6 @@ public class ImportHandler extends LoginHandler  {
    */
   protected void updatePersons()  {
     for (PersonMapper persMapper : this.persMappers)  {
-System.out.println("update person '" + persMapper.name + "'");
       if (LOG.isDebugEnabled())  {
         LOG.debug("update person '" + persMapper.name + "'");
       }
