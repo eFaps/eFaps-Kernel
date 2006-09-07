@@ -73,6 +73,14 @@
       <scope>compile</scope>
     </dependency>
 
+    <!-- For reading XML files -->
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>1.7</version>
+      <scope>compile</scope>
+    </dependency>
+
     <!-- logging purpose -->
     <dependency>
       <groupId>commons-logging</groupId>

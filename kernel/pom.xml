@@ -15,9 +15,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev: 207 $
- Last Changed:    $Date: 2006-05-01 11:37:19 +0200 (Mon, 01 May 2006) $
- Last Changed By: $Author: tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -106,7 +106,7 @@
     <dependency>
       <groupId>commons-digester</groupId>
       <artifactId>commons-digester</artifactId>
-      <version>1.6</version>
+      <version>1.7</version>
       <scope>provided</scope>
     </dependency>
 
