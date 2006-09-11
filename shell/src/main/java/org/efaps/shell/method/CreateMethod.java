@@ -29,6 +29,7 @@ import org.efaps.util.EFapsException;
 
 /**
  *
+ * @todo descriptionâ
  * @author tmo
  * @version $Id$
  */
@@ -38,10 +39,9 @@ public final class CreateMethod extends AbstractJavaScriptMethod  {
   // instance methods
 
   /**
-   * The import of persons is started. First the cache is reloaded and then
-   * the import itself is done.
    *
    * @todo remove Exception
+   * @todo descriptionâ
    */
   public void doMethod() throws EFapsException,Exception {
     StringReader reader = new StringReader("eFapsCreateAll();");
