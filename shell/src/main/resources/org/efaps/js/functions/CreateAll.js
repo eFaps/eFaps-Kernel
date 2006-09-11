@@ -997,12 +997,14 @@ function _eFapsCreateAccessTablesStep1(_con, _stmt)  {
 
   eFapsCommonSQLTableCreate(_con, _stmt, "Access Sets", "ACCESSSET", null,[
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["REVISION              "+TYPE_STRING_SHORT+"(10)"],
+      ["UUID                  "+TYPE_STRING_SHORT+"(128)"],
+      ["REVISION              "+TYPE_STRING_SHORT+"(40)"],
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
       ["CREATED               "+TYPE_DATETIME+"                  not null"],
       ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
       ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["constraint ACSST_UNIQUE        unique(NAME)"],
+      ["constraint ACSST_NAME_UQ       unique(NAME)"],
+      ["constraint ACSST_UUID_UQ       unique(UUID)"],
       ["constraint ACSST_FK_CRTR       foreign key(CREATOR)      references USERPERSON(ID)"],
       ["constraint ACSST_FK_MDFR       foreign key(MODIFIER)     references USERPERSON(ID)"]
   ]);

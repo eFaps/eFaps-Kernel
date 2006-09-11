@@ -35,6 +35,11 @@ with (TYPE)  {
     setSQLTable("Admin_Access_AccessSetSQLTable");
     setSQLColumn("NAME");
   }
+  with (addAttribute("UUID"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_Access_AccessSetSQLTable");
+    setSQLColumn("UUID");
+  }
   with (addAttribute("Revision"))  {
     setAttributeType("String");
     setSQLTable("Admin_Access_AccessSetSQLTable");
