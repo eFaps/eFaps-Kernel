@@ -29,6 +29,7 @@ import org.efaps.util.EFapsException;
 
 /**
  *
+ * @todo descriptionâ
  * @author tmo
  * @version $Id$
  */
@@ -38,9 +39,8 @@ public final class ShellMethod extends AbstractJavaScriptMethod  {
   // instance methods
 
   /**
-   * The import of persons is started. First the cache is reloaded and then
-   * the import itself is done.
    *
+   * @todo descriptionâ
    * @todo remove Exception
    */
   public void doMethod() throws EFapsException,Exception {
