@@ -34,6 +34,23 @@ import org.efaps.util.EFapsException;
  */
 public abstract class AbstractMethod  {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * The instance variable stores the login name of the current user.
+   */
+  private String userName = null;
+
+  /**
+   * All arguments given to the shell after defining the method are stored
+   * in this instance variable. The value is automatically set by the shell.
+   */
+  private String[] arguments = null;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
+
   /**
    * @todo remove Exception
    * @todo description
@@ -64,7 +81,8 @@ public abstract class AbstractMethod  {
    */
   protected void startTransaction() throws EFapsException,Exception  {
     getTransactionManager().begin();
-    Context.newThreadContext(getTransactionManager().getTransaction());
+    Context.newThreadContext(getTransactionManager().getTransaction(),
+                             this.userName);
   }
   
   /**
@@ -90,5 +108,44 @@ public abstract class AbstractMethod  {
    */
   protected TransactionManager getTransactionManager()  {
     return Shell.transactionManager;
+  }
+
+  /**
+   * The user with given user name and password makes a login.
+   *
+   * @param _userName   name of user who wants to make a login
+   * @param _password   password of the user used to check
+   * @throws EFapsException if the user could not login
+   * @see #userName
+   * @todo real login with check of password
+   */
+  protected void login(final String _userName, 
+                       final String _password) throws EFapsException {
+    this.userName = _userName;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // getter and setter instance methods
+
+  /**
+   * This is the getter method for instance variable {@link #arguments}.
+   *
+   * @return value of instance variable {@link #arguments}
+   * @see #setArguments
+   * @see #arguments
+   */
+  public String[] getArguments()  {
+    return this.arguments;
+  }
+
+  /**
+   * This is the setter method for instance variable {@link #arguments}.
+   *
+   * @param _args new value for instance variable {@link #arguments}
+   * @see #getArguments
+   * @see #arguments
+   */
+  public void setArguments(final String[] _arguments)  {
+    this.arguments = _arguments;
   }
 }

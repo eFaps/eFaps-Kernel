@@ -75,21 +75,28 @@ public class Shell {
   public static void main(String _args[]) throws Exception  {
 
 // read input arguments
-boolean create = false;
-boolean shell = false;
-boolean importPersons = false;
 String bootstrap = null;
-for (int i=0; i<_args.length; i++)  {
+Class < AbstractMethod > methodClass = null;
+String[] args = null;
+for (int i = 0; i < _args.length; i++)  {
   if (_args[i].equals("-bootstrap"))  {
     bootstrap = _args[++i];
-  } else if (_args[i].equals("-create"))  {
-    create = true;
-  } else if (_args[i].equals("-importPersons"))  {
-    importPersons = true;
-  } else if (_args[i].equals("-shell"))  {
-    shell = true;
   } else  {
-    throw new Exception("unknown parameter "+_args[i]);
+    String className = "org.efaps.shell.method." 
+            + _args[i].substring(1,2).toUpperCase()
+            + _args[i].substring(2)
+            + "Method";
+
+    try  {
+      methodClass = (Class < AbstractMethod >)Class.forName(className);
+      args = new String[_args.length - i - 1];
+      for (int j = i + 1, k = 0; j < _args.length; j++, k++)  {
+        args[k] = _args[j];
+      }
+      break;
+    } catch (ClassNotFoundException e)  {
+      throw new Exception("unknown parameter "+_args[i]);
+    }
   }
 }
 
@@ -97,7 +104,7 @@ if (bootstrap==null)  {
   throw new Exception("Unknown Bootstrap.");
 }
 
-// read properties
+// read bootstrap properties
 Properties props = new Properties();
 FileInputStream fstr = new FileInputStream(bootstrap);
 props.loadFromXML(fstr);
@@ -127,34 +134,18 @@ ObjectFactory of = (ObjectFactory)(Class.forName(ref.getFactoryClassName())).new
 DataSource ds = (DataSource)of.getObjectInstance(ref, null, null, null);
 Context.setDataSource(ds);
 
-
-
-
 context = new Context();
 
 
-if (create)  {
+if (methodClass != null)  {
   try {
-    AbstractMethod method = new org.efaps.shell.method.CreateMethod();
+    AbstractMethod method = methodClass.newInstance();
+    method.setArguments(args);
     method.execute();
   } catch (Throwable e)  {
     e.printStackTrace();
   }
-} else if (importPersons)  {
-  try {
-    AbstractMethod method = new org.efaps.shell.method.ImportPersonsMethod();
-    method.execute();
-  } catch (Throwable e)  {
-    e.printStackTrace();
-  }
-} else if (shell)  {
-  try {
-    AbstractMethod method = new org.efaps.shell.method.ShellMethod();
-    method.execute();
-  } catch (Throwable e)  {
-    e.printStackTrace();
-  }
-} else  {
+/*} else  {
 org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
 
 Global global = Main.getGlobal();
@@ -168,6 +159,7 @@ Main.evaluateScript(cx, global, in, null, "Init", 1, null);
 context = new Context(Person.get("Administrator"));
   StringReader reader = new StringReader("shell()");
   Main.evaluateScript(cx, Main.getGlobal(), reader, null, "<stdin>", 0, null);
+*/
 }
 
 
