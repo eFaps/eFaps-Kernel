@@ -22,44 +22,44 @@
 with (TYPE)  {
   with (addAttribute("OID"))  {
     setAttributeType("OID");
-    setSQLTable("Admin_Access_AccessSet2TypeSQLTable");
+    setSQLTable("Admin_Access_AccessSet2DataModelTypeSQLTable");
     setSQLColumn("ID");
   }
   with (addAttribute("ID"))  {
     setAttributeType("Integer");
-    setSQLTable("Admin_Access_AccessSet2TypeSQLTable");
+    setSQLTable("Admin_Access_AccessSet2DataModelTypeSQLTable");
     setSQLColumn("ID");
   }
   with (addAttribute("Creator"))  {
     setAttributeType("CreatorLink");
-    setSQLTable("Admin_Access_AccessSet2TypeSQLTable");
+    setSQLTable("Admin_Access_AccessSet2DataModelTypeSQLTable");
     setSQLColumn("CREATOR");
   }
   with (addAttribute("Created"))  {
     setAttributeType("Created");
-    setSQLTable("Admin_Access_AccessSet2TypeSQLTable");
+    setSQLTable("Admin_Access_AccessSet2DataModelTypeSQLTable");
     setSQLColumn("CREATED");
   }
   with (addAttribute("Modifier"))  {
     setAttributeType("ModifierLink");
-    setSQLTable("Admin_Access_AccessSet2TypeSQLTable");
+    setSQLTable("Admin_Access_AccessSet2DataModelTypeSQLTable");
     setSQLColumn("MODIFIER");
   }
   with (addAttribute("Modified"))  {
     setAttributeType("Modified");
-    setSQLTable("Admin_Access_AccessSet2TypeSQLTable");
+    setSQLTable("Admin_Access_AccessSet2DataModelTypeSQLTable");
     setSQLColumn("MODIFIED");
   }
   with (addAttribute("AccessSetLink"))  {
     setAttributeType("Link");
     setTypeLink("Admin_Access_AccessSet");
-    setSQLTable("Admin_Access_AccessSet2TypeSQLTable");
+    setSQLTable("Admin_Access_AccessSet2DataModelTypeSQLTable");
     setSQLColumn("ACCESSSET");
   }
-  with (addAttribute("AccessTypeLink"))  {
+  with (addAttribute("DataModelTypeLink"))  {
     setAttributeType("Link");
     setTypeLink("Admin_LifeCycle_AccessType");
-    setSQLTable("Admin_Access_AccessSet2TypeSQLTable");
+    setSQLTable("Admin_Access_AccessSet2DataModelTypeSQLTable");
     setSQLColumn("ACCESSTYPE");
   }
 }

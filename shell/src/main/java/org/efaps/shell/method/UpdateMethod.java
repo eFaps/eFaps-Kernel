@@ -21,6 +21,7 @@
 package org.efaps.shell.method;
 
 import org.efaps.shell.method.update.AccessSetUpdate;
+import org.efaps.shell.method.update.AccessTypeUpdate;
 
 import org.efaps.util.EFapsException;
 
@@ -43,8 +44,16 @@ public final class UpdateMethod extends AbstractMethod  {
     reloadCache();
     startTransaction();
     for (int i = 0; i < getArguments().length; i++)  {
+      AccessTypeUpdate update = AccessTypeUpdate.readXMLFile(getArguments()[i]);
+      if (update != null)  {
+        update.updateInDB();
+      }
+    }
+    for (int i = 0; i < getArguments().length; i++)  {
       AccessSetUpdate update = AccessSetUpdate.readXMLFile(getArguments()[i]);
-      update.updateInDB();
+      if (update != null)  {
+        update.updateInDB();
+      }
     }
     commitTransaction();
   }

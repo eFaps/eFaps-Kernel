@@ -616,7 +616,7 @@ function _eFapsCreateDataModelTablesStep1(_con, _stmt)  {
       ["SQLCACHEEXPR          "+TYPE_STRING_SHORT+"(50)"],
       ["constraint DMTYPE_FK_PRNTDMTP  foreign key(PARENTDMTYPE) references DMTYPE(ID)"]
   ]);
-
+/*
   eFapsCommonSQLTableCreate(_con, _stmt, "connection of policies for type definitions", "DMTYPE2POLICY", null,[
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
       ["CREATED               "+TYPE_DATETIME+"                  not null"],
@@ -629,7 +629,7 @@ function _eFapsCreateDataModelTablesStep1(_con, _stmt)  {
       ["constraint DMTPE2PLCY_FK_DMTP  foreign key(DMTYPE)       references DMTYPE(ID)"],
       ["constraint DMTPE2PLCY_FK_PLCY  foreign key(LCPOLICY)     references LCPOLICY(ID)"]
   ]);
-
+*/
   _exec(_stmt, "Table 'DMATTRIBUTETYPE'", "attribute types",
     "create table DMATTRIBUTETYPE ("+
       "ID                    "+TYPE_INTEGER+"                   not null,"+
@@ -943,21 +943,6 @@ function _eFapsCreateLifeCycleTablesStep1(_con, _stmt)  {
       ["constraint LCSTS_FK_LCPOLICY   foreign key(LCPOLICY)     references LCPOLICY(ID)"]
   ]);
 
-  _exec(_stmt, "Table 'LCACCESSTYPE'", "Access Types",
-    "create table LCACCESSTYPE ("+
-      "ID                    "+TYPE_INTEGER+"                   not null,"+
-      "NAME                  "+TYPE_STRING_SHORT+"(128)         not null,"+
-      "CREATOR               "+TYPE_INTEGER+"                   not null,"+
-      "CREATED               "+TYPE_DATETIME+"                  not null,"+
-      "MODIFIER              "+TYPE_INTEGER+"                   not null,"+
-      "MODIFIED              "+TYPE_DATETIME+"                  not null,"+
-      "constraint LCACCESSTP_PK_ID    primary key(ID),"+
-      "constraint LCACCESSTP_UK_NAME  unique(NAME),"+
-      "constraint LCACCESSTP_FK_CRTR  foreign key(CREATOR)      references USERPERSON(ID),"+
-      "constraint LCACCESSTP_FK_MDFR  foreign key(MODIFIER)     references USERPERSON(ID)"+
-    ")"
-  );
-
   eFapsCommonSQLTableCreate(_con, _stmt, "Access Itself", "LCSTATUSACCESS", null,[
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
@@ -971,20 +956,9 @@ function _eFapsCreateLifeCycleTablesStep1(_con, _stmt)  {
       ["constraint LCSTSACS_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID)"],
       ["constraint LCSTSACS_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"],
       ["constraint LCSTSACS_FK_STS     foreign key(LCSTATUS)     references LCSTATUS(ID)"],
-      ["constraint LCSTSACS_FK_ACSTP   foreign key(LCACCESSTYPE) references LCACCESSTYPE(ID)"],
+      ["constraint LCSTSACS_FK_ACSTP   foreign key(LCACCESSTYPE) references ACCESSTYPE(ID)"],
       ["constraint LCSTSACS_FK_USR     foreign key(USERABSTRACT) references USERABSTRACT(ID)"]
   ]);
-
-  var text = "Insert all access types";
-  _exec(_stmt, text, "",   "insert into LCACCESSTYPE values (100,'show',    1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")");
-  _exec(_stmt, null, null, "insert into LCACCESSTYPE values (101,'read',    1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")");
-  _exec(_stmt, null, null, "insert into LCACCESSTYPE values (102,'modify',  1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")");
-  _exec(_stmt, null, null, "insert into LCACCESSTYPE values (110,'create',  1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")");
-  _exec(_stmt, null, null, "insert into LCACCESSTYPE values (111,'delete',  1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")");
-  _exec(_stmt, null, null, "insert into LCACCESSTYPE values (120,'checkout',1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")");
-  _exec(_stmt, null, null, "insert into LCACCESSTYPE values (121,'checkin', 1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")");
-  _exec(_stmt, null, null, "insert into LCACCESSTYPE values (130,'promote', 1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")");
-  _exec(_stmt, null, null, "insert into LCACCESSTYPE values (131,'demote',  1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")");
 }
 
 /**
@@ -994,6 +968,20 @@ function _eFapsCreateLifeCycleTablesStep1(_con, _stmt)  {
  */
 function _eFapsCreateAccessTablesStep1(_con, _stmt)  {
   print("Create Access Tables");
+
+  eFapsCommonSQLTableCreate(_con, _stmt, "Access Types", "ACCESSTYPE", null,[
+      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["UUID                  "+TYPE_STRING_SHORT+"(128)"],
+      ["REVISION              "+TYPE_STRING_SHORT+"(40)"],
+      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+      ["CREATED               "+TYPE_DATETIME+"                  not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+      ["constraint ACCESSTP_PK_ID      primary key(ID)"],
+      ["constraint ACCESSTP_UK_NAME    unique(NAME)"],
+      ["constraint ACCESSTP_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID)"],
+      ["constraint ACCESSTP_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"]
+  ]);
 
   eFapsCommonSQLTableCreate(_con, _stmt, "Access Sets", "ACCESSSET", null,[
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
@@ -1010,15 +998,31 @@ function _eFapsCreateAccessTablesStep1(_con, _stmt)  {
   ]);
 
   eFapsCommonSQLTableCreate(_con, _stmt, "Link from Access Sets to Access Types", "ACCESSSET2TYPE", null,[
-      ["LCACCESSSET           "+TYPE_INTEGER+"                   not null"],
-      ["LCACCESSTYPE          "+TYPE_INTEGER+"                   not null"],
+      ["ACCESSSET             "+TYPE_INTEGER+"                   not null"],
+      ["ACCESSTYPE            "+TYPE_INTEGER+"                   not null"],
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
       ["CREATED               "+TYPE_DATETIME+"                  not null"],
       ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
       ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["constraint ACSST2TP_UNIQUE     unique(LCACCESSSET,LCACCESSTYPE)"],
+      ["constraint ACSST2TP_UNIQUE     unique(ACCESSSET,ACCESSTYPE)"],
+      ["constraint ACSST2TP_FK_SET     foreign key(ACCESSSET)    references ACCESSSET(ID)"],
+      ["constraint ACSST2TP_FK_TYPE    foreign key(ACCESSTYPE)   references ACCESSTYPE(ID)"],
       ["constraint ACSST2TP_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID)"],
       ["constraint ACSST2TP_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"]
+  ]);
+
+  eFapsCommonSQLTableCreate(_con, _stmt, "Link from Access Sets to Data Model Types", "ACCESSSET2DMTYPE", null,[
+      ["ACCESSSET             "+TYPE_INTEGER+"                   not null"],
+      ["DMTYPE                "+TYPE_INTEGER+"                   not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+      ["CREATED               "+TYPE_DATETIME+"                  not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+      ["constraint ACSST2DMTP_UNIQUE   unique(ACCESSSET,DMTYPE)"],
+      ["constraint ACSST2DMTP_FK_SET   foreign key(ACCESSSET)    references ACCESSSET(ID)"],
+      ["constraint ACSST2DMTP_FK_TYPE  foreign key(DMTYPE)       references DMTYPE(ID)"],
+      ["constraint ACSST2DMTP_FK_CRTR  foreign key(CREATOR)      references USERPERSON(ID)"],
+      ["constraint ACSST2DMTP_FK_MDFR  foreign key(MODIFIER)     references USERPERSON(ID)"]
   ]);
 }
 
@@ -1082,9 +1086,9 @@ function createAll()  {
     if (eFapsCommonVersionGet(con,stmt) < 1)  {
       _eFapsCreateUserTablesStep1     (con, stmt);
       _eFapsCreateCommonTablesStep1   (con, stmt);
-      _eFapsCreateLifeCycleTablesStep1(con, stmt);
-      _eFapsCreateAccessTablesStep1   (con, stmt);
       _eFapsCreateDataModelTablesStep1(con, stmt);
+      _eFapsCreateAccessTablesStep1   (con, stmt);
+      _eFapsCreateLifeCycleTablesStep1(con, stmt);
       _eFapsCreateUITablesStep1       (con, stmt);
       _eFapsCreateCommonTablesStep2   (con, stmt);
       _eFapsCreateDataModelTablesStep2(con, stmt);

@@ -35,6 +35,16 @@ with (TYPE)  {
     setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
     setSQLColumn("NAME");
   }
+  with (addAttribute("UUID"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
+    setSQLColumn("UUID");
+  }
+  with (addAttribute("Revision"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
+    setSQLColumn("REVISION");
+  }
   with (addAttribute("Creator"))  {
     setAttributeType("CreatorLink");
     setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");

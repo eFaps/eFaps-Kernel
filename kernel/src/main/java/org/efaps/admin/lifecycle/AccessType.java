@@ -93,7 +93,7 @@ public class AccessType extends LifeCycleObject  {
             "select "+
               "ID,"+
               "NAME "+
-            "from LCACCESSTYPE "+
+            "from ACCESSTYPE "+
             "where ID="+_id
         );
         if (rs.next())  {
