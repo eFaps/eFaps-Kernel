@@ -107,7 +107,9 @@ public class AccessTypeUpdate extends AbstractUpdate  {
   // getter and setter methods
 
   /**
+   * Returns a string representation with values of all instance variables.
    *
+   * @return string representation of this access type update
    */
   public String toString()  {
     return new ToStringBuilder(this).
@@ -226,7 +228,11 @@ e.printStackTrace();
     }
 
     /**
+     * Returns a string representation with values of all instance variables
+     * of a definition.
      *
+     * @return string representation of this definition of an access type 
+     *         update
      */
     public String toString()  {
       return new ToStringBuilder(this).

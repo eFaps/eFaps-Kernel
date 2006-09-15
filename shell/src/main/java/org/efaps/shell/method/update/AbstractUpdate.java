@@ -173,7 +173,9 @@ public abstract class AbstractUpdate  {
   }
   
   /**
+   * Returns a string representation with values of all instance variables.
    *
+   * @return string representation of this abstract update
    */
   public String toString()  {
     return new ToStringBuilder(this).
