@@ -18,19 +18,18 @@
 package org.efaps.db;
 
 import java.util.Hashtable;
+import java.util.UUID;
 
 /**
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public interface CacheInterface  {
 
-//  public static String getViewableName(Context _context, int _id);
-
-  public String getViewableName(Context _context);
-
   public String getName();
 
+  public UUID getUUID();
+
   public long getId();
-
-//  public static CacheInterface getObject(Context _context, int _id);
-
 }

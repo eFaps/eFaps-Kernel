@@ -29,7 +29,9 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.SQLTable;
@@ -46,6 +48,29 @@ import org.efaps.db.Context;
  * @version $Id$
  */
 public class Cache<K extends CacheInterface>  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   *
+   * @see #get(Long)
+   */
+  private final Map < Long, K > cache4Id = new Hashtable < Long, K > ();
+
+  /**
+   *
+   * @see #get(String)
+   */
+  private final Map < String, K > cache4Name = new Hashtable < String, K > ();
+
+  /**
+   * @see #get(UUID)
+   */
+  private final Map < UUID, K > cache4UUID = new Hashtable < UUID, K > ();
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors
 
   public Cache()  {
 caches.add(this);
@@ -68,12 +93,31 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
     rs.close();
   }
 */
-  public K get(long _id)  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
+
+  /**
+   *
+   * @see #cache4Id
+   */
+  public K get(final long _id)  {
     return getCache4Id().get(new Long(_id));
   }
 
-  public K get(String _name)  {
+  /**
+   *
+   * @see #cache4Name
+   */
+  public K get(final String _name)  {
     return getCache4Name().get(_name);
+  }
+
+  /**
+   * @see #cache4UUID
+   */
+  public K get(final UUID _uuid)  {
+    return this.cache4UUID.get(_uuid);
   }
 
   /**
@@ -84,9 +128,12 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
    * @param _cacheObj cache object to add
    * @see #get
    */
-  public void add(K _cacheObj)  {
+  public void add(final K _cacheObj)  {
     getCache4Id().put(new Long(_cacheObj.getId()), _cacheObj);
     getCache4Name().put(_cacheObj.getName(), _cacheObj);
+    if (_cacheObj.getUUID() != null)  {
+      this.cache4UUID.put(_cacheObj.getUUID(), _cacheObj);
+    }
   }
 
   /**
@@ -95,15 +142,10 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
    * @return <i>true</i> if the cache has some entries, otherwise <i>false</i>
    */
   public boolean hasEntries()  {
-    return (getCache4Id().size() > 0) || (getCache4Name().size() > 0);
+    return (getCache4Id().size() > 0) 
+            || (getCache4Name().size() > 0) 
+            || (this.cache4UUID.size() > 0);
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance variables
-
-  private Hashtable<Long,K> cache4Id = new Hashtable<Long,K>();
-
-  private Hashtable<String,K> cache4Name = new Hashtable<String,K>();
 
   /////////////////////////////////////////////////////////////////////////////
   // getter and setter methods
@@ -111,14 +153,14 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
   /**
    *
    */
-  public Map<Long,K> getCache4Id()  {
+  public Map < Long, K > getCache4Id()  {
     return this.cache4Id;
   }
 
   /**
    *
    */
-  protected Map<String,K> getCache4Name()  {
+  protected Map < String, K > getCache4Name()  {
     return this.cache4Name;
   }
 
@@ -148,13 +190,14 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
   /**
    *
    */
-  public static Set<Cache> caches = Collections.synchronizedSet(new HashSet<Cache>());
+  public static Set < Cache > caches 
+                          = Collections.synchronizedSet(new HashSet<Cache>());
 
   /**
    * The static method removes all values in the caches. The datamodel cache
    * is initialised automatically.
    */
-  public static void reloadCache(Context _context) throws Exception {
+  public static void reloadCache(final Context _context) throws Exception {
     synchronized(caches)  {
       for (Cache cache : caches)  {
         cache.getCache4Id().clear();
@@ -167,6 +210,7 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
       SQLTable.initialise(_context);
       Type.initialise(_context);
       Attribute.initialise(_context);
+      AccessType.initialise(_context);
       UserInterfaceObject.initialise(_context);
       EventDefinition.initialise(_context);
     }

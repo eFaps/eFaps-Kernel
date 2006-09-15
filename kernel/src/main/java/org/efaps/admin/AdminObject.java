@@ -22,6 +22,7 @@ package org.efaps.admin;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -102,7 +103,7 @@ static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClass
    *
    * @see #getUUID
    */
-  private final String uuid;
+  private final UUID uuid;
 
   /**
    * This is the instance variable for the name of this admin object.
@@ -138,7 +139,7 @@ static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClass
                         final String _uuid, 
                         final String _name)  {
     this.id = _id;
-    this.uuid = (_uuid == null) ? null : _uuid.trim();
+    this.uuid = (_uuid == null) ? null : UUID.fromString(_uuid.trim());
     setName(_name);
   }
 
@@ -221,7 +222,7 @@ static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClass
    * @return value of instance variable {@uuid}
    * @see #uuid
    */
-  public String getUUID()  {
+  public UUID getUUID()  {
     return this.uuid;
   }
 

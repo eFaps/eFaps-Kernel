@@ -28,10 +28,14 @@ import java.util.Map;
 import java.util.Set;
 
 import org.efaps.admin.user.Role;
+import org.efaps.admin.access.AccessType;
 import org.efaps.db.Cache;
 import org.efaps.db.Context;
 
 /**
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class Status extends LifeCycleObject  {
 
@@ -69,7 +73,7 @@ private void addAccess(Role _role, AccessType _accessType)  {
 Map<Role,Set<AccessType>> access = new Hashtable<Role,Set<AccessType>>();
 
 public boolean checkAccess(Context _context, long _accessType) throws Exception  {
-  return checkAccess(_context, AccessType.get(_context, _accessType));
+  return checkAccess(_context, AccessType.getAccessType(_accessType));
 }
 
 public boolean checkAccess(Context _context, AccessType _accessType)  {
@@ -153,7 +157,7 @@ public boolean checkAccess(Context _context, AccessType _accessType)  {
       while (rs.next())  {
         long userId =       rs.getLong(1);
         long accessTypeId = rs.getLong(2);
-        addAccess(Role.get(userId), AccessType.get(_context, accessTypeId));
+        addAccess(Role.get(userId), AccessType.getAccessType(accessTypeId));
       }
       rs.close();
     } catch (Exception e)  {
