@@ -58,8 +58,8 @@ with (TYPE)  {
   }
   with (addAttribute("DataModelTypeLink"))  {
     setAttributeType("Link");
-    setTypeLink("Admin_LifeCycle_AccessType");
+    setTypeLink("Admin_DataModel_Type");
     setSQLTable("Admin_Access_AccessSet2DataModelTypeSQLTable");
-    setSQLColumn("ACCESSTYPE");
+    setSQLColumn("DMTYPE");
   }
 }
