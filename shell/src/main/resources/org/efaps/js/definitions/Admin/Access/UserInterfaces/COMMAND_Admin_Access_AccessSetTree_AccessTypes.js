@@ -24,7 +24,7 @@ with (COMMAND)  {
   addProperty("TargetExpand",           "Admin_Access_AccessSet2Type\\AccessSetLink.AccessTypeLink");
   addProperty("TargetMode",             "view");
   addProperty("TargetShowCheckBoxes",   "true");
-//  addIcon("Admin_User_GroupListImage");
+  addIcon("Admin_Access_AccessTypeListImage");
   addTargetMenu("Admin_Access_AccessSetTree_AccessTypes_Menu");
   addTargetTable("Admin_Access_AccessTypeTable");
 }
