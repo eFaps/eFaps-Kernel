@@ -14,16 +14,12 @@
  * limitations under the License.
  *
  * Author:          tmo
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:354 $
+ * Last Changed:    $Date:2006-09-06 01:13:53 +0200 (Mi, 06 Sep 2006) $
+ * Last Changed By: $Author:tmo $
  */
 
-with (MENU)  {
-  addProperty("Target",                 "content");
-  addProperty("TargetMode",             "view");
-  addTargetForm("Admin_Access_AccessSetForm");
-  addTargetMenu("Admin_Access_AccessSetTree_Menu");
-  addChild(new Command("Admin_Access_AccessSetTree_AccessTypes"));
-  addChild(new Command("Admin_Access_AccessSetTree_DataModelTypes"));
+with (COMMAND)  {
+  addProperty("Target",                 "popup");
+  addTargetSearch("Admin_Access_AccessSetTree_DataModelTypes_Menu_Action_AddExisting_Search");
 }

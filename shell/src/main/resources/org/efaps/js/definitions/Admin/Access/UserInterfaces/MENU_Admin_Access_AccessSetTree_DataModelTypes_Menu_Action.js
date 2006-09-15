@@ -20,10 +20,6 @@
  */
 
 with (MENU)  {
-  addProperty("Target",                 "content");
-  addProperty("TargetMode",             "view");
-  addTargetForm("Admin_Access_AccessSetForm");
-  addTargetMenu("Admin_Access_AccessSetTree_Menu");
-  addChild(new Command("Admin_Access_AccessSetTree_AccessTypes"));
-  addChild(new Command("Admin_Access_AccessSetTree_DataModelTypes"));
+  addChild(new Command("Admin_Access_AccessSetTree_DataModelTypes_Menu_Action_AddExisting"));
+  addChild(new Command("Admin_Access_AccessSetTree_DataModelTypes_Menu_Action_Disconnect"));
 }
