@@ -87,7 +87,8 @@ public class AccessType extends AdminObject  {
   // static methods
 
   /**
-   * Initialise the cache of JAAS systems.
+   * Initialise the cache of JAAS systems. All access types are read from the
+   * database.
    *
    * @param _context  eFaps context for this request
    * @see #getMethod
