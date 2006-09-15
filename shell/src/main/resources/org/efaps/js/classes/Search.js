@@ -84,12 +84,17 @@ Search.prototype.VARNAME     = new String("SEARCH");
 ///////////////////////////////////////////////////////////////////////////////
 // common methods
 
+Search.prototype._create = function(_name)  {
+  var insert = new Insert(Shell.context, "Admin_UI_Search");
+  insert.add(Shell.context, "Name", _name);
+  insert.executeWithoutAccessCheck();
+  this.instance = insert.getInstance();
+}
+
 Search.prototype.update = function(_fileName, _objName)  {
   if (this.getOid()==null || this.getOid()=="" || this.getOid()=="0")  {
     print("  - create");
-    this.object.Name = _objName;
-    this.object.create();
-    this.instance = new Instance(Shell.getContext(), this.object.oid);
+    this._create(_objName);
   } else  {
     print("  - cleanup");
     this.cleanup();
@@ -143,11 +148,10 @@ function createSearches(_fileList)  {
     var fileName = new File(_fileList[indx]);
     if (fileName.getName().startsWith(Search.prototype.FILE_PREFIX) && fileName.getName().endsWith(".js"))  {
       var objName = getSearchNameFromFileName(fileName.getName());
-      var obj = new EFapsInstance("Admin_UI_Search", objName);
-      if (obj.oid==null || obj.oid=="" || obj.oid=="0")  {
-        print("Create Menu '"+objName+"'");
-        obj.Name = objName;
-        obj.create();
+      var search = new Search(objName);
+      if (search.getOid()==null || search.getOid()=="" || search.getOid()=="0")  {
+        print("Create Search '"+objName+"'");
+        search._create(objName);
       }
     }
   }

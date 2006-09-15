@@ -67,7 +67,7 @@ UIAbstract.prototype._createLink = function(_linkType, _toType, _toName)  {
     var insert = new Insert(Shell.getContext(), _linkType);
     insert.add(Shell.getContext(), "From", this.getId());
     insert.add(Shell.getContext(), "To", toId);
-    insert.execute(Shell.getContext());
+    insert.executeWithoutAccessCheck();
   } else  {
     print("!!!!!!!!!!!!!!!!!!! '"+_toType+"' '"+_toName+"' not found!");
   }
@@ -148,7 +148,7 @@ UIAbstract.prototype.addRole = function(_userName)  {
     var insert = new Insert(Shell.getContext(), "Admin_UI_Access");
     insert.add(Shell.getContext(), "UserLink", userId);
     insert.add(Shell.getContext(), "UILink",   this.getId());
-    insert.execute(Shell.getContext());
+    insert.executeWithoutAccessCheck();
   } else  {
     print("!!!!!!!!!!!!!!!!!!! Role '" + _userName + "' not found!");
   }

@@ -174,7 +174,7 @@ setTitle(list.makeString(context, query));
       Instance instance = new Instance(_context, getParameter("oid"));
       insert.add(_context, getCommand().getTargetConnectAttribute(), ""+instance.getId());
     }
-    insert.execute(_context);
+    insert.execute();
     setInstance(new Instance(_context, getCommand().getTargetCreateType(), insert.getId()));
 
 // "TargetConnectChildAttribute"
@@ -186,7 +186,7 @@ if (getCommand().getProperty("TargetConnectType")!=null)  {
   Insert connect = new Insert(_context, getCommand().getProperty("TargetConnectType"));
   connect.add(_context, getCommand().getProperty("TargetConnectParentAttribute"), ""+parent.getId());
   connect.add(_context, getCommand().getProperty("TargetConnectChildAttribute"), ""+insert.getId());
-  connect.execute(_context);
+  connect.execute();
 }
 
     for (Field field : getForm().getFields())  {
@@ -242,7 +242,7 @@ System.out.println("field.getName()="+field.getName());
       }
     }
 
-    update.execute(_context);
+    update.execute();
   }
 
 

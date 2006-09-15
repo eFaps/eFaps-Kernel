@@ -150,7 +150,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
       update.add(context, "Name", def.name);
       update.add(context, "Revision", def.globalVersion 
                                       + "#" + def.localVersion);
-      update.execute(context);
+      update.executeWithoutAccessCheck();
       setLinksInDB(instance, Links.AccessTypes, def.accessTypes);
       setLinksInDB(instance, Links.DataModelTypes, def.dataModelTypes);
       setLinksInDB(instance, Links.Persons, def.persons);
@@ -217,7 +217,7 @@ System.out.println(_linkType.childTypeName + " '" + objName + "' not found!");
         Insert insert = new Insert(context, _linkType.linkName);
         insert.add(context, _linkType.parentAttrName, "" + _instance.getId());
         insert.add(context, _linkType.childAttrName, "" + target);
-        insert.execute(context);
+        insert.executeWithoutAccessCheck();
       } else  {
         currents.remove(target);
       }

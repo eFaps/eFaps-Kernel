@@ -40,9 +40,12 @@ import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
 
-
 import org.efaps.db.Instance;
 
+/**
+ * @author tmo
+ * @version $Id$
+ */
 public class SearchBean extends AbstractCollectionBean implements TableBeanInterface  {
 
   public SearchBean()  {
@@ -303,7 +306,7 @@ throw new Exception("Could not found parent attribute '"+command.getConnectParen
         Insert insert = new Insert(context, type);
         insert.add(context, parentAttr, ""+parent.getId());
         insert.add(context, childAttr,  ""+child.getId());
-        insert.execute(context);
+        insert.execute();
       }
     }
   }

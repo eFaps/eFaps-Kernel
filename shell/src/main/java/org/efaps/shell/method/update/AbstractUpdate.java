@@ -158,7 +158,7 @@ public abstract class AbstractUpdate  {
     Insert insert = new Insert(context, this.dataModelType);
     insert.add(context, "Name", this.uuid);
     insert.add(context, "UUID", this.uuid);
-    insert.execute(context);
+    insert.executeWithoutAccessCheck();
     this.instance = insert.getInstance();
   }
     

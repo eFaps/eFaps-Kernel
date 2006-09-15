@@ -113,7 +113,7 @@ public class Checkin extends AbstractAction  {
       Update update = new Update(_context, getInstance());
       update.add(_context, attrFileName, fileName);
       update.add(_context, attrFileLength, ""+size);
-      update.execute(_context);
+      update.executeWithoutAccessCheck();
       ok = true;
     } catch (EFapsException e)  {
       throw e;

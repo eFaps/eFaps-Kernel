@@ -120,7 +120,7 @@ Role.prototype.addJAASKey = function(_jaasSystem, _jaasKey)  {
     insert.add(Shell.getContext(), "Key", _jaasKey);
     insert.add(Shell.getContext(), "UserLink", this.getId());
     insert.add(Shell.getContext(), "JAASSystemLink", jaasSystemId);
-    insert.execute(Shell.getContext());
+    insert.executeWithoutAccessCheck();
   }
 }
 

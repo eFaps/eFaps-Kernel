@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db;
@@ -45,37 +48,38 @@ public class LifeCycleAction extends Update {
   }
 
 
-  public void execute(Context _context, int _action) throws Exception {
+  public void execute(final int _action) throws Exception {
+    Context context = Context.getThreadContext();
     try  {
-      _context.getConnection().setAutoCommit(false);
+      context.getConnection().setAutoCommit(false);
 
-      Status status = getCurrentStatus(_context, true);
+      Status status = getCurrentStatus(context, true);
 
       if (_action==ACTION_PROMOTE)  {
-        if (!status.checkAccess(_context, ACTION_PROMOTE))  {
+        if (!status.checkAccess(context, ACTION_PROMOTE))  {
 throw new EFapsException(getClass(), "NoPromoteRights");
         }
         status = getNextStatus(status);
       } else if (_action==ACTION_DEMOTE)  {
-        if (!status.checkAccess(_context, ACTION_DEMOTE))  {
+        if (!status.checkAccess(context, ACTION_DEMOTE))  {
 throw new EFapsException(getClass(), "NoDemoteRights");
         }
         status = getPrevStatus(status);
       }
-      add(_context, getStatusAttribute(), ""+status.getId());
-      super.execute(_context);
-      _context.getConnection().commit();
+      add(context, getStatusAttribute(), ""+status.getId());
+      super.execute();
+      context.getConnection().commit();
 
     } catch (EFapsException e)  {
-      try  {_context.getConnection().rollback();} catch (Exception e1)  {}
+      try  {context.getConnection().rollback();} catch (Exception e1)  {}
       throw e;
     } catch (Exception e)  {
-      try  {_context.getConnection().rollback();} catch (Exception e1)  {}
+      try  {context.getConnection().rollback();} catch (Exception e1)  {}
 throw new EFapsException(getClass(), "execute.Exception", e);
 //e.printStackTrace();
     } finally  {
       try  {
-        _context.getConnection().setAutoCommit(true);
+        context.getConnection().setAutoCommit(true);
       } catch (Exception e)  {
 throw new EFapsException(getClass(), "execute.AutoCommitException", e);
 //e.printStackTrace();

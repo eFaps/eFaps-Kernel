@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ import org.efaps.webdav.method.PropFindMethod;
  *
  *
  * @author tmo
- * @version $Rev$
+ * @version $Id$
  */
 public class WebDAVServlet extends HttpServlet  {
 
@@ -364,7 +364,7 @@ System.out.println("destParentInstance="+destParentInstance);
 
       Update update = new Update(context, instance);
       update.add(context, "Name", destUriArray[destUriArray.length - 1]);
-      update.execute(context);
+      update.execute();
       update.close();
 
     } catch (IOException e)  {

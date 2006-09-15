@@ -119,12 +119,17 @@ Command.prototype.cleanup = function()  {
   this.cleanupAccess();
 }
 
+Command.prototype._create = function(_name)  {
+  var insert = new Insert(Shell.context, "Admin_UI_Command");
+  insert.add(Shell.context, "Name", _name);
+  insert.executeWithoutAccessCheck();
+  this.instance = insert.getInstance();
+}
+
 Command.prototype.update = function(_fileName, _objName)  {
   if (this.getOid()==null || this.getOid()=="" || this.getOid()=="0")  {
     print("  - create");
-    this.object.Name = _objName;
-    this.object.create();
-    this.instance = new Instance(Shell.getContext(), this.object.oid);
+    this._create(_objName);
   } else  {
     print("  - cleanup");
     this.cleanup();

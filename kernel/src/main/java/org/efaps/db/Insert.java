@@ -109,36 +109,42 @@ public class Insert extends Update {
   }
 
   /**
-   * @param _context  context for this request
    */
-  public void execute(Context _context) throws EFapsException  {
+  public void execute() throws EFapsException  {
+    executeWithoutAccessCheck();
+  }
+
+  /**
+   */
+  public void executeWithoutAccessCheck() throws EFapsException  {
+    Context context = Context.getThreadContext();
     ConnectionResource con = null;
     try  {
-      executeTrigger(_context, TriggerEvent.INSERT_PRE);
+      executeTrigger(context, TriggerEvent.INSERT_PRE);
 
-      con = _context.getConnectionResource();
+      con = context.getConnectionResource();
 
-      if (test4Unique(_context))  {
+      if (test4Unique(context))  {
         throw new EFapsException(getClass(), "execute.UniqueKeyError");
       }
 
       SQLTable mainTable = getType().getMainTable();
 
-      long id = executeOneStatement(_context, con, mainTable, getExpr4Tables().get(mainTable), 0);
+      long id = executeOneStatement(context, con, mainTable, getExpr4Tables().get(mainTable), 0);
 
-      setInstance(new Instance(_context, getInstance().getType(), id));
+      setInstance(new Instance(context, getInstance().getType(), id));
 
       for (Map.Entry<SQLTable, Map<String,AttributeTypeInterface>> entry
                                               : getExpr4Tables().entrySet())  {
         SQLTable table = entry.getKey();
         if ((table != mainTable) && !table.isReadOnly())  {
-          executeOneStatement(_context, con, table, entry.getValue(), id);
+          executeOneStatement(context, con, table, entry.getValue(), id);
         }
       }
 
       con.commit();
 
-      executeTrigger(_context, TriggerEvent.INSERT_POST);
+      executeTrigger(context, TriggerEvent.INSERT_POST);
     } catch (EFapsException e)  {
       if (con != null)  {
         con.abort();

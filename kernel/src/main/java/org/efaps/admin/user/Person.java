@@ -439,7 +439,7 @@ public class Person extends UserObject implements CacheInterface  {
     Attribute attrPass = type.getAttribute("Password");
     Update update = new Update(_context, type, "" + getId());
     update.add(_context, attrPass, _newPasswd);
-    update.execute(_context);
+    update.executeWithoutAccessCheck();
   }
 
   /////////////////////////////////////////////////////////////////////////////

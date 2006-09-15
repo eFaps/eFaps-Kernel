@@ -90,7 +90,7 @@ Type.prototype.addTrigger = function(_type, _indexPos, _subject)  {
   insert.add(Shell.getContext(), "Name", _subject);
   insert.add(Shell.getContext(), "IndexPosition", _indexPos);
   insert.add(Shell.getContext(), "Abstract", this.getId());
-  insert.execute(Shell.getContext());
+  insert.executeWithoutAccessCheck();
 
   return new Trigger(insert.getInstance());
 }
@@ -146,7 +146,7 @@ Type.prototype.addAttribute = function(_name)  {
     insert.add(Shell.getContext(), "AttributeType", (new DMAttributeType("Type")).getId());
     insert.add(Shell.getContext(), "Table", (new SQLTable("Admin_AbstractSQLTable")).getId());
     insert.add(Shell.getContext(), "SQLColumn", "-"+_name);
-    insert.execute(Shell.getContext());
+    insert.executeWithoutAccessCheck();
 
     attr = new Attribute(insert.getInstance());
   }
@@ -217,11 +217,17 @@ Type.prototype.cleanup = function()  {
   this.setParentType(null);
 }
 
+Type.prototype._create = function(_name)  {
+  var insert = new Insert(Shell.context, "Admin_DataModel_Type");
+  insert.add(Shell.context, "Name", _name);
+  insert.executeWithoutAccessCheck();
+  this.instance = insert.getInstance();
+}
+
 Type.prototype.update = function(_fileName, _objName)  {
   if (this.getOid()==null || this.getOid()=="" || this.getOid()=="0")  {
     print("  - create");
-    this.object.Name = _objName;
-    this.object.create();
+    this._create(_objName);
   } else  {
     print("  - cleanup");
     this.cleanup();
@@ -320,11 +326,10 @@ function importTypes(_fileList)  {
     var fileName = new File(_fileList[indx]);
     if (fileName.getName().startsWith(Type.prototype.FILE_PREFIX) && fileName.getName().endsWith(".js"))  {
       var objName = new String(fileName.getName().substring(5, fileName.getName().length()-3));
-      var obj = new EFapsInstance("Admin_DataModel_Type", objName);
-      if (obj.oid==null || obj.oid=="" || obj.oid=="0")  {
+      var type = new Type(objName);
+      if (type.getOid()==null || type.getOid()=="" || type.getOid()=="0")  {
         print("Create Type '"+objName+"'");
-        obj.Name = objName;
-        obj.create();
+        type._create(objName);
       }
     }
   }

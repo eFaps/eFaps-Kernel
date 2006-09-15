@@ -84,7 +84,7 @@ Image.prototype.update = function(_fileName, _objName)  {
     print("  - create");
     var insert = new Insert(Shell.getContext(), "Admin_UI_Image");
     insert.add(Shell.getContext(), "Name", _objName);
-    insert.execute(Shell.getContext());
+    insert.executeWithoutAccessCheck();
     this.instance = insert.getInstance();
   } else  {
     print("  - update");

@@ -111,7 +111,7 @@ if (_object.getId()!=null && _object.getId()!="0")  {
       var insert = new Insert(Shell.getContext(), "Admin_UI_Menu2Command");
       insert.add(Shell.getContext(), "FromMenu", this.getId());
       insert.add(Shell.getContext(), "ToCommand", _object.getId());
-      insert.execute(Shell.getContext());
+      insert.executeWithoutAccessCheck();
 } else  {
       print("!!!!!!!!!!!!!!!!!!! object  '"+_object+"' not found!");
 }
@@ -153,12 +153,17 @@ Menu.prototype.cleanup = function()  {
   this.cleanupChilds();
 }
 
+Menu.prototype._create = function(_name)  {
+  var insert = new Insert(Shell.context, "Admin_UI_Menu");
+  insert.add(Shell.context, "Name", _name);
+  insert.executeWithoutAccessCheck();
+  this.instance = insert.getInstance();
+}
+
 Menu.prototype.update = function(_fileName, _objName)  {
   if (this.getOid()==null || this.getOid()=="" || this.getOid()=="0")  {
     print("  - create");
-    this.object.Name = _objName;
-    this.object.create();
-    this.instance = new Instance(Shell.getContext(), this.object.oid);
+    this._create(_objName);
   } else  {
     print("  - cleanup");
     this.cleanup();
@@ -234,11 +239,10 @@ function createMenus(_fileList)  {
     var fileName = new File(_fileList[indx]);
     if (fileName.getName().startsWith(Menu.prototype.FILE_PREFIX) && fileName.getName().endsWith(".js"))  {
       var objName = getMenuNameFromFileName(fileName.getName());
-      var obj = new EFapsInstance("Admin_UI_Menu", objName);
-      if (obj.oid==null || obj.oid=="" || obj.oid=="0")  {
+      var menu = new Menu(objName);
+      if (menu.getOid()==null || menu.getOid()=="" || menu.getOid()=="0")  {
         print("Create Menu '"+objName+"'");
-        obj.Name = objName;
-        obj.create();
+        menu._create(objName);
       }
     }
   }

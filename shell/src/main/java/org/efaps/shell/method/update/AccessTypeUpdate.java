@@ -99,7 +99,7 @@ public class AccessTypeUpdate extends AbstractUpdate  {
       update.add(context, "Name", def.name);
       update.add(context, "Revision", def.globalVersion  
                                       + "#" + def.localVersion);
-      update.execute(context);
+      update.executeWithoutAccessCheck();
     }
   }
 

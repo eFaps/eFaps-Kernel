@@ -100,7 +100,7 @@ SQLTable.prototype._create = function(_name)  {
   insert.add(Shell.context, "Name", _name);
   insert.add(Shell.context, "SQLColumnID", "-");
   insert.add(Shell.context, "SQLTable", ("-" + _name).substring(0, 34));
-  insert.execute(Shell.context);
+  insert.executeWithoutAccessCheck();
   this.instance = insert.getInstance();
 }
 

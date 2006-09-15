@@ -628,7 +628,7 @@ e.printStackTrace();
   }
 }
 */
-
+/*
 public void jsFunction_create() throws Exception  {
   Insert insert = new Insert(Shell.context, instance.getType());
   for (Iterator iter = attributes.entrySet().iterator(); iter.hasNext(); )  {
@@ -653,7 +653,7 @@ public void jsFunction_update() throws Exception  {
   update.execute(Shell.context);
   attributes.clear();
 }
-
+*/
 // TODO: Exception handling?
   /**
    * Checkin into an attribute from a given file.

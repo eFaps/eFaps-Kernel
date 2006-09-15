@@ -46,7 +46,8 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
  */
 public class Update  {
 
@@ -229,24 +230,33 @@ if (testNeeded)  {
   /**
    *
    */
-  public void execute(Context _context) throws Exception  {
+  public void execute() throws Exception  {
+    executeWithoutAccessCheck();
+  }
+
+    /**
+   *
+   */
+  public void executeWithoutAccessCheck() throws Exception  {
+    Context context = Context.getThreadContext();
     ConnectionResource con = null;
     try  {
-      executeTrigger(_context, TriggerEvent.UPDATE_PRE);
+      executeTrigger(context, TriggerEvent.UPDATE_PRE);
 
-      con = _context.getConnectionResource();
+      con = context.getConnectionResource();
 
-      if (test4Unique(_context))  {
+      if (test4Unique(context))  {
         throw new EFapsException(getClass(), "execute.UniqueKeyError");
       }
 
-      for (Map.Entry<SQLTable,Map<String,AttributeTypeInterface>> entry : getExpr4Tables().entrySet())  {
+      for (Map.Entry < SQLTable, Map < String, AttributeTypeInterface > > entry 
+                                              : getExpr4Tables().entrySet())  {
         SQLTable table = entry.getKey();
         Map expressions = (Map)entry.getValue();
 
         PreparedStatement stmt = null;
         try {
-          stmt = createOneStatement(_context, con, table, expressions);
+          stmt = createOneStatement(context, con, table, expressions);
           int rows = stmt.executeUpdate();
           if (rows==0)  {
 throw new Exception("Can not update! It exists not!");
@@ -259,7 +269,7 @@ throw new Exception("Can not update! It exists not!");
       }
       con.commit();
 
-      executeTrigger(_context, TriggerEvent.UPDATE_POST);
+      executeTrigger(context, TriggerEvent.UPDATE_POST);
     } catch (Exception e)  {
 e.printStackTrace();
       throw e;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.slide;
@@ -1580,7 +1583,7 @@ System.out.println("createFolder("+_uri.toString()+")");
             Insert insert = new Insert(this.context, "TeamCenter_Folder");
             insert.add(this.context, "ParentFolder", ""+parentInstance.getId());
             insert.add(this.context, "Name", path[path.length-1]);
-            insert.execute(this.context);
+            insert.execute();
             insert.close();
           } catch (Exception e)  {
             throw new ServiceAccessException(this.service, e);
@@ -1597,14 +1600,14 @@ System.out.println("createResource("+_uri.toString()+")");
             Insert insert = new Insert(this.context, "TeamCenter_Document");
             insert.add(this.context, "Name", path[path.length-1]);
             insert.add(this.context, "FileName", path[path.length-1]);
-            insert.execute(this.context);
+            insert.execute();
 Instance docInstance = insert.getInstance();
             insert.close();
 
             insert = new Insert(this.context, "TeamCenter_Document2Folder");
             insert.add(this.context, "Document", ""+docInstance.getId());
             insert.add(this.context, "Folder", ""+parentInstance.getId());
-            insert.execute(this.context);
+            insert.execute();
             insert.close();
           } catch (Exception e)  {
             throw new ServiceAccessException(this.service, e);
@@ -1771,14 +1774,14 @@ System.out.println("toBeCreated="+toBeCreated);
             Insert insert = new Insert(this.context, "TeamCenter_Document");
             insert.add(this.context, "Name",      fileName);
             insert.add(this.context, "FileName",  fileName);
-            insert.execute(this.context);
+            insert.execute();
             instance = insert.getInstance();
             insert.close();
 
             insert = new Insert(this.context, "TeamCenter_Document2Folder");
             insert.add(this.context, "Document", ""+instance.getId());
             insert.add(this.context, "Folder", ""+parentInstance.getId());
-            insert.execute(this.context);
+            insert.execute();
             insert.close();
           } catch (Exception e)  {
             throw new ServiceAccessException(this.service, e);
