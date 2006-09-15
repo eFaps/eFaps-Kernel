@@ -65,6 +65,6 @@ with (TYPE)  {
     setSQLTable("Admin_Access_AccessSetSQLTable");
     setSQLColumn("MODIFIED");
   }
-//  addProperty("Icon",                   "${ROOTURL}/servlet/image/eFapsAdminLifeCycleAccessType");
+  addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_Access_AccessSetImage");
   addProperty("Tree",                   "Admin_Access_AccessSetTree");
 }

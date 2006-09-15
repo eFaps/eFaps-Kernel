@@ -23,7 +23,7 @@ with (COMMAND)  {
   addProperty("Target",                 "content");
   addProperty("TargetQueryTypes",       "Admin_Access_AccessSet");
   addProperty("TargetShowCheckBoxes",   "true");
-//  addIcon("eFapsAdminAccessAccessType");
+  addIcon("Admin_Access_AccessSetImage");
   addTargetMenu("Admin_Access_AccessSetMyDesk_Menu");
   addTargetTable("Admin_Access_AccessSetTable");
   addRole("Administration");
