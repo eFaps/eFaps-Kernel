@@ -22,6 +22,6 @@ with (COMMAND)  {
   addProperty("Target",                 "content");
   addProperty("TargetQueryTypes",       "Admin_DataModel_Type");
   addIcon("Admin_DataModel_TypeImage");
-  addTargetTable("Admin_DataModel_TypeList");
+  addTargetTable("Admin_DataModel_TypeTable");
   addRole("Administration");
 }

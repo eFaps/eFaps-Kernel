@@ -24,5 +24,5 @@ with (COMMAND)  {
   addProperty("TargetExpand",           "Admin_DataModel_Type2Policy\\PolicyLink.TypeLink");
   addProperty("TargetMode",             "view");
   addIcon("Admin_DataModel_TypeListImage");
-  addTargetTable("Admin_DataModel_TypeList");
+  addTargetTable("Admin_DataModel_TypeTable");
 }
