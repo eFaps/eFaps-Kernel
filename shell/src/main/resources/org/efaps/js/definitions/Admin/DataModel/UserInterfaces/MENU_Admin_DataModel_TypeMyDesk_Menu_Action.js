@@ -14,17 +14,12 @@
  * limitations under the License.
  *
  * Author:          tmo
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:347 $
+ * Last Changed:    $Date:2006-09-06 00:08:24 +0200 (Mi, 06 Sep 2006) $
+ * Last Changed By: $Author:tmo $
  */
 
-with (COMMAND)  {
-  addProperty("Target",                 "content");
-  addProperty("TargetQueryTypes",       "Admin_DataModel_Type");
-  addProperty("TargetShowCheckBoxes",   "true");
-  addIcon("Admin_DataModel_TypeImage");
-  addTargetMenu("Admin_DataModel_TypeMyDesk_Menu");
-  addTargetTable("Admin_DataModel_TypeTable");
-  addRole("Administration");
+with (MENU)  {
+  addChild(new Command("Admin_DataModel_TypeMyDesk_Menu_Action_Create"));
+  addChild(new Command("Admin_DataModel_TypeMyDesk_Menu_Action_Delete"));
 }
