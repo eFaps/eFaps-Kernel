@@ -21,6 +21,7 @@
 package org.efaps.servlet;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -44,7 +45,7 @@ import org.efaps.db.SearchQuery;
  * <code>/efaps/servlet/image/Admin_UI_Image</code>.
  *
  * @author tmo
- * @version $Rev$
+ * @version $Id$
  */
 public class ImageServlet extends HttpServlet  {
 
@@ -179,10 +180,9 @@ public class ImageServlet extends HttpServlet  {
      * The method is not needed in this cache implementation, but to implemente
      * interface {@link CacheInterface} the method is required.
      *
-     * @param _context  context for this request
      * @return always <code>null</code>
      */
-    public String getViewableName(Context _context)  {
+    public UUID getUUID()  {
       return null;
     }
 
