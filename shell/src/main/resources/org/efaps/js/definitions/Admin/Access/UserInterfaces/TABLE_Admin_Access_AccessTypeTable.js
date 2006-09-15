@@ -19,15 +19,23 @@
  */
 
 with (TABLE)  {
-  with (addField("id"))  {
-    addProperty("Expression",             "ID");
-    addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
-    addProperty("Label",                  "Admin_LifeCycle_AccessType/ID.Label");
-  }
   with (addField("name"))  {
     addProperty("Expression",             "Name");
     addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
-    addProperty("Label",                  "Admin_LifeCycle_AccessType/Name.Label");
+    addProperty("Label",                  "Admin_Access_AccessType/Name.Label");
     addProperty("ShowTypeIcon",           "true");
+  }
+  with (addField("uuid"))  {
+    addProperty("Expression",             "UUID");
+    addProperty("Label",                  "Admin_Access_AccessType/UUID.Label");
+  }
+  with (addField("revision"))  {
+    addProperty("Expression",             "Revision");
+    addProperty("Label",                  "Admin_Access_AccessType/Revision.Label");
+  }
+  with (addField("buttonOpenInNewWindow"))  {
+    addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
+    addProperty("Target",                 "popup");
+    addIcon("eFapsActionNewWindow");
   }
 }

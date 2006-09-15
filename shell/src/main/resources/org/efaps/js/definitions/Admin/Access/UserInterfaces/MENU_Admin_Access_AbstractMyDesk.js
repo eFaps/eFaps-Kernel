@@ -20,5 +20,6 @@
  */
 
 with (MENU)  {
+  addChild(new Command("Admin_Access_AccessTypeMyDesk"));
   addChild(new Command("Admin_Access_AccessSetMyDesk"));
 }

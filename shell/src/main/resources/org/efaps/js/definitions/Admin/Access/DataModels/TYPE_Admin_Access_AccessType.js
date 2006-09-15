@@ -22,49 +22,49 @@
 with (TYPE)  {
   with (addAttribute("OID"))  {
     setAttributeType("OID");
-    setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
+    setSQLTable("Admin_Access_AccessTypeSQLTable");
     setSQLColumn("ID");
   }
   with (addAttribute("ID"))  {
     setAttributeType("Integer");
-    setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
+    setSQLTable("Admin_Access_AccessTypeSQLTable");
     setSQLColumn("ID");
   }
   with (addAttribute("Name"))  {
     setAttributeType("String");
-    setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
+    setSQLTable("Admin_Access_AccessTypeSQLTable");
     setSQLColumn("NAME");
   }
   with (addAttribute("UUID"))  {
     setAttributeType("String");
-    setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
+    setSQLTable("Admin_Access_AccessTypeSQLTable");
     setSQLColumn("UUID");
   }
   with (addAttribute("Revision"))  {
     setAttributeType("String");
-    setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
+    setSQLTable("Admin_Access_AccessTypeSQLTable");
     setSQLColumn("REVISION");
   }
   with (addAttribute("Creator"))  {
     setAttributeType("CreatorLink");
-    setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
+    setSQLTable("Admin_Access_AccessTypeSQLTable");
     setSQLColumn("CREATOR");
   }
   with (addAttribute("Created"))  {
     setAttributeType("Created");
-    setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
+    setSQLTable("Admin_Access_AccessTypeSQLTable");
     setSQLColumn("CREATED");
   }
   with (addAttribute("Modifier"))  {
     setAttributeType("ModifierLink");
-    setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
+    setSQLTable("Admin_Access_AccessTypeSQLTable");
     setSQLColumn("MODIFIER");
   }
   with (addAttribute("Modified"))  {
     setAttributeType("Modified");
-    setSQLTable("Admin_LifeCycle_AccessTypeSQLTable");
+    setSQLTable("Admin_Access_AccessTypeSQLTable");
     setSQLColumn("MODIFIED");
   }
-  addProperty("Icon",                   "${ROOTURL}/servlet/image/eFapsAdminLifeCycleAccessType");
-  addProperty("Tree",                   "Admin_LifeCycle_AccessTypeTree");
+  addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_Access_AccessTypeImage");
+  addProperty("Tree",                   "Admin_Access_AccessTypeTree");
 }

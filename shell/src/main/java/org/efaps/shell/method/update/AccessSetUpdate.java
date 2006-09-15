@@ -141,7 +141,7 @@ public class AccessSetUpdate  {
     Set < Long > targets = new HashSet < Long > ();
     for (String accessType : _accessTypes)  {
       query = new SearchQuery();
-      query.setQueryTypes(context, "Admin_LifeCycle_AccessType");
+      query.setQueryTypes(context, "Admin_Access_AccessType");
       query.addWhereExprEqValue(context, "Name", accessType);
       query.addSelect(context, "ID");
       query.execute(context);

@@ -20,8 +20,8 @@
 
 with (COMMAND)  {
   addProperty("Target",                 "content");
-  addProperty("TargetQueryTypes",       "Admin_LifeCycle_AccessType");
+  addProperty("TargetQueryTypes",       "Admin_Access_AccessType");
   addIcon("eFapsAdminLifeCycleAccessType");
-  addTargetTable("Admin_LifeCycle_AccessTypeTable");
+  addTargetTable("Admin_Access_AccessTypeTable");
   addRole("Administration");
 }

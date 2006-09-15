@@ -14,18 +14,18 @@
  * limitations under the License.
  *
  * Author:          tmo
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:356 $
+ * Last Changed:    $Date:2006-09-06 03:06:13 +0200 (Mi, 06 Sep 2006) $
+ * Last Changed By: $Author:tmo $
  */
 
 with (COMMAND)  {
   addProperty("ConnectChildAttribute",  "AccessTypeLink");
   addProperty("ConnectParentAttribute", "AccessSetLink");
   addProperty("ConnectType",            "Admin_Access_AccessSet2Type");
-  addProperty("ResultTable",            "Admin_LifeCycle_AccessTypeTable");
-  addProperty("SearchForm",             "Admin_LifeCycle_AccessTypeForm");
-  addProperty("SearchType",             "Admin_LifeCycle_AccessType");
+  addProperty("ResultTable",            "Admin_Access_AccessTypeTable");
+  addProperty("SearchForm",             "Admin_Access_AccessTypeForm");
+  addProperty("SearchType",             "Admin_Access_AccessType");
   addProperty("TargetMode",             "connect");
 }
 

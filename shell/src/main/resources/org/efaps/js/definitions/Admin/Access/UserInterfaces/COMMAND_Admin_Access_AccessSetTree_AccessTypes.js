@@ -26,5 +26,5 @@ with (COMMAND)  {
   addProperty("TargetShowCheckBoxes",   "true");
 //  addIcon("Admin_User_GroupListImage");
   addTargetMenu("Admin_Access_AccessSetTree_AccessTypes_Menu");
-  addTargetTable("Admin_LifeCycle_AccessTypeTable");
+  addTargetTable("Admin_Access_AccessTypeTable");
 }

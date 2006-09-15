@@ -58,7 +58,7 @@ with (TYPE)  {
   }
   with (addAttribute("AccessTypeLink"))  {
     setAttributeType("Link");
-    setTypeLink("Admin_LifeCycle_AccessType");
+    setTypeLink("Admin_Access_AccessType");
     setSQLTable("Admin_Access_AccessSet2TypeSQLTable");
     setSQLColumn("ACCESSTYPE");
   }

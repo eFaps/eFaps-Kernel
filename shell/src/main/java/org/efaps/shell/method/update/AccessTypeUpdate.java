@@ -73,7 +73,7 @@ public class AccessTypeUpdate extends AbstractUpdate  {
    *
    */
   public AccessTypeUpdate() {
-    super("Admin_LifeCycle_AccessType");
+    super("Admin_Access_AccessType");
   }
 
   /////////////////////////////////////////////////////////////////////////////
