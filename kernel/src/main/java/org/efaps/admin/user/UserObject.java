@@ -57,7 +57,7 @@ public abstract class UserObject extends AdminObject  {
    * @param _name name  to set
    */
   protected UserObject(final long _id, final String _name)  {
-    super(_id, _name);
+    super(_id, null, _name);
   }
 
   /////////////////////////////////////////////////////////////////////////////

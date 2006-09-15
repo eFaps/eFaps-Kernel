@@ -38,6 +38,10 @@ import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+/**
+ * @author tmo
+ * @version $Id$
+ */
 public abstract class UserInterfaceObject extends AdminObject  {
 
 
@@ -48,7 +52,7 @@ public abstract class UserInterfaceObject extends AdminObject  {
    * @param _name name  to set
    */
   protected UserInterfaceObject(final long _id, final String _name)  {
-    super(_id, _name);
+    super(_id, null, _name);
   }
 
   /////////////////////////////////////////////////////////////////////////////

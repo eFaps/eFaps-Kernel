@@ -36,7 +36,8 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.transaction.ConnectionResource;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
  */
 public class EventDefinition extends AdminObject  {
 
@@ -57,7 +58,7 @@ public class EventDefinition extends AdminObject  {
    *
    */
   private EventDefinition(final long _id, final String _name, final long _indexPos, final Type _eventType)  {
-    super(_id, _name);
+    super(_id, null, _name);
     this.indexPos = _indexPos;
     this.eventType = _eventType;
   }

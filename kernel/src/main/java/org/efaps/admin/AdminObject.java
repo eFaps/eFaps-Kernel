@@ -86,19 +86,64 @@ static public EFapsClassName getEnum(final String _name) {
   }
 static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClassName>();
 
-
   /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
-   * Constructor to set the id and name of the user interface object.
+   * The instance variable stores the id of the collections object.
+   *
+   * @see #getId
+   */
+  private final long id;
+
+  /**
+   * This is the instance variable for the universal unique identifier of this
+   * admin object.
+   *
+   * @see #getUUID
+   */
+  private final String uuid;
+
+  /**
+   * This is the instance variable for the name of this admin object.
+   *
+   * @see #setName
+   * @see #getName
+   */
+  private String name = null;
+
+  /**
+   * This is the instance variable for the properties.
+   *
+   * @getProperties
+   */
+  private final Map < String, String > properties 
+                                          = new HashMap < String, String > ();
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors
+
+  /**
+   * Constructor to set instance variables {@link #id}, {@link #uuid} and 
+   * {@link #name} of this administrational object.
    *
    * @param _id         id to set
+   * @param _uuid       universal unique identifier
    * @param _name name  to set
+   * @see #id
+   * @see #uuid
+   * @see #name
    */
-  protected AdminObject(long _id, String _name)  {
-    setId(_id);
+  protected AdminObject(final long _id, 
+                        final String _uuid, 
+                        final String _name)  {
+    this.id = _id;
+    this.uuid = (_uuid == null) ? null : _uuid.trim();
     setName(_name);
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * Sets the link properties for this object.
@@ -109,7 +154,11 @@ static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClass
    * @param _toType   to type
    * @param _toName   to name
    */
-  protected void setLinkProperty(Context _context, EFapsClassName _linkType, long _toId, EFapsClassName _toType, String _toName) throws Exception  {
+  protected void setLinkProperty(final Context _context, 
+                                 final EFapsClassName _linkType, 
+                                 final long _toId, 
+                                 final EFapsClassName _toType, 
+                                 final String _toName) throws Exception  {
   }
 
   /**
@@ -121,7 +170,9 @@ static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClass
    * @param _name     name of the property (key)
    * @param _value    value of the property
    */
-  protected void setProperty(Context _context, String _name, String _value) throws Exception  {
+  protected void setProperty(final Context _context, 
+                             final String _name, 
+                             final String _value) throws Exception  {
     getProperties().put(_name, _value);
   }
 
@@ -132,7 +183,7 @@ static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClass
    * @param _name     name of the property (key)
    * @return value of the property with the given name / key.
    */
-  public String getProperty(String _name)  {
+  public String getProperty(final String _name)  {
     return getProperties().get(_name);
   }
 
@@ -145,58 +196,33 @@ static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClass
   public String toString()  {
     return new ToStringBuilder(this).
       append("name", getName()).
+      append("uuid", getUUID()).
       append("id", getId()).
       append("properties", getProperties()).
       toString();
   }
 
   /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance variable stores the id of the collections object.
-   *
-   * @see #setId
-   * @see #getId
-   */
-  private long id = 0;
-
-  /**
-   * This is the instance variable for the name of the collection instance.
-   *
-   * @see #setName
-   * @see #getName
-   */
-  private String name = null;
-
-  /**
-   * This is the instance variable for the properties.
-   *
-   * @getProperties
-   */
-  private Map<String,String> properties = new HashMap<String,String>();
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the setter method for instance variable {@link #id}.
-   *
-   * @param _id new value for instance variable {@link #id}
-   * @see #id
-   * @see #getId
-   */
-  public void setId(long _id)  {
-    this.id = _id;
-  }
-
+  // getter and setter instance methods
+  
   /**
    * This is the getter method for instance variable {@link #id}.
    *
    * @return value of instance variable {@id}
    * @see #id
-   * @see #setId
    */
   public long getId()  {
     return this.id;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #uuid}.
+   *
+   * @return value of instance variable {@uuid}
+   * @see #uuid
+   */
+  public String getUUID()  {
+    return this.uuid;
   }
 
   /**
@@ -206,8 +232,8 @@ static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClass
    * @see #name
    * @see #getName
    */
-  public void setName(String _name)  {
-    this.name = (_name==null ? null : _name.trim());
+  protected void setName(final String _name)  {
+    this.name = (_name == null) ? null : _name.trim();
   }
 
   /**
@@ -227,7 +253,7 @@ static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClass
    * @return value of instance variable {@properties}
    * @see #properties
    */
-  protected Map<String,String> getProperties()  {
+  protected Map < String, String > getProperties()  {
     return this.properties;
   }
 }

@@ -19,6 +19,10 @@ package org.efaps.admin.lifecycle;
 
 import org.efaps.admin.AdminObject;
 
+/**
+ * @author tmo
+ * @version $Id$
+ */
 public abstract class LifeCycleObject extends AdminObject  {
 
   /**
@@ -28,6 +32,6 @@ public abstract class LifeCycleObject extends AdminObject  {
    * @param _name name  to set
    */
   protected LifeCycleObject(long _id, String _name)  {
-    super(_id, _name);
+    super(_id, null, _name);
   }
 }

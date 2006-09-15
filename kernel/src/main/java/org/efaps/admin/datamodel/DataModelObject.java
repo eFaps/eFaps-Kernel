@@ -24,6 +24,10 @@ import java.sql.Statement;
 import org.efaps.admin.AdminObject;
 import org.efaps.db.Context;
 
+/**
+ * @author tmo
+ * @version $Id$
+ */
 public abstract class DataModelObject extends AdminObject  {
 
   /**
@@ -33,7 +37,7 @@ public abstract class DataModelObject extends AdminObject  {
    * @param _name name  to set
    */
   protected DataModelObject(long _id, String _name)  {
-    super(_id, _name);
+    super(_id, null, _name);
   }
 
   /////////////////////////////////////////////////////////////////////////////

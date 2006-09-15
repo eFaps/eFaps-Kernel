@@ -137,7 +137,7 @@ public class JAASSystem extends AdminObject implements CacheInterface  {
    * @param _name name  to set
    */
   private JAASSystem(final long _id, final String _name)  {
-    super(_id, _name);
+    super(_id, null, _name);
   }
 
 // TODO: this is needed anymore??
