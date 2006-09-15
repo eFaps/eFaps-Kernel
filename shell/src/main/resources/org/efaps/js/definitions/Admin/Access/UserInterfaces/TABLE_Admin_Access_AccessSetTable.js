@@ -26,6 +26,10 @@ with (TABLE)  {
     addProperty("Label",                  "Admin_Access_AccessSet/Name.Label");
     addProperty("ShowTypeIcon",           "true");
   }
+  with (addField("uuid"))  {
+    addProperty("Expression",             "UUID");
+    addProperty("Label",                  "Admin_Access_AccessSet/UUID.Label");
+  }
   with (addField("revision"))  {
     addProperty("Expression",             "Revision");
     addProperty("Label",                  "Admin_Access_AccessSet/Revision.Label");
