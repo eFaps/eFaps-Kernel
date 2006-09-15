@@ -14,17 +14,18 @@
  * limitations under the License.
  *
  * Author:          tmo
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:356 $
+ * Last Changed:    $Date:2006-09-06 03:06:13 +0200 (Mi, 06 Sep 2006) $
+ * Last Changed By: $Author:tmo $
  */
 
-with (MENU)  {
-  addProperty("Target",                 "content");
-  addProperty("TargetMode",             "view");
-  addTargetForm("Admin_Access_AccessSetForm");
-  addTargetMenu("Admin_Access_AccessSetTree_Menu");
-  addChild(new Command("Admin_Access_AccessSetTree_AccessTypes"));
-  addChild(new Command("Admin_Access_AccessSetTree_DataModelTypes"));
-  addChild(new Command("Admin_Access_AccessSetTree_Users"));
+with (COMMAND)  {
+  addProperty("ConnectChildAttribute",  "UserAbstractLink");
+  addProperty("ConnectParentAttribute", "AccessSetLink");
+  addProperty("ConnectType",            "Admin_Access_AccessSet2UserAbstract");
+  addProperty("ResultTable",            "Admin_User_PersonTable");
+  addProperty("SearchForm",             "Admin_User_PersonForm");
+  addProperty("SearchType",             "Admin_User_Person");
+  addProperty("TargetMode",             "connect");
 }
+
