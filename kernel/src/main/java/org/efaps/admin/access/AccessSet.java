@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.AdminObject;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Cache;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -53,7 +54,7 @@ public class AccessSet extends AdminObject  {
    * This is the sql select statement to select all access types from the
    * database.
    *
-   * @see #initialise
+   * @see #init4ReadAllAccessSets
    */
   private static final String SQL_SELECT  = "select "
                                                 + "ID,"
@@ -65,12 +66,23 @@ public class AccessSet extends AdminObject  {
    * This is the sql select statement to select the links from all access sets
    * to all access types in the database.
    *
-   * @see #initialise
+   * @see #init4ReadLinks2AccessTypes
    */
- private static final String SQL_SET2TYPE = "select "
+  private static final String SQL_SET2TYPE = "select "
                                                 + "ACCESSSET,"
                                                 + "ACCESSTYPE "
                                               + "from ACCESSSET2TYPE";
+
+  /**
+   * This is the sql select statement to select the links from all access sets
+   * to all data model types in the database.
+   *
+   * @see #init4ReadLinks2DMTypes
+   */
+  private static final String SQL_SET2DMTYPE = "select "
+                                                  + "ACCESSSET,"
+                                                  + "DMTYPE "
+                                                + "from ACCESSSET2DMTYPE";
 
   /**
    * Stores all instances of class {@link AccessSet}.
@@ -91,6 +103,14 @@ public class AccessSet extends AdminObject  {
    * @see #getAccessTypes
    */
   private final Set < AccessType > accessTypes = new HashSet < AccessType > ();
+
+  /**
+   * All related data models types of this access set are referenced in this 
+   * instance variable.
+   *
+   * @see #getDataModelTypes
+   */
+  private final Set < Type > dataModelTypes = new HashSet < Type > ();
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
@@ -121,90 +141,166 @@ public class AccessSet extends AdminObject  {
     return this.accessTypes;
   }
 
+  /**
+   * This is the getter method for instance variable {@link #dataModelTypes}.
+   *
+   * @return the value of the instance variable {@link #dataModelTypes}.
+   * @see #dataModelTypes
+   */
+  public Set < Type > getDataModelTypes()  {
+    return this.dataModelTypes;
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
   /**
-   * Initialise the cache of JAAS systems. All access sets and their links to
-   * the access types are read from the database.
+   * Initialise the cache of JAAS systems. 
    *
    * @param _context  eFaps context for this request
-   * @see #SQL_SELECT
-   * @see #SQL_SET2TYPE
+   * @see #init4ReadAllAccessSets
+   * @see #init4ReadLinks2AccessTypes
+   * @see #
    */
   public static void initialise(final Context _context) throws Exception  {
     ConnectionResource con = null;
     try  {
       con = _context.getConnectionResource();
 
-      // read access sets
-      Statement stmt = null;
-      try  {
-
-        stmt = con.getConnection().createStatement();
-
-        ResultSet rs = stmt.executeQuery(SQL_SELECT);
-        while (rs.next())  {
-          long id                       = rs.getLong(1);
-          String uuid                   = rs.getString(2);
-          String name                   = rs.getString(3);
-
-          LOG.debug("read access set '" + name + "' "
-                    + "(id = " + id + ", uuid = " + uuid + ")");
-
-          cache.add(new AccessSet(id, uuid, name));
-        }
-        rs.close();
-
-      } finally  {
-        if (stmt != null)  {
-          stmt.close();
-        }
-      }
-
-      // read links from access sets to access types
-      stmt = null;
-      try  {
-
-        stmt = con.getConnection().createStatement();
-
-        ResultSet rs = stmt.executeQuery(SQL_SET2TYPE);
-        while (rs.next())  {
-          long accessSetId              = rs.getLong(1);
-          long accessTypeId             = rs.getLong(2);
-
-          AccessSet accessSet   = AccessSet.getAccessSet(accessSetId);
-          AccessType accessType = AccessType.getAccessType(accessTypeId);
-          if (accessSet == null)  {
-            LOG.error("could not found access set with id "
-                                                  + "'" + accessSetId + "'");
-          } else if (accessType == null)  {
-            LOG.error("could not found access type with id "
-                                                  + "'" + accessTypeId + "'");
-          } else  {
-            LOG.debug("read link from "
-                      + "access set '" + accessSet.getName() + "' "
-                      + "(id = " + accessSet.getId() + ", "
-                          + "uuid = " + accessSet.getUUID() + ") to "
-                      + "access type '" + accessType.getName() + "' "
-                      + "(id = " + accessType.getId() + ", "
-                          + "uuid = " + accessType.getUUID() + ")");
-            accessSet.getAccessTypes().add(accessType);
-          }
-         }
-        rs.close();
-
-      } finally  {
-        if (stmt != null)  {
-          stmt.close();
-        }
-      }
-
+      init4ReadAllAccessSets(con);
+      init4ReadLinks2AccessTypes(con);
+      init4ReadLinks2DMTypes(con);
+ 
       con.commit();
 
     } finally  {
       if ((con != null) && con.isOpened())  {
         con.abort();
+      }
+    }
+  }
+
+  /**
+   * All access sets are read from the database.
+   *
+   * @param _con  connection resource
+   * @see #SQL_SELECT
+   */
+  private static void init4ReadAllAccessSets(final ConnectionResource _con) 
+                                                            throws Exception  {
+    Statement stmt = null;
+    try  {
+
+      stmt = _con.getConnection().createStatement();
+
+      ResultSet rs = stmt.executeQuery(SQL_SELECT);
+      while (rs.next())  {
+        long id                       = rs.getLong(1);
+        String uuid                   = rs.getString(2);
+        String name                   = rs.getString(3);
+
+        LOG.debug("read access set '" + name + "' "
+                  + "(id = " + id + ", uuid = " + uuid + ")");
+
+        cache.add(new AccessSet(id, uuid, name));
+      }
+      rs.close();
+
+    } finally  {
+      if (stmt != null)  {
+        stmt.close();
+      }
+    }
+  }
+
+  /**
+   * All access set links to the access types are read from the database.
+   *
+   * @param _con  connection resource
+   * @see #SQL_SET2TYPE
+   */
+  private static void init4ReadLinks2AccessTypes(final ConnectionResource _con) 
+                                                            throws Exception  {
+    Statement stmt = null;
+    try  {
+
+      stmt = _con.getConnection().createStatement();
+
+      ResultSet rs = stmt.executeQuery(SQL_SET2TYPE);
+      while (rs.next())  {
+        long accessSetId              = rs.getLong(1);
+        long accessTypeId             = rs.getLong(2);
+
+        AccessSet accessSet   = AccessSet.getAccessSet(accessSetId);
+        AccessType accessType = AccessType.getAccessType(accessTypeId);
+        if (accessSet == null)  {
+          LOG.error("could not found access set with id "
+                                                + "'" + accessSetId + "'");
+        } else if (accessType == null)  {
+          LOG.error("could not found access type with id "
+                                                + "'" + accessTypeId + "'");
+        } else  {
+          LOG.debug("read link from "
+                    + "access set '" + accessSet.getName() + "' "
+                    + "(id = " + accessSet.getId() + ", "
+                        + "uuid = " + accessSet.getUUID() + ") to "
+                    + "access type '" + accessType.getName() + "' "
+                    + "(id = " + accessType.getId() + ", "
+                        + "uuid = " + accessType.getUUID() + ")");
+          accessSet.getAccessTypes().add(accessType);
+        }
+       }
+      rs.close();
+
+    } finally  {
+      if (stmt != null)  {
+        stmt.close();
+      }
+    }
+  }
+
+  /**
+   * All access set links to the data model types are read from the database.
+   *
+   * @param _con  connection resource
+   * @see #SQL_SET2DMTYPE
+   */
+  private static void init4ReadLinks2DMTypes(final ConnectionResource _con) 
+                                                            throws Exception  {
+    Statement stmt = null;
+    try  {
+
+      stmt = _con.getConnection().createStatement();
+
+      ResultSet rs = stmt.executeQuery(SQL_SET2TYPE);
+      while (rs.next())  {
+        long accessSetId              = rs.getLong(1);
+        long dataModelTypeId          = rs.getLong(2);
+
+        AccessSet accessSet   = AccessSet.getAccessSet(accessSetId);
+        Type dataModelType    = Type.get(dataModelTypeId);
+        if (accessSet == null)  {
+          LOG.error("could not found access set with id "
+                                                + "'" + accessSetId + "'");
+        } else if (dataModelType == null)  {
+          LOG.error("could not found data model type with id "
+                                                + "'" + dataModelTypeId + "'");
+        } else  {
+          LOG.debug("read link from "
+                    + "access set '" + accessSet.getName() + "' "
+                    + "(id = " + accessSet.getId() + ", "
+                        + "uuid = " + accessSet.getUUID() + ") to "
+                    + "data model type '" + dataModelType.getName() + "' "
+                    + "(id = " + dataModelType.getId() + ", "
+                        + "uuid = " + dataModelType.getUUID() + ")");
+          accessSet.getDataModelTypes().add(dataModelType);
+        }
+       }
+      rs.close();
+
+    } finally  {
+      if (stmt != null)  {
+        stmt.close();
       }
     }
   }
