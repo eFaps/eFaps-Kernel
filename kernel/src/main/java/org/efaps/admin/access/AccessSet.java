@@ -67,7 +67,7 @@ public class AccessSet extends AdminObject  {
    *
    * @see #initialise
    */
- private static final String SQL_SET2TYPE = "select"
+ private static final String SQL_SET2TYPE = "select "
                                                 + "ACCESSSET,"
                                                 + "ACCESSTYPE "
                                               + "from ACCESSSET2TYPE";
