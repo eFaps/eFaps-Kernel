@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
@@ -46,6 +47,7 @@ import org.efaps.db.Context;
 /**
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public class Cache<K extends CacheInterface>  {
 
@@ -200,8 +202,9 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
   public static void reloadCache(final Context _context) throws Exception {
     synchronized(caches)  {
       for (Cache cache : caches)  {
-        cache.getCache4Id().clear();
-        cache.getCache4Name().clear();
+        cache.cache4Id.clear();
+        cache.cache4Name.clear();
+        cache.cache4UUID.clear();
       }
       JAASSystem.initialise(_context);
       Role.initialise(_context);
@@ -211,6 +214,7 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
       Type.initialise(_context);
       Attribute.initialise(_context);
       AccessType.initialise(_context);
+      AccessSet.initialise(_context);
       UserInterfaceObject.initialise(_context);
       EventDefinition.initialise(_context);
     }
