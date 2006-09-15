@@ -36,7 +36,6 @@ with (FORM)  {
     addProperty("Searchable",             "true");
   }
   with (addField("uuid"))  {
-    addProperty("Columns",                "20");
     addProperty("Creatable",              "false");
     addProperty("Editable",               "false");
     addProperty("Expression",             "UUID");
