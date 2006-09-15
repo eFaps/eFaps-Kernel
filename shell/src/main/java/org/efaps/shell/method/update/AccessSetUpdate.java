@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -48,7 +49,57 @@ import org.efaps.util.EFapsException;
  * @author tmo
  * @version $Id$
  */
-public class AccessSetUpdate  {
+public class AccessSetUpdate extends AbstractUpdate  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // enums
+  
+  /**
+   * The enum is used to define the links with all information needed to update
+   * the link information between this access set and the related objects.
+   */
+  private enum Links  {
+    /** Link to access types. */
+    AccessTypes("Admin_Access_AccessSet2Type", 
+                "AccessSetLink", 
+                "Admin_Access_AccessType", "AccessTypeLink"),
+    /** Link to data model types. */
+    DataModelTypes("Admin_Access_AccessSet2DataModelType", 
+                   "AccessSetLink", 
+                   "Admin_DataModel_Type", "DataModelTypeLink"),
+    /** Link to persons. */
+    Persons("Admin_Access_AccessSet2UserAbstract", 
+            "AccessSetLink", 
+            "Admin_User_Person", "UserAbstractLink"),
+    /** Link to roles. */
+    Roles("Admin_Access_AccessSet2UserAbstract", 
+          "AccessSetLink", 
+          "Admin_User_Role", "UserAbstractLink"),
+    /** Link to groups. */
+    Groups("Admin_Access_AccessSet2UserAbstract", 
+           "AccessSetLink", 
+           "Admin_User_Group", "UserAbstractLink");
+
+    /** Name of the link. */
+    final String linkName;
+    /** Name of the parent attribute in the link. */
+    final String parentAttrName;
+    /** Name of the child type */
+    final String childTypeName;
+    /** Name of the child attribute in the link. */
+    final String childAttrName;
+    
+    /** 
+    */
+    Links(final String _linkName,
+          final String _parentAttrName,
+          final String _childTypeName, final String _childAttrName)  {
+      this.linkName = _linkName;
+      this.parentAttrName = _parentAttrName;
+      this.childTypeName = _childTypeName;
+      this.childAttrName = _childAttrName;
+    }
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
@@ -62,24 +113,20 @@ public class AccessSetUpdate  {
   // instance variables
 
   /**
-   * The univeral unique identifier of the object is stored in this instance
-   * variable.
-   *
-   * @see #setUUID
-   */
-  private String uuid = null;
-  
-  /**
-   * The instance of the object in the eFaps database is stored in this 
-   * instance variable..
-   */
-  private Instance instance = null;
-
-  /**
    * All definitions of versions are added to this list.
    */
   private List < Definition > definitions = new ArrayList < Definition > ();
  
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors
+
+  /**
+   *
+   */
+  public AccessSetUpdate() {
+    super("Admin_Access_AccessSet");
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
@@ -97,69 +144,79 @@ public class AccessSetUpdate  {
   public void updateInDB() throws EFapsException,Exception {
     Context context = Context.getThreadContext();
 
-    readInstanceFromDB();
-    if (this.instance == null)  {
-      createInstanceInDB();
-    }
+    Instance instance = getInstance();
     for (Definition def : this.definitions)  {
-      Update update = new Update(context, this.instance);
+      Update update = new Update(context, instance);
       update.add(context, "Name", def.name);
       update.add(context, "Revision", def.globalVersion 
                                       + "#" + def.localVersion);
       update.execute(context);
-      setAccessTypesInDB(def.accessTypes);
+      setLinksInDB(instance, Links.AccessTypes, def.accessTypes);
+      setLinksInDB(instance, Links.DataModelTypes, def.dataModelTypes);
+      setLinksInDB(instance, Links.Persons, def.persons);
+      setLinksInDB(instance, Links.Roles, def.roles);
+      setLinksInDB(instance, Links.Groups, def.groups);
     }
   }
 
   /**
-   * Sets for this access set in the eFaps database the given access types. 
+   * Sets the links from this object to the given list of objects (with the 
+   * object name) in the eFaps database.
    *
-   * @param _accessType string list of all access types to set for this 
-   *                    access set
+   * @param _instance   instance for which the access types must be set
+   * @param _linkType   link to update
+   * @param _objNames   string list of all object names to set for this 
+   *                    object
    */
-  protected void setAccessTypesInDB(final List < String > _accessTypes)  
+  protected void setLinksInDB(final Instance _instance,
+                              final Links _linkType,
+                              final List < String > _objNames)  
                                             throws EFapsException,Exception  {
                                               
     Context context = Context.getThreadContext();
     
-    // get ids from current access types
+    // get ids from current object
     Map < Long, String > currents = new HashMap < Long, String > ();
     SearchQuery query = new SearchQuery();
     query.setExpand(context, 
-                    this.instance, 
-                    "Admin_Access_AccessSet2Type\\AccessSetLink");
-    query.addSelect(context, "AccessTypeLink.ID");
+                    _instance, 
+                    _linkType.linkName + "\\" + _linkType.parentAttrName);
+    query.addSelect(context, _linkType.childAttrName + ".ID");
     query.addSelect(context, "OID");
+    query.addSelect(context, _linkType.childAttrName + ".Type");
     query.execute(context);
     while (query.next())  {
-      currents.put((Long) query.get(context, "AccessTypeLink.ID"),
+      Type type = (Type) query.get(context, _linkType.childAttrName + ".Type");
+      if (_linkType.childTypeName.equals(type.getName()))  {
+        currents.put((Long) query.get(context, _linkType.childAttrName + ".ID"),
                    (String) query.get(context, "OID"));
+      }
     }
     query.close();
 
-    // get ids for target access types
+    // get ids for target
     Set < Long > targets = new HashSet < Long > ();
-    for (String accessType : _accessTypes)  {
+    for (String objName : _objNames)  {
       query = new SearchQuery();
-      query.setQueryTypes(context, "Admin_Access_AccessType");
-      query.addWhereExprEqValue(context, "Name", accessType);
+      query.setQueryTypes(context, _linkType.childTypeName);
+      query.addWhereExprEqValue(context, "Name", objName);
       query.addSelect(context, "ID");
       query.execute(context);
       if (query.next())  {
         targets.add((Long) query.get(context, "ID"));
         
       } else  {
-System.out.println("Access Type '" + accessType + "' not found!");
+System.out.println(_linkType.childTypeName + " '" + objName + "' not found!");
       }
       query.close();
     }
 
-    // insert needed new links to access types
+    // insert needed new links
     for (Long target : targets)  {
       if (currents.get(target) == null)  {
-        Insert insert = new Insert(context, "Admin_Access_AccessSet2Type");
-        insert.add(context, "AccessSetLink", "" + this.instance.getId());
-        insert.add(context, "AccessTypeLink", "" + target);
+        Insert insert = new Insert(context, _linkType.linkName);
+        insert.add(context, _linkType.parentAttrName, "" + _instance.getId());
+        insert.add(context, _linkType.childAttrName, "" + target);
         insert.execute(context);
       } else  {
         currents.remove(target);
@@ -173,69 +230,17 @@ System.out.println("Access Type '" + accessType + "' not found!");
     }
   }
 
-  /**
-   * The method searchs for the given universal unique identifier in 
-   * {@link #uuid} the instance in the eFaps database and stores the result
-   * in {@link #instance}. If no object is found in eFaps, {@link #instance}
-   * is set to <code>null</code>.
-   *
-   * @see #instance
-   * @see #uuid
-   * @todo remove throwing of Exception
-   */
-  protected void readInstanceFromDB() throws EFapsException,Exception  {
-    Context context = Context.getThreadContext();
-    SearchQuery query = new SearchQuery();
-    query.setQueryTypes(context, "Admin_Access_AccessSet");
-    query.addWhereExprEqValue(context, "UUID", this.uuid);
-    query.addSelect(context, "OID");
-    query.execute(context);
-    if (query.next())  {
-      this.instance = new Instance(context, 
-                                   (String) query.get(context, "OID"));
-    } else  {
-      this.instance = null;
-    }
-    query.close();
-  }
-  
-  /**
-   * A new instance is created in the eFaps db for given univeral unique 
-   * identifier in {@link #uuid}. The name of the access set is also the
-   * universal unique identifier, because the name of access set is first 
-   * updates in the version definition.<br/>
-   * The new created object is stored as instance information in 
-   * {@link #instance}.
-   *
-   * @see #uuid
-   * @see #instance
-   * @todo remove throwing of Exception
-   */
-  protected void createInstanceInDB() throws EFapsException, Exception  {
-    Context context = Context.getThreadContext();
-    Insert insert = new Insert(context, "Admin_Access_AccessSet");
-    insert.add(context, "Name", this.uuid);
-    insert.add(context, "UUID", this.uuid);
-    insert.execute(context);
-    this.instance = insert.getInstance();
-  }
-    
   /////////////////////////////////////////////////////////////////////////////
   // getter and setter methods
 
   /**
-   * @see #uuid
-   */
-  public void setUUID(final String _uuid)  {
-    this.uuid = _uuid;
-  }
-  
-  /**
+   * Returns a string representation with values of all instance variables.
    *
+   * @return string representation of this access set update
    */
   public String toString()  {
     return new ToStringBuilder(this).
-      append("uuid",            this.uuid).
+      appendSuper(super.toString()).
       append("definitions",     this.definitions).
       toString();
   }
@@ -275,11 +280,24 @@ System.out.println("Access Type '" + accessType + "' not found!");
       digester.addCallMethod("access-set/definition/access-type", "addAccessType", 1);
       digester.addCallParam("access-set/definition/access-type", 0);
 
+      digester.addCallMethod("access-set/definition/type", "addDataModelType", 1);
+      digester.addCallParam("access-set/definition/type", 0);
+
+      digester.addCallMethod("access-set/definition/person", "addPerson", 1);
+      digester.addCallParam("access-set/definition/person", 0);
+
+      digester.addCallMethod("access-set/definition/role", "addRole", 1);
+      digester.addCallParam("access-set/definition/role", 0);
+
+      digester.addCallMethod("access-set/definition/group", "addGroup", 1);
+      digester.addCallParam("access-set/definition/group", 0);
+
       ret = (AccessSetUpdate) digester.parse(_file);
     } catch (SAXException e)  {
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);
     }
+System.out.println("ret="+ret);
     return ret;
   }
 
@@ -327,7 +345,27 @@ e.printStackTrace();
     /**
      * List of all access type to which this access set is assigned to.
      */
-    private List < String > accessTypes = new ArrayList < String > ();
+    private final List < String > accessTypes = new ArrayList < String > ();
+
+    /**
+     * List of all data model types which are assigned to this access set.
+     */
+    private final List < String > dataModelTypes = new ArrayList < String > ();
+
+    /**
+     * List of all person which are assigned to this access set.
+     */
+    private final List < String > persons = new ArrayList < String > ();
+
+    /**
+     * List of all roles which are assigned to this access set.
+     */
+    private final List < String > roles = new ArrayList < String > ();
+
+    /**
+     * List of all groups which are assigned to this access set.
+     */
+    private final List < String > groups = new ArrayList < String > ();
 
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
@@ -350,6 +388,8 @@ e.printStackTrace();
     }
     
     /**
+     * @param _accessType access type to add (defined with the name of the
+     *                    access type)
      * @see #accessTypes
      */
     public void addAccessType(final String _accessType)  {
@@ -357,7 +397,41 @@ e.printStackTrace();
     }
 
     /**
-     * 
+     * @param _dataModelType  data model type to add (defined with the name of
+     *                        the data model type)
+     * @see #dataModelTypes
+     */
+    public void addDataModelType(final String _dataModelType)  {
+      this.dataModelTypes.add(_dataModelType);
+    }
+
+    /**
+     * @param _person person to add (defined with the name of the person)
+     * @see #persons
+     */
+    public void addPerson(final String _person)  {
+      this.persons.add(_person);
+    }
+
+    /**
+     * @param _role role to add (defined with the name of the role)
+     * @see #roles
+     */
+    public void addRole(final String _role)  {
+      this.roles.add(_role);
+    }
+
+    /**
+     * @param _group group to add (defined with the name of the group)
+     * @see #groups
+     */
+    public void addGroup(final String _group)  {
+      this.groups.add(_group);
+    }
+
+    /**
+     *
+     * @param _name name of the access set (for this version definition)
      * @see #name
      */
     public void setName(final String _name)  {
@@ -365,7 +439,10 @@ e.printStackTrace();
     }
 
     /**
+     * Returns a string representation with values of all instance variables
+     * of a definition.
      *
+     * @return string representation of this definition of an access set update
      */
     public String toString()  {
       return new ToStringBuilder(this).
@@ -375,6 +452,9 @@ e.printStackTrace();
         append("mode",            this.mode).
         append("name",            this.name).
         append("access types",    this.accessTypes).
+        append("persons",         this.persons).
+        append("roles",           this.roles).
+        append("groups",          this.groups).
         toString();
     }
   }
