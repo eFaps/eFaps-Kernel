@@ -1024,6 +1024,20 @@ function _eFapsCreateAccessTablesStep1(_con, _stmt)  {
       ["constraint ACSST2DMTP_FK_CRTR  foreign key(CREATOR)      references USERPERSON(ID)"],
       ["constraint ACSST2DMTP_FK_MDFR  foreign key(MODIFIER)     references USERPERSON(ID)"]
   ]);
+
+  eFapsCommonSQLTableCreate(_con, _stmt, "Link from Access Sets to Users", "ACCESSSET2USER", null,[
+      ["ACCESSSET             "+TYPE_INTEGER+"                   not null"],
+      ["USERABSTRACT          "+TYPE_INTEGER+"                   not null"],
+      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
+      ["CREATED               "+TYPE_DATETIME+"                  not null"],
+      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
+      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
+      ["constraint ACSST2USER_UNIQUE   unique(ACCESSSET,USERABSTRACT)"],
+      ["constraint ACSST2USER_FK_SET   foreign key(ACCESSSET)    references ACCESSSET(ID)"],
+      ["constraint ACSST2USER_FK_TYPE  foreign key(USERABSTRACT) references USERABSTRACT(ID)"],
+      ["constraint ACSST2USER_FK_CRTR  foreign key(CREATOR)      references USERPERSON(ID)"],
+      ["constraint ACSST2USER_FK_MDFR  foreign key(MODIFIER)     references USERPERSON(ID)"]
+  ]);
 }
 
 /**
