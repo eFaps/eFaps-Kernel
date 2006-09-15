@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.access;
@@ -31,7 +34,7 @@ import org.efaps.db.transaction.ConnectionResource;
 
 /**
  * @author tmo
- * @version $Id: LifeCycleObject.java 372 2006-09-15 09:08:19 +0200 (Fr, 15 Sep 2006) tmo $
+ * @version $Id$
  * @todo description
  */
 public class AccessType extends AdminObject  {
