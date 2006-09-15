@@ -56,7 +56,7 @@ with (TYPE)  {
     setSQLTable("Admin_Access_AccessSet2UserAbstractSQLTable");
     setSQLColumn("ACCESSSET");
   }
-  with (addAttribute("UserAbstractTypeLink"))  {
+  with (addAttribute("UserAbstractLink"))  {
     setAttributeType("Link");
     setTypeLink("Admin_User_Abstract");
     setSQLTable("Admin_Access_AccessSet2UserAbstractSQLTable");
