@@ -65,7 +65,6 @@ public void setQueryTypes(Context _context, String _types) throws Exception  {
   }
 }
 
-ArrayList<Type> types = new ArrayList<Type>();
 
   /**
    *
@@ -227,78 +226,5 @@ throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getNam
 
   //////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * The instance method replaces all the attributes in the text string
-   * beginning with a &quot;$&lt;&quot; and ending with a &quot;&gt;&quot;
-   * with the related values.
-   *
-   * @param _context  context for this request
-   * @param _text     text string with attributes to replace with the values
-   * @return replaced text string
-   * @see #addAllFromString
-   */
-  public String replaceAllInString(Context _context, String _text) throws Exception  {
-    int index = _text.indexOf("$<");
-    while (index>=0)  {
-      int end = _text.indexOf(">", index);
-      if (end<0)  {
-        break;
-      }
-      String expr = _text.substring(index+2,end);
-
-      Object value = get(_context, expr);
-      if (value!=null)  {
-        _text = _text.substring(0, index) +
-            value +
-            _text.substring(end+1);
-      } else  {
-        _text = _text.substring(0, index) + _text.substring(end+1);
-      }
-      index = _text.indexOf("$<", end);
-    }
-    return _text;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * All object ids for one row are returned. The objects id defined in the
-   * expand are returned in the same order.
-   *
-   * @param _context  eFaps context for this request
-   * @return pipe separated string of object ids
-   */
-  public String getRowOIDs(Context _context) throws Exception  {
-    StringBuffer rowOIDs = new StringBuffer();
-    boolean first = true;
-    for (Type type : types)  {
-      String value = getOID(_context, type);
-      if (first)  {
-        first = false;
-      } else  {
-        rowOIDs.append('|');
-      }
-      rowOIDs.append(value);
-    }
-    return rowOIDs.toString();
-  }
-
-  /**
-   * The instance method returns the instance for the current selected row.
-   *
-   * @param _context  context for this request
-   */
-  public Instance getInstance(Context _context, Field _field) throws Exception  {
-    Instance ret = null;
-
-    if (_field!=null && _field.getAlternateOID()!=null)  {
-      String value = getOID(_context, _field);
-      ret = new Instance(_context, value);
-    } else  {
-      ret = getInstance(_context, this.type);
-    }
-    return ret;
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
+   /////////////////////////////////////////////////////////////////////////////
 }

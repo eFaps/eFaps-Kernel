@@ -37,6 +37,7 @@ import javax.sql.rowset.JoinRowSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
@@ -68,8 +69,11 @@ public abstract class AbstractQuery  {
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
+private boolean checkAccess = false;
+
 private CachedResult cachedResult = null;
 Type type = null;
+ArrayList<Type> types = new ArrayList<Type>();
 
   /**
    * The instance variable stores the order of the select types.
@@ -355,14 +359,45 @@ getMainSelectTypes().put(_type, selectType);
    * @param _key      key for which the attribute value must returned
    * @return atribute value for given key
    */
-  public Object get(Context _context, Object _key) throws Exception  {
+  public Object get(final Context _context, 
+                    final Object _key) throws Exception  {
     Object ret = null;
-    SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
-    if (selExpr!=null)  {
-      ret = selExpr.getAttrValue(_context);
+
+    if (hasAccess(_context, _key))  {
+      SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
+      if (selExpr!=null)  {
+        ret = selExpr.getAttrValue(_context);
+      }
     }
+//System.out.println("------------ret="+ret);
     return ret;
   }
+
+private boolean hasAccess(final Context _context,
+                          final Object _key) throws Exception  {
+  boolean hasAccess = true;
+  if (this.checkAccess)  {
+    Instance instance = null;
+    String oid = null;
+    SelExpr2Attr selExpr = getAllOIDSelExprMap().get(_key);
+    if (selExpr!=null)  {
+      oid = (String) selExpr.getAttrValue(_context);
+    }
+//System.out.println("------------oid="+oid);
+    if ((oid != null) && !oid.equals("0.0"))  {
+      instance = new Instance(_context, oid);
+    } else  {
+      instance = getInstance(_context, this.type);
+    }
+    if (instance != null)  {
+      hasAccess = instance.getType()
+            .hasAccess(instance, 
+                       AccessTypeEnums.SHOW.getAccessType());
+    }
+//System.out.println("------------hasAccess="+hasAccess);
+  }
+  return hasAccess;
+}
 
   /**
    * The instance method returns for the given key the atribute.
@@ -371,7 +406,8 @@ getMainSelectTypes().put(_type, selectType);
    * @param _key      key for which the attribute value must returned
    * @return attribute for given key
    */
-  public Attribute getAttribute(Context _context, Object _key) throws Exception  {
+  public Attribute getAttribute(final Context _context, 
+                                final Object _key) throws Exception  {
     Attribute ret = null;
     SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
     if (selExpr!=null)  {
@@ -381,16 +417,57 @@ getMainSelectTypes().put(_type, selectType);
   }
 
   /**
+   * All object ids for one row are returned. The objects id defined in the
+   * expand are returned in the same order.
+   *
+   * @param _context  eFaps context for this request
+   * @return pipe separated string of object ids
+   */
+  public String getRowOIDs(final Context _context) throws Exception  {
+    StringBuffer rowOIDs = new StringBuffer();
+    boolean first = true;
+    for (Type type : types)  {
+      String value = getOID(_context, type);
+      if (first)  {
+        first = false;
+      } else  {
+        rowOIDs.append('|');
+      }
+      rowOIDs.append(value);
+    }
+    return rowOIDs.toString();
+  }
+
+  /**
    *
    * @param _context  eFaps context for this request
    * @param _key      key for which the object id value must returned
    * @return object id for given key
    */
-  public String getOID(Context _context, Object _key) throws Exception  {
+  public String getOID(final Context _context, 
+                       final Object _key) throws Exception  {
     String ret = null;
     SelExpr2Attr selExpr = getAllOIDSelExprMap().get(_key);
     if (selExpr!=null)  {
-      ret = (String)selExpr.getAttrValue(_context);
+      ret = (String) selExpr.getAttrValue(_context);
+    }
+    return ret;
+  }
+
+  /**
+   * The instance method returns the instance for the current selected row.
+   *
+   * @param _context  context for this request
+   */
+  public Instance getInstance(Context _context, Field _field) throws Exception  {
+    Instance ret = null;
+    if (hasAccess(_context, _field))  {
+      if ((_field != null) && (_field.getAlternateOID() != null))  {
+        String value = getOID(_context, _field);
+        ret = new Instance(_context, value);
+      } else  {
+        ret = getInstance(_context, this.type);
+      }
     }
     return ret;
   }
@@ -419,12 +496,45 @@ if (selectType.getIndexType()!=null)  {
     return new Instance(_context, type, id);
   }
 
+  /**
+   * The instance method replaces all the attributes in the text string
+   * beginning with a &quot;$&lt;&quot; and ending with a &quot;&gt;&quot;
+   * with the related values.
+   *
+   * @param _context  context for this request
+   * @param _text     text string with attributes to replace with the values
+   * @return replaced text string
+   * @see #addAllFromString
+   */
+  public String replaceAllInString(Context _context, String _text) throws Exception  {
+    int index = _text.indexOf("$<");
+    while (index>=0)  {
+      int end = _text.indexOf(">", index);
+      if (end<0)  {
+        break;
+      }
+      String expr = _text.substring(index+2,end);
+
+      Object value = get(_context, expr);
+      if (value!=null)  {
+        _text = _text.substring(0, index) +
+            value +
+            _text.substring(end+1);
+      } else  {
+        _text = _text.substring(0, index) + _text.substring(end+1);
+      }
+      index = _text.indexOf("$<", end);
+    }
+    return _text;
+  }
+
   /////////////////////////////////////////////////////////////////////////////
 
   /**
    * The instance method executes the query.
    */
   public void execute() throws Exception  {
+    this.checkAccess = true;
     executeWithoutAccessCheck();
   }
 
@@ -532,15 +642,6 @@ throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable");
    */
   public boolean next() throws Exception  {
     return this.cachedResult.next();
-/*
-    boolean ret;
-    if (getResultSet()!=null)  {
-      ret = getResultSet().next();
-    } else  {
-      ret = false;
-    }
-    return ret;
-*/
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -1018,6 +1119,35 @@ private List<WhereClause> whereClauses = new ArrayList<WhereClause>();
    */
   private class SelExpr2Attr  {
 
+    ///////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Stores the attribute
+     *
+     * @see #getAttribute
+     * @see #setAttribute
+     */
+    private Attribute attribute = null;
+
+    /**
+     * Stores all select expression.
+     *
+     * @see #getSelExpr
+     * @see #setSelExpr
+     */
+    private ArrayList < SelectExpression > selExprs = null;
+
+    /**
+     * Stores all the indexes of the SQL select expression where the values of
+     * the attribute are found (in the same order than defined in the
+     * attribute).
+     *
+     * @see #getIndexes
+     */
+    private ArrayList < Integer > indexes = new ArrayList<Integer>();
+
+    ///////////////////////////////////////////////////////////////////////////
+
     /**
      * Constructor
      *
@@ -1058,34 +1188,7 @@ return ret.readValue(_context, cachedResult, getIndexes());
 //      return ret.readValue(_context, getResultSet(), getIndexes());
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * Stores the attribute
-     *
-     * @see #getAttribute
-     * @see #setAttribute
-     */
-    private Attribute attribute = null;
-
-    /**
-     * Stores all select expression.
-     *
-     * @see #getSelExpr
-     * @see #setSelExpr
-     */
-    private ArrayList<SelectExpression> selExprs = null;
-
-    /**
-     * Stores all the indexes of the SQL select expression where the values of
-     * the attribute are found (in the same order than defined in the
-     * attribute).
-     *
-     * @see #getIndexes
-     */
-    private ArrayList<Integer> indexes = new ArrayList<Integer>();
-
-    ///////////////////////////////////////////////////////////////////////////
+     ///////////////////////////////////////////////////////////////////////////
 
     /**
      * This is the getter method for instance variable {@link #attribute}.

@@ -85,7 +85,7 @@ System.out.println("--->selectedFilter="+getSelectedFilter());
 */
     }
 
-    query.executeWithoutAccessCheck();
+    query.execute();
 
     setValues(new ArrayList<Row>());
 
@@ -116,6 +116,7 @@ setTitle(list.makeString(_context, query));
   void executeRowResult(Context _context, SearchQuery _query) throws Exception  {
     while (_query.next())  {
       Row row = new Row(_query.getRowOIDs(_context));
+      boolean toAdd = false;
       for (Field field : getTable().getFields())  {
         Object value = null;
 Attribute attr = null;
@@ -126,6 +127,7 @@ Attribute attr = null;
           value = _query.get(_context, field);
           attr = _query.getAttribute(_context, field);
         }
+        Instance instance = _query.getInstance(_context, field);
 //        if (attrValue!=null)  {
 //          attrValue.setField(field);
 //        }
@@ -133,9 +135,12 @@ UIInterface classUI = null;
 if (attr!=null)  {
   classUI = attr.getAttributeType().getUI();
 }
-        row.add(field, classUI, value, _query.getInstance(_context, field));
+        toAdd = toAdd || (value != null) || (instance != null);
+        row.add(field, classUI, value, instance);
       }
-      getValues().add(row);
+      if (toAdd)  {
+        getValues().add(row);
+      }
     }
   }
 
