@@ -27,6 +27,7 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.transaction.ConnectionResource;
@@ -99,9 +100,17 @@ public class Delete  {
    * the context user has access. the delete is made with 
    * {@link #executeWithoutAccessCheck}.
    *
+   * @throws EFapsException if the current context user has no delete access
+   *         on given eFaps object.
    * @see #executeWithoutAccessCheck
    */
   public void execute() throws Exception  {
+    boolean hasAccess = this.instance.getType()
+          .hasAccess(this.instance, 
+                     AccessTypeEnums.DELETE.getAccessType());
+    if (!hasAccess)  {
+      throw new EFapsException(getClass(), "execute.NoAccess");
+    }
     executeWithoutAccessCheck();
   }
 
@@ -153,7 +162,9 @@ public class Delete  {
         throw e;
       } finally  {
         try  {
-          stmt.close();
+          if (stmt != null)  {
+            stmt.close();
+          }
         } catch (java.sql.SQLException e)  {
         }
       }
