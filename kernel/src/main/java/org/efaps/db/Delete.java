@@ -41,36 +41,68 @@ import org.efaps.util.EFapsException;
  */
 public class Delete  {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
   /**
    * Logging instance used in this class.
    */
   private static final Log LOG = LogFactory.getLog(Delete.class);
 
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * The instance variable stores the instance for which this update is made.
+   *
+   * @see #getInstance
+   * @see #setInstance
+   */
+  private final Instance instance;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors
+
   /**
    *
-   * @param _context    eFaps context for this request
    * @param _instance
+   * @todo description
    */
-  public Delete(Context _context, Instance _instance) throws EFapsException  {
-    setInstance(_instance);
+  public Delete(final Instance _instance)  {
+    this.instance = _instance;
   }
 
   /**
    *
-   * @param _context    eFaps context for this request
    * @param _type
    * @param _id
+   * @todo description
    */
-  public Delete(Context _context, Type _type, String _id) throws EFapsException  {
-    setInstance(new Instance(_context, _type, _id));
+  public Delete(final Type _type, final String _id)  {
+    this.instance = new Instance(_type, _id);
   }
 
   /**
-   * @param _context    eFaps context for this request
    * @param _oid
+   * @todo description
    */
-  public Delete(Context _context, String _oid) throws Exception  {
-    setInstance(new Instance(_context, _oid));
+  public Delete(final String _oid)  {
+    this.instance = new Instance(_oid);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
+
+  /**
+   * First it is checked if the user has access to delete the eFaps object 
+   * defined in {@link #instance}. If no access, an exception is thrown. If
+   * the context user has access. the delete is made with 
+   * {@link #executeWithoutAccessCheck}.
+   *
+   * @see #executeWithoutAccessCheck
+   */
+  public void execute() throws Exception  {
+    executeWithoutAccessCheck();
   }
 
   /**
@@ -78,16 +110,19 @@ public class Delete  {
    * SQL tables from the type (if the SQL table is not read only!). If a store
    * is defined for the type, the checked in file is also deleted (with the
    * help of the store resource implementation; if the store resource
-   * implementation has not implemented the delete, the file is not deleted!).
+   * implementation has not implemented the delete, the file is not 
+   * deleted!).<br/>
+   * It is not checked if the current context user has access to delete the 
+   * eFaps object defined in {@link #instance}.
    *
-   * @param _context    eFaps context for this request
    * @see SQLTable#readOnly
    */
-  public void execute(Context _context) throws Exception  {
+  public void executeWithoutAccessCheck() throws Exception  {
+    Context context = Context.getThreadContext();
     ConnectionResource con = null;
 
     try  {
-      con = _context.getConnectionResource();
+      con = context.getConnectionResource();
 
       Statement stmt = null;
       try  {
@@ -124,39 +159,29 @@ public class Delete  {
       }
 
       con.commit();
-    } catch (Exception e)  {
-      if (con != null)  {
+    } finally  {
+      if ((con != null) && con.isOpened())  {
         con.abort();
       }
-      throw e;
     }
 
     StoreResource store = null;
     try  {
       if (getInstance().getType().hasStoreResource())  {
-        store = _context.getStoreResource(getInstance());
+        store = context.getStoreResource(getInstance());
         store.delete();
         store.commit();
       }
-    } catch (Exception e)  {
-      if (store != null)  {
+    } finally  {
+      if ((con != null) && con.isOpened())  {
         store.abort();
       }
-      throw e;
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance variable stores the instance for which this update is made.
-   *
-   * @see #getInstance
-   * @see #setInstance
-   */
-  private Instance instance = null;
 
   /////////////////////////////////////////////////////////////////////////////
+  // instance getter and setter methods
 
   /**
    * This is the getter method for instance variable {@link #instance}.
@@ -167,16 +192,5 @@ public class Delete  {
    */
   public Instance getInstance()  {
     return this.instance;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #instance}.
-   *
-   * @param _out new value for instance variable {@link #instance}
-   * @see #instance
-   * @see #getInstance
-   */
-  protected void setInstance(Instance _instance)  {
-    this.instance = _instance;
   }
 }

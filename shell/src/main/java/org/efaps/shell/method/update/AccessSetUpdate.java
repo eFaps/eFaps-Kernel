@@ -48,6 +48,7 @@ import org.efaps.util.EFapsException;
 /**
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public class AccessSetUpdate extends AbstractUpdate  {
 
@@ -225,8 +226,8 @@ System.out.println(_linkType.childTypeName + " '" + objName + "' not found!");
 
     // remove unneeded current links to access types
     for (String oid : currents.values())  {   
-      Delete del = new Delete(context, oid);
-      del.execute(context);
+      Delete del = new Delete(oid);
+      del.execute();
     }
   }
 

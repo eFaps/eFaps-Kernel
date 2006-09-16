@@ -1386,8 +1386,8 @@ System.out.println("toBeCreated="+toBeCreated);
         // if not folder, delete links of document to folder!
         if (!isFolder(instance))  {
         }
-        Delete delete = new Delete(this.context, instance);
-        delete.execute(this.context);
+        Delete delete = new Delete(instance);
+        delete.execute();
 //        delete.close();
       } catch (ObjectNotFoundException e)  {
         throw e;

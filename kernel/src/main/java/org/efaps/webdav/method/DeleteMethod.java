@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.webdav.method;
@@ -29,6 +32,8 @@ import org.efaps.db.Instance;
 
 /**
  *
+ * @author tmo
+ * @version $Id$
  */
 public class DeleteMethod extends AbstractMethod  {
 
@@ -41,10 +46,8 @@ public class DeleteMethod extends AbstractMethod  {
 
       Instance instance = getFolderInstance(context, _request.getPathInfo());
 
-
-      Delete delete = new Delete(context, instance);
-      delete.execute(context);
-//      delete.close();
+      Delete delete = new Delete(instance);
+      delete.execute();
 
       _response.setStatus(Status.NO_CONTENT.code);
 

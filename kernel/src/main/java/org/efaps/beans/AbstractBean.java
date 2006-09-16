@@ -32,6 +32,11 @@ import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 
+/*
+ * @author tmo
+ * @version $Id$
+ * @todo description
+ */
 public abstract class AbstractBean implements AbstractBeanInterface  {
 
   public AbstractBean()  {
@@ -51,7 +56,7 @@ System.out.println("AbstractBean.destructor");
    */
   public void setOid(String _oid) throws Exception  {
     if (_oid!=null && _oid.length()>0)  {
-setInstance(new Instance(null, _oid));
+setInstance(new Instance(_oid));
 //      Context context = new Context();
 //      try  {
 //        setInstance(new Instance(context, _oid));

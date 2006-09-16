@@ -58,8 +58,8 @@ System.out.println("actionCommandName="+actionCommandName);
         count++;
       }
     }
-    org.efaps.db.Delete del = new org.efaps.db.Delete(context, oid);
-    del.execute(context);
+    org.efaps.db.Delete del = new org.efaps.db.Delete(oid);
+    del.execute();
   }
 System.out.println("*************************************************");
 

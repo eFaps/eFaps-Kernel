@@ -37,7 +37,6 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
 import org.efaps.db.Context;
-import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -47,6 +46,7 @@ import org.efaps.util.EFapsException;
 /**
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public class AccessTypeUpdate extends AbstractUpdate  {
 
