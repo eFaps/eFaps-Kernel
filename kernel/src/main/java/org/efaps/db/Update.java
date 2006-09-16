@@ -246,7 +246,7 @@ if (testNeeded)  {
       con = context.getConnectionResource();
 
       if (test4Unique(context))  {
-        throw new EFapsException(getClass(), "execute.UniqueKeyError");
+        throw new EFapsException(getClass(), "executeWithoutAccessCheck.UniqueKeyError");
       }
 
       for (Map.Entry < SQLTable, Map < String, AttributeTypeInterface > > entry 

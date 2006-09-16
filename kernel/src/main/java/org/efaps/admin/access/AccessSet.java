@@ -272,7 +272,7 @@ public class AccessSet extends AdminObject  {
 
       stmt = _con.getConnection().createStatement();
 
-      ResultSet rs = stmt.executeQuery(SQL_SET2TYPE);
+      ResultSet rs = stmt.executeQuery(SQL_SET2DMTYPE);
       while (rs.next())  {
         long accessSetId              = rs.getLong(1);
         long dataModelTypeId          = rs.getLong(2);
@@ -294,6 +294,7 @@ public class AccessSet extends AdminObject  {
                     + "(id = " + dataModelType.getId() + ", "
                         + "uuid = " + dataModelType.getUUID() + ")");
           accessSet.getDataModelTypes().add(dataModelType);
+          dataModelType.addAccessSet(accessSet);
         }
        }
       rs.close();

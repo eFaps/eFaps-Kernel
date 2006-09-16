@@ -34,4 +34,5 @@ with (TYPE)  {
   }
   addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_DataModel_TypeImage");
   addProperty("Tree",                   "Admin_DataModel_TypeTree");
+  addProperty("AccessCheckClass",       "org.efaps.admin.access.SimpleAccessCheckOnType");
 }

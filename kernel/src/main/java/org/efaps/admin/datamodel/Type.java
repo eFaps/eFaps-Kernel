@@ -36,6 +36,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.access.AccessCheckInterface;
+import org.efaps.admin.access.AccessSet;
+import org.efaps.admin.access.AccessType;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.lifecycle.Policy;
@@ -47,8 +50,10 @@ import org.efaps.admin.user.Role;
 import org.efaps.db.Cache;
 import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.servlet.RequestHandler;
+import org.efaps.util.EFapsException;
 
 /**
  * This is the class for the type description. The type description holds
@@ -58,6 +63,9 @@ import org.efaps.servlet.RequestHandler;
  * @version $Id$
  */
 public class Type extends DataModelObject  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
 
   /**
    * Logging instance used in this class.
@@ -74,6 +82,171 @@ public class Type extends DataModelObject  {
                                                 + "SQLCACHEEXPR "
                                               + "from V_ADMINTYPE";
 
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * Instance variable for the parent type from which this type is derived.
+   *
+   * @see #getParentType
+   * @see #setParentType
+   */
+  private Type parentType = null;
+
+  /**
+   * Instance variable for the id of parent type from which this type is
+   * derived. Also the parent ids from the parent is stored.
+   *
+   * @see #getParentTypeId
+   * @see #setParentTypeId
+   */
+  private String parentTypeIds = "";
+
+  /**
+   * Instance variable for all child types derived from this type.
+   *
+   * @see #getChildTypes
+   */
+  private Set < Type > childTypes = new HashSet < Type > ();
+
+  /**
+   * The instance variables stores all attributes for this type object.
+   *
+   * @see #getAttributes()
+   * @see #add(Attribute)
+   * @see #getAttribute
+   * @see #getAttributes(Class)
+   */
+  private Map < String,Attribute > attributes 
+                                        = new HashMap < String, Attribute > ();
+
+  /**
+   * Cache of the business objects of this type.
+   *
+   * @see #getCache
+   * @see #setCache
+   */
+  private Cache cache = null;
+
+  /**
+   * Instance of a HashSet to store all possible policies for this type.
+   *
+   * @see #addPolicy
+   * @see #getPolicies
+   */
+  private Set < Policy > policies = new HashSet < Policy > ();
+
+  /**
+   * Instance of a HashSet to store all needed tables for this type. The
+   * tables are automatically added via the method {@link #add(Attribute)}.
+   *
+   * @see #add(Attribute)
+   * @see #getTables
+   */
+  private Set < SQLTable > tables = new HashSet < SQLTable > ();
+
+  /**
+   * The instance variable stores the main table, which must be inserted
+   * first. In the main table stands also the select statement to get a new
+   * id. The value is automatically set with method {@link #add(Attribute)}.
+   *
+   * @see Table.mainTable
+   * @see #add(Attribute)
+   * @see #getMainTable
+   * @see #setMainTable
+   */
+  private SQLTable mainTable = null;
+
+  /**
+   * This instance variable stores the form for the viewing mode.
+   *
+   * @see #getFormView
+   * @see #setFormView
+   */
+  private Form formView = null;
+
+  /**
+   * This instance variable stores the form for the editing mode.
+   *
+   * @see #getFormEdit
+   * @see #setFormEdit
+   */
+  private Form formEdit = null;
+
+  /**
+   * This instance variable stores the form for the creating mode.
+   *
+   * @see #getFormCreate
+   * @see #setFormCreate
+   */
+  private Form formCreate = null;
+
+  /**
+   * This instance variable stores the standard type menu.
+   *
+   * @see #getTreeMenu
+   * @see #setTreeMenu
+   */
+  private Menu treeMenu = null;
+
+  /**
+   * Th instance variable stores the attribute used to represent this type.
+   *
+   * @see #getViewAttribute
+   * @see #setViewAttribute
+   */
+  private Attribute viewAttribute = null;
+
+  /**
+   * The instance variable stores all unique keys of this type instance.
+   *
+   * @see #getUniqueKeys
+   * @see #setUniqueKeys
+   */
+  private Collection < UniqueKey > uniqueKeys = null;
+
+  /**
+   * The type icon is stored in this instance variable.
+   */
+  private String icon = null;
+
+  /**
+   * All attributes which are used as links are stored in this map.
+   *
+   * @see #getLinks
+   */
+  private Map < String, Attribute > links 
+                  = new HashMap < String, Attribute > ();
+
+  /**
+   * All triggers for this type are stored in this map.
+   */
+  private final Map < TriggerEvent, List < EventDefinition > > trigger 
+                  = new HashMap <  TriggerEvent, List < EventDefinition > > ();
+
+  /**
+   * All class instances which are used to check access are in this list. The
+   * order comes directly from the database and the access checks should be 
+   * tested in this order.
+   *
+   * @see #addAccessCheck
+   * @see #hasAccess
+   */
+  private final List < AccessCheckInterface > accessChecks = 
+                  new ArrayList < AccessCheckInterface > ();
+
+  /**
+   * All access sets which are assigned to this type are store in this instance 
+   * variable.
+   *
+   * @see #addAccessSet
+   * @see #getAccessSets
+   */
+  private final Set < AccessSet > accessSets = new HashSet < AccessSet > ();
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors
+
   /**
    * This is the constructor for class Type. Every instance of class Type
    * must have a name (parameter <i>_name</i>).
@@ -86,6 +259,9 @@ public class Type extends DataModelObject  {
     typeAttr.setAttributeType(AttributeType.get("Type"));
     addAttribute(typeAttr);
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * Add an attribute to this type and all child types of this type.
@@ -268,6 +444,78 @@ public class Type extends DataModelObject  {
   }
 
   /////////////////////////////////////////////////////////////////////////////
+  // instance methods used for access management
+
+  /**
+   * A new instance of the given access check class is added to the list of 
+   * access checks.
+   *
+   * @param _name name of the access check class to add
+   * @see #accessChecks
+   */
+  private void addAccessCheck(final String _name)  {
+    try  {
+      Class < AccessCheckInterface > acClass 
+                      = (Class < AccessCheckInterface >) Class.forName(_name);
+      this.accessChecks.add(acClass.newInstance());
+    } catch (ClassNotFoundException e)  {
+      LOG.error("could not found class '" + _name + "' for "
+                + "type " + toString(), e);
+    } catch (InstantiationException e)  {
+      LOG.error("could not create new instance of class '" + _name + "' for "
+                + "type " + toString(), e);
+    } catch (IllegalAccessException e)  {
+      LOG.error("could not access class '" + _name + "' for "
+                + "type " + toString(), e);
+    }
+  }
+
+  /**
+   * Checks, if the current context user has all access defined in the list of
+   * access types for the given instance. 
+   *
+   * @param _instance     instance for which the access must be checked
+   * @param _accessTypes  list of access types which must be checked
+   * @param <i>true</i> if the current context user has access, otherwise 
+   *        <i>false</i>.
+   * @see #accessChecks
+   */
+  public boolean hasAccess(final Instance _instance, 
+                           final AccessType _accessType)
+                                                      throws EFapsException  {
+    boolean hasAccess = true;
+
+    for (AccessCheckInterface ac : this.accessChecks)  {
+      hasAccess = ac.checkAccess(_instance, _accessType);
+      if (!hasAccess)  {
+        break;
+      }
+    }
+    return hasAccess;
+  }
+
+  /**
+   * A new access set is assigned to this type instance.
+   *
+   * @param _accessSet  new access to assign to this type instance
+   * @see #accessSets
+   */
+  public void addAccessSet(final AccessSet _accessSet)  {
+    this.accessSets.add(_accessSet);
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #accessSets}.
+   *
+   * @return value of instance variable {@link #accessSets}
+   * @see #accessSets
+   */
+  public Set < AccessSet > getAccessSets()  {
+    return this.accessSets;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods used to initialise this type instance
 
   /**
    * The instance method sets a new property value.
@@ -279,9 +527,11 @@ public class Type extends DataModelObject  {
    * @see #setViewAttribute
    */
   protected void setProperty(final Context _context, final String _name, final String _value) throws Exception  {
-    if (_name.startsWith("Icon"))  {
+    if (_name.startsWith("AccessCheckClass"))  {
+      addAccessCheck(_value);
+    } else if ("Icon".equals(_name))  {
       setIcon(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.startsWith("Tree"))  {
+    } else if ("Tree".equals(_name))  {
       setTreeMenuName(_value);
     } else if (_name.startsWith("UniqueKey"))  {
       addUniqueKey(_value);
@@ -429,143 +679,6 @@ throw e;
   }
 */
 
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Instance variable for the parent type from which this type is derived.
-   *
-   * @see #getParentType
-   * @see #setParentType
-   */
-  private Type parentType = null;
-
-  /**
-   * Instance variable for the id of parent type from which this type is
-   * derived. Also the parent ids from the parent is stored.
-   *
-   * @see #getParentTypeId
-   * @see #setParentTypeId
-   */
-  private String parentTypeIds = "";
-
-  /**
-   * Instance variable for all child types derived from this type.
-   *
-   * @see #getChildTypes
-   */
-  private Set < Type > childTypes = new HashSet < Type > ();
-
-  /**
-   * The instance variables stores all attributes for this type object.
-   *
-   * @see #getAttributes()
-   * @see #add(Attribute)
-   * @see #getAttribute
-   * @see #getAttributes(Class)
-   */
-  private Map < String,Attribute > attributes = new Hashtable < String, Attribute > ();
-
-  /**
-   * Cache of the business objects of this type.
-   *
-   * @see #getCache
-   * @see #setCache
-   */
-  private Cache cache = null;
-
-  /**
-   * Instance of a HashSet to store all possible policies for this type.
-   *
-   * @see #addPolicy
-   * @see #getPolicies
-   */
-  private Set < Policy > policies = new HashSet < Policy > ();
-
-  /**
-   * Instance of a HashSet to store all needed tables for this type. The
-   * tables are automatically added via the method {@link #add(Attribute)}.
-   *
-   * @see #add(Attribute)
-   * @see #getTables
-   */
-  private Set < SQLTable > tables = new HashSet < SQLTable > ();
-
-  /**
-   * The instance variable stores the main table, which must be inserted
-   * first. In the main table stands also the select statement to get a new
-   * id. The value is automatically set with method {@link #add(Attribute)}.
-   *
-   * @see Table.mainTable
-   * @see #add(Attribute)
-   * @see #getMainTable
-   * @see #setMainTable
-   */
-  private SQLTable mainTable = null;
-
-  /**
-   * This instance variable stores the form for the viewing mode.
-   *
-   * @see #getFormView
-   * @see #setFormView
-   */
-  private Form formView = null;
-
-  /**
-   * This instance variable stores the form for the editing mode.
-   *
-   * @see #getFormEdit
-   * @see #setFormEdit
-   */
-  private Form formEdit = null;
-
-  /**
-   * This instance variable stores the form for the creating mode.
-   *
-   * @see #getFormCreate
-   * @see #setFormCreate
-   */
-  private Form formCreate = null;
-
-  /**
-   * This instance variable stores the standard type menu.
-   *
-   * @see #getTreeMenu
-   * @see #setTreeMenu
-   */
-  private Menu treeMenu = null;
-
-  /**
-   * Th instance variable stores the attribute used to represent this type.
-   *
-   * @see #getViewAttribute
-   * @see #setViewAttribute
-   */
-  private Attribute viewAttribute = null;
-
-  /**
-   * The instance variable stores all unique keys of this type instance.
-   *
-   * @see #getUniqueKeys
-   * @see #setUniqueKeys
-   */
-  private Collection < UniqueKey > uniqueKeys = null;
-
-  /**
-   * The type icon is stored in this instance variable.
-   */
-  private String icon = null;
-
-  /**
-   * All attributes which are used as links are stored in this map.
-   *
-   * @see #getLinks
-   */
-  private Map < String, Attribute > links = new HashMap < String, Attribute > ();
-
-  /**
-   * All triggers for this type are stored in this map.
-   */
-  private final Map < TriggerEvent, List < EventDefinition > > trigger = new HashMap <  TriggerEvent, List < EventDefinition > > ();
 
   /////////////////////////////////////////////////////////////////////////////
 

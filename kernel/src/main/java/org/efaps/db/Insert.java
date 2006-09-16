@@ -33,6 +33,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
@@ -44,9 +45,14 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class Insert extends Update {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
 
   /**
    * Logging instance used in this class.
@@ -54,6 +60,7 @@ public class Insert extends Update {
   private static final Log LOG = LogFactory.getLog(Insert.class);
 
   /////////////////////////////////////////////////////////////////////////////
+  // constructors
 
   /**
    * @param _context  context for this request
@@ -75,6 +82,9 @@ public class Insert extends Update {
     addCreateUpdateAttributes(_context);
     addTables();
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * Add all tables of the type to the expressions, because for the type
@@ -111,6 +121,13 @@ public class Insert extends Update {
   /**
    */
   public void execute() throws EFapsException  {
+    boolean hasAccess = getType()
+          .hasAccess(new Instance(getType()), 
+                     AccessTypeEnums.CREATE.getAccessType());
+
+    if (!hasAccess)  {
+      throw new EFapsException(getClass(), "execute.NoAccess", getType());
+    }
     executeWithoutAccessCheck();
   }
 
@@ -125,7 +142,7 @@ public class Insert extends Update {
       con = context.getConnectionResource();
 
       if (test4Unique(context))  {
-        throw new EFapsException(getClass(), "execute.UniqueKeyError");
+        throw new EFapsException(getClass(), "executeWithoutAccessCheck.UniqueKeyError");
       }
 
       SQLTable mainTable = getType().getMainTable();
@@ -154,7 +171,7 @@ public class Insert extends Update {
       if (con != null)  {
         con.abort();
       }
-      throw new EFapsException(getClass(), "execute.Throwable");
+      throw new EFapsException(getClass(), "executeWithoutAccessCheck.Throwable");
     }
   }
 
