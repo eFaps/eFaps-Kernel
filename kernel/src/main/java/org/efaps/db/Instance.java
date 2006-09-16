@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.db;
@@ -22,9 +25,38 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class Instance  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * The instance variable stores the type definition for which this class is
+   * the instance.
+   *
+   * @see #getType
+   * @see #setType
+   */
+  private Type type = null;
+
+  /**
+   * The instance variable stores the id of the instance in the database.
+   *
+   * @see #getId
+   * @see #setId
+   */
+  private long id = 0;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors
+
+  public Instance(Type _type)  {
+    setType(_type);
+  }
 
   public Instance(Context _context, Type _type, long _id)  {
     setType(_type);
@@ -57,49 +89,19 @@ public class Instance  {
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
-public String getOid()  {
-  String ret = null;
-  if (getType()!=null && getId()!=0)  {
-    ret = getType().getId()+"."+getId();
-  }
-  return ret;
-}
-
-  /**
-   * The method returns a string representation of the instance object. It does
-   * not replace method {@link #getOid}!.
-   *
-   * @return string representation of this instance object
-   */
-  public String toString()  {
-    return new ToStringBuilder(this).
-      append("oid", getOid()).
-      append("type", getType()).
-      append("id", getId()).
-      toString();
+  public String getOid()  {
+    String ret = null;
+    if (getType()!=null && getId()!=0)  {
+      ret = getType().getId()+"."+getId();
+    }
+    return ret;
   }
 
   /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance variable stores the type definition for which this class is
-   * the instance.
-   *
-   * @see #getType
-   * @see #setType
-   */
-  private Type type = null;
-
-  /**
-   * The instance variable stores the id of the instance in the database.
-   *
-   * @see #getId
-   * @see #setId
-   */
-  private long id = 0;
-
-  /////////////////////////////////////////////////////////////////////////////
+  // getter and setter methods
 
   /**
    * This is the getter method for the instance variable {@link #type}.
@@ -145,4 +147,17 @@ public String getOid()  {
     this.id = _id;
   }
 
+  /**
+   * The method returns a string representation of the instance object. It does
+   * not replace method {@link #getOid}!.
+   *
+   * @return string representation of this instance object
+   */
+  public String toString()  {
+    return new ToStringBuilder(this).
+      append("oid", getOid()).
+      append("type", getType()).
+      append("id", getId()).
+      toString();
+  }
 }
