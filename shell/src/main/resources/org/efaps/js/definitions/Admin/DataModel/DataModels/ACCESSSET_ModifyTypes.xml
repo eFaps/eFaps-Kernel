@@ -36,9 +36,14 @@
 
     <name>ModifyTypes</name>
 
+    <access-type>create</access-type>
     <access-type>read</access-type>
     <access-type>show</access-type>
     <access-type>modify</access-type>
+    
+    <type>Admin_DataModel_Type</type>
+
+    <role>Administration</role>
   </definition>
 
 </access-set>
