@@ -39,63 +39,140 @@ public class Instance  {
    * the instance.
    *
    * @see #getType
-   * @see #setType
    */
-  private Type type = null;
+  private final Type type;
 
   /**
-   * The instance variable stores the id of the instance in the database.
+   * The instance variable stores the database id of the instance in the 
+   * database.
    *
    * @see #getId
-   * @see #setId
    */
-  private long id = 0;
+  private final long id;
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
 
-  public Instance(Type _type)  {
-    setType(_type);
+  /**
+   * Constructor used if no object exists but the type is know (e.g. if a new
+   * object will be created...). The database id is set to 0.
+   *
+   * @param _type type of the instance
+   */
+  public Instance(final Type _type)  {
+    this.type = _type;
+    this.id = 0;
   }
 
-  public Instance(Context _context, Type _type, long _id)  {
-    setType(_type);
-    setId(_id);
+  /**
+   * Constructor used if the type and the database id is known.
+   *
+   * @param _type type of the instance
+   * @param _id   id in the database of the instance
+   */
+  public Instance(final Type _type, final long _id)  {
+    this.type = _type;
+    this.id = _id;
   }
 
-  public Instance(Context _context, Type _type, String _id)  {
-    setType(_type);
-    if (_id!=null && _id.length()>0)  {
-      setId(Long.parseLong(_id));
+  /**
+   * Constructor used if the type and the database id is known. The database id 
+   * is defined in a string and converted to a long.
+   *
+   * @param _type type of the instance
+   * @param _id   id in the database of the instance as string
+   */
+  public Instance(final Type _type, final String _id)  {
+    this.type = _type;
+    if ((_id != null) && (_id.length() > 0))  {
+      this.id = Long.parseLong(_id);
+    } else  {
+      this.id = 0;
     }
   }
 
-  public Instance(Context _context, String _typeName, String _id) throws Exception  {
-    if (_typeName!=null && _typeName.length()>0)  {
-      setType(Type.get(_typeName));
-      if ((_id != null) && (_id.length() > 0))  {
-        setId(Long.parseLong(_id));
-      }
+  /**
+   * Constructor used if the type and the database id is known. The type is 
+   * only known as string and searched in the cache. The database id is defined 
+   * in a string and converted to a long.
+   *
+   * @param _type type of the instance as string
+   * @param _id   id in the database of the instance as string
+   */
+  public Instance(final String _type, final String _id)  {
+    if ((_type != null) && (_type.length() > 0))  {
+      this.type = Type.get(_type);
+    } else  {
+      this.type = null;
+    }
+    if ((_id != null) && (_id.length() > 0))  {
+      this.id = Long.parseLong(_id);
+    } else  {
+      this.id = 0;
     }
   }
 
-  public Instance(Context _context, String _oid) throws Exception  {
-    if (_oid!=null)  {
+  /**
+   * Constructor used if the string representation of the object id is known.
+   *
+   * @param _oid  objecd id in string representation
+   */
+  public Instance(final String _oid)  {
+    if (_oid != null)  {
       int index = _oid.indexOf(".");
       if (index >= 0)  {
-        setType(Type.get(Long.parseLong(_oid.substring(0, index))));
-        setId(Long.parseLong(_oid.substring(index+1)));
+        this.type = Type.get(Long.parseLong(_oid.substring(0, index)));
+        this.id = Long.parseLong(_oid.substring(index+1));
+      } else  {
+        this.type = null;
+        this.id = 0;
       }
+    } else  {
+      this.type = null;
+      this.id = 0;
     }
+  }
+
+  /**
+   * @deprecated
+   */
+  public Instance(final Context _context, final Type _type, final long _id)  {
+    this(_type, _id);
+  }
+
+  /**
+   * @deprecated
+   */
+  public Instance(final Context _context, final Type _type, final String _id)  {
+    this(_type, _id);
+  }
+
+  /**
+   * @deprecated
+   */
+  public Instance(final Context _context, final String _typeName, final String _id)  {
+    this(_typeName, _id);
+  }
+
+  /**
+   * @deprecated
+   */
+  public Instance(final Context _context, final String _oid)  {
+    this(_oid);
   }
 
   /////////////////////////////////////////////////////////////////////////////
-  // instance variables
+  // instance methods
 
+  /**
+   * The string representation which is defined by this instance is returned.
+   *
+   * @return string representation of the object id
+   */
   public String getOid()  {
     String ret = null;
-    if (getType()!=null && getId()!=0)  {
-      ret = getType().getId()+"."+getId();
+    if ((getType() != null) && (getId() != 0))  {
+      ret = getType().getId() + "." + getId();
     }
     return ret;
   }
@@ -115,36 +192,13 @@ public class Instance  {
   }
 
   /**
-   * This is the setter method for the instance variable {@link #type}.
-   *
-   * @param _type  new value for instance variable {@link #type}
-   * @see #type
-   * @see #getType
-   */
-  private void setType(Type _type)  {
-    this.type = _type;
-  }
-
-  /**
    * This is the getter method for the instance variable {@link #id}.
    *
    * @return value of instance variable {@link #id}
    * @see #id
-   * @see #setId
    */
   public long getId()  {
     return this.id;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #id}.
-   *
-   * @param _id  new value for instance variable {@link #id}
-   * @see #id
-   * @see #getId
-   */
-  private void setId(long _id)  {
-    this.id = _id;
   }
 
   /**
