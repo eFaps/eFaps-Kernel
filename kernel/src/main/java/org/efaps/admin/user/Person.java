@@ -112,6 +112,7 @@ public class Person extends UserObject implements CacheInterface  {
   /**
    * HashSet instance variale to hold all groups for this person.
    *
+   * @see #getGroups
    * @see #add(Group)
    */
   private final Set < Group > groups = new HashSet < Group > ();
@@ -832,6 +833,26 @@ public class Person extends UserObject implements CacheInterface  {
 
   /////////////////////////////////////////////////////////////////////////////
   // getter and setter methods
+
+  /**
+   * This is the getter method for instance variable {@link #roles}.
+   *
+   * @return the value of the instance variable {@link #roles}.
+   * @see #roles
+   */
+  public Set < Role > getRoles()  {
+    return this.roles;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #groups}.
+   *
+   * @return the value of the instance variable {@link #groups}.
+   * @see #groups
+   */
+  public Set < Group > getGroups()  {
+    return this.groups;
+  }
 
   /**
    * Returns a string representation of this person.
