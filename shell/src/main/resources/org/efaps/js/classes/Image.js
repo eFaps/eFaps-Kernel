@@ -108,8 +108,8 @@ Image.prototype.checkin = function(_fileName)  {
       stream = new FileInputStream(new File(_fileName));
     }
 
-    var checkin = new Checkin(Shell.getContext(), this.getInstance());
-    checkin.execute(Shell.getContext(), _fileName, stream, stream.available());
+    var checkin = new Checkin(this.getInstance());
+    checkin.executeWithoutAccessCheck(_fileName, stream, stream.available());
 
     stream.close();
   } catch (e)  {
