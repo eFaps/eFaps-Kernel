@@ -227,7 +227,7 @@ System.out.println(_linkType.childTypeName + " '" + objName + "' not found!");
     // remove unneeded current links to access types
     for (String oid : currents.values())  {   
       Delete del = new Delete(oid);
-      del.execute();
+      del.executeWithoutAccessCheck();
     }
   }
 
