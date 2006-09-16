@@ -1795,8 +1795,8 @@ throw new RevisionNotFoundException(_uri.toString(), _revisionDescriptor.getRevi
         }
 System.out.println("_revisionContent.streamContent().available()="+_revisionContent.streamContent().available());
 
-        Checkin checkin = new Checkin(this.context, instance);
-        checkin.execute(this.context, fileName,
+        Checkin checkin = new Checkin(instance);
+        checkin.execute(fileName,
             _revisionContent.streamContent(), -1);
 //checkin.close(this.context);
 

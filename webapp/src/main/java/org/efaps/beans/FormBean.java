@@ -200,8 +200,10 @@ if (getCommand().getProperty("TargetConnectType")!=null)  {
           FormFieldUpdateInterface fieldUpdate = updateClass.newInstance();
           fieldUpdate.update(_context, this, field);
         } else if (fileItem!=null)  {
-          Checkin checkin = new Checkin(_context, getInstance());
-          checkin.execute(_context, fileItem.getName(), fileItem.getInputStream(), (int)fileItem.getSize());
+          Checkin checkin = new Checkin(getInstance());
+          checkin.execute(fileItem.getName(), 
+                          fileItem.getInputStream(), 
+                          (int)fileItem.getSize());
         }
 // TODO: ev. exception?
       }
@@ -236,8 +238,10 @@ System.out.println("field.getName()="+field.getName());
           FormFieldUpdateInterface fieldUpdate = updateClass.newInstance();
           fieldUpdate.update(_context, this, field);
         } else if (fileItem!=null)  {
-          Checkin checkin = new Checkin(_context, getInstance());
-          checkin.execute(_context, fileItem.getName(), fileItem.getInputStream(), (int)fileItem.getSize());
+          Checkin checkin = new Checkin(getInstance());
+          checkin.execute(fileItem.getName(), 
+                          fileItem.getInputStream(), 
+                          (int) fileItem.getSize());
         }
 // TODO: ev. exception?
       }
