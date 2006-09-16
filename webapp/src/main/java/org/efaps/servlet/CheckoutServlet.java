@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.efaps.db.SearchQuery;
  * The servlet checks out files from objects.
  *
  * @author tmo
- * @version $Rev$
+ * @version $Id$
  */
 public class CheckoutServlet extends HttpServlet  {
 
@@ -61,13 +61,13 @@ public class CheckoutServlet extends HttpServlet  {
     try  {
       Context context = Context.getThreadContext();
 
-      Checkout checkout = new Checkout(context, oid);
-      checkout.preprocess(context);
+      Checkout checkout = new Checkout(oid);
+      checkout.preprocess();
 
       _res.setContentType(getServletContext().getMimeType(checkout.getFileName()));
       _res.addHeader("Content-Disposition", "inline; filename=\""+checkout.getFileName()+"\"");
 
-      checkout.process(context, _res.getOutputStream());
+      checkout.execute(_res.getOutputStream());
 
     } catch (IOException e)  {
       throw e;

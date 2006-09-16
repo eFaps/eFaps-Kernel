@@ -25,6 +25,10 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.transaction.StoreResource;
 import org.efaps.util.EFapsException;
@@ -37,217 +41,16 @@ import org.efaps.util.EFapsException;
  */
 public class Checkout extends AbstractAction  {
 
-  /**
-   * Constructor with object id as string.
-   *
-   * @param _context  eFaps context for this request
-   * @param _oid      oid of object on which the checkout is made
-   * @param _attrName name of the attribute where the blob is in
-   * @todo rewrite to thrown EFapsException
-   */
-  public Checkout(final Context _context, final String _oid) throws Exception  {
-    this(_context, new Instance(_context, _oid));
-  }
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
 
   /**
-   * Constructor with instance object.
-   *
-   * @param _context  eFaps context for this request
-   * @param _instance instance on which the checkout is made
-   * @param _attrName name of the attribute where the blob is in
+   * Logging instance used in this class.
    */
-  public Checkout(final Context _context, final Instance _instance) throws EFapsException  {
-    this.instance = _instance;
-  }
-
-  /**
-   * The method is only a dummy method and closes the checkout action. The
-   * method should be called, if in the future the checkout class needs a
-   * call to this method.
-   */
-  public void close()  {
-  }
-
-  /**
-   *
-   * @param _context  eFaps context for this request
-   */
-  public void preprocess(final Context _context) throws Exception  {
-    Type type = getInstance().getType();
-    String fileName = type.getProperty(PROPERTY_STORE_ATTR_FILE_NAME);
-
-    SearchQuery query = new SearchQuery();
-    query.setObject(_context, getInstance());
-    query.addSelect(_context, fileName);
-//    try  {
-      query.executeWithoutAccessCheck();
-      if (query.next())  {
-        Object value = query.get(_context, fileName);
-        setFileName(value.toString());
-      }
-//    } finally  {
-      query.close();
-//    }
-  }
-
-  /**
-   * Executes the checkout.
-   *
-   * @param _context  eFaps context for this request
-   * @param _out      output stream where to write the file
-   * @throws EFapsException if checkout action fails
-   */
-  public void process(final Context _context, final OutputStream _out) throws EFapsException  {
-    StoreResource storeRsrc = null;
-    try  {
-      storeRsrc = _context.getStoreResource(getInstance().getType(), getInstance().getId());
-      storeRsrc.read(_out);
-      storeRsrc.commit();
-    } catch (EFapsException e)  {
-      if (storeRsrc != null)  {
-        storeRsrc.abort();
-      }
-      throw e;
-    } catch (Throwable e)  {
-      if (storeRsrc != null)  {
-        storeRsrc.abort();
-      }
-      throw new EFapsException(Checkout.class, "execute.Throwable", e);
-    }
-
-
-//FileSystem fileSystem = new org.efaps.db.vfs.provider.sqldatabase.SQLDataBaseFileSystem();
-
-/*    FileObject fileObject = null;
-    try  {
-
-        Type type = getInstance().getType();
-
-org.apache.commons.vfs.impl.DefaultFileSystemManager defaultFSManager = new org.apache.commons.vfs.impl.DefaultFileSystemManager();
-
-String providerClassName = null;
-Type parent = type;
-while (providerClassName==null && parent!=null)  {
-  providerClassName=parent.getProperty("VFSProvider");
-  parent=parent.getParentType();
-}
-
-String prefix = null;
-parent = type;
-while (prefix==null && parent!=null)  {
-  prefix=parent.getProperty("VFSPrefix");
-  parent=parent.getParentType();
-}
-
-org.apache.commons.vfs.provider.FileProvider fileProvider = (org.apache.commons.vfs.provider.FileProvider)Class.forName(providerClassName).newInstance();
-
-defaultFSManager.addProvider("test", fileProvider);
-//defaultFSManager.setDefaultProvider(fileProvider);
-defaultFSManager.init();
-
-fileObject = defaultFSManager.resolveFile("test://"+prefix+"/"+getInstance().getId());
-
-  if (!fileObject.isReadable())  {
-    throw new EFapsException(Checkout.class, "#####file no readable");
-  }
-
-
-  InputStream in = fileObject.getContent().getInputStream();
-  if (in!=null)  {
-    int length = 1;
-    while (length>0)  {
-      length = in.read(this.buffer);
-      if (length>0)  {
-        _out.write(this.buffer, 0, length);
-      }
-    }
-  }
-
-    } catch (Throwable e)  {
-e.printStackTrace();
-      throw new EFapsException(Checkout.class, "execute.Throwable", e);
-    } finally  {
-      try {fileObject.close();} catch (FileSystemException e) {}
-    }
-*/
-
-  }
-
-
-  /**
-   * Executes the checkout.
-   *
-   * @param _context  eFaps context for this request
-   * @throws EFapsException if checkout action fails
-   */
-/*
-  public InputStream getInputStream(final Context _context) throws EFapsException  {
-//FileSystem fileSystem = new org.efaps.db.vfs.provider.sqldatabase.SQLDataBaseFileSystem();
-
-InputStream ret = null;
-    FileObject fileObject = null;
-    try  {
-        Type type = getInstance().getType();
-
-org.apache.commons.vfs.impl.DefaultFileSystemManager defaultFSManager = new org.apache.commons.vfs.impl.DefaultFileSystemManager();
-
-String providerClassName = null;
-Type parent = type;
-while (providerClassName==null && parent!=null)  {
-  providerClassName=parent.getProperty("VFSProvider");
-  parent=parent.getParentType();
-}
-
-String prefix = null;
-parent = type;
-while (prefix==null && parent!=null)  {
-  prefix=parent.getProperty("VFSPrefix");
-  parent=parent.getParentType();
-}
-
-org.apache.commons.vfs.provider.FileProvider fileProvider = (org.apache.commons.vfs.provider.FileProvider)Class.forName(providerClassName).newInstance();
-
-defaultFSManager.addProvider("test", fileProvider);
-//defaultFSManager.setDefaultProvider(fileProvider);
-defaultFSManager.init();
-
-fileObject = defaultFSManager.resolveFile("test://"+prefix+"/"+getInstance().getId());
-
-  if (!fileObject.isReadable())  {
-    throw new EFapsException(Checkout.class, "#####file no readable");
-  }
-
-
-  InputStream in = fileObject.getContent().getInputStream();
-
-ret = new VFSInputStream(in, fileObject);
-
-    } catch (Throwable e)  {
-e.printStackTrace();
-      throw new EFapsException(Checkout.class, "execute.Throwable", e);
-    }
-return ret;
-  }
-
-
-private class VFSInputStream extends FilterInputStream  {
-
-FileObject object = null;
-
-  private VFSInputStream(InputStream _in, FileObject _object)  {
-    super(_in);
-this.object = _object;
-  }
-
-  public void close() throws IOException  {
-    super.close();
-this.object.close();
-  }
-
-}
-*/
+  private static final Log LOG = LogFactory.getLog(Checkout.class);
 
   /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
    * Instance holding the oid of the object which is checked out.
@@ -267,12 +70,118 @@ this.object.close();
    * Stores the file name after pre processing.
    *
    * @see #preprocess
-   * @see #setFileName
    * @see #getFileName
    */
   private String fileName = null;
 
   /////////////////////////////////////////////////////////////////////////////
+  // constructors
+
+  /**
+   * Constructor with object id as string.
+   *
+   * @param _context  eFaps context for this request
+   * @param _oid      oid of object on which the checkout is made
+   * @param _attrName name of the attribute where the blob is in
+   * @todo rewrite to thrown EFapsException
+   */
+  public Checkout(final String _oid)  {
+    this(new Instance(_oid));
+  }
+
+  /**
+   * Constructor with instance object.
+   *
+   * @param _context  eFaps context for this request
+   * @param _instance instance on which the checkout is made
+   * @param _attrName name of the attribute where the blob is in
+   */
+  public Checkout(final Instance _instance)  {
+    this.instance = _instance;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
+
+  /**
+   * The method is only a dummy method and closes the checkout action. The
+   * method should be called, if in the future the checkout class needs a
+   * call to this method.
+   */
+  public void close()  {
+  }
+
+  /**
+   *
+   */
+  public void preprocess() throws Exception  {
+    Context context = Context.getThreadContext();
+
+    Type type = getInstance().getType();
+    String fileName = type.getProperty(PROPERTY_STORE_ATTR_FILE_NAME);
+
+    SearchQuery query = new SearchQuery();
+    query.setObject(context, getInstance());
+    query.addSelect(context, fileName);
+//    try  {
+      query.executeWithoutAccessCheck();
+      if (query.next())  {
+        Object value = query.get(context, fileName);
+        this.fileName = value.toString();
+      }
+//    } finally  {
+      query.close();
+//    }
+  }
+
+  /**
+   * Executes the checkout.
+   *
+   * @param _out      output stream where to write the file
+   * @throws EFapsException if the current context user has now access to 
+   *         checkout the file out of the eFaps object
+   */
+  public void execute(final OutputStream _out) throws EFapsException  {
+    boolean hasAccess = this.instance.getType()
+          .hasAccess(this.instance, 
+                     AccessTypeEnums.CHECKOUT.getAccessType());
+    if (!hasAccess)  {
+      throw new EFapsException(getClass(), "execute.NoAccess");
+    }
+    executeWithoutAccessCheck(_out);
+  }
+
+  /**
+   * Executes the checkout.
+   *
+   * @param _out      output stream where to write the file
+   * @throws EFapsException if checkout action fails
+   */
+  public void executeWithoutAccessCheck(final OutputStream _out) 
+                                                      throws EFapsException  {
+    Context context = Context.getThreadContext();
+    StoreResource store = null;
+    try  {
+      store = context.getStoreResource(getInstance().getType(), 
+                                       getInstance().getId());
+      store.read(_out);
+      store.commit();
+    } catch (EFapsException e)  {
+      LOG.error("could not checkout " + this.instance, e);
+      throw e;
+    } catch (Throwable e)  {
+      LOG.error("could not checkout " + this.instance, e);
+      throw new EFapsException(getClass(), 
+                               "executeWithoutAccessCheck.Throwable", e);
+    } finally  {
+      if ((store != null) && store.isOpened())  {
+        store.abort();
+      }
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance getter and setter methods
 
   /**
    * This is the getter method for instance variable {@link #instance}.
@@ -282,17 +191,6 @@ this.object.close();
    */
   protected Instance getInstance()  {
     return this.instance;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #fileName}.
-   *
-   * @param _fileName new fileName for instance variable {@link #fileName}
-   * @see #fileName
-   * @see #getFileName
-   */
-  private void setFileName(String _fileName)  {
-    this.fileName = _fileName;
   }
 
   /**

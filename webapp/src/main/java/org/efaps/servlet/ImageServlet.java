@@ -79,12 +79,12 @@ public class ImageServlet extends HttpServlet  {
       ImageMapper imageMapper = cache.get(imgName);
 
       if (imageMapper != null)  {
-        Checkout checkout = new Checkout(context, imageMapper.oid);
+        Checkout checkout = new Checkout(imageMapper.oid);
 
         _res.setContentType(getServletContext().getMimeType(imageMapper.file));
         _res.addHeader("Content-Disposition", "inline; filename=\"" + imageMapper.file + "\"");
 
-        checkout.process(context, _res.getOutputStream());
+        checkout.executeWithoutAccessCheck(_res.getOutputStream());
 
         checkout.close();
       }

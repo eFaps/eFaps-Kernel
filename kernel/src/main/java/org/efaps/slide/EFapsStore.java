@@ -1718,7 +1718,7 @@ System.out.println("toBeCreated="+toBeCreated);
 throw new RevisionNotFoundException(uri.toString(), revisionDescriptor.getRevisionNumber());
           } else  {
 System.out.println("retrieveRevisionContent.found instance="+instance);
-            org.efaps.db.Checkout checkout = new org.efaps.db.Checkout(context, instance);
+            org.efaps.db.Checkout checkout = new org.efaps.db.Checkout(instance);
 // 20051126 geht nicht mehr!!!!
 //            nrc.setContent(checkout.getInputStream(context));
           }

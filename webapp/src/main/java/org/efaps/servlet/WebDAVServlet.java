@@ -213,13 +213,13 @@ if (instance == null)  {
 // throw Exception!!
 }
 
-      Checkout checkout = new Checkout(context, instance);
-      checkout.preprocess(context);
+      Checkout checkout = new Checkout(instance);
+      checkout.preprocess();
 
       _response.setContentType(getServletContext().getMimeType(checkout.getFileName()));
       _response.addHeader("Content-Disposition", "inline; filename=\""+checkout.getFileName()+"\"");
 
-      checkout.process(context, _response.getOutputStream());
+      checkout.execute(_response.getOutputStream());
 
     } catch (IOException e)  {
       throw e;
