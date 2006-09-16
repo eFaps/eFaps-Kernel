@@ -393,7 +393,7 @@ private Instance getFileInstance(final Context _context, final String _uri) thro
   query.addWhereExprEqValue(_context, "Folder", ""+folder.getId());
   query.addSelect(_context, "Document.FileName");
   query.addSelect(_context, "Document.OID");
-  query.execute(_context);
+  query.execute();
   while (query.next())  {
     String docName = query.get(_context, "Document.FileName").toString();
     if (uri[uri.length - 1].equals(docName))  {
@@ -421,7 +421,7 @@ private Instance getFolderInstance(final Context _context, final int _index, fin
     query.setQueryTypes(_context, "TeamCenter_RootFolder");
     query.addWhereExprEqValue(_context, "Name", _uri[_index]);
     query.addSelect(_context, "OID");
-    query.execute(_context);
+    query.execute();
 // TODO: was passiert wenn nicht gefunden?
     if (query.next())  {
       instance = new Instance(_context, query.get(_context,"OID").toString());
@@ -444,7 +444,7 @@ private Instance getSubFolderInstance(final Context _context, final Instance _fo
   query.addWhereExprEqValue(_context, "Name", _name);
   query.addWhereExprEqValue(_context, "ParentFolder", "" + _folderInstance.getId());
   query.addSelect(_context, "OID");
-  query.execute(_context);
+  query.execute();
 // TODO: was passiert wenn nicht gefunden?
 // nichts => gibt null zurueck
   if (query.next())  {

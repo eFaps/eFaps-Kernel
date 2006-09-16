@@ -51,14 +51,94 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public abstract class AbstractQuery  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
 
   /**
    * Logging instance used in this class.
    */
   private static final Log LOG = LogFactory.getLog(AbstractQuery.class);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+private CachedResult cachedResult = null;
+Type type = null;
+
+  /**
+   * The instance variable stores the order of the select types.
+   *
+   * @see #getSelectTypesOrder
+   */
+  private List<SelectType> selectTypesOrder = new ArrayList<SelectType>();
+
+  /**
+   * The instance variable stores all single join elements.
+   *
+   * @see #getJoinElements
+   */
+  private List<JoinElement> joinElements = new ArrayList<JoinElement>();
+
+  /**
+   * The instance variable maps expressions to join elements.
+   */
+  private Map<String,JoinElement> mapJoinElements = new HashMap<String,JoinElement>();
+
+  /**
+   * The instance variable stores the main instance of the join element. The
+   * main join element is that join elment which stores the direct selectable
+   * attribute values.
+   *
+   * @see #getMainJoinElement
+   */
+  private JoinElement mainJoinElement = new JoinElement();
+
+  /**
+   * The instance variable stores all main selected types. The key in this map
+   * is the main table.
+   *
+   * @see #getSelectTypes
+   */
+  private Map<Type,SelectType> mainSelectTypes = new HashMap<Type,SelectType>();
+
+  /**
+   * The instance variable stores all main where clauses. This where clauses
+   * must be used by all join elements! This is a different behaviour than
+   * the where clauses for a join element.
+   *
+   * @see #getMainWhereClauses
+   */
+  private List<WhereClause> mainWhereClauses = new ArrayList<WhereClause>();
+
+  /**
+   * Should the child types als be expanded?
+   *
+   * @see #isExpandChildTypes
+   * @see #setExpandChildTypes
+   */
+  private boolean expandChildTypes = true;
+
+  /**
+   * The instance variable stores all select expressions and their relations
+   * to attributes for this query.
+   *
+   * @see #getAllSelExprMap
+   */
+  private Map<Object,SelExpr2Attr> allSelExprMap = new HashMap<Object,SelExpr2Attr>();
+
+  /**
+   * The instance variable stores all OID select expressions and their
+   * relations to attributes for this query.
+   *
+   * @see #getAllOIDSelExprMap
+   */
+  private Map<Object,SelExpr2Attr> allOIDSelExprMap = new HashMap<Object,SelExpr2Attr>();
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -97,6 +177,7 @@ public abstract class AbstractQuery  {
   }
 
   /////////////////////////////////////////////////////////////////////////////
+  // add for selecting something
 
   /**
    * The instance method adds all fields of the collection user interface
@@ -105,14 +186,12 @@ public abstract class AbstractQuery  {
    * @param _context      context for this request
    * @param _collection   collection user interface object with fields to add
    * @see #add(Field)
+   * @todo change against list of fields!!
    */
   public void add(Context _context, Collection _collection) throws Exception  {
     for (int i=0; i<_collection.getFields().size(); i++)  {
       Field field = (Field)_collection.getFields().get(i);
       add(field);
-//      if (field.getReference()!=null)  {
-//        addAllFromString(_context, field.getReference());
-//      }
     }
   }
 
@@ -120,7 +199,7 @@ public abstract class AbstractQuery  {
    * The method adds an single attribute from a type to the select statement.
    *
    * @param _attr attribute to add to the query
-   * @see #add(Object, Attribute)
+   * @see #addSelect
    */
   public void add(Attribute _attr)  {
     addSelect(false, _attr, _attr);
@@ -131,16 +210,50 @@ public abstract class AbstractQuery  {
    * statement.
    *
    * @param _field  field to add to the query
-   * @see #add(Object, Attribute)
+   * @see #addSelect
    */
-abstract public void add(Field _field) throws Exception;
-//  public void add(Field _field) throws Exception  {
-//    if (_field.getAttribute()!=null)  {
-//      add(_field, _field.getAttribute());
-//    } else if (_field.getProgramValue()!=null)  {
-//      _field.getProgramValue().addSelectAttributes(null, this);
-//    }
-//  }
+  public void add(Field _field) throws Exception  {
+    addSelect(false, _field, this.type, _field.getExpression());
+    if (_field.getAlternateOID()!=null)  {
+      addSelect(true, _field, this.type, _field.getAlternateOID());
+    }
+  }
+
+  /**
+   * The method adds all attributes in the string beginning with a
+   * &quot;$&lt;&quot; and ending with a &quot;&gt;&quot;.
+   *
+   * @param _context  context for this request
+   * @param _text     text string with all attributes
+   * @return <i>true</i> if an attribute from the text string is added to the
+   *         query
+   * @see #add(Attribute)
+   * @see #replaceAllInString
+   */
+  public boolean addAllFromString(final Context _context, 
+                                  final String _text) throws Exception  {
+    boolean ret = false;
+    int index = _text.indexOf("$<");
+    while (index >= 0)  {
+      int end = _text.indexOf(">", index);
+      if (end < 0)  {
+        break;
+      }
+      addSelect(_context, _text.substring(index+2,end));
+      index = _text.indexOf("$<", end);
+      ret = true;
+    }
+    return ret;
+  }
+
+  /**
+   * The method adds an expression to the selectstatement.
+   *
+   * @param _expression expression to add
+   */
+  public void addSelect(final Context _context, final String _expression) throws Exception  {
+    addSelect(false, _expression, this.type, _expression);
+  }
 
   /**
    * @param _isOID  must be set to <i>true</i> is select expression selects
@@ -149,7 +262,9 @@ abstract public void add(Field _field) throws Exception;
    *                map expression
    * @param _attr   attribute itself which must be selected
    */
-  protected void addSelect(boolean _isOID, Object _key, Attribute _attr)  {
+  protected void addSelect(final boolean _isOID, 
+                           final Object _key, 
+                           final Attribute _attr)  {
     getSelectType(_attr.getParent()).addSelect(_isOID, _key, _attr);
   }
 
@@ -160,7 +275,10 @@ abstract public void add(Field _field) throws Exception;
    *                    map expression
    * @param _expression
    */
-  protected void addSelect(boolean _isOID, Object _key, Type _type, String _expression) throws Exception  {
+  protected void addSelect(final boolean _isOID, 
+                           final Object _key, 
+                           final Type _type, 
+                           final String _expression) throws Exception  {
     getSelectType(_type).addSelect(_isOID, _key, _expression);
   }
 
@@ -170,7 +288,7 @@ abstract public void add(Field _field) throws Exception;
    * @param _type type to add in the correct order
    * @see #addTypes4Order(Type,boolean)
    */
-  public void addTypes4Order(Type _type)  {
+  public void addTypes4Order(final Type _type)  {
     addTypes4Order(_type, false);
   }
 
@@ -182,13 +300,15 @@ abstract public void add(Field _field) throws Exception;
    * @see #selectTypesOrder
    * @see #getSelectType
    */
-  public void addTypes4Order(Type _type, boolean _nullAllowed)  {
-//System.out.println("addTypes4Order="+_type.getName()+":"+getSelectTypesOrder().size());
+  public void addTypes4Order(final Type _type, 
+                             final boolean _nullAllowed)  {
     SelectType selectType = getSelectType(_type);
     selectType.setOrderIndex(getSelectTypesOrder().size());
     selectType.setNullAllowed(_nullAllowed);
     getSelectTypesOrder().add(selectType);
   }
+
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * The instance method returns for the given type the select type class
@@ -301,34 +421,35 @@ if (selectType.getIndexType()!=null)  {
 
   /////////////////////////////////////////////////////////////////////////////
 
-private CachedResult cachedResult = null;
+  /**
+   * The instance method executes the query.
+   */
+  public void execute() throws Exception  {
+    executeWithoutAccessCheck();
+  }
 
   /**
    * The instance method executes the query.
    */
-  public void execute(Context _context) throws Exception  {
+  public void executeWithoutAccessCheck() throws Exception  {
+    Context context = Context.getThreadContext();
+    
 try  {
     if (getMainJoinElement().selectSize()>0)  {
-//System.out.println("---------------AbstractQuery.getMainJoinElement().selectSize()>0");
 
-
-int incSelIndex = 0;
-//JoinRowSet jrs = _context.getDbType().createJoinRowSetInstance();
-/*oracle.jdbc.rowset.OracleJoinRowSet jrs = new oracle.jdbc.rowset.OracleJoinRowSet();*/
-
-this.cachedResult = new CachedResult();
+      int incSelIndex = 0;
+      this.cachedResult = new CachedResult();
 
       for (JoinElement joinElement : getJoinElements())  {
 
 
-joinElement.setIncSelIndex(incSelIndex);
-// warum diese überprüfung? weil der join jeweils die spalte mit der id zum vergleichen rauschmeisst!!
-if (incSelIndex == 0)  {
-  incSelIndex += joinElement.getSelectExpressions().size();
-} else  {
-  incSelIndex += joinElement.getSelectExpressions().size()-1;
-}
-
+        joinElement.setIncSelIndex(incSelIndex);
+        // warum diese Ueberpruefung? weil der join jeweils die spalte mit der id zum vergleichen rauschmeisst!!
+        if (incSelIndex == 0)  {
+          incSelIndex += joinElement.getSelectExpressions().size();
+        } else  {
+          incSelIndex += joinElement.getSelectExpressions().size()-1;
+        }
 
         CompleteStatement completeStatement = new CompleteStatement();
 
@@ -337,34 +458,26 @@ if (incSelIndex == 0)  {
         for (SelectType selectType : getSelectTypesOrder())  {
           if (selectType.isNullAllowed())  {
             completeStatement.appendUnion();
-            joinElement.appendStatement(completeStatement, selectType.getOrderIndex(), isExpandChildTypes());
+            joinElement.appendStatement(completeStatement, 
+                                        selectType.getOrderIndex(), 
+                                        isExpandChildTypes());
           }
         }
 
-        executeOneCompleteStmt(_context, completeStatement, joinElement.getMatchColumn());
+        executeOneCompleteStmt(context, completeStatement, joinElement.getMatchColumn());
       }
 
-
-//      setResultSet(jrs);
-///setResultSet(null);
-
-
-//System.out.println("----getAllSelExprMap()="+getAllSelExprMap());
-for (SelExpr2Attr selExpr : getAllSelExprMap().values())  {
-  selExpr.initSelectIndex();
-}
-//System.out.println("----getAllOIDSelExprMap()="+getAllOIDSelExprMap());
-for (SelExpr2Attr selExpr : getAllOIDSelExprMap().values())  {
-  selExpr.initSelectIndex();
-}
-
-
+      for (SelExpr2Attr selExpr : getAllSelExprMap().values())  {
+        selExpr.initSelectIndex();
+      }
+      for (SelExpr2Attr selExpr : getAllOIDSelExprMap().values())  {
+        selExpr.initSelectIndex();
+      }
     }
-//System.out.println("----end execute()");
 } catch (Exception e)  {
 e.printStackTrace();
 }
-this.cachedResult.beforeFirst();
+    this.cachedResult.beforeFirst();
   }
 
   /**
@@ -429,77 +542,6 @@ throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable");
     return ret;
 */
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance variable stores the order of the select types.
-   *
-   * @see #getSelectTypesOrder
-   */
-  private List<SelectType> selectTypesOrder = new ArrayList<SelectType>();
-
-  /**
-   * The instance variable stores all single join elements.
-   *
-   * @see #getJoinElements
-   */
-  private List<JoinElement> joinElements = new ArrayList<JoinElement>();
-
-  /**
-   * The instance variable maps expressions to join elements.
-   */
-  private Map<String,JoinElement> mapJoinElements = new HashMap<String,JoinElement>();
-
-  /**
-   * The instance variable stores the main instance of the join element. The
-   * main join element is that join elment which stores the direct selectable
-   * attribute values.
-   *
-   * @see #getMainJoinElement
-   */
-  private JoinElement mainJoinElement = new JoinElement();
-
-  /**
-   * The instance variable stores all main selected types. The key in this map
-   * is the main table.
-   *
-   * @see #getSelectTypes
-   */
-  private Map<Type,SelectType> mainSelectTypes = new HashMap<Type,SelectType>();
-
-  /**
-   * The instance variable stores all main where clauses. This where clauses
-   * must be used by all join elements! This is a different behaviour than
-   * the where clauses for a join element.
-   *
-   * @see #getMainWhereClauses
-   */
-  private List<WhereClause> mainWhereClauses = new ArrayList<WhereClause>();
-
-  /**
-   * Should the child types als be expanded?
-   *
-   * @see #isExpandChildTypes
-   * @see #setExpandChildTypes
-   */
-  private boolean expandChildTypes = true;
-
-  /**
-   * The instance variable stores all select expressions and their relations
-   * to attributes for this query.
-   *
-   * @see #getAllSelExprMap
-   */
-  private Map<Object,SelExpr2Attr> allSelExprMap = new HashMap<Object,SelExpr2Attr>();
-
-  /**
-   * The instance variable stores all OID select expressions and their
-   * relations to attributes for this query.
-   *
-   * @see #getAllOIDSelExprMap
-   */
-  private Map<Object,SelExpr2Attr> allOIDSelExprMap = new HashMap<Object,SelExpr2Attr>();
 
   /////////////////////////////////////////////////////////////////////////////
 

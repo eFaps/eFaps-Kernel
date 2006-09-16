@@ -164,7 +164,7 @@ function createScriptTables(_path, _match, _author)  {
   query.addWhereExprEqValue(Shell.getContext(), "Name", _match);
   query.addSelect(Shell.getContext(), "Name");
   
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   
   print("");
   print("Create Table Scripts:");

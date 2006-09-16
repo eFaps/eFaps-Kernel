@@ -131,7 +131,7 @@ public abstract class AbstractUpdate  {
     query.setQueryTypes(context, this.dataModelType);
     query.addWhereExprEqValue(context, "UUID", this.uuid);
     query.addSelect(context, "OID");
-    query.execute(context);
+    query.executeWithoutAccessCheck();
     if (query.next())  {
       this.instance = new Instance(context, 
                                    (String) query.get(context, "OID"));

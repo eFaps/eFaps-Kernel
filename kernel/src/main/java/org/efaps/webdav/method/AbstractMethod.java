@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.webdav.method;
@@ -34,7 +37,9 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public abstract class AbstractMethod  {
 
@@ -233,7 +238,7 @@ public abstract class AbstractMethod  {
     query.addWhereExprEqValue(_context, "Folder", ""+folder.getId());
     query.addSelect(_context, "Document.FileName");
     query.addSelect(_context, "Document.OID");
-    query.execute(_context);
+    query.execute();
     while (query.next())  {
       String docName = query.get(_context, "Document.FileName").toString();
       if (uri[uri.length - 1].equals(docName))  {
@@ -261,7 +266,7 @@ public abstract class AbstractMethod  {
       query.setQueryTypes(_context, "TeamCenter_RootFolder");
       query.addWhereExprEqValue(_context, "Name", _uri[_index]);
       query.addSelect(_context, "OID");
-      query.execute(_context);
+      query.execute();
 // TODO: was passiert wenn nicht gefunden?
       if (query.next())  {
         instance = new Instance(_context, query.get(_context,"OID").toString());
@@ -283,7 +288,7 @@ System.out.println("found instance="+instance);
     query.addWhereExprEqValue(_context, "Name", _name);
     query.addWhereExprEqValue(_context, "ParentFolder", "" + _folderInstance.getId());
     query.addSelect(_context, "OID");
-    query.execute(_context);
+    query.execute();
 // TODO: was passiert wenn nicht gefunden?
 // nichts => gibt null zurueck
     if (query.next())  {

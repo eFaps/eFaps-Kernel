@@ -117,7 +117,7 @@ public class ImageServlet extends HttpServlet  {
       query.addSelect(_context, "Name");
       query.addSelect(_context, "FileName");
       query.addSelect(_context, "OID");
-      query.execute(_context);
+      query.executeWithoutAccessCheck();
 
       while (query.next())  {
         String name = (String) query.get(_context, "Name");

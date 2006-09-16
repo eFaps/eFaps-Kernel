@@ -30,7 +30,9 @@ import org.efaps.admin.lifecycle.Status;
 import org.efaps.util.EFapsException;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class LifeCycleAction extends Update {
 
@@ -152,7 +154,7 @@ throw new Exception("demote not possible!");
     SearchQuery query = new SearchQuery();
     query.setObject(_context, getInstance());
     query.add(statusAttr);
-    query.execute(_context);
+    query.executeWithoutAccessCheck();
     if (!query.next())  {
 throw new Exception("object does not exists");
     }

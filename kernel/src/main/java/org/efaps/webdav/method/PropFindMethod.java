@@ -39,7 +39,9 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class PropFindMethod extends AbstractMethod  {
 
@@ -149,7 +151,7 @@ if (_request.getPathInfo()==null || "/".equals(_request.getPathInfo()))  {
   query.addSelect(context, "Name");
   query.addSelect(context, "Modified");
   query.addSelect(context, "Created");
-  query.execute(context);
+  query.execute();
   while (query.next())  {
     String resourceName = makeResourceName(_request.getRequestURI(), query.get(context, "Name").toString());
     Date modified = (Date) query.get(context, "Modified");
@@ -166,7 +168,7 @@ if (_request.getPathInfo()==null || "/".equals(_request.getPathInfo()))  {
     query.addSelect(context, "Name");
     query.addSelect(context, "Created");
     query.addSelect(context, "Modified");
-    query.execute(context);
+    query.execute();
     while (query.next())  {
       String resourceName = makeResourceName(_request.getRequestURI(), query.get(context, "Name").toString());
       Date modified = (Date) query.get(context, "Modified");
@@ -182,7 +184,7 @@ if (_request.getPathInfo()==null || "/".equals(_request.getPathInfo()))  {
     query.addSelect(context, "FileLength");
     query.addSelect(context, "Created");
     query.addSelect(context, "Modified");
-    query.execute(context);
+    query.execute();
     while (query.next())  {
       String resourceName = makeResourceName(_request.getRequestURI(), query.get(context, "FileName").toString());
       Date modified   = (Date) query.get(context, "Modified");

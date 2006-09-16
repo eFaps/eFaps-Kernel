@@ -80,7 +80,7 @@ Menu.prototype.cleanupChilds = function()  {
   var query = new SearchQuery();
   query.setExpand(Shell.getContext(), this.getOid(), "Admin_UI_Menu2Command\\FromMenu");
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   while (query.next())  {
     var oid = query.get(Shell.getContext(), "OID");
     var del = new Delete(Shell.getContext(), oid);
@@ -131,7 +131,7 @@ Menu.prototype._writeChilds = function(_file)  {
   query.setExpand(Shell.getContext(), this.getOid(), "Admin_UI_Menu2Command\\FromMenu.ToCommand");
   query.addSelect(Shell.getContext(), "Type");
   query.addSelect(Shell.getContext(), "Name");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   while (query.next())  {
     var type = query.get(Shell.getContext(), "Type").getName();
     var name = query.get(Shell.getContext(), "Name");
@@ -287,7 +287,7 @@ function createScriptMenus(_path, _match, _author)  {
   query.addWhereExprEqValue(Shell.getContext(), "Name", _match);
   query.addSelect(Shell.getContext(), "Name");
   
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   
   print("");
   print("Create Menu Scripts:");

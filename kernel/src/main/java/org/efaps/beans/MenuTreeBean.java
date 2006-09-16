@@ -31,6 +31,11 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 
+/**
+ * @author tmo
+ * @version $Id$
+ * @todo description
+ */
 public class MenuTreeBean extends MenuAbstractBean  {
 
   public MenuTreeBean()  {
@@ -68,7 +73,7 @@ throw new Exception("no tree menu defined for type "+getInstance().getType().get
     SearchQuery query = new SearchQuery();
     query.setObject(_context, getInstance());
     query.addAllFromString(_context, getMenuLabel());
-    query.execute(_context);
+    query.execute();
 
     if (query.next())  {
       setMenuLabel(query.replaceAllInString(_context, getMenuLabel()));

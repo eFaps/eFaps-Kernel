@@ -35,7 +35,7 @@ function Image(_name)  {
   query.setQueryTypes(Shell.getContext(), "Admin_UI_Image");
   query.addWhereExprEqValue(Shell.getContext(), "Name", _name);
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
 
   if (query.next())  {
     var oid = query.get(Shell.getContext(), "OID");
@@ -167,7 +167,7 @@ function createScriptImages(_path, _match)  {
   query.addWhereExprEqValue(Shell.getContext(), "Name", _match);
   query.addSelect(Shell.getContext(), "Name");
   
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   
   print("Create Images:");
   print("~~~~~~~~~~~~~~");

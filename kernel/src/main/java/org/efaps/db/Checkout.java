@@ -31,6 +31,9 @@ import org.efaps.util.EFapsException;
 
 /**
  * The class is used to checkout a file from a given attribute of an object.
+ *
+ * @author tmo
+ * @version $Id$
  */
 public class Checkout extends AbstractAction  {
 
@@ -77,7 +80,7 @@ public class Checkout extends AbstractAction  {
     query.setObject(_context, getInstance());
     query.addSelect(_context, fileName);
 //    try  {
-      query.execute(_context);
+      query.executeWithoutAccessCheck();
       if (query.next())  {
         Object value = query.get(_context, fileName);
         setFileName(value.toString());

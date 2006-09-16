@@ -210,7 +210,7 @@ testNeeded = true;
       }
 if (testNeeded)  {
       query.addSelect(_context, "ID");
-      query.execute(_context);
+      query.executeWithoutAccessCheck();
 
       while (query.next())  {
         long id = (Long)query.get(_context, "ID");

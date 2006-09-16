@@ -80,7 +80,7 @@ Attribute.prototype._writeUpdateScript = function(_file, _space)  {
   query.addSelect(Shell.getContext(), "TypeLink.Name");
   query.addSelect(Shell.getContext(), "Table.Name");
   query.addSelect(Shell.getContext(), "SQLColumn");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   if (query.next())  {
     var attrType  = query.get(Shell.getContext(), "AttributeType.Name").value;
     var typeLink  = query.get(Shell.getContext(), "TypeLink.Name").value;

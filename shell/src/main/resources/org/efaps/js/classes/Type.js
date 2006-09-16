@@ -102,7 +102,7 @@ Type.prototype.cleanupTriggers = function()  {
   var query = new SearchQuery();
   query.setExpand(Shell.getContext(), this.getOid(), "Admin_Event_Definition\\Abstract");
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   while (query.next())  {
     var attrOid  = query.get(Shell.getContext(), "OID");
     (new Trigger(new Instance(Shell.getContext(), attrOid))).remove();
@@ -135,7 +135,7 @@ Type.prototype.addAttribute = function(_name)  {
   query.addWhereExprEqValue(Shell.getContext(), "Name", _name);
   query.addWhereExprEqValue(Shell.getContext(), "ParentType", this.getId());
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   if (query.next())  {
     var attrOid = query.get(Shell.getContext(), "OID");
     attr = new Attribute(new Instance(Shell.getContext(), attrOid));
@@ -176,7 +176,7 @@ Type.prototype.cleanupAttributes = function()  {
   var query = new SearchQuery();
   query.setExpand(Shell.getContext(), this.getOid(), "Admin_DataModel_Attribute\\ParentType");
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   while (query.next())  {
     var attrOid  = query.get(Shell.getContext(), "OID");
     (new Attribute(new Instance(Shell.getContext(), attrOid))).cleanup();
@@ -256,7 +256,7 @@ Type.prototype.writeUpdateScript = function(_path, _author)  {
   query.addSelect(Shell.getContext(), "OID");
   query.addSelect(Shell.getContext(), "ParentType");
   query.addSelect(Shell.getContext(), "ParentType.Name");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   if (query.next())  {
     var parType   = query.get(Shell.getContext(), "ParentType.Name").value;
     
@@ -350,7 +350,7 @@ function createScriptTypes(_path, _match, _author)  {
   query.addWhereExprEqValue(Shell.getContext(), "Name", _match);
   query.addSelect(Shell.getContext(), "Name");
   
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   
   print("");
   print("Create Type Scripts:");

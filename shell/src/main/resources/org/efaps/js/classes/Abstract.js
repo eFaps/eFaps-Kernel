@@ -83,7 +83,7 @@ Abstract.prototype.cleanupProperties = function()  {
   var query = new SearchQuery();
   query.setExpand(Shell.getContext(), this.getOid(), "Admin_Property\\Abstract");
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   while (query.next())  {
     var propOid = query.get(Shell.getContext(), "OID");
     var del = new Delete(Shell.getContext(), propOid);
@@ -104,7 +104,7 @@ Abstract.prototype._writeProperties = function(_file, _space)  {
   query.setExpand(Shell.getContext(), this.getInstance(), "Admin_Property\\Abstract");
   query.addSelect(Shell.getContext(), "Name");
   query.addSelect(Shell.getContext(), "Value");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
 
   var map = new TreeMap();
   while (query.next())  {
@@ -194,7 +194,7 @@ Abstract.prototype._getAttrValue = function(_attrName)  {
   var query = new Packages.org.efaps.db.SearchQuery();
   query.setObject(Shell.getContext(), this.getOid());
   query.addSelect(Shell.getContext(), _attrName);
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   if (query.next())  {
     ret = query.get(Shell.getContext(), _attrName);
   }

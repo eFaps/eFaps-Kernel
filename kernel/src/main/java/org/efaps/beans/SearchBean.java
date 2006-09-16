@@ -45,6 +45,7 @@ import org.efaps.db.Instance;
 /**
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public class SearchBean extends AbstractCollectionBean implements TableBeanInterface  {
 
@@ -176,7 +177,7 @@ query.addWhereExprMatchValue(context, field.getExpression(), value);
       }
     }
     query.add(context, getTable());
-    query.execute(context);
+    query.execute();
 
     setValues(new ArrayList());
     getTableBean().setValues(getValues());

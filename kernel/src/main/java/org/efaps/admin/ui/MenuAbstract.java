@@ -172,7 +172,7 @@ abstract public class MenuAbstract extends CommandAbstract  {
     query.setExpand(_context, menuInst, "Admin_UI_Menu2Command\\FromMenu");
     query.addSelect(_context, "ID");
     query.addSelect(_context, "ToCommand");
-    query.execute(_context);
+    query.executeWithoutAccessCheck();
 
     while (query.next())  {
       long commandId = (Long)query.get(_context, "ToCommand");

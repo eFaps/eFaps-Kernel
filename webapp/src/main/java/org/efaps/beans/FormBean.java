@@ -52,7 +52,8 @@ import org.efaps.beans.form.FormFieldUpdateInterface;
 /**
  *
  * @author tmo
- * @version $Rev$
+ * @version $Id$
+ * @todo description
  */
 public class FormBean extends AbstractCollectionBean  {
 
@@ -108,7 +109,7 @@ ValueList list = parser.ExpressionString();
 list.makeSelect(context, query);
 
       query.addAllFromString(context, getUkTitle());
-      query.execute(context);
+      query.execute();
 
       if (query.next())  {
         setValues(new ArrayList());
@@ -281,7 +282,7 @@ System.out.println("field.getName()="+field.getName());
         query.addWhereAttrEqValue(context, attr, value);
       }
       if (query!=null)  {
-        query.execute(context);
+        query.execute();
         if (query.next())  {
           Instance instance = query.getInstance(context, type);
           if (!query.next())  {

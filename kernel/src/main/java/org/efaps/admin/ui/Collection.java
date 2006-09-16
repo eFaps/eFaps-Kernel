@@ -35,7 +35,9 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public abstract class Collection extends UserInterfaceObject  {
 
@@ -183,7 +185,7 @@ this.selIndexLen++;
     query.setExpand(_context, instance, EFapsClassName.FIELD.name+"\\Collection");
     query.addSelect(_context, "ID");
     query.addSelect(_context, "Name");
-    query.execute(_context);
+    query.executeWithoutAccessCheck();
 
     while (query.next())  {
       long id     = (Long)query.get(_context, "ID");

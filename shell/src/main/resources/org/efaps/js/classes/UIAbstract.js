@@ -40,7 +40,7 @@ UIAbstract.prototype.cleanupLinks = function UIAbstract_cleanupLinks()  {
   var query = new SearchQuery();
   query.setExpand(Shell.getContext(), this.getInstance(), "Admin_UI_Link\\From");
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
 
   while (query.next())  {
     var oid = query.get(Shell.getContext(), "OID");
@@ -61,7 +61,7 @@ UIAbstract.prototype._createLink = function(_linkType, _toType, _toName)  {
   query.setQueryTypes(Shell.getContext(), _toType);
   query.addWhereExprEqValue(Shell.getContext(), "Name", _toName);
   query.addSelect(Shell.getContext(), "ID");
-  query.execute(Shell.context);
+  query.executeWithoutAccessCheck();
   if (query.next())  {
     var toId = query.get(Shell.getContext(), "ID");
     var insert = new Insert(Shell.getContext(), _linkType);
@@ -84,7 +84,7 @@ UIAbstract.prototype._writeLinks = function(_file, _space)  {
   query.setExpand(Shell.getContext(), this.getInstance(), "Admin_UI_Link\\From");
   query.addSelect(Shell.getContext(), "Type");
   query.addSelect(Shell.getContext(), "To.Name");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
 
   var links = new Packages.java.util.TreeSet();
   while (query.next())  {
@@ -123,7 +123,7 @@ UIAbstract.prototype.cleanupAccess = function UIAbstract_cleanupAccess()  {
   var query = new SearchQuery();
   query.setExpand(Shell.getContext(), this.getInstance(), "Admin_UI_Access\\UILink");
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
 
   while (query.next())  {
     var oid = query.get(Shell.getContext(), "OID");
@@ -142,7 +142,7 @@ UIAbstract.prototype.addRole = function(_userName)  {
   query.setQueryTypes(Shell.getContext(), "Admin_User_Role");
   query.addWhereExprEqValue(Shell.getContext(), "Name", _userName);
   query.addSelect(Shell.getContext(), "ID");
-  query.execute(Shell.context);
+  query.executeWithoutAccessCheck();
   if (query.next())  {
     var userId = query.get(Shell.getContext(), "ID");
     var insert = new Insert(Shell.getContext(), "Admin_UI_Access");
@@ -165,7 +165,7 @@ UIAbstract.prototype._writeAccess = function(_file, _space)  {
   query.setExpand(Shell.getContext(), this.getInstance(), "Admin_UI_Link\\From");
   query.addSelect(Shell.getContext(), "Type");
   query.addSelect(Shell.getContext(), "To.Name");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
 
   var links = new Packages.java.util.TreeSet();
   while (query.next())  {

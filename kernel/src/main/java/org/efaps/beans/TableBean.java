@@ -40,6 +40,11 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 
+/**
+ * @author tmo
+ * @version $Id$
+ * @todo description
+ */
 public class TableBean extends AbstractCollectionBean implements TableBeanInterface  {
 
   public TableBean()  {
@@ -80,7 +85,7 @@ System.out.println("--->selectedFilter="+getSelectedFilter());
 */
     }
 
-    query.execute(context);
+    query.executeWithoutAccessCheck();
 
     setValues(new ArrayList<Row>());
 
@@ -98,7 +103,7 @@ ValueParser parser = new ValueParser(new StringReader(getTitle()));
 ValueList list = parser.ExpressionString();
 list.makeSelect(_context, query);
       if (query.selectSize()>0)  {
-        query.execute(_context);
+        query.executeWithoutAccessCheck();
         if (query.next())  {
 setTitle(list.makeString(_context, query));
 //          setTitle(query.replaceAllInString(_context, getTitle()));

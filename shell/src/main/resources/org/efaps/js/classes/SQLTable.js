@@ -35,7 +35,7 @@ function SQLTable(_name)  {
   query.setQueryTypes(Shell.getContext(), "Admin_DataModel_SQLTable");
   query.addWhereExprEqValue(Shell.getContext(), "Name", _name);
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
 
   if (query.next())  {
     var oid = query.get(Shell.getContext(), "OID");
@@ -126,7 +126,7 @@ SQLTable.prototype.print = function()  {
   query.addSelect(Shell.getContext(), "SQLColumnID");
   query.addSelect(Shell.getContext(), "SQLColumnType");
 //  query.addSelect(Shell.getContext(), "DMTableMain.Name");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   if (query.next())  {
     print("Name:                      "+query.get(Shell.getContext(), "Name"));
     print("SQL Table Name:            "+query.get(Shell.getContext(), "SQLTable"));

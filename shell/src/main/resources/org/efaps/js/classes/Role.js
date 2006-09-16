@@ -28,7 +28,7 @@ function Role(_name)  {
   query.setQueryTypes(Shell.getContext(), "Admin_UI_Search");
   query.addWhereExprEqValue(Shell.getContext(), "Name", _name);
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
 
   if (query.next())  {
     var oid = query.get(Shell.getContext(), "OID");
@@ -109,7 +109,7 @@ Role.prototype.addJAASKey = function(_jaasSystem, _jaasKey)  {
   query.setQueryTypes(Shell.getContext(), "Admin_User_JAASSystem");
   query.addWhereExprEqValue(Shell.getContext(), "Name", _jaasSystem);
   query.addSelect(Shell.getContext(), "ID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   if (query.next())  {
     var jaasSystemId = query.get(Shell.getContext(), "ID");
   }
@@ -209,7 +209,7 @@ function createScriptRoles(_path, _match, _author)  {
   query.addWhereExprEqValue(Shell.getContext(), "Name", _match);
   query.addSelect(Shell.getContext(), "Name");
   
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   
   print("");
   print("Create Role Scripts:");

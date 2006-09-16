@@ -184,7 +184,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
     query.addSelect(context, _linkType.childAttrName + ".ID");
     query.addSelect(context, "OID");
     query.addSelect(context, _linkType.childAttrName + ".Type");
-    query.execute(context);
+    query.executeWithoutAccessCheck();
     while (query.next())  {
       Type type = (Type) query.get(context, _linkType.childAttrName + ".Type");
       if (_linkType.childTypeName.equals(type.getName()))  {
@@ -201,7 +201,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
       query.setQueryTypes(context, _linkType.childTypeName);
       query.addWhereExprEqValue(context, "Name", objName);
       query.addSelect(context, "ID");
-      query.execute(context);
+      query.executeWithoutAccessCheck();
       if (query.next())  {
         targets.add((Long) query.get(context, "ID"));
         

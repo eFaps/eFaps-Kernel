@@ -42,7 +42,7 @@ UICollection.prototype.cleanupFields = function()  {
   var query = new SearchQuery();
   query.setExpand(Shell.getContext(), this.getOid(), "Admin_UI_Field\\Collection");
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   while (query.next())  {
     var oid = query.get(Shell.getContext(), "OID");
     (new Field(new Instance(Shell.getContext(), oid))).remove();
@@ -76,7 +76,7 @@ UICollection.prototype._writeFields = function(_file)  {
   query.setExpand(Shell.getContext(), this.getOid(), "Admin_UI_Field\\Collection");
   query.addSelect(Shell.getContext(), "Name");
   query.addSelect(Shell.getContext(), "OID");
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   while (query.next())  {
     var fieldOid  = query.get(Shell.getContext(), "OID");
     var fieldName = query.get(Shell.getContext(), "Name");

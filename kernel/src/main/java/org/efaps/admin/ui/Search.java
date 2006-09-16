@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 195 $
- * Last Changed:    $Date: 2006-04-30 10:54:40 +0200 (Sun, 30 Apr 2006) $
- * Last Changed By: $Author: tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
@@ -32,6 +32,7 @@ import org.efaps.util.EFapsException;
  *
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public class Search extends MenuAbstract  {
 
@@ -186,7 +187,7 @@ public Table getTable(int _index)  {
       query.setQueryTypes(_context, EFapsClassName.MENU.name);
       query.addWhereExprEqValue(_context, "ID", getId());
       query.addSelect(_context, "Name");
-      query.execute(_context);
+      query.executeWithoutAccessCheck();
 
       if (query.next())  {
         setName((String)query.get(_context, "Name"));
@@ -252,7 +253,7 @@ setLabel(getName()+".Label");
       query.setQueryTypes(_context, EFapsClassName.COMMAND.name);
       query.addWhereExprEqValue(_context, "ID", getId());
       query.addSelect(_context, "Name");
-      query.execute(_context);
+      query.executeWithoutAccessCheck();
 
       if (query.next())  {
         setName((String)query.get(_context, "Name"));

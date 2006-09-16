@@ -1256,7 +1256,7 @@ System.out.println("toBeCreated="+toBeCreated);
           org.efaps.db.SearchQuery query = new org.efaps.db.SearchQuery();
           query.setQueryTypes(this.context, "TeamCenter_RootFolder");
           query.addSelect(this.context, "Name");
-          query.execute(this.context);
+          query.execute();
           while (query.next())  {
             subject.addChild(new SubjectNode(query.get(this.context, "Name").toString()));
           }
@@ -1278,7 +1278,7 @@ if (instance == null)  {
             query.addSelect(this.context, "OID");
             query.addSelect(this.context, "Created");
             query.addSelect(this.context, "Modified");
-            query.execute(this.context);
+            query.execute();
             while (query.next())  {
               String name = query.get(this.context, "Name").toString();
               String oid  = query.get(this.context, "OID").toString();
@@ -1304,7 +1304,7 @@ if (instance == null)  {
             query.addSelect(this.context, "Created");
             query.addSelect(this.context, "Modified");
             query.addSelect(this.context, "OID");
-            query.execute(this.context);
+            query.execute();
             while (query.next())  {
               String oid  = query.get(this.context, "OID").toString();
               String name = query.get(this.context, "FileName").toString();
@@ -1496,7 +1496,7 @@ System.out.println("retrieveRevisionDescriptor.foundInstance="+instance);
           if (!isFolder(instance))  {
             query.addSelect(this.context, "FileLength");
           }
-          query.execute(this.context);
+          query.execute();
           query.next();
 
           if (isFolder(instance))  {
@@ -1845,7 +1845,7 @@ if (instance==null)  {
     query.setQueryTypes(_context, "TeamCenter_RootFolder");
     query.addWhereExprEqValue(_context, "Name", path[2]);
     query.addSelect(_context, "OID");
-    query.execute(_context);
+    query.execute();
 // TODO: was passiert wenn nicht gefunden?
     query.next();
     instance = new Instance(_context, query.get(_context,"OID").toString());
@@ -1858,7 +1858,7 @@ if (instance==null)  {
     query.addWhereExprEqValue(_context, "Name", path[path.length-1]);
     query.addWhereExprEqValue(_context, "ParentFolder", ""+parentInstance.getId());
     query.addSelect(_context, "OID");
-    query.execute(_context);
+    query.execute();
     if (query.next())  {
       instance = new Instance(_context, query.get(_context,"OID").toString());
     }
@@ -1870,7 +1870,7 @@ if (instance==null)  {
       query.addWhereExprEqValue(_context, "Folder", ""+parentInstance.getId());
       query.addSelect(_context, "Document.OID");
       query.addSelect(_context, "Document.FileName");
-      query.execute(_context);
+      query.execute();
       while (query.next())  {
         String docName = query.get(_context, "Document.FileName").toString();
         if (path[path.length-1].equals(docName))  {

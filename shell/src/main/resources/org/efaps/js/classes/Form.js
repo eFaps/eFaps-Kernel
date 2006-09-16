@@ -20,6 +20,7 @@
  */
 
 importClass(Packages.org.efaps.db.Instance);
+importClass(Packages.org.efaps.db.SearchQuery);
 
 function Form(_name)  {
   this.object = new EFapsInstance("Admin_UI_Form", _name);
@@ -158,12 +159,12 @@ function importForms(_fileList)  {
  * @param _author (String)  author used in the header
  */
 function createScriptForms(_path, _match, _author)  {
-  var query = new Packages.org.efaps.db.SearchQuery();
+  var query = new SearchQuery();
   query.setQueryTypes(Shell.getContext(), "Admin_UI_Form");
   query.addWhereExprEqValue(Shell.getContext(), "Name", _match);
   query.addSelect(Shell.getContext(), "Name");
   
-  query.execute(Shell.getContext());
+  query.executeWithoutAccessCheck();
   
   print("Create Form Scripts:");
   print("~~~~~~~~~~~~~~~~~~~~");

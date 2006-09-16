@@ -43,6 +43,7 @@ import org.efaps.db.query.WhereClauseAttributeMatchValue;
  *
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public class SearchQuery extends AbstractQuery  {
 
@@ -54,7 +55,6 @@ public class SearchQuery extends AbstractQuery  {
 
 //ArrayList<Type> types = new ArrayList<Type>();
 
-Type type = null;
 
 public void setQueryTypes(Context _context, String _types) throws Exception  {
   if (_types != null)  {
@@ -228,32 +228,6 @@ throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getNam
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * The method adds all attributes in the string beginning with a
-   * &quot;$&lt;&quot; and ending with a &quot;&gt;&quot;.
-   *
-   * @param _context  context for this request
-   * @param _text     text string with all attributes
-   * @return <i>true</i> if an attribute from the text string is added to the
-   *         query
-   * @see #add(Attribute)
-   * @see #replaceAllInString
-   */
-  public boolean addAllFromString(Context _context, String _text) throws Exception  {
-    boolean ret = false;
-    int index = _text.indexOf("$<");
-    while (index>=0)  {
-      int end = _text.indexOf(">", index);
-      if (end<0)  {
-        break;
-      }
-      addSelect(_context, _text.substring(index+2,end));
-      index = _text.indexOf("$<", end);
-      ret = true;
-    }
-    return ret;
-  }
-
-  /**
    * The instance method replaces all the attributes in the text string
    * beginning with a &quot;$&lt;&quot; and ending with a &quot;&gt;&quot;
    * with the related values.
@@ -286,30 +260,6 @@ throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getNam
   }
 
   //////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The method adds a single field from a form or a table to the select
-   * statement.
-   *
-   * @param _field  field to add to the query
-   * @see #add(Object, Attribute)
-   */
-  public void add(Field _field) throws Exception  {
-//System.out.println("                           add field "+_field);
-    addSelect(false, _field, this.type, _field.getExpression());
-    if (_field.getAlternateOID()!=null)  {
-      addSelect(true, _field, this.type, _field.getAlternateOID());
-    }
-  }
-
-  /**
-   * The method adds an expression to the selectstatement.
-   *
-   * @param _expression expression to add
-   */
-  public void addSelect(Context _context, String _expression) throws Exception  {
-    addSelect(false, _expression, this.type, _expression);
-  }
 
   /**
    * All object ids for one row are returned. The objects id defined in the

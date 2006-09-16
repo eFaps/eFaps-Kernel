@@ -305,7 +305,7 @@ e.printStackTrace();
         query.setQueryTypes(_context, getEFapsClassName().name);
         query.addSelect(_context, "ID");
         query.addSelect(_context, "Name");
-        query.execute(_context);
+        query.executeWithoutAccessCheck();
         while (query.next())  {
           long id     = (Long) query.get(_context, "ID");
           String name = (String) query.get(_context, "Name");
@@ -361,7 +361,7 @@ e.printStackTrace();
       UIObj uiObj = null;
       Class < UIObj > uiObjClass = getCallerClass();
       try  {
-        _query.execute(_context);
+        _query.executeWithoutAccessCheck();
         if (_query.next())  {
           long id     = (Long)_query.get(_context, "ID");
           String name = (String)_query.get(_context, "Name");

@@ -125,7 +125,7 @@ Type type = Type.get(_type);
       query.setQueryTypes(Shell.getContext(), _type);
       query.addWhereExprEqValue(Shell.getContext(), "Name", _name);
       query.addSelect(Shell.getContext(), "Name");
-      query.execute(Shell.context);
+      query.execute();
       if (query.next())  {
         instance = new Instance(Shell.context, query.getRowOIDs(Shell.context));
       } else  {
@@ -225,7 +225,7 @@ query.setExpandChildTypes(true);
 //  query.addAllFromString(Shell.getContext(), "$<Type>");
 //}
 
-    query.execute(Shell.context);
+    query.execute();
 if (query.next())  {
 //    AttributeTypeInterface result=query.get(Shell.context, attr);
 Object result = query.get(Shell.getContext(), _name);
@@ -261,7 +261,7 @@ List<EFapsInstance> list = new ArrayList<EFapsInstance>();
 
 SearchQuery query = new SearchQuery();
 query.setExpand(Shell.getContext(), self.instance, _name);
-query.execute(Shell.getContext());
+query.execute();
 
 while (query.next())  {
   list.add(new EFapsInstance(new Instance(Shell.getContext(), query.getRowOIDs(Shell.getContext()))));
@@ -588,104 +588,6 @@ public void jsFunction_links()  {
     System.out.println(""+name);
   }
 }
-
-// TODO: muss complete umgeschrieben werrden (mit Klasse org.efaps.db.Delete )
-/*public void jsFunction_remove()  {
-//System.out.println("remove");
-  if (instance!=null && instance.getOid()!=null && instance.getOid().length()>0)  {
-
-    java.sql.Statement stmt = null;
-    try  {
-      stmt = Shell.context.getConnection().createStatement();
-
-      org.efaps.admin.datamodel.Table mainTable = instance.getType().getMainTable();
-      Iterator iter = instance.getType().getTables().iterator();
-      while (iter.hasNext())  {
-        org.efaps.admin.datamodel.Table curTable = (org.efaps.admin.datamodel.Table)iter.next();
-        if (curTable!=mainTable)  {
-          StringBuffer buf = new StringBuffer();
-          buf.append("delete from ").append(curTable.getSqlTable()).append(" ");
-          buf.append("where ").append(curTable.getSqlColId()).append("=").append(instance.getId()).append("");
-//System.out.println("buf="+buf.toString());
-          stmt.addBatch(buf.toString());
-        }
-      }
-      StringBuffer buf = new StringBuffer();
-      buf.append("delete from ").append(mainTable.getSqlTable()).append(" ");
-      buf.append("where ").append(mainTable.getSqlColId()).append("=").append(instance.getId()).append("");
-      stmt.addBatch(buf.toString());
-//System.out.println("buf="+buf.toString());
-
-      stmt.executeBatch();
-    } catch (Exception e)  {
-e.printStackTrace();
-    } finally  {
-      try  {
-        stmt.close();
-      } catch (java.sql.SQLException e)  {
-      }
-    }
-  }
-}
-*/
-/*
-public void jsFunction_create() throws Exception  {
-  Insert insert = new Insert(Shell.context, instance.getType());
-  for (Iterator iter = attributes.entrySet().iterator(); iter.hasNext(); )  {
-    Map.Entry entry = (Map.Entry)iter.next();
-    Attribute attr = (Attribute)entry.getKey();
-    String value = entry.getValue().toString();
-    insert.add(Shell.context, attr, value);
-  }
-  insert.execute(Shell.context);
-  instance = insert.getInstance();
-  attributes.clear();
-}
-
-public void jsFunction_update() throws Exception  {
-  Update update = new Update(Shell.context, instance);
-  for (Iterator iter = attributes.entrySet().iterator(); iter.hasNext(); )  {
-    Map.Entry entry = (Map.Entry)iter.next();
-    Attribute attr = (Attribute)entry.getKey();
-    String value = entry.getValue().toString();
-    update.add(Shell.context, attr, value);
-  }
-  update.execute(Shell.context);
-  attributes.clear();
-}
-*/
-// TODO: Exception handling?
-  /**
-   * Checkin into an attribute from a given file.
-   *
-   * @param _attrName   name of the attribute getting the file
-   * @param _fileName   name of file to check in
-   */
-/*  public void jsFunction_checkin(String _attrName, String _fileName) throws Exception  {
-
-    Checkin checkin = new Checkin(Shell.getContext(), this.instance, _attrName);
-
-    File file = new File(_fileName);
-    FileInputStream in = new FileInputStream(file);
-    checkin.execute(Shell.getContext(), file.getName(), in, in.available());
-    in.close();
-  }
-*/
-
-// TODO: Exception handling?
-  /**
-   * Checkout from attribute into given file.
-   *
-   * @param _attrName   name of the attribute with the file
-   * @param _fileName   name of file where to check out
-   */
-/*  public void jsFunction_checkout(String _attrName, String _fileName) throws Exception  {
-    Checkout checkout = new Checkout(Shell.getContext(), this.instance, _attrName);
-
-    File file =new File(_fileName);
-    checkout.process(Shell.getContext(), new FileOutputStream(file));
-  }
-*/
 
 private Map<Attribute,Object> attributes = new HashMap<Attribute,Object>();
 

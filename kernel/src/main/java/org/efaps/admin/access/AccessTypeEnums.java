@@ -20,6 +20,8 @@
 
 package org.efaps.admin.access;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -89,4 +91,16 @@ public enum AccessTypeEnums   {
   public AccessType getAccessType()  {
     return AccessType.getAccessType(this.uuid);
   }
+  
+  /**
+   * The related access type from {@link #getAccessType} is packed in a list.
+   *
+   * @return related access type as list
+   * @see #getAccessType
+   */
+   public List < AccessType > getAccessTypeAsList()  {
+     List < AccessType > ret = new ArrayList < AccessType > (1);
+     ret.add(getAccessType());
+     return ret;
+   }
 }

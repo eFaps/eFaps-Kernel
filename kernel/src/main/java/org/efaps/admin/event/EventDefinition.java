@@ -174,7 +174,7 @@ e.printStackTrace();
     query.addSelect(_context, "IndexPosition");
     query.addSelect(_context, "Abstract");
     query.addSelect(_context, "Abstract.Type");
-    query.execute(_context);
+    query.executeWithoutAccessCheck();
 System.out.println("--------------------------------------------");
     while (query.next())  {
       long eventId      = (Long)   query.get(_context, "ID");
