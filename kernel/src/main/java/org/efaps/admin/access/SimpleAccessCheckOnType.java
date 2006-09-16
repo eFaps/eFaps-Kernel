@@ -65,69 +65,70 @@ public class SimpleAccessCheckOnType implements AccessCheckInterface   {
                              final AccessType _accessType) 
                                                       throws EFapsException  {
 
-System.out.println("_instance="+_instance);
-System.out.println("_accessType="+_accessType);
-    boolean hasAccess = false;
     Context context = Context.getThreadContext();
 
-    if (AccessTypeEnums.CREATE.getAccessType().equals(_accessType))  {
-      Type type = _instance.getType();
-      StringBuilder toTests = new StringBuilder();
-      toTests.append(0);
-System.out.println("-------------------type.getAccessSets()="+type.getAccessSets());
-      for (AccessSet accessSet : type.getAccessSets())  {
-System.out.println("-------------------accessSet.getAccessTypes()="+accessSet.getAccessTypes());
-        if (accessSet.getAccessTypes().contains(_accessType))  {
-          toTests.append(",").append(accessSet.getId());
-        }
-      }
-      
-      StringBuilder users = new StringBuilder();
-      users.append(context.getPersonId());
-      for (Role role : context.getPerson().getRoles())  {
-        users.append(",").append(role.getId());
-      }
-      for (Group group : context.getPerson().getGroups())  {
-        users.append(",").append(group.getId());
-      }
-
-      StringBuilder cmd = new StringBuilder();
-      cmd.append("select count(*) from ACCESSSET2USER ")
-         .append("where ACCESSSET in (").append(toTests).append(") ")
-         .append("and USERABSTRACT in (").append(users).append(")");
-
-      ConnectionResource con = null;
-      try  {
-        con = context.getConnectionResource();
-  
-        Statement stmt = null;
-        try  {
-  
-          stmt = con.getConnection().createStatement();
-  
-          ResultSet rs = stmt.executeQuery(cmd.toString());
-          if (rs.next())  {
-            hasAccess = (rs.getLong(1) > 0) ? true : false;
-          }
-          rs.close();
-  
-        } finally  {
-          if (stmt != null)  {
-            stmt.close();
-          }
-        }
-  
-        con.commit();
-  
-      } catch (SQLException e)  {
-        LOG.error("sql statement '" + cmd.toString() + "' not executable!", e);
-      } finally  {
-        if ((con != null) && con.isOpened())  {
-          con.abort();
-        }
+    Type type = _instance.getType();
+    StringBuilder toTests = new StringBuilder();
+    toTests.append(0);
+    for (AccessSet accessSet : type.getAccessSets())  {
+      if (accessSet.getAccessTypes().contains(_accessType))  {
+        toTests.append(",").append(accessSet.getId());
       }
     }
+    
+    StringBuilder users = new StringBuilder();
+    users.append(context.getPersonId());
+    for (Role role : context.getPerson().getRoles())  {
+      users.append(",").append(role.getId());
+    }
+    for (Group group : context.getPerson().getGroups())  {
+      users.append(",").append(group.getId());
+    }
 
+    return executeStatement(context, toTests, users);
+  }
+
+  protected boolean executeStatement(final Context _context,
+                                     final StringBuilder _accessSets,
+                                     final StringBuilder _users) 
+                                                      throws EFapsException  {
+    boolean hasAccess = false;
+
+    StringBuilder cmd = new StringBuilder();
+    cmd.append("select count(*) from ACCESSSET2USER ")
+       .append("where ACCESSSET in (").append(_accessSets).append(") ")
+       .append("and USERABSTRACT in (").append(_users).append(")");
+
+    ConnectionResource con = null;
+    try  {
+      con = _context.getConnectionResource();
+
+      Statement stmt = null;
+      try  {
+
+        stmt = con.getConnection().createStatement();
+
+        ResultSet rs = stmt.executeQuery(cmd.toString());
+        if (rs.next())  {
+          hasAccess = (rs.getLong(1) > 0) ? true : false;
+        }
+        rs.close();
+
+      } finally  {
+        if (stmt != null)  {
+          stmt.close();
+        }
+      }
+
+      con.commit();
+
+    } catch (SQLException e)  {
+      LOG.error("sql statement '" + cmd.toString() + "' not executable!", e);
+    } finally  {
+      if ((con != null) && con.isOpened())  {
+        con.abort();
+      }
+    }
     return hasAccess;
   }
 }

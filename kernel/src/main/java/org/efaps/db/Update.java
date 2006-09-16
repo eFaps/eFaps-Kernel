@@ -32,6 +32,7 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
@@ -231,6 +232,13 @@ if (testNeeded)  {
    *
    */
   public void execute() throws Exception  {
+    boolean hasAccess = getType()
+          .hasAccess(new Instance(getType()), 
+                     AccessTypeEnums.MODIFY.getAccessType());
+
+    if (!hasAccess)  {
+      throw new EFapsException(getClass(), "execute.NoAccess");
+    }
     executeWithoutAccessCheck();
   }
 
