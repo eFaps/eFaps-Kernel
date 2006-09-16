@@ -298,7 +298,6 @@ System.out.println(_linkType.childTypeName + " '" + objName + "' not found!");
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);
     }
-System.out.println("ret="+ret);
     return ret;
   }
 
