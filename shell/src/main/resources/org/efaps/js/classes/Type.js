@@ -22,7 +22,6 @@
 importClass(Packages.java.io.File);
 importClass(Packages.java.io.FileWriter);
 
-importClass(Packages.org.efaps.db.Delete);
 importClass(Packages.org.efaps.db.Insert);
 importClass(Packages.org.efaps.db.Instance);
 importClass(Packages.org.efaps.db.SearchQuery);

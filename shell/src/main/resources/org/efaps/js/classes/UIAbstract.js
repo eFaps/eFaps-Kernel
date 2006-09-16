@@ -44,8 +44,8 @@ UIAbstract.prototype.cleanupLinks = function UIAbstract_cleanupLinks()  {
 
   while (query.next())  {
     var oid = query.get(Shell.getContext(), "OID");
-    var del = new Delete(Shell.getContext(), oid);
-    del.execute(Shell.getContext());
+    var del = new Delete(oid);
+    del.executeWithoutAccessCheck();
   }
 }
 
@@ -127,8 +127,8 @@ UIAbstract.prototype.cleanupAccess = function UIAbstract_cleanupAccess()  {
 
   while (query.next())  {
     var oid = query.get(Shell.getContext(), "OID");
-    var del = new Delete(Shell.getContext(), oid);
-    del.execute(Shell.getContext());
+    var del = new Delete(oid);
+    del.executeWithoutAccessCheck();
   }
 }
 

@@ -19,6 +19,8 @@
  * Last Changed By: $Author$
  */
 
+importClass(Packages.org.efaps.db.Delete);
+
 /**
  * The class represents an Trigger of a type.
  */
@@ -62,8 +64,8 @@ Trigger.prototype.cleanup = function()  {
  */
 Trigger.prototype.remove = function()  {
   this.cleanup();
-  var del = new Packages.org.efaps.db.Delete(Shell.getContext(), this.getOid());
-  del.execute(Shell.getContext());
+  var del = new Delete(this.getOid());
+  del.executeWithoutAccessCheck();
 }
 
 /**

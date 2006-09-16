@@ -83,8 +83,8 @@ Menu.prototype.cleanupChilds = function()  {
   query.executeWithoutAccessCheck();
   while (query.next())  {
     var oid = query.get(Shell.getContext(), "OID");
-    var del = new Delete(Shell.getContext(), oid);
-    del.execute(Shell.getContext());
+    var del = new Delete(oid);
+    del.executeWithoutAccessCheck();
   }
   query.close();
 }

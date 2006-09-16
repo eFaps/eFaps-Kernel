@@ -86,8 +86,8 @@ Abstract.prototype.cleanupProperties = function()  {
   query.executeWithoutAccessCheck();
   while (query.next())  {
     var propOid = query.get(Shell.getContext(), "OID");
-    var del = new Delete(Shell.getContext(), propOid);
-    del.execute(Shell.getContext());
+    var del = new Delete(propOid);
+    del.executeWithoutAccessCheck();
   }
   query.close();
 }

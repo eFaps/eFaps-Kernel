@@ -19,10 +19,11 @@
  * Last Changed By: $Author$
  */
 
+importClass(Packages.org.efaps.db.Delete);
+
 /**
  * The class represents an attribute of a type.
  */
-
 function Attribute(_instance)  {
   this.instance = _instance;
 
@@ -62,8 +63,8 @@ Attribute.prototype.cleanup = function()  {
  */
 Attribute.prototype.remove = function()  {
   this.cleanup();
-  var del = new Packages.org.efaps.db.Delete(Shell.getContext(), this.getOid());
-  del.execute(Shell.getContext());
+  var del = new Delete(this.getOid());
+  del.executeWithoutAccessCheck();
 }
 
 /**

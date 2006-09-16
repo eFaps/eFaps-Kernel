@@ -43,6 +43,6 @@ Field.prototype.cleanup = function()  {
 
 Field.prototype.remove = function()  {
   this.cleanup();
-  var del = new Delete(Shell.getContext(), this.getOid());
-  del.execute(Shell.getContext());
+  var del = new Delete(this.getOid());
+  del.executeWithoutAccessCheck();
 }
