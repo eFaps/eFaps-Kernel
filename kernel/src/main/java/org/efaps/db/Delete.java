@@ -184,7 +184,7 @@ public class Delete  {
         store.commit();
       }
     } finally  {
-      if ((con != null) && con.isOpened())  {
+      if ((store != null) && store.isOpened())  {
         store.abort();
       }
     }
