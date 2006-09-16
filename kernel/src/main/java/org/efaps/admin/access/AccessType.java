@@ -84,6 +84,23 @@ public class AccessType extends AdminObject  {
   }
 
   /////////////////////////////////////////////////////////////////////////////
+  // instance methods
+
+  /**
+   * The method checks, if the given object represents the same access type as
+   * this instance. Equals means, that the object to compare is not null,
+   * an instance of this class {@link AccessType} and both id's are the same.
+   *
+   * @param _toCompare  object used to compare
+   * @return <i>true</i> if equals, otherwise <i>false</i>
+   */
+  public boolean equals(final Object _toCompare)  {
+    return (_toCompare != null)
+            && (_toCompare instanceof AccessType)
+            && (((AccessType) _toCompare).getId() == getId());
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
   // static methods
 
   /**
