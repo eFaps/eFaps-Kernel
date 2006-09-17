@@ -41,12 +41,17 @@ import org.efaps.util.EFapsException;
 /**
  * The servlet logs in a user with name and password. The name and password is
  * checked with the help of Java Authentication and Authorization Service
- * (short JAAS).
+ * (short JAAS).<br/>
+ * The login servlet itself could handle the HTTP GET and POST operations
+ * (see {@link #doGet} and {@link #doPost}).
  *
  * @author tmo
  * @version $Id$
  */
 public class LoginServlet extends HttpServlet  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
 
   /**
    * Logging instance used to give logging information of this class.
@@ -73,6 +78,9 @@ public class LoginServlet extends HttpServlet  {
    */
   final private static String PARAM_PASSWORD =        "password";
 
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
   /**
    * The forward URL used if the login is correct and the next page must be
    * shown.
@@ -87,6 +95,9 @@ public class LoginServlet extends HttpServlet  {
    * @see #doGet
    */
   private LoginHandler loginHandler = null;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * The login servlet is initialised. The application name in
@@ -112,16 +123,58 @@ public class LoginServlet extends HttpServlet  {
   }
 
   /**
+   * Performs the HTTP GET operation; calls only method {@link #doHandle}.
+   * The method is needed to overwrite the default implementation which reports
+   * an HTTP BAD_REQUEST error.
+   *
+   * @param _req  HttpServletRequest that encapsulates the request to the 
+   *              servlet
+   * @param _res  HttpServletResponse that encapsulates the response from the 
+   *              servlet
+   * @see #doHandle
+   */
+  protected void doGet(final HttpServletRequest _req, 
+                       final HttpServletResponse _res) 
+                                        throws ServletException, IOException  {
+    doHandle(_req, _res);
+  }
+
+  /**
+   * Performs the HTTP POST operation; calls only method {@link #doHandle}.
+   * The method is needed to overwrite the default implementation which reports
+   * an HTTP BAD_REQUEST error.
+   *
+   * @param _req  HttpServletRequest that encapsulates the request to the 
+   *              servlet
+   * @param _res  HttpServletResponse that encapsulates the response from the 
+   *              servlet
+   * @see #doHandle
+   */
+  protected void doPost(final HttpServletRequest _req, 
+                        final HttpServletResponse _res) 
+                                        throws ServletException, IOException  {
+    doHandle(_req, _res);
+  }
+
+  /**
    * User wants to login into eFaps. The user name and password is checked.
-   * User name is stored in session variable {@link SecurityFilter#SESSIONPARAM_LOGIN_NAME}.
-   * After login a redirect to the "common/Main.jsf" is made.<br/>
+   * User name is stored in session variable 
+   * {@link SecurityFilter#SESSIONPARAM_LOGIN_NAME}. After login a redirect to 
+   * the "common/Main.jsf" is made.<br/>
    * The post parameter names are {@link #PARAM_USERNAME} and
    * {@link #PARAM_PASSWORD}.
    *
-   * @param _req request variable
-   * @param _res response variable
+   * @param _req  HttpServletRequest that encapsulates the request to the 
+   *              servlet
+   * @param _res  HttpServletResponse that encapsulates the response from the 
+   *              servlet
+   * @see #doGet
+   * @see #doPost
+   * @see #doSendLoginFrameNotCorrect
    */
-  protected void doGet(final HttpServletRequest _req, final HttpServletResponse _res) throws ServletException, IOException  {
+  protected void doHandle(final HttpServletRequest _req, 
+                          final HttpServletResponse _res) 
+                                        throws ServletException, IOException  {
     PrintWriter out = _res.getWriter();
 
     String name = _req.getParameter(PARAM_USERNAME);
@@ -148,10 +201,14 @@ public class LoginServlet extends HttpServlet  {
   /**
    * This page is sent if the login is not correct.
    *
-   * @param _req request variable
-   * @param _res response variable
+   * @param _req  HttpServletRequest that encapsulates the request to the 
+   *              servlet
+   * @param _res  HttpServletResponse that encapsulates the response from the 
+   *              servlet
    */
-  protected void doSendLoginFrameNotCorrect(HttpServletRequest _req, HttpServletResponse _res) throws ServletException, IOException  {
+  protected void doSendLoginFrameNotCorrect(final HttpServletRequest _req, 
+                                            final HttpServletResponse _res) 
+                                        throws ServletException, IOException  {
     _res.setContentType("text/html");
     PrintWriter pW = null;
     try  {
