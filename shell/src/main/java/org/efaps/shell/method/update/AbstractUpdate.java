@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -162,6 +163,77 @@ public abstract class AbstractUpdate  {
     this.instance = insert.getInstance();
   }
     
+  /**
+   * Sets the links from this object to the given list of objects (with the 
+   * object name) in the eFaps database.
+   *
+   * @param _instance   instance for which the access types must be set
+   * @param _linkType   link to update
+   * @param _objNames   string list of all object names to set for this 
+   *                    object
+   */
+  protected void setLinksInDB(final Instance _instance,
+                              final Link _linkType,
+                              final List < String > _objNames)  
+                                            throws EFapsException,Exception  {
+                                              
+    Context context = Context.getThreadContext();
+    
+    // get ids from current object
+    Map < Long, String > currents = new HashMap < Long, String > ();
+    SearchQuery query = new SearchQuery();
+    query.setExpand(context, 
+                    _instance, 
+                    _linkType.linkName + "\\" + _linkType.parentAttrName);
+    query.addSelect(context, _linkType.childAttrName + ".ID");
+    query.addSelect(context, "OID");
+    query.addSelect(context, _linkType.childAttrName + ".Type");
+    query.executeWithoutAccessCheck();
+    while (query.next())  {
+      Type type = (Type) query.get(context, _linkType.childAttrName + ".Type");
+      if (_linkType.childTypeName.equals(type.getName()))  {
+        currents.put((Long) query.get(context, _linkType.childAttrName + ".ID"),
+                   (String) query.get(context, "OID"));
+      }
+    }
+    query.close();
+
+    // get ids for target
+    Set < Long > targets = new HashSet < Long > ();
+    for (String objName : _objNames)  {
+      query = new SearchQuery();
+      query.setQueryTypes(context, _linkType.childTypeName);
+      query.addWhereExprEqValue(context, "Name", objName);
+      query.addSelect(context, "ID");
+      query.executeWithoutAccessCheck();
+      if (query.next())  {
+        targets.add((Long) query.get(context, "ID"));
+        
+      } else  {
+System.out.println(_linkType.childTypeName + " '" + objName + "' not found!");
+      }
+      query.close();
+    }
+
+    // insert needed new links
+    for (Long target : targets)  {
+      if (currents.get(target) == null)  {
+        Insert insert = new Insert(context, _linkType.linkName);
+        insert.add(context, _linkType.parentAttrName, "" + _instance.getId());
+        insert.add(context, _linkType.childAttrName, "" + target);
+        insert.executeWithoutAccessCheck();
+      } else  {
+        currents.remove(target);
+      }
+    }
+
+    // remove unneeded current links to access types
+    for (String oid : currents.values())  {   
+      Delete del = new Delete(oid);
+      del.executeWithoutAccessCheck();
+    }
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // getter and setter methods
 
@@ -181,5 +253,57 @@ public abstract class AbstractUpdate  {
     return new ToStringBuilder(this).
       append("uuid",            this.uuid).
       toString();
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static classes
+
+  /**
+   * The class is used to define the links with all information needed to 
+   * update the link information between the object to update and the related
+   * objects.
+   *
+   * @see #setLinksInDB
+   */
+  static protected class Link  {
+
+    /** Name of the link. */
+    private final String linkName;
+
+    /**
+     * Name of the parent attribute in the link. The parent attribute stores
+     * the id of the objecto udpate.
+     */
+    private final String parentAttrName;
+
+    /**
+     * Name of the child type used to query for the given name to which a link
+     * must be set.
+     */
+    private final String childTypeName;
+
+    /** Name of the child attribute in the link. */
+    private final String childAttrName;
+    
+    /**
+     * Constructor used to initialise the instance variables.
+     *
+     * @param _linkName         name of the link itself
+     * @param _parentAttrName   name of the parent attribute in the link
+     * @param _childTypeName    name of the child type
+     * @param _childAttrName    name of the child attribute in the link
+     * @see #linkName
+     * @see #parentAttrName
+     * @see #childTypeName
+     * @see #childAttrName
+     */
+    Link(final String _linkName,
+         final String _parentAttrName,
+         final String _childTypeName, final String _childAttrName)  {
+      this.linkName = _linkName;
+      this.parentAttrName = _parentAttrName;
+      this.childTypeName = _childTypeName;
+      this.childAttrName = _childAttrName;
+    }
   }
 }

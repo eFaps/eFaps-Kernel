@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
-import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -53,62 +52,42 @@ import org.efaps.util.EFapsException;
 public class AccessSetUpdate extends AbstractUpdate  {
 
   /////////////////////////////////////////////////////////////////////////////
-  // enums
-  
-  /**
-   * The enum is used to define the links with all information needed to update
-   * the link information between this access set and the related objects.
-   */
-  private enum Links  {
-    /** Link to access types. */
-    AccessTypes("Admin_Access_AccessSet2Type", 
-                "AccessSetLink", 
-                "Admin_Access_AccessType", "AccessTypeLink"),
-    /** Link to data model types. */
-    DataModelTypes("Admin_Access_AccessSet2DataModelType", 
-                   "AccessSetLink", 
-                   "Admin_DataModel_Type", "DataModelTypeLink"),
-    /** Link to persons. */
-    Persons("Admin_Access_AccessSet2UserAbstract", 
-            "AccessSetLink", 
-            "Admin_User_Person", "UserAbstractLink"),
-    /** Link to roles. */
-    Roles("Admin_Access_AccessSet2UserAbstract", 
-          "AccessSetLink", 
-          "Admin_User_Role", "UserAbstractLink"),
-    /** Link to groups. */
-    Groups("Admin_Access_AccessSet2UserAbstract", 
-           "AccessSetLink", 
-           "Admin_User_Group", "UserAbstractLink");
-
-    /** Name of the link. */
-    final String linkName;
-    /** Name of the parent attribute in the link. */
-    final String parentAttrName;
-    /** Name of the child type */
-    final String childTypeName;
-    /** Name of the child attribute in the link. */
-    final String childAttrName;
-    
-    /** 
-    */
-    Links(final String _linkName,
-          final String _parentAttrName,
-          final String _childTypeName, final String _childAttrName)  {
-      this.linkName = _linkName;
-      this.parentAttrName = _parentAttrName;
-      this.childTypeName = _childTypeName;
-      this.childAttrName = _childAttrName;
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Logging instance used to give logging information of this class.
    */
   private final static Log LOG = LogFactory.getLog(AccessSetUpdate.class);
+
+  /** Link to access types. */
+  private final static Link LINK2ACCESSTYPE
+                    = new Link("Admin_Access_AccessSet2Type", 
+                               "AccessSetLink", 
+                               "Admin_Access_AccessType", "AccessTypeLink");
+
+  /** Link to data model types. */
+  private final static Link LINK2DATAMODELTYPE
+                    = new Link("Admin_Access_AccessSet2DataModelType", 
+                               "AccessSetLink", 
+                               "Admin_DataModel_Type", "DataModelTypeLink");
+
+  /** Link to persons. */
+  private final static Link LINK2PERSON
+                    = new Link("Admin_Access_AccessSet2UserAbstract", 
+                               "AccessSetLink", 
+                               "Admin_User_Person", "UserAbstractLink");
+
+  /** Link to roles. */
+  private final static Link LINK2ROLE
+                    = new Link("Admin_Access_AccessSet2UserAbstract", 
+                               "AccessSetLink", 
+                               "Admin_User_Role", "UserAbstractLink");
+
+  /** Link to groups. */
+  private final static Link LINK2GROUP
+                    = new Link("Admin_Access_AccessSet2UserAbstract", 
+                               "AccessSetLink", 
+                               "Admin_User_Group", "UserAbstractLink");
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -152,82 +131,11 @@ public class AccessSetUpdate extends AbstractUpdate  {
       update.add(context, "Revision", def.globalVersion 
                                       + "#" + def.localVersion);
       update.executeWithoutAccessCheck();
-      setLinksInDB(instance, Links.AccessTypes, def.accessTypes);
-      setLinksInDB(instance, Links.DataModelTypes, def.dataModelTypes);
-      setLinksInDB(instance, Links.Persons, def.persons);
-      setLinksInDB(instance, Links.Roles, def.roles);
-      setLinksInDB(instance, Links.Groups, def.groups);
-    }
-  }
-
-  /**
-   * Sets the links from this object to the given list of objects (with the 
-   * object name) in the eFaps database.
-   *
-   * @param _instance   instance for which the access types must be set
-   * @param _linkType   link to update
-   * @param _objNames   string list of all object names to set for this 
-   *                    object
-   */
-  protected void setLinksInDB(final Instance _instance,
-                              final Links _linkType,
-                              final List < String > _objNames)  
-                                            throws EFapsException,Exception  {
-                                              
-    Context context = Context.getThreadContext();
-    
-    // get ids from current object
-    Map < Long, String > currents = new HashMap < Long, String > ();
-    SearchQuery query = new SearchQuery();
-    query.setExpand(context, 
-                    _instance, 
-                    _linkType.linkName + "\\" + _linkType.parentAttrName);
-    query.addSelect(context, _linkType.childAttrName + ".ID");
-    query.addSelect(context, "OID");
-    query.addSelect(context, _linkType.childAttrName + ".Type");
-    query.executeWithoutAccessCheck();
-    while (query.next())  {
-      Type type = (Type) query.get(context, _linkType.childAttrName + ".Type");
-      if (_linkType.childTypeName.equals(type.getName()))  {
-        currents.put((Long) query.get(context, _linkType.childAttrName + ".ID"),
-                   (String) query.get(context, "OID"));
-      }
-    }
-    query.close();
-
-    // get ids for target
-    Set < Long > targets = new HashSet < Long > ();
-    for (String objName : _objNames)  {
-      query = new SearchQuery();
-      query.setQueryTypes(context, _linkType.childTypeName);
-      query.addWhereExprEqValue(context, "Name", objName);
-      query.addSelect(context, "ID");
-      query.executeWithoutAccessCheck();
-      if (query.next())  {
-        targets.add((Long) query.get(context, "ID"));
-        
-      } else  {
-System.out.println(_linkType.childTypeName + " '" + objName + "' not found!");
-      }
-      query.close();
-    }
-
-    // insert needed new links
-    for (Long target : targets)  {
-      if (currents.get(target) == null)  {
-        Insert insert = new Insert(context, _linkType.linkName);
-        insert.add(context, _linkType.parentAttrName, "" + _instance.getId());
-        insert.add(context, _linkType.childAttrName, "" + target);
-        insert.executeWithoutAccessCheck();
-      } else  {
-        currents.remove(target);
-      }
-    }
-
-    // remove unneeded current links to access types
-    for (String oid : currents.values())  {   
-      Delete del = new Delete(oid);
-      del.executeWithoutAccessCheck();
+      setLinksInDB(instance, LINK2ACCESSTYPE,    def.accessTypes);
+      setLinksInDB(instance, LINK2DATAMODELTYPE, def.dataModelTypes);
+      setLinksInDB(instance, LINK2PERSON,        def.persons);
+      setLinksInDB(instance, LINK2ROLE,          def.roles);
+      setLinksInDB(instance, LINK2GROUP,         def.groups);
     }
   }
 
