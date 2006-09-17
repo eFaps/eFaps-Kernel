@@ -26,6 +26,14 @@ with (TABLE)  {
     addProperty("Label",                  "Admin_User_JAASSystem/Name.Label");
     addProperty("ShowTypeIcon",           "true");
   }
+  with (addField("uuid"))  {
+    addProperty("Expression",             "UUID");
+    addProperty("Label",                  "Admin_User_JAASSystem/UUID.Label");
+  }
+  with (addField("revision"))  {
+    addProperty("Expression",             "Revision");
+    addProperty("Label",                  "Admin_User_JAASSystem/Revision.Label");
+  }
   with (addField("buttonOpenInNewWindow"))  {
     addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
     addProperty("Target",                 "popup");

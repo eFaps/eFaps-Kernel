@@ -35,6 +35,16 @@ with (TYPE)  {
     setSQLTable("Admin_User_JAASSystemSQLTable");
     setSQLColumn("NAME");
   }
+  with (addAttribute("UUID"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("UUID");
+  }
+  with (addAttribute("Revision"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_JAASSystemSQLTable");
+    setSQLColumn("REVISION");
+  }
   with (addAttribute("Creator"))  {
     setAttributeType("CreatorLink");
     setSQLTable("Admin_User_JAASSystemSQLTable");

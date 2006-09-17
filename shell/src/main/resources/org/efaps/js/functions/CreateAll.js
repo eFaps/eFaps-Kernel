@@ -336,6 +336,8 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
 
   eFapsCommonSQLTableCreate(_con, _stmt, "JAAS systems", "USERJAASSYSTEM", null,[
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["UUID                  "+TYPE_STRING_SHORT+"(128)"],
+      ["REVISION              "+TYPE_STRING_SHORT+"(40)"],
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
       ["CREATED               "+TYPE_DATETIME+"                  not null"],
       ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
@@ -355,7 +357,8 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
       ["METHODPERSONFAX       "+TYPE_STRING_SHORT+"(128)"],
       ["METHODROLEKEY         "+TYPE_STRING_SHORT+"(128)"],
       ["METHODGROUPKEY        "+TYPE_STRING_SHORT+"(128)"],
-      ["constraint USERJAASSYS_UK_NAME unique(NAME)"]
+      ["constraint USERJAASSYS_UK_NAME unique(NAME)"],
+      ["constraint USERJAASSYS_UK_UUID unique(UUID)"]
   ]);
 
   eFapsCommonSQLTableCreate(_con, _stmt, "Mapping to external JAAS systems", "USERJAASKEY", null,[
@@ -402,7 +405,8 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
   ]);
 
   _exec(_stmt, "Insert JAAS System eFaps", null,
-    "insert into USERJAASSYSTEM(NAME, CREATOR, CREATED, MODIFIER, MODIFIED, "
+    "insert into USERJAASSYSTEM(NAME, UUID, "
+            + "CREATOR, CREATED, MODIFIER, MODIFIED, "
             + "CLASSNAMEPERSON,"
             + "CLASSNAMEROLE,"
             + "CLASSNAMEGROUP,"
@@ -411,7 +415,8 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
             + "METHODROLEKEY,"
             + "METHODGROUPKEY"
             + ") "+
-        "values ('eFaps', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", "
+        "values ('eFaps', '878a1347-a5f3-4a68-a9a4-d214e3570a62',"
+            + "1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", "
             + "'org.efaps.jaas.efaps.PersonPrincipal',"
             + "'org.efaps.jaas.efaps.RolePrincipal',"
             + "'org.efaps.jaas.efaps.GroupPrincipal',"
@@ -452,8 +457,13 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
   );
 
   eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column CREATOR and MODIFIER", "USERABSTRACT", [
-      ["constraint USRABSTR_FK_CRTR   foreign key(CREATOR)    references USERPERSON(ID)"],
-      ["constraint USRABSTR_MDFR      foreign key(MODIFIER)   references USERPERSON(ID)"]
+      ["constraint USRABSTR_FK_CRTR   foreign key(CREATOR)          references USERPERSON(ID)"],
+      ["constraint USRABSTR_MDFR      foreign key(MODIFIER)         references USERPERSON(ID)"]
+  ]);
+
+  eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column CREATOR and MODIFIER", "USERJAASSYSTEM", [
+      ["constraint USERJAASSYS_FK_CRTR foreign key(CREATOR)          references USERABSTRACT(ID)"],
+      ["constraint USERJAASSYS_FK_MDFR foreign key(MODIFIER)         references USERABSTRACT(ID)"]
   ]);
 }
 
