@@ -71,7 +71,7 @@ public class Menu extends MenuAbstract  {
    * @return instance of class {@link Menu}
    * @see #getCache
    */
-  static public Menu get(final long _id) throws EFapsException  {
+  static public Menu get(final long _id)  {
     return getCache().get(_id);
   }
 
@@ -83,7 +83,7 @@ public class Menu extends MenuAbstract  {
    * @return instance of class {@link Menu}
    * @see #getCache
    */
-  static public Menu get(final String _name) throws EFapsException  {
+  static public Menu get(final String _name)  {
     return getCache().get(_name);
   }
 

@@ -24,7 +24,9 @@ import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class Command extends CommandAbstract  {
 
@@ -52,7 +54,7 @@ public class Command extends CommandAbstract  {
    * @return instance of class {@link Command}
    * @see #getCache
    */
-  static public Command get(final long _id) throws EFapsException  {
+  static public Command get(final long _id)  {
     return getCache().get(_id);
   }
 
@@ -64,7 +66,7 @@ public class Command extends CommandAbstract  {
    * @return instance of class {@link Command}
    * @see #getCache
    */
-  static public Command get(final String _name) throws EFapsException  {
+  static public Command get(final String _name)  {
     return getCache().get(_name);
   }
 
