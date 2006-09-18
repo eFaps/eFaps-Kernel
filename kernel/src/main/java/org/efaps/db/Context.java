@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -88,7 +89,7 @@ public class Context {
   private Stack<ConnectionResource> connectionStack =
                                       new Stack<ConnectionResource>();
 
-  private Transaction transaction = null;
+  private final Transaction transaction;
 
   /**
    * This is the instance variable for the SQL Connection to the database.
@@ -100,6 +101,8 @@ public class Context {
 
   /**
    * This instance variable represents the user name of the context.
+   *
+   * @see #getPerson
    */
   private Person person = null;
 
@@ -109,74 +112,37 @@ public class Context {
    * The information is needed to create localised information within eFaps.
    *
    * @see #getLocale
-   * @see #setLocale
    */
-  private Locale locale = null;
+  private final Locale locale;
+
+  /**
+   *
+   */
+  private Map < String, String[] > parameters;
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
   /**
-   * Default constructor used to get a SQL connection to the database.
-   */
-  public Context() throws EFapsException  {
-    this((Person)null, (Locale)null);
-  }
-
-  /**
-   * Constructor for
-   *
-   * @see #person
-   */
-  public Context(final Person _person) throws EFapsException  {
-    this(_person, (Locale)null);
-  }
-
-  /**
    * Constructor for
    *
    * @see #person
    * @see #locale
    */
-  public Context(final Person _person, final Locale _locale) throws EFapsException  {
+  private Context(final Transaction _transaction, 
+                  final Person _person, 
+                  final Locale _locale) throws EFapsException  {
 System.out.println("--------------------------------- new context");
-//    InitialContext initCtx = new InitialContext();
-//    javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
-//    DataSource ds = (DataSource) envCtx.lookup("jdbc/eFaps");
-//    setConnection(ds.getConnection());
+    this.transaction = _transaction;
+    this.person = _person;
+    this.locale = _locale;
 try  {
-    setConnection(getDataSource().getConnection());
-    getConnection().setAutoCommit(true);
-} catch (SQLException e)  {
-// TODO: LOG + Exception
-e.printStackTrace();
-}
-setPerson(_person);
-setLocale(_locale);
-
-//System.out.println("++++++++++++++++++++++++++ connection.closed=" + getConnection().isClosed()+":_locale="+_locale);
-
-  }
-
-  /**
-   * Constructor for
-   *
-   * @see #person
-   * @see #locale
-   */
-  public Context(final Transaction _transaction, final Person _person, final Locale _locale) throws EFapsException  {
-System.out.println("--------------------------------- new context");
-try  {
-this.transaction = _transaction;
     setConnection(getDataSource().getConnection());
   getConnection().setAutoCommit(true);
 } catch (SQLException e)  {
 // TODO: LOG + Exception
 e.printStackTrace();
 }
-setPerson(_person);
-setLocale(_locale);
-//System.out.println("++++++++++++++++++++++++++ connection.closed=" + getConnection().isClosed()+":_locale="+_locale);
   }
 
 
@@ -434,21 +400,9 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
    *
    * @return value of instance variable {@link #person}
    * @see #person
-   * @see #setPerson
    */
   public final Person getPerson()  {
     return this.person;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #person}.
-   *
-   * @param _person new value for instance variable {@link #person}
-   * @see #person
-   * @see #getPerson
-   */
-  private void setPerson(final Person _person)  {
-    this.person = _person;
   }
 
   /**
@@ -456,21 +410,9 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
    *
    * @return value of instance variable {@link #locale}
    * @see #locale
-   * @see #setLocale
    */
   public final Locale getLocale()  {
     return this.locale;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #locale}.
-   *
-   * @param _locale new value for instance variable {@link #locale}
-   * @see #locale
-   * @see #getLocale
-   */
-  private void setLocale(final Locale _locale)  {
-    this.locale = _locale;
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -501,7 +443,7 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
    *         context is null
    * @see #threadContext
    */
-  public static void setThreadContext(final Context _context)
+  private static void setThreadContext(final Context _context)
       throws EFapsException  {
 
     if (threadContext.get() != null)  {
@@ -557,12 +499,11 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
                         final String _userName, final Locale _locale)
                 throws EFapsException  {
 
-    Context context = new Context(_transaction, null, null);
+    Context context = new Context(_transaction, null, _locale);
     setThreadContext(context);
     if (_userName != null)  {
-      context.setPerson(Person.get(_userName));
+      context.person = Person.get(_userName);
     }
-    context.setLocale(_locale);
     return context;
   }
 

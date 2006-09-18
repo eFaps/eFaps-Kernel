@@ -90,17 +90,17 @@ Context.setDataSource(ds);
 
 javax.transaction.TransactionManager tm = new org.apache.slide.transaction.SlideTransactionManager();
 tm.begin();
-Context context = new Context(tm.getTransaction(), null, null);
-Context.setThreadContext(context);
+Context context = Context.newThreadContext(tm.getTransaction(), null, null);
 try {
 Cache.reloadCache(context);
 } catch (Throwable e)  {
   e.printStackTrace();
 }
 tm.rollback();
-
+context.close();
 } catch (Exception e)  {
 e.printStackTrace();
+  
 }
 
 

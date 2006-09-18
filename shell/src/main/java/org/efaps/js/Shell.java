@@ -134,7 +134,7 @@ ObjectFactory of = (ObjectFactory)(Class.forName(ref.getFactoryClassName())).new
 DataSource ds = (DataSource)of.getObjectInstance(ref, null, null, null);
 Context.setDataSource(ds);
 
-context = new Context();
+//context = new Context();
 
 
 if (methodClass != null)  {

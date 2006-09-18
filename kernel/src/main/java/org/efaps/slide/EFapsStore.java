@@ -1181,7 +1181,7 @@ Service service = null;
       principal = _principal;
 try  {
 // TODO: Hack, damit insert / update funkt!!
-  this.context = new org.efaps.db.Context(org.efaps.admin.user.Person.get("Administrator"));
+//  this.context = new org.efaps.db.Context(org.efaps.admin.user.Person.get("Administrator"));
 //{
 //} catch (javax.naming.NamingException e)  {
 //  throw new ServiceAccessException(_service, e);

@@ -1134,7 +1134,10 @@ function _eFapsCreateUITablesStep1(_con, _stmt)  {
 
 function createAll()  {
 
-  var context = new Context();
+  Shell.transactionManager.begin();
+
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
+  Shell.setContext(context);
 
   try  {
     var con = context.getConnection();
@@ -1157,10 +1160,12 @@ function createAll()  {
 
 //    if (eFapsCommonVersionGet(con,stmt) < 2)  {
 //    }
+    Shell.transactionManager.commit();
 
     stmt.close();
   } catch (e)  {
     print(e);
+    Shell.transactionManager.abort();
     throw e;
   } finally  {
     context.close();
