@@ -39,8 +39,6 @@
   <%
     String cacheKey =   request.getParameter("cacheKey");
 
-System.out.println("request.getAttribute(\"uiObject\")="+request.getAttribute("uiObject"));
-
     org.efaps.beans.TableBeanInterface uiObject = (org.efaps.beans.TableBeanInterface)request.getAttribute("uiObject");
     if (uiObject==null)  {
       uiObject = (org.efaps.beans.TableBeanInterface)cache.getTableBean(cacheKey, request.getParameter("command"));
