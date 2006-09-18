@@ -38,9 +38,9 @@ import org.efaps.admin.ui.Search;
 import org.efaps.admin.ui.Table;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
-import org.efaps.db.SearchQuery;
-
 import org.efaps.db.Instance;
+import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
@@ -49,12 +49,11 @@ import org.efaps.db.Instance;
  */
 public class SearchBean extends AbstractCollectionBean implements TableBeanInterface  {
 
-  public SearchBean()  {
-System.out.println("SearchBean.constructor");
+  public SearchBean() throws EFapsException  {
+    super();
   }
 
   public void finalize()  {
-System.out.println("SearchBean.destructor");
   }
 
 
@@ -75,7 +74,7 @@ System.out.println("SearchBean.destructor");
    *
    * @param _name name of the command object
    */
-  public void setCommandName(final String _name) throws Exception  {
+  public void setCommandName(final String _name) throws EFapsException  {
     addHiddenValue("searchCommand" , _name);
     setCommand(getSearch().getSearchCommand(_name));
     setForm(((Search.SearchCommand)getCommand()).getSearchForm());
@@ -123,7 +122,7 @@ System.out.println("hallo!.3");
    * @param _oid    object id
    * @see #instance
    */
-  public void setOid(final String _oid) throws Exception  {
+  public void setOid(final String _oid) throws EFapsException  {
     super.setOid(_oid);
     if (_oid!=null)  {
       addHiddenValue("parentOid", _oid);

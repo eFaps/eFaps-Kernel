@@ -48,6 +48,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.beans.form.FormFieldUpdateInterface;
+import org.efaps.util.EFapsException;
 
 /**
  *
@@ -57,8 +58,64 @@ import org.efaps.beans.form.FormFieldUpdateInterface;
  */
 public class FormBean extends AbstractCollectionBean  {
 
-  public FormBean()  {
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * The instance variable stores the form which must be shown.
+   *
+   * @see #getForm
+   * @see #setForm
+   */
+  private Form form = null;
+
+  /**
+   * The instance variable stores the instance for the unique key.
+   *
+   * @see #getUkInstance
+   * @see #setUkInstance
+   * @see #ukTitle
+   * @see #ukMode
+   */
+  private Instance ukInstance = null;
+
+  /**
+   * The instance variable stores the title if an object is found in create
+   * mode.
+   *
+   * @see #getUkTitle
+   * @see #setUkTitle
+   * @see #ukInstance
+   * @see #ukMode
+   */
+  private String ukTitle = null;
+
+  /**
+   * The instance variable stores if in create mode for a type a given unique
+   * key is found.
+   *
+   * @see #isUkMode
+   * @see #setUkMode
+   * @see #ukInstance
+   * @see #ukTitle
+   */
+  private boolean ukMode = false;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / descructors
+
+  /**
+   * The command name is extracted from the form values.
+   */
+  public FormBean() throws EFapsException  {
+    super();
+    addHiddenValue("oid", getInstance().getOid());
 System.out.println("FormBean.constructor");
+    String cmdName = getParameter("command");
+    if (cmdName==null || cmdName.length()==0 || "undefined".equals(cmdName))  {
+      cmdName = getParameter("formCommand");
+    }
+    setCommandName(cmdName);
   }
 
   public void finalize()  {
@@ -66,6 +123,7 @@ System.out.println("FormBean.destructor");
   }
 
   /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   public void execute() throws Exception  {
     Context context = Context.getThreadContext();
@@ -147,11 +205,16 @@ setTitle(list.makeString(context, query));
    * @see #processUpdate
    */
   public void process() throws Exception  {
+try {
     if (isCreateMode())  {
       processCreate(Context.getThreadContext());
     } else  {
       processUpdate(Context.getThreadContext());
     }
+} catch (Exception e)  {
+  e.printStackTrace();
+  throw e;
+}
   }
 
   /**
@@ -200,6 +263,7 @@ if (getCommand().getProperty("TargetConnectType")!=null)  {
           FormFieldUpdateInterface fieldUpdate = updateClass.newInstance();
           fieldUpdate.update(_context, this, field);
         } else if (fileItem!=null)  {
+System.out.println("-----------checkin ------"+fileItem);
           Checkin checkin = new Checkin(getInstance());
           checkin.execute(fileItem.getName(), 
                           fileItem.getInputStream(), 
@@ -304,9 +368,9 @@ System.out.println("field.getName()="+field.getName());
    *
    * @param _name name of the command object
    */
-  public void setCommandName(String _name) throws Exception  {
+  public void setCommandName(String _name) throws EFapsException  {
     super.setCommandName(_name);
-    if (getCommand()!=null)  {
+    if (getCommand() != null)  {
       addHiddenValue("formCommand", _name);
       setForm(getCommand().getTargetForm());
     }
@@ -325,7 +389,7 @@ System.out.println("field.getName()="+field.getName());
    * @see AbstractBean.setParameters
    * @see #setCommandName
    */
-  public void setParameters(Map<String,String[]> _parameters, Map<String,FileItem> _fileParameters) throws Exception  {
+/*  public void setParameters(Map<String,String[]> _parameters, Map<String,FileItem> _fileParameters) throws Exception  {
     super.setParameters(_parameters, _fileParameters);
 
     String cmdName = getParameter("command");
@@ -334,7 +398,7 @@ System.out.println("field.getName()="+field.getName());
     }
     setCommandName(cmdName);
   }
-
+*/
   /**
    * Adds a field value to the list of values.
    *
@@ -383,13 +447,13 @@ System.out.println("field.getName()="+field.getName());
    * @param _oid    object id
    * @see #instance
    */
-  public void setOid(String _oid) throws Exception  {
+/*  public void setOid(String _oid) throws EFapsException  {
     super.setOid(_oid);
     if (_oid!=null)  {
       addHiddenValue("oid", _oid);
     }
   }
-
+*/
   /**
    * The instance method sets the unique key instance object id. This happens,
    * if the user puts values in fields of unique key attributes for which an
@@ -408,48 +472,6 @@ System.out.println("field.getName()="+field.getName());
       addHiddenValue("ukOid", _ukOid);
     }
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance variable stores the form which must be shown.
-   *
-   * @see #getForm
-   * @see #setForm
-   */
-  private Form form = null;
-
-  /**
-   * The instance variable stores the instance for the unique key.
-   *
-   * @see #getUkInstance
-   * @see #setUkInstance
-   * @see #ukTitle
-   * @see #ukMode
-   */
-  private Instance ukInstance = null;
-
-  /**
-   * The instance variable stores the title if an object is found in create
-   * mode.
-   *
-   * @see #getUkTitle
-   * @see #setUkTitle
-   * @see #ukInstance
-   * @see #ukMode
-   */
-  private String ukTitle = null;
-
-  /**
-   * The instance variable stores if in create mode for a type a given unique
-   * key is found.
-   *
-   * @see #isUkMode
-   * @see #setUkMode
-   * @see #ukInstance
-   * @see #ukTitle
-   */
-  private boolean ukMode = false;
 
   /////////////////////////////////////////////////////////////////////////////
 

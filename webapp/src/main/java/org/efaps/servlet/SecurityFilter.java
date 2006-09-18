@@ -24,8 +24,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.Filter;
@@ -45,12 +48,17 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.fileupload.DiskFileUpload;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.slide.transaction.SlideTransactionManager;
 
 import org.efaps.db.Context;
 import org.efaps.admin.user.Person;
+import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
@@ -213,16 +221,47 @@ String uri = httpRequest.getRequestURI();
     try  {
       transactionManager.begin();
       Locale locale = null;
+      Map < String, String[] > params = null;
+      Map < String, FileItem > fileParams = null;
       if (_request instanceof HttpServletRequest)  {
-        locale = ((HttpServletRequest)_request).getLocale();
+        HttpServletRequest httpRequest = (HttpServletRequest) _request;
+        locale = httpRequest.getLocale();
+        if (ServletFileUpload.isMultipartContent(httpRequest))  {
+          DiskFileUpload dfu = new DiskFileUpload();
+// TODO: global setting!! + temp variable! 
+// dfu.setRepositoryPath("s:\\temp");	also works without this *jul*
+    
+          List files = dfu.parseRequest(httpRequest);
+          params = new HashMap < String, String[] > ();
+          fileParams = new HashMap < String, FileItem > ();
+          for (Object obj : files)  {
+            FileItem file = (FileItem)obj;
+            if (file.isFormField())  {
+              params.put(file.getFieldName(), new String[]{file.getString()});
+            } else  {
+              fileParams.put(file.getFieldName(), file);
+            }
+          }
+        } else  {
+          params = httpRequest.getParameterMap();
+        }
+      } else  {
+        params = _request.getParameterMap();
       }
       context = Context.newThreadContext(transactionManager.getTransaction(), 
-                                         _userName, locale);
-    } catch (org.efaps.util.EFapsException e)  {
+                                         _userName, locale, 
+                                         params, fileParams);
+    } catch (FileUploadException e)  {
+      LOG.error("could not initialise the context", e);
+      throw new ServletException(e);
+    } catch (EFapsException e)  {
+      LOG.error("could not initialise the context", e);
       throw new ServletException(e);
     } catch (SystemException e)  {
+      LOG.error("could not initialise the context", e);
       throw new ServletException(e);
     } catch (NotSupportedException e)  {
+      LOG.error("could not initialise the context", e);
       throw new ServletException(e);
     }
   

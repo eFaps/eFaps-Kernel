@@ -30,6 +30,7 @@ import org.efaps.admin.ui.UserInterfaceObject;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
@@ -38,7 +39,21 @@ import org.efaps.db.SearchQuery;
  */
 public class MenuTreeBean extends MenuAbstractBean  {
 
-  public MenuTreeBean()  {
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * The instance variable stores the menu label for this menu tree bean.
+   *
+   * @see #setMenuLabel
+   * @see #getMenuLabel
+   */
+  private String menuLabel = null;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
+
+  public MenuTreeBean() throws EFapsException  {
     super();
 System.out.println("MenuTreeBean.constructor");
   }
@@ -47,6 +62,9 @@ System.out.println("MenuTreeBean.constructor");
     super.finalize();
 System.out.println("MenuTreeBean.destructor");
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * Following steps are made from this method;
@@ -81,16 +99,6 @@ throw new Exception("no tree menu defined for type "+getInstance().getType().get
 
     query.close();
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance variable stores the menu label for this menu tree bean.
-   *
-   * @see #setMenuLabel
-   * @see #getMenuLabel
-   */
-  private String menuLabel = null;
 
   /////////////////////////////////////////////////////////////////////////////
 

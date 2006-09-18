@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import org.efaps.util.EFapsException;
 
 public class FormPasswordBean extends FormBean  {
 
-  public FormPasswordBean()  {
+  public FormPasswordBean() throws EFapsException  {
     super();
 System.out.println("FormPasswordBean.constructor");
   }

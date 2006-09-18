@@ -37,9 +37,21 @@ import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public abstract class AbstractCollectionBean extends AbstractBean implements CollectionBeanInterface  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
+  
+  public AbstractCollectionBean() throws EFapsException  {
+    super();
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * The query is executed and the result is stored (cached) internally. The
@@ -58,7 +70,7 @@ public abstract class AbstractCollectionBean extends AbstractBean implements Col
    * @see #mode
    * @see #targetFrame
    */
-  public void setCommandName(String _name) throws Exception  {
+  public void setCommandName(String _name) throws EFapsException  {
       Context context = Context.getThreadContext();
       setCommand(Command.get(_name));
       if (getCommand() == null)  {
@@ -66,12 +78,11 @@ public abstract class AbstractCollectionBean extends AbstractBean implements Col
       }
       if (getCommand()!=null)  {
 
-System.out.println("getCommand().getTargetMenu()="+getCommand().getTargetMenu());
-if (getCommand().getTargetMenu()!=null)  {
-  if (getCommand().getTargetMenu().hasAccess(context))  {
-    setMenuHolder(new MenuAbstractBean.MenuHolder(context, getCommand().getTargetMenu()));
-  }
-}
+        if (getCommand().getTargetMenu()!=null)  {
+          if (getCommand().getTargetMenu().hasAccess(context))  {
+            setMenuHolder(new MenuAbstractBean.MenuHolder(context, getCommand().getTargetMenu()));
+          }
+        }
 
         setMode(getCommand().getTargetMode());
         setTargetFrame(getCommand().getTarget());
@@ -95,12 +106,6 @@ if (getCommand().getTargetMenu()!=null)  {
 //this.viewContext = null;
   }
 
-//Context viewContext = null;
-/*
-protected Context getViewContext()  {
-  return this.viewContext;
-}
-*/
   /////////////////////////////////////////////////////////////////////////////
 
 /**

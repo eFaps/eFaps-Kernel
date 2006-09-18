@@ -39,6 +39,7 @@ import org.efaps.db.AbstractQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
@@ -47,7 +48,8 @@ import org.efaps.db.SearchQuery;
  */
 public class TableBean extends AbstractCollectionBean implements TableBeanInterface  {
 
-  public TableBean()  {
+  public TableBean() throws EFapsException  {
+    super();
 System.out.println("TableBean.constructor");
   }
 
@@ -103,7 +105,7 @@ ValueParser parser = new ValueParser(new StringReader(getTitle()));
 ValueList list = parser.ExpressionString();
 list.makeSelect(_context, query);
       if (query.selectSize()>0)  {
-        query.executeWithoutAccessCheck();
+        query.execute();
         if (query.next())  {
 setTitle(list.makeString(_context, query));
 //          setTitle(query.replaceAllInString(_context, getTitle()));
@@ -182,7 +184,7 @@ if (attr!=null)  {
    *
    * @param _name name of the command object
    */
-  public void setCommandName(String _name) throws Exception  {
+  public void setCommandName(String _name) throws EFapsException  {
     super.setCommandName(_name);
     if (getCommand()!=null)  {
       setTable(getCommand().getTargetTable());

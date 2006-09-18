@@ -25,18 +25,28 @@ import java.util.List;
 import org.apache.myfaces.custom.navmenu.NavigationMenuItem;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 
 /**
  * The bean is used for the main tool bar on the main header JSP page.
+ *
+ * @author tmo
+ * @version $Id$
  */
 public class MenuMainToolBarBean extends MenuAbstractBean  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
    * The value stores the bean used to translate strings.
    */
   private ResourceBundleBean i18nBean = null;
 
-  public MenuMainToolBarBean()  {
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors
+
+  public MenuMainToolBarBean() throws EFapsException  {
     super();
 System.out.println("MenuMainToolBarBean.constructor");
   }
@@ -45,6 +55,9 @@ System.out.println("MenuMainToolBarBean.constructor");
     super.finalize();
 System.out.println("MenuMainToolBarBean.destructor");
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * This is the getter method for the jsf NavigationMenuItems which are parsed
@@ -55,7 +68,7 @@ System.out.println("MenuMainToolBarBean.destructor");
    * @see org.efaps.beans.MenuAbstractBean#setMenuHolder
    * @see org.efaps.beans.MenuAbstractBean#getMenuHolder
    */
-  public List<NavigationMenuItem> getJSFMenu() throws Exception {
+  public List < NavigationMenuItem > getJSFMenu() throws Exception {
     execute(Context.getThreadContext());
     return JSFMapper.getJSFNavigationMenuItems(this.i18nBean, getMenuHolder());
   }
@@ -68,7 +81,7 @@ System.out.println("MenuMainToolBarBean.destructor");
    * @param _context  context for this request
    * @param _menu     menu object (the value is <i>null</i>!)
    */
-  protected void execute(Context _context) throws Exception  {
+  protected void execute(final Context _context) throws Exception  {
     setMenu(_context, Menu.get("MainToolBar"));
   }
 

@@ -22,13 +22,18 @@ package org.efaps.beans;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 
 /**
  * The bean is used for
+ *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class MenuTabBean extends MenuAbstractBean  {
 
-  public MenuTabBean()  {
+  public MenuTabBean() throws EFapsException  {
     super();
 System.out.println("MenuTabBean.constructor");
   }

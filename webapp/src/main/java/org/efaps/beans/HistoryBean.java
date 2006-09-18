@@ -112,6 +112,19 @@ public class HistoryBean extends AbstractBean  {
    */
   private ResourceBundleBean i18nBean = null;
 
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors
+
+  /**
+   * @todo description
+   */
+  public HistoryBean() throws EFapsException  {
+    super();
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
+
   /**
    * The instance is set to the given object id in the parameter. Then the
    * history data is read with {@link #doExecute} and sorted {@link #doSort}
@@ -123,7 +136,7 @@ public class HistoryBean extends AbstractBean  {
    * @see #sortColumn
    * @see #sortAscending
    */
-  public void setOid(String _oid) throws Exception  {
+  public void setOid(String _oid) throws EFapsException  {
    if (_oid != null)  {
       super.setOid(_oid);
       doExecute();

@@ -31,6 +31,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 
 /*
  * @author tmo
@@ -39,8 +40,12 @@ import org.efaps.db.Instance;
  */
 public abstract class AbstractBean implements AbstractBeanInterface  {
 
-  public AbstractBean()  {
+  public AbstractBean() throws EFapsException  {
 System.out.println("AbstractBean.constructor");
+    String oid = getParameter("oid");
+    if (oid != null)  {
+      this.instance = new Instance(getParameter("oid"));
+    }
   }
 
   public void finalize()  {
@@ -54,32 +59,9 @@ System.out.println("AbstractBean.destructor");
    * @param _oid    object id
    * @see #instance
    */
-  public void setOid(String _oid) throws Exception  {
+  public void setOid(String _oid) throws EFapsException  {
     if (_oid!=null && _oid.length()>0)  {
-setInstance(new Instance(_oid));
-//      Context context = new Context();
-//      try  {
-//        setInstance(new Instance(context, _oid));
-//      } catch (Exception e)  {
-//        throw e;
-//      } finally  {
-//        try  {
-//          context.close();
-//        } catch (Exception e)  {
-//        }
-//      }
-    }
-  }
-
-  /**
-   * The instance method sets the user name who is actual logged in.
-   *
-   * @param _loginName
-   * @see #loginPerson
-   */
-  public void setLoginName(String _loginName) throws Exception  {
-    if (_loginName!=null)  {
-      setLoginPerson(Person.get(_loginName));
+      setInstance(new Instance(_oid));
     }
   }
 
@@ -94,30 +76,13 @@ setInstance(new Instance(_oid));
   }
 
   /**
-   * This is the setter method for the Parameters variable {@link #parameters}.
-   *
-   * @param _parameters     new value for Parameters variable
-   *                        {@link #parameters}
-   * @param _fileParameters new value for Parameters variable
-   *                        {@link #fileParameters}
-   * @see #parameters
-   * @see #fileParameters
-   */
-  public void setParameters(Map<String,String[]> _parameters, Map<String,FileItem> _fileParameters) throws Exception  {
-    setParameters(_parameters);
-    setFileParameters(_fileParameters);
-    setOid(getParameter("oid"));
-  }
-
-  /**
    * @return value for given parameter
-   * @see #parameters
    * @todo description
    */
-  public String getParameter(String _name)  {
+  public String getParameter(String _name) throws EFapsException  {
     String ret = null;
 
-    String[] values = getParameters().get(_name);
+    String[] values = Context.getThreadContext().getParameters().get(_name);
     if (values!=null)  {
       ret = values[0];
     }
@@ -125,11 +90,15 @@ setInstance(new Instance(_oid));
   }
 
   /**
-   * @see #fileParameters
    * @todo description
    */
-  public FileItem getFileParameter(String _name)  {
-    return getFileParameters().get(_name);
+  public FileItem getFileParameter(String _name) throws EFapsException  {
+    FileItem fileItem = null;
+    Context context = Context.getThreadContext();
+    if (context.getFileParameters() != null)  {
+      fileItem = context.getFileParameters().get(_name);
+    }
+    return fileItem;
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -160,15 +129,6 @@ setInstance(new Instance(_oid));
   private HttpServletRequest request = null;
 
   /**
-   * The instance variable stores the http servlet request parameters.
-   *
-   * @see #getParameter
-   * @see #getParameters
-   * @see #setParameters
-   */
-  private Map<String,String[]> parameters = null;
-
-  /**
    * The instance variable stores the http servlet file request parameters.
    *
    * @see #getFileParameters
@@ -184,15 +144,6 @@ setInstance(new Instance(_oid));
    * @see #setInitialised
    */
   private boolean initialised = false;
-
-  /**
-   * The instance variable stores the logged in person object used to create
-   * new context objects.
-   *
-   * @see #setLoginPerson
-   * @see #getLoginPerson
-   */
-  private Person loginPerson = null;
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -263,50 +214,6 @@ setInstance(new Instance(_oid));
   }
 
   /**
-   * This is the getter method for the Parameters variable {@link #parameters}.
-   *
-   * @return value of Parameters variable {@link #parameters}
-   * @see #parameters
-   * @see #setParameters
-   */
-  public Map<String,String[]> getParameters()  {
-    return this.parameters;
-  }
-
-  /**
-   * This is the setter method for the Parameters variable {@link #parameters}.
-   *
-   * @param _Parameters  new value for Parameters variable {@link #parameters}
-   * @see #parameters
-   * @see #getParameters
-   */
-  private void setParameters(Map<String,String[]> _parameters)  {
-    this.parameters = _parameters;
-  }
-
-  /**
-   * This is the getter method for the FileParameters variable {@link #fileParameters}.
-   *
-   * @return value of FileParameters variable {@link #fileParameters}
-   * @see #fileParameters
-   * @see #setFileParameters
-   */
-  public Map<String,FileItem> getFileParameters()  {
-    return this.fileParameters;
-  }
-
-  /**
-   * This is the setter method for the FileParameters variable {@link #fileParameters}.
-   *
-   * @param _FileParameters  new value for FileParameters variable {@link #fileParameters}
-   * @see #fileParameters
-   * @see #getFileParameters
-   */
-  private void setFileParameters(Map<String,FileItem> _fileParameters)  {
-    this.fileParameters = _fileParameters;
-  }
-
-  /**
    * This is the getter method for the initialised variable {@link #initialised}.
    *
    * @return value of initialised variable {@link #initialised}
@@ -326,27 +233,5 @@ setInstance(new Instance(_oid));
    */
   public void setInitialised(boolean _initialised)  {
     this.initialised = _initialised;
-  }
-
-  /**
-   * This is the getter method for the loginPerson variable {@link #loginPerson}.
-   *
-   * @return value of loginPerson variable {@link #loginPerson}
-   * @see #loginPerson
-   * @see #setLoginPerson
-   */
-  public Person getLoginPerson()  {
-    return this.loginPerson;
-  }
-
-  /**
-   * This is the setter method for the loginPerson variable {@link #loginPerson}.
-   *
-   * @param _loginPerson  new value for loginPerson variable {@link #loginPerson}
-   * @see #loginPerson
-   * @see #getLoginPerson
-   */
-  public void setLoginPerson(Person _loginPerson)  {
-    this.loginPerson = _loginPerson;
   }
 }

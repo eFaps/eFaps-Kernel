@@ -30,11 +30,24 @@ import org.efaps.admin.ui.MenuAbstract;
 import org.efaps.admin.ui.UserInterfaceObject;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public abstract class MenuAbstractBean extends AbstractBean  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // contructors
+
+  public MenuAbstractBean() throws EFapsException  {
+    super();
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * @see #execute(Context,Menu)

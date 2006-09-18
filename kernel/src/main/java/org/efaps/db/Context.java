@@ -35,6 +35,8 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
+import org.apache.commons.fileupload.FileItem;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Person;
 import org.efaps.db.databases.AbstractDatabase;
@@ -116,9 +118,18 @@ public class Context {
   private final Locale locale;
 
   /**
+   * The parameters used to open a new thread context are stored in this 
+   * instance variable (e.g. the request parameters from a http servlet are
+   * stored in this variable).
    *
+   * @see #getParameters
    */
-  private Map < String, String[] > parameters;
+  private final Map < String, String[] > parameters;
+
+  /**
+   * @todo replace FileItem against own implementation
+   */
+  private final Map < String, FileItem > fileParameters;
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -131,11 +142,16 @@ public class Context {
    */
   private Context(final Transaction _transaction, 
                   final Person _person, 
-                  final Locale _locale) throws EFapsException  {
+                  final Locale _locale,
+                  final Map < String, String[] > _parameters,
+                  final Map < String, FileItem > _fileParameters)
+                                                      throws EFapsException  {
 System.out.println("--------------------------------- new context");
     this.transaction = _transaction;
     this.person = _person;
     this.locale = _locale;
+    this.parameters = _parameters;
+    this.fileParameters = _fileParameters;
 try  {
     setConnection(getDataSource().getConnection());
   getConnection().setAutoCommit(true);
@@ -360,6 +376,21 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
     return ret;
   }
 
+  /**
+   *
+   */
+  public String getParameter(final String _key)  {
+    String value = null;
+    if (this.parameters != null)  {
+      String[] values = this.parameters.get(_key);
+      if ((values != null) && (values.length > 0))  {
+        value = values[0];
+      }
+    }
+    return value;
+  }
+
+
   /////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
 
@@ -415,6 +446,26 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
     return this.locale;
   }
 
+  /**
+   * This is the getter method for instance variable {@link #parameters}.
+   *
+   * @return value of instance variable {@link #parameters}
+   * @see #parameters
+   */
+  public final Map < String, String[] > getParameters()  {
+    return this.parameters;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #fileParameters}.
+   *
+   * @return value of instance variable {@link #fileParameters}
+   * @see #fileParameters
+   */
+  public final Map < String, FileItem > getFileParameters()  {
+    return this.fileParameters;
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
@@ -468,7 +519,7 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
   public static Context newThreadContext(final Transaction _transaction)
       throws EFapsException  {
 
-    return newThreadContext(_transaction, null, null);
+    return newThreadContext(_transaction, null, null, null, null);
   }
 
   /**
@@ -483,7 +534,7 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
   public static Context newThreadContext(final Transaction _transaction, 
                         final String _userName)
                 throws EFapsException  {
-    return newThreadContext(_transaction, _userName, null);
+    return newThreadContext(_transaction, _userName, null, null, null);
   }
 
   /**
@@ -499,7 +550,30 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
                         final String _userName, final Locale _locale)
                 throws EFapsException  {
 
-    Context context = new Context(_transaction, null, _locale);
+    return newThreadContext(_transaction, _userName, _locale, null, null);
+  }
+
+  /**
+   * For current thread a new context object must be created
+   *
+   * @param _transaction    transaction of the new thread
+   * @param _userName       name of current user to set
+   * @param _locale         locale instance (which langage settings has the 
+   *                        user)
+   * @param _parameters     map with parameters for this thread context
+   * @param _fileParameters map with file parameters
+   * @return new context of thread
+   * @throws EFapsException if current thread context is alread set
+   * @see #threadContext
+   */
+  public static Context newThreadContext(final Transaction _transaction, 
+                        final String _userName, final Locale _locale,
+                        final Map < String, String[] > _parameters,
+                        final Map < String, FileItem > _fileParameters)
+                throws EFapsException  {
+
+    Context context = new Context(_transaction, null, _locale, 
+                                  _parameters, _fileParameters);
     setThreadContext(context);
     if (_userName != null)  {
       context.person = Person.get(_userName);
