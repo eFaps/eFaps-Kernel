@@ -32,7 +32,8 @@ import org.efaps.db.Context;
 
 /**
  * @author tmo
- * @version $Rev$
+ * @version $Id$
+ * @todo description
  */
 public class CacheSessionBean  {
 
@@ -40,11 +41,11 @@ public class CacheSessionBean  {
   }
 
 
-  public void put(String _key, Object _object)  {
+  public void put(final String _key, final Object _object)  {
     getCache().put(_key, _object);
   }
 
-  public Object get(String _key)  {
+  public Object get(final String _key)  {
     return getCache().get(_key);
   }
 
@@ -57,7 +58,8 @@ public class CacheSessionBean  {
    *                      created
    * @see #getCommand
    */
-  public TableBean getTableBean(String _key, String _commandName) throws Exception  {
+  public TableBean getTableBean(final String _key, 
+                                final String _commandName) throws Exception  {
     TableBean tableBean = (TableBean)get(_key);
     if (tableBean==null)  {
 
@@ -81,7 +83,7 @@ public class CacheSessionBean  {
    *                      created
    * @see #getCommand
    */
-  public FormBean getFormBean(String _commandName) throws Exception  {
+  public FormBean getFormBean(final String _commandName) throws Exception  {
     FormBean formBean = null;
     CommandAbstract command = getCommand(_commandName);
     if (command!=null && command.getTargetFormBean()!=null)  {
@@ -99,18 +101,18 @@ public class CacheSessionBean  {
    * @param _commandName  name of the command
    * @see #getTableBean
    */
-  private CommandAbstract getCommand(String _commandName) throws Exception  {
+  private CommandAbstract getCommand(final String _commandName)  {
     CommandAbstract ret = null;
 
     ret = Command.get(_commandName);
-    if (ret==null)  {
+    if (ret == null)  {
       ret = Menu.get(_commandName);
     }
     return ret;
   }
 
 
-  public void remove(String _key)  {
+  public void remove(final String _key)  {
     getCache().remove(_key);
   }
 
