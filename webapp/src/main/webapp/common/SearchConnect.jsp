@@ -34,7 +34,6 @@
     <jsp:setProperty name="uiObject" property="searchName"  param="search"/>
     <jsp:setProperty name="uiObject" property="commandName" param="searchCommand"/>
     <jsp:setProperty name="uiObject" property="oid"         param="parentOid"/>
-    <jsp:setProperty name="uiObject" property="loginName"   value="<%=session.getAttribute("login.name")%>"/>
   <%
 
   uiObject.execute4Connect(oids);
