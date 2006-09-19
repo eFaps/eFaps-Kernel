@@ -36,6 +36,8 @@ import javax.transaction.Transaction;
 import javax.transaction.xa.XAResource;
 
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Person;
@@ -53,6 +55,11 @@ public class Context {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
+
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Log LOG = LogFactory.getLog(Context.class);
 
   /**
    * Static variable storing the database type.
@@ -127,6 +134,13 @@ public class Context {
   private final Map < String, String[] > parameters;
 
   /**
+   * The file parameters used to open a new thread context are stored in this
+   * instance variable (e.g. the request parameters from a http servlet or
+   * in the shell the parameters from the command shell). The file item 
+   * represents one file which includes an input stream, the name and the 
+   * length of the file.
+   *
+   * @see #getFileParameters
    * @todo replace FileItem against own implementation
    */
   private final Map < String, FileItem > fileParameters;
@@ -156,6 +170,7 @@ try  {
     setConnection(getDataSource().getConnection());
   getConnection().setAutoCommit(true);
 } catch (SQLException e)  {
+  LOG.error("could not get a sql connection", e);
 // TODO: LOG + Exception
 e.printStackTrace();
 }
