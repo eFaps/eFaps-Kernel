@@ -59,14 +59,6 @@ public class AccessTypeUpdate extends AbstractUpdate  {
   private final static Log LOG = LogFactory.getLog(AccessTypeUpdate.class);
 
   /////////////////////////////////////////////////////////////////////////////
-  // instance variables
-
-  /**
-   * All definitions of versions are added to this list.
-   */
-  private List < Definition > definitions = new ArrayList < Definition > ();
- 
-  /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -74,48 +66,6 @@ public class AccessTypeUpdate extends AbstractUpdate  {
    */
   public AccessTypeUpdate() {
     super("Admin_Access_AccessType");
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
-
-  /**
-   * Adds one definition of a update for a specific version to all definitions
-   * in {@link #definitions}.
-   *
-   * @param _definition definition to add
-   * @see #definitions
-   */
-  public void addDefinition(final Definition _definition)  {
-    this.definitions.add(_definition);
-  }
-
-  public void updateInDB() throws EFapsException,Exception {
-    Context context = Context.getThreadContext();
-
-    Instance instance = getInstance();
-    for (Definition def : this.definitions)  {
-      Update update = new Update(context, instance);
-      update.add(context, "Name", def.name);
-      update.add(context, "Revision", def.globalVersion  
-                                      + "#" + def.localVersion);
-      update.executeWithoutAccessCheck();
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // getter and setter methods
-
-  /**
-   * Returns a string representation with values of all instance variables.
-   *
-   * @return string representation of this access type update
-   */
-  public String toString()  {
-    return new ToStringBuilder(this).
-      appendSuper(super.toString()).
-      append("definitions",     this.definitions).
-      toString();
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -161,87 +111,6 @@ e.printStackTrace();
   /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition  {
-    
-    ///////////////////////////////////////////////////////////////////////////
-    // instance variables
-
-    /**
-     * Name of the application for which this definition is defined.
-     *
-     * @see #setVersion
-     */
-    private String application = null;
-     
-    /**
-     * Number of the global version of the application.
-     *
-     * @see #setVersion
-     */
-    private long globalVersion = 0;
-
-    /**
-     * Text of the local version of this definition.
-     *
-     * @see #setVersion
-     */
-    private String localVersion = null;
-
-    /**
-     * 
-     *
-     * @see #setVersion
-     */
-    private String mode = null;
-
-    /**
-     * Name of the access set for which this definition is defined.
-     */
-    private String name = null;
-
-    ///////////////////////////////////////////////////////////////////////////
-    // instance methods
-
-    /**
-     * The version information of this defintion is set.
-     *
-     * @param _application    name of the application for which the version is 
-     *                        defined
-     * @param _globalVersion  global version
-     */
-    public void setVersion(final String _application, 
-                           final String _globalVersion,
-                           final String _localVersion,
-                           final String _mode)  {
-      this.application = _application;
-      this.globalVersion = Long.valueOf(_globalVersion);
-      this.localVersion = _localVersion;
-      this.mode = _mode;
-    }
-    
-    /**
-     * 
-     * @see #name
-     */
-    public void setName(final String _name)  {
-      this.name = _name;
-    }
-
-    /**
-     * Returns a string representation with values of all instance variables
-     * of a definition.
-     *
-     * @return string representation of this definition of an access type 
-     *         update
-     */
-    public String toString()  {
-      return new ToStringBuilder(this).
-        append("application",     this.application).
-        append("global version",  this.globalVersion).
-        append("local version",   this.localVersion).
-        append("mode",            this.mode).
-        append("name",            this.name).
-        toString();
-    }
+  public static class Definition extends DefinitionAbstract {
   }
 }
