@@ -233,7 +233,7 @@ if (testNeeded)  {
    */
   public void execute() throws Exception  {
     boolean hasAccess = getType()
-          .hasAccess(new Instance(getType()), 
+          .hasAccess(getInstance(), 
                      AccessTypeEnums.MODIFY.getAccessType());
 
     if (!hasAccess)  {
