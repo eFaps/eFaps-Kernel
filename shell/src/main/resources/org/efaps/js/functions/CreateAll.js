@@ -1020,7 +1020,6 @@ function _eFapsCreateAccessTablesStep1(_con, _stmt)  {
       ["CREATED               "+TYPE_DATETIME+"                  not null"],
       ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
       ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-//      ["constraint ACCESSTP_PK_ID      primary key(ID)"],
       ["constraint ACCESSTP_UK_NAME    unique(NAME)"],
       ["constraint ACCESSTP_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID)"],
       ["constraint ACCESSTP_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"]
