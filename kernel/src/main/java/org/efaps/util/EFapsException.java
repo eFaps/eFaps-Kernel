@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.util;
@@ -26,21 +29,14 @@ import org.efaps.db.Context;
  * ({@link #className}) plus the id ({@link #id}) plus the strings <i>.Id</i>,
  * <i>.Error</i> and <i>.Action</i> to show the user a internationlised
  * description of the exception.
+ *
+ * @author tmo
+ * @version $Id$
  */
 public class EFapsException extends Exception  {
 
-  public EFapsException(Class _className, String _id, Object... _args)  {
-    super("error in "+_className.getName()+"("+_id+","+_args+")");
-    setId(_id);
-    setClassName(_className);
-    if (_args.length>0 && _args[0] instanceof Throwable)  {
-      setThrowable((Throwable)_args[0]);
-    }
-    setArgs(_args);
-  }
-
-
   /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
    * The instance variable stores the class name where the exception occurs.
@@ -48,7 +44,7 @@ public class EFapsException extends Exception  {
    * @see #getClassName
    * @see #setClassName
    */
-  private Class className = null;
+  private final Class className;
 
   /**
    * The instance variable stores the id (key) of the exception.
@@ -56,15 +52,7 @@ public class EFapsException extends Exception  {
    * @see #getId
    * @see #setId
    */
-  private String id = null;
-
-  /**
-   * The instance variable stores the thrown exception
-   *
-   * @see #getThrowable
-   * @see #setThrowable
-   */
-  private Throwable throwable = null;
+  private final String id;
 
   /**
    * The instance variable stores the arguments replaced in the error text.
@@ -72,9 +60,35 @@ public class EFapsException extends Exception  {
    * @see #getArgs
    * @see #setArgs
    */
-  private Object[] args = null;
+  private final Object[] args;
 
   /////////////////////////////////////////////////////////////////////////////
+  // constructor / destructor
+
+  public EFapsException(Class _className, String _id, Object... _args)  {
+    super("error in "+_className.getName()+"("+_id+","+_args+")");
+    this.id = _id;
+    this.className = _className;
+    if ((_args.length > 0) && (_args[0] instanceof Throwable))  {
+      initCause((Throwable) _args[0]);
+    }
+    this.args = _args;
+  }
+
+  /**
+   * The cause is returned. The method only exists to support old interface
+   * (in pre Java 1.4 it was not possible to store a cause in class
+   * {@link java.lang.Throwable}).
+   *
+   * @see java.lang.Throwable#getCause()
+   * @deprecated
+   */
+  public Throwable getThrowable()  {
+    return getCause();
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance getter and setter methods
 
   /**
    * This is the getter method for instance variable {@link #className}.
@@ -87,16 +101,6 @@ public class EFapsException extends Exception  {
     return this.className;
   }
 
-  /**
-   * This is the setter method for instance variable {@link #className}.
-   *
-   * @param _className new value for instance variable {@link #className}
-   * @see #className
-   * @see #getClassName
-   */
-  private void setClassName(Class _className)  {
-    this.className = _className;
-  }
 
   /**
    * This is the getter method for instance variable {@link #id}.
@@ -110,39 +114,6 @@ public class EFapsException extends Exception  {
   }
 
   /**
-   * This is the setter method for instance variable {@link #id}.
-   *
-   * @param _id new value for instance variable {@link #id}
-   * @see #id
-   * @see #getId
-   */
-  private void setId(String _id)  {
-    this.id = _id;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #throwable}.
-   *
-   * @return value of instance variable {@link #throwable}
-   * @see #throwable
-   * @see #setThrowable
-   */
-  public Throwable getThrowable()  {
-    return this.throwable;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #throwable}.
-   *
-   * @param _throwable new value for instance variable {@link #throwable}
-   * @see #throwable
-   * @see #getThrowable
-   */
-  private void setThrowable(Throwable _throwable)  {
-    this.throwable = _throwable;
-  }
-
-  /**
    * This is the getter method for instance variable {@link #args}.
    *
    * @return value of instance variable {@link #args}
@@ -151,16 +122,5 @@ public class EFapsException extends Exception  {
    */
   public Object[] getArgs()  {
     return this.args;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #args}.
-   *
-   * @param _args new value for instance variable {@link #args}
-   * @see #args
-   * @see #getArgs
-   */
-  private void setArgs(Object[] _args)  {
-    this.args = _args;
   }
 }
