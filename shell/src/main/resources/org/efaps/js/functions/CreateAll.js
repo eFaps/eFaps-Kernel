@@ -24,6 +24,7 @@ importClass(Packages.org.efaps.admin.user.Person);
 importClass(Packages.org.efaps.db.databases.AbstractDatabase);
 importClass(Packages.org.efaps.shell.method.update.AccessSetUpdate);
 importClass(Packages.org.efaps.shell.method.update.AccessTypeUpdate);
+importClass(Packages.org.efaps.shell.method.update.user.JAASSystemUpdate);
 
 var TYPE_INTEGER      = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.INTEGER);
 var TYPE_STRING_SHORT = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.STRING_SHORT);
@@ -130,7 +131,23 @@ function _eFapsCreateAllImportXMLFiles()  {
       if (update != null)  {
         update.updateInDB();
       }
+    }
+  }
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
       var update = AccessSetUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB();
+      }
+    }
+  }
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = JAASSystemUpdate.readXMLFile(file);
       if (update != null)  {
         update.updateInDB();
       }

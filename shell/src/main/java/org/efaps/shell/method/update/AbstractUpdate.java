@@ -86,12 +86,6 @@ public abstract class AbstractUpdate  {
   private final List < DefinitionAbstract > definitions 
                                   = new ArrayList < DefinitionAbstract > ();
 
-  /**
-   * The instance of the object in the eFaps database is stored in this 
-   * instance variable..
-   */
-  private Instance instance = null;
-
   /////////////////////////////////////////////////////////////////////////////
   // constructors
 
@@ -125,62 +119,15 @@ public abstract class AbstractUpdate  {
     this.definitions.add(_definition);
   }
 
-  public void updateInDB() throws EFapsException,Exception {
-    Instance instance = getInstance();
-    for (DefinitionAbstract def : this.definitions)  {
-      def.updateInDB(instance, this.allLinkTypes);
-    }
-  }
-
   /**
    * The instance method returns the eFaps instance representing the read XML
    * configuration. If not already get from the eFaps databasse, the 
    * information is read. If no instance exists in the database, a new one
    * is automatically created.
-   *
-   * @return eFaps instance
-   * @see #instance
-   * @see #readInstanceFromDB
-   * @see #createInstanceInDB
-   * @todo remove throwing of Exception
-   */
-  protected Instance getInstance() throws EFapsException,Exception  {
-    if (this.instance == null)  {
-      readInstanceFromDB();
-      if (this.instance == null)  {
-        createInstanceInDB();
-      }
-    }
-    return this.instance;
-  }
-
-  /**
    * The method searchs for the given universal unique identifier in 
    * {@link #uuid} the instance in the eFaps database and stores the result
    * in {@link #instance}. If no object is found in eFaps, {@link #instance}
    * is set to <code>null</code>.
-   *
-   * @see #instance
-   * @see #uuid
-   * @todo remove throwing of Exception
-   */
-  protected void readInstanceFromDB() throws EFapsException,Exception  {
-    Context context = Context.getThreadContext();
-    SearchQuery query = new SearchQuery();
-    query.setQueryTypes(context, this.dataModelType);
-    query.addWhereExprEqValue(context, "UUID", this.uuid);
-    query.addSelect(context, "OID");
-    query.executeWithoutAccessCheck();
-    if (query.next())  {
-      this.instance = new Instance(context, 
-                                   (String) query.get(context, "OID"));
-    } else  {
-      this.instance = null;
-    }
-    query.close();
-  }
-  
-  /**
    * A new instance is created in the eFaps db for given univeral unique 
    * identifier in {@link #uuid}. The name of the access set is also the
    * universal unique identifier, because the name of access set is first 
@@ -188,19 +135,35 @@ public abstract class AbstractUpdate  {
    * The new created object is stored as instance information in 
    * {@link #instance}.
    *
-   * @see #uuid
-   * @see #instance
-   * @todo remove throwing of Exception
+   * @todo description
    */
-  protected void createInstanceInDB() throws EFapsException, Exception  {
+  public void updateInDB() throws EFapsException,Exception {
+    Instance instance = null;
+    Insert insert = null;
     Context context = Context.getThreadContext();
-    Insert insert = new Insert(context, this.dataModelType);
-    insert.add(context, "Name", this.uuid);
-    insert.add(context, "UUID", this.uuid);
-    insert.executeWithoutAccessCheck();
-    this.instance = insert.getInstance();
+
+    // search for the instan ce
+    SearchQuery query = new SearchQuery();
+    query.setQueryTypes(context, this.dataModelType);
+    query.addWhereExprEqValue(context, "UUID", this.uuid);
+    query.addSelect(context, "OID");
+    query.executeWithoutAccessCheck();
+    if (query.next())  {
+      instance = new Instance(context, (String) query.get(context, "OID"));
+    }
+    query.close();
+
+    // if no instance exists, a new insert must be done
+    if (instance == null)  {
+      insert = new Insert(context, this.dataModelType);
+//      insert.add(context, "Name", this.uuid);
+      insert.add(context, "UUID", this.uuid);
+    }
+
+    for (DefinitionAbstract def : this.definitions)  {
+      def.updateInDB(instance, this.allLinkTypes, insert);
+    }
   }
-    
 
   /////////////////////////////////////////////////////////////////////////////
   // getter and setter methods
@@ -325,19 +288,34 @@ public abstract class AbstractUpdate  {
      *
      */
     public void updateInDB(final Instance _instance,
-                           final Set < Link > _allLinkTypes) throws EFapsException, Exception  {
+                           final Set < Link > _allLinkTypes,
+                           final Insert _insert) throws EFapsException, Exception  {
       Context context = Context.getThreadContext();
+      Instance instance = _instance;
 
-      Update update = new Update(context, _instance);
-      update.add(context, "Revision", this.globalVersion  
-                                      + "#" + this.localVersion);
-      for (Map.Entry < String, String > entry : this.values.entrySet())  {
-        update.add(context, entry.getKey(), entry.getValue());
+      if (_insert != null)  {
+        _insert.add(context, "Revision", this.globalVersion  
+                                         + "#" + this.localVersion);
+        if (this.values.get("Name") == null)  {
+          _insert.add(context, "Name", "-");
+        }
+        for (Map.Entry < String, String > entry : this.values.entrySet())  {
+          _insert.add(context, entry.getKey(), entry.getValue());
+        }
+        _insert.executeWithoutAccessCheck();
+        instance = _insert.getInstance();
+      } else  {
+        Update update = new Update(context, _instance);
+        update.add(context, "Revision", this.globalVersion  
+                                        + "#" + this.localVersion);
+        for (Map.Entry < String, String > entry : this.values.entrySet())  {
+          update.add(context, entry.getKey(), entry.getValue());
+        }
+        update.executeWithoutAccessCheck();
       }
-      update.executeWithoutAccessCheck();
       if (_allLinkTypes != null)  {
         for (Link linkType : _allLinkTypes)  {
-          setLinksInDB(_instance, linkType, this.links.get(linkType));
+          setLinksInDB(instance, linkType, this.links.get(linkType));
         }
       }
     }

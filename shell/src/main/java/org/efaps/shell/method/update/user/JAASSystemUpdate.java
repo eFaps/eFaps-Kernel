@@ -165,7 +165,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
       digester.addCallParam("user-jaassystem/definition/role/key-method", 0);
 
       digester.addCallMethod("user-jaassystem/definition/group/classname", "setGroupClassName", 1);
-      digester.addCallParam("user-jaassystem/definition/gorup/classname", 0);
+      digester.addCallParam("user-jaassystem/definition/group/classname", 0);
 
       digester.addCallMethod("user-jaassystem/definition/group/key-method", "setGroupKeyMethod", 1);
       digester.addCallParam("user-jaassystem/definition/group/key-method", 0);
