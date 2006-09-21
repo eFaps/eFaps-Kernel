@@ -63,6 +63,12 @@
       <key-method>getName</key-method>
     </group>
 
+    <!-- keys for usable persons -->
+    <assigned-person>
+      <name>Administrator</name>
+      <key>Administrator</key>
+    </assigned-person>
+
     <!-- keys for usable roles -->
     <assigned-role>
       <name>Administration</name>
