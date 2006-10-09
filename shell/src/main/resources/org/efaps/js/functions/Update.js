@@ -19,16 +19,19 @@
  * Last Changed By: $Author$
  */
 
-function eFapsUpdateDataModel()  {
+function eFapsUpdateDataModel(_path)  {
   print("############ Reload Cache");
   reloadCache();
 
   Shell.transactionManager.begin();
-  var context = new Context(Shell.transactionManager.getTransaction(), Packages.org.efaps.admin.user.Person.get("Administrator"), null);
-  Context.setThreadContext(context);
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
-  var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
 
+  if (_path == null)  {
+    var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
+  } else  {
+    var fileList = eFapsGetAllFiles(_path, true);
+  }
 
   importImages(fileList);
   importSQLTables(fileList);
@@ -48,3 +51,4 @@ function eFapsUpdateDataModel()  {
   Shell.transactionManager.commit();
   context.close();
 }
+
