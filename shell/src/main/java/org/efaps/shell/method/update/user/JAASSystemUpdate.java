@@ -22,25 +22,15 @@ package org.efaps.shell.method.update.user;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
-import org.efaps.db.Context;
-import org.efaps.db.Insert;
-import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
-import org.efaps.db.Update;
 import org.efaps.shell.method.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
 
