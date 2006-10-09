@@ -86,6 +86,12 @@ CP=$CP:$shellPathLib/commons-logging-1.0.4.jar
 CP=$CP:$shellPathLib/commons-digester-1.7.jar
 CP=$CP:$shellPathLib/commons-beanutils-1.6.jar
 
+# command line parser
+CP=$CP:$shellPathLib/commons-cli-1.0.jar
+
+# evaluate expression in the xml files
+CP=$CP:$shellPathLib/commons-jexl-1.1.jar
+
 # used for toString methods
 CP=$CP:$shellPathLib/commons-lang-2.1.jar
 

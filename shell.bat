@@ -45,6 +45,12 @@ Rem digester to read xml files
 set CP=%CP%;%shellPathLib%\commons-digester-1.7.jar
 set CP=%CP%;%shellPathLib%\commons-beanutils-1.6.jar
 
+REM command line parser
+set CP=%CP%;%shellPathLib%\commons-cli-1.0.jar
+
+REM evaluate expression in the xml files
+set CP=%CP%;%shellPathLib%\commons-jexl-1.1.jar
+
 REM used for toString methods
 set CP=%CP%;%shellPathLib%\commons-lang-2.1.jar
 

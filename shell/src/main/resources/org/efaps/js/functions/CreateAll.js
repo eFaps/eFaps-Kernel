@@ -19,6 +19,9 @@
  * Last Changed By: $Author$
  */
 
+importClass(Packages.org.apache.commons.jexl.JexlHelper);
+importClass(Packages.org.apache.commons.jexl.JexlContext);
+
 importClass(Packages.org.efaps.db.Context);
 importClass(Packages.org.efaps.admin.user.Person);
 importClass(Packages.org.efaps.db.databases.AbstractDatabase);
@@ -123,13 +126,15 @@ function _eFapsCreateAllImportUserInterface()  {
 function _eFapsCreateAllImportXMLFiles()  {
   var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
   
+  var jexlContext = JexlHelper.createContext();
+
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
     if (fileName.endsWith(".xml"))  {
       var update = AccessTypeUpdate.readXMLFile(file);
       if (update != null)  {
-        update.updateInDB();
+        update.updateInDB(jexlContext);
       }
     }
   }
@@ -139,7 +144,7 @@ function _eFapsCreateAllImportXMLFiles()  {
     if (fileName.endsWith(".xml"))  {
       var update = AccessSetUpdate.readXMLFile(file);
       if (update != null)  {
-        update.updateInDB();
+        update.updateInDB(jexlContext);
       }
     }
   }
@@ -149,7 +154,7 @@ function _eFapsCreateAllImportXMLFiles()  {
     if (fileName.endsWith(".xml"))  {
       var update = JAASSystemUpdate.readXMLFile(file);
       if (update != null)  {
-        update.updateInDB();
+        update.updateInDB(jexlContext);
       }
     }
   }
@@ -871,7 +876,8 @@ function _eFapsCreateCommonTablesStep1(_con, _stmt)  {
   eFapsCommonSQLTableCreate(_con, _stmt, "Common Abstract Table", "ABSTRACT", null,[
       ["TYPEID                "+TYPE_INTEGER+"                   not null"],
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["REVISION              "+TYPE_STRING_SHORT+"(10)"],
+      ["UUID                  "+TYPE_STRING_SHORT+"(128)"],
+      ["REVISION              "+TYPE_STRING_SHORT+"(40)"],
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
       ["CREATED               "+TYPE_DATETIME+"                  not null"],
       ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
@@ -910,6 +916,7 @@ function _eFapsCreateCommonTablesStep2(_con, _stmt)  {
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'Modifier',         'MODIFIER',         412, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'Modified',         'MODIFIED',         332, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'Name',             'NAME',             100, null);
+  _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'UUID',             'UUID',             100, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'Revision',         'REVISION',         100, null);
 }
 

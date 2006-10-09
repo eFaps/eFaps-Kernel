@@ -36,6 +36,16 @@ import org.efaps.util.EFapsException;
 public final class CreateMethod extends AbstractJavaScriptMethod  {
   
   /////////////////////////////////////////////////////////////////////////////
+  // constructors / desctructors
+  
+  /**
+   *
+   */
+  public CreateMethod()  {
+    super("create", "creates a new eFaps instance");
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**

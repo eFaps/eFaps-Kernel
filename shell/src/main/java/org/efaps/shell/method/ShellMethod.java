@@ -36,6 +36,16 @@ import org.efaps.util.EFapsException;
 public final class ShellMethod extends AbstractJavaScriptMethod  {
   
   /////////////////////////////////////////////////////////////////////////////
+  // constructors / desctructors
+  
+  /**
+   *
+   */
+  public ShellMethod()  {
+    super("shell", "starts the eFaps shell");
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**

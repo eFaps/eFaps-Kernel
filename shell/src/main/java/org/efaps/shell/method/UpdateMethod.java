@@ -20,8 +20,14 @@
 
 package org.efaps.shell.method;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.jexl.JexlHelper;
+import org.apache.commons.jexl.JexlContext;
+
 import org.efaps.shell.method.update.AccessSetUpdate;
 import org.efaps.shell.method.update.AccessTypeUpdate;
+import org.efaps.shell.method.update.datamodel.SQLTableUpdate;
 import org.efaps.shell.method.update.user.JAASSystemUpdate;
 
 import org.efaps.util.EFapsException;
@@ -34,6 +40,26 @@ import org.efaps.util.EFapsException;
 public final class UpdateMethod extends AbstractMethod  {
   
   /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  private final static Option PROPERTY_VERSION  = OptionBuilder
+        .withArgName("number")
+        .hasArg()
+        .withDescription("Defines global import version")
+        .create("version");
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / desctructors
+  
+  /**
+   *
+   */
+  public UpdateMethod()  {
+    super("update", "updates eFaps instance",
+          PROPERTY_VERSION);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -44,22 +70,36 @@ public final class UpdateMethod extends AbstractMethod  {
     login("Administrator", "");
     reloadCache();
     startTransaction();
-    for (int i = 0; i < getArguments().length; i++)  {
-      JAASSystemUpdate update = JAASSystemUpdate.readXMLFile(getArguments()[i]);
+ 
+    JexlContext jexlContext = JexlHelper.createContext();
+    String version = getCommandLine().getOptionValue("version");
+    if (version != null)  {
+      jexlContext.getVars().put("version", 
+                                Integer.parseInt(version));
+    }
+    
+    for (String fileName : getCommandLine().getArgs())  {
+      SQLTableUpdate update = SQLTableUpdate.readXMLFile(fileName);
       if (update != null)  {
-        update.updateInDB();
+        update.updateInDB(jexlContext);
       }
     }
-    for (int i = 0; i < getArguments().length; i++)  {
-      AccessTypeUpdate update = AccessTypeUpdate.readXMLFile(getArguments()[i]);
+    for (String fileName : getCommandLine().getArgs())  {
+      JAASSystemUpdate update = JAASSystemUpdate.readXMLFile(fileName);
       if (update != null)  {
-        update.updateInDB();
+        update.updateInDB(jexlContext);
       }
     }
-    for (int i = 0; i < getArguments().length; i++)  {
-      AccessSetUpdate update = AccessSetUpdate.readXMLFile(getArguments()[i]);
+    for (String fileName : getCommandLine().getArgs())  {
+      AccessTypeUpdate update = AccessTypeUpdate.readXMLFile(fileName);
       if (update != null)  {
-        update.updateInDB();
+        update.updateInDB(jexlContext);
+      }
+    }
+    for (String fileName : getCommandLine().getArgs())  {
+      AccessSetUpdate update = AccessSetUpdate.readXMLFile(fileName);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
       }
     }
     commitTransaction();

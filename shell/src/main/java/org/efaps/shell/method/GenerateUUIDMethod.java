@@ -33,6 +33,16 @@ import org.efaps.util.EFapsException;
 public final class GenerateUUIDMethod extends AbstractMethod  {
   
   /////////////////////////////////////////////////////////////////////////////
+  // constructors / desctructors
+  
+  /**
+   *
+   */
+  public GenerateUUIDMethod()  {
+    super("generateUUID", "generate unique univeral identifier");
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**

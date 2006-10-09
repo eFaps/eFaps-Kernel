@@ -20,6 +20,9 @@
 
 package org.efaps.shell.method;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+
 import org.efaps.db.Context;
 import org.efaps.jaas.ImportHandler;
 import org.efaps.util.EFapsException;
@@ -60,6 +63,36 @@ public final class ImportPersonsMethod extends AbstractMethod  {
    * {@link #PROP_NAME_APPLICATION}.
    */
   private final static String DEFAULT_APPLICATION = "eFaps";
+
+/*  private final static Option PROPERTY_APPLICATION  = OptionBuilder
+        .withArgName( PROP_NAME_APPLICATION + "=value" )
+        .hasArg()
+        .withValueSeparator()
+        .withDescription("Defines the name of the JAAS application defined in "
+                         + "the JAAS configuration used to import. "
+                         + "The default value is "
+                         + "'" + DEFAULT_APPLICATION + "'.")
+        .create( "D" + PROP_NAME_APPLICATION );
+
+  private final static Option PROPERTY_JAAS  = OptionBuilder
+        .withArgName( "=value" )
+        .withArgName( PROP_NAME_APPLICATION + "=value" )
+        .hasArg()
+        .withValueSeparator()
+        .withDescription("Defines the JAAS configuration file.")
+        .create( "Djava.security.auth.login.config" );
+*/
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / desctructors
+  
+  /**
+   *
+   */
+  public ImportPersonsMethod()  {
+    super("importPersons", 
+          "imports all persons via JAAS");
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods

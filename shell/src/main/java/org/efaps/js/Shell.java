@@ -20,29 +20,17 @@
 
 package org.efaps.js;
 
-import java.io.StringReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Properties;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
-import javax.naming.spi.ObjectFactory;
-import javax.sql.DataSource;
+import java.util.HashSet;
+import java.util.Set;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionGroup;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.apache.slide.transaction.SlideTransactionManager;
 
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.tools.shell.Global;
-import org.mozilla.javascript.tools.shell.Main;
-
-import org.efaps.admin.user.Person;
-import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
-import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.shell.method.AbstractMethod;
 
 /**
@@ -60,115 +48,66 @@ public class Shell {
    */
   final public static TransactionManager transactionManager = new SlideTransactionManager();
 
+  static Context context=null;
+
+  final private static Set < AbstractMethod > methods 
+                                 = new HashSet  < AbstractMethod > ();
+  {
+    methods.add(new org.efaps.shell.method.CreateMethod());
+    methods.add(new org.efaps.shell.method.GenerateUUIDMethod());
+    methods.add(new org.efaps.shell.method.ImportPersonsMethod());
+    methods.add(new org.efaps.shell.method.ShellMethod());
+    methods.add(new org.efaps.shell.method.UpdateMethod());
+  }
+
+
   /**
    * Main entry point.
-   *
-   * Process arguments as would a normal Java program. Also
-   * create a new Context and associate it with the current thread.
-   * Then set up the execution environment and begin to
-   * execute scripts.
-   *
-   * @todo using org.efaps.shell.method.* classes as parameter definitions
-   *       (first letter of class name in lower case and withou Method at the 
-   *       end)
    */
   public static void main(String _args[]) throws Exception  {
+    (new Shell()).run(_args);
+  }
 
-// read input arguments
-String bootstrap = null;
-Class < AbstractMethod > methodClass = null;
-String[] args = null;
-for (int i = 0; i < _args.length; i++)  {
-  if (_args[i].equals("-bootstrap"))  {
-    bootstrap = _args[++i];
-  } else  {
-    String className = "org.efaps.shell.method." 
-            + _args[i].substring(1,2).toUpperCase()
-            + _args[i].substring(2)
-            + "Method";
 
-    try  {
-      methodClass = (Class < AbstractMethod >)Class.forName(className);
-      args = new String[_args.length - i - 1];
-      for (int j = i + 1, k = 0; j < _args.length; j++, k++)  {
-        args[k] = _args[j];
+
+  private void run(final String... _args)  {
+    AbstractMethod method = null;
+    for (String arg : _args)  {
+      for (AbstractMethod search : methods)  {
+        if (search.getOptionName().equals(arg.substring(1)))  {
+          method = search;
+          break;
+        }
       }
-      break;
-    } catch (ClassNotFoundException e)  {
-      throw new Exception("unknown parameter "+_args[i]);
+      if (method != null)  {
+        break;
+      }
+    }
+    
+    if (method != null)  {
+      try {
+        if (method.init(_args))  {
+          method.execute();
+        }
+      } catch (Throwable e)  {
+        e.printStackTrace();
+      }
+    } else  {
+      OptionGroup optionGroup = new OptionGroup();
+      for (AbstractMethod methodHelp : methods)  {
+        optionGroup.addOption(new Option(methodHelp.getOptionName(), methodHelp.getOptionDescription()));
+      }
+      Options options = new Options();
+      options.addOption("help", 
+                        false,
+                        "print this text; "
+                                + "use it together with an option to get help");
+      options.addOptionGroup(optionGroup);
+      (new HelpFormatter()).printHelp("eFaps", options);
     }
   }
-}
-
-if (bootstrap==null)  {
-  throw new Exception("Unknown Bootstrap.");
-}
-
-// read bootstrap properties
-Properties props = new Properties();
-FileInputStream fstr = new FileInputStream(bootstrap);
-props.loadFromXML(fstr);
-fstr.close();
-
-// buildup reference
-String factory = props.get("factory").toString();
-Reference ref = new Reference(DataSource.class.getName(), factory, null);
-for (Object key : props.keySet())  {
-  Object value = props.get(key);
-   ref.add(new StringRefAddr(key.toString(), (value==null ? null : value.toString())));
-}
-
-// configure database type
-Object dbTypeObj = props.get("dbType");
-if ((dbTypeObj == null) || (dbTypeObj.toString().length() == 0))  {
-  throw new Exception("could not initaliase database type");
-}
-AbstractDatabase dbType = ((Class<AbstractDatabase>)Class.forName(dbTypeObj.toString())).newInstance();
-if (dbType == null)  {
-  throw new Exception("could not initaliase database type");
-}
-Context.setDbType(dbType);
-
-// get datasource object
-ObjectFactory of = (ObjectFactory)(Class.forName(ref.getFactoryClassName())).newInstance();
-DataSource ds = (DataSource)of.getObjectInstance(ref, null, null, null);
-Context.setDataSource(ds);
-
-//context = new Context();
-
-
-if (methodClass != null)  {
-  try {
-    AbstractMethod method = methodClass.newInstance();
-    method.setArguments(args);
-    method.execute();
-  } catch (Throwable e)  {
-    e.printStackTrace();
-  }
-/*} else  {
-org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
-
-Global global = Main.getGlobal();
-ScriptableObject.defineClass(global, EFapsInstance.class);
-
-// run init javascript file
-ClassLoader classLoader = Shell.class.getClassLoader();
-Reader in = new InputStreamReader(classLoader.getResourceAsStream("org/efaps/js/Init.js"));
-Main.evaluateScript(cx, global, in, null, "Init", 1, null);
-
-context = new Context(Person.get("Administrator"));
-  StringReader reader = new StringReader("shell()");
-  Main.evaluateScript(cx, Main.getGlobal(), reader, null, "<stdin>", 0, null);
-*/
-}
-
-
-
-  }
-
-static Context context=null;
-
-
+  
+  
 static public void setContext(Context _context)  {
 context=_context;
 }

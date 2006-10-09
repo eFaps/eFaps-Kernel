@@ -23,6 +23,8 @@ package org.efaps.shell.method;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
+import org.apache.commons.cli.Option;
+
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.tools.shell.Global;
@@ -49,6 +51,20 @@ public abstract class AbstractJavaScriptMethod extends AbstractMethod  {
    # @see #getJavaScriptContext
    */
   private Context javaScriptContext = null;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / desctructors
+
+  /**
+   * @param _optionName name of the option used to call this method
+   * @param _optionDesc description of the option to call this method
+   * @param _options  all allowed options implemented by this method
+   */
+  protected AbstractJavaScriptMethod(final String _optionName,
+                                     final String _optionDesc,
+                                     final Option... _options)  {
+    super(_optionName, _optionDesc, _options);
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods

@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
+import org.apache.commons.jexl.Expression;
+import org.apache.commons.jexl.ExpressionFactory;
+import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -136,20 +139,21 @@ public abstract class AbstractUpdate  {
    * {@link #instance}.
    *
    * @todo description
+   * @param _jexlContext  expression context used to evaluate 
    */
-  public void updateInDB() throws EFapsException,Exception {
+  public void updateInDB(final JexlContext _jexlContext) throws EFapsException,Exception {
     Instance instance = null;
     Insert insert = null;
     Context context = Context.getThreadContext();
 
-    // search for the instan ce
+    // search for the instance
     SearchQuery query = new SearchQuery();
     query.setQueryTypes(context, this.dataModelType);
     query.addWhereExprEqValue(context, "UUID", this.uuid);
     query.addSelect(context, "OID");
     query.executeWithoutAccessCheck();
     if (query.next())  {
-      instance = new Instance(context, (String) query.get(context, "OID"));
+      instance = new Instance((String) query.get(context, "OID"));
     }
     query.close();
 
@@ -161,7 +165,17 @@ public abstract class AbstractUpdate  {
     }
 
     for (DefinitionAbstract def : this.definitions)  {
-      def.updateInDB(instance, this.allLinkTypes, insert);
+      if (insert == null)  {
+        _jexlContext.getVars().put("exists", new Boolean(true));
+      } else  {
+        _jexlContext.getVars().put("exists", new Boolean(false));
+      }
+      Expression jexlExpr = ExpressionFactory.createExpression(def.mode);
+      boolean exec = new Boolean(jexlExpr.evaluate(_jexlContext).toString());
+      if (exec)  {
+        def.updateInDB(instance, this.allLinkTypes, insert);
+      }
+      _jexlContext.getVars().remove("exists");
     }
   }
 
@@ -464,9 +478,19 @@ public abstract class AbstractUpdate  {
     /**
      * @param _name   name of the attribute
      * @param _value  value of the attribute
+     * @see #values
      */
     protected void addValue(final String _name, final String _value)  {
       this.values.put(_name, _value);
+    }
+    
+    /**
+     * @param _name   name of the attribtue
+     * @return value of the set attribute value in this definition
+     * @see #values
+     */
+    protected String getValue(final String _name)  {
+      return this.values.get(_name);
     }
 
     /**
