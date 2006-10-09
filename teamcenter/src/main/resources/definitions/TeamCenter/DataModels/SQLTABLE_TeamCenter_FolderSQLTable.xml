@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-sqltable>
+  <uuid>5e047326-1490-4651-b11b-ef8a16393b6c</uuid>
+
+  <definition>
+    <version>
+      <application>teamcenter</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==1)</mode>
+    </version>
+
+    <name>TeamCenter_FolderSQLTable</name>
+
+    <database>
+      <table-name>TCFOLDER</table-name>
+      <parent-table>ABSTRACT</parent-table>
+      <create>true</create>
+      <update>true</update>
+      <!-- columns -->
+      <column name="PARENTFOLDER" type="INTEGER"/>
+      <!-- contraints -->
+      <foreign name="TCFOLDER_FK_PRNTFOL"  key="PARENTFOLDER" reference="TCFOLDER(ID)"/>
+     </database>
+  </definition>
+
+  <definition>
+    <version>
+      <application>teamcenter</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==2)</mode>
+    </version>
+
+    <name>TeamCenter_FolderSQLTable</name>
+    <parent>Admin_AbstractSQLTable</parent>
+  </definition>
+
+</datamodel-sqltable>
