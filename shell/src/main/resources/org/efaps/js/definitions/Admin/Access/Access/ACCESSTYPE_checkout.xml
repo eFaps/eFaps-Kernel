@@ -31,7 +31,7 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>eq application and gt eq global and neq local</mode>
+      <mode>!(exists)</mode>
     </version>
 
     <name>checkout</name>
