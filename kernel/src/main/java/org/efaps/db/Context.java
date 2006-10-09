@@ -599,7 +599,7 @@ System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
   /////////////////////////////////////////////////////////////////////////////
   // static getter and setter methods
 
-  public static void setDbType(AbstractDatabase _dbType) throws ClassNotFoundException, IllegalAccessException {
+  public static void setDbType(final AbstractDatabase _dbType)  {
     dbType = _dbType;
   }
 
