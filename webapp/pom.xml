@@ -105,24 +105,26 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- Slide WebDAV Servlet -->
+    <!-- to use newest xml apis -->
     <dependency>
-      <groupId>slide</groupId>
-      <artifactId>slide-webdavservlet</artifactId>
-      <version>2.1</version>
-      <scope>package</scope>
+      <groupId>xml-apis</groupId>
+      <artifactId>xml-apis</artifactId>
+      <version>1.3.03</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>jdom</groupId>
-      <artifactId>jdom</artifactId>
-      <version>1.0</version>
-      <scope>package</scope>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.8.1</version>
+      <scope>compile</scope>
     </dependency>
+
+    <!-- used for basic authentification -->
     <dependency>
-      <groupId>commons-transaction</groupId>
-      <artifactId>commons-transaction</artifactId>
-      <version>1.1</version>
-      <scope>package</scope>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.3</version>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Web Application Tag Libs -->
@@ -154,7 +156,7 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- Transaction Manager -->
+    <!-- Transaction Management -->
     <dependency>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-jta</artifactId>
@@ -166,6 +168,12 @@
       <artifactId>slide-kernel</artifactId>
       <version>2.1</version>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-transaction</groupId>
+      <artifactId>commons-transaction</artifactId>
+      <version>1.1</version>
+      <scope>package</scope>
     </dependency>
 
     <!-- Connection Pooling -->
