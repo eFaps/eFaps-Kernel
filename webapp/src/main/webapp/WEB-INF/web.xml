@@ -1,4 +1,8 @@
-<!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN" "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd">
+<?xml version="1.0"?>
+
+<!DOCTYPE web-app PUBLIC 
+    "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" 
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <!--
 
@@ -78,18 +82,24 @@
     </description>
   </context-param>
 
-
   <!-- filter used to test if a user is logged in -->
   <filter>
     <filter-name>securityFilter</filter-name>
     <filter-class>org.efaps.servlet.SecurityFilter</filter-class>
-
     <init-param>
       <param-name>urlLoginPage</param-name>
       <param-value>login.jsp</param-value>
       <description>
         Url to the login jsp. The url must be defined relative to the servlet
         context name.
+      </description>
+    </init-param>
+    <init-param>
+      <param-name>urlWebDAV</param-name>
+      <param-value>webdav</param-value>
+      <description>
+        Url to the WebDAV integration. The url must be defined relative to the 
+        servlet context name.
       </description>
     </init-param>
   </filter>
@@ -212,6 +222,7 @@
   </servlet>
 
   <!-- Definition and configuration of Slide's WebDAV servlet. -->
+<!--
   <servlet>
     <servlet-name>webdav</servlet-name>
     <display-name>Slide DAV Server</display-name>
@@ -363,7 +374,7 @@
         </description>
     </init-param>
     <load-on-startup>1</load-on-startup>
-    <!-- Uncomment this to get authentication -->
+    -->   <!-- Uncomment this to get authentication -->
     <!--security-role-ref>
         <role-name>root</role-name>
         <role-link>root</role-link>
@@ -376,37 +387,39 @@
         <role-name>user</role-name>
         <role-link>user</role-link>
     </security-role-ref!-->
-  </servlet>
+<!--
+    </servlet>
+-->
 
   <!-- -->
   <servlet-mapping>
     <servlet-name>eFapsServlet</servlet-name>
-    <url-pattern>request/*</url-pattern>
+    <url-pattern>/request/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>eFapsCheckoutServlet</servlet-name>
-    <url-pattern>servlet/checkout/*</url-pattern>
+    <url-pattern>/servlet/checkout/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>eFapsLoginServlet</servlet-name>
-    <url-pattern>servlet/login/*</url-pattern>
+    <url-pattern>/servlet/login/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>eFapsLogoutServlet</servlet-name>
-    <url-pattern>servlet/logout</url-pattern>
+    <url-pattern>/servlet/logout</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>eFapsImageServlet</servlet-name>
-    <url-pattern>servlet/image/*</url-pattern>
+    <url-pattern>/servlet/image/*</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>eFapsWebDAVServlet</servlet-name>
-    <url-pattern>webdav/*</url-pattern>
+    <url-pattern>/webdav/*</url-pattern>
   </servlet-mapping>
 
   <!-- extension mapping -->
@@ -419,11 +432,12 @@
      If you change the mapping so that the servlet isn't the default servlet
      anymore, make sure to set the init-parameter 'default-servlet' to
      'false'. -->
+<!--
   <servlet-mapping>
       <servlet-name>webdav</servlet-name>
       <url-pattern>webdav1/*</url-pattern>
   </servlet-mapping>
-
+-->
 
 <session-config>
   <session-timeout>3000</session-timeout>
@@ -478,6 +492,7 @@
   </resource-ref>
 
   <!-- Authetication for the WebDAV servlet -->
+<!--
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>DAV resource</web-resource-name>
@@ -518,26 +533,8 @@
     </web-resource-collection>
     <auth-constraint>
       <role-name>*</role-name>
-<!--      <role-name>root</role-name>
-      <role-name>guest</role-name>
-      <role-name>user</role-name>
--->
     </auth-constraint>
   </security-constraint>
-
-  <login-config>
-    <auth-method>BASIC</auth-method>
-    <realm-name>Slide DAV Server</realm-name>
-  </login-config>
-  <security-role>
-    <role-name>root</role-name>
-  </security-role>
-  <security-role>
-    <role-name>guest</role-name>
-  </security-role>
-  <security-role>
-    <role-name>user</role-name>
-  </security-role>
-
+-->
 </web-app>
 
