@@ -26,9 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
-import org.efaps.db.Context;
-import org.efaps.db.Insert;
-import org.efaps.db.Instance;
+import org.efaps.webdav.CollectionResource;
 
 /**
  * The class implements WebDAV method <i>MKCOL</i> (a new collection is
@@ -43,24 +41,24 @@ public class MkColMethod extends AbstractMethod  {
    *
    */
   public void run(final HttpServletRequest _request, final HttpServletResponse _response) throws IOException, ServletException  {
-    try  {
-      Context context = Context.getThreadContext();
-
-      String[] uri = _request.getPathInfo().split("/");
-      Instance instance = getFolderInstance(context, uri.length - 2, uri);
-
-      Insert insert = new Insert(context, "TeamCenter_Folder");
-      insert.add(context, "ParentFolder", ""+instance.getId());
-      insert.add(context, "Name", uri[uri.length - 1]);
-      insert.execute();
-      insert.close();
-
-    } catch (IOException e)  {
-      throw e;
-    } catch (ServletException e)  {
-      throw e;
-    } catch (Throwable e)  {
-      throw new ServletException(e);
+    Status status = Status.CONFLICT;
+      
+    String[] uri = _request.getPathInfo().split("/");
+    String newName = uri[uri.length - 1];
+    
+    CollectionResource parentCollection 
+                          = getCollection4ParentPath(_request.getPathInfo());
+    if (parentCollection != null)  {
+      if ((getCollection(parentCollection, newName) != null)
+          || (getSource(parentCollection, newName) != null))  {
+        status = Status.FORBIDDEN;
+      } else  {
+        if (this.webDAVImpl.createCollection(parentCollection, newName))  {
+          status = Status.CREATED;
+        }
+      }
     }
+
+    _response.setStatus(status.code);
   }
 }

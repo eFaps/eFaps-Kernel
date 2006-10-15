@@ -47,16 +47,12 @@ import org.w3c.dom.NodeList;
 
 import org.xml.sax.InputSource;
 
-import org.efaps.db.Checkout;
-import org.efaps.db.Context;
-import org.efaps.db.Delete;
-import org.efaps.db.Insert;
-import org.efaps.db.Instance;
-import org.efaps.db.Update;
 import org.efaps.webdav.method.AbstractMethod;
 import org.efaps.webdav.method.DeleteMethod;
+import org.efaps.webdav.method.GetMethod;
 import org.efaps.webdav.method.MkColMethod;
 import org.efaps.webdav.method.PropFindMethod;
+import org.efaps.webdav.method.PutMethod;
 
 /**
  *
@@ -67,30 +63,11 @@ import org.efaps.webdav.method.PropFindMethod;
 public class WebDAVServlet extends HttpServlet  {
 
 //  private static final String METHOD_HEAD = "HEAD";
-  private static final String METHOD_PROPFIND = "PROPFIND";
   private static final String METHOD_PROPPATCH = "PROPPATCH";
-  private static final String METHOD_MKCOL = "MKCOL";
   private static final String METHOD_COPY = "COPY";
   private static final String METHOD_MOVE = "MOVE";
   private static final String METHOD_LOCK = "LOCK";
   private static final String METHOD_UNLOCK = "UNLOCK";
-
-  /**
-   * Simple date format for the creation date ISO representation (partial).
-   */
-  protected static final SimpleDateFormat creationDateFormat =
-      new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-
-  /**
-   * HTTP date format.
-   */
-  protected static final SimpleDateFormat modifedFormat =
-      new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
-
-  static {
-      creationDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-      modifedFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-  }
 
   static enum FindProperty {FIND_BY_PROPERTY, FIND_ALL_PROP, FIND_PROPERTY_NAMES};
   /**
@@ -109,8 +86,10 @@ public class WebDAVServlet extends HttpServlet  {
 
   static  {
     methods.put("DELETE",   new DeleteMethod());
+    methods.put("GET",      new GetMethod());
     methods.put("MKCOL",    new MkColMethod());
     methods.put("PROPFIND", new PropFindMethod());
+    methods.put("PUT",      new PutMethod());
   }
 
 
@@ -141,6 +120,7 @@ e.printStackTrace();
    */
   protected void service(final HttpServletRequest _request,
       final HttpServletResponse _response) throws ServletException, IOException  {
+System.out.println("method "+_request.getMethod());
 
     AbstractMethod method = methods.get(_request.getMethod());
     if (method != null)  {
@@ -181,9 +161,13 @@ super.service(_request, _response);
   protected void doOptions(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
 
-    resp.addHeader("DAV", "1,2");
+//    resp.addHeader("DAV", "1,2");
+    resp.addHeader("DAV", "1");
 
-    String methodsAllowed = "OPTIONS, GET, HEAD, POST, DELETE, TRACE, PROPPATCH, COPY, MOVE, LOCK, UNLOCK, PROPFIND, PUT";
+// CLass 1: COPY, DELETE, GET, HEAD, MKCOL, MOVE, OPTIONS, POST, PROPPATCH, PROPFIND, PUT
+// Class 2: COPY, DELETE, GET, HEAD, LOCK, MKCOL, MOVE, OPTIONS, POST, PROPPATCH, PROPFIND, PUT, UNLOCK
+// TRACE?
+    String methodsAllowed = "COPY, DELETE, GET, HEAD, MKCOL, MOVE, OPTIONS, POST, PROPPATCH, PROPFIND, PUT";
 
 //        if (!(object instanceof DirContext)) {
 //            methodsAllowed.append(", PUT");
@@ -191,46 +175,6 @@ super.service(_request, _response);
     resp.addHeader("Allow", methodsAllowed);
     resp.addHeader("MS-Author-Via", "DAV");
   }
-
-  /**
-   * Process a GET request for the specified resource.
-   *
-   * @param _request  The http servlet request we are processing
-   * @param _response The http servlet response we are creating
-   *
-   * @exception IOException if an input/output error occurs
-   * @exception ServletException if a servlet-specified error occurs
-   */
-  protected void doGet(HttpServletRequest _request,
-                       HttpServletResponse _response)
-      throws IOException, ServletException {
-
-    try  {
-      Context context = Context.getThreadContext();
-
-      Instance instance = getFileInstance(context, _request.getPathInfo());
-if (instance == null)  {
-// throw Exception!!
-}
-
-      Checkout checkout = new Checkout(instance);
-      checkout.preprocess();
-
-      _response.setContentType(getServletContext().getMimeType(checkout.getFileName()));
-      _response.addHeader("Content-Disposition", "inline; filename=\""+checkout.getFileName()+"\"");
-
-      checkout.execute(_response.getOutputStream());
-
-    } catch (IOException e)  {
-      throw e;
-    } catch (ServletException e)  {
-      throw e;
-    } catch (Throwable e)  {
-      throw new ServletException(e);
-    }
-
-  }
-
 
   /////////////////////////////////////////////////////////////////////////////
   // MOVE
@@ -339,7 +283,7 @@ if (instance == null)  {
       // Return the normalized path that we have completed
       return (normalized);
   }
-
+/*
   protected void doMove(HttpServletRequest _request, HttpServletResponse _response) throws ServletException, IOException {
 
     try  {
@@ -378,82 +322,9 @@ e.printStackTrace();
       throw new ServletException(e);
     }
   }
+*/
 
-
-  /////////////////////////////////////////////////////////////////////////////
-  // DELETE
-
-private Instance getFileInstance(final Context _context, final String _uri) throws Exception  {
-  Instance instance = null;
-
-  String[] uri = _uri.toString().split("/");
-  Instance folder =  getFolderInstance(_context, uri.length - 2, uri);
-  org.efaps.db.SearchQuery query = new org.efaps.db.SearchQuery();
-  query.setQueryTypes(_context, "TeamCenter_Document2Folder");
-  query.addWhereExprEqValue(_context, "Folder", ""+folder.getId());
-  query.addSelect(_context, "Document.FileName");
-  query.addSelect(_context, "Document.OID");
-  query.execute();
-  while (query.next())  {
-    String docName = query.get(_context, "Document.FileName").toString();
-    if (uri[uri.length - 1].equals(docName))  {
-      instance = new Instance(_context, query.get(_context,"Document.OID").toString());
-      break;
-    }
-  }
-  query.close();
-  return instance;
-}
-
-private Instance getFolderInstance(final Context _context, final String _uri) throws Exception  {
-  String[] uri = _uri.toString().split("/");
-  return getFolderInstance(_context, uri.length - 1, uri);
-}
-
-private Instance getFolderInstance(final Context _context, final int _index, final String[] _uri) throws Exception  {
-    Instance instance = null;
-
-  if (_index < 1)  {
-// throw exception1!
-  } else if (_index == 1)  {
-
-    org.efaps.db.SearchQuery query = new org.efaps.db.SearchQuery();
-    query.setQueryTypes(_context, "TeamCenter_RootFolder");
-    query.addWhereExprEqValue(_context, "Name", _uri[_index]);
-    query.addSelect(_context, "OID");
-    query.execute();
-// TODO: was passiert wenn nicht gefunden?
-    if (query.next())  {
-      instance = new Instance(_context, query.get(_context,"OID").toString());
-    }
-    query.close();
-  } else  {
-    Instance parentInstance = getFolderInstance(_context, _index - 1, _uri);
-    instance = getSubFolderInstance(_context, parentInstance, _uri[_index]);
-  }
-System.out.println("found instance="+instance);
-  return instance;
-}
-
-
-private Instance getSubFolderInstance(final Context _context, final Instance _folderInstance, final String _name) throws Exception  {
-  Instance instance = null;
-
-  org.efaps.db.SearchQuery query = new org.efaps.db.SearchQuery();
-  query.setQueryTypes(_context, "TeamCenter_Folder");
-  query.addWhereExprEqValue(_context, "Name", _name);
-  query.addWhereExprEqValue(_context, "ParentFolder", "" + _folderInstance.getId());
-  query.addSelect(_context, "OID");
-  query.execute();
-// TODO: was passiert wenn nicht gefunden?
-// nichts => gibt null zurueck
-  if (query.next())  {
-    instance = new Instance(_context, query.get(_context,"OID").toString());
-  }
-  query.close();
-
-  return instance;
-}
+  
 
   /////////////////////////////////////////////////////////////////////////////
 

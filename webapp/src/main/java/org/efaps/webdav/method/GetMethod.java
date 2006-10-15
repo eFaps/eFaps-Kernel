@@ -35,7 +35,7 @@ import org.efaps.webdav.SourceResource;
  * @author tmo
  * @version $Id$
  */
-public class DeleteMethod extends AbstractMethod  {
+public class GetMethod extends AbstractMethod  {
 
   /**
    *
@@ -43,10 +43,15 @@ public class DeleteMethod extends AbstractMethod  {
   public void run(final HttpServletRequest _request, final HttpServletResponse _response) throws IOException, ServletException  {
 
     AbstractResource resource = getResource4Path(_request.getPathInfo());
-    if (resource instanceof SourceResource)  {
-      this.webDAVImpl.deleteSource((SourceResource) resource);
-    } else if (resource instanceof CollectionResource)  {
-      this.webDAVImpl.deleteCollection((CollectionResource) resource);
+    if (resource == null)  {
+ // was fuer fehler muss hier gemacht werden???
+    } else if (resource instanceof SourceResource)  {
+      _response.setContentType(_request.getSession().getServletContext().getMimeType(resource.getName()));
+      _response.addHeader("Content-Disposition", "inline; filename=\""+resource.getName()+"\"");
+      this.webDAVImpl.checkoutSource((SourceResource) resource,
+                                     _response.getOutputStream());
+    } else  {
+// was fuer fehler muss hier gemacht werden???
     }
       
     // nicht richtig for collections....

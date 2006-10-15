@@ -25,6 +25,7 @@ import java.io.Writer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,8 +34,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.efaps.db.Context;
-import org.efaps.db.Instance;
+import org.efaps.webdav.AbstractResource;
+import org.efaps.webdav.CollectionResource;
+import org.efaps.webdav.SourceResource;
+import org.efaps.webdav.TeamCenterWebDAVImpl;
 
 /**
  * @author tmo
@@ -43,17 +46,23 @@ import org.efaps.db.Instance;
  */
 public abstract class AbstractMethod  {
 
+
   /**
    * Simple date format for the creation date ISO representation (partial).
    */
-  private static final SimpleDateFormat creationDateFormat =
-                            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+  private static final SimpleDateFormat creationDateFormat
+                        = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");  {
+    creationDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+  }
 
   /**
    * HTTP date format used to format last modified dates.
    */
-  private static final SimpleDateFormat modifiedDateFormat =
-      new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
+  private static final SimpleDateFormat modifiedDateFormat
+            = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", 
+                                   Locale.US);  {
+    modifiedDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+  }
 
 
   /**
@@ -65,6 +74,7 @@ public abstract class AbstractMethod  {
      */
     creationdate {
       String makeXML(Object _creationDate) {
+System.out.println("_creationDate="+_creationDate);
         StringBuffer ret = new StringBuffer();
         ret.append('<').append(name()).append(">")
            .append(creationDateFormat.format(_creationDate))
@@ -120,6 +130,7 @@ public abstract class AbstractMethod  {
      */
     getlastmodified {
       String makeXML(Object _modifiedDate) {
+System.out.println("_modifiedDate="+_modifiedDate);
         StringBuffer ret = new StringBuffer();
         ret.append('<').append(name()).append(">")
            .append(modifiedDateFormat.format(_modifiedDate))
@@ -164,8 +175,26 @@ public abstract class AbstractMethod  {
   }
 
 
+  public enum DepthHeader  {
+    /** 
+     * The method is to be applied only to the resource. 
+     */
+    depth0,
+    /** 
+     * The method is to be applied to the resource and its immediate children. 
+     */
+    depth1,
+    /** 
+     * The method is to be applied to the resource and all its progeny.
+     */
+    infity;
+  }
+
   public enum Status {
 
+    CONFLICT(HttpServletResponse.SC_CONFLICT, "Conflict"),
+    CREATED(HttpServletResponse.SC_CREATED, "Created"),
+    FORBIDDEN(HttpServletResponse.SC_FORBIDDEN, "Forbidden"),
     NO_CONTENT(HttpServletResponse.SC_NO_CONTENT, "No Content");
 
     /**
@@ -182,6 +211,25 @@ public abstract class AbstractMethod  {
       this.code = _code;
       this.text = _text;
     }
+  }
+
+
+protected TeamCenterWebDAVImpl webDAVImpl = new TeamCenterWebDAVImpl();
+
+
+  public DepthHeader getDepthHeader(final HttpServletRequest _request)  {
+    DepthHeader ret = DepthHeader.infity;
+    
+    String depthStr = _request.getHeader("Depth");
+    if (depthStr != null)  {
+      depthStr = depthStr.trim();
+      if ("0".equals(depthStr))  {
+        ret = DepthHeader.depth0;
+      } else if ("1".equals(depthStr))  {
+        ret = DepthHeader.depth1;
+      }
+    }
+    return ret;
   }
 
 /*
@@ -228,75 +276,54 @@ public abstract class AbstractMethod  {
 
   /////////////////////////////////////////////////////////////////////////////
 
-  protected Instance getFileInstance(final Context _context, final String _uri) throws Exception  {
-    Instance instance = null;
-
+  protected AbstractResource getResource4Path(final String _uri)  {
     String[] uri = _uri.toString().split("/");
-    Instance folder =  getFolderInstance(_context, uri.length - 2, uri);
-    org.efaps.db.SearchQuery query = new org.efaps.db.SearchQuery();
-    query.setQueryTypes(_context, "TeamCenter_Document2Folder");
-    query.addWhereExprEqValue(_context, "Folder", ""+folder.getId());
-    query.addSelect(_context, "Document.FileName");
-    query.addSelect(_context, "Document.OID");
-    query.execute();
-    while (query.next())  {
-      String docName = query.get(_context, "Document.FileName").toString();
-      if (uri[uri.length - 1].equals(docName))  {
-        instance = new Instance(_context, query.get(_context,"Document.OID").toString());
-        break;
+    
+    AbstractResource resource = null;
+    CollectionResource collection = null;
+    if (uri.length > 2)  {
+      collection = getCollection(uri.length - 2, uri);
+    }
+    if ((uri.length == 2) || (collection != null))  {
+      resource = getCollection(collection, uri[uri.length - 1]);
+      if (resource == null)  {
+        resource = getSource(collection, uri[uri.length - 1]);
       }
     }
-    query.close();
-    return instance;
+    return resource;
   }
 
-  protected Instance getFolderInstance(final Context _context, final String _uri) throws Exception  {
+  protected CollectionResource getCollection4ParentPath(final String _uri)  {
+    CollectionResource collection = null;
     String[] uri = _uri.toString().split("/");
-    return getFolderInstance(_context, uri.length - 1, uri);
+    
+    if (uri.length > 2)  {
+      collection = getCollection(uri.length - 2, uri);
+    }
+    return collection;
   }
 
-  protected Instance getFolderInstance(final Context _context, final int _index, final String[] _uri) throws Exception  {
-      Instance instance = null;
+  protected CollectionResource getCollection(final int _endIndex, 
+                                             final String[] _uri)  {
 
-    if (_index < 1)  {
-// throw exception1!
-    } else if (_index == 1)  {
-
-      org.efaps.db.SearchQuery query = new org.efaps.db.SearchQuery();
-      query.setQueryTypes(_context, "TeamCenter_RootFolder");
-      query.addWhereExprEqValue(_context, "Name", _uri[_index]);
-      query.addSelect(_context, "OID");
-      query.execute();
-// TODO: was passiert wenn nicht gefunden?
-      if (query.next())  {
-        instance = new Instance(_context, query.get(_context,"OID").toString());
-      }
-      query.close();
-    } else  {
-      Instance parentInstance = getFolderInstance(_context, _index - 1, _uri);
-      instance = getSubFolderInstance(_context, parentInstance, _uri[_index]);
+    CollectionResource collection = null;
+    for (int i = 1; 
+         (i <= _endIndex) && ((collection != null) || (i == 1)); 
+         i++)  {
+      collection = getCollection(collection, _uri[i]);
     }
-System.out.println("found instance="+instance);
-    return instance;
+
+    return collection;
   }
 
-  protected Instance getSubFolderInstance(final Context _context, final Instance _folderInstance, final String _name) throws Exception  {
-    Instance instance = null;
-
-    org.efaps.db.SearchQuery query = new org.efaps.db.SearchQuery();
-    query.setQueryTypes(_context, "TeamCenter_Folder");
-    query.addWhereExprEqValue(_context, "Name", _name);
-    query.addWhereExprEqValue(_context, "ParentFolder", "" + _folderInstance.getId());
-    query.addSelect(_context, "OID");
-    query.execute();
-// TODO: was passiert wenn nicht gefunden?
-// nichts => gibt null zurueck
-    if (query.next())  {
-      instance = new Instance(_context, query.get(_context,"OID").toString());
-    }
-    query.close();
-
-    return instance;
+  protected CollectionResource getCollection(final CollectionResource _collection, 
+                                             final String _name)  {
+    return this.webDAVImpl.getCollection(_collection, _name);
+  }
+  
+  protected SourceResource getSource(final CollectionResource _collection, 
+                                     final String _name)  {
+    return this.webDAVImpl.getSource(_collection, _name);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -344,6 +371,7 @@ throw new ServletException("webdavservlet.jaxpfailed");
    * @param text Text to append
    */
   public void writeText(Writer _writer, String text) throws IOException  {
+System.out.println(text);
     _writer.write(text);
   }
 
@@ -358,14 +386,14 @@ throw new ServletException("webdavservlet.jaxpfailed");
   public void writeElement(Writer _writer, String name, int type) throws IOException  {
     switch (type) {
     case OPENING:
-      _writer.write("<" + name + ">");
+      writeText(_writer, "<" + name + ">");
       break;
     case CLOSING:
-      _writer.write("</" + name + ">\n");
+      writeText(_writer, "</" + name + ">\n");
       break;
     case NO_CONTENT:
     default:
-      _writer.write("<" + name + "/>");
+      writeText(_writer, "<" + name + "/>");
       break;
     }
   }
