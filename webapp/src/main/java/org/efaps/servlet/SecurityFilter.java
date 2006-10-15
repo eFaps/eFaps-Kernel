@@ -48,6 +48,7 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -90,6 +91,13 @@ public class SecurityFilter implements Filter  {
    */
   final public static String INIT_PARAM_URL_LOGIN_PAGE = "urlLoginPage";
 
+  /**
+   * The string is name of the parameter used to define the url of the WebDAV 
+   * integration.
+   */
+  final public static String INIT_PARAM_URL_WEBDAV = "urlWebDAV";
+
+
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
@@ -110,6 +118,11 @@ public class SecurityFilter implements Filter  {
    */
   private String notLoggedInForward = null;
 
+  /**
+   *
+   */
+  private String urlWebDAV = null;
+  
 
   /**
    *
@@ -133,9 +146,11 @@ public class SecurityFilter implements Filter  {
     this.exludeUris.add((root + this.notLoggedInForward).replaceAll("//+", "/"));
     this.exludeUris.add((root + "/servlet/login").replaceAll("//+", "/"));
 
-System.out.println("------ filter init");
-// _filterConfig.getInitParameter("name");
-System.out.println("            _filterConfig.getServletContext().getServletContextName()="+this.exludeUris);
+
+    this.urlWebDAV = (root + "/" 
+                      + _filterConfig.getInitParameter(INIT_PARAM_URL_WEBDAV))
+                      .replaceAll("//+", "/");
+
   }
 
   /**
@@ -182,16 +197,36 @@ System.out.println("        filter getRequestURI()  ="+httpRequest.getRequestURI
 String uri = httpRequest.getRequestURI();
 
 
-    if (httpRequest.getAuthType()!=null && httpRequest.getAuthType().equals(HttpServletRequest.BASIC_AUTH))  {
+
+ /*   if (httpRequest.getAuthType()!=null && httpRequest.getAuthType().equals(HttpServletRequest.BASIC_AUTH))  {
       String userName = httpRequest.getUserPrincipal().getName();
       doFilter(userName, httpRequest, _response, _chain);
-    } else if (isLoggedIn(httpRequest))  {
+    } else*/
+    
+    if (isLoggedIn(httpRequest))  {
       String userName = (String)httpRequest.getSession().getAttribute(SESSIONPARAM_LOGIN_NAME);
       doFilter(userName, httpRequest, _response, _chain);
     } else if (this.exludeUris.contains(uri))  {
       doFilter(null, _request, _response, _chain);
+    } else if (uri.startsWith(this.urlWebDAV))  {
+      String header = httpRequest.getHeader("Authorization");
+      if (header == null)  {
+        ((HttpServletResponse)_response).setHeader("WWW-Authenticate", "Basic realm=\"eFaps WebDAV\"");
+        ((HttpServletResponse)_response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
+      } else  {
+        String encoded = header.substring(header.indexOf(" ") + 1);
+System.out.println("encoded="+encoded);
+        String decoded = new String(Base64.decodeBase64(encoded.getBytes()));
+        String userName = decoded.substring(0, decoded.indexOf(":"));
+        String password = decoded.substring(decoded.indexOf(":") + 1);
+System.out.println("userName="+userName);
+System.out.println("passwort="+password);
+        httpRequest.getSession().setAttribute(SESSIONPARAM_LOGIN_NAME, userName);
+        doFilter(userName, httpRequest, _response, _chain);
+      }
+    
+    
     } else  {
-
       if (httpRequest.getRequestURI().endsWith("common/MenuTree.jsp"))  {
         String markUrl = httpRequest.getRequestURI();
         if (httpRequest.getQueryString() != null)  {
