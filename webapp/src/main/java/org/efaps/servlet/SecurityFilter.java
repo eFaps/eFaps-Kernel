@@ -103,7 +103,7 @@ public class SecurityFilter implements Filter  {
   /**
    *
    */
-  final private static TransactionManager transactionManager = new SlideTransactionManager();
+  final public static TransactionManager transactionManager = new SlideTransactionManager();
 
   /**
    * All uris which are not needed filtered by security check (password check)
