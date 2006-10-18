@@ -84,6 +84,12 @@
 
   <!-- filter used to test if a user is logged in -->
   <filter>
+    <filter-name>eFapsBasicAuthenticationFilter</filter-name>
+    <filter-class>org.efaps.servlet.BasicAuthenticationFilter</filter-class>
+  </filter>
+
+  <!-- filter used to test if a user is logged in -->
+  <filter>
     <filter-name>securityFilter</filter-name>
     <filter-class>org.efaps.servlet.SecurityFilter</filter-class>
     <init-param>
@@ -138,6 +144,11 @@
             </description>
         </init-param>-->
   </filter>
+
+  <filter-mapping>
+    <filter-name>eFapsBasicAuthenticationFilter</filter-name>
+    <url-pattern>/webdav/*</url-pattern>
+  </filter-mapping>
 
   <filter-mapping>
     <filter-name>securityFilter</filter-name>

@@ -48,7 +48,6 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -208,24 +207,6 @@ String uri = httpRequest.getRequestURI();
       doFilter(userName, httpRequest, _response, _chain);
     } else if (this.exludeUris.contains(uri))  {
       doFilter(null, _request, _response, _chain);
-    } else if (uri.startsWith(this.urlWebDAV))  {
-      String header = httpRequest.getHeader("Authorization");
-      if (header == null)  {
-        ((HttpServletResponse)_response).setHeader("WWW-Authenticate", "Basic realm=\"eFaps WebDAV\"");
-        ((HttpServletResponse)_response).sendError(HttpServletResponse.SC_UNAUTHORIZED);
-      } else  {
-        String encoded = header.substring(header.indexOf(" ") + 1);
-System.out.println("encoded="+encoded);
-        String decoded = new String(Base64.decodeBase64(encoded.getBytes()));
-        String userName = decoded.substring(0, decoded.indexOf(":"));
-        String password = decoded.substring(decoded.indexOf(":") + 1);
-System.out.println("userName="+userName);
-System.out.println("passwort="+password);
-        httpRequest.getSession().setAttribute(SESSIONPARAM_LOGIN_NAME, userName);
-        doFilter(userName, httpRequest, _response, _chain);
-      }
-    
-    
     } else  {
       if (httpRequest.getRequestURI().endsWith("common/MenuTree.jsp"))  {
         String markUrl = httpRequest.getRequestURI();
