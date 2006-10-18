@@ -90,13 +90,6 @@ public class SecurityFilter implements Filter  {
    */
   final public static String INIT_PARAM_URL_LOGIN_PAGE = "urlLoginPage";
 
-  /**
-   * The string is name of the parameter used to define the url of the WebDAV 
-   * integration.
-   */
-  final public static String INIT_PARAM_URL_WEBDAV = "urlWebDAV";
-
-
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
@@ -119,12 +112,6 @@ public class SecurityFilter implements Filter  {
 
   /**
    *
-   */
-  private String urlWebDAV = null;
-  
-
-  /**
-   *
       Called by the web container to indicate to a filter that it is being placed into service. The servlet container calls the init method exactly once after instantiating the filter. The init method must complete successfully before the filter is asked to do any filtering work.
 
       The web container cannot place the filter into service if the init method either
@@ -144,12 +131,6 @@ public class SecurityFilter implements Filter  {
 
     this.exludeUris.add((root + this.notLoggedInForward).replaceAll("//+", "/"));
     this.exludeUris.add((root + "/servlet/login").replaceAll("//+", "/"));
-
-
-    this.urlWebDAV = (root + "/" 
-                      + _filterConfig.getInitParameter(INIT_PARAM_URL_WEBDAV))
-                      .replaceAll("//+", "/");
-
   }
 
   /**
@@ -195,13 +176,6 @@ System.out.println("        filter getAuthType()  ="+httpRequest.getAuthType()  
 System.out.println("        filter getRequestURI()  ="+httpRequest.getRequestURI()+":");
 String uri = httpRequest.getRequestURI();
 
-
-
- /*   if (httpRequest.getAuthType()!=null && httpRequest.getAuthType().equals(HttpServletRequest.BASIC_AUTH))  {
-      String userName = httpRequest.getUserPrincipal().getName();
-      doFilter(userName, httpRequest, _response, _chain);
-    } else*/
-    
     if (isLoggedIn(httpRequest))  {
       String userName = (String)httpRequest.getSession().getAttribute(SESSIONPARAM_LOGIN_NAME);
       doFilter(userName, httpRequest, _response, _chain);
