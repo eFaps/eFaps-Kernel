@@ -82,10 +82,26 @@
     </description>
   </context-param>
 
-  <!-- filter used to test if a user is logged in -->
+  <!-- filter used for basic authentication for WebDAV -->
   <filter>
     <filter-name>eFapsBasicAuthenticationFilter</filter-name>
     <filter-class>org.efaps.servlet.BasicAuthenticationFilter</filter-class>
+    <init-param>
+      <param-name>application</param-name>
+      <param-value>eFaps</param-value>
+      <description>
+        The value defines the JAAS application name. This is the name defined
+        in the JAAS configuration file.
+        The default value is 'eFaps'.
+      </description>
+    </init-param>
+    <init-param>
+      <param-name>title</param-name>
+      <param-value>eFaps WebDAV</param-value>
+      <description>
+        Text which is displayed in the login dialog on the user client.
+      </description>
+    </init-param>
   </filter>
 
   <!-- filter used to test if a user is logged in -->
@@ -438,17 +454,6 @@
     <servlet-name>eFapsFacesServlet</servlet-name>
     <url-pattern>*.jsf</url-pattern>
   </servlet-mapping>
-
-  <!-- The mapping for the Slide WebDAV servlet.
-     If you change the mapping so that the servlet isn't the default servlet
-     anymore, make sure to set the init-parameter 'default-servlet' to
-     'false'. -->
-<!--
-  <servlet-mapping>
-      <servlet-name>webdav</servlet-name>
-      <url-pattern>webdav1/*</url-pattern>
-  </servlet-mapping>
--->
 
 <session-config>
   <session-timeout>3000</session-timeout>
