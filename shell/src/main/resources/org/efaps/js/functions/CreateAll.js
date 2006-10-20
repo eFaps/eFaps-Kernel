@@ -27,6 +27,8 @@ importClass(Packages.org.efaps.admin.user.Person);
 importClass(Packages.org.efaps.db.databases.AbstractDatabase);
 importClass(Packages.org.efaps.shell.method.update.AccessSetUpdate);
 importClass(Packages.org.efaps.shell.method.update.AccessTypeUpdate);
+importClass(Packages.org.efaps.shell.method.update.datamodel.SQLTableUpdate);
+importClass(Packages.org.efaps.shell.method.update.integration.WebDAVUpdate);
 importClass(Packages.org.efaps.shell.method.update.user.JAASSystemUpdate);
 
 var TYPE_INTEGER      = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.INTEGER);
@@ -123,11 +125,23 @@ function _eFapsCreateAllImportUserInterface()  {
 /**
  * Import all XML files found in the sub directories.
  */
-function _eFapsCreateAllImportXMLFiles()  {
+function _eFapsCreateAllImportXMLFiles(_version)  {
   var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
   
   var jexlContext = JexlHelper.createContext();
+  jexlContext.getVars().put("version", 
+                            Packages.java.lang.Integer.parseInt(_version));
 
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SQLTableUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
@@ -153,6 +167,16 @@ function _eFapsCreateAllImportXMLFiles()  {
     var fileName = new Packages.java.lang.String(file.getName());
     if (fileName.endsWith(".xml"))  {
       var update = JAASSystemUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = WebDAVUpdate.readXMLFile(file);
       if (update != null)  {
         update.updateInDB(jexlContext);
       }
@@ -206,7 +230,8 @@ function eFapsCreateAll()  {
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  _eFapsCreateAllImportXMLFiles();
+  _eFapsCreateAllImportXMLFiles('2');
+  _eFapsCreateAllImportXMLFiles('3');
   Shell.transactionManager.commit();
   context.close();
 
