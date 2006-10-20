@@ -301,9 +301,9 @@ public abstract class AbstractUpdate  {
     /**
      *
      */
-    public void updateInDB(final Instance _instance,
-                           final Set < Link > _allLinkTypes,
-                           final Insert _insert) throws EFapsException, Exception  {
+    public Instance updateInDB(final Instance _instance,
+                               final Set < Link > _allLinkTypes,
+                               final Insert _insert) throws EFapsException, Exception  {
       Context context = Context.getThreadContext();
       Instance instance = _instance;
 
@@ -332,6 +332,8 @@ public abstract class AbstractUpdate  {
           setLinksInDB(instance, linkType, this.links.get(linkType));
         }
       }
+      
+      return instance;
     }
 
     /**

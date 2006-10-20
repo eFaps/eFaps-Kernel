@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
 import org.efaps.db.Context;
+import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.databases.AbstractDatabase;
@@ -310,15 +311,14 @@ e.printStackTrace();
      */
     public void setParent(final String _parent) throws Exception {
       if ((_parent != null) && (_parent.length() > 0))  {
-        Context context = Context.getThreadContext();
         // search for the instance
         SearchQuery query = new SearchQuery();
-        query.setQueryTypes(context, "Admin_DataModel_SQLTable");
-        query.addWhereExprEqValue(context, "Name", _parent);
-        query.addSelect(context, "OID");
+        query.setQueryTypes("Admin_DataModel_SQLTable");
+        query.addWhereExprEqValue("Name", _parent);
+        query.addSelect("OID");
         query.executeWithoutAccessCheck();
         if (query.next())  {
-          Instance instance = new Instance((String) query.get(context, "OID"));
+          Instance instance = new Instance((String) query.get("OID"));
           addValue("DMTableMain", "" + instance.getId());
         }  else  {
           addValue("DMTableMain", null);
@@ -362,19 +362,21 @@ e.printStackTrace();
     /**
      *
      */
-    public void updateInDB(final org.efaps.db.Instance _instance,
-                           final Set < Link > _allLinkTypes,
-                           final org.efaps.db.Insert _insert) throws EFapsException, Exception  {
+    public Instance updateInDB(final Instance _instance,
+                               final Set < Link > _allLinkTypes,
+                               final Insert _insert) throws EFapsException, Exception  {
+      Instance instance = _instance;
+      
       if (this.create)  {
         createSQLTable();
       }
-      
       if (this.update)  {
         updateSQLTable();
       }
       if (getValue("Name") != null)  {
-        super.updateInDB(_instance, _allLinkTypes, _insert);
+        instance = super.updateInDB(_instance, _allLinkTypes, _insert);
       }
+      return instance;
     }
 
 
