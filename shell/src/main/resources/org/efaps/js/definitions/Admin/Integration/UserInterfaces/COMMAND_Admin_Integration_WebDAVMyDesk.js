@@ -19,12 +19,12 @@
  * Last Changed By: $Author$
  */
 
-with (MENU)  {
-  addChild(new Command("Admin_MyDesk_Admin_Search"));
-  addChild(new Menu("Admin_User_AbstractMyDesk"));
-  addChild(new Menu("Admin_DataModel_AbstractMyDesk"));
-  addChild(new Menu("Admin_Access_AbstractMyDesk"));
-  addChild(new Menu("Admin_LifeCycle_AbstractMyDesk"));
-  addChild(new Menu("Admin_UI_AbstractMyDesk"));
-  addChild(new Menu("Admin_Integration_AbstractMyDesk"));
+with (COMMAND)  {
+  addProperty("Target",                 "content");
+  addProperty("TargetQueryTypes",       "Admin_Integration_WebDAV");
+  addProperty("TargetShowCheckBoxes",   "true");
+  addIcon("Admin_Integration_WebDAVImage");
+//  addTargetMenu("Admin_Integration_WebDAVMyDesk_Menu");
+  addTargetTable("Admin_Integration_WebDAVTable");
+  addRole("Administration");
 }

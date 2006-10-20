@@ -20,11 +20,5 @@
  */
 
 with (MENU)  {
-  addChild(new Command("Admin_MyDesk_Admin_Search"));
-  addChild(new Menu("Admin_User_AbstractMyDesk"));
-  addChild(new Menu("Admin_DataModel_AbstractMyDesk"));
-  addChild(new Menu("Admin_Access_AbstractMyDesk"));
-  addChild(new Menu("Admin_LifeCycle_AbstractMyDesk"));
-  addChild(new Menu("Admin_UI_AbstractMyDesk"));
-  addChild(new Menu("Admin_Integration_AbstractMyDesk"));
+  addChild(new Command("Admin_Integration_WebDAVMyDesk"));
 }
