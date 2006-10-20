@@ -28,6 +28,7 @@ importClass(Packages.org.efaps.db.databases.AbstractDatabase);
 importClass(Packages.org.efaps.shell.method.update.AccessSetUpdate);
 importClass(Packages.org.efaps.shell.method.update.AccessTypeUpdate);
 importClass(Packages.org.efaps.shell.method.update.datamodel.SQLTableUpdate);
+importClass(Packages.org.efaps.shell.method.update.datamodel.TypeUpdate);
 importClass(Packages.org.efaps.shell.method.update.integration.WebDAVUpdate);
 importClass(Packages.org.efaps.shell.method.update.user.JAASSystemUpdate);
 
@@ -136,16 +137,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
     if (fileName.endsWith(".xml"))  {
-      var update = SQLTableUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
       var update = AccessTypeUpdate.readXMLFile(file);
       if (update != null)  {
         update.updateInDB(jexlContext);
@@ -157,6 +148,26 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     var fileName = new Packages.java.lang.String(file.getName());
     if (fileName.endsWith(".xml"))  {
       var update = AccessSetUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SQLTableUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = TypeUpdate.readXMLFile(file);
       if (update != null)  {
         update.updateInDB(jexlContext);
       }
