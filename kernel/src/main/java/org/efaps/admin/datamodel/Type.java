@@ -544,7 +544,8 @@ public class Type extends DataModelObject  {
    * @see #addUniqueKey
    * @see #setViewAttribute
    */
-  protected void setProperty(final Context _context, final String _name, final String _value) throws Exception  {
+  protected void setProperty(final String _name, 
+                             final String _value) throws CacheReloadException  {
     if (_name.startsWith("AccessCheckClass"))  {
       addAccessCheck(_value);
     } else if ("Icon".equals(_name))  {

@@ -148,12 +148,12 @@ public abstract class AbstractUpdate  {
 
     // search for the instance
     SearchQuery query = new SearchQuery();
-    query.setQueryTypes(context, this.dataModelType);
-    query.addWhereExprEqValue(context, "UUID", this.uuid);
-    query.addSelect(context, "OID");
+    query.setQueryTypes(this.dataModelType);
+    query.addWhereExprEqValue("UUID", this.uuid);
+    query.addSelect("OID");
     query.executeWithoutAccessCheck();
     if (query.next())  {
-      instance = new Instance((String) query.get(context, "OID"));
+      instance = new Instance((String) query.get("OID"));
     }
     query.close();
 
@@ -354,18 +354,17 @@ public abstract class AbstractUpdate  {
       // get ids from current object
       Map < Long, String > currents = new HashMap < Long, String > ();
       SearchQuery query = new SearchQuery();
-      query.setExpand(context, 
-                      _instance, 
+      query.setExpand(_instance, 
                       _linkType.linkName + "\\" + _linkType.parentAttrName);
-      query.addSelect(context, _linkType.childAttrName + ".ID");
-      query.addSelect(context, "OID");
-      query.addSelect(context, _linkType.childAttrName + ".Type");
+      query.addSelect(_linkType.childAttrName + ".ID");
+      query.addSelect("OID");
+      query.addSelect(_linkType.childAttrName + ".Type");
       query.executeWithoutAccessCheck();
       while (query.next())  {
-        Type type = (Type) query.get(context, _linkType.childAttrName + ".Type");
+        Type type = (Type) query.get(_linkType.childAttrName + ".Type");
         if (_linkType.childTypeName.equals(type.getName()))  {
-          currents.put((Long) query.get(context, _linkType.childAttrName + ".ID"),
-                     (String) query.get(context, "OID"));
+          currents.put((Long) query.get(_linkType.childAttrName + ".ID"),
+                     (String) query.get("OID"));
         }
       }
       query.close();
@@ -377,12 +376,12 @@ public abstract class AbstractUpdate  {
         for (Map.Entry < String, Map < String, String > > linkEntry 
                                                           : _links.entrySet())  {
           query = new SearchQuery();
-          query.setQueryTypes(context, _linkType.childTypeName);
-          query.addWhereExprEqValue(context, "Name", linkEntry.getKey());
-          query.addSelect(context, "ID");
+          query.setQueryTypes(_linkType.childTypeName);
+          query.addWhereExprEqValue("Name", linkEntry.getKey());
+          query.addSelect("ID");
           query.executeWithoutAccessCheck();
           if (query.next())  {
-            targets.put((Long) query.get(context, "ID"), linkEntry.getValue());
+            targets.put((Long) query.get("ID"), linkEntry.getValue());
           } else  {
   System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not found!");
           }

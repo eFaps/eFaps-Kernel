@@ -26,6 +26,7 @@ import java.util.ResourceBundle;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  *
@@ -75,11 +76,12 @@ public class Table extends Collection implements Cloneable  {
    * @param _value  value of the property
    * @param _toId   id of the to object
    */
-  protected void setProperty(Context _context, String _name, String _value) throws Exception  {
+  protected void setProperty(final String _name, 
+                             final String _value) throws CacheReloadException  {
     if (_name.equals("SelectionColRef"))  {
       setSelectableColRef(Attribute.get(_value));
     } else  {
-      super.setProperty(_context, _name, _value);
+      super.setProperty(_name, _value);
     }
   }
 

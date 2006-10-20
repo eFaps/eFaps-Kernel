@@ -42,11 +42,11 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.efaps.db.Cache;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.js.Shell;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
 
 /**
  * @author tmo
@@ -271,7 +271,7 @@ public abstract class AbstractMethod  {
    */
   protected void reloadCache() throws EFapsException,Exception  {
     startTransaction();
-    Cache.reloadCache(Context.getThreadContext());
+    Cache.reloadCache();
     abortTransaction();
   }
   

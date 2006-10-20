@@ -306,7 +306,7 @@ this.type = type;
    * @deprecated
    */
   public void addWhereExprEqValue(Context _context, String _expr, long _value) throws EFapsException  {
-    addWhereExprEqValue(_context, _expr, _value);
+    addWhereExprEqValue(_expr, _value);
   }
 
   /**

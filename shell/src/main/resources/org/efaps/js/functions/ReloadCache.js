@@ -19,8 +19,8 @@
  * Last Changed By: $Author$
  */
 
-importClass(Packages.org.efaps.db.Cache);
 importClass(Packages.org.efaps.db.Context);
+importClass(Packages.org.efaps.util.cache.Cache);
 
 /**
  * Reloades the complete eFaps cache.
@@ -30,7 +30,7 @@ function reloadCache()  {
     Shell.transactionManager.begin();
     var context = new Context.newThreadContext(
                                     Shell.transactionManager.getTransaction());
-    Cache.reloadCache(context);
+    Cache.reloadCache();
     Shell.transactionManager.rollback();
     context.close();
 

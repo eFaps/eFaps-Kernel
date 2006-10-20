@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -144,8 +143,8 @@ this.selIndexLen++;
    * @param _value  value of the property
    * @param _toId   id of the to object
    */
-  protected void setProperty(Context _context, String _name, String _value) throws Exception  {
-/*    if (_name.startsWith("ExpandAttribute"))  {
+/*    protected void setProperty(String _name, String _value) throws EFapsException  {
+  if (_name.startsWith("ExpandAttribute"))  {
       int index = Integer.parseInt(_name.substring(15));
       if (getExpandAttributes()==null)  {
         setExpandAttributes(new Vector());
@@ -159,8 +158,9 @@ this.selIndexLen++;
     } else if (_name.equals("HeaderMenu"))  {
       setHeaderMenu(Menu.get(_context, _value));
     }
-*/
+
   }
+*/
 
   /////////////////////////////////////////////////////////////////////////////
 
