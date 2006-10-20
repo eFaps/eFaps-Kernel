@@ -105,6 +105,9 @@ public class WebDAVUpdate extends AbstractUpdate  {
       digester.addCallMethod("integration-webdav/definition/name", "setName", 1);
       digester.addCallParam("integration-webdav/definition/name", 0);
 
+      digester.addCallMethod("integration-webdav/definition/path", "setPath", 1);
+      digester.addCallParam("integration-webdav/definition/path", 0);
+
       ret = (WebDAVUpdate) digester.parse(_file);
     } catch (SAXException e)  {
 e.printStackTrace();
@@ -118,5 +121,12 @@ e.printStackTrace();
 
   public static class Definition extends DefinitionAbstract {
     
+    /**
+     * 
+     * @see #values
+     */
+    public void setPath(final String _path)  {
+      addValue("Path", _path);
+    }
   }
 }

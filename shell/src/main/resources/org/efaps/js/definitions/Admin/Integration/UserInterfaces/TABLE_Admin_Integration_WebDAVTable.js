@@ -34,6 +34,10 @@ with (TABLE)  {
     addProperty("Expression",             "Revision");
     addProperty("Label",                  "Admin_Integration_WebDAV/Revision.Label");
   }
+  with (addField("path"))  {
+    addProperty("Expression",             "Path");
+    addProperty("Label",                  "Admin_Integration_WebDAV/Path.Label");
+  }
   with (addField("buttonOpenInNewWindow"))  {
     addProperty("HRef",                   "${COMMONURL}/MenuTree.jsp");
     addProperty("Target",                 "popup");
