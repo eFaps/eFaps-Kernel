@@ -148,22 +148,18 @@ writeElement(writer, "multistatus xmlns=\"DAV:\"", OPENING);
 
   AbstractResource resource  = null;
 
-  if (_request.getPathInfo()==null || "/".equals(_request.getPathInfo()))  {
-// hmm, es muss fuer / info ausgegegeben werden... es gibt webdav-clients die
-// deshalb abschmirren...
-  } else  {
-    resource = getResource4Path(_request.getPathInfo());
-    if (resource == null)  {
+  resource = getResource4Path(_request.getPathInfo());
+  if (resource == null)  {
 // was fuer status muss da zurueckgegeben werden????
-    } else  {
-      write(writer, _request.getRequestURI(), properties, resource);
-    }
+System.out.println("did not found " + _request.getPathInfo());
+  } else  {
+    write(writer, _request.getRequestURI(), properties, resource);
   }
 
   if ((depthHeader == DepthHeader.depth1)
       && (resource instanceof CollectionResource))  {
     
-    List < AbstractResource > subs = this.webDAVImpl.getSubs((CollectionResource) resource);
+    List < AbstractResource > subs = ((CollectionResource) resource).getSubs();
     
     for (AbstractResource subResource : subs)  {
       write(writer, 

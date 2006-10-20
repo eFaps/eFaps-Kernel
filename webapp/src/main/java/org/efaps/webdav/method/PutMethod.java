@@ -55,14 +55,14 @@ public class PutMethod extends AbstractMethod  {
 // nicht immer richtig.... was ist wenn im root angelegt werden soll....
 // (im moment sonderfall, da im root keine datei abgelegt werden darf)
       status = Status.CONFLICT;
-    } else if (getCollection(parentCollection, name) != null)  {
+    } else if (parentCollection.getCollection(name) != null)  {
       status = Status.CONFLICT;
     } else  {
-      SourceResource source = getSource(parentCollection, name);
+      SourceResource source = parentCollection.getSource(name);
 
       if (source == null)  {
-        if (this.webDAVImpl.createSource(parentCollection, name))  {
-          source = getSource(parentCollection, name);
+        if (parentCollection.createSource(name))  {
+          source = parentCollection.getSource(name);
           status = Status.CREATED;
         }
       } else  {
@@ -73,8 +73,7 @@ public class PutMethod extends AbstractMethod  {
 // was muss da gesetzt werden????? => RFC 2068
 status = Status.CONFLICT;
       } else  {
-        boolean bck = this.webDAVImpl.checkinSource(source, 
-                                                    _request.getInputStream());
+        boolean bck = source.checkin(_request.getInputStream());
         if (!bck)  {
 // was muss da gesetzt werden????? => RFC 2068
 status = Status.CONFLICT;

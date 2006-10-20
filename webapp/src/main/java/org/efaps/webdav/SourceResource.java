@@ -20,6 +20,8 @@
 
 package org.efaps.webdav;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 
 import org.efaps.db.Instance;
@@ -45,14 +47,32 @@ public class SourceResource extends AbstractResource  {
   /////////////////////////////////////////////////////////////////////////////
   // constructor / desctructors
   
-  public SourceResource(final String _name,
+  public SourceResource(final WebDAVInterface _webDAVImpl,
+                        final String _name,
                         final Instance _instance,
                         final Date _created,
                         final Date _modified,
                         final String _description,
                         final long _length)  {
-    super(_name, _instance, _created, _modified, _description);
+    super(_webDAVImpl, _name, _instance, _created, _modified, _description);
     this.length = _length;
+  }
+
+  /**
+   * Deletes this source resource.
+   *
+   * @return <i>true</i> if deleted, otherwise <i>false</i>
+   */
+  public boolean delete()  {
+    return getWebDAVImpl().deleteSource(this);
+  }
+
+  public boolean checkout(final OutputStream _outputStream)  {
+    return getWebDAVImpl().checkoutSource(this, _outputStream);
+  }
+
+  public boolean checkin(final InputStream _inputStream)  {
+    return getWebDAVImpl().checkinSource(this, _inputStream);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -67,5 +87,4 @@ public class SourceResource extends AbstractResource  {
   public long getLength()  {
     return this.length;
   }
-
 }

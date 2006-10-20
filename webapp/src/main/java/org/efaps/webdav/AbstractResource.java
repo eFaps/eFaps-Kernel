@@ -36,6 +36,11 @@ public abstract class AbstractResource  {
   // instance variables
 
   /**
+   * WebDAV implementation to get information for this resource.
+   */
+  private final WebDAVInterface webDAVImpl;
+
+  /**
    * Name of the resource.
    *
    * @see #getName
@@ -74,11 +79,13 @@ public abstract class AbstractResource  {
   /////////////////////////////////////////////////////////////////////////////
   // constructor / desctructors
   
-  protected AbstractResource(final String _name,
+  protected AbstractResource(final WebDAVInterface _webDAVImpl,
+                             final String _name,
                              final Instance _instance,
                              final Date _created,
                              final Date _modified,
                              final String _description)  {
+    this.webDAVImpl = _webDAVImpl;
     this.name = _name;
     this.instance = _instance;
     this.created = _created;
@@ -88,6 +95,26 @@ public abstract class AbstractResource  {
 
   /////////////////////////////////////////////////////////////////////////////
   // getter / setter methods for instance variables
+
+  /**
+   * Deletes this resource.
+   *
+   * @return <i>true</i> if deleted, otherwise <i>false</i>
+   */
+  public abstract boolean delete();
+
+  /////////////////////////////////////////////////////////////////////////////
+  // getter / setter methods for instance variables
+
+  /**
+   * This is the getter method for instance variable {@table #webDAVImpl}.
+   *
+   * @return value of instance variable {@table #webDAVImpl}
+   * @see #webDAVImpl
+   */
+  public WebDAVInterface getWebDAVImpl()  {
+    return this.webDAVImpl;
+  }
 
   /**
    * This is the getter method for instance variable {@table #name}.

@@ -48,8 +48,7 @@ public class GetMethod extends AbstractMethod  {
     } else if (resource instanceof SourceResource)  {
       _response.setContentType(_request.getSession().getServletContext().getMimeType(resource.getName()));
       _response.addHeader("Content-Disposition", "inline; filename=\""+resource.getName()+"\"");
-      this.webDAVImpl.checkoutSource((SourceResource) resource,
-                                     _response.getOutputStream());
+      ((SourceResource) resource).checkout(_response.getOutputStream());
     } else  {
 // was fuer fehler muss hier gemacht werden???
     }

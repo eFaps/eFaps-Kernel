@@ -37,7 +37,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.efaps.webdav.AbstractResource;
 import org.efaps.webdav.CollectionResource;
 import org.efaps.webdav.SourceResource;
-import org.efaps.webdav.TeamCenterWebDAVImpl;
+import org.efaps.webdav.WebDAVImpl;
+import org.efaps.webdav.WebDAVInterface;
 
 /**
  * @author tmo
@@ -130,7 +131,6 @@ System.out.println("_creationDate="+_creationDate);
      */
     getlastmodified {
       String makeXML(Object _modifiedDate) {
-System.out.println("_modifiedDate="+_modifiedDate);
         StringBuffer ret = new StringBuffer();
         ret.append('<').append(name()).append(">")
            .append(modifiedDateFormat.format(_modifiedDate))
@@ -213,10 +213,6 @@ System.out.println("_modifiedDate="+_modifiedDate);
     }
   }
 
-
-protected TeamCenterWebDAVImpl webDAVImpl = new TeamCenterWebDAVImpl();
-
-
   public DepthHeader getDepthHeader(final HttpServletRequest _request)  {
     DepthHeader ret = DepthHeader.infity;
     
@@ -276,54 +272,50 @@ protected TeamCenterWebDAVImpl webDAVImpl = new TeamCenterWebDAVImpl();
 
   /////////////////////////////////////////////////////////////////////////////
 
+  private CollectionResource rootCollection = new CollectionResource(
+      new WebDAVImpl(),
+      "",
+      null,
+      new Date(),
+      new Date(),
+      "eFaps WebDAV Integration"
+  );
+  
   protected AbstractResource getResource4Path(final String _uri)  {
     String[] uri = _uri.toString().split("/");
     
-    AbstractResource resource = null;
-    CollectionResource collection = null;
-    if (uri.length > 2)  {
-      collection = getCollection(uri.length - 2, uri);
-    }
-    if ((uri.length == 2) || (collection != null))  {
-      resource = getCollection(collection, uri[uri.length - 1]);
-      if (resource == null)  {
-        resource = getSource(collection, uri[uri.length - 1]);
+    AbstractResource resource = this.rootCollection;
+    if (uri.length > 1)  {
+      CollectionResource collection = getCollection(uri.length - 2, uri);
+      if (collection != null)  {
+        resource = collection.getCollection(uri[uri.length - 1]);
+        if (resource == null)  {
+          resource = collection.getSource(uri[uri.length - 1]);
+        }
+      } else  {
+        resource = null;
       }
     }
     return resource;
   }
 
   protected CollectionResource getCollection4ParentPath(final String _uri)  {
-    CollectionResource collection = null;
     String[] uri = _uri.toString().split("/");
     
-    if (uri.length > 2)  {
-      collection = getCollection(uri.length - 2, uri);
-    }
-    return collection;
+    return getCollection(uri.length - 2, uri);
   }
 
   protected CollectionResource getCollection(final int _endIndex, 
                                              final String[] _uri)  {
 
-    CollectionResource collection = null;
+    CollectionResource collection = this.rootCollection;
     for (int i = 1; 
          (i <= _endIndex) && ((collection != null) || (i == 1)); 
          i++)  {
-      collection = getCollection(collection, _uri[i]);
+      collection = collection.getCollection(_uri[i]);
     }
 
     return collection;
-  }
-
-  protected CollectionResource getCollection(final CollectionResource _collection, 
-                                             final String _name)  {
-    return this.webDAVImpl.getCollection(_collection, _name);
-  }
-  
-  protected SourceResource getSource(final CollectionResource _collection, 
-                                     final String _name)  {
-    return this.webDAVImpl.getSource(_collection, _name);
   }
 
   /////////////////////////////////////////////////////////////////////////////

@@ -43,11 +43,7 @@ public class DeleteMethod extends AbstractMethod  {
   public void run(final HttpServletRequest _request, final HttpServletResponse _response) throws IOException, ServletException  {
 
     AbstractResource resource = getResource4Path(_request.getPathInfo());
-    if (resource instanceof SourceResource)  {
-      this.webDAVImpl.deleteSource((SourceResource) resource);
-    } else if (resource instanceof CollectionResource)  {
-      this.webDAVImpl.deleteCollection((CollectionResource) resource);
-    }
+    resource.delete();
       
     // nicht richtig for collections....
     _response.setStatus(Status.NO_CONTENT.code);

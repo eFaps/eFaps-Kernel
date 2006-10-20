@@ -46,7 +46,7 @@ import org.efaps.webdav.SourceResource;
  * @version $Id$
  * @todo description
  */
-public class TeamCenterWebDAVImpl  {
+public class TeamCenterWebDAVImpl implements WebDAVInterface  {
   
   /////////////////////////////////////////////////////////////////////////////
   // static variables
@@ -69,45 +69,24 @@ public class TeamCenterWebDAVImpl  {
     List < AbstractResource > subs = new ArrayList < AbstractResource > ();
 
     try  {
-      Context context = Context.getThreadContext();
-
-      if (_collection == null)  {
-        SearchQuery query = new SearchQuery();
-        query.setQueryTypes(context, "TeamCenter_RootFolder");
-        query.addSelect(context, "OID");
-        query.addSelect(context, "Name");
-        query.addSelect(context, "Modified");
-        query.addSelect(context, "Created");
-        query.execute();
-        while (query.next())  {
-          String name = query.get(context, "Name").toString();
-          subs.add(new CollectionResource(
-              name,
-              new Instance(query.get(context,"OID").toString()),
-              (Date) query.get(context, "Created"),
-              (Date) query.get(context, "Modified"),
-              name
-          ));
-        }
-        query.close();
-      } else  {
+      if (_collection.getInstance() !=null)  {
         // append sub folders
         SearchQuery query = new SearchQuery();
-        query.setExpand(context, 
-                        _collection.getInstance(), 
+        query.setExpand(_collection.getInstance(), 
                         "TeamCenter_Folder\\ParentFolder");
-        query.addSelect(context, "OID");
-        query.addSelect(context, "Name");
-        query.addSelect(context, "Created");
-        query.addSelect(context, "Modified");
+        query.addSelect("OID");
+        query.addSelect("Name");
+        query.addSelect("Created");
+        query.addSelect("Modified");
         query.execute();
         while (query.next())  {
-          String name = query.get(context, "Name").toString();
+          String name = query.get("Name").toString();
           subs.add(new CollectionResource(
+              this,
               name,
-              new Instance(query.get(context,"OID").toString()),
-              (Date) query.get(context, "Created"),
-              (Date) query.get(context, "Modified"),
+              new Instance(query.get("OID").toString()),
+              (Date) query.get("Created"),
+              (Date) query.get("Modified"),
               name
           ));
         }
@@ -115,24 +94,44 @@ public class TeamCenterWebDAVImpl  {
     
         // append sub files
         query = new SearchQuery();
-        query.setExpand(context, 
-                        _collection.getInstance(), 
+        query.setExpand(_collection.getInstance(), 
                         "TeamCenter_Document2Folder\\Folder.Document");
-        query.addSelect(context, "OID");
-        query.addSelect(context, "Name");
-        query.addSelect(context, "FileLength");
-        query.addSelect(context, "Created");
-        query.addSelect(context, "Modified");
+        query.addSelect("OID");
+        query.addSelect("Name");
+        query.addSelect("FileLength");
+        query.addSelect("Created");
+        query.addSelect("Modified");
         query.execute();
         while (query.next())  {
-          String name = (String) query.get(context, "Name");
+          String name = (String) query.get("Name");
           subs.add(new SourceResource(
+              this,
               name,
-              new Instance((String) query.get(context,"OID")),
-              (Date) query.get(context, "Created"),
-              (Date) query.get(context, "Modified"),
+              new Instance((String) query.get("OID")),
+              (Date) query.get("Created"),
+              (Date) query.get("Modified"),
               name,
-              (Long) query.get(context, "FileLength")
+              (Long) query.get("FileLength")
+          ));
+        }
+        query.close();
+      } else  {
+        SearchQuery query = new SearchQuery();
+        query.setQueryTypes("TeamCenter_RootFolder");
+        query.addSelect("OID");
+        query.addSelect("Name");
+        query.addSelect("Modified");
+        query.addSelect("Created");
+        query.execute();
+        while (query.next())  {
+          String name = query.get("Name").toString();
+          subs.add(new CollectionResource(
+              this,
+              name,
+              new Instance(query.get("OID").toString()),
+              (Date) query.get("Created"),
+              (Date) query.get("Modified"),
+              name
           ));
         }
         query.close();
@@ -159,28 +158,27 @@ public class TeamCenterWebDAVImpl  {
     CollectionResource collection = null;
     
     try  {
-      Context context = Context.getThreadContext();
       SearchQuery query = new SearchQuery();
-      if (_collection == null)  {
-        query.setQueryTypes(context, "TeamCenter_RootFolder");
-        query.addWhereExprEqValue(context, "Name", _name);
+      if (_collection.getInstance() !=null)  {
+        query.setQueryTypes("TeamCenter_Folder");
+        query.addWhereExprEqValue("Name", _name);
+        query.addWhereExprEqValue("ParentFolder", 
+                                  _collection.getInstance().getId());
       } else  {
-        query.setQueryTypes(context, "TeamCenter_Folder");
-        query.addWhereExprEqValue(context, "Name", _name);
-        query.addWhereExprEqValue(context, 
-                                  "ParentFolder", 
-                                  "" + _collection.getInstance().getId());
+        query.setQueryTypes("TeamCenter_RootFolder");
+        query.addWhereExprEqValue("Name", _name);
       }
-      query.addSelect(context, "OID");
-      query.addSelect(context, "Created");
-      query.addSelect(context, "Modified");
+      query.addSelect("OID");
+      query.addSelect("Created");
+      query.addSelect("Modified");
       query.execute();
       if (query.next())  {
         collection = new CollectionResource(
+            this,
             _name,
-            new Instance(query.get(context,"OID").toString()),
-            (Date) query.get(context, "Created"),
-            (Date) query.get(context, "Modified"),
+            new Instance(query.get("OID").toString()),
+            (Date) query.get("Created"),
+            (Date) query.get("Modified"),
             _name
         );
       }
@@ -206,21 +204,18 @@ public class TeamCenterWebDAVImpl  {
 
     if (_collection != null)  {
       try  {
-        Context context = Context.getThreadContext();
-    
         SearchQuery query = new SearchQuery();
-        query.setQueryTypes(context, "TeamCenter_Document2Folder");
-        query.addWhereExprEqValue(context, 
-                                  "Folder", 
+        query.setQueryTypes("TeamCenter_Document2Folder");
+        query.addWhereExprEqValue("Folder", 
                                   "" + _collection.getInstance().getId());
-        query.addSelect(context, "Document.OID");
-        query.addSelect(context, "Document.Name");
+        query.addSelect("Document.OID");
+        query.addSelect("Document.Name");
         query.execute();
         Instance instance = null;
         while (query.next())  {
-          String docName = (String) query.get(context, "Document.Name");
+          String docName = (String) query.get("Document.Name");
           if ((docName != null) && _name.equals(docName))  {
-            instance = new Instance((String) query.get(context,"Document.OID"));
+            instance = new Instance((String) query.get("Document.OID"));
             break;
           }
         }
@@ -228,19 +223,20 @@ public class TeamCenterWebDAVImpl  {
 
         if (instance != null)  {
           query = new SearchQuery();
-          query.setObject(context, instance);
-          query.addSelect(context, "FileLength");
-          query.addSelect(context, "Created");
-          query.addSelect(context, "Modified");
+          query.setObject(instance);
+          query.addSelect("FileLength");
+          query.addSelect("Created");
+          query.addSelect("Modified");
           query.execute();
           query.next();
           source = new SourceResource(
+              this,
               _name,
               instance,
-              (Date) query.get(context, "Created"),
-              (Date) query.get(context, "Modified"),
+              (Date) query.get("Created"),
+              (Date) query.get("Modified"),
               _name,
-              (Long) query.get(context, "FileLength")
+              (Long) query.get("FileLength")
           );
           query.close();
         }

@@ -102,17 +102,7 @@ public class WebDAVServlet extends HttpServlet  {
     String defaultEncoding = new java.io.InputStreamReader(System.in).getEncoding();
 this.urlEncoding = defaultEncoding;
 //    _urlEncoding = _default.getProperty(Property.UrlEncoding, defaultEncoding);
-
-//org.efaps.webdav.method.AbstractMethod method = new org.efaps.webdav.method.AbstractMethod();
-/*try {
-System.out.println("=====================================0");
-//method.test();
-System.out.println("=====================================1");
-} catch (Throwable e)  {
-e.printStackTrace();
-}
-*/
-}
+  }
 
 
   /**
@@ -120,7 +110,13 @@ e.printStackTrace();
    */
   protected void service(final HttpServletRequest _request,
       final HttpServletResponse _response) throws ServletException, IOException  {
-System.out.println("method "+_request.getMethod());
+
+
+System.out.println("getPath "+_request.getPathInfo());
+
+String path = _request.getPathInfo();
+
+
 
     AbstractMethod method = methods.get(_request.getMethod());
     if (method != null)  {
@@ -130,14 +126,8 @@ System.out.println("method "+_request.getMethod()+" not implementet");
 super.service(_request, _response);
     }
 
-/*    if (method.equals(METHOD_PROPFIND)) {
-      propFind.run(_req, _resp);
-    } else if (method.equals(METHOD_PROPPATCH)) {
+/*    } else if (method.equals(METHOD_PROPPATCH)) {
 //        doProppatch(req, resp);
-    } else if (method.equals(METHOD_MKCOL)) {
-      doMkcol(_req, _resp);
-    } else if (method.equals(METHOD_COPY)) {
-//        doCopy(req, resp);
     } else if (method.equals(METHOD_MOVE)) {
       doMove(_req, _resp);
     } else if (method.equals(METHOD_LOCK)) {
@@ -188,7 +178,7 @@ super.service(_request, _response);
    *
    * @param path the path to be normalized
    **/
-  private String decodeURL(HttpServletRequest _request, String path) {
+/*  private String decodeURL(HttpServletRequest _request, String path) {
 
      if (path == null)
           return null;
@@ -283,6 +273,7 @@ super.service(_request, _response);
       // Return the normalized path that we have completed
       return (normalized);
   }
+*/
 /*
   protected void doMove(HttpServletRequest _request, HttpServletResponse _response) throws ServletException, IOException {
 
@@ -323,170 +314,4 @@ e.printStackTrace();
     }
   }
 */
-
-  
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Opening tag.
-   */
-  public static final int OPENING = 0;
-
-
-  /**
-   * Closing tag.
-   */
-  public static final int CLOSING = 1;
-
-
-  /**
-   * Element with no content.
-   */
-  public static final int NO_CONTENT = 2;
-
-  /**
-   * Write XML Header.
-   */
-  public void writeXMLHeader(final Writer _writer) throws IOException  {
-    _writer.write("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n");
-  }
-
-  /**
-   * Write text.
-   *
-   * @param text Text to append
-   */
-  public void writeText(Writer _writer, String text) throws IOException  {
-    _writer.write(text);
-  }
-
-  /**
-   * Write data.
-   *
-   * @param data Data to append
-   */
-  public void writeData(Writer _writer, String data) throws IOException  {
-    _writer.write("<![CDATA[" + data + "]]>");
-  }
-
-  /**
-   * Write property to the XML.
-   *
-   * @param namespace Namespace
-   * @param namespaceInfo Namespace info
-   * @param name Property name
-   * @param value Property value
-   */
-  public void writeProperty(Writer _writer, String namespace, String namespaceInfo,
-                            String name, String value) throws IOException  {
-
-      writeElement(_writer, namespace, namespaceInfo, name, OPENING);
-      writeText(_writer, value);
-      writeElement(_writer, namespace, namespaceInfo, name, CLOSING);
-
-  }
-
-  /**
-   * Write an element.
-   *
-   * @param namespace Namespace abbreviation
-   * @param namespaceInfo Namespace info
-   * @param name Element name
-   * @param type Element type
-   */
-  public void writeElement(Writer _writer, String namespace, String namespaceInfo,
-                           String name, int type) throws IOException  {
-
-    if ((namespace != null) && (namespace.length() > 0)) {
-      switch (type) {
-      case OPENING:
-        if (namespaceInfo != null) {
-          _writer.write("<" + namespace + ":" + name + " xmlns:"
-                        + namespace + "=\""
-                        + namespaceInfo + "\">");
-        } else {
-          _writer.write("<" + namespace + ":" + name + ">");
-        }
-        break;
-      case CLOSING:
-        _writer.write("</" + namespace + ":" + name + ">\n");
-        break;
-      case NO_CONTENT:
-      default:
-        if (namespaceInfo != null) {
-          _writer.write("<" + namespace + ":" + name + " xmlns:"
-                        + namespace + "=\""
-                        + namespaceInfo + "\"/>");
-        } else {
-          _writer.write("<" + namespace + ":" + name + "/>");
-        }
-        break;
-      }
-    } else {
-      switch (type) {
-      case OPENING:
-        _writer.write("<" + name + ">");
-        break;
-      case CLOSING:
-        _writer.write("</" + name + ">\n");
-        break;
-      case NO_CONTENT:
-      default:
-        _writer.write("<" + name + "/>");
-        break;
-      }
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Return JAXP document builder instance.
-   */
-  protected DocumentBuilder getDocumentBuilder() throws ServletException {
-    DocumentBuilder documentBuilder = null;
-    DocumentBuilderFactory documentBuilderFactory = null;
-    try {
-      documentBuilderFactory = DocumentBuilderFactory.newInstance();
-      documentBuilderFactory.setNamespaceAware(true);
-      documentBuilder = documentBuilderFactory.newDocumentBuilder();
-    } catch(ParserConfigurationException e) {
-throw new ServletException("webdavservlet.jaxpfailed");
-//      throw new ServletException
-//          (sm.getString("webdavservlet.jaxpfailed"));
-    }
-    return documentBuilder;
-  }
-
-  /**
-   * Return the relative path associated with this servlet.
-   *
-   * @param request The servlet request we are processing
-   */
-  protected String getRelativePath(final HttpServletRequest _request) {
-
-      // Are we being processed by a RequestDispatcher.include()?
-/*      if (request.getAttribute(Globals.INCLUDE_REQUEST_URI_ATTR) != null) {
-          String result = (String) request.getAttribute(
-                                          Globals.INCLUDE_PATH_INFO_ATTR);
-          if (result == null)
-              result = (String) request.getAttribute(
-                                          Globals.INCLUDE_SERVLET_PATH_ATTR);
-          if ((result == null) || (result.equals("")))
-              result = "/";
-          return (result);
-      }
-*/
-      // No, extract the desired path directly from the request
-      String result = _request.getPathInfo();
-      if (result == null) {
-          result = _request.getServletPath();
-      }
-      if ((result == null) || (result.equals(""))) {
-          result = "/";
-      }
-      return (result);
-
-  }
 }

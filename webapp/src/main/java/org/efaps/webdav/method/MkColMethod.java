@@ -49,11 +49,11 @@ public class MkColMethod extends AbstractMethod  {
     CollectionResource parentCollection 
                           = getCollection4ParentPath(_request.getPathInfo());
     if (parentCollection != null)  {
-      if ((getCollection(parentCollection, newName) != null)
-          || (getSource(parentCollection, newName) != null))  {
+      if ((parentCollection.getCollection(newName) != null)
+          || (parentCollection.getSource(newName) != null))  {
         status = Status.FORBIDDEN;
       } else  {
-        if (this.webDAVImpl.createCollection(parentCollection, newName))  {
+        if (parentCollection.createCollection(newName))  {
           status = Status.CREATED;
         }
       }
