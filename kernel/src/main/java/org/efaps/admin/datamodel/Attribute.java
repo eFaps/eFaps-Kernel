@@ -21,6 +21,7 @@
 package org.efaps.admin.datamodel;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,11 +36,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.AttributeType;
-import org.efaps.db.Cache;
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * This is the class for the type description. The type description holds
@@ -368,10 +370,10 @@ public class Attribute extends DataModelObject  {
    *
    * @param _context  eFaps context for this request
    */
-  public static void initialise(final Context _context) throws Exception  {
+  public static void initialise() throws CacheReloadException  {
     ConnectionResource con = null;
     try  {
-      con = _context.getConnectionResource();
+      con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
       try  {
@@ -417,7 +419,7 @@ type.addAttribute(attr);
 
           getCache().add(attr);
 
-          attr.readFromDB4Properties(_context);
+          attr.readFromDB4Properties();
         }
         rs.close();
       } finally  {
@@ -426,9 +428,17 @@ type.addAttribute(attr);
         }
       }
       con.commit();
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read roles", e);
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read roles", e);
     } finally  {
       if ((con != null) && con.isOpened())  {
-        con.abort();
+        try  {
+          con.abort();
+        } catch (EFapsException e)  {
+          throw new CacheReloadException("could not read roles", e);
+        }
       }
     }
   }
@@ -441,7 +451,7 @@ type.addAttribute(attr);
    * @return instance of class {@link Attribute}
    * @see #getCache
    */
-  static public Attribute get(long _id) throws Exception  {
+  static public Attribute get(long _id)  {
     return getCache().get(_id);
   }
 
@@ -453,7 +463,7 @@ type.addAttribute(attr);
    * @return instance of class {@link Attribute}
    * @see #getCache
    */
-  static public Attribute get(String _name) throws Exception  {
+  static public Attribute get(String _name)  {
     return getCache().get(_name);
   }
 
@@ -476,6 +486,17 @@ type.addAttribute(attr);
   /////////////////////////////////////////////////////////////////////////////
 
   static protected class AttributeCache extends Cache<Attribute>  {
+
+    private AttributeCache()  {
+      super(new CacheReloadInterface()  {
+          public int priority()  {
+            return CacheReloadInterface.Priority.Attribute.number;
+          };
+          public void reloadCache() throws CacheReloadException  {
+            Attribute.initialise();
+          };
+      });
+    }
 
 /*    private Attribute readAttribute(Context _context, String _name) throws Exception  {
 int index = _name.indexOf("/");

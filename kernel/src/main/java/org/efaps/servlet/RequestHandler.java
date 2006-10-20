@@ -36,9 +36,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
-import org.efaps.db.Cache;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
+import org.efaps.util.cache.Cache;
 
 /**
  *
@@ -92,7 +92,7 @@ javax.transaction.TransactionManager tm = new org.apache.slide.transaction.Slide
 tm.begin();
 Context context = Context.newThreadContext(tm.getTransaction(), null, null);
 try {
-Cache.reloadCache(context);
+Cache.reloadCache();
 } catch (Throwable e)  {
   e.printStackTrace();
 }

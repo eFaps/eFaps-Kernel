@@ -21,6 +21,7 @@
 package org.efaps.admin.access;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,9 +32,12 @@ import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.Cache;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -91,7 +95,16 @@ public class AccessSet extends AdminObject  {
    * @see #getAccessSet(String)
    * @see #getAccessSet(UUID)
    */
-  private static final Cache < AccessSet > cache = new Cache < AccessSet > ();
+  private static final Cache < AccessSet > cache = new Cache < AccessSet > (
+    new CacheReloadInterface()  {
+        public int priority()  {
+          return CacheReloadInterface.Priority.AccessSet.number;
+        };
+        public void reloadCache() throws CacheReloadException  {
+          AccessSet.initialise();
+        };
+    }
+  );
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -162,10 +175,10 @@ public class AccessSet extends AdminObject  {
    * @see #init4ReadLinks2AccessTypes
    * @see #
    */
-  public static void initialise(final Context _context) throws Exception  {
+  public static void initialise() throws CacheReloadException  {
     ConnectionResource con = null;
     try  {
-      con = _context.getConnectionResource();
+      con = Context.getThreadContext().getConnectionResource();
 
       init4ReadAllAccessSets(con);
       init4ReadLinks2AccessTypes(con);
@@ -173,9 +186,16 @@ public class AccessSet extends AdminObject  {
  
       con.commit();
 
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not create connection resource", 
+                                     e);
     } finally  {
       if ((con != null) && con.isOpened())  {
-        con.abort();
+        try  {
+          con.abort();
+        } catch (EFapsException e)  {
+          throw new CacheReloadException("could not abort transaction", e);
+        }
       }
     }
   }
@@ -187,7 +207,7 @@ public class AccessSet extends AdminObject  {
    * @see #SQL_SELECT
    */
   private static void init4ReadAllAccessSets(final ConnectionResource _con) 
-                                                            throws Exception  {
+                                                 throws CacheReloadException  {
     Statement stmt = null;
     try  {
 
@@ -205,10 +225,14 @@ public class AccessSet extends AdminObject  {
         cache.add(new AccessSet(id, uuid, name));
       }
       rs.close();
-
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read access set", e);
     } finally  {
       if (stmt != null)  {
-        stmt.close();
+        try  {
+          stmt.close();
+        } catch (SQLException e)  {
+        }
       }
     }
   }
@@ -220,7 +244,7 @@ public class AccessSet extends AdminObject  {
    * @see #SQL_SET2TYPE
    */
   private static void init4ReadLinks2AccessTypes(final ConnectionResource _con) 
-                                                            throws Exception  {
+                                                 throws CacheReloadException  {
     Statement stmt = null;
     try  {
 
@@ -252,9 +276,14 @@ public class AccessSet extends AdminObject  {
        }
       rs.close();
 
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read access links", e);
     } finally  {
       if (stmt != null)  {
-        stmt.close();
+        try  {
+          stmt.close();
+        } catch (SQLException e)  {
+        }
       }
     }
   }
@@ -266,7 +295,7 @@ public class AccessSet extends AdminObject  {
    * @see #SQL_SET2DMTYPE
    */
   private static void init4ReadLinks2DMTypes(final ConnectionResource _con) 
-                                                            throws Exception  {
+                                                 throws CacheReloadException  {
     Statement stmt = null;
     try  {
 
@@ -299,9 +328,14 @@ public class AccessSet extends AdminObject  {
        }
       rs.close();
 
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read links to types", e);
     } finally  {
       if (stmt != null)  {
-        stmt.close();
+        try  {
+          stmt.close();
+        } catch (SQLException e)  {
+        }
       }
     }
   }

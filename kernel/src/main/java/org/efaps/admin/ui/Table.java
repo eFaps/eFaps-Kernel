@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
@@ -26,6 +29,9 @@ import org.efaps.util.EFapsException;
 
 /**
  *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class Table extends Collection implements Cloneable  {
 
@@ -257,12 +263,8 @@ public int getSelectableColRefIndex()  {
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  static public Table get(Context _context, long _id) throws EFapsException  {
-    Table table = (Table)getCache().get(_id);
-    if (table == null)  {
-      table = getCache().read(_context, _id);
-    }
-    return table;
+  static public Table get(long _id)  {
+    return getCache().get(_id);
   }
 
   /**
@@ -273,12 +275,8 @@ public int getSelectableColRefIndex()  {
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  static public Table get(Context _context, String _name) throws EFapsException  {
-    Table table = (Table)getCache().get(_name);
-    if (table == null)  {
-      table = getCache().read(_context, _name);
-    }
-    return table;
+  static public Table get(String _name)  {
+    return getCache().get(_name);
   }
 
   /**
@@ -295,7 +293,7 @@ public int getSelectableColRefIndex()  {
    *
    * @see #getCache
    */
-  static private UserInterfaceObjectCache<Table> cache = new UserInterfaceObjectCache<Table>(Table.class);
+  static private UserInterfaceObjectCache < Table > cache = new UserInterfaceObjectCache < Table > (Table.class);
 
   /////////////////////////////////////////////////////////////////////////////
 

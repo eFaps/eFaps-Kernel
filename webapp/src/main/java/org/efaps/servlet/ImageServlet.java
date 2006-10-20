@@ -32,11 +32,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.AdminObject;
-import org.efaps.db.Cache;
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Checkout;
-import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheObjectInterface;
+import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * The servlet checks out user interface images depending on the
@@ -49,10 +51,30 @@ import org.efaps.db.SearchQuery;
  */
 public class ImageServlet extends HttpServlet  {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+  
   /**
    * Logging instance used in this class.
    */
   private final static Log LOG = LogFactory.getLog(ImageServlet.class);
+
+  /**
+   * The cache stores all instance of class {@link #ImageMappe}.
+   */
+  private static Cache < ImageMapper > cache = new Cache < ImageMapper > (
+    new CacheReloadInterface()  {
+        public int priority()  {
+          return 20000;
+        };
+        public void reloadCache() throws CacheReloadException  {
+          ImageServlet.loadCache();
+        };
+    }
+  );
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * The method checks the image from the user interface image object out and
@@ -70,10 +92,8 @@ public class ImageServlet extends HttpServlet  {
     imgName = imgName.substring(imgName.lastIndexOf('/') + 1);
 
     try  {
-      Context context = Context.getThreadContext();
-
       if (!cache.hasEntries())  {
-        loadCache(context);
+        loadCache();
       }
 
       ImageMapper imageMapper = cache.get(imgName);
@@ -91,9 +111,9 @@ public class ImageServlet extends HttpServlet  {
     } catch (IOException e)  {
       LOG.error("while reading history data", e);
       throw e;
-    } catch (ServletException e)  {
+    } catch (CacheReloadException e)  {
       LOG.error("while reading history data", e);
-      throw e;
+      throw new ServletException(e);
     } catch (Exception e)  {
       LOG.error("while reading history data", e);
       throw new ServletException(e);
@@ -105,40 +125,39 @@ public class ImageServlet extends HttpServlet  {
    * name and object id. The cache is needed to reference from an image name
    * to the object id and the original file name.
    *
-   * @param _context  context for this request
    * @throws Exception if searchquery fails
    * @see #cache
    * @see #ImageMapper
    */
-  private static void loadCache(final Context _context) throws Exception  {
-    synchronized(cache)  {
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes(_context, AdminObject.EFapsClassName.IMAGE.name);
-      query.addSelect(_context, "Name");
-      query.addSelect(_context, "FileName");
-      query.addSelect(_context, "OID");
-      query.executeWithoutAccessCheck();
-
-      while (query.next())  {
-        String name = (String) query.get(_context, "Name");
-        String file = (String) query.get(_context, "FileName");
-        String oid  = (String) query.get(_context, "OID");
-        cache.add(new ImageMapper(name, file, oid));
+  private static void loadCache() throws CacheReloadException  {
+    try  {
+      synchronized(cache)  {
+        SearchQuery query = new SearchQuery();
+        query.setQueryTypes(AdminObject.EFapsClassName.IMAGE.name);
+        query.addSelect("Name");
+        query.addSelect("FileName");
+        query.addSelect("OID");
+        query.executeWithoutAccessCheck();
+  
+        while (query.next())  {
+          String name = (String) query.get("Name");
+          String file = (String) query.get("FileName");
+          String oid  = (String) query.get("OID");
+          cache.add(new ImageMapper(name, file, oid));
+        }
+        query.close();
       }
-      query.close();
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not initialise "
+                                     + "image servlet cache");
     }
   }
-
-  /**
-   * The cache stores all instance of class {@link #ImageMappe}.
-   */
-  private static Cache < ImageMapper > cache = new Cache < ImageMapper > ();
 
   /**
    * The class is used to map from the administrational image name to the image
    * file name and image object id.
    */
-  private static class ImageMapper implements CacheInterface  {
+  private static class ImageMapper implements CacheObjectInterface  {
 
     /**
      * The instance variable stores the administational name of the image.

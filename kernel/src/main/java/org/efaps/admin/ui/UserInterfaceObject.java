@@ -32,11 +32,12 @@ import java.util.Set;
 import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.UserObject;
-import org.efaps.db.Cache;
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -44,6 +45,19 @@ import org.efaps.util.EFapsException;
  */
 public abstract class UserInterfaceObject extends AdminObject  {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * The instance variable is an Access HashSet to store all users (person,
+   * group or role) who have access to this user interface object.
+   *
+   * @see #getAccess
+   */
+  private Set < UserObject > access = new HashSet < UserObject > ();
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
 
   /**
    * Constructor to set the id and name of the user interface object.
@@ -66,10 +80,10 @@ public abstract class UserInterfaceObject extends AdminObject  {
    * @see #readFromDB4Links
    * @see #readFromDB4Access
    */
-  protected void readFromDB(final Context _context) throws Exception  {
-    readFromDB4Properties(_context);
-    readFromDB4Links(_context);
-    readFromDB4Access(_context);
+  protected void readFromDB() throws CacheReloadException  {
+    readFromDB4Properties();
+    readFromDB4Links();
+    readFromDB4Access();
   }
 
   /**
@@ -78,8 +92,9 @@ public abstract class UserInterfaceObject extends AdminObject  {
    *
    * @param _context eFaps context for this request
    * @see AdminObject.setLinkProperty
+   * @todo use SearchQuery
    */
-  private void readFromDB4Links(final Context _context) throws Exception  {
+  private void readFromDB4Links() throws CacheReloadException  {
 // folgende aktion funktionier irgendwie nicht unter oracle...
 /*    SearchQuery query = new SearchQuery();
     query.setQueryTypes(_context, "Admin_UI_Link");
@@ -105,8 +120,9 @@ System.out.println("toType="+toType);
       setLinkProperty(_context, EFapsClassName.getEnum(type.getName()), toId, EFapsClassName.getEnum(toType.getName()), toName);
     }
 */
-Statement stmt = _context.getConnection().createStatement();
+Statement stmt = null; 
 try  {
+  stmt = Context.getThreadContext().getConnection().createStatement();
   ResultSet rs = stmt.executeQuery(
       "select "
           + "UIABSTRACT2UIABSTRACT.TYPEID,"
@@ -124,17 +140,22 @@ try  {
     Type conType    = Type.get(conTypeId);
     Type toType     = Type.get(toTypeId);
     if (EFapsClassName.getEnum(conType.getName()) != null)  {
-      setLinkProperty(_context,
+      setLinkProperty(
           EFapsClassName.getEnum(conType.getName()), toId,
           EFapsClassName.getEnum(toType.getName()), toName.trim());
     }
   }
   rs.close();
 } catch (Exception e)  {
-e.printStackTrace();
-  throw e;
+  throw new CacheReloadException("could not read db links for "
+                                 + "'" + getName() + "'" , e);
 } finally  {
-  stmt.close();
+  if (stmt != null)  {
+    try  {
+      stmt.close();
+    } catch (SQLException e)  {
+    }
+  }
 }
   }
 
@@ -144,10 +165,12 @@ e.printStackTrace();
    *
    * @param _context eFaps context for this request
    * @see AdminObject.setProperty
+   * @todo use SearchQuery
    */
-  private void readFromDB4Properties(final Context _context) throws Exception  {
-    Statement stmt = _context.getConnection().createStatement();
+  private void readFromDB4Properties() throws CacheReloadException  {
+    Statement stmt = null; 
     try  {
+      stmt = Context.getThreadContext().getConnection().createStatement();
       ResultSet rs = stmt.executeQuery(
           "select "
               + "PROPERTY.NAME,"
@@ -158,14 +181,19 @@ e.printStackTrace();
       while (rs.next())  {
         String name =   rs.getString(1).trim();
         String value =  rs.getString(2).trim();
-        setProperty(_context, name, value);
+        setProperty(name, value);
       }
       rs.close();
     } catch (Exception e)  {
-e.printStackTrace();
-      throw e;
+      throw new CacheReloadException("could not read properties for "
+                                     + "'" + getName() + "'" , e);
     } finally  {
-      stmt.close();
+      if (stmt != null)  {
+        try  {
+          stmt.close();
+        } catch (SQLException e)  {
+        }
+      }
     }
   }
 
@@ -173,10 +201,12 @@ e.printStackTrace();
    * The instance method reads the access for this user interface object.
    *
    * @param _context for this request
+   * @todo use SearchQuery
    */
-  private void readFromDB4Access(final Context _context) throws Exception  {
-    Statement stmt = _context.getConnection().createStatement();
+  private void readFromDB4Access() throws CacheReloadException  {
+    Statement stmt = null; 
     try  {
+      stmt = Context.getThreadContext().getConnection().createStatement();
       ResultSet rs = stmt.executeQuery(
           "select "
               + "UIACCESS.USERABSTRACT "
@@ -185,7 +215,7 @@ e.printStackTrace();
       );
       while (rs.next())  {
         long userId = rs.getLong(1);
-        UserObject userObject = UserObject.getUserObject(_context, userId);
+        UserObject userObject = UserObject.getUserObject(userId);
 if (userObject == null)  {
 throw new Exception("user " + userId + " does not exists!");
 } else  {
@@ -194,10 +224,15 @@ throw new Exception("user " + userId + " does not exists!");
       }
       rs.close();
     } catch (Exception e)  {
-e.printStackTrace();
-      throw e;
+      throw new CacheReloadException("could not read access for "
+                                     + "'" + getName() + "'" , e);
     } finally  {
-      stmt.close();
+      if (stmt != null)  {
+        try  {
+          stmt.close();
+        } catch (SQLException e)  {
+        }
+      }
     }
   }
 
@@ -232,16 +267,6 @@ e.printStackTrace();
   /////////////////////////////////////////////////////////////////////////////
 
   /**
-   * The instance variable is an Access HashSet to store all users (person,
-   * group or role) who have access to this user interface object.
-   *
-   * @see #getAccess
-   */
-  private Set < UserObject > access = new HashSet < UserObject >();
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
    * Getter method for the HashSet instance variable {@link #access}.
    *
    * @return value of the HashSet instance variable {@link #access}
@@ -259,26 +284,26 @@ e.printStackTrace();
    *
    * @param _context  eFaps context for this request
    */
-  public static void initialise(final Context _context) throws Exception  {
-    Command.getCache().initialise(_context);
-    Menu.getCache().initialise(_context);
-    Search.getCache().initialise(_context);
-    Form.getCache().initialise(_context);
-    Table.getCache().initialise(_context);
+  public static void initialise() throws CacheReloadException  {
+    Command.getCache().initialise();
+    Menu.getCache().initialise();
+    Search.getCache().initialise();
+    Form.getCache().initialise();
+    Table.getCache().initialise();
     for (Command command : Command.getCache().getCache4Id().values())  {
-      command.readFromDB(_context);
+      command.readFromDB();
     }
-    for (Menu command : Menu.getCache().getCache4Id().values())  {
-      command.readFromDB(_context);
+    for (Menu menu : Menu.getCache().getCache4Id().values())  {
+      menu.readFromDB();
     }
-    for (Search command : Search.getCache().getCache4Id().values())  {
-      command.readFromDB(_context);
+    for (Search search : Search.getCache().getCache4Id().values())  {
+      search.readFromDB();
     }
-    for (Form command : Form.getCache().getCache4Id().values())  {
-      command.readFromDB(_context);
+    for (Form form : Form.getCache().getCache4Id().values())  {
+      form.readFromDB();
     }
-    for (Table command : Table.getCache().getCache4Id().values())  {
-      command.readFromDB(_context);
+    for (Table table : Table.getCache().getCache4Id().values())  {
+      table.readFromDB();
     }
   }
 
@@ -286,6 +311,16 @@ e.printStackTrace();
   static protected class UserInterfaceObjectCache < UIObj extends UserInterfaceObject > extends Cache < UIObj >  {
 
     protected UserInterfaceObjectCache(final Class < UIObj > _callerClass)  {
+      super(
+        new CacheReloadInterface()  {
+            public int priority()  {
+              return 1200;
+            };
+            public void reloadCache() throws CacheReloadException  {
+              UIObj.initialise();
+            };
+        }
+      );
       this.callerClass = _callerClass;
     }
 
@@ -298,31 +333,48 @@ e.printStackTrace();
      *
      * @param _context  eFaps context for this request
      */
-    protected void initialise(final Context _context) throws Exception  {
+    protected void initialise() throws CacheReloadException  {
       Class < UIObj > uiObjClass = getCallerClass();
-      if (Type.get(getEFapsClassName().name) != null)  {
-        SearchQuery query = new SearchQuery();
-        query.setQueryTypes(_context, getEFapsClassName().name);
-        query.addSelect(_context, "ID");
-        query.addSelect(_context, "Name");
-        query.executeWithoutAccessCheck();
-        while (query.next())  {
-          long id     = (Long) query.get(_context, "ID");
-          String name = (String) query.get(_context, "Name");
-          UIObj uiObj = uiObjClass.getConstructor(Long.class, String.class).newInstance(id, name);
-          add(uiObj);
+      try  {
+        if (Type.get(getEFapsClassName().name) != null)  {
+          SearchQuery query = new SearchQuery();
+          query.setQueryTypes(getEFapsClassName().name);
+          query.addSelect("ID");
+          query.addSelect("Name");
+          query.executeWithoutAccessCheck();
+          while (query.next())  {
+            long id     = (Long) query.get("ID");
+            String name = (String) query.get("Name");
+            UIObj uiObj = uiObjClass.getConstructor(Long.class, String.class).newInstance(id, name);
+            add(uiObj);
+          }
         }
+      } catch (NoSuchMethodException e)  {
+        throw new CacheReloadException("class '" + uiObjClass.getName() + "' "
+                                       + "does not implement contructor "
+                                       + "(Long, String)", e);
+      } catch (InstantiationException e)  {
+        throw new CacheReloadException("could not instantiate class "
+                                       + "'" + uiObjClass.getName() + "'", e);
+      } catch (IllegalAccessException e)  {
+        throw new CacheReloadException("could not access class "
+                                       + "'" + uiObjClass.getName() + "'", e);
+      } catch (InvocationTargetException e)  {
+        throw new CacheReloadException("could not invoce constructor of class "
+                                       + "'" + uiObjClass.getName() + "'", e);
+      } catch (EFapsException e)  {
+        throw new CacheReloadException("could not initialise cache", e);
       }
     }
 
-    protected UIObj read(final Context _context, final long _id) throws EFapsException  {
+    protected UIObj read(final long _id) throws EFapsException  {
       try  {
         SearchQuery query = new SearchQuery();
-        query.setQueryTypes(_context, getEFapsClassName().name);
-        query.addWhereExprEqValue(_context, "ID", _id);
-        query.addSelect(_context, "ID");
-        query.addSelect(_context, "Name");
-        return(read(_context, query));
+        query.setQueryTypes(getEFapsClassName().name);
+        query.addWhereExprEqValue("ID", _id);
+        query.addSelect("ID");
+        query.addSelect("Name");
+        return(read(query));
       } catch (EFapsException e)  {
         throw e;
       } catch (Throwable e)  {
@@ -331,14 +383,14 @@ e.printStackTrace();
     }
 
 
-    protected UIObj read(final Context _context, final String _name) throws EFapsException  {
+    protected UIObj read(final String _name) throws EFapsException  {
       try  {
         SearchQuery query = new SearchQuery();
-        query.setQueryTypes(_context, getEFapsClassName().name);
-        query.addWhereExprEqValue(_context, "Name", _name);
-        query.addSelect(_context, "ID");
-        query.addSelect(_context, "Name");
-        return(read(_context, query));
+        query.setQueryTypes(getEFapsClassName().name);
+        query.addWhereExprEqValue("Name", _name);
+        query.addSelect("ID");
+        query.addSelect("Name");
+        return(read(query));
       } catch (EFapsException e)  {
         throw e;
       } catch (Throwable e)  {
@@ -357,17 +409,17 @@ e.printStackTrace();
       }
     }
 
-    private UIObj read(final Context _context, final SearchQuery _query) throws EFapsException  {
+    private UIObj read(final SearchQuery _query) throws EFapsException  {
       UIObj uiObj = null;
       Class < UIObj > uiObjClass = getCallerClass();
       try  {
         _query.executeWithoutAccessCheck();
         if (_query.next())  {
-          long id     = (Long)_query.get(_context, "ID");
-          String name = (String)_query.get(_context, "Name");
+          long id     = (Long)_query.get("ID");
+          String name = (String)_query.get("Name");
           uiObj = uiObjClass.getConstructor(Long.class, String.class).newInstance(id, name);
           add(uiObj);
-          uiObj.readFromDB(_context);
+          uiObj.readFromDB();
         }
       } catch (NoSuchMethodException e)  {
         throw new EFapsException(UserInterfaceObjectCache.class, "read.ConstructorNotFound", e, uiObjClass.getName());
@@ -407,7 +459,7 @@ e.printStackTrace();
     /**
      *
      */
-    private  Class < UIObj > getCallerClass() throws EFapsException  {
+    private  Class < UIObj > getCallerClass()  {
       return this.callerClass;
     }
 

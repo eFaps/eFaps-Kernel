@@ -29,6 +29,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
@@ -38,6 +41,7 @@ import org.efaps.db.query.WhereClauseAttributeEqualValue;
 import org.efaps.db.query.WhereClauseAttributeGreaterValue;
 import org.efaps.db.query.WhereClauseAttributeLessValue;
 import org.efaps.db.query.WhereClauseAttributeMatchValue;
+import org.efaps.util.EFapsException;
 
 /**
  *
@@ -47,6 +51,17 @@ import org.efaps.db.query.WhereClauseAttributeMatchValue;
  */
 public class SearchQuery extends AbstractQuery  {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Log LOG = LogFactory.getLog(SearchQuery.class);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructor / desctructors
+
   /**
    *
    */
@@ -55,8 +70,7 @@ public class SearchQuery extends AbstractQuery  {
 
 //ArrayList<Type> types = new ArrayList<Type>();
 
-
-public void setQueryTypes(Context _context, String _types) throws Exception  {
+public void setQueryTypes(final String _types) throws EFapsException  {
   if (_types != null)  {
     this.type = Type.get(_types);
     setExpandChildTypes(false);
@@ -65,41 +79,68 @@ public void setQueryTypes(Context _context, String _types) throws Exception  {
   }
 }
 
+/**
+ * @deprecated
+ */
+public void setQueryTypes(Context _context, String _types) throws EFapsException  {
+  setQueryTypes(_types);
+}
 
   /**
    *
    */
-  public void setObject(Context _context, Instance _instance) throws Exception  {
+  public void setObject(final Instance _instance) throws EFapsException  {
     Type type = _instance.getType();
 addSelect(true, type, type, "OID");
 types.add(this.type);
 this.type = type;
-    addWhereExprEqValue(_context, "ID", ""+_instance.getId());
+    addWhereExprEqValue("ID", ""+_instance.getId());
+  }
+
+  /**
+   * @deprecated
+   */
+  public void setObject(Context _context, Instance _instance) throws EFapsException  {
+    setObject(_instance);
   }
 
   /**
    *
    */
-  public void setObject(Context _context, String _oid) throws Exception  {
-    Instance instance = new Instance(_context, _oid);
+  public void setObject(final String _oid) throws EFapsException  {
+    Instance instance = new Instance(_oid);
     Type type = instance.getType();
 addSelect(true, type, type, "OID");
 types.add(this.type);
 this.type = type;
-    addWhereExprEqValue(_context, "ID", ""+instance.getId());
+    addWhereExprEqValue("ID", ""+instance.getId());
+  }
+
+  /**
+   * @deprecated
+   */
+  public void setObject(Context _context, String _oid) throws EFapsException  {
+    setObject(_oid);
   }
 
   /**
    *
    */
-  public void setExpand(Context _context, String _oid, String _expand) throws Exception  {
-    setExpand(_context, new Instance(_context, _oid), _expand);
+  public void setExpand(final String _oid, final String _expand) throws EFapsException  {
+    setExpand(new Instance(_oid), _expand);
   }
 
   /**
-   *
+   * @deprecated
    */
-  public void setExpand(Context _context, Instance _instance, String _expand) throws Exception  {
+  public void setExpand(Context _context, String _oid, String _expand) throws EFapsException  {
+    setExpand(_context, new Instance(_oid), _expand);
+  }
+
+  /**
+   * @todo Exception
+   */
+  public void setExpand(Instance _instance, String _expand) throws EFapsException  {
     StringTokenizer tokens = new StringTokenizer(_expand, ".");
     boolean first = true;
     Type type = _instance.getType();
@@ -111,7 +152,11 @@ this.type = type;
         attr = type.getAttribute(one);
       }
       if (attr==null)  {
-  throw new Exception("Could not found attribute or link with name '"+one+"' for type '"+type.getName()+"'");
+        LOG.debug("Could not found attribute or link with name "
+                  + "'" + one + "' for type '" + type.getName() + "'");
+        throw new EFapsException(getClass(),
+                                 "setExpand.AttributeOrLinkNotFound",
+                                 one, type.getName());
       }
       if (type.isKindOf(attr.getLink()))  {
         type = attr.getParent();
@@ -120,10 +165,10 @@ this.type = type;
       }
       addTypes4Order(type);
       if (first)  {
-        addWhereAttrEqValue(_context, attr, ""+_instance.getId());
+        addWhereAttrEqValue(attr, _instance.getId());
         first=false;
       } else  {
-        addWhereAttrEqAttr(_context, attr, type.getAttribute("ID"));
+        addWhereAttrEqAttr(attr, type.getAttribute("ID"));
       }
 
 addSelect(true, type, type, "OID");
@@ -139,6 +184,13 @@ this.type = type;
 
   }
 
+  /**
+   *
+   */
+  public void setExpand(Context _context, Instance _instance, String _expand) throws EFapsException  {
+    setExpand(_instance, _expand);
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   // where clauses
 
@@ -147,13 +199,25 @@ this.type = type;
    * @param _context  eFaps context for this request
    * @param _expr     expression to compare for equal
    * @param _value    value to compare for equal
+   * @todo exception property
    */
-  public void addWhereExprEqValue(final Context _context, final String _expr, final String _value) throws Exception  {
+  public void addWhereExprEqValue(final String _expr, final String _value) throws EFapsException  {
     Attribute attr = this.type.getAttribute(_expr);
     if (attr==null)  {
-throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getName()+"'");
+      LOG.debug("unknown expression '" + _expr + "' for type "
+                + "'" + this.type.getName() + "'");
+      throw new EFapsException(getClass(), "addWhereExprEqValue",
+                               "UnknownExpression", 
+                               _expr, this.type.getName());
     }
     getMainWhereClauses().add(new WhereClauseAttributeEqualValue(this, attr, _value));
+  }
+
+  /**
+   * @deprecated
+   */
+  public void addWhereExprEqValue(final Context _context, final String _expr, final String _value) throws EFapsException  {
+    addWhereExprEqValue(_expr, _value);
   }
 
   /**
@@ -162,40 +226,71 @@ throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getNam
    * @param _expr     expression to compare for equal
    * @param _value    value to compare for equal
    */
-  public void addWhereExprMatchValue(final Context _context, final String _expr, final String _value) throws Exception  {
+  public void addWhereExprMatchValue(final String _expr, final String _value) throws EFapsException  {
     Attribute attr = this.type.getAttribute(_expr);
     if (attr==null)  {
-throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getName()+"'");
+      LOG.debug("unknown expression '" + _expr + "' for type "
+                + "'" + this.type.getName() + "'");
+      throw new EFapsException(getClass(), "addWhereExprMatchValue",
+                               "UnknownExpression", 
+                               _expr, this.type.getName());
     }
     getMainWhereClauses().add(new WhereClauseAttributeMatchValue(this, attr, _value));
   }
 
   /**
+   * @deprecated
+   */
+  public void addWhereExprMatchValue(final Context _context, final String _expr, final String _value) throws EFapsException  {
+    addWhereExprMatchValue(_expr, _value);
+  }
+
+  /**
    *
-   * @param _context  eFaps context for this request
    * @param _expr     expression to compare for greater
    * @param _value    value to compare for equal
    */
-  public void addWhereExprGreaterValue(final Context _context, final String _expr, final String _value) throws Exception  {
+  public void addWhereExprGreaterValue(final String _expr, final String _value) throws EFapsException  {
     Attribute attr = this.type.getAttribute(_expr);
     if (attr==null)  {
-throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getName()+"'");
+      LOG.debug("unknown expression '" + _expr + "' for type "
+                + "'" + this.type.getName() + "'");
+      throw new EFapsException(getClass(), "addWhereExprGreaterValue",
+                               "UnknownExpression", 
+                               _expr, this.type.getName());
     }
     getMainWhereClauses().add(new WhereClauseAttributeGreaterValue(this, attr, _value));
   }
 
   /**
+   * @deprecated
+   */
+  public void addWhereExprGreaterValue(final Context _context, final String _expr, final String _value) throws EFapsException  {
+    addWhereExprGreaterValue(_expr, _value);
+  }
+
+  /**
    *
-   * @param _context  eFaps context for this request
    * @param _expr     expression to compare for less
    * @param _value    value to compare for equal
    */
-  public void addWhereExprLessValue(final Context _context, final String _expr, final String _value) throws Exception  {
+  public void addWhereExprLessValue(final String _expr, final String _value) throws EFapsException  {
     Attribute attr = this.type.getAttribute(_expr);
     if (attr==null)  {
-throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getName()+"'");
+      LOG.debug("unknown expression '" + _expr + "' for type "
+                + "'" + this.type.getName() + "'");
+      throw new EFapsException(getClass(), "addWhereExprLessValue",
+                               "UnknownExpression", 
+                               _expr, this.type.getName());
     }
     getMainWhereClauses().add(new WhereClauseAttributeLessValue(this, attr, _value));
+  }
+
+  /**
+   * @deprecated
+   */
+  public void addWhereExprLessValue(final Context _context, final String _expr, final String _value) throws EFapsException  {
+    addWhereExprLessValue(_expr, _value);
   }
 
   /**
@@ -203,8 +298,15 @@ throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getNam
    * @param _expr
    * @param _value
    */
-  public void addWhereExprEqValue(Context _context, String _expr, long _value) throws Exception  {
-    addWhereExprEqValue(_context, _expr, ""+_value);
+  public void addWhereExprEqValue(final String _expr, final long _value) throws EFapsException  {
+    addWhereExprEqValue(_expr, ""+_value);
+  }
+
+  /**
+   * @deprecated
+   */
+  public void addWhereExprEqValue(Context _context, String _expr, long _value) throws EFapsException  {
+    addWhereExprEqValue(_context, _expr, _value);
   }
 
   /**
@@ -212,16 +314,39 @@ throw new Exception("unknown expression '"+_expr+"' for type '"+this.type.getNam
    * @param _attr
    * @param _value
    */
-  public void addWhereAttrEqValue(Context _context, Attribute _attr, String _value)  {
+  public void addWhereAttrEqValue(final Attribute _attr, final String _value) throws EFapsException  {
     getMainWhereClauses().add(new WhereClauseAttributeEqualValue(this, _attr, _value));
+  }
+
+  /**
+   *
+   * @param _attr
+   * @param _value
+   */
+  public void addWhereAttrEqValue(final Attribute _attr, final long _value) throws EFapsException  {
+    getMainWhereClauses().add(new WhereClauseAttributeEqualValue(this, _attr, "" + _value));
+  }
+
+  /**
+   * @deprecated
+   */
+  public void addWhereAttrEqValue(Context _context, Attribute _attr, String _value) throws EFapsException  {
+    addWhereAttrEqValue(_attr, _value);
   }
 
   /**
    * @param _attr1
    * @param _attr2
    */
-  public void addWhereAttrEqAttr(Context _context, Attribute _attr1, Attribute _attr2)  {
+  public void addWhereAttrEqAttr(final Attribute _attr1, final Attribute _attr2) throws EFapsException  {
     getMainWhereClauses().add(new WhereClauseAttrEqAttr(this, _attr1, _attr2));
+  }
+
+  /**
+   * @deprecated
+   */
+  public void addWhereAttrEqAttr(Context _context, Attribute _attr1, Attribute _attr2) throws EFapsException  {
+    addWhereAttrEqAttr(_attr1, _attr2);
   }
 
   //////////////////////////////////////////////////////////////////////////////

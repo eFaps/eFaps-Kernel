@@ -47,13 +47,15 @@ import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
-import org.efaps.db.Cache;
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.servlet.RequestHandler;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheObjectInterface;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * This is the class for the type description. The type description holds
@@ -81,6 +83,22 @@ public class Type extends DataModelObject  {
                                                 + "PARENTDMTYPE,"
                                                 + "SQLCACHEEXPR "
                                               + "from V_ADMINTYPE";
+
+  /**
+   * Stores all instances of type.
+   *
+   * @see #get
+   */
+  private static Cache < Type > typeCache = new Cache < Type > (
+    new CacheReloadInterface()  {
+        public int priority()  {
+          return CacheReloadInterface.Priority.Type.number;
+        };
+        public void reloadCache() throws CacheReloadException  {
+          Type.initialise();
+        };
+    }
+  );
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -253,7 +271,7 @@ public class Type extends DataModelObject  {
    *
    * @param _name   name of the instance
    */
-  private Type(final long _id, final String _name) throws Exception  {
+  private Type(final long _id, final String _name)  {
     super(_id, _name);
     Attribute typeAttr = new Attribute(0, "Type", "");
     typeAttr.setAttributeType(AttributeType.get("Type"));
@@ -359,7 +377,7 @@ public class Type extends DataModelObject  {
    * @return cache object for given parameter <i>_id</i>
    * @param _id
    */
-  public CacheInterface getCacheObject(final long _id)  {
+  public CacheObjectInterface getCacheObject(final long _id)  {
     return getCache().get(_id);
   }
 
@@ -538,7 +556,7 @@ public class Type extends DataModelObject  {
     } else if (_name.equals("ViewAttribute"))  {
 //      setViewAttribute(_context, _value);
     } else  {
-      super.setProperty(_context, _name, _value);
+      super.setProperty(_name, _value);
     }
   }
 
@@ -981,12 +999,12 @@ public Menu getTreeMenu() throws Exception  {
    *
    * @param _context  eFaps context for this request
    */
-  public static void initialise(final Context _context) throws Exception  {
+  public static void initialise() throws CacheReloadException  {
     ConnectionResource con = null;
     try  {
       Map < Long, Long > parents = new HashMap < Long, Long > ();
 
-      con = _context.getConnectionResource();
+      con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
       try  {
@@ -1017,7 +1035,7 @@ public Menu getTreeMenu() throws Exception  {
           getTypeCache().add(type);
 
 //type.readDBPolicies(_context);
-type.readFromDB4Properties(_context);
+type.readFromDB4Properties();
 
           if (parentTypeId != 0)  {
             parents.put(id , parentTypeId);
@@ -1042,9 +1060,17 @@ type.readFromDB4Properties(_context);
 
       con.commit();
 
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read roles", e);
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read roles", e);
     } finally  {
       if ((con != null) && con.isOpened())  {
-        con.abort();
+        try  {
+          con.abort();
+        } catch (EFapsException e)  {
+          throw new CacheReloadException("could not read roles", e);
+        }
       }
     }
   }
@@ -1075,11 +1101,4 @@ type.readFromDB4Properties(_context);
   static Cache < Type > getTypeCache()  {
     return typeCache;
   }
-
-  /**
-   * Stores all instances of type.
-   *
-   * @see #get
-   */
-  private static Cache < Type > typeCache = new Cache < Type > ();
 }

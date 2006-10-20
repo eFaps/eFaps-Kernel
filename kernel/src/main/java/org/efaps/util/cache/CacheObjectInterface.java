@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:465 $
+ * Last Changed:    $Date:2006-10-20 12:16:08 +0200 (Fr, 20 Okt 2006) $
+ * Last Changed By: $Author:tmo $
  */
 
-package org.efaps.db;
+package org.efaps.util.cache;
 
-import java.util.Hashtable;
 import java.util.UUID;
 
 /**
  * @author tmo
- * @version $Id$
+ * @version $Id:CacheObjectInterface.java 465 2006-10-20 12:16:08 +0200 (Fr, 20 Okt 2006) tmo $
  * @todo description
  */
-public interface CacheInterface  {
+public interface CacheObjectInterface  {
 
   public String getName();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.lifecycle;
@@ -25,11 +28,15 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.efaps.db.Cache;
 import org.efaps.db.Context;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class Policy extends LifeCycleObject  {
 
@@ -67,10 +74,10 @@ public class Policy extends LifeCycleObject  {
    *
    * @return instance of class {@link Policy}
    */
-  public static Policy get(Context _context, long _id) throws Exception  {
-    Policy policy = (Policy)getCache().get(_id);
+  public static Policy get(final long _id) throws Exception  {
+    Policy policy = (Policy) getCache().get(_id);
     if (policy == null)  {
-      policy = getCache().readPolicy(_context, _id);
+      policy = getCache().readPolicy(_id);
     }
     return policy;
   }
@@ -80,10 +87,10 @@ public class Policy extends LifeCycleObject  {
    *
    * @return instance of class {@link Policy}
    */
-  public static Policy get(Context _context, String _name) throws Exception  {
-    Policy policy = (Policy)getCache().get(_name);
+  public static Policy get(final String _name) throws Exception  {
+    Policy policy = (Policy) getCache().get(_name);
     if (policy == null)  {
-      policy = getCache().readPolicy(_context, _name);
+      policy = getCache().readPolicy(_name);
     }
     return policy;
   }
@@ -111,8 +118,8 @@ public class Policy extends LifeCycleObject  {
    *
    * @param _context  context for this request
    */
-  private void readDBStatus(Context _context) throws Exception  {
-    Statement stmt = _context.getConnection().createStatement();
+  private void readDBStatus() throws Exception  {
+    Statement stmt = Context.getThreadContext().getConnection().createStatement();
     try  {
       ResultSet rs = stmt.executeQuery(
           "select "+
@@ -121,7 +128,7 @@ public class Policy extends LifeCycleObject  {
           "where LCPOLICY="+getId()
       );
       while (rs.next())  {
-        Status.get(_context, rs.getLong(1));
+        Status.get(rs.getLong(1));
       }
       rs.close();
     } catch (Exception e)  {
@@ -139,7 +146,7 @@ e.printStackTrace();
    * @see #getStatus
    * @see #addStatus
    */
-  private List<Status> status = new ArrayList<Status>();
+  private List < Status > status = new ArrayList < Status > ();
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -149,16 +156,26 @@ e.printStackTrace();
    * @see #status
    * @see #addStatus
    */
-  public List<Status> getStatus()  {
+  public List < Status > getStatus()  {
     return this.status;
   }
 
   /////////////////////////////////////////////////////////////////////////////
 
-  static protected class PolicyCache extends Cache<Policy>  {
+  static protected class PolicyCache extends Cache < Policy >  {
 
-    private Policy readPolicy(Context _context, long _id) throws Exception  {
-      return readPolicy4Statement(_context,
+    private PolicyCache()  {
+      super(new CacheReloadInterface()  {
+          public int priority()  {
+            return 1200;
+          };
+          public void reloadCache() throws CacheReloadException  {
+          };
+      });
+    }
+
+    private Policy readPolicy(final long _id) throws Exception  {
+      return readPolicy4Statement(
           "select "+
             "ID,"+
             "NAME "+
@@ -167,8 +184,8 @@ e.printStackTrace();
       );
     }
 
-    private Policy readPolicy(Context _context, String _name) throws Exception  {
-      return readPolicy4Statement(_context,
+    private Policy readPolicy(final String _name) throws Exception  {
+      return readPolicy4Statement(
           "select "+
             "ID,"+
             "NAME "+
@@ -177,9 +194,9 @@ e.printStackTrace();
       );
     }
 
-    private Policy readPolicy4Statement(Context _context, String _statement) throws Exception  {
+    private Policy readPolicy4Statement(final String _statement) throws Exception  {
       Policy ret = null;
-      Statement stmt = _context.getConnection().createStatement();
+      Statement stmt = Context.getThreadContext().getConnection().createStatement();
       try  {
         ResultSet rs = stmt.executeQuery(_statement);
         if (rs.next())  {
@@ -187,7 +204,7 @@ e.printStackTrace();
           String name =   rs.getString(2);
           ret = new Policy(id, name);
           add(ret);
-          ret.readDBStatus(_context);
+          ret.readDBStatus();
         }
         rs.close();
       } catch (Exception e)  {

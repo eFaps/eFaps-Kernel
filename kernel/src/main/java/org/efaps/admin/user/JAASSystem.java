@@ -22,6 +22,7 @@ package org.efaps.admin.user;
 
 import java.lang.reflect.Method;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,16 +33,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.AdminObject;
-import org.efaps.db.Cache;
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
  * @version $Id$
+ * @todo description
  */
-public class JAASSystem extends AdminObject implements CacheInterface  {
+public class JAASSystem extends AdminObject  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
 
   /**
    * Logging instance used in this class.
@@ -71,6 +78,25 @@ public class JAASSystem extends AdminObject implements CacheInterface  {
                                                 + "CLASSNAMEGROUP,"
                                                 + "METHODGROUPKEY "
                                               + "from V_USERJAASSYSTEM";
+
+  /**
+   * Stores all instances of class {@link JAASSystem}.
+   *
+   * @see #getCache
+   */
+  private static final Cache < JAASSystem > cache = new Cache < JAASSystem > (
+    new CacheReloadInterface()  {
+        public int priority()  {
+          return CacheReloadInterface.Priority.JAASSystem.number;
+        };
+        public void reloadCache() throws CacheReloadException  {
+          JAASSystem.initialise();
+        };
+    }
+  );
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
    * The class used as princple for persons for this JAAS system is stored
@@ -122,13 +148,6 @@ public class JAASSystem extends AdminObject implements CacheInterface  {
    * @see #getGroupMethodKey
    */
   private Method groupMethodKey = null;
-
-  /**
-   * Stores all instances of class {@link JAASSystem}.
-   *
-   * @see #getCache
-   */
-  private static final Cache < JAASSystem > cache = new Cache < JAASSystem > ();
 
   /**
    * Constructor to set the id and name of the user object.
@@ -253,10 +272,10 @@ return getName();
    * @param _context  eFaps context for this request
    * @see #getMethod
    */
-  public static void initialise(final Context _context) throws Exception  {
+  public static void initialise() throws CacheReloadException  {
     ConnectionResource con = null;
     try  {
-      con = _context.getConnectionResource();
+      con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
       try  {
@@ -359,9 +378,17 @@ return getName();
 
       con.commit();
 
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read roles", e);
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read roles", e);
     } finally  {
       if ((con != null) && con.isOpened())  {
-        con.abort();
+        try  {
+          con.abort();
+        } catch (EFapsException e)  {
+          throw new CacheReloadException("could not read roles", e);
+        }
       }
     }
   }

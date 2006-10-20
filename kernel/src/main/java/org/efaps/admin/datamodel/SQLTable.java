@@ -21,6 +21,7 @@
 package org.efaps.admin.datamodel;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,10 +32,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.AttributeType;
-import org.efaps.db.Cache;
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * This is the class for the table description. The table description holds
@@ -68,7 +71,16 @@ public class SQLTable extends DataModelObject  {
    *
    * @see #getCache
    */
-  private final static Cache<SQLTable> tableCache = new Cache<SQLTable>();
+  private final static Cache < SQLTable > tableCache = new Cache < SQLTable > (
+    new CacheReloadInterface()  {
+      public int priority()  {
+        return CacheReloadInterface.Priority.SQLTable.number;
+      };
+      public void reloadCache() throws CacheReloadException  {
+        SQLTable.initialise();
+      };
+    }
+  );
 
   /**
    * This is the constructor for class {@link Attribute}. Every instance of
@@ -108,9 +120,9 @@ public class SQLTable extends DataModelObject  {
    *
    * @param _name   name of the property
    * @param _value  value of the property
-   * @param _toId   id of the to object
    */
-  protected void setProperty(Context _context, String _name, String _value) throws Exception  {
+  protected void setProperty(final String _name, 
+                             final String _value) throws CacheReloadException  {
     if (_name.equals("ReadOnly"))  {
       if (_value.equals("true"))  {
         setReadOnly(true);
@@ -160,7 +172,7 @@ public class SQLTable extends DataModelObject  {
    * The instance variable stores all types which stores information in this
    * table.
    */
-  private Set<Type> types = new HashSet<Type>();
+  private Set < Type > types = new HashSet < Type > ();
 
   /**
    * The instance variables is set to <i>true</i> if this table is only a
@@ -302,10 +314,10 @@ public class SQLTable extends DataModelObject  {
    *
    * @param _context  eFaps context for this request
    */
-  public static void initialise(final Context _context) throws Exception  {
+  public static void initialise() throws CacheReloadException  {
     ConnectionResource con = null;
     try  {
-      con = _context.getConnectionResource();
+      con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
       try  {
@@ -327,7 +339,7 @@ public class SQLTable extends DataModelObject  {
           if (tableMainId>0)  {
             mainTables.put(id, tableMainId);
           }
-          table.readFromDB4Properties(_context);
+          table.readFromDB4Properties();
         }
         rs.close();
 
@@ -344,9 +356,17 @@ public class SQLTable extends DataModelObject  {
         }
       }
       con.commit();
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read sql tables", e);
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read sql tables", e);
     } finally  {
       if ((con != null) && con.isOpened())  {
-        con.abort();
+        try  {
+          con.abort();
+        } catch (EFapsException e)  {
+          throw new CacheReloadException("could not read sql tables", e);
+        }
       }
     }
   }
@@ -359,7 +379,7 @@ public class SQLTable extends DataModelObject  {
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  static public SQLTable get(final long _id) throws Exception  {
+  static public SQLTable get(final long _id)  {
     return getCache().get(_id);
   }
 
@@ -371,7 +391,7 @@ public class SQLTable extends DataModelObject  {
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  static public SQLTable get(final String _name) throws Exception  {
+  static public SQLTable get(final String _name)  {
     return getCache().get(_name);
   }
 

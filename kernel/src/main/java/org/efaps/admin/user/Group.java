@@ -32,17 +32,22 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.efaps.db.Cache;
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
  * @version $Id$
+ * @todo description
  */
-public class Group extends UserObject implements CacheInterface  {
+public class Group extends UserObject  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
 
   /**
    * Logging instance used in this class.
@@ -62,7 +67,19 @@ public class Group extends UserObject implements CacheInterface  {
    *
    * @see #getCache
    */
-  private static final Cache <Group > cache = new Cache < Group > ();
+  private static final Cache <Group > cache = new Cache < Group > (
+    new CacheReloadInterface()  {
+        public int priority()  {
+          return CacheReloadInterface.Priority.AccessSet.number;
+        };
+        public void reloadCache() throws CacheReloadException  {
+          Group.initialise();
+        };
+    }
+  );
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
 
   /**
    * Create a new group instance. The method is used from the static method
@@ -73,6 +90,9 @@ public class Group extends UserObject implements CacheInterface  {
   private Group(final long _id, final String _name)  {
     super(_id, _name);
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * Returns the viewable name of the group. The method {@link #getName} is
@@ -106,10 +126,10 @@ public class Group extends UserObject implements CacheInterface  {
    *
    * @param _context  eFaps context for this request
    */
-  public static void initialise(final Context _context) throws Exception  {
+  public static void initialise() throws CacheReloadException  {
     ConnectionResource con = null;
     try  {
-      con = _context.getConnectionResource();
+      con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
       try  {
@@ -133,10 +153,17 @@ public class Group extends UserObject implements CacheInterface  {
       }
 
       con.commit();
-
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read groups", e);
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read groups", e);
     } finally  {
       if ((con != null) && con.isOpened())  {
-        con.abort();
+        try  {
+          con.abort();
+        } catch (EFapsException e)  {
+          throw new CacheReloadException("could not read groups", e);
+        }
       }
     }
   }

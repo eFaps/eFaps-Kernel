@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.efaps.util.EFapsException;
 /**
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public abstract class UserObject extends AdminObject  {
 
@@ -339,8 +340,7 @@ public abstract class UserObject extends AdminObject  {
    * @param _id id to search in the cache
    * @return instance of class {@link UserObject}
    */
-  static public UserObject getUserObject(final Context _context,
-                                         final long _id) throws Exception  {
+  static public UserObject getUserObject(final long _id) throws Exception  {
     UserObject ret = Role.get(_id);
     if (ret == null)  {
       ret = Person.get(_id);
@@ -355,8 +355,7 @@ public abstract class UserObject extends AdminObject  {
    * @param _name name to search in the cache
    * @return instance of class {@link UserObject}
    */
-  static public UserObject getUserObject(final Context _context,
-                                         final String _name) throws Exception  {
+  static public UserObject getUserObject(final String _name) throws Exception  {
     UserObject ret = Role.get(_name);
     if (ret == null)  {
       ret = Person.get(_name);

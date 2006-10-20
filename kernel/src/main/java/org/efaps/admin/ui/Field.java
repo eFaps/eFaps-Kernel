@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
@@ -22,9 +25,12 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Context;
 import org.efaps.servlet.RequestHandler;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class Field extends UserInterfaceObject  {
 
@@ -121,10 +127,10 @@ public Field()  {
    * @param _toType   to type
    * @param _toName   to name
    */
-  protected void setLinkProperty(Context _context, EFapsClassName _linkType, long _toId, EFapsClassName _toType, String _toName) throws Exception  {
+  protected void setLinkProperty(EFapsClassName _linkType, long _toId, EFapsClassName _toType, String _toName) throws Exception  {
     switch (_linkType)  {
       case LINK_ICON:           setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/" + _toName));break;
-      default:                  super.setLinkProperty(_context, _linkType, _toId, _toType, _toName);break;
+      default:                  super.setLinkProperty(_linkType, _toId, _toType, _toName);break;
     }
   }
 
@@ -135,11 +141,26 @@ public Field()  {
    * @param _name     name of the property
    * @param _value    value of the property
    */
-  protected void setProperty(Context _context, String _name, String _value) throws Exception  {
+  protected void setProperty(final String _name, 
+                             final String _value) throws CacheReloadException  {
     if (_name.equals("AlternateOID"))  {
       setAlternateOID(_value);
     } else if (_name.equals("ClassNameUI"))  {
-      setClassUI((UIInterface)Class.forName(_value).newInstance());
+      try  {
+        setClassUI((UIInterface)Class.forName(_value).newInstance());
+      } catch (ClassNotFoundException e)  {
+        throw new CacheReloadException("could not found class "
+                                       + "'" + _value + "' for "
+                                       + "'" + getName() + "'", e);
+      } catch (InstantiationException e)  {
+        throw new CacheReloadException("could not instantiate class "
+                                       + "'" + _value + "' for "
+                                       + "'" + getName() + "'", e);
+      } catch (IllegalAccessException e)  {
+        throw new CacheReloadException("could not access class "
+                                       + "'" + _value + "' for "
+                                       + "'" + getName() + "'", e);
+      }
     } else if (_name.equals("Columns"))  {
       setCols(Integer.parseInt(_value));
     } else if (_name.equals("Creatable"))  {
@@ -161,9 +182,23 @@ public Field()  {
     } else if (_name.equals("Label"))  {
       setLabel(_value);
     } else if (_name.equals("ProgramValue"))  {
-//      try  {
+      try  {
         Class programValueClass = Class.forName(_value);
         setProgramValue((FieldProgramValueInterface)programValueClass.newInstance());
+      } catch (ClassNotFoundException e)  {
+        throw new CacheReloadException("could not found class "
+                                       + "'" + _value + "' for "
+                                       + "'" + getName() + "'", e);
+      } catch (InstantiationException e)  {
+        throw new CacheReloadException("could not instantiate class "
+                                       + "'" + _value + "' for "
+                                       + "'" + getName() + "'", e);
+      } catch (IllegalAccessException e)  {
+        throw new CacheReloadException("could not access class "
+                                       + "'" + _value + "' for "
+                                       + "'" + getName() + "'", e);
+      }
+//      try  {
 //      } catch (ClassNotFoundException e)  {
 //      } catch (InstantiationException e)  {
 //        throw new RequestException(getClass(), "newInstance.InstantiationException", e);
@@ -189,7 +224,7 @@ public Field()  {
         setTarget(CommandAbstract.TARGET_POPUP);
       }
     } else  {
-      super.setProperty(_context, _name, _value);
+      super.setProperty(_name, _value);
     }
   }
 

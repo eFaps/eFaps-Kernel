@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,17 +32,22 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.efaps.db.Cache;
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
  * @version $Id$
+ * @todo description
  */
-public class Role extends UserObject implements CacheInterface  {
+public class Role extends UserObject  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
 
   /**
    * Logging instance used in this class.
@@ -62,7 +67,19 @@ public class Role extends UserObject implements CacheInterface  {
    *
    * @see #getCache
    */
-  private static final Cache <Role > cache = new Cache < Role > ();
+  private static final Cache <Role > cache = new Cache < Role > (
+    new CacheReloadInterface()  {
+        public int priority()  {
+          return CacheReloadInterface.Priority.Role.number;
+        };
+        public void reloadCache() throws CacheReloadException  {
+          Role.initialise();
+        };
+    }
+  );
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
 
   /**
    * Create a new role instance. The method is used from the static method
@@ -73,6 +90,9 @@ public class Role extends UserObject implements CacheInterface  {
   private Role(final long _id, final String _name)  {
     super(_id, _name);
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * Returns the viewable name of the role. The method {@link #getName} is
@@ -106,10 +126,10 @@ public class Role extends UserObject implements CacheInterface  {
    *
    * @param _context  eFaps context for this request
    */
-  public static void initialise(final Context _context) throws Exception  {
+  public static void initialise() throws CacheReloadException  {
     ConnectionResource con = null;
     try  {
-      con = _context.getConnectionResource();
+      con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
       try  {
@@ -134,9 +154,17 @@ public class Role extends UserObject implements CacheInterface  {
 
       con.commit();
 
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read roles", e);
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read roles", e);
     } finally  {
       if ((con != null) && con.isOpened())  {
-        con.abort();
+        try  {
+          con.abort();
+        } catch (EFapsException e)  {
+          throw new CacheReloadException("could not read roles", e);
+        }
       }
     }
   }

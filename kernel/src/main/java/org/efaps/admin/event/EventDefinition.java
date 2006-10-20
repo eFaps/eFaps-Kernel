@@ -164,25 +164,26 @@ e.printStackTrace();
    *
    * @param _context  eFaps context for this request
    */
-  public static void initialise(final Context _context) throws Exception  {
+  public static void initialise() throws Exception  {
+    Context context = Context.getThreadContext();
     SearchQuery query = new SearchQuery();
-    query.setQueryTypes(_context, EFapsClassName.EVENT_DEFINITION.name);
+    query.setQueryTypes(context, EFapsClassName.EVENT_DEFINITION.name);
     query.setExpandChildTypes(true);
-    query.addSelect(_context, "ID");
-    query.addSelect(_context, "Type");
-    query.addSelect(_context, "Name");
-    query.addSelect(_context, "IndexPosition");
-    query.addSelect(_context, "Abstract");
-    query.addSelect(_context, "Abstract.Type");
+    query.addSelect(context, "ID");
+    query.addSelect(context, "Type");
+    query.addSelect(context, "Name");
+    query.addSelect(context, "IndexPosition");
+    query.addSelect(context, "Abstract");
+    query.addSelect(context, "Abstract.Type");
     query.executeWithoutAccessCheck();
 System.out.println("--------------------------------------------");
     while (query.next())  {
-      long eventId      = (Long)   query.get(_context, "ID");
-      Type eventType    = (Type)   query.get(_context, "Type");
-      String eventName  = (String) query.get(_context, "Name");
-      long eventPos     = (Long)   query.get(_context, "IndexPosition");
-      long parentId     = (Long)   query.get(_context, "Abstract");
-      Type parentType   = (Type)   query.get(_context, "Abstract.Type");
+      long eventId      = (Long)   query.get(context, "ID");
+      Type eventType    = (Type)   query.get(context, "Type");
+      String eventName  = (String) query.get(context, "Name");
+      long eventPos     = (Long)   query.get(context, "IndexPosition");
+      long parentId     = (Long)   query.get(context, "Abstract");
+      Type parentType   = (Type)   query.get(context, "Abstract.Type");
 System.out.println("eventId="+eventId);
 System.out.println("eventType="+eventType);
 System.out.println("eventName="+eventName);

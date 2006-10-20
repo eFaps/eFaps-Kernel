@@ -158,8 +158,8 @@ throw new Exception("demote not possible!");
     if (!query.next())  {
 throw new Exception("object does not exists");
     }
-    StatusLinkType statusValue = (StatusLinkType)query.get(_context, statusAttr);
-    return statusValue.getStatus(_context);
+    StatusLinkType statusValue = (StatusLinkType) query.get(_context, statusAttr);
+    return statusValue.getStatus();
   }
 
   /**

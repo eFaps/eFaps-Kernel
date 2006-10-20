@@ -36,18 +36,20 @@ import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.Cache;
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
 import org.efaps.db.Update;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
  * @version $Id$
+ * @todo description
  */
-public class Person extends UserObject implements CacheInterface  {
+public class Person extends UserObject  {
 
   /////////////////////////////////////////////////////////////////////////////
   // enum definitions
@@ -96,7 +98,15 @@ public class Person extends UserObject implements CacheInterface  {
    *
    * @see #getCache
    */
-  private final static Cache < Person > cache = new Cache < Person > ();
+  private final static Cache < Person > cache = new Cache < Person > (
+    new CacheReloadInterface()  {
+        public int priority()  {
+          return 0;
+        };
+        public void reloadCache() throws CacheReloadException  {
+        };
+    }
+  );
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables

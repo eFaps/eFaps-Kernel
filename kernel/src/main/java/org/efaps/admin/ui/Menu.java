@@ -27,6 +27,7 @@ import org.efaps.util.EFapsException;
  *
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public class Menu extends MenuAbstract  {
 
@@ -52,7 +53,7 @@ public class Menu extends MenuAbstract  {
    * @param _sortId   id used to sort
    * @param _id       command / menu id
    */
-  protected void add(Context _context, long _sortId, long _id) throws Exception  {
+  protected void add(long _sortId, long _id)  {
     Command command = Command.get(_id);
     if (command != null)  {
       add(_sortId, command);

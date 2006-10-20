@@ -31,6 +31,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -63,12 +65,11 @@ abstract public class MenuAbstract extends CommandAbstract  {
    * Adds a command or menu to this menu instance. The method must be
    * specific  implemented by all menu implementations.
    *
-   * @param _context  eFaps context for this request
    * @param _sortId   id used to sort
    * @param _id       id of the sub command / menu to add
    */
-  abstract protected void add(final Context _context, final long _sortId,
-          final long _id) throws Exception;
+  abstract protected void add(final long _sortId,
+                              final long _id);
 
   /**
    * Add a command to the menu structure.
@@ -153,9 +154,9 @@ abstract public class MenuAbstract extends CommandAbstract  {
    * @param _context  eFaps context for this request
    * @see #readFromDB4Childs
    */
-  protected void readFromDB(Context _context) throws Exception  {
-    super.readFromDB(_context);
-    readFromDB4Childs(_context);
+  protected void readFromDB() throws CacheReloadException  {
+    super.readFromDB();
+    readFromDB4Childs();
   }
 
   /**
@@ -166,18 +167,23 @@ abstract public class MenuAbstract extends CommandAbstract  {
    * @see #readFromDB
    * @see #add(long)
    */
-  private void readFromDB4Childs(Context _context) throws Exception  {
-    Instance menuInst = new Instance(_context, Type.get(EFapsClassName.MENU.name), getId());
-    SearchQuery query = new SearchQuery();
-    query.setExpand(_context, menuInst, "Admin_UI_Menu2Command\\FromMenu");
-    query.addSelect(_context, "ID");
-    query.addSelect(_context, "ToCommand");
-    query.executeWithoutAccessCheck();
-
-    while (query.next())  {
-      long commandId = (Long)query.get(_context, "ToCommand");
-      long sortId = (Long)query.get(_context, "ID");
-      add(_context, sortId, commandId);
+  private void readFromDB4Childs() throws CacheReloadException  {
+    try  {
+      Instance menuInst = new Instance(Type.get(EFapsClassName.MENU.name), getId());
+      SearchQuery query = new SearchQuery();
+      query.setExpand(menuInst, "Admin_UI_Menu2Command\\FromMenu");
+      query.addSelect("ID");
+      query.addSelect("ToCommand");
+      query.executeWithoutAccessCheck();
+  
+      while (query.next())  {
+        long commandId = (Long) query.get("ToCommand");
+        long sortId = (Long) query.get("ID");
+        add(sortId, commandId);
+      }
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read childs for menu "
+                                     + "'" + getName() + "'", e);
     }
   }
 }

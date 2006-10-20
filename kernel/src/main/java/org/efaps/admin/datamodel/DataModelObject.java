@@ -22,10 +22,13 @@ package org.efaps.admin.datamodel;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.efaps.admin.AdminObject;
 import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -56,10 +59,10 @@ public abstract class DataModelObject extends AdminObject  {
    * @param _context for this request
    * @see #setProperty
    */
-  protected void readFromDB4Properties(Context _context) throws Exception  {
+  protected void readFromDB4Properties() throws CacheReloadException  {
     Statement stmt = null;
     try  {
-      stmt = _context.getConnection().createStatement();
+      stmt = Context.getThreadContext().getConnection().createStatement();
       ResultSet rs = stmt.executeQuery(
           "select "+
             "PROPERTY.NAME,"+
@@ -71,14 +74,19 @@ public abstract class DataModelObject extends AdminObject  {
         String name =   rs.getString(1).trim();
         String value =  rs.getString(2).trim();
 //        setProperty(_context, name, value);
-setProperty(null, name, value);
+setProperty(name, value);
       }
       rs.close();
-    } catch (Exception e)  {
-e.printStackTrace();
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read properties", e);
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read properties", e);
     } finally  {
       if (stmt != null)  {
-        stmt.close();
+        try  {
+          stmt.close();
+        } catch (SQLException e)  {
+        }
       }
     }
   }

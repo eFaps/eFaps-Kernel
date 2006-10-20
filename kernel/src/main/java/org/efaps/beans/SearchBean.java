@@ -65,7 +65,7 @@ public class SearchBean extends AbstractCollectionBean implements TableBeanInter
    */
   public void setSearchName(final String _name) throws Exception  {
     addHiddenValue("search" , _name);
-    setSearch(Search.get(Context.getThreadContext(), _name));
+    setSearch(Search.get(_name));
   }
 
   /**

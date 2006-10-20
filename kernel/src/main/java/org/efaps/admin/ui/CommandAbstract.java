@@ -36,10 +36,11 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Role;
 import org.efaps.admin.user.UserObject;
 import org.efaps.beans.TableBean;
-import org.efaps.db.Cache;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.servlet.RequestHandler;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  *
@@ -199,14 +200,17 @@ public abstract class CommandAbstract extends UserInterfaceObject  {
    * @param _toType   to type
    * @param _toName   to name
    */
-  protected void setLinkProperty(Context _context, EFapsClassName _linkType, long _toId, EFapsClassName _toType, String _toName) throws Exception  {
+  protected void setLinkProperty(final EFapsClassName _linkType, 
+                                 final long _toId, 
+                                 final EFapsClassName _toType, 
+                                 final String _toName) throws Exception  {
     switch (_linkType)  {
       case LINK_ICON:           setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/" + _toName));break;
-      case LINK_TARGET_FORM:    setTargetForm(Form.get(_context, _toId));break;
+      case LINK_TARGET_FORM:    setTargetForm(Form.get(_toId));break;
       case LINK_TARGET_MENU:    setTargetMenu(Menu.get(_toId));break;
-      case LINK_TARGET_SEARCH:  setTargetSearch(Search.get(_context, _toName));break;
-      case LINK_TARGET_TABLE:   setTargetTable(Table.get(_context, _toId));break;
-      default:                  super.setLinkProperty(_context, _linkType, _toId, _toType, _toName);
+      case LINK_TARGET_SEARCH:  setTargetSearch(Search.get(_toName));break;
+      case LINK_TARGET_TABLE:   setTargetTable(Table.get(_toId));break;
+      default:                  super.setLinkProperty(_linkType, _toId, _toType, _toName);
     }
   }
 
@@ -217,7 +221,7 @@ public abstract class CommandAbstract extends UserInterfaceObject  {
    * @param _name     name of the property
    * @param _value    value of the property
    */
-  protected void setProperty(Context _context, String _name, String _value) throws Exception  {
+  protected void setProperty(String _name, String _value) throws CacheReloadException  {
     if (_name.equals("Action"))  {
       if (_value.equals("delete"))  {
         setAction(ACTION_DELETE);
@@ -264,7 +268,13 @@ public abstract class CommandAbstract extends UserInterfaceObject  {
     } else if (_name.equals("TargetCreateType"))  {
       setTargetCreateType(Type.get(_value));
     } else if (_name.equals("TargetFormBean"))  {
-      setTargetFormBean(Class.forName(_value));
+      try  {
+        setTargetFormBean(Class.forName(_value));
+      } catch (ClassNotFoundException e)  {
+        throw new CacheReloadException("could not found class '" + _value + "'"
+                                       + " used as target form bean for "
+                                       + "'" + getName() + "'", e);
+      }
     } else if (_name.equals("TargetMode"))  {
       if (_value.equals("create"))  {
         setTargetMode(TARGET_MODE_CREATE);
@@ -282,7 +292,13 @@ public abstract class CommandAbstract extends UserInterfaceObject  {
         setTargetShowCheckBoxes(false);
       }
     } else if (_name.equals("TargetTableBean"))  {
-      setTargetTableBean(Class.forName(_value));
+      try  {
+        setTargetTableBean(Class.forName(_value));
+      } catch (ClassNotFoundException e)  {
+        throw new CacheReloadException("could not found class '" + _value + "'"
+                                       + " used as target table bean for "
+                                       + "'" + getName() + "'", e);
+      }
     } else if (_name.startsWith("TargetTableFilter"))  {
       int index = Integer.parseInt(_name.substring(17));
       if (getTargetTableFilters()==null)  {
@@ -304,7 +320,7 @@ public abstract class CommandAbstract extends UserInterfaceObject  {
     } else if (_name.equals("WindowWidth"))  {
       setWindowWidth(Integer.parseInt(_value));
     } else {
-      super.setProperty(_context, _name, _value);
+      super.setProperty(_name, _value);
     }
   }
 

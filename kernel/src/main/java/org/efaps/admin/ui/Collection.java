@@ -33,6 +33,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -166,33 +168,35 @@ this.selIndexLen++;
    * The instance method reads all needed information for this user interface
    * object.
    *
-   * @param _context  eFaps context for this request
    * @see #readFromDB4Fields
    */
-  protected void readFromDB(Context _context) throws Exception  {
-    super.readFromDB(_context);
-    readFromDB4Fields(_context);
+  protected void readFromDB() throws CacheReloadException  {
+    super.readFromDB();
+    readFromDB4Fields();
   }
 
   /**
    * Read all fields related to this collection object.
-   *
-   * @param _context  eFaps context for this request
    */
-  private void readFromDB4Fields(Context _context) throws Exception  {
-    Instance instance = new Instance(_context, Type.get(EFapsClassName.COLLECTION.name), getId());
-    SearchQuery query = new SearchQuery();
-    query.setExpand(_context, instance, EFapsClassName.FIELD.name+"\\Collection");
-    query.addSelect(_context, "ID");
-    query.addSelect(_context, "Name");
-    query.executeWithoutAccessCheck();
-
-    while (query.next())  {
-      long id     = (Long)query.get(_context, "ID");
-      String name = (String)query.get(_context, "Name");
-      Field field = new Field(id, name);
-      field.readFromDB(_context);
-      add(field);
+  private void readFromDB4Fields() throws CacheReloadException  {
+    try  {
+      Instance instance = new Instance(Type.get(EFapsClassName.COLLECTION.name), getId());
+      SearchQuery query = new SearchQuery();
+      query.setExpand(instance, EFapsClassName.FIELD.name+"\\Collection");
+      query.addSelect("ID");
+      query.addSelect("Name");
+      query.executeWithoutAccessCheck();
+  
+      while (query.next())  {
+        long id     = (Long)query.get("ID");
+        String name = (String)query.get("Name");
+        Field field = new Field(id, name);
+        field.readFromDB();
+        add(field);
+      }
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read fields for "
+                                     + "'" + getName() + "'", e);
     }
   }
 

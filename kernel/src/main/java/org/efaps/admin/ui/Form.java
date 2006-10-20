@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
@@ -26,6 +29,9 @@ import org.efaps.util.EFapsException;
 
 /**
  *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class Form extends Collection  {
 
@@ -66,12 +72,8 @@ public class Form extends Collection  {
    * @return instance of class {@link Form}
    * @see #getCache
    */
-  static public Form get(Context _context, long _id) throws EFapsException  {
-    Form form = (Form)getCache().get(_id);
-    if (form == null)  {
-      form = getCache().read(_context, _id);
-    }
-    return form;
+  static public Form get(final long _id)  {
+    return getCache().get(_id);
   }
 
   /**
@@ -82,12 +84,8 @@ public class Form extends Collection  {
    * @return instance of class {@link Form}
    * @see #getCache
    */
-  static public Form get(Context _context, String _name) throws EFapsException  {
-    Form form = (Form)getCache().get(_name);
-    if (form == null)  {
-      form = getCache().read(_context, _name);
-    }
-    return form;
+  static public Form get(final String _name)  {
+    return getCache().get(_name);
   }
 
   /**
@@ -95,7 +93,7 @@ public class Form extends Collection  {
    *
    * @return value of static variable {@link #cache}
    */
-  static UserInterfaceObjectCache<Form> getCache()  {
+  static UserInterfaceObjectCache < Form > getCache()  {
     return cache;
   }
 
@@ -104,5 +102,6 @@ public class Form extends Collection  {
    *
    * @see #getCache
    */
-  static private UserInterfaceObjectCache<Form> cache = new UserInterfaceObjectCache<Form>(Form.class);
+  static private UserInterfaceObjectCache < Form > cache 
+                         = new UserInterfaceObjectCache < Form > (Form.class);
 }

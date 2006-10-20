@@ -32,8 +32,10 @@ import java.util.Set;
 
 import org.efaps.admin.user.Role;
 import org.efaps.admin.access.AccessType;
-import org.efaps.db.Cache;
 import org.efaps.db.Context;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -103,10 +105,10 @@ public boolean checkAccess(Context _context, AccessType _accessType)  {
    *
    * @return instance of class {@link Status}
    */
-  public static Status get(Context _context, long _id) throws Exception  {
+  public static Status get(final long _id) throws Exception  {
     Status status = (Status)getCache().get(_id);
     if (status == null)  {
-      status = getCache().readStatus(_context, _id);
+      status = getCache().readStatus(_id);
     }
     return status;
   }
@@ -116,10 +118,10 @@ public boolean checkAccess(Context _context, AccessType _accessType)  {
    *
    * @return instance of class {@link Status}
    */
-  public static Status get(Context _context, String _name) throws Exception  {
+  public static Status get(final String _name) throws Exception  {
     Status status = (Status)getCache().get(_name);
     if (status == null)  {
-      status = getCache().readStatus(_context, _name);
+      status = getCache().readStatus(_name);
     }
     return status;
   }
@@ -145,10 +147,9 @@ public boolean checkAccess(Context _context, AccessType _accessType)  {
   /**
    * The instance method reads the access rights for this status.
    *
-   * @param _context  context for this request
    */
-  private void readDBAccess(Context _context) throws Exception  {
-    Statement stmt = _context.getConnection().createStatement();
+  private void readDBAccess() throws Exception  {
+    Statement stmt = Context.getThreadContext().getConnection().createStatement();
     try  {
       ResultSet rs = stmt.executeQuery(
           "select "+
@@ -185,7 +186,7 @@ e.printStackTrace();
    * @see #name
    * @see #getName
    */
-  private void setPolicy(Policy _policy)  {
+  private void setPolicy(final Policy _policy)  {
     this.policy = _policy;
   }
 
@@ -222,10 +223,18 @@ e.printStackTrace();
 */
   /////////////////////////////////////////////////////////////////////////////
 
-  static protected class StatusCache extends Cache<Status>  {
+  static protected class StatusCache extends Cache < Status >  {
 
-    private Status readStatus(Context _context, long _id) throws Exception  {
-      return readStatus4Statement(_context,
+    protected StatusCache()  {
+      super(new CacheReloadInterface()  {
+        public int priority()  {return 1200;};
+        public void reloadCache() throws CacheReloadException  {
+        };
+      });
+    }
+
+    private Status readStatus(final long _id) throws Exception  {
+      return readStatus4Statement(
           "select "+
             "ID,"+
             "NAME,"+
@@ -235,8 +244,8 @@ e.printStackTrace();
       );
     }
 
-    private Status readStatus(Context _context, String _name) throws Exception  {
-      return readStatus4Statement(_context,
+    private Status readStatus(final String _name) throws Exception  {
+      return readStatus4Statement(
           "select "+
             "ID,"+
             "NAME,"+
@@ -246,18 +255,18 @@ e.printStackTrace();
       );
     }
 
-    private Status readStatus4Statement(Context _context, String _statement) throws Exception  {
+    private Status readStatus4Statement(final String _statement) throws Exception  {
       Status ret = null;
-      Statement stmt = _context.getConnection().createStatement();
+      Statement stmt = Context.getThreadContext().getConnection().createStatement();
       try  {
         ResultSet rs = stmt.executeQuery(_statement);
         if (rs.next())  {
           long id =       rs.getLong(1);
           String name =   rs.getString(2);
           long policyId = rs.getLong(3);
-          ret = new Status(id, name, Policy.get(_context, policyId));
+          ret = new Status(id, name, Policy.get(policyId));
           add(ret);
-          ret.readDBAccess(_context);
+          ret.readDBAccess();
         }
         rs.close();
       } catch (Exception e)  {

@@ -167,7 +167,7 @@ ArrayList<Type> types = new ArrayList<Type>();
    *
    * @see #statement
    */
-  public void close() throws Exception  {
+  public void close() throws EFapsException  {
 /*    if (getStatement()!=null)  {
       try  {
         getStatement().close();
@@ -205,7 +205,7 @@ ArrayList<Type> types = new ArrayList<Type>();
    * @param _attr attribute to add to the query
    * @see #addSelect
    */
-  public void add(Attribute _attr)  {
+  public void add(Attribute _attr) throws EFapsException  {
     addSelect(false, _attr, _attr);
   }
 
@@ -254,8 +254,18 @@ ArrayList<Type> types = new ArrayList<Type>();
    * The method adds an expression to the selectstatement.
    *
    * @param _expression expression to add
+   * @deprecated
    */
-  public void addSelect(final Context _context, final String _expression) throws Exception  {
+  public void addSelect(final Context _context, final String _expression) throws EFapsException  {
+    addSelect(false, _expression, this.type, _expression);
+  }
+
+  /**
+   * The method adds an expression to the selectstatement.
+   *
+   * @param _expression expression to add
+   */
+  public void addSelect(final String _expression) throws EFapsException  {
     addSelect(false, _expression, this.type, _expression);
   }
 
@@ -268,7 +278,7 @@ ArrayList<Type> types = new ArrayList<Type>();
    */
   protected void addSelect(final boolean _isOID, 
                            final Object _key, 
-                           final Attribute _attr)  {
+                           final Attribute _attr) throws EFapsException  {
     getSelectType(_attr.getParent()).addSelect(_isOID, _key, _attr);
   }
 
@@ -282,7 +292,7 @@ ArrayList<Type> types = new ArrayList<Type>();
   protected void addSelect(final boolean _isOID, 
                            final Object _key, 
                            final Type _type, 
-                           final String _expression) throws Exception  {
+                           final String _expression) throws EFapsException  {
     getSelectType(_type).addSelect(_isOID, _key, _expression);
   }
 
@@ -355,26 +365,33 @@ getMainSelectTypes().put(_type, selectType);
   /**
    * The instance method returns for the given key the attribute value.
    *
-   * @param _context  eFaps context for this request
    * @param _key      key for which the attribute value must returned
    * @return atribute value for given key
    */
-  public Object get(final Context _context, 
-                    final Object _key) throws Exception  {
+  public Object get(final Object _key) throws EFapsException  {
     Object ret = null;
 
-    if (hasAccess(_context, _key))  {
+    Context context = Context.getThreadContext();
+    if (hasAccess(context, _key))  {
       SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
       if (selExpr!=null)  {
-        ret = selExpr.getAttrValue(_context);
+        ret = selExpr.getAttrValue(context);
       }
     }
-//System.out.println("------------ret="+ret);
     return ret;
   }
 
-private boolean hasAccess(final Context _context,
-                          final Object _key) throws Exception  {
+  /**
+   * @deprecated
+   */
+  public Object get(final Context _context, 
+                    final Object _key) throws EFapsException  {
+    return get(_key);
+  }
+
+  
+  private boolean hasAccess(final Context _context,
+                          final Object _key) throws EFapsException  {
   boolean hasAccess = true;
   if (this.checkAccess)  {
     Instance instance = null;
@@ -445,7 +462,7 @@ private boolean hasAccess(final Context _context,
    * @return object id for given key
    */
   public String getOID(final Context _context, 
-                       final Object _key) throws Exception  {
+                       final Object _key) throws EFapsException  {
     String ret = null;
     SelExpr2Attr selExpr = getAllOIDSelExprMap().get(_key);
     if (selExpr!=null)  {
@@ -459,7 +476,7 @@ private boolean hasAccess(final Context _context,
    *
    * @param _context  context for this request
    */
-  public Instance getInstance(Context _context, Field _field) throws Exception  {
+  public Instance getInstance(Context _context, Field _field) throws EFapsException  {
     Instance ret = null;
     if (hasAccess(_context, _field))  {
       if ((_field != null) && (_field.getAlternateOID() != null))  {
@@ -477,10 +494,13 @@ private boolean hasAccess(final Context _context,
    *
    * @param _context  context for this request
    */
-  public Instance getInstance(Context _context, Type _type) throws Exception  {
+  public Instance getInstance(Context _context, Type _type) throws EFapsException  {
     SelectType selectType = getMainSelectTypes().get(_type);
 if (selectType==null)  {
-  throw new Exception("Type "+_type.getName()+" is not selected! New Instance can not created!");
+  LOG.error("Type '" + _type.getName() + "' is not selected! New Instance can not created!");
+  throw new EFapsException(getClass(),
+                           "getInstance.TypeNotSelected",
+                           _type.getName());
 }
 //    String id = getResultSet().getString(selectType.getIndexId().intValue());
 String id = this.cachedResult.getString(selectType.getIndexId().intValue());
@@ -493,7 +513,7 @@ if (selectType.getIndexType()!=null)  {
   type = Type.get(typeId);
 }
 
-    return new Instance(_context, type, id);
+    return new Instance(type, id);
   }
 
   /**
@@ -533,7 +553,7 @@ if (selectType.getIndexType()!=null)  {
   /**
    * The instance method executes the query.
    */
-  public void execute() throws Exception  {
+  public void execute() throws EFapsException  {
     this.checkAccess = true;
     executeWithoutAccessCheck();
   }
@@ -541,10 +561,9 @@ if (selectType.getIndexType()!=null)  {
   /**
    * The instance method executes the query.
    */
-  public void executeWithoutAccessCheck() throws Exception  {
+  public void executeWithoutAccessCheck() throws EFapsException  {
     Context context = Context.getThreadContext();
     
-try  {
     if (getMainJoinElement().selectSize()>0)  {
 
       int incSelIndex = 0;
@@ -584,9 +603,6 @@ try  {
         selExpr.initSelectIndex();
       }
     }
-} catch (Exception e)  {
-e.printStackTrace();
-}
     this.cachedResult.beforeFirst();
   }
 
@@ -640,7 +656,7 @@ throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable");
    * @return <i>true</i> if a new row is selected and exists, otherwise
    *         <i>false</i>
    */
-  public boolean next() throws Exception  {
+  public boolean next()  {
     return this.cachedResult.next();
   }
 
@@ -917,7 +933,7 @@ addSelectType(selectType);
     }
 
 
-private void addWhere(SelectType _selectType1, Attribute _attr1, SelectType _selectType2, Attribute _attr2) throws Exception  {
+private void addWhere(SelectType _selectType1, Attribute _attr1, SelectType _selectType2, Attribute _attr2) throws EFapsException  {
 whereClauses.add(new WhereClauseAttrEqAttr(_selectType1, _attr1, _selectType2, _attr2));
 }
 
@@ -1178,14 +1194,19 @@ private List<WhereClause> whereClauses = new ArrayList<WhereClause>();
      * @return attribute value with the value returned from the select
      *         expression
      */
-    protected Object getAttrValue(Context _context) throws Exception  {
+    protected Object getAttrValue(Context _context) throws EFapsException  {
       if (getAttribute()==null)  {
 throw new EFapsException(getClass(), "SelectExpression.get.NoAttribute");
       }
 //System.out.println("~~~~~~~~~~~~++getIndexes()="+getIndexes());
-      AttributeTypeInterface ret = getAttribute().newInstance();
-return ret.readValue(_context, cachedResult, getIndexes());
-//      return ret.readValue(_context, getResultSet(), getIndexes());
+      AttributeTypeInterface attrInterf = getAttribute().newInstance();
+Object ret = null;
+try  {
+  ret = attrInterf.readValue(_context, cachedResult, getIndexes());
+} catch (Exception e)  {
+  throw new EFapsException(getClass(), "getAttrValue.CouldNotReadValue", e);
+}
+return ret;
     }
 
      ///////////////////////////////////////////////////////////////////////////
@@ -1462,8 +1483,11 @@ if (getType().getMainTable().getSqlColType()!=null)  {
      * @param _key        key to store the select expression in the select
      *                    map expression
      * @param _expression expression itself which must be selected
+     * @todo EFapsException Property
      */
-    protected void addSelect(boolean _isOID, Object _key, String _expression) throws Exception  {
+    protected void addSelect(final boolean _isOID, 
+                             final Object _key, 
+                             final String _expression) throws EFapsException  {
 //System.out.println("AbstractQuery.addSelect("+_isOID+","+_key+","+_expression+")");
       if (_expression!=null && _expression.length()>0)  {
         if (_expression.indexOf('.')>=0)  {
@@ -1472,14 +1496,25 @@ if (getType().getMainTable().getSqlColType()!=null)  {
           String link = tokens.nextToken();
           Attribute attr = getType().getAttribute(link);
           if (attr==null)  {
-throw new Exception("Link for '"+link+"' does not exists on type '"+getType().getName()+"'");
+            LOG.error("Link for '" + link + "' does not exists on type "
+                      + "'"+getType().getName() + "'");
+            throw new EFapsException(getClass(), 
+                                     "addSelect.LinkDoesNotExists",
+                                     link,
+                                     getType().getName());
           }
 
 // add new link type
 Type linkType = attr.getLink();
 
 if (linkType==null)  {
-  throw new Exception("For Link '"+link+"' of type '" + getType().getName() + "' the type is not defined.");
+  LOG.error("For Link '" + link + "' of type "
+            + "'" + getType().getName() + "' "
+            + "the type is not defined.");
+  throw new EFapsException(getClass(), 
+                           "addSelect.LinkDoesNotExists",
+                           link,
+                           getType().getName());
 }
 
 SelectType selectType = elm.getNewSelectType(linkType, true);
@@ -1504,7 +1539,12 @@ getMapJoinElements().put(_expression, elm);
         } else  {
           Attribute attr = getType().getAttribute(_expression);
           if (attr==null)  {
-throw new Exception("attribute '"+_expression+"' for type '"+getType().getName()+"' not found");
+            LOG.error("attribute '" + _expression + "' for type "
+                      + "'" + getType().getName() + "' not found");
+            throw new EFapsException(getClass(),
+                                     "addSelect.AttributeNotFound",
+                                     _expression,
+                                     getType().getName());
           }
           addSelect(_isOID, _key, attr);
         }

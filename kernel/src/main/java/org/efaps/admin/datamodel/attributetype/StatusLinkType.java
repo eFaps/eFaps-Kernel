@@ -42,8 +42,8 @@ public class StatusLinkType extends AbstractLinkType  {
    * @return status string
    * @see #getStatus
    */
-  public String getViewableString(Locale _locale)  {
-    return getStatus(null).getViewableName(null);
+  public String getViewableString(final Locale _locale)  {
+    return getStatus().getViewableName(null);
   }
 
   /**
@@ -52,9 +52,9 @@ public class StatusLinkType extends AbstractLinkType  {
    *
    * @return status object
    */
-  public Status getStatus(Context _context)  {
+  public Status getStatus()  {
 try  {
-    return Status.get(_context, getValue());
+    return Status.get(getValue());
 } catch (Throwable e)  {
   e.printStackTrace();
 }

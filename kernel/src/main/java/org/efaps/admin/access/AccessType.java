@@ -21,6 +21,7 @@
 package org.efaps.admin.access;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
 
@@ -28,9 +29,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.AdminObject;
-import org.efaps.db.Cache;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -65,7 +69,16 @@ public class AccessType extends AdminObject  {
    * @see #getAccessType(UUID)
    */
   private static final Cache < AccessType > cache 
-                                                = new Cache < AccessType > ();
+                                                = new Cache < AccessType > (
+    new CacheReloadInterface()  {
+        public int priority()  {
+          return CacheReloadInterface.Priority.AccessType.number;
+        };
+        public void reloadCache() throws CacheReloadException  {
+          AccessType.initialise();
+        };
+    }
+  );
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
@@ -110,10 +123,10 @@ public class AccessType extends AdminObject  {
    * @param _context  eFaps context for this request
    * @see #getMethod
    */
-  public static void initialise(final Context _context) throws Exception  {
+  public static void initialise() throws CacheReloadException  {
     ConnectionResource con = null;
     try  {
-      con = _context.getConnectionResource();
+      con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
       try  {
@@ -141,9 +154,18 @@ public class AccessType extends AdminObject  {
 
       con.commit();
 
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read access types", e);
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read access types", e);
     } finally  {
       if ((con != null) && con.isOpened())  {
-        con.abort();
+        try  {
+          con.abort();
+        } catch (EFapsException e)  {
+          throw new CacheReloadException("could not abort transaction "
+                                         + "while reading access types", e);
+        }
       }
     }
   }

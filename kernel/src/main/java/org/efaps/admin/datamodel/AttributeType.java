@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,11 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -26,13 +30,17 @@ import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.ui.UIInterface;
-import org.efaps.db.Cache;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheReloadInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class AttributeType extends DataModelObject  {
 
@@ -277,10 +285,10 @@ return getName();
    *
    * @param _context  eFaps context for this request
    */
-  static public void initialise(Context _context) throws Exception  {
+  static public void initialise() throws CacheReloadException  {
     ConnectionResource con = null;
     try  {
-      con = _context.getConnectionResource();
+      con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
       try  {
@@ -310,9 +318,19 @@ return getName();
         }
       }
       con.commit();
+    } catch (ClassNotFoundException e)  {
+      throw new CacheReloadException("could not read attribute types", e);
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read attribute types", e);
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read attribute types", e);
     } finally  {
       if ((con != null) && con.isOpened())  {
-        con.abort();
+        try  {
+          con.abort();
+        } catch (EFapsException e)  {
+          throw new CacheReloadException("could not read attribute types", e);
+        }
       }
     }
   }
@@ -327,7 +345,7 @@ return getName();
    * @see #getCache
    * @see #read
    */
-  static public AttributeType get(long _id) throws Exception  {
+  static public AttributeType get(long _id)  {
     return getCache().get(_id);
   }
 
@@ -341,7 +359,7 @@ return getName();
    * @see #getCache
    * @see #read
    */
-  static public AttributeType get(String _name) throws Exception  {
+  static public AttributeType get(String _name)  {
     return getCache().get(_name);
   }
 
@@ -359,5 +377,13 @@ return getName();
    *
    * @see #getCache
    */
-  static private Cache<AttributeType> cache = new Cache<AttributeType>();
+  static private Cache<AttributeType> cache = new Cache<AttributeType>(
+    new CacheReloadInterface()  {
+        public int priority()  {
+          return CacheReloadInterface.Priority.AttributeType.number;
+        };
+        public void reloadCache() throws CacheReloadException  {
+        };
+    }
+  );
 }

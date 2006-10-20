@@ -23,10 +23,13 @@ package org.efaps.admin.ui;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  *
@@ -36,10 +39,21 @@ import org.efaps.util.EFapsException;
  */
 public class Search extends MenuAbstract  {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Log LOG = LogFactory.getLog(Type.class);
+
   /**
    * The static variable defines the class name in eFaps.
    */
   static public EFapsClassName EFAPS_CLASSNAME = EFapsClassName.SEARCH;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
 
   /**
    * This is the constructor to create a new instance of the class Search. The
@@ -58,14 +72,13 @@ public class Search extends MenuAbstract  {
   /**
    * A search menu with the given id is added to this search.
    *
-   * @param _context  eFaps context for this request
    * @param _sortId   id used to sort
    * @param _id       id of the search menu to add
    */
-  protected void add(final Context _context, final long _sortId,
-      final long _id) throws Exception  {
+  protected void add(final long _sortId,
+                     final long _id)  {
 
-    add(_sortId, new SearchMenu(_context, _id));
+    add(_sortId, new SearchMenu(_id));
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -137,10 +150,10 @@ public Table getTable(int _index)  {
    * @return instance of class {@link Command}
    * @see #getCache
    */
-  static public Search get(Context _context, String _name) throws EFapsException  {
-    Search search = (Search)getCache().get(_name);
+  static public Search get(String _name) throws EFapsException  {
+    Search search = (Search) getCache().get(_name);
     if (search==null)  {
-      search = getCache().read(_context, _name);
+      search = getCache().read(_name);
     }
     return search;
   }
@@ -167,9 +180,13 @@ public Table getTable(int _index)  {
 
   public class SearchMenu extends MenuAbstract  {
 
-    private SearchMenu(Context _context, long _id) throws Exception  {
+    private SearchMenu(long _id)   {
       super(_id, null);
-      readFromDB(_context);
+try  {
+      readFromDB();
+} catch (CacheReloadException e)  {
+  LOG.error(e);
+}
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -177,37 +194,40 @@ public Table getTable(int _index)  {
     /**
      * @see #readFromDB4SearchCommands
      */
-    protected void readFromDB(Context _context) throws Exception  {
-      readFromDB4Name(_context);
-      super.readFromDB(_context);
+    protected void readFromDB() throws CacheReloadException  {
+      readFromDB4Name();
+      super.readFromDB();
     }
 
-    private void readFromDB4Name(Context _context) throws Exception  {
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes(_context, EFapsClassName.MENU.name);
-      query.addWhereExprEqValue(_context, "ID", getId());
-      query.addSelect(_context, "Name");
-      query.executeWithoutAccessCheck();
+    private void readFromDB4Name() throws CacheReloadException  {
+      try  {
+        SearchQuery query = new SearchQuery();
+        query.setQueryTypes(EFapsClassName.MENU.name);
+        query.addWhereExprEqValue("ID", getId());
+        query.addSelect("Name");
+        query.executeWithoutAccessCheck();
 
-      if (query.next())  {
-        setName((String)query.get(_context, "Name"));
-      } else  {
-throw new Exception("search does not exists");
-      }
+        if (query.next())  {
+          setName((String)query.get("Name"));
+        } else  {
+throw new CacheReloadException("search does not exists");
+        }
 setLabel(getName()+".Label");
+      } catch (EFapsException e)  {
+        throw new CacheReloadException("could not read name of search", e);
+      }
     }
 
     /**
      * A search menu with the given id is added to this search.
      *
-     * @param _context  eFaps context for this request
      * @param _sortId   id used to sort
      * @param _id       id of the search menu to add
      */
-    protected void add(final Context _context, final long _sortId,
-        final long _id) throws Exception  {
+    protected void add(final long _sortId,
+                       final long _id)  {
 
-      add(_sortId, new SearchCommand(_context, _id));
+      add(_sortId, new SearchCommand(_id));
     }
 
     /**
@@ -228,9 +248,13 @@ setLabel(getName()+".Label");
 
   public class SearchCommand extends CommandAbstract  {
 
-    private SearchCommand(Context _context, long _id) throws Exception  {
+    private SearchCommand(long _id)  {
       super(_id, null);
-      readFromDB(_context);
+try  {
+      readFromDB();
+} catch (CacheReloadException e)  {
+  LOG.error(e);
+}
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -238,9 +262,9 @@ setLabel(getName()+".Label");
     /**
      * @see #readFromDB4SearchCommands
      */
-    protected void readFromDB(Context _context) throws Exception  {
-      readFromDB4Name(_context);
-      super.readFromDB(_context);
+    protected void readFromDB() throws CacheReloadException  {
+      readFromDB4Name();
+      super.readFromDB();
     }
 
     /**
@@ -248,30 +272,34 @@ setLabel(getName()+".Label");
      *
      * @param _context  context for this request
      */
-    private void readFromDB4Name(Context _context) throws Exception  {
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes(_context, EFapsClassName.COMMAND.name);
-      query.addWhereExprEqValue(_context, "ID", getId());
-      query.addSelect(_context, "Name");
-      query.executeWithoutAccessCheck();
+    private void readFromDB4Name() throws CacheReloadException  {
+      try  {
+        SearchQuery query = new SearchQuery();
+        query.setQueryTypes(EFapsClassName.COMMAND.name);
+        query.addWhereExprEqValue("ID", getId());
+        query.addSelect("Name");
+        query.executeWithoutAccessCheck();
 
-      if (query.next())  {
-        setName((String)query.get(_context, "Name"));
-      } else  {
-throw new Exception("search does not exists");
-      }
+        if (query.next())  {
+          setName((String)query.get("Name"));
+        } else  {
+throw new CacheReloadException("search does not exists");
+        }
 setLabel(getName()+".Label");
+      } catch (EFapsException e)  {
+        throw new CacheReloadException("could not read name of search", e);
+      }
     }
 
     /**
      * The instance method sets all properties of search command object.
      *
-     * @param _context  context for this request
      * @param _name     name of the property (key)
      * @param _value    value of the property
      * @param _toId     id of the user interface object the property references
      */
-    protected void setProperty(Context _context, String _name, String _value) throws Exception  {
+    protected void setProperty(final String _name, 
+                               final String _value) throws CacheReloadException  {
       if (_name.equals("ConnectChildAttribute"))  {
         setConnectChildAttribute(_value);
       } else if (_name.equals("ConnectParentAttribute"))  {
@@ -279,25 +307,25 @@ setLabel(getName()+".Label");
       } else if (_name.equals("ConnectType"))  {
         setConnectType(Type.get(_value));
       } else if (_name.equals("ResultTable"))  {
-        Table resultTable = Table.get(_context, _value);
+        Table resultTable = Table.get(_value);
 if (resultTable==null)  {
-  throw new Exception("Can not find table with name '"+_value+"'");
+  throw new CacheReloadException("Can not find table with name '"+_value+"'");
 }
         setResultTable(resultTable);
       } else if (_name.equals("SearchForm"))  {
-        Form searchForm = Form.get(_context, _value);
+        Form searchForm = Form.get(_value);
 if (searchForm==null)  {
-  throw new Exception("Can not find form with name '"+_value+"'");
+  throw new CacheReloadException("Can not find form with name '"+_value+"'");
 }
         setSearchForm(searchForm);
       } else if (_name.equals("SearchType"))  {
 Type searchType = Type.get(_value);
 if (searchType==null)  {
-  throw new Exception("Can not find type with name '"+_value+"'");
+  throw new CacheReloadException("Can not find type with name '"+_value+"'");
 }
 setSearchType(searchType);
       } else  {
-        super.setProperty(_context, _name, _value);
+        super.setProperty(_name, _value);
       }
     }
 

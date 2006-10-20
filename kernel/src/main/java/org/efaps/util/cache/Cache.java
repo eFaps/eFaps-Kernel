@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.db;
+package org.efaps.util.cache;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -49,7 +49,7 @@ import org.efaps.db.Context;
  * @version $Id$
  * @todo description
  */
-public class Cache<K extends CacheInterface>  {
+public class Cache < K extends CacheObjectInterface >  {
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -71,10 +71,16 @@ public class Cache<K extends CacheInterface>  {
    */
   private final Map < UUID, K > cache4UUID = new Hashtable < UUID, K > ();
 
+  /**
+   *
+   */
+  private final CacheReloadInterface reloadInstance;
+
   /////////////////////////////////////////////////////////////////////////////
   // constructors
 
-  public Cache()  {
+  public Cache(final CacheReloadInterface _reloadInstance)  {
+    this.reloadInstance = _reloadInstance;
 caches.add(this);
   }
 
@@ -199,14 +205,25 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
    * The static method removes all values in the caches. The datamodel cache
    * is initialised automatically.
    */
-  public static void reloadCache(final Context _context) throws Exception {
+  public static void reloadCache() throws Exception {
     synchronized(caches)  {
       for (Cache cache : caches)  {
         cache.cache4Id.clear();
         cache.cache4Name.clear();
         cache.cache4UUID.clear();
       }
-      JAASSystem.initialise(_context);
+      JAASSystem.initialise();
+      Role.initialise();
+      Group.initialise();
+      AttributeType.initialise();
+      SQLTable.initialise();
+      Type.initialise();
+      Attribute.initialise();
+      AccessType.initialise();
+      AccessSet.initialise();
+      UserInterfaceObject.initialise();
+      EventDefinition.initialise();
+/*      JAASSystem.initialise(_context);
       Role.initialise(_context);
       Group.initialise(_context);
       AttributeType.initialise(_context);
@@ -217,6 +234,7 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
       AccessSet.initialise(_context);
       UserInterfaceObject.initialise(_context);
       EventDefinition.initialise(_context);
+*/
     }
   }
 

@@ -26,8 +26,9 @@ import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import org.efaps.db.CacheInterface;
 import org.efaps.db.Context;
+import org.efaps.util.cache.CacheObjectInterface;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
  *
@@ -35,7 +36,7 @@ import org.efaps.db.Context;
  * @author tmo
  * @version $Id$
  */
-public abstract class AdminObject implements CacheInterface  {
+public abstract class AdminObject implements CacheObjectInterface  {
 
   /**
    *
@@ -149,14 +150,12 @@ static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClass
   /**
    * Sets the link properties for this object.
    *
-   * @param _context  eFaps context for this request
    * @param _linkType type of the link property
    * @param _toId     to id
    * @param _toType   to type
    * @param _toName   to name
    */
-  protected void setLinkProperty(final Context _context, 
-                                 final EFapsClassName _linkType, 
+  protected void setLinkProperty(final EFapsClassName _linkType, 
                                  final long _toId, 
                                  final EFapsClassName _toType, 
                                  final String _toName) throws Exception  {
@@ -166,14 +165,12 @@ static private Map<String,EFapsClassName> mapper = new HashMap<String,EFapsClass
    * The instance method sets all properties of this administrational object.
    * All properties are stores in instance variable {@link #properties}.
    *
-   * @see #properties
-   * @param _context  context for this request
    * @param _name     name of the property (key)
    * @param _value    value of the property
+   * @see #properties
    */
-  protected void setProperty(final Context _context, 
-                             final String _name, 
-                             final String _value) throws Exception  {
+  protected void setProperty(final String _name, 
+                             final String _value) throws CacheReloadException  {
     getProperties().put(_name, _value);
   }
 
