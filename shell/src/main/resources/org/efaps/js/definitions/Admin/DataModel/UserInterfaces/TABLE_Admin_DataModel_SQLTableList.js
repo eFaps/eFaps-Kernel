@@ -26,6 +26,10 @@ with (TABLE)  {
     addProperty("Label",                  "Admin_DataModel_SQLTable/Name.Label");
     addProperty("ShowTypeIcon",           "true");
   }
+  with (addField("uuid"))  {
+    addProperty("Expression",             "UUID");
+    addProperty("Label",                  "Admin_DataModel_SQLTable/UUID.Label");
+  }
   with (addField("SQLTable"))  {
     addProperty("Expression",             "SQLTable");
     addProperty("Label",                  "Admin_DataModel_SQLTable/SQLTable.Label");

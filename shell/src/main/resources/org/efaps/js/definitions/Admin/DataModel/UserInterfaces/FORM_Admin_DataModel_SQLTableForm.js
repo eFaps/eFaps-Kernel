@@ -43,6 +43,12 @@ with (FORM)  {
     addProperty("Required",               "true");
     addProperty("Searchable",             "true");
   }
+  with (addField("uuid"))  {
+    addProperty("Creatable",              "false");
+    addProperty("Editable",               "false");
+    addProperty("Expression",             "UUID");
+    addProperty("Searchable",             "true");
+  }
   with (addField("revision"))  {
     addProperty("Columns",                "20");
     addProperty("Creatable",              "true");

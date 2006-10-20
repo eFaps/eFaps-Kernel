@@ -26,6 +26,10 @@ with (TABLE)  {
     addProperty("Label",                  "Admin_DataModel_Type/Name.Label");
     addProperty("ShowTypeIcon",           "true");
   }
+  with (addField("uuid"))  {
+    addProperty("Expression",             "UUID");
+    addProperty("Label",                  "Admin_DataModel_Type/UUID.Label");
+  }
   with (addField("ParentType"))  {
     addProperty("AlternateOID",           "ParentType.OID");
     addProperty("Expression",             "ParentType.Name");
