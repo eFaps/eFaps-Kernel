@@ -287,10 +287,21 @@ public abstract class AbstractUpdate  {
     private String mode = null;
 
     /**
-     * Name of the access set for which this definition is defined.
+     * The value depending on the attribute name for this definition.
+     *
+     * @see #addValue
+     * @see #getValue
      */
     private final Map < String, String > values 
-        = new HashMap < String, String > ();
+                                          = new HashMap < String, String > ();
+
+    /**
+     * Property value depending on the property name for this definition
+     *
+     * @see #addProperty.
+     */
+    private final Map < String, String > properties 
+                                          = new HashMap < String, String > ();
 
     /**
      *
@@ -332,7 +343,8 @@ public abstract class AbstractUpdate  {
           setLinksInDB(instance, linkType, this.links.get(linkType));
         }
       }
-      
+      setPropertiesInDb(instance);
+
       return instance;
     }
 
@@ -385,7 +397,7 @@ public abstract class AbstractUpdate  {
           if (query.next())  {
             targets.put((Long) query.get("ID"), linkEntry.getValue());
           } else  {
-  System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not found!");
+System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not found!");
           }
           query.close();
         }
@@ -425,6 +437,35 @@ public abstract class AbstractUpdate  {
       }
     }
 
+    
+    /**
+     *
+     */
+    protected void setPropertiesInDb(final Instance _instance)
+    throws EFapsException, Exception  {
+      Context context = Context.getThreadContext();
+      
+      // remove old properties
+      SearchQuery query = new SearchQuery();
+      query.setExpand(_instance, "Admin_Property\\Abstract");
+      query.addSelect("OID");
+      query.executeWithoutAccessCheck();
+      while (query.next())  {
+        String propOid = (String) query.get("OID");
+        Delete del = new Delete(propOid);
+        del.executeWithoutAccessCheck();
+      }
+      query.close();                 
+      // add current properites
+      for (Map.Entry < String, String > entry : this.properties.entrySet())  {
+        Insert insert = new Insert(context, "Admin_Property");
+        insert.add(context, "Name", entry.getKey());
+        insert.add(context, "Value", entry.getValue());
+        insert.add(context, "Abstract", "" + _instance.getId()); 
+        insert.executeWithoutAccessCheck();
+      }
+    }
+    
     /**
      * The version information of this defintion is set.
      *
@@ -493,6 +534,17 @@ public abstract class AbstractUpdate  {
     protected String getValue(final String _name)  {
       return this.values.get(_name);
     }
+    
+    /**
+     * Add a new property with given name and value to this definition.
+     *
+     * @param _name   name of the property to add
+     * @param _value  value of the property to add
+     * @see #properties
+     */
+    public void addProperty(final String _name, final String _value)  {
+      this.properties.put(_name, _value);
+    }
 
     /**
      * 
@@ -516,6 +568,7 @@ public abstract class AbstractUpdate  {
         .append("local version",   this.localVersion)
         .append("mode",            this.mode)
         .append("values",          this.values)
+        .append("properties",      this.properties)
         .append("links",           this.links)
        .toString();
     }
