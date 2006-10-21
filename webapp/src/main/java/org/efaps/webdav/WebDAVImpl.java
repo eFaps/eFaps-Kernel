@@ -146,11 +146,22 @@ public class WebDAVImpl implements WebDAVInterface  {
     return false;
   }
 
+  /**
+   * New WebDAV integrations are not allowed to create within the WebDAV 
+   * integration.
+   *
+   * @return always <i>false</i>
+   */
   public boolean createCollection(final CollectionResource _collection, 
                                   final String _name)  {
     return false;
   }
 
+  /**
+   * New files are not allowed to create within the WebDAV integration.
+   *
+   * @return always <i>false</i>
+   */
   public boolean createSource(final CollectionResource _collection, 
                               final String _name)  {
     return false;
