@@ -39,6 +39,11 @@
 
     <name>TeamCenter_WebDAVIntegration</name>
     <path>teamcenter</path>
+    
+    <property>
+      <name>Class</name>
+      <value>org.efaps.webdav.TeamCenterWebDAVImpl</value>
+    </property>
 
   </definition>
 </integration-webdav>
