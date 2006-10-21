@@ -108,6 +108,10 @@ public class WebDAVUpdate extends AbstractUpdate  {
       digester.addCallMethod("integration-webdav/definition/path", "setPath", 1);
       digester.addCallParam("integration-webdav/definition/path", 0);
 
+      digester.addCallMethod("integration-webdav/definition/property", "addProperty", 2);
+      digester.addCallParam("integration-webdav/definition/property/name", 0);
+      digester.addCallParam("integration-webdav/definition/property/value", 1);
+
       ret = (WebDAVUpdate) digester.parse(_file);
     } catch (SAXException e)  {
 e.printStackTrace();
