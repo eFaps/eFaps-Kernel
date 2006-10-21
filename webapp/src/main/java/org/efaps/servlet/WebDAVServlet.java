@@ -34,6 +34,7 @@ import javax.servlet.ServletException;
 import org.efaps.webdav.method.AbstractMethod;
 import org.efaps.webdav.method.DeleteMethod;
 import org.efaps.webdav.method.GetMethod;
+import org.efaps.webdav.method.HeadMethod;
 import org.efaps.webdav.method.MkColMethod;
 import org.efaps.webdav.method.PropFindMethod;
 import org.efaps.webdav.method.PutMethod;
@@ -71,6 +72,7 @@ public class WebDAVServlet extends HttpServlet  {
   static  {
     methods.put("DELETE",   new DeleteMethod());
     methods.put("GET",      new GetMethod());
+    methods.put("HEAD",     new HeadMethod());
     methods.put("MKCOL",    new MkColMethod());
     methods.put("PROPFIND", new PropFindMethod());
     methods.put("PUT",      new PutMethod());

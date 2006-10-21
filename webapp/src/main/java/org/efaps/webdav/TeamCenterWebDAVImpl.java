@@ -205,17 +205,17 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     if (_collection != null)  {
       try  {
         SearchQuery query = new SearchQuery();
-        query.setQueryTypes("TeamCenter_Document2Folder");
-        query.addWhereExprEqValue("Folder", 
-                                  "" + _collection.getInstance().getId());
-        query.addSelect("Document.OID");
-        query.addSelect("Document.Name");
+        query.setExpand(_collection.getInstance(), 
+                        "TeamCenter_Document2Folder\\Folder.Document");
+        query.addSelect("OID");
+        query.addSelect("Name");
         query.execute();
         Instance instance = null;
         while (query.next())  {
-          String docName = (String) query.get("Document.Name");
+          String docName = (String) query.get("Name");
+System.out.println("found '"+docName+"' org("+_name+")");
           if ((docName != null) && _name.equals(docName))  {
-            instance = new Instance((String) query.get("Document.OID"));
+            instance = new Instance((String) query.get("OID"));
             break;
           }
         }

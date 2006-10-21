@@ -195,7 +195,9 @@ System.out.println("_creationDate="+_creationDate);
     CONFLICT(HttpServletResponse.SC_CONFLICT, "Conflict"),
     CREATED(HttpServletResponse.SC_CREATED, "Created"),
     FORBIDDEN(HttpServletResponse.SC_FORBIDDEN, "Forbidden"),
-    NO_CONTENT(HttpServletResponse.SC_NO_CONTENT, "No Content");
+    NO_CONTENT(HttpServletResponse.SC_NO_CONTENT, "No Content"),
+    NOT_FOUND(HttpServletResponse.SC_NOT_FOUND, "Not Found");
+
 
     /**
      * The variable stores the code number of the status flag.
@@ -309,9 +311,7 @@ System.out.println("_creationDate="+_creationDate);
                                              final String[] _uri)  {
 
     CollectionResource collection = this.rootCollection;
-    for (int i = 1; 
-         (i <= _endIndex) && ((collection != null) || (i == 1)); 
-         i++)  {
+    for (int i = 1; (i <= _endIndex) && (collection != null); i++)  {
       collection = collection.getCollection(_uri[i]);
     }
 
