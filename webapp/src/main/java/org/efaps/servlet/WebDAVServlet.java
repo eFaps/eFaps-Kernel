@@ -36,6 +36,7 @@ import org.efaps.webdav.method.DeleteMethod;
 import org.efaps.webdav.method.GetMethod;
 import org.efaps.webdav.method.HeadMethod;
 import org.efaps.webdav.method.MkColMethod;
+import org.efaps.webdav.method.OptionsMethod;
 import org.efaps.webdav.method.PropFindMethod;
 import org.efaps.webdav.method.PutMethod;
 
@@ -54,13 +55,6 @@ public class WebDAVServlet extends HttpServlet  {
   private static final String METHOD_LOCK = "LOCK";
   private static final String METHOD_UNLOCK = "UNLOCK";
 
-  static enum FindProperty {FIND_BY_PROPERTY, FIND_ALL_PROP, FIND_PROPERTY_NAMES};
-  /**
-   * FIND_BY_PROPERTY - Specify a property mask.
-   * FIND_ALL_PROP - Display all properties.
-   * FIND_PROPERTY_NAMES - Return property names.
-   */
-
   /**
    * The URL encoding used by this webDAV servlet is stored
    */
@@ -74,6 +68,7 @@ public class WebDAVServlet extends HttpServlet  {
     methods.put("GET",      new GetMethod());
     methods.put("HEAD",     new HeadMethod());
     methods.put("MKCOL",    new MkColMethod());
+    methods.put("OPTIONS",  new OptionsMethod());
     methods.put("PROPFIND", new PropFindMethod());
     methods.put("PUT",      new PutMethod());
   }
@@ -111,48 +106,18 @@ String path = _request.getPathInfo();
 System.out.println("method "+_request.getMethod()+" not implementet");
 super.service(_request, _response);
     }
-
-/*    } else if (method.equals(METHOD_PROPPATCH)) {
-//        doProppatch(req, resp);
-    } else if (method.equals(METHOD_MOVE)) {
-      doMove(_req, _resp);
-    } else if (method.equals(METHOD_LOCK)) {
-//        doLock(req, resp);
-    } else if (method.equals(METHOD_UNLOCK)) {
-//        doUnlock(req, resp);
-    } else {
-        super.service(_req, _resp);
-    }
-*/
-  }
-
-  /**
-   * OPTIONS Method.
-   *
-   * @param req The request
-   * @param resp The response
-   * @throws ServletException If an error occurs
-   * @throws IOException If an IO error occurs
-   */
-  protected void doOptions(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
-
-//    resp.addHeader("DAV", "1,2");
-    resp.addHeader("DAV", "1");
-
-// CLass 1: COPY, DELETE, GET, HEAD, MKCOL, MOVE, OPTIONS, POST, PROPPATCH, PROPFIND, PUT
-// Class 2: COPY, DELETE, GET, HEAD, LOCK, MKCOL, MOVE, OPTIONS, POST, PROPPATCH, PROPFIND, PUT, UNLOCK
-// TRACE?
-    String methodsAllowed = "COPY, DELETE, GET, HEAD, MKCOL, MOVE, OPTIONS, POST, PROPPATCH, PROPFIND, PUT";
-
-//        if (!(object instanceof DirContext)) {
-//            methodsAllowed.append(", PUT");
-
-    resp.addHeader("Allow", methodsAllowed);
-    resp.addHeader("MS-Author-Via", "DAV");
   }
 
   /////////////////////////////////////////////////////////////////////////////
+  // MOVE
+
+  /**
+   * Return a context-relative path, beginning with a "/", that represents
+   * the canonical version of the specified path after ".." and "." elements
+   * are resolved out.  If the specified path attempts to go outside the
+   * boundaries of the current context (i.e. too many ".." path elements
+   * are present), return <code>null</code> instead.
+   *  /////////////////////////////////////////////////////////////////////////////
   // MOVE
 
   /**
