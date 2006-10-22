@@ -24,6 +24,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
 
+import org.efaps.webdav.resource.AbstractResource;
+import org.efaps.webdav.resource.CollectionResource;
+import org.efaps.webdav.resource.SourceResource;
+
 /**
  *
  * @author tmo

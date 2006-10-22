@@ -26,10 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
-import org.efaps.webdav.AbstractResource;
-import org.efaps.webdav.CollectionResource;
-import org.efaps.webdav.SourceResource;
-
 /**
  *
  * @author tmo

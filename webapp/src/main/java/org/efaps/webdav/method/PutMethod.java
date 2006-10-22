@@ -27,8 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
 import org.efaps.util.EFapsException;
-import org.efaps.webdav.CollectionResource;
-import org.efaps.webdav.SourceResource;
+import org.efaps.webdav.resource.CollectionResource;
+import org.efaps.webdav.resource.SourceResource;
 
 /**
  *

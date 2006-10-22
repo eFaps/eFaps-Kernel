@@ -40,6 +40,10 @@ import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
 
+import org.efaps.webdav.resource.AbstractResource;
+import org.efaps.webdav.resource.CollectionResource;
+import org.efaps.webdav.resource.SourceResource;
+
 /**
  * The class is used as gateway to all WebDAV integrations. Each implementation
  * of a WebDAV integration is cached as {@link #RootCollectionResource}

@@ -18,13 +18,14 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webdav;
+package org.efaps.webdav.resource;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 
 import org.efaps.db.Instance;
+import org.efaps.webdav.WebDAVInterface;
 
 /**
  *

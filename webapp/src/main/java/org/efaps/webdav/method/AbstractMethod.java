@@ -31,9 +31,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.efaps.webdav.AbstractResource;
-import org.efaps.webdav.CollectionResource;
-import org.efaps.webdav.SourceResource;
+import org.efaps.webdav.resource.AbstractResource;
+import org.efaps.webdav.resource.CollectionResource;
+import org.efaps.webdav.resource.SourceResource;
 import org.efaps.webdav.WebDAVImpl;
 
 /**

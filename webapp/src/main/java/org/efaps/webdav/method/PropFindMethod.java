@@ -38,9 +38,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import org.efaps.webdav.AbstractResource;
-import org.efaps.webdav.CollectionResource;
-import org.efaps.webdav.SourceResource;
+import org.efaps.webdav.resource.AbstractResource;
+import org.efaps.webdav.resource.CollectionResource;
+import org.efaps.webdav.resource.SourceResource;
 
 /**
  * @author tmo
