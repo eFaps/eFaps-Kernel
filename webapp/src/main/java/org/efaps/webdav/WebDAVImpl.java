@@ -32,6 +32,8 @@ import org.apache.commons.logging.LogFactory;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+//import org.efaps.util.cache.Cache;
+//import org.efaps.util.cache.CacheObjectInterface;
 
 /**
  *
@@ -48,6 +50,12 @@ public class WebDAVImpl implements WebDAVInterface  {
    * Logging instance used in this class.
    */
   private static final Log LOG = LogFactory.getLog(WebDAVImpl.class);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /** All known integrations. */
+//  private final 
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -70,9 +78,10 @@ public class WebDAVImpl implements WebDAVInterface  {
       while (query.next())  {
         String path = query.get("Path").toString();
         subs.add(new CollectionResource(
+            this,
             new TeamCenterWebDAVImpl(),
             path,
-            null,
+            new Instance((String) query.get("OID")),
             (Date) query.get("Created"),
             (Date) query.get("Modified"),
             path
@@ -103,14 +112,16 @@ public class WebDAVImpl implements WebDAVInterface  {
       SearchQuery query = new SearchQuery();
       query.setQueryTypes("Admin_Integration_WebDAV");
       query.addWhereExprEqValue("Path", _name);
+      query.addSelect("OID");
       query.addSelect("Created");
       query.addSelect("Modified");
       query.execute();
       if (query.next())  {
         collection = new CollectionResource(
+            this,
             new TeamCenterWebDAVImpl(),
             _name,
-            null,
+            new Instance((String) query.get("OID")),
             (Date) query.get("Created"),
             (Date) query.get("Modified"),
             _name

@@ -32,17 +32,27 @@ import org.efaps.db.Instance;
  * @todo description
  */
 public class CollectionResource extends AbstractResource  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * WebDAV implementation to get information for sub collections / sources.
+   */
+  private final WebDAVInterface subWebDAVImpl;
   
   /////////////////////////////////////////////////////////////////////////////
   // constructor / desctructors
   
   public CollectionResource(final WebDAVInterface _webDAVImpl,
+                            final WebDAVInterface _subWebDAVImpl,
                             final String _name,
                             final Instance _instance,
                             final Date _created,
                             final Date _modified,
                             final String _description)  {
     super(_webDAVImpl, _name, _instance, _created, _modified, _description);
+    this.subWebDAVImpl = _subWebDAVImpl;
   }
   
   /**
@@ -58,27 +68,27 @@ public class CollectionResource extends AbstractResource  {
    * @return sub collections and sources for this collection
    */
   public List < AbstractResource > getSubs()  {
-    return getWebDAVImpl().getSubs(this);
+    return this.subWebDAVImpl.getSubs(this);
   }
 
   public CollectionResource getCollection(final String _name)  {
-    return getWebDAVImpl().getCollection(this, _name);
+    return this.subWebDAVImpl.getCollection(this, _name);
   }
 
   /**
    * @return <i>true</i> if created, otherwise <i>false</i>
    */
   public boolean createCollection(final String _name)  {
-    return getWebDAVImpl().createCollection(this, _name);
+    return this.subWebDAVImpl.createCollection(this, _name);
   }
 
 
   public SourceResource getSource(final String _name)  {
-    return getWebDAVImpl().getSource(this, _name);
+    return this.subWebDAVImpl.getSource(this, _name);
   }
 
   public boolean createSource(final String _name)  {
-    return getWebDAVImpl().createSource(this, _name);
+    return this.subWebDAVImpl.createSource(this, _name);
   }
 
 }

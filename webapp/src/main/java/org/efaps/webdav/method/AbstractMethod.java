@@ -215,6 +215,15 @@ System.out.println("_creationDate="+_creationDate);
     }
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  private final RootCollectionResource rootCollection 
+                                                = new RootCollectionResource();
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
+
   public DepthHeader getDepthHeader(final HttpServletRequest _request)  {
     DepthHeader ret = DepthHeader.infity;
     
@@ -274,14 +283,6 @@ System.out.println("_creationDate="+_creationDate);
 
   /////////////////////////////////////////////////////////////////////////////
 
-  private CollectionResource rootCollection = new CollectionResource(
-      new WebDAVImpl(),
-      "",
-      null,
-      new Date(),
-      new Date(),
-      "eFaps WebDAV Integration"
-  );
   
   protected AbstractResource getResource4Path(final String _uri)  {
     String[] uri = _uri.toString().split("/");
@@ -396,4 +397,25 @@ System.out.println(text);
   public void writeXMLHeader(final Writer _writer) throws IOException  {
     _writer.write("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n");
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  
+  private class RootCollectionResource extends CollectionResource  {
+    RootCollectionResource()  {
+      this(new WebDAVImpl(), new Date());
+    };
+    
+    private RootCollectionResource(final WebDAVInterface _webDAVImpl,
+                                   final Date _date)  {
+      super(_webDAVImpl,
+              _webDAVImpl,
+              "",
+              null,
+              _date,
+              _date,
+              "eFaps WebDAV Integration"
+      );
+    }
+  };
+
 }

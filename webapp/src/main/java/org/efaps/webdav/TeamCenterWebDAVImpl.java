@@ -68,7 +68,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     List < AbstractResource > subs = new ArrayList < AbstractResource > ();
 
     try  {
-      if (_collection.getInstance() !=null)  {
+      if (_collection.getWebDAVImpl() instanceof TeamCenterWebDAVImpl)  {
         // append sub folders
         SearchQuery query = new SearchQuery();
         query.setExpand(_collection.getInstance(), 
@@ -81,6 +81,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
         while (query.next())  {
           String name = query.get("Name").toString();
           subs.add(new CollectionResource(
+              this,
               this,
               name,
               new Instance(query.get("OID").toString()),
@@ -126,6 +127,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
           String name = query.get("Name").toString();
           subs.add(new CollectionResource(
               this,
+              this,
               name,
               new Instance(query.get("OID").toString()),
               (Date) query.get("Created"),
@@ -158,7 +160,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     
     try  {
       SearchQuery query = new SearchQuery();
-      if (_collection.getInstance() !=null)  {
+      if (_collection.getWebDAVImpl() instanceof TeamCenterWebDAVImpl)  {
         query.setQueryTypes("TeamCenter_Folder");
         query.addWhereExprEqValue("Name", _name);
         query.addWhereExprEqValue("ParentFolder", 
@@ -173,6 +175,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
       query.execute();
       if (query.next())  {
         collection = new CollectionResource(
+            this,
             this,
             _name,
             new Instance(query.get("OID").toString()),
