@@ -31,7 +31,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.efaps.db.Checkin;
 import org.efaps.db.Checkout;
-import org.efaps.db.Context;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -213,7 +212,6 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
         Instance instance = null;
         while (query.next())  {
           String docName = (String) query.get("Name");
-System.out.println("found '"+docName+"' org("+_name+")");
           if ((docName != null) && _name.equals(docName))  {
             instance = new Instance((String) query.get("OID"));
             break;
@@ -281,13 +279,9 @@ System.out.println("found '"+docName+"' org("+_name+")");
     boolean ok = false;
 
     try  {
-      Context context = Context.getThreadContext();
-
-      Insert insert = new Insert(context, "TeamCenter_Folder");
-      insert.add(context, 
-                 "ParentFolder", 
-                 "" + _collection.getInstance().getId());
-      insert.add(context, "Name", _name);
+      Insert insert = new Insert("TeamCenter_Folder");
+      insert.add("ParentFolder",  "" + _collection.getInstance().getId());
+      insert.add("Name",          _name);
       insert.execute();
       insert.close();
       ok = true;
@@ -303,19 +297,15 @@ System.out.println("found '"+docName+"' org("+_name+")");
     boolean ok = false;
 
     try  {
-      Context context = Context.getThreadContext();
-
-      Insert insert = new Insert(context, "TeamCenter_Document");
-      insert.add(context, "Name", _name);
+      Insert insert = new Insert("TeamCenter_Document");
+      insert.add("Name", _name);
       insert.execute();
       Instance fileInstance = insert.getInstance();
       insert.close();
           
-      insert = new Insert(context, "TeamCenter_Document2Folder");
-      insert.add(context, "Document", "" + fileInstance.getId());
-      insert.add(context, 
-                 "Folder", 
-                 "" + _collection.getInstance().getId());
+      insert = new Insert("TeamCenter_Document2Folder");
+      insert.add("Document", "" + fileInstance.getId());
+      insert.add("Folder",   "" + _collection.getInstance().getId());
       insert.execute();
       insert.close();
 
