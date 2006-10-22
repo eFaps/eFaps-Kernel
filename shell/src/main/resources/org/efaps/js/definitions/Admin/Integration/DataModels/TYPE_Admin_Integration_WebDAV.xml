@@ -44,5 +44,15 @@
       <sqlcolumn>PATH</sqlcolumn>
     </attribute>
     
+    <property>
+      <name>Icon</name>
+      <value>${ROOTURL}/servlet/image/Admin_Integration_WebDAVImage</value>
+    </property>
+    
+    <property>
+      <name>Tree</name>
+      <value>Admin_Integration_WebDAVTree</value>
+    </property>
+
   </definition>
 </datamodel-type>
