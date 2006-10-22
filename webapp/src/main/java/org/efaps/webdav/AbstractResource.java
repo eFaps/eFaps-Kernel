@@ -107,9 +107,9 @@ public abstract class AbstractResource  {
   // getter / setter methods for instance variables
 
   /**
-   * This is the getter method for instance variable {@table #webDAVImpl}.
+   * This is the getter method for instance variable {@link #webDAVImpl}.
    *
-   * @return value of instance variable {@table #webDAVImpl}
+   * @return value of instance variable {@link #webDAVImpl}
    * @see #webDAVImpl
    */
   public WebDAVInterface getWebDAVImpl()  {
@@ -117,9 +117,9 @@ public abstract class AbstractResource  {
   }
 
   /**
-   * This is the getter method for instance variable {@table #name}.
+   * This is the getter method for instance variable {@link #name}.
    *
-   * @return value of instance variable {@table #name}
+   * @return value of instance variable {@link #name}
    * @see #name
    */
   public String getName()  {
@@ -127,9 +127,9 @@ public abstract class AbstractResource  {
   }
 
   /**
-   * This is the getter method for instance variable {@table #instance}.
+   * This is the getter method for instance variable {@link #instance}.
    *
-   * @return value of instance variable {@table #instance}
+   * @return value of instance variable {@link #instance}
    * @see #instance
    */
   public Instance getInstance()  {
@@ -137,9 +137,9 @@ public abstract class AbstractResource  {
   }
 
   /**
-   * This is the getter method for instance variable {@table #created}.
+   * This is the getter method for instance variable {@link #created}.
    *
-   * @return value of instance variable {@table #created}
+   * @return value of instance variable {@link #created}
    * @see #created
    */
   public Date getCreated()  {
@@ -147,9 +147,9 @@ public abstract class AbstractResource  {
   }
 
   /**
-   * This is the getter method for instance variable {@table #modified}.
+   * This is the getter method for instance variable {@link #modified}.
    *
-   * @return value of instance variable {@table #modified}
+   * @return value of instance variable {@link #modified}
    * @see #modified
    */
   public Date getModified()  {
@@ -157,9 +157,9 @@ public abstract class AbstractResource  {
   }
 
   /**
-   * This is the getter method for instance variable {@table #description}.
+   * This is the getter method for instance variable {@link #description}.
    *
-   * @return value of instance variable {@table #description}
+   * @return value of instance variable {@link #description}
    * @see #description
    */
   public String getDescription()  {
