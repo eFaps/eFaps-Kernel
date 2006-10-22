@@ -36,11 +36,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
-import org.efaps.db.Context;
-import org.efaps.db.Insert;
-import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
-import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 /**

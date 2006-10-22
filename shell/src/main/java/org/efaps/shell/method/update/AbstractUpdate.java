@@ -40,7 +40,6 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.Context;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -144,7 +143,6 @@ public abstract class AbstractUpdate  {
   public void updateInDB(final JexlContext _jexlContext) throws EFapsException,Exception {
     Instance instance = null;
     Insert insert = null;
-    Context context = Context.getThreadContext();
 
     // search for the instance
     SearchQuery query = new SearchQuery();
@@ -159,9 +157,9 @@ public abstract class AbstractUpdate  {
 
     // if no instance exists, a new insert must be done
     if (instance == null)  {
-      insert = new Insert(context, this.dataModelType);
+      insert = new Insert(this.dataModelType);
 //      insert.add(context, "Name", this.uuid);
-      insert.add(context, "UUID", this.uuid);
+      insert.add("UUID", this.uuid);
     }
 
     for (DefinitionAbstract def : this.definitions)  {
@@ -315,26 +313,24 @@ public abstract class AbstractUpdate  {
     public Instance updateInDB(final Instance _instance,
                                final Set < Link > _allLinkTypes,
                                final Insert _insert) throws EFapsException, Exception  {
-      Context context = Context.getThreadContext();
+
       Instance instance = _instance;
 
       if (_insert != null)  {
-        _insert.add(context, "Revision", this.globalVersion  
-                                         + "#" + this.localVersion);
+        _insert.add("Revision", this.globalVersion + "#" + this.localVersion);
         if (this.values.get("Name") == null)  {
-          _insert.add(context, "Name", "-");
+          _insert.add("Name", "-");
         }
         for (Map.Entry < String, String > entry : this.values.entrySet())  {
-          _insert.add(context, entry.getKey(), entry.getValue());
+          _insert.add(entry.getKey(), entry.getValue());
         }
         _insert.executeWithoutAccessCheck();
         instance = _insert.getInstance();
       } else  {
-        Update update = new Update(context, _instance);
-        update.add(context, "Revision", this.globalVersion  
-                                        + "#" + this.localVersion);
+        Update update = new Update(_instance);
+        update.add("Revision", this.globalVersion + "#" + this.localVersion);
         for (Map.Entry < String, String > entry : this.values.entrySet())  {
-          update.add(context, entry.getKey(), entry.getValue());
+          update.add(entry.getKey(), entry.getValue());
         }
         update.executeWithoutAccessCheck();
       }
@@ -363,8 +359,6 @@ public abstract class AbstractUpdate  {
                       final Map < String, Map < String, String > > _links)  
                                               throws EFapsException,Exception  {
                                                 
-      Context context = Context.getThreadContext();
-      
       // get ids from current object
       Map < Long, String > currents = new HashMap < Long, String > ();
       SearchQuery query = new SearchQuery();
@@ -407,22 +401,22 @@ System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not 
       for (Map.Entry < Long, Map < String, String > > target 
                                                         : targets.entrySet())  {
         if (currents.get(target.getKey()) == null)  {
-          Insert insert = new Insert(context, _linkType.linkName);
-          insert.add(context, _linkType.parentAttrName, "" + _instance.getId());
-          insert.add(context, _linkType.childAttrName, "" + target.getKey());
+          Insert insert = new Insert(_linkType.linkName);
+          insert.add(_linkType.parentAttrName, "" + _instance.getId());
+          insert.add(_linkType.childAttrName,  "" + target.getKey());
           if (target.getValue() != null)  {
             for (Map.Entry < String, String > value 
                                                 : target.getValue().entrySet())  {
-              insert.add(context, value.getKey(), value.getValue());
+              insert.add(value.getKey(), value.getValue());
             }
           }
           insert.executeWithoutAccessCheck();
         } else  {
           if (target.getValue() != null)  {
-            Update update = new Update(context, currents.get(target.getKey()));
+            Update update = new Update(currents.get(target.getKey()));
             for (Map.Entry < String, String > value 
                                                 : target.getValue().entrySet())  {
-              update.add(context, value.getKey(), value.getValue());
+              update.add(value.getKey(), value.getValue());
             }
             update.executeWithoutAccessCheck();
           }
@@ -439,11 +433,12 @@ System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not 
 
     
     /**
-     *
+     * @param _instance instance for which the propertie must be set
+     * @todo rework of the update algorithmus (not always a complete delete and
+     *       and new create is needed)
      */
     protected void setPropertiesInDb(final Instance _instance)
-    throws EFapsException, Exception  {
-      Context context = Context.getThreadContext();
+                                          throws EFapsException, Exception  {
       
       // remove old properties
       SearchQuery query = new SearchQuery();
@@ -455,13 +450,14 @@ System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not 
         Delete del = new Delete(propOid);
         del.executeWithoutAccessCheck();
       }
-      query.close();                 
+      query.close();
+
       // add current properites
       for (Map.Entry < String, String > entry : this.properties.entrySet())  {
-        Insert insert = new Insert(context, "Admin_Property");
-        insert.add(context, "Name", entry.getKey());
-        insert.add(context, "Value", entry.getValue());
-        insert.add(context, "Abstract", "" + _instance.getId()); 
+        Insert insert = new Insert("Admin_Property");
+        insert.add("Name",     entry.getKey());
+        insert.add("Value",    entry.getValue());
+        insert.add("Abstract", "" + _instance.getId()); 
         insert.executeWithoutAccessCheck();
       }
     }

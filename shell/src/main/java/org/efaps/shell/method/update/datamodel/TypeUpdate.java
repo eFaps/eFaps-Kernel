@@ -36,7 +36,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
-import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -201,20 +200,18 @@ e.printStackTrace();
         query.executeWithoutAccessCheck();
         if (query.next())  {
           String attrOid = (String) query.get("OID");
-          Context context = Context.getThreadContext();
-          Update update = new Update(context, attrOid);
-          update.add(context, "AttributeType",  "" + attr.type);
-          update.add(context, "Table",          "" + attr.sqlTable);
-          update.add(context, "SQLColumn",      attr.sqlColumn);
+          Update update = new Update(attrOid);
+          update.add("AttributeType",  "" + attr.type);
+          update.add("Table",          "" + attr.sqlTable);
+          update.add("SQLColumn",      attr.sqlColumn);
           update.executeWithoutAccessCheck();
         } else  {
-          Context context = Context.getThreadContext();
-          Insert insert =  new Insert(context, "Admin_DataModel_Attribute");
-          insert.add(context, "ParentType",     "" + instance.getId());
-          insert.add(context, "Name",           attr.name);
-          insert.add(context, "AttributeType",  "" + attr.type);
-          insert.add(context, "Table",          "" + attr.sqlTable);
-          insert.add(context, "SQLColumn",      attr.sqlColumn);
+          Insert insert =  new Insert("Admin_DataModel_Attribute");
+          insert.add("ParentType",     "" + instance.getId());
+          insert.add("Name",           attr.name);
+          insert.add("AttributeType",  "" + attr.type);
+          insert.add("Table",          "" + attr.sqlTable);
+          insert.add("SQLColumn",      attr.sqlColumn);
           insert.executeWithoutAccessCheck();
         }
         query.close();
