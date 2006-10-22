@@ -41,10 +41,12 @@ import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
 
 /**
+ * The class is used as gateway to all WebDAV integrations. Each implementation
+ * of a WebDAV integration is cached as {@link #RootCollectionResource}
+ * object in {@link #cache}.
  *
  * @author tmo
  * @version $Id$
- * @todo description
  */
 public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   
@@ -59,7 +61,7 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
-  /** All known integrations. */
+  /** All known WebDAV integrations. */
   private final RootCollectionResourceCache cache 
                                 = new RootCollectionResourceCache(this);
 
@@ -106,6 +108,7 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
           this.cache.add(new RootCollectionResource(
               this,
               webDavImpl,
+              name,
               UUID.fromString((String) query.get("UUID")),
               path,
               instance,
@@ -176,9 +179,19 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   }
 
   /**
+   * First, it is tested, if all WebDAV integrations are loaded into the cache.
+   * If not, method {@link #reloadCache} is used to initialise the cache. Then
+   * all cached WebDAV integration are returned as list.
+   *
+   * @param _col collection resource for which the sub collections are 
+   *             searched, here ignored (because this WebDAV integration is the
+   *             root!)
+   * @return all WebDAV integration
+   * @see #cache
    * @see #reloadCache
+   * @see #RootCollectionResourceCache.getResources
    */
-  public List < AbstractResource > getSubs(final CollectionResource _collection)   {
+  public List < AbstractResource > getSubs(final CollectionResource _col)   {
     if (!this.cache.hasEntries())  {
       try  {
         reloadCache();
@@ -191,13 +204,20 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
 
 
   /**
-   * @param _collection collection resource representing the folder (if null,
-   *                    means root folder)
-   * @param _name       name of the searched collection resource
+   * First, it is tested, if all WebDAV integrations are loaded into the cache.
+   * If not, method {@link #reloadCache} is used to initialise the cache. Then
+   * the cache is used to found the root collection resource with the given
+   * name.
+   *
+   * @param _col  collection resource for which the collections is 
+   *              searched, here ignored (because this WebDAV integration is
+   *              the root!)
+   * @param _name name of the searched collection resource
    * @return found collection resource for given instance or null if not found.
+   * @see #cache
    * @see #reloadCache
    */
-  public CollectionResource getCollection(final CollectionResource _collection,
+  public CollectionResource getCollection(final CollectionResource _col,
                                           final String _name)  {
     if (!this.cache.hasEntries())  {
       try  {
@@ -210,30 +230,39 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   }
 
   /**
-   * @param _collection collection resource representing the folder (if null,
-   *                    means root folder)
-   * @param _name       name of the searched source resource
-   * @return found source resource for given instance or null if not found.
-   * @todo use EFapsException instead of Exception
+   * Because no files exists within the WebDAV integration itself, a source
+   * could not be found.
+   *
+   * @return always <code>null</code>
    */
   public SourceResource getSource(final CollectionResource _collection,
                                   final String _name)  {
-    
     return null;
   }
 
-
+  /**
+   * WebDAV integrations are not allowed to delete within the WebDAV 
+   * integration itself.
+   *
+   * @return always <i>false</i>
+   */
   public boolean deleteCollection(final CollectionResource _collection)  {
     return false;
   }
   
+  /**
+   * Because no files exists within the WebDAV integration itself, a delete
+   * of a source is not working.
+   *
+   * @return always <i>false</i>
+   */
   public boolean deleteSource(final SourceResource _source)  {
     return false;
   }
 
   /**
    * New WebDAV integrations are not allowed to create within the WebDAV 
-   * integration.
+   * integration itself.
    *
    * @return always <i>false</i>
    */
@@ -243,7 +272,7 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   }
 
   /**
-   * New files are not allowed to create within the WebDAV integration.
+   * New files are not allowed to create within the WebDAV integration itself.
    *
    * @return always <i>false</i>
    */
@@ -252,12 +281,23 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
     return false;
   }
 
-  
+  /**
+   * Because no files exists within the WebDAV integration itself, a checkin
+   * to a source is not working.
+   *
+   * @return always <i>false</i>
+   */
   public boolean checkinSource(final SourceResource _source, 
                                final InputStream _inputStream)  {
     return false;
   }
 
+  /**
+   * Because no files exists within the WebDAV integration itself, a checkout
+   * of a source is not working.
+   *
+   * @return always <i>false</i>
+   */
   public boolean checkoutSource(final SourceResource _source, 
                                 final OutputStream _outputStream)  {
     return false;
@@ -266,21 +306,33 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   /////////////////////////////////////////////////////////////////////////////
   
   /**
-   *
+   * The class is used to cache all root collection resources.
    */
   private class RootCollectionResourceCache 
                                   extends Cache < RootCollectionResource >  {
     
-    RootCollectionResourceCache(WebDAVImpl _webDAVImpl)  {
+    RootCollectionResourceCache(final WebDAVImpl _webDAVImpl)  {
       super(_webDAVImpl);
     }
     
+    /**
+     *
+     * @return all cached root collection resources
+     */
     public Collection < RootCollectionResource > getResources()  {
       return getCache4Name().values();
     }
   }
 
   /**
+   * The represents one implementation of a WebDAV integration. Because the
+   * universal unique identifier is stored within this collection resource
+   * implementation, a new class is created and derived from
+   * {@link CollectionResource}.<br/>
+   * Because the class also implements interface {@link CacheObjectInterface},
+   * the method {@link #getId} and {@link #getUUID} are defined. The needed
+   * method {@link CacheObjectInterface#getName} is defined in class
+   * {@link CollectionResource} which used the path as name.
    */
   private class RootCollectionResource extends CollectionResource 
                                        implements CacheObjectInterface  {
@@ -288,22 +340,45 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
     /** UUID for this Root Collection Resource. */
     private final UUID uuid;
     
+    /**
+     * The constructor is used to create a new Java instance of one WebDAV
+     * integration implentation. The display name of this collection is the
+     * path and in braces behind the name together with the unique universal
+     * identifier.
+     *
+     * @param _webDAVImpl     Java instance of this {@link @WebDAVImpl} class
+     * @param _subWebDAVImpl  Java instance of the WebDAV integration
+     *                        implementation
+     * @param _name           name of the WebDAV integration implementation
+     * @param _uuid           universal unique identifier of the WebDAV
+     *                        integration implementation
+     * @param _path           path of the WebDAV integration implementation
+     * @param _instance       eFaps instance of the WebDAV integration
+     *                        implementation
+     * @param _created        creation date of the WebDAV integration
+     *                        implementation
+     * @param _modified       last modification dat of the WebDAV integration
+     *                        implementation
+     * @see #reloadCache
+     */
     RootCollectionResource(final WebDAVInterface _webDAVImpl,
                            final WebDAVInterface _subWebDAVImpl,
+                           final String _name,
                            final UUID _uuid,
                            final String _path,
                            final Instance _instance,
                            final Date _created,
                            final Date _modified)  {
-      super(_webDAVImpl, _subWebDAVImpl, _path, _instance,
-            _created, _modified, _path);
+      super(_webDAVImpl, _subWebDAVImpl, _path, _instance, _created, _modified, 
+            _path + " (Name: " + _name + ", UUID: " + _uuid.toString() + ")");
       this.uuid = _uuid;
     }
     
     /**
-     * Returns the id of the instance.
+     * Returns the id of the {@link AbstractResource#instance}.
      *
      * @return id of the instance
+     * @see AbstractResource#instance
      */
     public long getId()  {
       return getInstance().getId();
