@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -433,32 +434,40 @@ System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not 
 
     
     /**
+     * The properties are only set if the object to update could own properties
+     * (meaning derived from 'Admin_Abstract').
+     *
      * @param _instance instance for which the propertie must be set
      * @todo rework of the update algorithmus (not always a complete delete and
      *       and new create is needed)
+     * @todo description
      */
     protected void setPropertiesInDb(final Instance _instance)
                                           throws EFapsException, Exception  {
       
-      // remove old properties
-      SearchQuery query = new SearchQuery();
-      query.setExpand(_instance, "Admin_Property\\Abstract");
-      query.addSelect("OID");
-      query.executeWithoutAccessCheck();
-      while (query.next())  {
-        String propOid = (String) query.get("OID");
-        Delete del = new Delete(propOid);
-        del.executeWithoutAccessCheck();
-      }
-      query.close();
-
-      // add current properites
-      for (Map.Entry < String, String > entry : this.properties.entrySet())  {
-        Insert insert = new Insert("Admin_Property");
-        insert.add("Name",     entry.getKey());
-        insert.add("Value",    entry.getValue());
-        insert.add("Abstract", "" + _instance.getId()); 
-        insert.executeWithoutAccessCheck();
+      Attribute attr = _instance.getType().getLinks()
+                                          .get("Admin_Property\\Abstract");
+      if (attr!=null)  {
+        // remove old properties
+        SearchQuery query = new SearchQuery();
+        query.setExpand(_instance, "Admin_Property\\Abstract");
+        query.addSelect("OID");
+        query.executeWithoutAccessCheck();
+        while (query.next())  {
+          String propOid = (String) query.get("OID");
+          Delete del = new Delete(propOid);
+          del.executeWithoutAccessCheck();
+        }
+        query.close();
+  
+        // add current properites
+        for (Map.Entry < String, String > entry : this.properties.entrySet())  {
+          Insert insert = new Insert("Admin_Property");
+          insert.add("Name",     entry.getKey());
+          insert.add("Value",    entry.getValue());
+          insert.add("Abstract", "" + _instance.getId()); 
+          insert.executeWithoutAccessCheck();
+        }
       }
     }
     
