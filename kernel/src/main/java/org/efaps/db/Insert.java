@@ -63,24 +63,37 @@ public class Insert extends Update {
   // constructors
 
   /**
-   * @param _context  context for this request
-   * @param _type     type instance to insert
+   * @param _type     type of instance to insert
+   * @see #addCreateUpdateAttributes
+   * @see #addTables
    */
-  public Insert(Context _context, Type _type) throws EFapsException  {
-    super(_context, _type, null);
+  public Insert(final Type _type) throws EFapsException  {
+    super(_type, null);
 
-    addCreateUpdateAttributes(_context);
+    addCreateUpdateAttributes();
     addTables();
   }
 
   /**
-   * @todo wrong exception!
+   * @deprecated
    */
-  public Insert(Context _context, String _type) throws Exception  {
-    super(_context, Type.get(_type), null);
+  public Insert(Context _context, Type _type) throws EFapsException  {
+    this(_type);
+  }
 
-    addCreateUpdateAttributes(_context);
-    addTables();
+  /**
+   * @param _type type of instance to insert
+   * @see #Insert(Type)
+   */
+  public Insert(final String _type) throws EFapsException  {
+    this(Type.get(_type));
+  }
+
+  /**
+   * @deprecated
+   */
+  public Insert(Context _context, String _type) throws EFapsException  {
+    this(Type.get(_type));
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -102,18 +115,16 @@ public class Insert extends Update {
   /**
    * Add all attributes of the type which must be always updated.
    *
-   * @param _context  context for this request
-   * @param _type     data model type
-   * @throws EFapsException from called method
+    * @throws EFapsException from called method
    */
-  private void addCreateUpdateAttributes(Context _context) throws EFapsException  {
+  private void addCreateUpdateAttributes() throws EFapsException  {
     Iterator iter = getType().getAttributes().entrySet().iterator();
     while (iter.hasNext())  {
       Map.Entry entry = (Map.Entry) iter.next();
       Attribute attr = (Attribute) entry.getValue();
       AttributeType attrType = attr.getAttributeType();
       if (attrType.isCreateUpdate())  {
-        add(_context, attr, null, false);
+        add(attr, null, false);
       }
     }
   }

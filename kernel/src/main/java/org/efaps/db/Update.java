@@ -52,51 +52,99 @@ import org.efaps.util.EFapsException;
  */
 public class Update  {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
   /**
    * Logging instance used in this class.
    */
   private static final Log LOG = LogFactory.getLog(Update.class);
 
   /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
+   * The instance variable stores the instance for which this update is made.
    *
+   * @see #getInstance
+   * @see #setInstance
    */
-  public Update(Context _context, Instance _instance) throws EFapsException  {
-    setInstance(_instance);
-    addAlwaysUpdateAttributes(_context);
+  private Instance instance = null;
+
+  /**
+   * The string instance variable stores the table names of the select
+   * statement.
+   *
+   * @see #getExpr4Tables
+   */
+  private Map<SQLTable,Map<String,AttributeTypeInterface>> expr4Tables = new Hashtable<SQLTable,Map<String,AttributeTypeInterface>>();
+
+  private final Map<String,AttributeTypeInterface> mapAttr2Value = new HashMap<String,AttributeTypeInterface>();
+
+  protected final Map < Attribute , String > values 
+                                        = new HashMap < Attribute, String > ();
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
+
+  /**
+   */
+  public Update(final Type _type, 
+                final String _id) throws EFapsException  {
+    this(new Instance(_type, _id));
   }
 
   /**
-   *
+   * @deprecated
    */
   public Update(Context _context, Type _type, String _id) throws EFapsException  {
-    setInstance(new Instance(_context, _type, _id));
-    addAlwaysUpdateAttributes(_context);
+    this(new Instance(_type, _id));
+  }
+
+  /**
+   */
+  public Update(final String _oid) throws EFapsException  {
+    this(new Instance(_oid));
+  }
+
+  /**
+   * @deprecated
+   */
+  public Update(Context _context, String _oid) throws EFapsException  {
+    this(new Instance(_oid));
   }
 
   /**
    *
    */
-  public Update(Context _context, String _oid) throws Exception  {
-    setInstance(new Instance(_context, _oid));
-    addAlwaysUpdateAttributes(_context);
+  public Update(final Instance _instance) throws EFapsException  {
+    setInstance(_instance);
+    addAlwaysUpdateAttributes();
   }
+
+  /**
+   * @deprecated
+   */
+  public Update(Context _context, Instance _instance) throws EFapsException  {
+    this(_instance);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
    * Add all attributes of the type which must be always updated.
    *
-   * @param _context  context for this request
    * @param _type     data model type
    */
-  protected void addAlwaysUpdateAttributes(Context _context) throws EFapsException  {
+  protected void addAlwaysUpdateAttributes() throws EFapsException  {
     Iterator iter = getInstance().getType().getAttributes().entrySet().iterator();
     while (iter.hasNext())  {
       Map.Entry entry = (Map.Entry)iter.next();
       Attribute attr = (Attribute)entry.getValue();
       AttributeType attrType = attr.getAttributeType();
       if (attrType.isAlwaysUpdate())  {
-        add(_context, attr, null, false);
+        add(attr, null, false);
       }
     }
   }
@@ -127,7 +175,8 @@ public class Update  {
    * @param _triggerEvent trigger events to execute
    * @throws EFapsException from trigger execution
    */
-  protected void executeTrigger(final Context _context, TriggerEvent _triggerEvent) throws EFapsException  {
+  protected void executeTrigger(final Context _context, 
+                                final TriggerEvent _triggerEvent) throws EFapsException  {
     List < EventDefinition > triggers = getInstance().getType().getTrigger(_triggerEvent);
     if (triggers != null)  {
       Map < TriggerKeys4Values, Map > map = new HashMap < TriggerKeys4Values, Map >();
@@ -138,32 +187,51 @@ public class Update  {
     }
   }
 
-
-Map<String,AttributeTypeInterface> mapAttr2Value = new HashMap<String,AttributeTypeInterface>();
-
   /**
-   * @todo exception if attribute does not exists on type!
+   * @param _attr   name of attribute to update
+   * @param _value  attribute value
    */
-  public void add(Context _context, String _attr, String _value) throws EFapsException  {
+  public void add(final String _attr, 
+                  final String _value) throws EFapsException  {
     Attribute attr = getInstance().getType().getAttribute(_attr);
 if (attr==null)  {
   throw new EFapsException(getClass(), "add.UnknownAttributeName");
 }
-    add(_context, attr, _value);
+    add(attr, _value, true);
   }
 
   /**
-   * @todo what happens if an attribute owns more than one SQL column? see TODO comment
+   * @deprecated use {@link #add(String,String)}
+   */
+  public void add(Context _context, String _attr, String _value) throws EFapsException  {
+    add(_attr, _value);
+  }
+
+  /**
+   * @param _attr   attribute to update
+   * @param _value  new attribute value
+   */
+  public void add(final Attribute _attr, 
+                  final String _value) throws EFapsException  {
+    add(_attr, _value, true);
+  }
+
+  /**
+   * @deprecated use {@link #add(Attribute,String)}
    */
   public void add(Context _context, Attribute _attr, String _value) throws EFapsException  {
-    add(_context, _attr, _value, true);
+    add(_attr, _value, true);
   }
 
-final protected Map < Attribute , String > values = new HashMap < Attribute, String > ();
 
   /**
+   * @param _attr             attribute to update
+   * @param _value            new attribute value
+   * @param _triggerRelevant
    */
-  public void add(final Context _context, final Attribute _attr, final String _value, final boolean _triggerRelevant) throws EFapsException  {
+  public void add(final Attribute _attr, 
+                  final String _value, 
+                  final boolean _triggerRelevant) throws EFapsException  {
     Map<String,AttributeTypeInterface> expressions = getExpr4Tables().get(_attr.getTable());
 
     if (expressions==null)  {
@@ -173,7 +241,7 @@ final protected Map < Attribute , String > values = new HashMap < Attribute, Str
 
     AttributeTypeInterface attrType = _attr.newInstance();
     attrType.setAttribute(_attr);
-    attrType.set(_context, _value);
+    attrType.set(Context.getThreadContext(), _value);
 // TODO: was, wenn ein attribute mehr als ein SQL Column hat?
 //    expressions.put(_attr.getSqlColName(), attrType);
 expressions.put(_attr.getSqlColNames().get(0), attrType);
@@ -242,7 +310,7 @@ if (testNeeded)  {
     executeWithoutAccessCheck();
   }
 
-    /**
+  /**
    *
    */
   public void executeWithoutAccessCheck() throws Exception  {
@@ -288,7 +356,10 @@ e.printStackTrace();
     }
   }
 
-  private PreparedStatement createOneStatement(Context _context, ConnectionResource _con, SQLTable _table, Map _expressions) throws SQLException, EFapsException  {
+  private PreparedStatement createOneStatement(final Context _context, 
+                                               final ConnectionResource _con, 
+                                               final SQLTable _table, 
+                                               final Map _expressions) throws SQLException, EFapsException  {
     List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
     StringBuilder cmd = new StringBuilder();
     cmd.append("update ").append(_table.getSqlTable()).append(" set ");
@@ -347,24 +418,7 @@ e.printStackTrace();
   }
 
   /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance variable stores the instance for which this update is made.
-   *
-   * @see #getInstance
-   * @see #setInstance
-   */
-  private Instance instance = null;
-
-  /**
-   * The string instance variable stores the table names of the select
-   * statement.
-   *
-   * @see #getExpr4Tables
-   */
-  private Map<SQLTable,Map<String,AttributeTypeInterface>> expr4Tables = new Hashtable<SQLTable,Map<String,AttributeTypeInterface>>();
-
-  /////////////////////////////////////////////////////////////////////////////
+  // getter / setter methods
 
   /**
    * This is the getter method for instance variable {@link #instance}.
