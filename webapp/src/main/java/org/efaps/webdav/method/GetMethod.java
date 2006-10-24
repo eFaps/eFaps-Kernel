@@ -33,13 +33,15 @@ import org.efaps.webdav.resource.SourceResource;
  *
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public class GetMethod extends AbstractMethod  {
 
   /**
    *
    */
-  public void run(final HttpServletRequest _request, final HttpServletResponse _response) throws IOException, ServletException  {
+  public void run(final HttpServletRequest _request, 
+                  final HttpServletResponse _response) throws IOException, ServletException  {
 
     AbstractResource resource = getResource4Path(_request.getPathInfo());
     if (resource == null)  {
@@ -47,9 +49,11 @@ public class GetMethod extends AbstractMethod  {
       _response.setStatus(Status.NOT_FOUND.code);
     } else  {
       _response.setContentType(_request.getSession().getServletContext().getMimeType(resource.getName()));
-      _response.addHeader("Content-Disposition", "inline; filename=\""+resource.getName()+"\"");
+      _response.setHeader("Content-Disposition", "inline; filename=\""+resource.getName()+"\"");
       if (resource instanceof SourceResource)  {
-        ((SourceResource) resource).checkout(_response.getOutputStream());
+        SourceResource source = (SourceResource) resource;
+        _response.setHeader("content-length", "" + source.getLength());
+        source.checkout(_response.getOutputStream());
       }
       _response.setStatus(Status.NO_CONTENT.code);
     }
