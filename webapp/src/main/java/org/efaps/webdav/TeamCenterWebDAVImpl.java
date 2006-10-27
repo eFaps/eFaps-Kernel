@@ -254,6 +254,15 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     boolean ok = false;
     
     try  {
+      List < AbstractResource > subs = getSubs(_collection);
+      for (AbstractResource rsrc : subs)  {
+        if (rsrc instanceof CollectionResource)  {
+          deleteCollection((CollectionResource) rsrc);
+        } else  {
+          deleteSource((SourceResource) rsrc);
+        }
+      }
+
       Delete delete = new Delete(_collection.getInstance());
       delete.execute();
       ok = true;
@@ -268,6 +277,17 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     boolean ok = false;
 
     try  {
+      SearchQuery query = new SearchQuery();
+      query.setExpand(_source.getInstance(), 
+                      "TeamCenter_Document2Folder\\Document");
+      query.addSelect("OID");
+      query.execute();
+      while (query.next())  {
+        Delete delete = new Delete((String) query.get("OID"));
+        delete.execute();
+      }
+      query.close();
+
       Delete delete = new Delete(_source.getInstance());
       delete.execute();
       ok = true;
