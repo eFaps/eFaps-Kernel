@@ -65,8 +65,22 @@ public abstract class AbstractMethod  {
     FORBIDDEN(HttpServletResponse.SC_FORBIDDEN, "Forbidden"),
     NO_CONTENT(HttpServletResponse.SC_NO_CONTENT, "No Content"),
     NOT_FOUND(HttpServletResponse.SC_NOT_FOUND, "Not Found"),
-    METHOD_NOT_ALLOWED(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Method Not Allowed");
-
+    /**
+     * Status code (400) indicating the request sent by the client was 
+     * syntactically incorrect.
+     */
+    BAD_REQUEST(HttpServletResponse.SC_BAD_REQUEST, "Bad Request"),
+    /**
+     * Status code (405) indicating that the method specified in the 
+     * Request-Line is not allowed for the resource identified by the 
+     * Request-URI.
+     */
+    METHOD_NOT_ALLOWED(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Method Not Allowed"),
+    /**
+     * Status code (501) indicating the HTTP server does not support the 
+     * functionality needed to fulfill the request.
+     */
+    NOT_IMPLEMENTED(HttpServletResponse.SC_NOT_IMPLEMENTED, "Not Implemented");
 
     /**
      * The variable stores the code number of the status flag.

@@ -25,6 +25,12 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
+import javax.xml.parsers.DocumentBuilder;
+
+import org.w3c.dom.Document;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import org.efaps.webdav.resource.CollectionResource;
 
@@ -38,23 +44,43 @@ import org.efaps.webdav.resource.CollectionResource;
 public class MkColMethod extends AbstractMethod  {
 
   /**
-   *
+   * @todo the request body must be processed (currently the status is 
+   *                                           NOT_IMPLEMENTED)
    */
   public void run(final HttpServletRequest _request, final HttpServletResponse _response) throws IOException, ServletException  {
-    Status status = Status.CONFLICT;
+    Status status = null;
       
     String[] uri = _request.getPathInfo().split("/");
     String newName = uri[uri.length - 1];
-    
+
     CollectionResource parentCollection 
                           = getCollection4ParentPath(_request.getPathInfo());
-    if (parentCollection != null)  {
-      if ((parentCollection.getCollection(newName) != null)
+
+    if (parentCollection == null)  {
+      status = Status.CONFLICT;
+    } else  {
+      if (_request.getInputStream().available() > 0) {
+        DocumentBuilder documentBuilder = getDocumentBuilder();
+        try {
+          Document document = documentBuilder
+                        .parse(new InputSource(_request.getInputStream()));
+          // TODO : Process this request body
+          status = Status.NOT_IMPLEMENTED;
+        } catch(SAXException e) {
+          // Parse error - assume invalid content
+          status = Status.BAD_REQUEST;
+        }
+      } else if ((parentCollection.getCollection(newName) != null)
           || (parentCollection.getSource(newName) != null))  {
+        // source with given name already existing
         status = Status.METHOD_NOT_ALLOWED;
       } else  {
         if (parentCollection.createCollection(newName))  {
+          // new collection source created
           status = Status.CREATED;
+        } else  {
+          // new collection source not creatable
+          status = Status.FORBIDDEN;
         }
       }
     }
