@@ -38,13 +38,21 @@ public class DeleteMethod extends AbstractMethod  {
   /**
    *
    */
-  public void run(final HttpServletRequest _request, final HttpServletResponse _response) throws IOException, ServletException  {
+  public void run(final HttpServletRequest _request, 
+                  final HttpServletResponse _response) throws IOException, ServletException  {
+
+    Status status = null;
 
     AbstractResource resource = getResource4Path(_request.getPathInfo());
-    resource.delete();
+    if (resource != null)  {
+      resource.delete();
+// nicht richtig for collections....????
+      status = Status.NO_CONTENT;
+    } else  {
+      status = Status.NOT_FOUND;
+    }
       
-    // nicht richtig for collections....
-    _response.setStatus(Status.NO_CONTENT.code);
+    _response.setStatus(status.code);
 
   }
 }
