@@ -51,7 +51,7 @@ public class MkColMethod extends AbstractMethod  {
     if (parentCollection != null)  {
       if ((parentCollection.getCollection(newName) != null)
           || (parentCollection.getSource(newName) != null))  {
-        status = Status.FORBIDDEN;
+        status = Status.METHOD_NOT_ALLOWED;
       } else  {
         if (parentCollection.createCollection(newName))  {
           status = Status.CREATED;

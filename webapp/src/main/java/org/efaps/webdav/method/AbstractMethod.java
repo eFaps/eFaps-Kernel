@@ -64,7 +64,8 @@ public abstract class AbstractMethod  {
     CREATED(HttpServletResponse.SC_CREATED, "Created"),
     FORBIDDEN(HttpServletResponse.SC_FORBIDDEN, "Forbidden"),
     NO_CONTENT(HttpServletResponse.SC_NO_CONTENT, "No Content"),
-    NOT_FOUND(HttpServletResponse.SC_NOT_FOUND, "Not Found");
+    NOT_FOUND(HttpServletResponse.SC_NOT_FOUND, "Not Found"),
+    METHOD_NOT_ALLOWED(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Method Not Allowed");
 
 
     /**
