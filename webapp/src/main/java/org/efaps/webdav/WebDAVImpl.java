@@ -234,6 +234,17 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   }
 
   /**
+   * A rename / move of a WebDAV integration is not always not allowed.
+   *
+   * @return always <i>false</i>
+   */
+  public boolean moveCollection(final CollectionResource _collection,
+                                final CollectionResource _newParent,
+                                final String _newName)  {
+    return false;
+  }
+
+  /**
    * Because no files exists within the WebDAV integration itself, a source
    * could not be found.
    *

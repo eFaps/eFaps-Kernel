@@ -36,6 +36,9 @@ import org.efaps.webdav.resource.SourceResource;
  */
 public interface WebDAVInterface  {
   
+  /////////////////////////////////////////////////////////////////////////////
+  // collection resource methods
+
   public List < AbstractResource > getSubs(final CollectionResource _collection);
 
   /**
@@ -47,6 +50,29 @@ public interface WebDAVInterface  {
   public CollectionResource getCollection(final CollectionResource _collection,
                                           final String _name);
 
+  public boolean createCollection(final CollectionResource _collection, 
+                                  final String _name);
+
+  /**
+   * A collection is moved to a new collection with a new name. Attention! The
+   * new location (new parent) could be the same parent as currently specified!
+   *
+   * @param _collection collection to move
+   * @param _newParent  new parent collection
+   * @param _newName    new name of the collection to move in the new parent
+   *                    collection
+   * @return <i>true</i> if the move of the collection is allowed, otherwise
+   *         <i>false</i>
+   */
+  public boolean moveCollection(final CollectionResource _collection,
+                                final CollectionResource _newParent,
+                                final String _newName);
+
+  public boolean deleteCollection(final CollectionResource _collection);
+  
+  /////////////////////////////////////////////////////////////////////////////
+  // source resource methods
+
   /**
    * @param _collection collection resource representing the folder (if null,
    *                    means root folder)
@@ -56,16 +82,11 @@ public interface WebDAVInterface  {
   public SourceResource getSource(final CollectionResource _collection,
                                   final String _name);
 
-  public boolean deleteCollection(final CollectionResource _collection);
-  
-  public boolean deleteSource(final SourceResource _source);
-
-  public boolean createCollection(final CollectionResource _collection, 
-                                  final String _name);
-
   public boolean createSource(final CollectionResource _collection, 
                               final String _name);
   
+  public boolean deleteSource(final SourceResource _source);
+
   public boolean checkinSource(final SourceResource _source, 
                                final InputStream _inputStream);
 

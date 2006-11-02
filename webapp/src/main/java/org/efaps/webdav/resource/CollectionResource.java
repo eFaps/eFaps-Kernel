@@ -66,14 +66,34 @@ public class CollectionResource extends AbstractResource  {
   }
 
   /**
+   * Moves this collection resource to a new location.
+   *
+   * @param _collection   new parent collection to move
+   * @param _newName      new name of the collection in the parent collection
+   * @return <i>true</i> if moved, otherwise <i>false</i>
+   */
+  public boolean move(final CollectionResource _collection,
+                      final String _newName)  {
+    return getWebDAVImpl().moveCollection(this, _collection, _newName);
+  }
+
+  /**
    * @return sub collections and sources for this collection
    */
   public List < AbstractResource > getSubs()  {
-    return this.subWebDAVImpl.getSubs(this);
+    List < AbstractResource > list = this.subWebDAVImpl.getSubs(this);
+    for (AbstractResource resource : list)  {
+      resource.setParent(this);
+    }
+    return list;
   }
 
   public CollectionResource getCollection(final String _name)  {
-    return this.subWebDAVImpl.getCollection(this, _name);
+    CollectionResource ret = this.subWebDAVImpl.getCollection(this, _name);
+    if (ret != null)  {
+      ret.setParent(this);
+    }
+    return ret;
   }
 
   /**
@@ -85,7 +105,11 @@ public class CollectionResource extends AbstractResource  {
 
 
   public SourceResource getSource(final String _name)  {
-    return this.subWebDAVImpl.getSource(this, _name);
+    SourceResource ret = this.subWebDAVImpl.getSource(this, _name);
+    if (ret != null)  {
+      ret.setParent(this);
+    }
+    return ret;
   }
 
   public boolean createSource(final String _name)  {

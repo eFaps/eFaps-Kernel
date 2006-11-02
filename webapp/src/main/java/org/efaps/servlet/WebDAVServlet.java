@@ -36,6 +36,7 @@ import org.efaps.webdav.method.DeleteMethod;
 import org.efaps.webdav.method.GetMethod;
 import org.efaps.webdav.method.HeadMethod;
 import org.efaps.webdav.method.MkColMethod;
+import org.efaps.webdav.method.MoveMethod;
 import org.efaps.webdav.method.OptionsMethod;
 import org.efaps.webdav.method.PropFindMethod;
 import org.efaps.webdav.method.PutMethod;
@@ -68,7 +69,8 @@ public class WebDAVServlet extends HttpServlet  {
     methods.put("GET",      new GetMethod());
     methods.put("HEAD",     new HeadMethod());
     methods.put("MKCOL",    new MkColMethod());
-    methods.put("OPTIONS",  new OptionsMethod());
+    methods.put("MOVE",     new MoveMethod());
+    methods.put("MKCOL",    new MkColMethod());
     methods.put("PROPFIND", new PropFindMethod());
     methods.put("PUT",      new PutMethod());
   }
@@ -94,6 +96,7 @@ this.urlEncoding = defaultEncoding;
 
 
 System.out.println("getPath "+_request.getPathInfo());
+System.out.println("getMethod "+_request.getMethod());
 
 String path = _request.getPathInfo();
 

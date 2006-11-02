@@ -77,6 +77,14 @@ public abstract class AbstractResource  {
    */
   private final String description;
 
+  /**
+   * Parent Collection resource of this resource.
+   *
+   * @see #getParent
+   * @see #setParent
+   */
+  private CollectionResource parent = null;
+
   /////////////////////////////////////////////////////////////////////////////
   // constructor / desctructors
   
@@ -95,7 +103,7 @@ public abstract class AbstractResource  {
   }
 
   /////////////////////////////////////////////////////////////////////////////
-  // getter / setter methods for instance variables
+  // instance methods
 
   /**
    * Deletes this resource.
@@ -103,6 +111,16 @@ public abstract class AbstractResource  {
    * @return <i>true</i> if deleted, otherwise <i>false</i>
    */
   public abstract boolean delete();
+  
+  /**
+   * Moves this resource to a new location.
+   *
+   * @param _collection   new parent collection to move
+   * @param _newName      new name in the parent collection
+   * @return <i>true</i> if moved, otherwise <i>false</i>
+   */
+  public abstract boolean move(final CollectionResource _collection,
+                               final String _newName);
 
   /////////////////////////////////////////////////////////////////////////////
   // getter / setter methods for instance variables
@@ -165,5 +183,27 @@ public abstract class AbstractResource  {
    */
   public String getDescription()  {
     return this.description;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #parent}.
+   *
+   * @return value of instance variable {@link #parent}
+   * @see #parent
+   * @see #setParent
+   */
+  public CollectionResource getParent()  {
+    return this.parent;
+  }
+
+  /**
+   * This is the setter method for instance variable {@link #parent}.
+   *
+   * @parm _parent new value of instance variable {@link #parent}
+   * @see #parent
+   * @see #getParent
+   */
+  protected void setParent(final CollectionResource _parent)  {
+    this.parent = _parent;
   }
 }

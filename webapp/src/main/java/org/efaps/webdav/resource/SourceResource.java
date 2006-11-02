@@ -68,6 +68,18 @@ public class SourceResource extends AbstractResource  {
     return getWebDAVImpl().deleteSource(this);
   }
 
+  /**
+   * Moves this source resource to a new location.
+   *
+   * @param _collection   new parent collection to move
+   * @param _newName      new name of the source in the parent collection
+   * @return <i>true</i> if moved, otherwise <i>false</i>
+   */
+  public boolean move(final CollectionResource _collection,
+                      final String _newName)  {
+    return false;
+  }
+
   public boolean checkout(final OutputStream _outputStream)  {
     return getWebDAVImpl().checkoutSource(this, _outputStream);
   }

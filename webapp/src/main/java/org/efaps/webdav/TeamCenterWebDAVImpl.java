@@ -35,6 +35,7 @@ import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 import org.efaps.webdav.resource.AbstractResource;
 import org.efaps.webdav.resource.CollectionResource;
@@ -249,7 +250,40 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     return source;
   }
 
+  /**
+   * A collection is moved to a new collection with a new name. Attention! The
+   * new location (new parent) could be the same parent as currently specified!
+   *
+   * @param _collection collection to move
+   * @param _newParent  new parent collection
+   * @param _newName    new name of the collection to move in the new parent
+   *                    collection
+   * @return <i>true</i> if the move of the collection is allowed, otherwise
+   *         <i>false</i>
+   */
+  public boolean moveCollection(final CollectionResource _collection,
+                                final CollectionResource _newParent,
+                                final String _newName)  {
+    boolean ok = false;
+    
+    try  {
+      Update update = new Update(_collection.getInstance());
 
+      if (_collection.getParent().getInstance().getId() 
+                                      != _newParent.getInstance().getId())  {
+        update.add("ParentFolder", "" + _newParent.getInstance().getId()); 
+      }
+      
+      update.add("Name", _newName);
+      update.execute();
+      ok = true;
+    } catch (Exception e)  {
+      LOG.error("could not move collection "
+                + "'" + _collection.getName() + "'", e);
+    }
+    return ok;
+  }
+  
   public boolean deleteCollection(final CollectionResource _collection)  {
     boolean ok = false;
     
