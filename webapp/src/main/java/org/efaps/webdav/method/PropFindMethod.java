@@ -241,12 +241,6 @@ writeElement(writer, "multistatus", CLOSING);
   }
 
 
-/**
- * Collection type.
- */
-public static final String COLLECTION_TYPE = "<collection/>";
-
-
   protected void write(final Writer _writer, 
                        final String _resourceName, 
                        final DAVProperty[] _properties, 
@@ -262,23 +256,7 @@ public static final String COLLECTION_TYPE = "<collection/>";
     writeElement(_writer, "prop", OPENING);
 
     for (DAVProperty property : _properties)  {
-      if (property.equals(DAVProperty.creationdate))  {
-        writeText(_writer, property.makeXML(_resource.getCreated()));
-      } else if (property.equals(DAVProperty.displayname))  {
-        writeText(_writer, property.makeXML(_resource.getDescription()));
-      } else if (property.equals(DAVProperty.getcontentlength)
-                 && (_resource instanceof SourceResource))  {
-        writeText(_writer, 
-                  property.makeXML("" 
-                                   + ((SourceResource) _resource).getLength()));
-      } else if (property.equals(DAVProperty.getlastmodified))  {
-        writeText(_writer, property.makeXML(_resource.getModified()));
-      } else if (property.equals(DAVProperty.resourcetype) 
-                 && (_resource instanceof CollectionResource))  {
-        writeText(_writer, property.makeXML(COLLECTION_TYPE));
-      } else  {
-        writeText(_writer, property.makeXML(""));
-      }
+      writeText(_writer, property.makeXML(_resource));
     }
 
     writeElement(_writer, "prop", CLOSING);

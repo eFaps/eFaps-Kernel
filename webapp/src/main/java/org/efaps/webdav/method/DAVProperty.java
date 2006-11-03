@@ -24,6 +24,10 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.efaps.webdav.resource.AbstractResource;
+import org.efaps.webdav.resource.CollectionResource;
+import org.efaps.webdav.resource.SourceResource;
+
 /**
  * The enum defines the DAV properties described in RFC2518 chapter 13.
  */
@@ -41,12 +45,8 @@ public enum DAVProperty  {
       this.creationDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
-    String makeXML(Object _creationDate) {
-      StringBuffer ret = new StringBuffer();
-      ret.append('<').append(name()).append(">")
-         .append(creationDateFormat.format(_creationDate))
-         .append("</").append(name()).append(">");
-      return ret.toString();
+    public String makeXML(final AbstractResource _rsrc) {
+      return makeXML(creationDateFormat.format(_rsrc.getCreated()));
     }
   },
 
@@ -55,12 +55,8 @@ public enum DAVProperty  {
    * user.
    */
   displayname {
-    String makeXML(Object _name) {
-      StringBuffer ret = new StringBuffer();
-      ret.append('<').append(name()).append(">")
-         .append("<![CDATA[").append(_name).append("]]>")
-         .append("</").append(name()).append(">");
-      return ret.toString();
+    public String makeXML(final AbstractResource _rsrc) {
+      return makeXML("<![CDATA[" + _rsrc.getDescription() + "]]>");
     }
   },
 
@@ -76,6 +72,13 @@ public enum DAVProperty  {
    * headers.
    */
   getcontentlength {
+    public String makeXML(final AbstractResource _rsrc) {
+      String ret = "";
+      if (_rsrc instanceof SourceResource)  {
+        ret = makeXML("" + ((SourceResource) _rsrc).getLength());
+      }
+      return ret;
+    }
   },
 
   /**
@@ -104,12 +107,8 @@ public enum DAVProperty  {
       this.modifiedDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
-    String makeXML(Object _modifiedDate) {
-      StringBuffer ret = new StringBuffer();
-      ret.append('<').append(name()).append(">")
-         .append(this.modifiedDateFormat.format(_modifiedDate))
-         .append("</").append(name()).append(">");
-      return ret.toString();
+    public String makeXML(final AbstractResource _rsrc) {
+      return makeXML(this.modifiedDateFormat.format(_rsrc.getModified()));
     }
   },
 
@@ -123,6 +122,15 @@ public enum DAVProperty  {
    * Specifies the nature of the resource.
    */
   resourcetype {
+    public String makeXML(final AbstractResource _rsrc)  {
+      String ret = null;
+      if (_rsrc instanceof CollectionResource)  {
+        ret = makeXML("");
+      } else  {
+        ret = makeXML("<collection/>");
+      }
+      return ret;
+    }
   },
 
   /**
@@ -138,13 +146,16 @@ public enum DAVProperty  {
   supportedlock {
   };
 
-
-  String makeXML(Object _text) {
+  protected String makeXML(final String _text) {
     StringBuffer ret = new StringBuffer();
     ret.append('<').append(name()).append(">")
        .append(_text)
        .append("</").append(name()).append(">");
     return ret.toString();
+  }
+  
+  public String makeXML(final AbstractResource _rsrc)  {
+    return makeXML("");
   }
 }
 
