@@ -62,7 +62,7 @@ public class MoveMethod extends AbstractMethod  {
       status = Status.CONFLICT;
     } else if (!overwrite && (newRes != null))  {
       // source with given name already existing
-      status = Status.METHOD_NOT_ALLOWED;
+      status = Status.PRECONDITION_FAILED;
     } else  {
       AbstractResource resource = getResource4Path(_request.getPathInfo());
 
@@ -75,7 +75,11 @@ public class MoveMethod extends AbstractMethod  {
       // TODO: test, if the same webdav implementation is used!!
       if (resource.move(newParentCol, newName))  {
         // new collection source created
-        status = Status.NO_CONTENT;
+        if (newRes != null)  {
+          status = Status.NO_CONTENT;
+        } else  {
+          status = Status.CREATED;
+        }
       } else  {
         // new collection source not creatable
         status = Status.FORBIDDEN;
@@ -114,6 +118,7 @@ public class MoveMethod extends AbstractMethod  {
    * the canonical version of the specified path.
    *
    * @param path the path to be normalized
+   * @todo rework of exception handling
    */
   private String decodeURL(final HttpServletRequest _request, 
                            final String path) {
@@ -140,8 +145,7 @@ public class MoveMethod extends AbstractMethod  {
     try  {
       java.net.URL url = new java.net.URL(normalized);
       normalized = url.getFile();
-    } catch (Exception e)  {
-e.printStackTrace();
+    } catch (java.net.MalformedURLException e)  {
     }
 
     // remove servlet context name and servlet path

@@ -60,22 +60,49 @@ public abstract class AbstractMethod  {
 
   public enum Status {
 
-    CONFLICT(HttpServletResponse.SC_CONFLICT, "Conflict"),
+    /**
+     * Status code (201) indicating the request succeeded and created a new
+     * resource on the server.
+     */
     CREATED(HttpServletResponse.SC_CREATED, "Created"),
-    FORBIDDEN(HttpServletResponse.SC_FORBIDDEN, "Forbidden"),
+    /**
+     * Status code (204) indicating that the request succeeded but that there
+     * was no new information to return.
+     */
     NO_CONTENT(HttpServletResponse.SC_NO_CONTENT, "No Content"),
-    NOT_FOUND(HttpServletResponse.SC_NOT_FOUND, "Not Found"),
     /**
      * Status code (400) indicating the request sent by the client was 
      * syntactically incorrect.
      */
     BAD_REQUEST(HttpServletResponse.SC_BAD_REQUEST, "Bad Request"),
     /**
+     *  Status code (403) indicating the server understood the request but
+     * refused to fulfill it.
+     */
+    FORBIDDEN(HttpServletResponse.SC_FORBIDDEN, "Forbidden"),
+    /**
+     * Status code (404) indicating that the requested resource is not
+     * available.
+     */
+    NOT_FOUND(HttpServletResponse.SC_NOT_FOUND, "Not Found"),
+    /**
+     * Status code (405) indicating that the method specified in the 
+     * Request-Line is not allowed for the resource identified by the 
+     * Request-URI.
+     */
+    CONFLICT(HttpServletResponse.SC_CONFLICT, "Conflict"),
+    /**
      * Status code (405) indicating that the method specified in the 
      * Request-Line is not allowed for the resource identified by the 
      * Request-URI.
      */
     METHOD_NOT_ALLOWED(HttpServletResponse.SC_METHOD_NOT_ALLOWED, "Method Not Allowed"),
+    /**
+     * Status code (412) indicating that the precondition given in one or more
+     * of the request-header fields evaluated to false when it was tested on
+     * the server.
+     */
+    PRECONDITION_FAILED(HttpServletResponse.SC_PRECONDITION_FAILED, "Precondition Failed"),    
     /**
      * Status code (501) indicating the HTTP server does not support the 
      * functionality needed to fulfill the request.
