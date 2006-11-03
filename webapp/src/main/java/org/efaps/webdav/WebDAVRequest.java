@@ -77,7 +77,12 @@ public class WebDAVRequest  {
   // instance methods
 
   public String getPathInfo()  {
-    return this.request.getPathInfo();
+    String ret = this.request.getPathInfo();
+    
+    if ((ret == null) || "".equals(ret))  {
+      ret = "/";
+    }
+    return ret;
   }
   
   public String getRequestURI()  {
