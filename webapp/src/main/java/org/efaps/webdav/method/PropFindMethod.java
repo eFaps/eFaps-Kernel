@@ -43,12 +43,17 @@ import org.efaps.webdav.resource.CollectionResource;
 import org.efaps.webdav.resource.SourceResource;
 
 /**
+ * @see RFC 2518 - 8.1 PROPFIND
  * @author tmo
  * @version $Id$
  * @todo description
  */
 public class PropFindMethod extends AbstractMethod  {
 
+  /////////////////////////////////////////////////////////////////////////////
+  
+  final static String DAV_XML_NAMESPACE = "DAV:";
+  
 
   /**
    * FIND_BY_PROPERTY - Specify a property mask.
@@ -70,13 +75,17 @@ Writer writer = _response.getWriter();
     WebDAVRequest.DepthHeader depthHeader = _request.getDepthHeader();
 
 
-System.out.println("depthHeader="+depthHeader);
 
-    try {
+if (_request.isInputAvailable())  {
+try {
       Document document = _request.getDocument();
 
       // Get the root element of the document
       Element rootElement = document.getDocumentElement();
+if (rootElement.getNamespaceURI().equals(DAV_XML_NAMESPACE)
+    && rootElement.getLocalName().equals("propfind"))  {
+
+
       NodeList childList = rootElement.getChildNodes();
 
       for (int i=0; i < childList.getLength(); i++) {
@@ -85,52 +94,46 @@ System.out.println("depthHeader="+depthHeader);
         case Node.TEXT_NODE:
           break;
         case Node.ELEMENT_NODE:
-          if (currentNode.getNodeName().endsWith("prop")) {
+          if (currentNode.getLocalName().equals("prop")) {
               type = FindProperty.FIND_BY_PROPERTY;
               propNode = currentNode;
           }
-          if (currentNode.getNodeName().endsWith("propname")) {
+          if (currentNode.getLocalName().equals("propname")) {
               type = FindProperty.FIND_PROPERTY_NAMES;
           }
-          if (currentNode.getNodeName().endsWith("allprop")) {
+          if (currentNode.getLocalName().equals("allprop")) {
               type = FindProperty.FIND_ALL_PROP;
           }
           break;
         }
       }
+} else  {
+  _response.setStatus(Status.BAD_REQUEST.code);
+  return;
+}
     } catch(Exception e) {
+_response.setStatus(Status.BAD_REQUEST.code);
+return;
         // Most likely there was no content : we use the defaults.
         // TODO : Enhance that !
     }
-
-System.out.println("type="+type);
+}
 
     // Properties which are to be displayed.
     DAVProperty[] properties = null;
-    List<String>      unDefinedProperties = new ArrayList<String>();
-
 
     if (type == FindProperty.FIND_BY_PROPERTY) {
       List<DAVProperty> propertiesList = new ArrayList<DAVProperty>();
       NodeList childList = propNode.getChildNodes();
 
       for (int i=0; i < childList.getLength(); i++) {
-        Node currentNode = childList.item(i);
-        switch (currentNode.getNodeType()) {
-        case Node.TEXT_NODE:
-          break;
-        case Node.ELEMENT_NODE:
-          String nodeName = currentNode.getNodeName();
-          String propertyName = null;
-          if (nodeName.indexOf(':') != -1) {
-            propertyName = nodeName.substring(nodeName.indexOf(':') + 1);
-          } else {
-            propertyName = nodeName;
-          }
+        Node curNode = childList.item(i);
+        if ((curNode.getNodeType() == Node.ELEMENT_NODE)
+            && (curNode.getNamespaceURI().equals(DAV_XML_NAMESPACE)))  {
           try  {
-            propertiesList.add(DAVProperty.valueOf(propertyName));
+            propertiesList.add(DAVProperty.valueOf(curNode.getLocalName()));
           } catch (IllegalArgumentException e)  {
-            unDefinedProperties.add(propertyName);
+// TODO property is not found =>  404 (Not Found)
           }
         }
       }
