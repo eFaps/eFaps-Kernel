@@ -55,20 +55,27 @@ public class MoveMethod extends AbstractMethod  {
 
     CollectionResource newParentCol = getCollection4ParentPath(destination);
 
+    AbstractResource newRes = newParentCol.get(newName);
+
     if (newParentCol == null)  {
       // new parent collection does not exists
       status = Status.CONFLICT;
-    } else if (!overwrite 
-               && ((newParentCol.getCollection(newName) != null)
-                    || (newParentCol.getSource(newName) != null)))  {
+    } else if (!overwrite && (newRes != null))  {
       // source with given name already existing
       status = Status.METHOD_NOT_ALLOWED;
     } else  {
       AbstractResource resource = getResource4Path(_request.getPathInfo());
-// TODO: test, if the same webdav implementation is used!!
+
+      // if on the target place a resource exists 
+      // => delete (because overwrite!)
+      if (newRes != null)  {
+        newRes.delete();        
+      }
+
+      // TODO: test, if the same webdav implementation is used!!
       if (resource.move(newParentCol, newName))  {
         // new collection source created
-        status = Status.CREATED;
+        status = Status.NO_CONTENT;
       } else  {
         // new collection source not creatable
         status = Status.FORBIDDEN;
@@ -104,10 +111,7 @@ public class MoveMethod extends AbstractMethod  {
                   
   /**
    * Return a context-relative path, beginning with a "/", that represents
-   * the canonical version of the specified path after ".." and "." elements
-   * are resolved out.  If the specified path attempts to go outside the
-   * boundaries of the current context (i.e. too many ".." path elements
-   * are present), return <code>null</code> instead.
+   * the canonical version of the specified path.
    *
    * @param path the path to be normalized
    */
@@ -131,7 +135,6 @@ public class MoveMethod extends AbstractMethod  {
     if (normalized == null)  {
       return (null);
     }
-System.out.println("normalized1="+normalized);
 
     // remove protocol, schema etc.
     try  {
@@ -141,26 +144,22 @@ System.out.println("normalized1="+normalized);
 e.printStackTrace();
     }
 
-System.out.println("normalized2="+normalized);
+    // remove servlet context name and servlet path
+    String servlet = "/" 
+                      + _request.getSession().getServletContext()
+                                             .getServletContextName() 
+                      + _request.getServletPath();
+    if (normalized.startsWith(servlet))  {
+      normalized = normalized.substring(servlet.length());
+    }
 
-      // remove servlet context name and servlet path
-      String servlet = "/" 
-                        + _request.getSession().getServletContext()
-                                               .getServletContextName() 
-                        + _request.getServletPath();
-      if (normalized.startsWith(servlet))  {
-        normalized = normalized.substring(servlet.length());
-      }
-System.out.println("normalized3="+normalized);
+    // add leading slash if necessary
+    if (!normalized.startsWith("/"))  {
+      normalized = "/" + normalized;
+    }
 
-      // add leading slash if necessary
-      if (!normalized.startsWith("/"))  {
-        normalized = "/" + normalized;
-      }
-
-System.out.println("normalized7="+normalized);
-      // Return the normalized path that we have completed
-      return (normalized);
+    // Return the normalized path that we have completed
+    return (normalized);
   }
 
 }

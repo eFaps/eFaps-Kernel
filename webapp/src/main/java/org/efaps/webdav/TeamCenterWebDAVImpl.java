@@ -194,60 +194,22 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     return collection;
   }
 
-  /**
-   * @param _collection collection resource representing the folder (if null,
-   *                    means root folder)
-   * @param _name       name of the searched source resource
-   * @return found source resource for given instance or null if not found.
-   * @todo use EFapsException instead of Exception
-   */
-  public SourceResource getSource(final CollectionResource _collection,
+  public boolean createCollection(final CollectionResource _collection, 
                                   final String _name)  {
-    
-    SourceResource source = null;
+    boolean ok = false;
 
-    if (_collection != null)  {
-      try  {
-        SearchQuery query = new SearchQuery();
-        query.setExpand(_collection.getInstance(), 
-                        "TeamCenter_Document2Folder\\Folder.Document");
-        query.addSelect("OID");
-        query.addSelect("Name");
-        query.execute();
-        Instance instance = null;
-        while (query.next())  {
-          String docName = (String) query.get("Name");
-          if ((docName != null) && _name.equals(docName))  {
-            instance = new Instance((String) query.get("OID"));
-            break;
-          }
-        }
-        query.close();
-
-        if (instance != null)  {
-          query = new SearchQuery();
-          query.setObject(instance);
-          query.addSelect("FileLength");
-          query.addSelect("Created");
-          query.addSelect("Modified");
-          query.execute();
-          query.next();
-          source = new SourceResource(
-              this,
-              _name,
-              instance,
-              (Date) query.get("Created"),
-              (Date) query.get("Modified"),
-              _name,
-              (Long) query.get("FileLength")
-          );
-          query.close();
-        }
-      } catch (Exception e)  {
-        LOG.error("could not get information about source '" + _name + "'", e);
-      }
+    try  {
+      Insert insert = new Insert("TeamCenter_Folder");
+      insert.add("ParentFolder",  "" + _collection.getInstance().getId());
+      insert.add("Name",          _name);
+      insert.execute();
+      insert.close();
+      ok = true;
+    } catch (Exception e)  {
+      LOG.error("could not create collection "
+                + "'" + _name + "'", e);
     }
-    return source;
+    return ok;
   }
 
   /**
@@ -307,47 +269,60 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     return ok;
   }
   
-  public boolean deleteSource(final SourceResource _source)  {
-    boolean ok = false;
-
-    try  {
-      SearchQuery query = new SearchQuery();
-      query.setExpand(_source.getInstance(), 
-                      "TeamCenter_Document2Folder\\Document");
-      query.addSelect("OID");
-      query.execute();
-      while (query.next())  {
-        Delete delete = new Delete((String) query.get("OID"));
-        delete.execute();
-      }
-      query.close();
-
-      Delete delete = new Delete(_source.getInstance());
-      delete.execute();
-      ok = true;
-    } catch (Exception e)  {
-      LOG.error("could not delete source "
-                + "'" + _source.getName() + "'", e);
-    }
-    return ok;
-  }
-
-  public boolean createCollection(final CollectionResource _collection, 
+  /**
+   * @param _collection collection resource representing the folder (if null,
+   *                    means root folder)
+   * @param _name       name of the searched source resource
+   * @return found source resource for given instance or null if not found.
+   * @todo use EFapsException instead of Exception
+   */
+  public SourceResource getSource(final CollectionResource _collection,
                                   final String _name)  {
-    boolean ok = false;
+    
+    SourceResource source = null;
 
-    try  {
-      Insert insert = new Insert("TeamCenter_Folder");
-      insert.add("ParentFolder",  "" + _collection.getInstance().getId());
-      insert.add("Name",          _name);
-      insert.execute();
-      insert.close();
-      ok = true;
-    } catch (Exception e)  {
-      LOG.error("could not create collection "
-                + "'" + _name + "'", e);
+    if (_collection != null)  {
+      try  {
+        SearchQuery query = new SearchQuery();
+        query.setExpand(_collection.getInstance(), 
+                        "TeamCenter_Document2Folder\\Folder.Document");
+        query.addSelect("OID");
+        query.addSelect("Name");
+        query.execute();
+        Instance instance = null;
+        while (query.next())  {
+          String docName = (String) query.get("Name");
+          if ((docName != null) && _name.equals(docName))  {
+            instance = new Instance((String) query.get("OID"));
+            break;
+          }
+        }
+        query.close();
+
+        if (instance != null)  {
+          query = new SearchQuery();
+          query.setObject(instance);
+          query.addSelect("FileLength");
+          query.addSelect("Created");
+          query.addSelect("Modified");
+          query.execute();
+          query.next();
+          source = new SourceResource(
+              this,
+              _name,
+              instance,
+              (Date) query.get("Created"),
+              (Date) query.get("Modified"),
+              _name,
+              (Long) query.get("FileLength")
+          );
+          query.close();
+        }
+      } catch (Exception e)  {
+        LOG.error("could not get information about source '" + _name + "'", e);
+      }
     }
-    return ok;
+    return source;
   }
 
   public boolean createSource(final CollectionResource _collection, 
@@ -375,6 +350,73 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
     return ok;
   }
 
+  /**
+   * A source resource is moved to a new collection with a new name. Attention! 
+   * The new location (new parent) could be the same parent as currently
+   * specified!
+   *
+   * @param _collection collection to move
+   * @param _newParent  new parent collection
+   * @param _newName    new name of the collection to move in the new parent
+   *                    collection
+   * @return <i>true</i> if the move of the collection is allowed, otherwise
+   *         <i>false</i>
+   */
+  public boolean moveSource(final SourceResource _source,
+                            final CollectionResource _newParent,
+                            final String _name)  {
+    boolean ok = false;
+
+    try  {
+      SearchQuery query = new SearchQuery();
+      query.setExpand(_source.getInstance(), 
+                      "TeamCenter_Document2Folder\\Document");
+      query.addSelect("OID");
+      query.execute();
+      while (query.next())  {
+        Update update = new Update((String) query.get("OID"));
+        update.add("Folder", "" + _newParent.getInstance().getId());
+        update.execute();
+      }
+      query.close();
+      
+      Update update = new Update(_source.getInstance());
+      update.add("Name", _name);
+      update.execute();
+
+      ok = true;
+    } catch (Exception e)  {
+      LOG.error("could not move source "
+                + "'" + _source.getName() + "'", e);
+    }
+    return ok;
+  }
+
+  public boolean deleteSource(final SourceResource _source)  {
+    boolean ok = false;
+
+    try  {
+      SearchQuery query = new SearchQuery();
+      query.setExpand(_source.getInstance(), 
+                      "TeamCenter_Document2Folder\\Document");
+      query.addSelect("OID");
+      query.execute();
+      while (query.next())  {
+        Delete delete = new Delete((String) query.get("OID"));
+        delete.execute();
+      }
+      query.close();
+
+      Delete delete = new Delete(_source.getInstance());
+      delete.execute();
+
+      ok = true;
+    } catch (Exception e)  {
+      LOG.error("could not delete source "
+                + "'" + _source.getName() + "'", e);
+    }
+    return ok;
+  }
   
   public boolean checkinSource(final SourceResource _source, 
                                final InputStream _inputStream)  {

@@ -182,6 +182,9 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
     return ret;
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // collection resource instance methods
+
   /**
    * First, it is tested, if all WebDAV integrations are loaded into the cache.
    * If not, method {@link #reloadCache} is used to initialise the cache. Then
@@ -234,6 +237,17 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   }
 
   /**
+   * New WebDAV integrations are not allowed to create within the WebDAV 
+   * integration itself.
+   *
+   * @return always <i>false</i>
+   */
+  public boolean createCollection(final CollectionResource _collection, 
+                                  final String _name)  {
+    return false;
+  }
+
+  /**
    * A rename / move of a WebDAV integration is not always not allowed.
    *
    * @return always <i>false</i>
@@ -243,6 +257,19 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
                                 final String _newName)  {
     return false;
   }
+
+  /**
+   * WebDAV integrations are not allowed to delete within the WebDAV 
+   * integration itself.
+   *
+   * @return always <i>false</i>
+   */
+  public boolean deleteCollection(final CollectionResource _collection)  {
+    return false;
+  }
+  
+  /////////////////////////////////////////////////////////////////////////////
+  // source resource instance methods
 
   /**
    * Because no files exists within the WebDAV integration itself, a source
@@ -256,15 +283,27 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   }
 
   /**
-   * WebDAV integrations are not allowed to delete within the WebDAV 
-   * integration itself.
+   * New files are not allowed to create within the WebDAV integration itself.
    *
    * @return always <i>false</i>
    */
-  public boolean deleteCollection(final CollectionResource _collection)  {
+  public boolean createSource(final CollectionResource _collection, 
+                              final String _name)  {
     return false;
   }
-  
+
+  /**
+   * Because no files exists within the WebDAV integration itself, a move of
+   * a source is not working.
+   *
+   * @return always <i>false</i>
+   */
+  public boolean moveSource(final SourceResource _source,
+                            final CollectionResource _newParent,
+                            final String _newName)  {
+    return false;
+  }
+
   /**
    * Because no files exists within the WebDAV integration itself, a delete
    * of a source is not working.
@@ -272,27 +311,6 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
    * @return always <i>false</i>
    */
   public boolean deleteSource(final SourceResource _source)  {
-    return false;
-  }
-
-  /**
-   * New WebDAV integrations are not allowed to create within the WebDAV 
-   * integration itself.
-   *
-   * @return always <i>false</i>
-   */
-  public boolean createCollection(final CollectionResource _collection, 
-                                  final String _name)  {
-    return false;
-  }
-
-  /**
-   * New files are not allowed to create within the WebDAV integration itself.
-   *
-   * @return always <i>false</i>
-   */
-  public boolean createSource(final CollectionResource _collection, 
-                              final String _name)  {
     return false;
   }
 

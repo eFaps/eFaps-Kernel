@@ -85,6 +85,22 @@ public interface WebDAVInterface  {
   public boolean createSource(final CollectionResource _collection, 
                               final String _name);
   
+  /**
+   * A source resource is moved to a new collection with a new name. Attention! 
+   * The new location (new parent) could be the same parent as currently
+   * specified!
+   *
+   * @param _collection collection to move
+   * @param _newParent  new parent collection
+   * @param _newName    new name of the collection to move in the new parent
+   *                    collection
+   * @return <i>true</i> if the move of the collection is allowed, otherwise
+   *         <i>false</i>
+   */
+  public boolean moveSource(final SourceResource _source,
+                            final CollectionResource _newParent,
+                            final String _name);
+
   public boolean deleteSource(final SourceResource _source);
 
   public boolean checkinSource(final SourceResource _source, 

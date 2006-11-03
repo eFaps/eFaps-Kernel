@@ -77,7 +77,7 @@ public class SourceResource extends AbstractResource  {
    */
   public boolean move(final CollectionResource _collection,
                       final String _newName)  {
-    return false;
+    return getWebDAVImpl().moveSource(this, _collection, _newName);
   }
 
   public boolean checkout(final OutputStream _outputStream)  {
