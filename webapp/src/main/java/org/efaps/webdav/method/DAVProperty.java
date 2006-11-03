@@ -125,9 +125,9 @@ public enum DAVProperty  {
     public String makeXML(final AbstractResource _rsrc)  {
       String ret = null;
       if (_rsrc instanceof CollectionResource)  {
-        ret = makeXML("");
-      } else  {
         ret = makeXML("<collection/>");
+      } else  {
+        ret = makeXML("");
       }
       return ret;
     }
