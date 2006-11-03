@@ -31,9 +31,7 @@ import javax.sql.rowset.JoinRowSet;
 public class DerbyDatabase extends AbstractDatabase  {
 
 // TODO: specificy real column type
-  public DerbyDatabase() throws ClassNotFoundException, IllegalAccessException  {
-    super();
-
+  public DerbyDatabase()  {
     this.columnMap.put(ColumnType.INTEGER,      "bigint");
 //    this.columnMap.put(ColumnType.REAL,         "real");
     this.columnMap.put(ColumnType.STRING_SHORT, "char");
@@ -183,5 +181,12 @@ public class DerbyDatabase extends AbstractDatabase  {
     } finally  {
       stmt.close();
     }
+  }
+
+  /**
+   * @return always <i>true</i> because supported by Derby database
+   */
+  public boolean supportsGetGeneratedKeys()  {
+    return true;
   }
 }

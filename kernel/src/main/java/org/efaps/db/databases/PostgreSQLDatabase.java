@@ -31,9 +31,7 @@ import javax.sql.rowset.JoinRowSet;
 public class PostgreSQLDatabase extends AbstractDatabase  {
 
 // TODO: specificy real column type
-  public PostgreSQLDatabase() throws ClassNotFoundException, IllegalAccessException  {
-    super();
-
+  public PostgreSQLDatabase()  {
     this.columnMap.put(ColumnType.INTEGER,      "bigint");
     this.columnMap.put(ColumnType.REAL,         "real");
     this.columnMap.put(ColumnType.STRING_SHORT, "char");

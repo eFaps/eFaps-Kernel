@@ -1070,7 +1070,7 @@ public class Person extends UserObject  {
 
 // TODO: check for uniqueness!
 // TODO: hard coded mofifier and creator
-        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
+        if (!context.getDbType().supportsGetGeneratedKeys())  {
           persId = context.getDbType().getNewId(rsrc.getConnection(),
                           persType.getMainTable().getSqlTable(), "ID");
           cmd.append("insert into ").append(persType.getMainTable().getSqlTable())

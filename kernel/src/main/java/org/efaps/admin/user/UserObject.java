@@ -110,7 +110,7 @@ public abstract class UserObject extends AdminObject  {
       StringBuilder cmd = new StringBuilder();
       try  {
         long keyId = 0;
-        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
+        if (!context.getDbType().supportsGetGeneratedKeys())  {
           keyId = context.getDbType().getNewId(rsrc.getConnection(),
                           keyType.getMainTable().getSqlTable(), "ID");
           cmd.append("insert into ").append(keyType.getMainTable().getSqlTable())
@@ -205,7 +205,7 @@ public abstract class UserObject extends AdminObject  {
            .append(_assignType.getMainTable().getSqlTable())
            .append("(");
         long keyId = 0;
-        if (!rsrc.getConnection().getMetaData().supportsGetGeneratedKeys())  {
+        if (!context.getDbType().supportsGetGeneratedKeys())  {
           keyId = context.getDbType().getNewId(
                           rsrc.getConnection(),
                           _assignType.getMainTable().getSqlTable(), 

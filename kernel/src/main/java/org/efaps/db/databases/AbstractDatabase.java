@@ -64,59 +64,12 @@ public abstract class AbstractDatabase  {
   }
 
   /**
-   *
-   */
-//  public abstract void createTable();
-
-  /**
-   * The class is used to create a new instance of {@link CachedRowSet}.
-   *
-   * @see #createCachedRowSetInstance
-   */
-  private Class < CachedRowSet > cachedRowSetImplClass = null;
-
-  /**
-   * The class is used to create a new instance of {@link JoinRowSet}.
-   *
-   * @see #createJoinRowSetInstance
-   */
-  private Class < JoinRowSet > joinRowSetImplClass = null;
-
-  /**
    * The map stores the mapping between the column types used in eFaps the
    * database specific column types.
    */
   protected final Map < ColumnType, String > columnMap = new HashMap < ColumnType, String >();
 
-  protected AbstractDatabase() throws ClassNotFoundException, IllegalAccessException  {
-    this((Class < CachedRowSet >)Class.forName("com.sun.rowset.CachedRowSetImpl"),
-         (Class < JoinRowSet >)Class.forName("com.sun.rowset.JoinRowSetImpl"));
-  }
-
-  protected AbstractDatabase(
-      final Class < CachedRowSet > _cachedRowSetImplClass,
-      final Class < JoinRowSet > _joinRowSetImplClass)  {
-
-    this.cachedRowSetImplClass  = _cachedRowSetImplClass;
-    this.joinRowSetImplClass    = _joinRowSetImplClass;
-  }
-
-  /**
-   * The instance method returns a new cached row set instance.
-   *
-   * @return cached row set instance
-   */
-  public CachedRowSet createCachedRowSetInstance() throws InstantiationException, IllegalAccessException  {
-    return this.cachedRowSetImplClass.newInstance();
-  }
-
-  /**
-   * The instance method returns a new join row set instance.
-   *
-   * @return join row set instance
-   */
-  public JoinRowSet createJoinRowSetInstance() throws InstantiationException, IllegalAccessException  {
-    return this.joinRowSetImplClass.newInstance();
+  protected AbstractDatabase()  {
   }
 
   /**
@@ -184,6 +137,16 @@ public abstract class AbstractDatabase  {
   public long getNewId(final Connection _con, final String _table,
           final String _column)  throws SQLException  {
     throw new SQLException("method 'getNewId' not imlemented");
+  }
+
+  /**
+   * The method returns if a database implementation supports to get generated
+   * keys while inserting a new line in a SQL table.
+   *
+   * @return always <i>false</i> because not implemented in this class
+   */
+  public boolean supportsGetGeneratedKeys()  {
+    return false;
   }
 }
 

@@ -30,12 +30,7 @@ import javax.sql.rowset.JoinRowSet;
 
 public class OracleDatabase extends AbstractDatabase  {
 
-  public OracleDatabase() throws ClassNotFoundException, IllegalAccessException  {
-    super(
-        (Class < CachedRowSet >)Class.forName("oracle.jdbc.rowset.OracleCachedRowSet"),
-        (Class < JoinRowSet >)Class.forName("oracle.jdbc.rowset.OracleJoinRowSet")
-    );
-
+  public OracleDatabase()  {
     this.columnMap.put(ColumnType.INTEGER,      "number");
     this.columnMap.put(ColumnType.REAL,         "number");
     this.columnMap.put(ColumnType.STRING_SHORT, "varchar2");
@@ -211,5 +206,12 @@ public class OracleDatabase extends AbstractDatabase  {
     } finally  {
       stmt.close();
     }
+  }
+
+  /**
+   * @return always <i>true</i> because supported by Oracle database
+   */
+  public boolean supportsGetGeneratedKeys()  {
+    return true;
   }
 }
