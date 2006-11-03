@@ -126,13 +126,7 @@ public class WebDAVRequest  {
    * @return <i>true</i> if input is avaible, otherwise <i>false</i>
    */
   public boolean isInputAvailable()  {
-    boolean isAvailable = false;
-
-    try  {
-      isAvailable = this.request.getInputStream().available() > 0;
-    } catch (IOException e)  {
-    }
-    return isAvailable;
+    return this.request.getContentLength() > 0;
   }
 
   /**
