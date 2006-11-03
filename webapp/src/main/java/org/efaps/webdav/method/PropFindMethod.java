@@ -165,59 +165,6 @@ System.out.println("did not found " + _request.getPathInfo());
             properties, 
             subResource);
     }
-/*
-
-  if (_request.getPathInfo()==null || "/".equals(_request.getPathInfo()))  {
-    org.efaps.db.SearchQuery query = new org.efaps.db.SearchQuery();
-    query.setQueryTypes(context, "TeamCenter_RootFolder");
-    query.addSelect(context, "Name");
-    query.addSelect(context, "Modified");
-    query.addSelect(context, "Created");
-    query.execute();
-    while (query.next())  {
-      String resourceName = makeResourceName(_request.getRequestURI(), query.get(context, "Name").toString());
-      Date modified = (Date) query.get(context, "Modified");
-      Date created = (Date) query.get(context, "Created");
-      writeOneFolder(writer, resourceName, properties, created, modified);
-    }
-    query.close();
-  } else  {
-    if (instance == null)  {
-    } else if (instance.getType().getName().equals("TeamCenter_Folder") 
-               || instance.getType().getName().equals("TeamCenter_RootFolder"))  {
-      org.efaps.db.SearchQuery query = new org.efaps.db.SearchQuery();
-      query.setExpand(context, instance, "TeamCenter_Folder\\ParentFolder");
-      query.addSelect(context, "Name");
-      query.addSelect(context, "Created");
-      query.addSelect(context, "Modified");
-      query.execute();
-      while (query.next())  {
-        String resourceName = makeResourceName(_request.getRequestURI(), query.get(context, "Name").toString());
-        Date modified = (Date) query.get(context, "Modified");
-        Date created = (Date) query.get(context, "Created");
-        writeOneFolder(writer, resourceName, properties, created, modified);
-      }
-      query.close();
-  
-  
-      query = new org.efaps.db.SearchQuery();
-      query.setExpand(context, instance, "TeamCenter_Document2Folder\\Folder.Document");
-      query.addSelect(context, "FileName");
-      query.addSelect(context, "FileLength");
-      query.addSelect(context, "Created");
-      query.addSelect(context, "Modified");
-      query.execute();
-      while (query.next())  {
-        String resourceName = makeResourceName(_request.getRequestURI(), query.get(context, "FileName").toString());
-        Date modified   = (Date) query.get(context, "Modified");
-        Date created    = (Date) query.get(context, "Created");
-        Long fileLength = (Long) query.get(context, "FileLength");
-        writeOneFile(writer, resourceName, properties, created, modified, fileLength);
-      }
-      query.close();
-    }
-  }
-*/
   }
 writeElement(writer, "multistatus", CLOSING);
 } catch (Exception e)  {
