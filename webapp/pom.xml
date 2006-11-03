@@ -231,6 +231,14 @@
       <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/commons-vfs-1.0-RC8-SNAPSHOT.jar</systemPath>
     </dependency>
 
+    <!-- To Create HTML Codes used in the WebDAV integration -->
+    <dependency>
+      <groupId>ecs</groupId>
+      <artifactId>ecs</artifactId>
+      <version>1.4.2</version>
+      <scope>compile</scope>
+    </dependency>
+
   </dependencies>
 
 </project>
