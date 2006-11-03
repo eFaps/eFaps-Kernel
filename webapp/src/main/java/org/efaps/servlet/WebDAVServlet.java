@@ -71,6 +71,7 @@ public class WebDAVServlet extends HttpServlet  {
     methods.put("MKCOL",    new MkColMethod());
     methods.put("MOVE",     new MoveMethod());
     methods.put("MKCOL",    new MkColMethod());
+    methods.put("OPTIONS",  new OptionsMethod());
     methods.put("PROPFIND", new PropFindMethod());
     methods.put("PUT",      new PutMethod());
   }
