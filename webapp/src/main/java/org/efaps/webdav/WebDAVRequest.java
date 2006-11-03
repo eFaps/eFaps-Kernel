@@ -158,8 +158,10 @@ public class WebDAVRequest  {
   /**
    * Return a context-relative path, beginning with a "/", that represents
    * the canonical version of the specified path.
+   * This is specified in "RFC 2518 - 9.3 Destination Header".
    *
    * @param path the path to be normalized
+   * @see RFC 2518 - 9.3 Destination Header
    * @todo rework of exception handling
    */
   public String getDestination() {

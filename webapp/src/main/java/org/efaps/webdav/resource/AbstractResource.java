@@ -122,6 +122,16 @@ public abstract class AbstractResource  {
   public abstract boolean move(final CollectionResource _collection,
                                final String _newName);
 
+  /**
+   * Copies this resource to a new location.
+   *
+   * @param _collection   new parent collection to copy
+   * @param _newName      new name in the parent collection
+   * @return <i>true</i> if copied, otherwise <i>false</i>
+   */
+  public abstract boolean copy(final CollectionResource _collection,
+                               final String _newName);
+
   /////////////////////////////////////////////////////////////////////////////
   // getter / setter methods for instance variables
 

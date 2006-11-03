@@ -78,6 +78,18 @@ public class CollectionResource extends AbstractResource  {
   }
 
   /**
+   * Copies this collection resource to a new location.
+   *
+   * @param _collection   new parent collection to copy on
+   * @param _newName      new name of the collection in the parent collection
+   * @return <i>true</i> if copied, otherwise <i>false</i>
+   */
+  public boolean copy(final CollectionResource _collection,
+                      final String _newName)  {
+    return getWebDAVImpl().copyCollection(this, _collection, _newName);
+  }
+
+  /**
    * For this collection all found sub collections and sources are returned.
    * As parent collection this collection is set.
    *

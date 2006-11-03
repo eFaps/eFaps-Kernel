@@ -68,6 +68,21 @@ public interface WebDAVInterface  {
                                 final CollectionResource _newParent,
                                 final String _newName);
 
+  /**
+   * A collection is copied to a new collection with a new name. Attention! The
+   * new location (new parent) could be the same parent as currently specified!
+   *
+   * @param _collection collection to copy
+   * @param _newParent  new parent collection
+   * @param _newName    new name of the collection to copy in the new parent
+   *                    collection
+   * @return <i>true</i> if the copy of the collection is allowed, otherwise
+   *         <i>false</i>
+   */
+  public boolean copyCollection(final CollectionResource _collection,
+                                final CollectionResource _newParent,
+                                final String _newName);
+
   public boolean deleteCollection(final CollectionResource _collection);
   
   /////////////////////////////////////////////////////////////////////////////
@@ -90,7 +105,7 @@ public interface WebDAVInterface  {
    * The new location (new parent) could be the same parent as currently
    * specified!
    *
-   * @param _collection collection to move
+   * @param _source     source to move
    * @param _newParent  new parent collection
    * @param _newName    new name of the collection to move in the new parent
    *                    collection
@@ -98,6 +113,22 @@ public interface WebDAVInterface  {
    *         <i>false</i>
    */
   public boolean moveSource(final SourceResource _source,
+                            final CollectionResource _newParent,
+                            final String _name);
+
+  /**
+   * A source resource is copied to a new collection with a new name.
+   * Attention! The new location (new parent) could be the same parent as
+   * currently specified!
+   *
+   * @param _source     source to copy
+   * @param _newParent  new parent collection
+   * @param _newName    new name of the collection to copy in the new parent
+   *                    collection
+   * @return <i>true</i> if the copy of the collection is allowed, otherwise
+   *         <i>false</i>
+   */
+  public boolean copySource(final SourceResource _source,
                             final CollectionResource _newParent,
                             final String _name);
 

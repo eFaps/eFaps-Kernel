@@ -33,6 +33,7 @@ import javax.servlet.ServletException;
 
 import org.efaps.webdav.WebDAVRequest;
 import org.efaps.webdav.method.AbstractMethod;
+import org.efaps.webdav.method.CopyMethod;
 import org.efaps.webdav.method.DeleteMethod;
 import org.efaps.webdav.method.GetMethod;
 import org.efaps.webdav.method.HeadMethod;
@@ -52,8 +53,6 @@ public class WebDAVServlet extends HttpServlet  {
 
 //  private static final String METHOD_HEAD = "HEAD";
   private static final String METHOD_PROPPATCH = "PROPPATCH";
-  private static final String METHOD_COPY = "COPY";
-  private static final String METHOD_MOVE = "MOVE";
   private static final String METHOD_LOCK = "LOCK";
   private static final String METHOD_UNLOCK = "UNLOCK";
 
@@ -66,6 +65,7 @@ public class WebDAVServlet extends HttpServlet  {
   private static Map<String,AbstractMethod> methods = new HashMap<String,AbstractMethod>();
 
   static  {
+    methods.put("COPY",     new CopyMethod());
     methods.put("DELETE",   new DeleteMethod());
     methods.put("GET",      new GetMethod());
     methods.put("HEAD",     new HeadMethod());

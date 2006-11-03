@@ -237,7 +237,7 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   }
 
   /**
-   * New WebDAV integrations are not allowed to create within the WebDAV 
+   * New WebDAV integrations are never allowed to create within the WebDAV 
    * integration itself.
    *
    * @return always <i>false</i>
@@ -248,11 +248,22 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   }
 
   /**
-   * A rename / move of a WebDAV integration is not always not allowed.
+   * A rename / move of a WebDAV integration is never allowed.
    *
    * @return always <i>false</i>
    */
   public boolean moveCollection(final CollectionResource _collection,
+                                final CollectionResource _newParent,
+                                final String _newName)  {
+    return false;
+  }
+
+  /**
+   * A copy of a WebDAV integration is never allowed.
+   *
+   * @return always <i>false</i>
+   */
+  public boolean copyCollection(final CollectionResource _collection,
                                 final CollectionResource _newParent,
                                 final String _newName)  {
     return false;
@@ -299,6 +310,18 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
    * @return always <i>false</i>
    */
   public boolean moveSource(final SourceResource _source,
+                            final CollectionResource _newParent,
+                            final String _newName)  {
+    return false;
+  }
+
+  /**
+   * Because no files exists within the WebDAV integration itself, a copy of
+   * a source is not working.
+   *
+   * @return always <i>false</i>
+   */
+  public boolean copySource(final SourceResource _source,
                             final CollectionResource _newParent,
                             final String _newName)  {
     return false;
