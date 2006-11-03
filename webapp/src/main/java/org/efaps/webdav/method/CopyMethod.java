@@ -39,7 +39,7 @@ import org.efaps.webdav.resource.CollectionResource;
 public class CopyMethod extends AbstractMethod  {
 
   /**
-   *
+   * @todo depth header for 0 must be implemented
    */
   public void run(final WebDAVRequest _request, 
                   final HttpServletResponse _response) throws IOException, ServletException  {
