@@ -174,10 +174,7 @@ public abstract class AbstractMethod  {
     if (uri.length > 1)  {
       CollectionResource collection = getCollection(uri.length - 2, uri);
       if (collection != null)  {
-        resource = collection.getCollection(uri[uri.length - 1]);
-        if (resource == null)  {
-          resource = collection.getSource(uri[uri.length - 1]);
-        }
+        resource = collection.get(uri[uri.length - 1]);
       } else  {
         resource = null;
       }

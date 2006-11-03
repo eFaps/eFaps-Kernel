@@ -88,6 +88,21 @@ public class CollectionResource extends AbstractResource  {
     return list;
   }
 
+  /**
+   * Returns for given name the sub collection or sub source resource.
+   *
+   * @param _name   name of the resource to get
+   * @see #getCollection
+   * @see #getSource
+   */
+  public AbstractResource get(final String _name)  {
+    AbstractResource ret = getCollection(_name);
+    if (ret == null)  {
+      ret = getSource(_name);
+    }
+    return ret;
+  }
+
   public CollectionResource getCollection(final String _name)  {
     CollectionResource ret = this.subWebDAVImpl.getCollection(this, _name);
     if (ret != null)  {
