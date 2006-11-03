@@ -22,11 +22,13 @@ package org.efaps.webdav.method;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
+import org.efaps.webdav.WebDAVRequest;
+
 /**
+ * Specified by "RFC2068 - 9.2 OPTIONS".
  *
  * @author tmo
  * @version $Id$
@@ -36,15 +38,16 @@ public class OptionsMethod extends AbstractMethod  {
   /**
    *
    */
-  public void run(final HttpServletRequest _request, final HttpServletResponse _response) throws IOException, ServletException  {
+  public void run(final WebDAVRequest _request, 
+                  final HttpServletResponse _response) throws IOException, ServletException  {
 
 //    resp.addHeader("DAV", "1,2");
-    _response.addHeader("DAV", "1");
+    _response.addHeader("DAV", "1,2");
 
 // CLass 1: COPY, DELETE, GET, HEAD, MKCOL, MOVE, OPTIONS, POST, PROPPATCH, PROPFIND, PUT
 // Class 2: COPY, DELETE, GET, HEAD, LOCK, MKCOL, MOVE, OPTIONS, POST, PROPPATCH, PROPFIND, PUT, UNLOCK
 // TRACE?
-    final String methodsAllowed = "COPY, DELETE, GET, HEAD, MKCOL, MOVE, OPTIONS, POST, PROPPATCH, PROPFIND, PUT";
+    final String methodsAllowed = "COPY, DELETE, GET, HEAD, MKCOL, MOVE, OPTIONS, POST, PROPPATCH, PROPFIND, PUT, LOCK, UNLOCK";
 
 //        if (!(object instanceof DirContext)) {
 //            methodsAllowed.append(", PUT");

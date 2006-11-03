@@ -22,10 +22,10 @@ package org.efaps.webdav.method;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
+import org.efaps.webdav.WebDAVRequest;
 import org.efaps.webdav.resource.AbstractResource;
 import org.efaps.webdav.resource.CollectionResource;
 import org.efaps.webdav.resource.SourceResource;
@@ -41,14 +41,13 @@ public class MoveMethod extends AbstractMethod  {
   /**
    *
    */
-  public void run(final HttpServletRequest _request, 
+  public void run(final WebDAVRequest _request, 
                   final HttpServletResponse _response) throws IOException, ServletException  {
 
     Status status = null;
 
-    String destination = decodeURL(_request, 
-                                   _request.getHeader("Destination"));
-    boolean overwrite = isOverwrite(_request);
+    String destination = _request.getDestination();
+    boolean overwrite = _request.isOverwrite();
 
     String[] destUri = destination.split("/");
     String newName = destUri[destUri.length - 1];
@@ -88,82 +87,4 @@ public class MoveMethod extends AbstractMethod  {
 
     _response.setStatus(status.code);
   }
-
-  /**
-   * The request is checked, if the header <code>Overwrite</code> is specified.
-   * If the value is set to <code>T</code> or the header is not specified, the
-   * return value is <i>true</i>.<br/>
-   * This is specified in "RFC2518 - 9.6 Overwrite Header"
-   *
-   * @param _request  http servler request
-   * @return true if the request header <code>Overwrite</code> is set to 
-   *         <code>T</code> or not defined.
-   */
-  protected boolean isOverwrite(final HttpServletRequest _request)  {
-    boolean overwrite = true;
-    
-    String overwriteHeader = _request.getHeader("Overwrite");
-    if (overwriteHeader != null) {
-      if (overwriteHeader.equalsIgnoreCase("T")) {
-        overwrite = true;
-      } else {
-        overwrite = false;
-      }
-    }
-    return overwrite;
-  }
-                  
-  /**
-   * Return a context-relative path, beginning with a "/", that represents
-   * the canonical version of the specified path.
-   *
-   * @param path the path to be normalized
-   * @todo rework of exception handling
-   */
-  private String decodeURL(final HttpServletRequest _request, 
-                           final String path) {
-
-    if (path == null)  {
-      return null;
-    }
-
-    // Resolve encoded characters in the normalized path,
-    // which also handles encoded spaces so we can skip that later.
-    // Placed at the beginning of the chain so that encoded
-    // bad stuff(tm) can be caught by the later checks
-    String normalized = null;
-    try  {
-      normalized = java.net.URLDecoder.decode(path, "UTF8");
-    } catch (java.io.UnsupportedEncodingException e)  {
-    }
-
-    if (normalized == null)  {
-      return (null);
-    }
-
-    // remove protocol, schema etc.
-    try  {
-      java.net.URL url = new java.net.URL(normalized);
-      normalized = url.getFile();
-    } catch (java.net.MalformedURLException e)  {
-    }
-
-    // remove servlet context name and servlet path
-    String servlet = "/" 
-                      + _request.getSession().getServletContext()
-                                             .getServletContextName() 
-                      + _request.getServletPath();
-    if (normalized.startsWith(servlet))  {
-      normalized = normalized.substring(servlet.length());
-    }
-
-    // add leading slash if necessary
-    if (!normalized.startsWith("/"))  {
-      normalized = "/" + normalized;
-    }
-
-    // Return the normalized path that we have completed
-    return (normalized);
-  }
-
 }

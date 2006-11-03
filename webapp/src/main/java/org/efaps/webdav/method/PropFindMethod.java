@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 import javax.xml.parsers.DocumentBuilder;
@@ -38,6 +37,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import org.efaps.webdav.WebDAVRequest;
 import org.efaps.webdav.resource.AbstractResource;
 import org.efaps.webdav.resource.CollectionResource;
 import org.efaps.webdav.resource.SourceResource;
@@ -58,7 +58,8 @@ public class PropFindMethod extends AbstractMethod  {
   static enum FindProperty {FIND_BY_PROPERTY, FIND_ALL_PROP, FIND_PROPERTY_NAMES};
 
 
-  public void run(final HttpServletRequest _request, HttpServletResponse _response) throws IOException, ServletException  {
+  public void run(final WebDAVRequest _request, 
+                  final HttpServletResponse _response) throws IOException, ServletException  {
 try  {
 Writer writer = _response.getWriter();
 
@@ -66,16 +67,13 @@ Writer writer = _response.getWriter();
     Node propNode = null;
 
 
-    DepthHeader depthHeader = getDepthHeader(_request);
+    WebDAVRequest.DepthHeader depthHeader = _request.getDepthHeader();
 
 
 System.out.println("depthHeader="+depthHeader);
 
-
-    DocumentBuilder documentBuilder = getDocumentBuilder();
-
     try {
-      Document document = documentBuilder.parse(new InputSource(_request.getInputStream()));
+      Document document = _request.getDocument();
 
       // Get the root element of the document
       Element rootElement = document.getDocumentElement();
@@ -156,7 +154,7 @@ System.out.println("did not found " + _request.getPathInfo());
     write(writer, _request.getRequestURI(), properties, resource);
   }
 
-  if ((depthHeader == DepthHeader.depth1)
+  if ((depthHeader == WebDAVRequest.DepthHeader.depth1)
       && (resource instanceof CollectionResource))  {
     
     List < AbstractResource > subs = ((CollectionResource) resource).getSubs();

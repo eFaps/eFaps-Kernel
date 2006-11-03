@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 
+import org.efaps.webdav.WebDAVRequest;
 import org.efaps.webdav.method.AbstractMethod;
 import org.efaps.webdav.method.DeleteMethod;
 import org.efaps.webdav.method.GetMethod;
@@ -99,13 +100,9 @@ this.urlEncoding = defaultEncoding;
 System.out.println("getPath "+_request.getPathInfo());
 System.out.println("getMethod "+_request.getMethod());
 
-String path = _request.getPathInfo();
-
-
-
     AbstractMethod method = methods.get(_request.getMethod());
     if (method != null)  {
-      method.run(_request, _response);
+      method.run(new WebDAVRequest(_request), _response);
     } else  {
 System.out.println("method "+_request.getMethod()+" not implementet");
 super.service(_request, _response);

@@ -22,16 +22,16 @@ package org.efaps.webdav.method;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
-import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import org.efaps.webdav.WebDAVRequest;
 import org.efaps.webdav.resource.CollectionResource;
 
 /**
@@ -47,7 +47,8 @@ public class MkColMethod extends AbstractMethod  {
    * @todo the request body must be processed (currently the status is 
    *                                           NOT_IMPLEMENTED)
    */
-  public void run(final HttpServletRequest _request, final HttpServletResponse _response) throws IOException, ServletException  {
+  public void run(final WebDAVRequest _request, 
+                  final HttpServletResponse _response) throws IOException, ServletException  {
     Status status = null;
       
     String[] uri = _request.getPathInfo().split("/");
@@ -59,13 +60,17 @@ public class MkColMethod extends AbstractMethod  {
     if (parentCollection == null)  {
       status = Status.CONFLICT;
     } else  {
-      if (_request.getInputStream().available() > 0) {
-        DocumentBuilder documentBuilder = getDocumentBuilder();
+      if (_request.isInputAvailable()) {
         try {
-          Document document = documentBuilder
-                        .parse(new InputSource(_request.getInputStream()));
+          Document document = _request.getDocument();
           // TODO : Process this request body
           status = Status.NOT_IMPLEMENTED;
+        } catch(IOException e)  {
+          // input 
+          status = Status.BAD_REQUEST;
+        } catch(ParserConfigurationException e)  {
+          // Parse error - assume invalid content
+          status = Status.BAD_REQUEST;
         } catch(SAXException e) {
           // Parse error - assume invalid content
           status = Status.BAD_REQUEST;

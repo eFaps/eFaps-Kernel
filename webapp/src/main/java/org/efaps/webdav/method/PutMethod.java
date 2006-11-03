@@ -22,11 +22,10 @@ package org.efaps.webdav.method;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
-import org.efaps.util.EFapsException;
+import org.efaps.webdav.WebDAVRequest;
 import org.efaps.webdav.resource.CollectionResource;
 import org.efaps.webdav.resource.SourceResource;
 
@@ -41,7 +40,7 @@ public class PutMethod extends AbstractMethod  {
   /**
    *
    */
-  public void run(final HttpServletRequest _request, 
+  public void run(final WebDAVRequest _request, 
                   final HttpServletResponse _response) throws IOException, ServletException  {
     Status status = null;
 
@@ -73,7 +72,7 @@ public class PutMethod extends AbstractMethod  {
 // was muss da gesetzt werden????? => RFC 2068
 status = Status.CONFLICT;
       } else  {
-        boolean bck = source.checkin(_request.getInputStream());
+        boolean bck = source.checkin(_request.getRequest().getInputStream());
         if (!bck)  {
 // was muss da gesetzt werden????? => RFC 2068
 status = Status.CONFLICT;

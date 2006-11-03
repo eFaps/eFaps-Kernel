@@ -22,10 +22,10 @@ package org.efaps.webdav.method;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
+import org.efaps.webdav.WebDAVRequest;
 import org.efaps.webdav.resource.AbstractResource;
 
 /**
@@ -39,13 +39,14 @@ public class HeadMethod extends AbstractMethod  {
   /**
    *
    */
-  public void run(final HttpServletRequest _request, final HttpServletResponse _response) throws IOException, ServletException  {
+  public void run(final WebDAVRequest _request, 
+                  final HttpServletResponse _response) throws IOException, ServletException  {
 
     AbstractResource resource = getResource4Path(_request.getPathInfo());
     if (resource == null)  {
       _response.setStatus(Status.NOT_FOUND.code);
     } else  {
-      _response.setContentType(_request.getSession().getServletContext().getMimeType(resource.getName()));
+      _response.setContentType(_request.getRequest().getSession().getServletContext().getMimeType(resource.getName()));
       _response.addHeader("Content-Disposition", "inline; filename=\""+resource.getName()+"\"");
       _response.setStatus(Status.NO_CONTENT.code);
     }

@@ -22,10 +22,10 @@ package org.efaps.webdav.method;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
+import org.efaps.webdav.WebDAVRequest;
 import org.efaps.webdav.resource.AbstractResource;
 
 /**
@@ -38,7 +38,7 @@ public class DeleteMethod extends AbstractMethod  {
   /**
    *
    */
-  public void run(final HttpServletRequest _request, 
+  public void run(final WebDAVRequest _request, 
                   final HttpServletResponse _response) throws IOException, ServletException  {
 
     Status status = null;

@@ -24,17 +24,14 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
+import org.efaps.webdav.WebDAVImpl;
+import org.efaps.webdav.WebDAVRequest;
 import org.efaps.webdav.resource.AbstractResource;
 import org.efaps.webdav.resource.CollectionResource;
 import org.efaps.webdav.resource.SourceResource;
-import org.efaps.webdav.WebDAVImpl;
 
 /**
  * @author tmo
@@ -43,20 +40,6 @@ import org.efaps.webdav.WebDAVImpl;
  */
 public abstract class AbstractMethod  {
 
-  public enum DepthHeader  {
-    /** 
-     * The method is to be applied only to the resource. 
-     */
-    depth0,
-    /** 
-     * The method is to be applied to the resource and its immediate children. 
-     */
-    depth1,
-    /** 
-     * The method is to be applied to the resource and all its progeny.
-     */
-    infity;
-  }
 
   public enum Status {
 
@@ -134,41 +117,15 @@ public abstract class AbstractMethod  {
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
-  public DepthHeader getDepthHeader(final HttpServletRequest _request)  {
-    DepthHeader ret = DepthHeader.infity;
-    
-    String depthStr = _request.getHeader("Depth");
-    if (depthStr != null)  {
-      depthStr = depthStr.trim();
-      if ("0".equals(depthStr))  {
-        ret = DepthHeader.depth0;
-      } else if ("1".equals(depthStr))  {
-        ret = DepthHeader.depth1;
-      }
-    }
-    return ret;
-  }
 
 /*
 
-  if (property.equals("creationdate")) {
-    writeProperty(_writer, null, null, "creationdate", creationDateFormat.format(_created));
-  } else if (property.equals("displayname")) {
-      writeElement(_writer, null, null, "displayname", OPENING);
-      writeData(_writer, _resourceName);
-      writeElement(_writer, null, null, "displayname", CLOSING);
-  } else if (property.equals("getcontentlanguage")) {
+   } else if (property.equals("getcontentlanguage")) {
       writeElement(_writer, null, null, "getcontentlanguage", NO_CONTENT);
-  } else if (property.equals("getcontentlength")) {
-      writeProperty(_writer, null, null, "getcontentlength", "0");
-  } else if (property.equals("getcontenttype")) {
+   } else if (property.equals("getcontenttype")) {
       writeProperty(_writer, null, null, "getcontenttype", "");
   } else if (property.equals("getetag")) {
       writeProperty(_writer, null, null, "getetag", "");
-  } else if (property.equals("getlastmodified")) {
-    writeProperty(_writer, null, null, "getlastmodified", modifedFormat.format(_modified));
-  } else if (property.equals("resourcetype")) {
-      writeProperty(_writer, null, null, "resourcetype", COLLECTION_TYPE);
   } else if (property.equals("source")) {
     writeProperty(_writer, null, null, "source", "");
   } else if (property.equals("supportedlock")) {
@@ -189,7 +146,8 @@ public abstract class AbstractMethod  {
 //      propertiesNotFound.addElement(property);
   }
 */
-  abstract public void run(final HttpServletRequest _request, HttpServletResponse _response) throws IOException, ServletException;
+  abstract public void run(final WebDAVRequest _request, 
+                           final HttpServletResponse _response) throws IOException, ServletException;
 
   /////////////////////////////////////////////////////////////////////////////
 
@@ -227,24 +185,6 @@ public abstract class AbstractMethod  {
   }
 
   /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Return JAXP document builder instance.
-   */
-  protected DocumentBuilder getDocumentBuilder() throws ServletException {
-    DocumentBuilder documentBuilder = null;
-    DocumentBuilderFactory documentBuilderFactory = null;
-    try {
-      documentBuilderFactory = DocumentBuilderFactory.newInstance();
-      documentBuilderFactory.setNamespaceAware(true);
-      documentBuilder = documentBuilderFactory.newDocumentBuilder();
-    } catch(ParserConfigurationException e) {
-throw new ServletException("webdavservlet.jaxpfailed");
-//      throw new ServletException
-//          (sm.getString("webdavservlet.jaxpfailed"));
-    }
-    return documentBuilder;
-  }
 
   /////////////////////////////////////////////////////////////////////////////
 
