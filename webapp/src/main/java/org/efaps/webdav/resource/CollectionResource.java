@@ -78,6 +78,9 @@ public class CollectionResource extends AbstractResource  {
   }
 
   /**
+   * For this collection all found sub collections and sources are returned.
+   * As parent collection this collection is set.
+   *
    * @return sub collections and sources for this collection
    */
   public List < AbstractResource > getSubs()  {
@@ -90,6 +93,7 @@ public class CollectionResource extends AbstractResource  {
 
   /**
    * Returns for given name the sub collection or sub source resource.
+   * As parent collection this collection is set.
    *
    * @param _name   name of the resource to get
    * @see #getCollection
@@ -103,6 +107,9 @@ public class CollectionResource extends AbstractResource  {
     return ret;
   }
 
+  /**
+   * As parent collection this collection is set.
+   */
   public CollectionResource getCollection(final String _name)  {
     CollectionResource ret = this.subWebDAVImpl.getCollection(this, _name);
     if (ret != null)  {
@@ -118,7 +125,9 @@ public class CollectionResource extends AbstractResource  {
     return this.subWebDAVImpl.createCollection(this, _name);
   }
 
-
+  /**
+   * As parent collection this collection is set.
+   */
   public SourceResource getSource(final String _name)  {
     SourceResource ret = this.subWebDAVImpl.getSource(this, _name);
     if (ret != null)  {
