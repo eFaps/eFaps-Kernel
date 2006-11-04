@@ -30,6 +30,9 @@ import org.efaps.shell.method.update.AccessTypeUpdate;
 import org.efaps.shell.method.update.datamodel.SQLTableUpdate;
 import org.efaps.shell.method.update.datamodel.TypeUpdate;
 import org.efaps.shell.method.update.integration.WebDAVUpdate;
+import org.efaps.shell.method.update.ui.CommandUpdate;
+import org.efaps.shell.method.update.ui.MenuUpdate;
+import org.efaps.shell.method.update.ui.TableUpdate;
 import org.efaps.shell.method.update.user.JAASSystemUpdate;
 
 import org.efaps.util.EFapsException;
@@ -106,6 +109,24 @@ public final class UpdateMethod extends AbstractMethod  {
     }
     for (String fileName : getCommandLine().getArgs())  {
       AccessSetUpdate update = AccessSetUpdate.readXMLFile(fileName);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+    for (String fileName : getCommandLine().getArgs())  {
+      TableUpdate update = TableUpdate.readXMLFile(fileName);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+    for (String fileName : getCommandLine().getArgs())  {
+      MenuUpdate update = MenuUpdate.readXMLFile(fileName);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+    for (String fileName : getCommandLine().getArgs())  {
+      CommandUpdate update = CommandUpdate.readXMLFile(fileName);
       if (update != null)  {
         update.updateInDB(jexlContext);
       }
