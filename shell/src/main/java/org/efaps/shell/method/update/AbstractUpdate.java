@@ -189,6 +189,17 @@ public abstract class AbstractUpdate  {
   }
   
   /**
+   * This is the getter method for instance variable {@link #uuid}.
+   *
+   * @return value of instance variable {@link #uuid}
+   * @see #uuid
+   * @see #setUUID
+   */
+  public String getUUID()  {
+    return this.uuid;
+  }
+
+  /**
    * Returns a string representation with values of all instance variables.
    *
    * @return string representation of this abstract update
@@ -445,9 +456,7 @@ System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not 
     protected void setPropertiesInDb(final Instance _instance)
                                           throws EFapsException, Exception  {
       
-      Attribute attr = _instance.getType().getLinks()
-                                          .get("Admin_Property\\Abstract");
-      if (attr!=null)  {
+      if (_instance.getType().isKindOf(Type.get("Admin_Abstract")))  {
         // remove old properties
         SearchQuery query = new SearchQuery();
         query.setExpand(_instance, "Admin_Property\\Abstract");
