@@ -97,7 +97,7 @@
     </attribute>
 
     <attribute>
-      <name>ParentFolder</name>
+      <name>ParentCollectionLink</name>
       <type>Link</type>
       <typelink>TeamWork_Collection</typelink>
       <sqltable>TeamWork_CollectionSQLTable</sqltable>
