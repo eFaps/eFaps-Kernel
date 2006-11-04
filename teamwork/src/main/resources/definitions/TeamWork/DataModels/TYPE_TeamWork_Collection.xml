@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-type>
+  <uuid>ac4bda36-c87e-4a71-92e4-c62a3464747b</uuid>
+
+  <definition>
+    <version>
+      <application>teamwork</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==2)</mode>
+    </version>
+
+    <name>TeamWork_Collection</name>
+  </definition>
+
+  <definition>
+    <version>
+      <application>teamwork</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version>=3)</mode>
+    </version>
+
+    <name>TeamWork_Collection</name>
+
+    <attribute>
+      <name>Type</name>
+      <type>Type</type>
+      <sqltable>TeamWork_CollectionSQLTable</sqltable>
+      <sqlcolumn>TYPEID</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>OID</name>
+      <type>OID</type>
+      <sqltable>TeamWork_CollectionSQLTable</sqltable>
+      <sqlcolumn>TYPEID,ID</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>TeamWork_CollectionSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Creator</name>
+      <type>CreatorLink</type>
+      <sqltable>TeamWork_CollectionSQLTable</sqltable>
+      <sqlcolumn>CREATOR</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Created</name>
+      <type>Created</type>
+      <sqltable>TeamWork_CollectionSQLTable</sqltable>
+      <sqlcolumn>CREATED</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Modifier</name>
+      <type>ModifierLink</type>
+      <sqltable>TeamWork_CollectionSQLTable</sqltable>
+      <sqlcolumn>MODIFIER</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Name</name>
+      <type>String</type>
+      <sqltable>TeamWork_CollectionSQLTable</sqltable>
+      <sqlcolumn>NAME</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>ParentFolder</name>
+      <type>Link</type>
+      <typelink>TeamWork_Collection</typelink>
+      <sqltable>TeamWork_CollectionSQLTable</sqltable>
+      <sqlcolumn>PARENT</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>Locked</name>
+      <type>Boolean</type>
+      <sqltable>TeamWork_CollectionSQLTable</sqltable>
+      <sqlcolumn>LOCKED</sqlcolumn>
+    </attribute>
+
+    <property>
+      <name>Icon</name>
+      <value>${ROOTURL}/servlet/image/TeamWork_CollectionImage</value>
+    </property>
+    
+    <property>
+      <name>Tree</name>
+      <value>TeamWork_CollectionTree</value>
+    </property>
+
+  </definition>
+</datamodel-type>
