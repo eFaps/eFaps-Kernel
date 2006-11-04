@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev:528 $
+ Last Changed:    $Date:2006-11-04 09:38:52 +0100 (Sa, 04 Nov 2006) $
+ Last Changed By: $Author:tmo $
 
 -->
 
@@ -28,22 +28,27 @@
 
   <definition>
     <version>
-      <application>teamcenter</application>
+      <application>teamwork</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:528 $</local>
       <mode>(version==1)</mode>
     </version>
 
-    <name>TeamCenter_DocumentSQLTable</name>
+    <name>TeamWork_SourceSQLTable</name>
 
     <database>
-      <table-name>TCDOCUMENT</table-name>
-      <parent-table>ABSTRACT</parent-table>
+      <table-name>TWSOURCE</table-name>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="FILENAME"   type="STRING_SHORT" length="128"/>
-      <column name="FILELENGTH" type="INTEGER"/>
+      <column name="NAME"         type="STRING_SHORT"   not-null="true"/>
+      <column name="CREATOR"      type="INTEGER"        not-null="true"/>
+      <column name="CREATED"      type="DATETIME"       not-null="true"/>
+      <column name="MODIFIER"     type="INTEGER"        not-null="true"/>
+      <column name="MODIFIED"     type="DATETIME"       not-null="true"/>
+      <column name="PARENT"       type="INTEGER"/>
+      <column name="LOCKED"       type="BOOLEAN"/>
+      <column name="FILELENGTH"   type="INTEGER"/>
      </database>
   </definition>
 
@@ -51,13 +56,21 @@
     <version>
       <application>teamcenter</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:528 $</local>
       <mode>(version==2)</mode>
     </version>
 
-    <name>TeamCenter_DocumentSQLTable</name>
-    <parent>Admin_AbstractSQLTable</parent>
+    <name>TeamWork_SourceSQLTable</name>
 
+    <database>
+      <table-name>TWSOURCE</table-name>
+      <update>true</update>
+      <!-- contraints -->
+      <foreign name="TWSOURCE_FK_CRTR"        key="CREATOR"   reference="USERPERSON(ID)"/>
+      <foreign name="TWSOURCE_FK_MDFR"        key="MODIFIER"  reference="USERPERSON(ID)"/>
+      <foreign name="TWSOURCE_FK_PARENT"      key="PARENT"    reference="TWCOLLECTION(ID)"/>
+    </database>
+    
   </definition>
 
 </datamodel-sqltable>
