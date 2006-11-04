@@ -113,11 +113,16 @@ public class TypeUpdate extends AbstractUpdate  {
       digester.addCallMethod("datamodel-type/definition/parent", "setParent", 1);
       digester.addCallParam("datamodel-type/definition/parent", 0);
 
-      digester.addCallMethod("datamodel-type/definition/attribute", "addAttribute", 4);
+      digester.addCallMethod("datamodel-type/definition/attribute", "addAttribute", 5);
       digester.addCallParam("datamodel-type/definition/attribute/name", 0);
       digester.addCallParam("datamodel-type/definition/attribute/type", 1);
       digester.addCallParam("datamodel-type/definition/attribute/sqltable", 2);
       digester.addCallParam("datamodel-type/definition/attribute/sqlcolumn", 3);
+      digester.addCallParam("datamodel-type/definition/attribute/typelink", 4);
+
+      digester.addCallMethod("datamodel-type/definition/property", "addProperty", 2);
+      digester.addCallParam("datamodel-type/definition/property/name", 0);
+      digester.addCallParam("datamodel-type/definition/property/value", 1);
 
       ret = (TypeUpdate) digester.parse(_file);
     } catch (SAXException e)  {
@@ -141,15 +146,19 @@ e.printStackTrace();
     private final long sqlTable;
     /** SQL Column of the attribute. */
     private final String sqlColumn;
+    /** Type Link Id (used for links to another type). */
+    private final long typeLinkId;
 
     private Attribute(final String _name,
                       final long _type,
                       final long _sqlTable,
-                      final String _sqlColumn)  {
+                      final String _sqlColumn,
+                      final long _typeLinkId)  {
       this.name = _name;
       this.type = _type;
       this.sqlTable = _sqlTable;
       this.sqlColumn = _sqlColumn;
+      this.typeLinkId = _typeLinkId;
     }
 
     /**
@@ -164,6 +173,7 @@ e.printStackTrace();
         .append("type",       this.type)
         .append("sqlTable",   this.sqlTable)
         .append("sqlColumn",  this.sqlColumn)
+        .append("typeLinkId", this.typeLinkId)
         .toString();
     }
   }
@@ -198,23 +208,26 @@ e.printStackTrace();
         query.addWhereExprEqValue("ParentType", instance.getId());
         query.addSelect("OID");
         query.executeWithoutAccessCheck();
+        Update update;
+
         if (query.next())  {
-          String attrOid = (String) query.get("OID");
-          Update update = new Update(attrOid);
-          update.add("AttributeType",  "" + attr.type);
-          update.add("Table",          "" + attr.sqlTable);
-          update.add("SQLColumn",      attr.sqlColumn);
-          update.executeWithoutAccessCheck();
+          update = new Update((String) query.get("OID"));
         } else  {
-          Insert insert =  new Insert("Admin_DataModel_Attribute");
-          insert.add("ParentType",     "" + instance.getId());
-          insert.add("Name",           attr.name);
-          insert.add("AttributeType",  "" + attr.type);
-          insert.add("Table",          "" + attr.sqlTable);
-          insert.add("SQLColumn",      attr.sqlColumn);
-          insert.executeWithoutAccessCheck();
+          update =  new Insert("Admin_DataModel_Attribute");
+          update.add("ParentType",     "" + instance.getId());
+          update.add("Name",           attr.name);
         }
         query.close();
+
+        update.add("AttributeType",  "" + attr.type);
+        update.add("Table",          "" + attr.sqlTable);
+        update.add("SQLColumn",      attr.sqlColumn);
+        if (attr.typeLinkId == 0)  {
+          update.add("TypeLink", null);
+        } else  {
+          update.add("TypeLink", "" + attr.typeLinkId);
+        }
+        update.executeWithoutAccessCheck();
       }
       return instance;
     }
@@ -245,14 +258,16 @@ e.printStackTrace();
     public void addAttribute(final String _name,
                              final String _type,
                              final String _sqlTable,
-                             final String _sqlColumn) throws EFapsException  {
-      
+                             final String _sqlColumn,
+                             final String _typeLink) throws EFapsException  {
       SearchQuery query = new SearchQuery();
       query.setQueryTypes("Admin_DataModel_AttributeType");
       query.addWhereExprEqValue("Name", _type);
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
       if (!query.next())  {
+        LOG.error("type[" + getValue("Name") + "].attribute[" + _name + "]: "
+                  + "attribute type '" + _type + "' not found");
       }
       long attrTypeId = (new Instance((String) query.get("OID"))).getId();
       query.close();
@@ -263,12 +278,31 @@ e.printStackTrace();
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
       if (!query.next())  {
+        LOG.error("type[" + getValue("Name") + "].attribute[" + _name + "]: "
+                  + "SQL table '" + _sqlTable + "' not found");
       }
       long sqlTableId = (new Instance((String) query.get("OID"))).getId();
       query.close();
-      
+
+      long typeLinkId = 0;
+      if ((_typeLink != null) && (_typeLink.length() > 0))  {
+        query = new SearchQuery();
+        query.setQueryTypes("Admin_DataModel_Type");
+        query.addWhereExprEqValue("Name", _typeLink);
+        query.addSelect("ID");
+        query.executeWithoutAccessCheck();
+        if (!query.next())  {
+          LOG.error("type[" + getValue("Name") + "].attribute[" + _name + "]: "
+                      + " Type '" + _typeLink + "' as link not found");
+        } else  {
+          typeLinkId = (Long) query.get("ID");
+        }
+        query.close();
+      }
+
       this.attributes.add(new Attribute(_name, attrTypeId, 
-                                        sqlTableId, _sqlColumn));
+                                        sqlTableId, _sqlColumn, 
+                                        typeLinkId));
     }
   }
 }
