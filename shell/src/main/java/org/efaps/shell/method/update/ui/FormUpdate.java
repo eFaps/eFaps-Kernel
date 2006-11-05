@@ -28,7 +28,7 @@ import java.io.IOException;
  * @version $Id$
  * @todo description
  */
-public class TableUpdate extends AbstractCollectionUpdate  {
+public class FormUpdate extends AbstractCollectionUpdate  {
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
@@ -36,22 +36,22 @@ public class TableUpdate extends AbstractCollectionUpdate  {
   /**
    *
    */
-  public TableUpdate() {
-    super("Admin_UI_Table");
+  public FormUpdate() {
+    super("Admin_UI_Form");
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static TableUpdate readXMLFile(final String _fileName) throws IOException  {
+  public static FormUpdate readXMLFile(final String _fileName) throws IOException  {
 //    } catch (IOException e)  {
 //      LOG.error("could not open file '" + _fileName + "'", e);
     return readXMLFile(new File(_fileName));
   }
 
-  public static TableUpdate readXMLFile(final File _file) throws IOException  {
-    return (TableUpdate) AbstractCollectionUpdate.readXMLFile(_file, 
-                                                              "ui-table", 
-                                                              TableUpdate.class);
+  public static FormUpdate readXMLFile(final File _file) throws IOException  {
+    return (FormUpdate) AbstractCollectionUpdate.readXMLFile(_file, 
+                                                             "ui-form", 
+                                                             FormUpdate.class);
   }
 }
