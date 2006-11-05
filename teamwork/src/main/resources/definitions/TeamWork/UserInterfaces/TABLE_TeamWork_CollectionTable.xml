@@ -53,36 +53,16 @@
     </version>
     <name>TeamWork_CollectionTable</name>
     <!-- fields -->
-    <field>
-      <name>name</name>
-      <property>
-        <name>Expression</name>
-        <value>Name</value>
-      </property>
-      <property>
-        <name>HRef</name>
-        <value>${COMMONURL}/MenuTree.jsp</value>
-      </property>
-      <property>
-        <name>Label</name>
-        <value>TeamWork_Collection/Name.Label</value>
-      </property>
-      <property>
-        <name>ShowTypeIcon</name>
-        <value>true</value>
-      </property>
+    <field name="name">
+      <property name="Expression">Name</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">TeamWork_Collection/Name.Label</property>
+      <property name="ShowTypeIcon">true</property>
     </field>
-    <field>
-      <name>buttonOpenInNewWindow</name>
+    <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>
-      <property>
-        <name>HRef</name>
-        <value>${COMMONURL}/MenuTree.jsp</value>
-      </property>
-      <property>
-        <name>Target</name>
-        <value>popup</value>
-      </property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Target">popup</property>
     </field>
   </definition>
 

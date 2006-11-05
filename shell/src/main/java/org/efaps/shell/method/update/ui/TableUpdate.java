@@ -116,20 +116,20 @@ public class TableUpdate extends AbstractUpdate  {
       digester.addCallParam("ui-table/definition/name", 0);
 
       digester.addCallMethod("ui-table/definition/property", "addProperty", 2);
-      digester.addCallParam("ui-table/definition/property/name", 0);
+      digester.addCallParam("ui-table/definition/property", 0, "name");
       digester.addCallParam("ui-table/definition/property/value", 1);
 
       digester.addObjectCreate("ui-table/definition/field", Field.class);
       digester.addSetNext("ui-table/definition/field", "addField");
 
-      digester.addCallMethod("ui-table/definition/field/name", "setName", 1);
-      digester.addCallParam("ui-table/definition/field/name", 0);
+      digester.addCallMethod("ui-table/definition/field", "setName", 1);
+      digester.addCallParam("ui-table/definition/field", 0, "name");
 
       digester.addCallMethod("ui-table/definition/field/icon", "setIcon", 1);
       digester.addCallParam("ui-table/definition/field/icon", 0);
 
       digester.addCallMethod("ui-table/definition/field/property", "addProperty", 2);
-      digester.addCallParam("ui-table/definition/field/property/name", 0);
+      digester.addCallParam("ui-table/definition/field/property", 0, "name");
       digester.addCallParam("ui-table/definition/field/property/value", 1);
 
       ret = (TableUpdate) digester.parse(_file);
@@ -226,7 +226,10 @@ e.printStackTrace();
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
       while (query.next())  {
-        (new Delete((String) query.get("OID"))).executeWithoutAccessCheck();
+        Instance field = new Instance((String) query.get("OID"));
+        setPropertiesInDb(field, null);
+        setLinksInDB(field, LINKFIELD2ICON, null);
+        (new Delete(field)).executeWithoutAccessCheck();
       }
       query.close();
 

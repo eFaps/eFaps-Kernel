@@ -53,74 +53,30 @@
     </version>
     <name>TeamWork_SourceTable</name>
     <!-- fields -->
-    <field>
-      <name>type</name>
-      <property>
-        <name>Expression</name>
-        <value>Type</value>
-      </property>
-      <property>
-        <name>HRef</name>
-        <value>${COMMONURL}/MenuTree.jsp</value>
-      </property>
-      <property>
-        <name>Label</name>
-        <value>TeamWork_Source/Type.Label</value>
-      </property>
-      <property>
-        <name>ShowTypeIcon</name>
-        <value>true</value>
-      </property>
+    <field name="type">
+      <property name="Expression">Type</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">TeamWork_Source/Type.Label</property>
+      <property name="ShowTypeIcon">true</property>
     </field>
-    <field>
-      <name>name</name>
-      <property>
-        <name>Expression</name>
-        <value>Name</value>
-      </property>
-      <property>
-        <name>HRef</name>
-        <value>${COMMONURL}/MenuTree.jsp</value>
-      </property>
-      <property>
-        <name>Label</name>
-        <value>TeamWork_Source/Name.Label</value>
-      </property>
+    <field name="name">
+      <property name="Expression">Name</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">TeamWork_Source/Name.Label</property>
     </field>
-    <field>
-      <name>fileLength</name>
-      <property>
-        <name>FileLength</name>
-        <value>Name</value>
-      </property>
-      <property>
-        <name>Label</name>
-        <value>TeamWork_Source/FileLength.Label</value>
-      </property>
+    <field name="fileLength">
+      <property name="FileLength">Name</property>
+      <property name="Label">TeamWork_Source/FileLength.Label</property>
     </field>
-    <field>
-      <name>checkout</name>
+    <field name="checkout">
       <icon>Action_View</icon>
-      <property>
-        <name>HRef</name>
-        <value>${ROOTURL}/servlet/checkout</value>
-      </property>
-      <property>
-        <name>Target</name>
-        <value>popup</value>
-      </property>
+      <property name="HRef">${ROOTURL}/servlet/checkout</property>
+      <property name="Target">popup</property>
     </field>
-    <field>
-      <name>buttonOpenInNewWindow</name>
+    <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>
-      <property>
-        <name>HRef</name>
-        <value>${COMMONURL}/MenuTree.jsp</value>
-      </property>
-      <property>
-        <name>Target</name>
-        <value>popup</value>
-      </property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Target">popup</property>
     </field>
   </definition>
 

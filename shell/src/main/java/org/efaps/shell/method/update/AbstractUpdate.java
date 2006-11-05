@@ -351,7 +351,7 @@ public abstract class AbstractUpdate  {
           setLinksInDB(instance, linkType, this.links.get(linkType));
         }
       }
-      setPropertiesInDb(instance);
+      setPropertiesInDb(instance, this.properties);
 
       return instance;
     }
@@ -448,12 +448,14 @@ System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not 
      * The properties are only set if the object to update could own properties
      * (meaning derived from 'Admin_Abstract').
      *
-     * @param _instance instance for which the propertie must be set
+     * @param _instance   instance for which the propertie must be set
+     * @param _properties new properties to set
      * @todo rework of the update algorithmus (not always a complete delete and
      *       and new create is needed)
      * @todo description
      */
-    protected void setPropertiesInDb(final Instance _instance)
+    protected void setPropertiesInDb(final Instance _instance,
+                                     final Map < String, String > _properties)
                                           throws EFapsException, Exception  {
       
       if (_instance.getType().isKindOf(Type.get("Admin_Abstract")))  {
@@ -470,12 +472,14 @@ System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not 
         query.close();
   
         // add current properites
-        for (Map.Entry < String, String > entry : this.properties.entrySet())  {
-          Insert insert = new Insert("Admin_Property");
-          insert.add("Name",     entry.getKey());
-          insert.add("Value",    entry.getValue());
-          insert.add("Abstract", "" + _instance.getId()); 
-          insert.executeWithoutAccessCheck();
+        if (_properties != null)  {
+          for (Map.Entry < String, String > entry : _properties.entrySet())  {
+            Insert insert = new Insert("Admin_Property");
+            insert.add("Name",     entry.getKey());
+            insert.add("Value",    entry.getValue());
+            insert.add("Abstract", "" + _instance.getId()); 
+            insert.executeWithoutAccessCheck();
+          }
         }
       }
     }
