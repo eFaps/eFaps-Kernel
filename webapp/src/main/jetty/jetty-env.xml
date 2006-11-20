@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC 
+    "-//Mort Bay Consulting//DTD Configure//EN" 
+    "http://jetty.mortbay.org/configure.dtd">
+
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<Configure class="org.mortbay.jetty.webapp.WebAppContext">
+
+  <!-- Define database connection -->
+  <New id="eFapsJDBC" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>eFaps/jdbc</Arg>
+    <Arg>
+      <New class="org.apache.commons.dbcp.BasicDataSource">
+        <Set name="DriverClassName"><SystemProperty name="efaps.db.driverClassName"/></Set>
+        <Set name="Url"><SystemProperty name="efaps.db.url"/></Set>
+        <Set name="Username"><SystemProperty name="efaps.db.username"/></Set>
+        <Set name="Password"><SystemProperty name="efaps.db.password"/></Set>
+        <Set name="MaxActive"><SystemProperty name="efaps.db.maxActive"/></Set>
+        <Set name="MaxIdle"><SystemProperty name="efaps.db.maxIdle"/></Set>
+        <Set name="MaxWait"><SystemProperty name="efaps.db.maxWait"/></Set>
+        <Set name="RemoveAbandoned"><SystemProperty name="efaps.db.removeAbandoned"/></Set>
+        <Set name="LogAbandoned"><SystemProperty name="efaps.db.logAbandoned"/></Set>
+      </New>
+    </Arg>
+  </New>
+
+  <!-- Define postgresql as database connection -->
+  <New id="eFapsDBType" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>eFaps/dbType</Arg>
+    <Arg>
+      <Call class="org.efaps.db.databases.AbstractDatabase" name="findByClassName">
+        <Arg><SystemProperty name="efaps.db.type"/></Arg>
+      </Call>
+    </Arg>
+  </New>
+  
+  <!-- define the eFaps document store -->
+  <New id="eFapsStore" class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>eFaps/store/documents</Arg>
+    <Arg>
+      <New class="org.efaps.db.transaction.VFSStoreFactoryBean">
+        <Set name="BaseName">file://<SystemProperty name="efaps.store"/></Set>
+        <Set name="Provider">org.apache.commons.vfs.provider.local.DefaultLocalFileProvider</Set>
+      </New>
+    </Arg>
+  </New>
+
+</Configure>
