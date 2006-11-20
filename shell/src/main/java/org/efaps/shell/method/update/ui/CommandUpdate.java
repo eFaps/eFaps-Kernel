@@ -54,31 +54,41 @@ public class CommandUpdate extends AbstractUpdate  {
                                "From", 
                                "Admin_UI_Table", "To");
 
+  /** Link from command to form as target */
+  private final static Link LINK2TARGETFORM
+                    = new Link("Admin_UI_LinkTargetForm", 
+                               "From", 
+                               "Admin_UI_Form", "To");
+
   /** Link from command to menu as target */
   private final static Link LINK2TARGETMENU
                     = new Link("Admin_UI_LinkTargetMenu", 
                                "From", 
                                "Admin_UI_Menu", "To");
 
-  private final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
+  protected final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
     ALLLINKS.add(LINK2TARGETTABLE);
+    ALLLINKS.add(LINK2TARGETFORM);
     ALLLINKS.add(LINK2TARGETMENU);
-/*    ALLLINKS.add(LINK2PERSON);
-    ALLLINKS.add(LINK2ROLE);
-    ALLLINKS.add(LINK2GROUP);
-*/
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
-   *
+   * Default contractor used by the XML parser for initialise a command.
    */
   public CommandUpdate() {
     super("Admin_UI_Command", ALLLINKS);
   }
 
+  /**
+   *
+   */
+  protected CommandUpdate(final String _typeName, final Set < Link > _allLinks) {
+    super(_typeName, _allLinks);
+  }
+  
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
@@ -99,7 +109,7 @@ public class CommandUpdate extends AbstractUpdate  {
       digester.addCallMethod("ui-command/uuid", "setUUID", 1);
       digester.addCallParam("ui-command/uuid", 0);
 
-      digester.addObjectCreate("ui-command/definition", Definition.class);
+      digester.addObjectCreate("ui-command/definition", CommandDefinition.class);
       digester.addSetNext("ui-command/definition", "addDefinition");
 
       digester.addCallMethod("ui-command/definition/version", "setVersion", 4);
@@ -113,6 +123,9 @@ public class CommandUpdate extends AbstractUpdate  {
 
       digester.addCallMethod("ui-command/definition/target/table", "assignTargetTable", 1);
       digester.addCallParam("ui-command/definition/target/table", 0);
+
+      digester.addCallMethod("ui-command/definition/target/form", "assignTargetForm", 1);
+      digester.addCallParam("ui-command/definition/target/form", 0);
 
       digester.addCallMethod("ui-command/definition/target/menu", "assignTargetMenu", 1);
       digester.addCallParam("ui-command/definition/target/menu", 0);
@@ -132,7 +145,7 @@ e.printStackTrace();
   /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition extends DefinitionAbstract {
+  public static class CommandDefinition extends DefinitionAbstract {
     
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
@@ -144,6 +157,15 @@ e.printStackTrace();
      */
      public void assignTargetTable(final String _targetTable)  {
        addLink(LINK2TARGETTABLE, _targetTable);
+     }
+
+    /**
+     * Assigns a form as target for this command definition.
+     *
+     * @param _targetForm  name of the target form
+     */
+     public void assignTargetForm(final String _targetForm)  {
+       addLink(LINK2TARGETFORM, _targetForm);
      }
 
     /**

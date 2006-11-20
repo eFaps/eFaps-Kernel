@@ -38,7 +38,7 @@ import org.efaps.shell.method.update.AbstractUpdate;
  * @version $Id$
  * @todo description
  */
-public class MenuUpdate extends AbstractUpdate  {
+public class MenuUpdate extends CommandUpdate  {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
@@ -48,19 +48,15 @@ public class MenuUpdate extends AbstractUpdate  {
    */
   private final static Log LOG = LogFactory.getLog(MenuUpdate.class);
 
-  /** Link from menu to table as target */
-  private final static Link LINK2TARGETTABLES
-                    = new Link("Admin_UI_LinkTargetTable", 
-                               "From", 
-                               "Admin_UI_Table", "To");
+  /** Link from menu to child command / menu */
+  private final static Link LINK2CHILD
+             = new OrderedLink("Admin_UI_Menu2Command", 
+                               "FromMenu", 
+                               "Admin_UI_Command", "ToCommand");
 
   private final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
-    ALLLINKS.add(LINK2TARGETTABLES);
-/*    ALLLINKS.add(LINK2DATAMODELTYPE);
-    ALLLINKS.add(LINK2PERSON);
-    ALLLINKS.add(LINK2ROLE);
-    ALLLINKS.add(LINK2GROUP);
-*/
+    ALLLINKS.add(LINK2CHILD);
+    ALLLINKS.addAll(CommandUpdate.ALLLINKS);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -93,7 +89,7 @@ public class MenuUpdate extends AbstractUpdate  {
       digester.addCallMethod("ui-menu/uuid", "setUUID", 1);
       digester.addCallParam("ui-menu/uuid", 0);
 
-      digester.addObjectCreate("ui-menu/definition", Definition.class);
+      digester.addObjectCreate("ui-menu/definition", MenuDefinition.class);
       digester.addSetNext("ui-menu/definition", "addDefinition");
 
       digester.addCallMethod("ui-menu/definition/version", "setVersion", 4);
@@ -107,6 +103,15 @@ public class MenuUpdate extends AbstractUpdate  {
 
       digester.addCallMethod("ui-menu/definition/target/table", "assignTargetTable", 1);
       digester.addCallParam("ui-menu/definition/target/table", 0);
+
+      digester.addCallMethod("ui-menu/definition/target/form", "assignTargetForm", 1);
+      digester.addCallParam("ui-menu/definition/target/form", 0);
+
+      digester.addCallMethod("ui-menu/definition/target/menu", "assignTargetMenu", 1);
+      digester.addCallParam("ui-menu/definition/target/menu", 0);
+
+      digester.addCallMethod("ui-menu/definition/childs/child", "assignChild", 1);
+      digester.addCallParam("ui-menu/definition/childs/child", 0);
 
       digester.addCallMethod("ui-menu/definition/property", "addProperty", 2);
       digester.addCallParam("ui-menu/definition/property/name", 0);
@@ -123,18 +128,18 @@ e.printStackTrace();
   /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition extends DefinitionAbstract {
+  public static class MenuDefinition extends CommandDefinition  {
     
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
     /**
-     * Assigns a table as target for this menu definition.
+     * .
      *
-     * @param _targetTable  name of the target table
+     * @param _childName  name of the child command / menu
      */
-     public void assignTargetTable(final String _targetTable)  {
-       addLink(LINK2TARGETTABLES, _targetTable);
-     }
+    public void assignChild(final String _childName)  {
+      addLink(LINK2CHILD, _childName);
+    }
   }
 }

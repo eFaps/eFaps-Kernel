@@ -238,6 +238,9 @@ public abstract class AbstractUpdate  {
      */
     private final String childTypeName;
 
+    /** Child Type extracted from the child type name. */
+    private final Type childType;
+
     /** Name of the child attribute in the link. */
     private final String childAttrName;
     
@@ -259,7 +262,36 @@ public abstract class AbstractUpdate  {
       this.linkName = _linkName;
       this.parentAttrName = _parentAttrName;
       this.childTypeName = _childTypeName;
+      this.childType = Type.get(this.childTypeName);
       this.childAttrName = _childAttrName;
+    }
+
+    /**
+     * Returns a string representation with values of all instance variables
+     * of a link.
+     *
+     * @return string representation of this link
+     */
+    public String toString()  {
+      return new ToStringBuilder(this)
+        .append("linkName",        this.linkName)
+        .append("parentAttrName",  this.parentAttrName)
+        .append("childTypeName",   this.childTypeName)
+        .append("childAttrName",   this.childAttrName)
+       .toString();
+    }
+  }
+
+  /**
+   * Some links has a order in the database. This means that the connections
+   * must be made in the order they are defined in the xml update file.
+   */
+  static protected class OrderedLink extends Link {
+    
+    public OrderedLink(final String _linkName,
+         final String _parentAttrName,
+         final String _childTypeName, final String _childAttrName)  {
+      super(_linkName, _parentAttrName, _childTypeName, _childAttrName);
     }
   }
 
@@ -364,13 +396,17 @@ public abstract class AbstractUpdate  {
      * @param _linkType   link to update
      * @param _objNames   string list of all object names to set for this 
      *                    object
+     * @todo it could be that more than one current from same target is 
+     *       defined! E.g. menu to child!
+     * @todo ordered link is only a hack, the current connection are always 
+     *       disconnected
      */
     protected void setLinksInDB(
                       final Instance _instance,
                       final Link _linkType,
                       final Map < String, Map < String, String > > _links)  
                                               throws EFapsException,Exception  {
-                                                
+
       // get ids from current object
       Map < Long, String > currents = new HashMap < Long, String > ();
       SearchQuery query = new SearchQuery();
@@ -382,13 +418,17 @@ public abstract class AbstractUpdate  {
       query.executeWithoutAccessCheck();
       while (query.next())  {
         Type type = (Type) query.get(_linkType.childAttrName + ".Type");
-        if (_linkType.childTypeName.equals(type.getName()))  {
-          currents.put((Long) query.get(_linkType.childAttrName + ".ID"),
-                     (String) query.get("OID"));
+        if (type.isKindOf(_linkType.childType))  {
+          if (_linkType instanceof OrderedLink)  {
+            Delete del = new Delete((String) query.get("OID"));
+            del.executeWithoutAccessCheck();
+          } else   {
+            currents.put((Long) query.get(_linkType.childAttrName + ".ID"),
+                         (String) query.get("OID"));
+          }
         }
       }
       query.close();
-  
       // get ids for target
       Map < Long, Map < String, String > > targets 
                               = new HashMap < Long, Map < String, String > > ();
@@ -397,6 +437,7 @@ public abstract class AbstractUpdate  {
                                                           : _links.entrySet())  {
           query = new SearchQuery();
           query.setQueryTypes(_linkType.childTypeName);
+          query.setExpandChildTypes(true);
           query.addWhereExprEqValue("Name", linkEntry.getKey());
           query.addSelect("ID");
           query.executeWithoutAccessCheck();
@@ -591,4 +632,5 @@ System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not 
        .toString();
     }
   }
+
 }
