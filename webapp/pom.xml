@@ -56,8 +56,99 @@
           <target>1.5</target>
         </configuration>
       </plugin>
-    </plugins>
 
+      <!-- define jetty 6 plugin for easy testing -->
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <configuration>
+          <contextPath>/eFaps</contextPath>
+          <webApp>${basedir}/target/eFaps</webApp> 
+          <webAppSourceDirectory>${basedir}/target/eFaps</webAppSourceDirectory>
+          <jettyEnvXml>${basedir}/src/main/jetty/jetty-env.xml</jettyEnvXml>
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <!-- all system properties must be set here, because the maven
+               settings are not system properties! --> 
+          <systemProperties>
+            <systemProperty>
+              <name>java.security.auth.login.config</name>
+              <value>${basedir}/src/main/jetty/jaas.config</value>
+            </systemProperty>
+            <systemProperty>
+              <name>efaps.store</name>
+              <value>${basedir}/target/store</value>
+            </systemProperty>
+            <systemProperty>
+              <name>efaps.db.driverClassName</name>
+              <value>${efaps.db.driverClassName}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>efaps.db.url</name>
+              <value>${efaps.db.url}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>efaps.db.username</name>
+              <value>${efaps.db.username}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>efaps.db.password</name>
+              <value>${efaps.db.password}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>efaps.db.maxActive</name>
+              <value>${efaps.db.maxActive}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>efaps.db.maxIdle</name>
+              <value>${efaps.db.maxIdle}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>efaps.db.maxWait</name>
+              <value>${efaps.db.maxWait}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>efaps.db.removeAbandoned</name>
+              <value>${efaps.db.removeAbandoned}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>efaps.db.logAbandoned</name>
+              <value>${efaps.db.logAbandoned}</value>
+            </systemProperty>
+            <systemProperty>
+              <name>efaps.db.type</name>
+              <value>${efaps.db.type}</value>
+            </systemProperty>
+          </systemProperties>
+          <connectors>
+            <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
+              <port>8080</port>
+              <maxIdleTime>60000</maxIdleTime>
+            </connector>
+          </connectors>
+        </configuration>
+        <!-- this depencies are specified here because jetty is j2ee 5 
+             complient meaing that myfaces must be defined directly in the 
+             jetty container to overwrite standard java -->
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.myfaces.core</groupId>
+            <artifactId>myfaces-api</artifactId>
+            <version>1.1.4</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.myfaces.core</groupId>
+            <artifactId>myfaces-impl</artifactId>
+            <version>1.1.4</version>
+          </dependency>
+          <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.13</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+    </plugins>
   </build>
 
   <!-- ************************************************************************
@@ -139,6 +230,20 @@
       <version>1.1.0</version>
       <scope>package</scope>
     </dependency>
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>i18n</artifactId>
+      <version>unknown</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/taglibs-i18n.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>unstandard</artifactId>
+      <version>unknown</version>
+      <scope>system</scope>
+      <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/taglibs-unstandard.jar</systemPath>
+    </dependency>
 
     <!-- Web Application ?????? -->
     <dependency>
@@ -204,15 +309,14 @@
     <dependency>
       <groupId>org.apache.myfaces.core</groupId>
       <artifactId>myfaces-api</artifactId>
-      <version>1.1.2</version>
+      <version>1.1.4</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.myfaces.core</groupId>
       <artifactId>myfaces-impl</artifactId>
-      <version>1.1.4-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/myfaces-impl-1.1.4-SNAPSHOT.jar</systemPath>
+      <version>1.1.4</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.myfaces</groupId>
