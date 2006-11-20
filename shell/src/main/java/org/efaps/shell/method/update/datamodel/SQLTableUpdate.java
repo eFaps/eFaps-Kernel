@@ -111,6 +111,9 @@ public class SQLTableUpdate extends AbstractUpdate  {
       digester.addCallMethod("datamodel-sqltable/definition/name", "setName", 1);
       digester.addCallParam("datamodel-sqltable/definition/name", 0);
 
+      digester.addCallMethod("datamodel-sqltable/definition/typeid-column", "setTypeIdColumn", 1);
+      digester.addCallParam("datamodel-sqltable/definition/typeid-column", 0);
+
       digester.addCallMethod("datamodel-sqltable/definition/parent", "setParent", 1);
       digester.addCallParam("datamodel-sqltable/definition/parent", 0);
 
@@ -296,6 +299,13 @@ e.printStackTrace();
     public void setSQLTableName(final String _value)  {
       addValue("SQLTable", _value);
       addValue("SQLColumnID", "ID");
+    }
+
+    /**
+     *
+     */
+    public void setTypeIdColumn(final String _typeIdColumn)  {
+      addValue("SQLColumnType", _typeIdColumn);
     }
 
     /**
