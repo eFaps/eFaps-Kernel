@@ -148,5 +148,21 @@ public abstract class AbstractDatabase  {
   public boolean supportsGetGeneratedKeys()  {
     return false;
   }
+  
+  /////////////////////////////////////////////////////////////////////////////
+  // static methods
+  
+  /**
+   * Instanciate the given db classname and returns them.
+   *
+   * @param _dbClassName    name of the class to instanciate
+   * @return new database definition instance
+   */
+  public static AbstractDatabase findByClassName(final String _dbClassName) 
+                                            throws ClassNotFoundException,
+                                                   InstantiationException,
+                                                   IllegalAccessException  {
+    return (AbstractDatabase) Class.forName(_dbClassName).newInstance();
+  }
 }
 
