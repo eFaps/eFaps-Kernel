@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev:538 $
+ Last Changed:    $Date:2006-11-04 13:03:14 +0100 (Sa, 04 Nov 2006) $
+ Last Changed By: $Author:tmo $
 
 -->
 
@@ -30,7 +30,7 @@
     <version>
       <application>teamwork</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:538 $</local>
       <mode>(version==2)</mode>
     </version>
 
@@ -41,7 +41,7 @@
     <version>
       <application>teamwork</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:538 $</local>
       <mode>(version>=3)</mode>
     </version>
 
@@ -80,6 +80,13 @@
       <type>ModifierLink</type>
       <sqltable>TeamWork_SourceSQLTable</sqltable>
       <sqlcolumn>MODIFIER</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Modified</name>
+      <type>Modified</type>
+      <sqltable>TeamWork_SourceSQLTable</sqltable>
+      <sqlcolumn>MODIFIED</sqlcolumn>
     </attribute>
 
     <attribute>
