@@ -21,14 +21,13 @@
  Last Changed:    $Date$
  Last Changed By: $Author$
 
-  addChild(new Menu("TeamCenter_RootFolderMyDesk_Menu_Action"));
 -->
 
 <ui-menu>
   <uuid>add6de96-ec8f-40c5-a375-404ef5409505</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the command 
+    version definition used to create the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -42,7 +41,7 @@
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the command 
+    version definition used to define the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -53,6 +52,9 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_RootCollectionMyDesk_Menu</name>
+    <childs>
+      <child>TeamWork_RootCollectionMyDesk_Menu_Action</child>
+    </childs>
   </definition>
 
 </ui-menu>
