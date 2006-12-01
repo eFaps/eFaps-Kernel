@@ -71,6 +71,7 @@ with (TYPE)  {
     setSQLTable("Admin_User_PersonSQLTable");
     setSQLColumn("LASTLOGIN");
   }
+  addProperty("AccessCheckClass",       "org.efaps.admin.access.SimpleAccessCheckOnType");
   addProperty("Form",                   "Admin_User_PersonForm");
   addProperty("Icon",                   "${ROOTURL}/servlet/image/Admin_User_PersonImage");
   addProperty("Tree",                   "Admin_User_PersonTree");

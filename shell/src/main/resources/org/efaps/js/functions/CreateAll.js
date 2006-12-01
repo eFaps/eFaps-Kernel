@@ -31,6 +31,7 @@ importClass(Packages.org.efaps.shell.method.update.datamodel.SQLTableUpdate);
 importClass(Packages.org.efaps.shell.method.update.datamodel.TypeUpdate);
 importClass(Packages.org.efaps.shell.method.update.integration.WebDAVUpdate);
 importClass(Packages.org.efaps.shell.method.update.user.JAASSystemUpdate);
+importClass(Packages.org.efaps.shell.method.update.user.RoleUpdate);
 
 var TYPE_INTEGER      = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.INTEGER);
 var TYPE_STRING_SHORT = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.STRING_SHORT);
@@ -133,6 +134,16 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
   jexlContext.getVars().put("version", 
                             Packages.java.lang.Integer.parseInt(_version));
 
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = RoleUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
@@ -384,6 +395,7 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
   eFapsCommonSQLTableCreate(_con, _stmt, "Abstract User", "USERABSTRACT", null,[
       ["TYPEID                "+TYPE_INTEGER+"                   not null"],
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
+      ["UUID                  "+TYPE_STRING_SHORT+"(128)"],
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
       ["CREATED               "+TYPE_DATETIME+"                  not null"],
       ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
