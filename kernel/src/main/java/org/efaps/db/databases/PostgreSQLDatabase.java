@@ -157,14 +157,15 @@ System.out.println("  - Table '" + tableName + "'");
       }
 
       cmd.append(",")
-         .append("constraint ").append(_table).append("_UK_ID unique(ID)");
+         .append("constraint ")
+                        .append(_table).append("_PK_ID primary key (ID)");
 
       // foreign key to parent sql table
       if (_parentTable != null)  {
         cmd.append(",")
            .append("constraint ").append(_table).append("_FK_ID ")
-           .append("foreign key(ID) ")
-           .append("references ").append(_parentTable).append("(ID)");
+           .append("foreign key (ID) ")
+           .append("references ").append(_parentTable).append(" (ID)");
       }
 
       cmd.append(") without OIDS;");
