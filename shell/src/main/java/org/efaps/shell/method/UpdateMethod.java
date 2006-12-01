@@ -35,6 +35,7 @@ import org.efaps.shell.method.update.ui.FormUpdate;
 import org.efaps.shell.method.update.ui.MenuUpdate;
 import org.efaps.shell.method.update.ui.TableUpdate;
 import org.efaps.shell.method.update.user.JAASSystemUpdate;
+import org.efaps.shell.method.update.user.RoleUpdate;
 
 import org.efaps.util.EFapsException;
 
@@ -84,6 +85,12 @@ public final class UpdateMethod extends AbstractMethod  {
                                 Integer.parseInt(version));
     }
     
+    for (String fileName : getCommandLine().getArgs())  {
+      RoleUpdate update = RoleUpdate.readXMLFile(fileName);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
     for (String fileName : getCommandLine().getArgs())  {
       SQLTableUpdate update = SQLTableUpdate.readXMLFile(fileName);
       if (update != null)  {

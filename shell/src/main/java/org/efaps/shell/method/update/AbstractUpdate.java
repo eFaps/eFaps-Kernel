@@ -68,7 +68,7 @@ public abstract class AbstractUpdate  {
   /**
    * The name of the data model type is store in this instance variable.
    */
-  private final String dataModelType;
+  private final Type dataModelType;
 
   /**
    * All known link types are set to this instance varaible.
@@ -104,7 +104,7 @@ public abstract class AbstractUpdate  {
    */
   protected AbstractUpdate(final String _dataModelType,
                            final Set < Link > _allLinkTypes)  {
-    this.dataModelType = _dataModelType;
+    this.dataModelType = Type.get(_dataModelType);
     this.allLinkTypes = _allLinkTypes;
   }
 
@@ -147,7 +147,7 @@ public abstract class AbstractUpdate  {
 
     // search for the instance
     SearchQuery query = new SearchQuery();
-    query.setQueryTypes(this.dataModelType);
+    query.setQueryTypes(this.dataModelType.getName());
     query.addWhereExprEqValue("UUID", this.uuid);
     query.addSelect("OID");
     query.executeWithoutAccessCheck();
@@ -361,7 +361,9 @@ public abstract class AbstractUpdate  {
       Instance instance = _instance;
 
       if (_insert != null)  {
-        _insert.add("Revision", this.globalVersion + "#" + this.localVersion);
+        if (_insert.getInstance().getType().getAttribute("Revision") != null)  {
+          _insert.add("Revision", this.globalVersion + "#" + this.localVersion);
+        }
         if (this.values.get("Name") == null)  {
           _insert.add("Name", "-");
         }
@@ -372,7 +374,9 @@ public abstract class AbstractUpdate  {
         instance = _insert.getInstance();
       } else  {
         Update update = new Update(_instance);
-        update.add("Revision", this.globalVersion + "#" + this.localVersion);
+        if (_instance.getType().getAttribute("Revision") != null)  {
+          update.add("Revision", this.globalVersion + "#" + this.localVersion);
+        }
         for (Map.Entry < String, String > entry : this.values.entrySet())  {
           update.add(entry.getKey(), entry.getValue());
         }
