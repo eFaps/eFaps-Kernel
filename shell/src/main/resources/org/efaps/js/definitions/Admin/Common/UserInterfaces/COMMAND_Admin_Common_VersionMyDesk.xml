@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>8d9aae87-fa36-4b62-aba0-dbd9c0ca273a</uuid>
+<ui-command>
+  <uuid>70c3a8b8-37bf-4b56-afa0-3042d883494c</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>Admin_Common_MyDesk</name>
+    <name>Admin_Common_VersionMyDesk</name>
   </definition>
-
+    
   <!-- ************************************************************************
-    version definition used to update the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,16 +51,21 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>Admin_Common_MyDesk</name>
-    <childs>
-      <child>Admin_Common_SearchMyDesk</child>
-      <child>Admin_User_AbstractMyDesk</child>
-      <child>Admin_DataModel_AbstractMyDesk</child>
-      <child>Admin_Access_AbstractMyDesk</child>
-      <child>Admin_LifeCycle_AbstractMyDesk</child>
-      <child>Admin_UI_AbstractMyDesk</child>
-      <child>Admin_Integration_AbstractMyDesk</child>
-      <child>Admin_Common_VersionMyDesk</child>
-    </childs>
+    <name>Admin_Common_VersionMyDesk</name>
+    <!-- target definitions -->
+    <target>
+      <table>Admin_Common_VersionTable</table>
+    </target>
+<!--  addIcon("Admin_Integration_WebDAVImage");-->
+    <!-- properties -->
+    <property>
+      <name>Target</name>
+      <value>content</value>
+    </property>
+    <property>
+      <name>TargetQueryTypes</name>
+      <value>Admin_Common_Version</value>
+    </property>
   </definition>
-</ui-menu>
+
+</ui-command>
