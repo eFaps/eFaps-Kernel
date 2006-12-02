@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -434,8 +435,12 @@ public abstract class AbstractUpdate  {
       }
       query.close();
       // get ids for target
-      Map < Long, Map < String, String > > targets 
-                              = new HashMap < Long, Map < String, String > > ();
+      Map < Long, Map < String, String > > targets;
+      if (_linkType instanceof OrderedLink)  {
+        targets = new LinkedHashMap < Long, Map < String, String > > ();
+      } else  {
+        targets = new HashMap < Long, Map < String, String > > ();
+      }
       if (_links != null)  {
         for (Map.Entry < String, Map < String, String > > linkEntry 
                                                           : _links.entrySet())  {
@@ -556,7 +561,11 @@ System.out.println(_linkType.childTypeName + " '" + linkEntry.getKey() + "' not 
                            final Map < String, String > _values)  {
       Map < String, Map < String, String > > oneLink = this.links.get(_link);
       if (oneLink == null)  {
-        oneLink = new HashMap < String, Map < String, String > > ();
+        if (_link instanceof OrderedLink)  {
+          oneLink = new LinkedHashMap < String, Map < String, String > > ();
+        } else  {
+          oneLink = new HashMap < String, Map < String, String > > ();
+        }
         this.links.put(_link, oneLink);
       }
       oneLink.put(_name, _values);
