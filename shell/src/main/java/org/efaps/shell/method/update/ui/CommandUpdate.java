@@ -66,10 +66,17 @@ public class CommandUpdate extends AbstractUpdate  {
                                "From", 
                                "Admin_UI_Menu", "To");
 
+  /** Link from command to search as target */
+  private final static Link LINK2TARGETSEARCH
+                    = new Link("Admin_UI_LinkTargetSearch", 
+                               "From", 
+                               "Admin_UI_Search", "To");
+
   protected final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
     ALLLINKS.add(LINK2TARGETTABLE);
     ALLLINKS.add(LINK2TARGETFORM);
     ALLLINKS.add(LINK2TARGETMENU);
+    ALLLINKS.add(LINK2TARGETSEARCH);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -130,6 +137,9 @@ public class CommandUpdate extends AbstractUpdate  {
       digester.addCallMethod("ui-command/definition/target/menu", "assignTargetMenu", 1);
       digester.addCallParam("ui-command/definition/target/menu", 0);
 
+      digester.addCallMethod("ui-command/definition/target/search", "assignTargetSearch", 1);
+      digester.addCallParam("ui-command/definition/target/search", 0);
+
       digester.addCallMethod("ui-command/definition/property", "addProperty", 2);
       digester.addCallParam("ui-command/definition/property/name", 0);
       digester.addCallParam("ui-command/definition/property/value", 1);
@@ -175,6 +185,15 @@ e.printStackTrace();
      */
      public void assignTargetMenu(final String _targetMenu)  {
        addLink(LINK2TARGETMENU, _targetMenu);
+     }
+
+    /**
+     * Assigns a search menu as target for this command definition.
+     *
+     * @param _targetSearch  name of the target search
+     */
+     public void assignTargetSearch(final String _targetSearch)  {
+       addLink(LINK2TARGETSEARCH, _targetSearch);
      }
   }
 }
