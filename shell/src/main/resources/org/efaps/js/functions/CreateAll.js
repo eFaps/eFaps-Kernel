@@ -30,6 +30,8 @@ importClass(Packages.org.efaps.shell.method.update.AccessTypeUpdate);
 importClass(Packages.org.efaps.shell.method.update.datamodel.SQLTableUpdate);
 importClass(Packages.org.efaps.shell.method.update.datamodel.TypeUpdate);
 importClass(Packages.org.efaps.shell.method.update.integration.WebDAVUpdate);
+importClass(Packages.org.efaps.shell.method.update.ui.CommandUpdate);
+importClass(Packages.org.efaps.shell.method.update.ui.MenuUpdate);
 importClass(Packages.org.efaps.shell.method.update.user.JAASSystemUpdate);
 importClass(Packages.org.efaps.shell.method.update.user.RoleUpdate);
 
@@ -134,6 +136,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
   jexlContext.getVars().put("version", 
                             Packages.java.lang.Integer.parseInt(_version));
 
+  // rolle
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
@@ -144,6 +147,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
       }
     }
   }
+  // access type
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
@@ -154,6 +158,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
       }
     }
   }
+  // access set
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
@@ -164,6 +169,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
       }
     }
   }
+  // sql table
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
@@ -174,6 +180,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
       }
     }
   }
+  // type
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
@@ -184,6 +191,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
       }
     }
   }
+  // JAAS system
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
@@ -194,6 +202,29 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
       }
     }
   }
+  // command
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = CommandUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // menu
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = MenuUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // webDAV
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
