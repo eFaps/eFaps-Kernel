@@ -56,6 +56,7 @@ public class Shell {
     methods.add(new org.efaps.shell.method.CreateMethod());
     methods.add(new org.efaps.shell.method.GenerateUUIDMethod());
     methods.add(new org.efaps.shell.method.ImportPersonsMethod());
+    methods.add(new org.efaps.shell.method.InstallMethod());
     methods.add(new org.efaps.shell.method.ShellMethod());
     methods.add(new org.efaps.shell.method.UpdateMethod());
   }
