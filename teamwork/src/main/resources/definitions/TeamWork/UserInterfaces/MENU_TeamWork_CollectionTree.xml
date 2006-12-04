@@ -58,7 +58,7 @@
     </target>
     <childs>
       <child>TeamWork_CollectionTree_SubCollections</child>
-<!-- child>TeamCenter_FolderTree_Documents</child -->
+      <child>TeamWork_CollectionTree_Sources</child>
       <child>Main_Util_History</child>
     </childs>
     <property>
