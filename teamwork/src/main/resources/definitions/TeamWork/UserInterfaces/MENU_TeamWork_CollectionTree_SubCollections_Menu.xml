@@ -24,7 +24,7 @@
 -->
 
 <ui-menu>
-  <uuid>2578f7ba-17a3-47ca-9078-78455fc7d4f6</uuid>
+  <uuid>25512a42-83af-4188-95c6-c6e3dbb52d65</uuid>
 
   <!-- ************************************************************************
     version definition used to create the menu 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree_Menu_Action</name>
+    <name>TeamWork_CollectionTree_SubCollections_Menu</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,9 +51,9 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree_Menu_Action</name>
+    <name>TeamWork_CollectionTree_SubCollections_Menu</name>
     <childs>
-      <child>TeamWork_RootCollectionTree_Menu_Action_Edit</child>
+      <child>TeamWork_CollectionTree_SubCollections_Menu_Action</child>
     </childs>
   </definition>
 

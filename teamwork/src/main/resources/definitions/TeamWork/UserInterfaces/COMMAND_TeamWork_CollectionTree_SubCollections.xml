@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>2578f7ba-17a3-47ca-9078-78455fc7d4f6</uuid>
+<ui-command>
+  <uuid>8a87d70d-3474-4874-8802-05eaaa747314</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree_Menu_Action</name>
+    <name>TeamWork_CollectionTree_SubCollections</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,10 +51,29 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree_Menu_Action</name>
-    <childs>
-      <child>TeamWork_RootCollectionTree_Menu_Action_Edit</child>
-    </childs>
+    <name>TeamWork_CollectionTree_SubCollections</name>
+    <!-- target definitions -->
+    <target>
+      <table>TeamWork_CollectionTable</table>
+      <menu>TeamWork_CollectionTree_SubCollections_Menu</menu>
+    </target>
+    <!-- properties -->
+    <property>
+      <name>Target</name>
+      <value>content</value>
+    </property>
+    <property>
+      <name>TargetExpand</name>
+      <value>TeamWork_Collection\ParentCollectionLink</value>
+    </property>
+    <property>
+      <name>TargetMode</name>
+      <value>view</value>
+    </property>
+    <property>
+      <name>TargetShowCheckBoxes</name>
+      <value>true</value>
+    </property>
   </definition>
 
-</ui-menu>
+</ui-command>

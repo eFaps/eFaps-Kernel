@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>2578f7ba-17a3-47ca-9078-78455fc7d4f6</uuid>
+<ui-command>
+  <uuid>f31513b8-90bc-4336-a2bd-676ad525f801</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree_Menu_Action</name>
+    <name>TeamWork_CollectionTree_Menu_Action_Edit</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,10 +51,20 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree_Menu_Action</name>
-    <childs>
-      <child>TeamWork_RootCollectionTree_Menu_Action_Edit</child>
-    </childs>
+    <name>TeamWork_CollectionTree_Menu_Action_Edit</name>
+    <!-- target definitions -->
+    <target>
+      <form>TeamWork_CollectionForm</form>
+    </target>
+    <!-- properties -->
+    <property>
+      <name>Target</name>
+      <value>popup</value>
+    </property>
+    <property>
+      <name>TargetMode</name>
+      <value>edit</value>
+    </property>
   </definition>
 
-</ui-menu>
+</ui-command>
