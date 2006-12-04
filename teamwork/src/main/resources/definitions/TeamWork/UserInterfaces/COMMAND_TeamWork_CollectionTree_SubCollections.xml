@@ -54,8 +54,8 @@
     <name>TeamWork_CollectionTree_SubCollections</name>
     <!-- target definitions -->
     <target>
-      <table>TeamWork_CollectionTable</table>
       <menu>TeamWork_CollectionTree_SubCollections_Menu</menu>
+      <table>TeamWork_CollectionTable</table>
     </target>
     <!-- properties -->
     <property>

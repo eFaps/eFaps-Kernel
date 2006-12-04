@@ -59,7 +59,7 @@
     </property>
     <property>
       <name>AskUser</name>
-      <value>true/ParentCollectionLink</value>
+      <value>true</value>
     </property>
     <property>
       <name>Submit</name>
