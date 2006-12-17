@@ -48,6 +48,12 @@ public class CommandUpdate extends AbstractUpdate  {
    */
   private final static Log LOG = LogFactory.getLog(CommandUpdate.class);
 
+  /** Link from command to icon */
+  private final static Link LINK2ICON
+                    = new Link("Admin_UI_LinkIcon", 
+                               "From", 
+                               "Admin_UI_Image", "To");
+
   /** Link from command to table as target */
   private final static Link LINK2TARGETTABLE
                     = new Link("Admin_UI_LinkTargetTable", 
@@ -73,6 +79,7 @@ public class CommandUpdate extends AbstractUpdate  {
                                "Admin_UI_Search", "To");
 
   protected final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
+    ALLLINKS.add(LINK2ICON);
     ALLLINKS.add(LINK2TARGETTABLE);
     ALLLINKS.add(LINK2TARGETFORM);
     ALLLINKS.add(LINK2TARGETMENU);
@@ -128,6 +135,9 @@ public class CommandUpdate extends AbstractUpdate  {
       digester.addCallMethod("ui-command/definition/name", "setName", 1);
       digester.addCallParam("ui-command/definition/name", 0);
 
+      digester.addCallMethod("ui-command/definition/icon", "assignIcon", 1);
+      digester.addCallParam("ui-command/definition/icon", 0);
+
       digester.addCallMethod("ui-command/definition/target/table", "assignTargetTable", 1);
       digester.addCallParam("ui-command/definition/target/table", 0);
 
@@ -165,35 +175,44 @@ e.printStackTrace();
      *
      * @param _targetTable  name of the target table
      */
-     public void assignTargetTable(final String _targetTable)  {
-       addLink(LINK2TARGETTABLE, _targetTable);
+     public void assignIcon(final String _icon)  {
+       addLink(LINK2ICON, _icon);
      }
+
+    /**
+     * Assigns a table as target for this command definition.
+     *
+     * @param _targetTable  name of the target table
+     */
+    public void assignTargetTable(final String _targetTable)  {
+      addLink(LINK2TARGETTABLE, _targetTable);
+    }
 
     /**
      * Assigns a form as target for this command definition.
      *
      * @param _targetForm  name of the target form
      */
-     public void assignTargetForm(final String _targetForm)  {
-       addLink(LINK2TARGETFORM, _targetForm);
-     }
+    public void assignTargetForm(final String _targetForm)  {
+      addLink(LINK2TARGETFORM, _targetForm);
+    }
 
     /**
      * Assigns a menu as target for this command definition.
      *
      * @param _targetMenu  name of the target menu
      */
-     public void assignTargetMenu(final String _targetMenu)  {
-       addLink(LINK2TARGETMENU, _targetMenu);
-     }
+    public void assignTargetMenu(final String _targetMenu)  {
+      addLink(LINK2TARGETMENU, _targetMenu);
+    }
 
     /**
      * Assigns a search menu as target for this command definition.
      *
      * @param _targetSearch  name of the target search
      */
-     public void assignTargetSearch(final String _targetSearch)  {
-       addLink(LINK2TARGETSEARCH, _targetSearch);
-     }
+    public void assignTargetSearch(final String _targetSearch)  {
+      addLink(LINK2TARGETSEARCH, _targetSearch);
+    }
   }
 }

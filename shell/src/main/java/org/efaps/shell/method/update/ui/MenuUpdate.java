@@ -101,6 +101,9 @@ public class MenuUpdate extends CommandUpdate  {
       digester.addCallMethod("ui-menu/definition/name", "setName", 1);
       digester.addCallParam("ui-menu/definition/name", 0);
 
+      digester.addCallMethod("ui-menu/definition/icon", "assignIcon", 1);
+      digester.addCallParam("ui-menu/definition/icon", 0);
+
       digester.addCallMethod("ui-menu/definition/target/table", "assignTargetTable", 1);
       digester.addCallParam("ui-menu/definition/target/table", 0);
 
