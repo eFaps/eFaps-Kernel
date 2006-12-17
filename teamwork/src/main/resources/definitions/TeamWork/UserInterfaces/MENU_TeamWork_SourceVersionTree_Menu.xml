@@ -23,11 +23,11 @@
 
 -->
 
-<ui-table>
-  <uuid>44ca4fd1-70d2-44ef-9589-78b8fb69f634</uuid>
+<ui-menu>
+  <uuid>63267ed1-c40a-4cf2-a3fe-3726e60d0bfd</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the table 
+    version definition used to create the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_SourceTable</name>
+    <name>TeamWork_SourceVersionTree_Menu</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the table 
+    version definition used to define the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,19 +51,11 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>TeamWork_SourceTable</name>
-    <!-- fields -->
-    <field name="name">
-      <property name="Expression">Name</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Label">TeamWork_Source/Name.Label</property>
-      <property name="ShowTypeIcon">true</property>
-    </field>
-    <field name="buttonOpenInNewWindow">
-      <icon>eFapsActionNewWindow</icon>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Target">popup</property>
-    </field>
+    <name>TeamWork_SourceVersionTree_Menu</name>
+    <childs>
+      <child>TeamWork_SourceVersionTree_Menu_Action</child>
+    </childs>
   </definition>
 
-</ui-table>
+</ui-menu>
+

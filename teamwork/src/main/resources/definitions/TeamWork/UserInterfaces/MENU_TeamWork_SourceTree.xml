@@ -57,6 +57,7 @@
       <menu>TeamWork_SourceTree_Menu</menu>
     </target>
     <childs>
+      <child>TeamWork_SourceTree_Versions</child>
       <child>Main_Util_History</child>
     </childs>
     <property>
