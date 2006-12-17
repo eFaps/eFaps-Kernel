@@ -201,6 +201,16 @@ public abstract class AbstractUpdate  {
   }
 
   /**
+   * This is the getter method for instance variable {@link #definitions}.
+   *
+   * @return value of instance variable {@link #definitions}
+   * @see #definitions
+   */
+  protected List < DefinitionAbstract > getDefinitions()  {
+    return this.definitions;
+  }
+
+  /**
    * Returns a string representation with values of all instance variables.
    *
    * @return string representation of this abstract update

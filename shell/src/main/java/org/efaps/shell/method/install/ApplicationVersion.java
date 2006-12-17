@@ -35,6 +35,7 @@ import org.efaps.shell.method.update.datamodel.TypeUpdate;
 import org.efaps.shell.method.update.integration.WebDAVUpdate;
 import org.efaps.shell.method.update.ui.CommandUpdate;
 import org.efaps.shell.method.update.ui.FormUpdate;
+import org.efaps.shell.method.update.ui.ImageUpdate;
 import org.efaps.shell.method.update.ui.MenuUpdate;
 import org.efaps.shell.method.update.ui.TableUpdate;
 import org.efaps.shell.method.update.user.JAASSystemUpdate;
@@ -112,6 +113,12 @@ public class ApplicationVersion implements Comparable < ApplicationVersion >  {
       }
     }
     for (File file : files)  {
+      ImageUpdate update = ImageUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+    for (File file : files)  {
       FormUpdate update = FormUpdate.readXMLFile(file);
       if (update != null)  {
         update.updateInDB(jexlContext);
@@ -177,7 +184,7 @@ public class ApplicationVersion implements Comparable < ApplicationVersion >  {
   public int compareTo(final ApplicationVersion _compareTo)  {
     return new Long(this.number).compareTo(_compareTo.number);
   }
-                            
+
   /**
    * This is the setter method for instance variable {@link #number}.
    *
