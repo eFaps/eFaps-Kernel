@@ -26,11 +26,13 @@ abstract class AbstractAction  {
    * Property name of the file name attribute used in store actions (checkin,
    * checkout).
    */
-  protected static final String PROPERTY_STORE_ATTR_FILE_NAME   = "StoreAttributeFileName";
+  protected static final String PROPERTY_STORE_ATTR_FILE_NAME
+                                                    = "StoreAttributeFileName";
 
   /**
    * Property name of the file length attribute used in store actions
    * (checkin).
    */
-  protected static final String PROPERTY_STORE_ATTR_FILE_LENGTH = "StoreAttributeFileLength";
+  protected static final String PROPERTY_STORE_ATTR_FILE_LENGTH
+                                                  = "StoreAttributeFileLength";
 }
