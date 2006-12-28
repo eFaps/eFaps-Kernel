@@ -81,6 +81,17 @@ public class VFSStoreResource extends StoreResource  {
   private final static Log LOG = LogFactory.getLog(VFSStoreResource.class);
 
   /**
+   * Property Name of the number of sub directories.
+   */
+  private final static String PROPERTY_NUMBER_SUBDIRS 
+                                                = "StoreNumberSubDirectories";
+
+  /**
+   * Property Name to define if the type if is used to define a sub directory.
+   */
+  private final static String PROPERTY_USE_TYPE = "StoreUseTypeIdInPath";
+
+  /**
    * Extension of the temporary file in the store used in the transaction that
    * the original file is not overwritten.
    */
@@ -119,10 +130,36 @@ public class VFSStoreResource extends StoreResource  {
   private StoreEvent storeEvent = StoreEvent.UNKNOWN;
 
   /**
+   * Stores the name of the file including the correct directory.
+   */
+  private String fileName = null;
+
+  /**
    *
    */
   public VFSStoreResource(final Context _context, final Type _type, final long _fileId) throws EFapsException  {
     super(_context, _type, _fileId);
+
+    StringBuffer fileName = new StringBuffer();
+
+    String useTypeIdStr = getType().getProperty(PROPERTY_USE_TYPE);
+    if ("true".equalsIgnoreCase(useTypeIdStr))  {
+      fileName.append(getType().getId()).append("/");
+    }
+
+    String numberSubDirsStr =  getType().getProperty(PROPERTY_NUMBER_SUBDIRS);
+    if (numberSubDirsStr != null)  {
+      long numberSubDirs = Long.parseLong(numberSubDirsStr);
+      String pathFormat = "%0" 
+                          + Math.round(Math.log10(numberSubDirs) + 0.5d) 
+                          + "d";
+      fileName.append(String.format(pathFormat, 
+                                         getFileId() % numberSubDirs))
+                   .append("/");
+    }
+    fileName.append(getFileId());
+    this.fileName = fileName.toString();
+
     try  {
       this.res = VFSStoreFactoryBean.getFileProvider(_type);
     } catch (EFapsException e)  {
@@ -147,7 +184,7 @@ public class VFSStoreResource extends StoreResource  {
       this.storeEvent = StoreEvent.WRITE;
       int size = _size;
 
-      FileObject tmpFile = this.res.findFile(getFileId() + EXTENSION_TEMP);
+      FileObject tmpFile = this.res.findFile(this.fileName + EXTENSION_TEMP);
       if (!tmpFile.exists())  {
         tmpFile.createFile();
       }
@@ -203,9 +240,10 @@ public class VFSStoreResource extends StoreResource  {
     try  {
       this.storeEvent = StoreEvent.READ;
 
-      file = this.res.findFile(getFileId() + EXTENSION_NORMAL);
+      file = this.res.findFile(this.fileName + EXTENSION_NORMAL);
 
       if (!file.isReadable())  {
+        LOG.error("file for " + this.fileName + " not readable");
 throw new EFapsException(VFSStoreResource.class, "#####file no readable");
       }
 
@@ -228,7 +266,7 @@ throw new EFapsException(VFSStoreResource.class, "#####file no readable");
     } catch (EFapsException e)  {
       throw e;
     } catch (Throwable e)  {
-e.printStackTrace();
+      LOG.error("read of " + this.fileName + " failed", e);
       throw new EFapsException(VFSStoreResource.class, "read.Throwable", e);
     } finally  {
       if (file != null)  {
@@ -253,7 +291,9 @@ e.printStackTrace();
    * (used for 2-phase commits)
    */
   public int prepare(final Xid _xid)  {
-System.out.println("VFSStore.öööööööööööööööööööööööööö.prepare="+_xid);
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("transaction prepare (xid=" + _xid + ")");
+    }
     return 0;
   }
 
@@ -281,9 +321,9 @@ System.out.println("VFSStore.öööööööööööööööööööööööööö.prepare="+_xid);
     }
     if (this.storeEvent == StoreEvent.WRITE)  {
       try  {
-        FileObject tmpFile = this.res.findFile(getFileId() + EXTENSION_TEMP);
-        FileObject newFile = this.res.findFile(getFileId() + EXTENSION_NORMAL);
-        FileObject bakFile = this.res.findFile(getFileId() + EXTENSION_BAKUP);
+        FileObject tmpFile = this.res.findFile(this.fileName + EXTENSION_TEMP);
+        FileObject newFile = this.res.findFile(this.fileName + EXTENSION_NORMAL);
+        FileObject bakFile = this.res.findFile(this.fileName + EXTENSION_BAKUP);
         if (bakFile.exists())  {
           bakFile.delete();
         }
@@ -303,8 +343,8 @@ System.out.println("VFSStore.öööööööööööööööööööööööööö.prepare="+_xid);
       }
     } else if (this.storeEvent == StoreEvent.DELETE)  {
       try  {
-        FileObject curFile = this.res.findFile(getFileId() + EXTENSION_NORMAL);
-        FileObject bakFile = this.res.findFile(getFileId() + EXTENSION_BAKUP);
+        FileObject curFile = this.res.findFile(this.fileName + EXTENSION_NORMAL);
+        FileObject bakFile = this.res.findFile(this.fileName + EXTENSION_BAKUP);
         if (bakFile.exists())  {
           bakFile.delete();
         }
@@ -336,10 +376,10 @@ System.out.println("VFSStore.öööööööööööööööööööööööööö.prepare="+_xid);
    */
   public void rollback(final Xid _xid) throws XAException  {
     if (LOG.isDebugEnabled())  {
-      LOG.debug("transaction rollback");
+      LOG.debug("transaction rollback (xid = " + _xid + ")");
     }
     try  {
-      FileObject tmpFile = this.res.findFile(getFileId() + EXTENSION_TEMP);
+      FileObject tmpFile = this.res.findFile(this.fileName + EXTENSION_TEMP);
       if (tmpFile.exists())  {
         tmpFile.delete();
       }
@@ -355,14 +395,18 @@ System.out.println("VFSStore.öööööööööööööööööööööööööö.prepare="+_xid);
           Tells the resource manager to forget about a heuristically completed transaction branch.
    */
   public void forget(final Xid _xid)   {
-System.out.println("VFSStore.öööööööööööööööööööööööööö.forget="+_xid);
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("transaction forget (xid=" + _xid + ")");
+    }
   }
 
   /**
           Obtains the current transaction timeout value set for this XAResource instance.
    */
   public int getTransactionTimeout()  {
-System.out.println("VFSStore.öööööööööööööööööööööööööö.getTransactionTimeout");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("transaction getTransactionTimeout ");
+    }
     return 0;
   }
 
@@ -370,7 +414,9 @@ System.out.println("VFSStore.öööööööööööööööööööööööööö.getTransactionTimeout");
           Obtains a list of prepared transaction branches from a resource manager.
    */
   public Xid[] recover(final int _flag)  {
-System.out.println("VFSStore.öööööööööööööööööööööööööö.recover");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("transaction recover (flag = " + _flag + ")");
+    }
     return null;
   }
 
@@ -379,7 +425,10 @@ System.out.println("VFSStore.öööööööööööööööööööööööööö.recover");
           Sets the current transaction timeout value for this XAResource instance.
    */
   public boolean  setTransactionTimeout(final int _seconds)  {
-System.out.println("VFSStore.öööööööööööööööööööööööööö.setTransactionTimout");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("transaction setTransactionTimeout (seconds=" 
+                                                    + _seconds + ")");
+    }
     return true;
   }
 }
