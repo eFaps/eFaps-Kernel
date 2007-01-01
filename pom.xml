@@ -206,7 +206,7 @@ Needed from eFaps within toString methods.
     <dependency>
       <groupId>commons-vfs</groupId>
       <artifactId>commons-vfs</artifactId>
-      <version>20050307052300</version>
+      <version>1.0</version>
       <scope>provided</scope>
 <!--
       <url>http://jakarta.apache.org/commons/vfs/</url>
