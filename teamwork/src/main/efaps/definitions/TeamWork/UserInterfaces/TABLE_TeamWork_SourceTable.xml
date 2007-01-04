@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<ui-table>
+  <uuid>44ca4fd1-70d2-44ef-9589-78b8fb69f634</uuid>
+
+  <!-- ************************************************************************
+    version definition used to create the table 
+  ************************************************************************* -->
+  <definition>
+    <version>
+      <application>teamwork</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>true</mode>
+      <mode>(version==2)</mode>
+    </version>
+    <name>TeamWork_SourceTable</name>
+  </definition>
+    
+  <!-- ************************************************************************
+    version definition used to define the table 
+  ************************************************************************* -->
+  <definition>
+    <version>
+      <application>teamwork</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>true</mode>
+      <mode>(version>=3)</mode>
+    </version>
+    <name>TeamWork_SourceTable</name>
+    <!-- fields -->
+    <field name="name">
+      <property name="Expression">Name</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">TeamWork_Source/Name.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="buttonOpenInNewWindow">
+      <icon>eFapsActionNewWindow</icon>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Target">popup</property>
+    </field>
+  </definition>
+
+</ui-table>

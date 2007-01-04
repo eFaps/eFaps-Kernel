@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<ui-command>
+  <uuid>2bf2daf7-181d-4916-9432-a7cf545cfdc9</uuid>
+
+  <!-- ************************************************************************
+    version definition used to create the command 
+  ************************************************************************* -->
+  <definition>
+    <version>
+      <application>teamwork</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>true</mode>
+      <mode>(version==2)</mode>
+    </version>
+    <name>TeamWork_SourceTree_Versions</name>
+  </definition>
+    
+  <!-- ************************************************************************
+    version definition used to define the command 
+  ************************************************************************* -->
+  <definition>
+    <version>
+      <application>teamwork</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>true</mode>
+      <mode>(version>=3)</mode>
+    </version>
+    <name>TeamWork_SourceTree_Versions</name>
+    <!-- target definitions -->
+    <target>
+      <menu>TeamWork_SourceTree_Versions_Menu</menu>
+      <table>TeamWork_SourceVersionTable</table>
+    </target>
+    <!-- properties -->
+    <property>
+      <name>DefaultSelected</name>
+      <value>true</value>
+    </property>
+    <property>
+      <name>Target</name>
+      <value>content</value>
+    </property>
+    <property>
+      <name>TargetMode</name>
+      <value>view</value>
+    </property>
+    <property>
+      <name>TargetExpand</name>
+      <value>TeamWork_SourceVersion\ParentSourceLink</value>
+    </property>
+    <property>
+      <name>TargetMode</name>
+      <value>view</value>
+    </property>
+    <property>
+      <name>TargetShowCheckBoxes</name>
+      <value>true</value>
+    </property>
+  </definition>
+
+</ui-command>
