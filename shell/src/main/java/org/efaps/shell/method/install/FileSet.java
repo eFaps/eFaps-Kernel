@@ -25,6 +25,10 @@ import java.io.FileFilter;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.jexl.Expression;
+import org.apache.commons.jexl.ExpressionFactory;
+import org.apache.commons.jexl.JexlHelper;
+import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
@@ -34,8 +38,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  */
 public class FileSet implements FileFilter  {
     
-  /** Stores the starting directory for which this file set is defined. */
-  private String directory = null;
+  /**
+   * Stores the starting directory for which this file set is defined. Default
+   * value is current directory.
+   *
+   * @see #setDirectory
+   */
+  private String directory = ".";
   
   /**
    * Store regular expression of directory names which are included.
@@ -54,13 +63,29 @@ public class FileSet implements FileFilter  {
   private Set < String > includeFiles = new HashSet < String > ();
 
   /**
-   * This is the setter method for instance variable {@link #directory}.
+   * This sets instance variable {@link #directory} depending on the value of
+   * the expression and value:
+   * <ul>
+   * <li>if value is not null, the starting directory is set to this value</li>
+   * <li>if value is null, the expression is not null and not a string with
+   *     with zero length, the expression is evaluted and used as starting
+   *     directory</li>
+   * </ul>
    *
-   * @param _number new value for instance variable {@link #directory}
+   * @param _expr   expression used to evalute the starting directory 
+   *                (expression is evaluted if not null or zero string)
+   * @param _value  hard coded value (is used if not null)
    * @see #directory
    */
-  public void setDirectory(final String _directory)  {
-    this.directory = _directory;
+  public void setDirectory(final String _expr, final String _value) throws Exception {
+    if (_value != null)  {
+      this.directory = _value;
+    } else if ((_expr != null) && (_expr.length() > 0)) {
+      JexlContext jexlContext = JexlHelper.createContext();
+      jexlContext.getVars().put("System", System.class);
+      Expression jexlExpr = ExpressionFactory.createExpression(_expr);
+      this.directory = jexlExpr.evaluate(jexlContext).toString();
+    }
   }
 
   /**
