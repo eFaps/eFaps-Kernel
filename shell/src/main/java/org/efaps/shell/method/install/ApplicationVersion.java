@@ -49,6 +49,9 @@ import org.efaps.util.EFapsException;
  */
 public class ApplicationVersion implements Comparable < ApplicationVersion >  {
                               
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
   /** 
    * The number of the version is stored in this instance variable.
    *
@@ -64,12 +67,14 @@ public class ApplicationVersion implements Comparable < ApplicationVersion >  {
    */
   private final Set < FileSet > fileSets = new HashSet < FileSet > ();
   
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
+
   /**
    * Installs the xml update scripts of the schema definitions for this
    * version defined in {@link #number}.
    */
   public void install() throws EFapsException, Exception  {
-    System.out.println("Install version "+getNumber());
     
     Set < File > files  = getFiles();
     
@@ -184,6 +189,9 @@ public class ApplicationVersion implements Comparable < ApplicationVersion >  {
   public int compareTo(final ApplicationVersion _compareTo)  {
     return new Long(this.number).compareTo(_compareTo.number);
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance getter and setter methods
 
   /**
    * This is the setter method for instance variable {@link #number}.
