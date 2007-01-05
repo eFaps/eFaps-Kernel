@@ -80,43 +80,43 @@
             </systemProperty>
             <systemProperty>
               <name>efaps.db.driverClassName</name>
-              <value>${efaps.db.driverClassName}</value>
+              <value>${org.efaps.db.driverClassName}</value>
             </systemProperty>
             <systemProperty>
               <name>efaps.db.url</name>
-              <value>${efaps.db.url}</value>
+              <value>${org.efaps.db.url}</value>
             </systemProperty>
             <systemProperty>
               <name>efaps.db.username</name>
-              <value>${efaps.db.username}</value>
+              <value>${org.efaps.db.username}</value>
             </systemProperty>
             <systemProperty>
               <name>efaps.db.password</name>
-              <value>${efaps.db.password}</value>
+              <value>${org.efaps.db.password}</value>
             </systemProperty>
             <systemProperty>
               <name>efaps.db.maxActive</name>
-              <value>${efaps.db.maxActive}</value>
+              <value>${org.efaps.db.maxActive}</value>
             </systemProperty>
             <systemProperty>
               <name>efaps.db.maxIdle</name>
-              <value>${efaps.db.maxIdle}</value>
+              <value>${org.efaps.db.maxIdle}</value>
             </systemProperty>
             <systemProperty>
               <name>efaps.db.maxWait</name>
-              <value>${efaps.db.maxWait}</value>
+              <value>${org.efaps.db.maxWait}</value>
             </systemProperty>
             <systemProperty>
               <name>efaps.db.removeAbandoned</name>
-              <value>${efaps.db.removeAbandoned}</value>
+              <value>${org.efaps.db.removeAbandoned}</value>
             </systemProperty>
             <systemProperty>
               <name>efaps.db.logAbandoned</name>
-              <value>${efaps.db.logAbandoned}</value>
+              <value>${org.efaps.db.logAbandoned}</value>
             </systemProperty>
             <systemProperty>
               <name>efaps.db.type</name>
-              <value>${efaps.db.type}</value>
+              <value>${org.efaps.db.type}</value>
             </systemProperty>
           </systemProperties>
           <connectors>
