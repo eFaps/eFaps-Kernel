@@ -375,21 +375,31 @@ public abstract class AbstractUpdate  {
         if (_insert.getInstance().getType().getAttribute("Revision") != null)  {
           _insert.add("Revision", this.globalVersion + "#" + this.localVersion);
         }
-        if (this.values.get("Name") == null)  {
+        String name = this.values.get("Name");
+        if (name == null)  {
           _insert.add("Name", "-");
         }
         for (Map.Entry < String, String > entry : this.values.entrySet())  {
           _insert.add(entry.getKey(), entry.getValue());
         }
+        if (LOG.isInfoEnabled() && (name != null))  {
+          LOG.info("Insert " + _insert.getInstance().getType().getName() + " " 
+                   + "'" + name + "'");
+        }
         _insert.executeWithoutAccessCheck();
         instance = _insert.getInstance();
       } else  {
+        String name = this.values.get("Name");
         Update update = new Update(_instance);
         if (_instance.getType().getAttribute("Revision") != null)  {
           update.add("Revision", this.globalVersion + "#" + this.localVersion);
         }
         for (Map.Entry < String, String > entry : this.values.entrySet())  {
           update.add(entry.getKey(), entry.getValue());
+        }
+        if (LOG.isInfoEnabled() && (name != null))  {
+          LOG.info("Update " + _instance.getType().getName() + " " 
+                   + "'" + name + "'");
         }
         update.executeWithoutAccessCheck();
       }
