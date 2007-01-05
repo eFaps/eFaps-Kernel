@@ -27,27 +27,33 @@
   <application>teamwork</application>
 
   <version number="1">
-    <fileset>
+<!--
+  <fileset>
       <start>System.getProperties().get("java.runtime.name") + "/src/main/resources/definitions"</start>
       <includedir dir=".*"/>
       <includefile file=".*xml$"/>
     </fileset>
+-->
   </version>
 
   <version number="2">
-    <fileset>
+<!--
+  <fileset>
       <start dir="/Users/tim/Daten/eFaps/source/eFaps/teamwork/src/main/resources/definitions"/>
       <includedir dir=".*"/>
       <includefile file=".*xml$"/>
     </fileset>
+-->
   </version>
 
   <version number="3">
+  <!--
     <fileset>
       <start>"/src/main/resources/definitions"</start>
       <includedir dir=".*"/>
       <includefile file=".*xml$"/>
-    </fileset>
+    </fileset>-->
   </version>
 
+  <version number="6"/>
 </install>
