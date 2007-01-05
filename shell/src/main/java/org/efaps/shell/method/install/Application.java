@@ -25,6 +25,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
@@ -37,10 +39,29 @@ import org.efaps.util.EFapsException;
  */
 public class Application  {
 
-  /** Stores the name of the application. */
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(Application.class);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * Stores the name of the application.
+   *
+   * @see #setApplication
+   */
   private String application = null;
   
-  /** Stores all versions of this application which must be installed. */
+  /**
+   * Stores all versions of this application which must be installed.
+   *
+   * @see #getVersions
+   */
   private Set < ApplicationVersion > versions 
                                     = new TreeSet < ApplicationVersion > ();
 
@@ -50,6 +71,9 @@ public class Application  {
    * @see #loadInstalledVersions
    */
   private final Set < Long > installed = new HashSet < Long > ();
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * For each version in {@link @versions} is tested, if it is alread
@@ -63,11 +87,49 @@ public class Application  {
    */
   public void install() throws EFapsException, Exception  {
     loadInstalledVersions();
+    LOG.info("Install application '" + this.application + "'");
     for (ApplicationVersion version : versions)  {
-      if (!this.installed.contains(version.getNumber()))  {
+      if (LOG.isInfoEnabled())  {
+        LOG.info("Check version " + version.getNumber());
+      }
+      if (this.installed.contains(version.getNumber()))  {
+        if (LOG.isInfoEnabled())  {
+          LOG.info("Version " + version.getNumber() + " already installed");
+        }
+      } else  {
+        if (LOG.isInfoEnabled())  {
+          LOG.info("Starting installation of version " + version.getNumber());
+        }
         version.install();
         storeVersion(version.getNumber());
+        if (LOG.isInfoEnabled())  {
+          LOG.info("Finished installation of version " + version.getNumber());
+        }
       }
+    }
+  }
+
+  /**
+   * Updates the last installed version.
+   *
+   * @todo throw Exceptions instead of logging errors
+   */
+  public void updateLastVersion() throws EFapsException, Exception  {
+    loadInstalledVersions();
+    ApplicationVersion version = getLastVersion();
+    if (this.installed.contains(version.getNumber()))  {
+      if (LOG.isInfoEnabled())  {
+        LOG.info("Update version " + version.getNumber() + " of application "
+                 + "'" + this.application + "'");
+      }
+      version.install();
+      if (LOG.isInfoEnabled())  {
+        LOG.info("Finished update of version " + version.getNumber());
+      }
+    } else  {
+      LOG.error("Version " + version.getNumber() + " of application "
+                + "'" + this.application + "' not installed and could "
+                + "not updated!");
     }
   }
 
@@ -109,6 +171,19 @@ public class Application  {
   }
   
   /**
+   * Returns the last application version which must be installed.
+   *
+   * @return last application version to install
+   */
+  public final ApplicationVersion getLastVersion()  {
+    return (ApplicationVersion) 
+                            this.versions.toArray()[this.versions.size() - 1];
+  }
+  
+  /////////////////////////////////////////////////////////////////////////////
+  // instance getter and setter methods
+
+  /**
    * This is the setter method for instance variable {@link #application}.
    *
    * @param _application new value for instance variable {@link #application}
@@ -116,6 +191,16 @@ public class Application  {
    */
   public void setApplication(final String _application)  {
     this.application = _application;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #versions}.
+   *
+   * @return value of instance variable {@link #versions}
+   * @see #versions
+   */
+  public Set < ApplicationVersion >  getVersions()  {
+    return this.versions;
   }
 
   /**
