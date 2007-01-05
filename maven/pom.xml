@@ -1,0 +1,147 @@
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.efaps</groupId>
+  <packaging>maven-plugin</packaging><!-- must be war file to get all jar files! -->
+  <artifactId>efaps-maven-plugin</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <parent>
+    <groupId>org.efaps</groupId>
+    <artifactId>efaps</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <!-- ************************************************************************
+  * Project itself
+  ************************************************************************+ -->
+  <build>
+
+    <plugins>
+      <!--
+        Compiler Settings:
+        - Java 1.5 is needed!
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <!-- ************************************************************************
+  * Depencies
+  ************************************************************************+ -->
+  <dependencies>
+    <!-- eFaps kernel and shell -->
+    <dependency>
+      <groupId>org.efaps</groupId>
+      <artifactId>eFaps-Kernel</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.efaps</groupId>
+      <artifactId>eFaps-Shell</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- For Logging with Log4J -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.9</version>
+      <scope>package</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- For reading XML files -->
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>1.7</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- For interpreting expressions of definition -->
+    <dependency>
+      <groupId>commons-jexl</groupId>
+      <artifactId>commons-jexl</artifactId>
+      <version>1.1</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- used for toString methods -->
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.1</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Transaction Manager -->
+    <dependency>
+      <groupId>geronimo-spec</groupId>
+      <artifactId>geronimo-spec-jta</artifactId>
+      <version>1.0-M1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>slide</groupId>
+      <artifactId>slide-kernel</artifactId>
+      <version>2.1</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Connection Pooling -->
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+      <version>1.2.1</version>
+      <scope>package</scope>
+    </dependency>
+
+    <!-- maven plugin api -->
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>2.0</version>
+    </dependency>
+    
+  </dependencies>
+
+</project>
