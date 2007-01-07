@@ -48,6 +48,12 @@ public class CommandUpdate extends AbstractUpdate  {
    */
   private final static Log LOG = LogFactory.getLog(CommandUpdate.class);
 
+  /** Link from UI object to role */
+  private final static Link LINK2ACCESSROLE
+                    = new Link("Admin_UI_Access", 
+                               "UILink", 
+                               "Admin_User_Role", "UserLink");
+
   /** Link from command to icon */
   private final static Link LINK2ICON
                     = new Link("Admin_UI_LinkIcon", 
@@ -79,6 +85,7 @@ public class CommandUpdate extends AbstractUpdate  {
                                "Admin_UI_Search", "To");
 
   protected final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
+    ALLLINKS.add(LINK2ACCESSROLE);
     ALLLINKS.add(LINK2ICON);
     ALLLINKS.add(LINK2TARGETTABLE);
     ALLLINKS.add(LINK2TARGETFORM);
@@ -138,6 +145,9 @@ public class CommandUpdate extends AbstractUpdate  {
       digester.addCallMethod("ui-command/definition/icon", "assignIcon", 1);
       digester.addCallParam("ui-command/definition/icon", 0);
 
+      digester.addCallMethod("ui-command/definition/access/role", "assignAccessRole", 1);
+      digester.addCallParam("ui-command/definition/access/role", 0);
+
       digester.addCallMethod("ui-command/definition/target/table", "assignTargetTable", 1);
       digester.addCallParam("ui-command/definition/target/table", 0);
 
@@ -171,6 +181,15 @@ e.printStackTrace();
     // instance methods
 
     /**
+     * Assigns a role for accessing this command.
+     *
+     * @param _role   name of the role
+     */
+     public void assignAccessRole(final String _role)  {
+       addLink(LINK2ACCESSROLE, _role);
+     }
+
+     /**
      * Assigns a table as target for this command definition.
      *
      * @param _targetTable  name of the target table
