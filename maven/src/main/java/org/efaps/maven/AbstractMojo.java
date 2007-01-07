@@ -34,13 +34,13 @@ import org.apache.commons.digester.Digester;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.slide.transaction.SlideTransactionManager;
 
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
-import org.efaps.js.Shell;
-import org.efaps.shell.method.install.Application;
-import org.efaps.shell.method.install.ApplicationVersion;
-import org.efaps.shell.method.install.FileSet;
+import org.efaps.maven.install.Application;
+import org.efaps.maven.install.ApplicationVersion;
+import org.efaps.maven.install.FileSet;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 
@@ -53,6 +53,13 @@ abstract class AbstractMojo implements Mojo  {
   
   /////////////////////////////////////////////////////////////////////////////
   // static variables
+
+  /**
+   * Theoretically all efaps contexts object instances must include a
+   * transaction manager.
+   */
+  final public static TransactionManager transactionManager 
+                                              = new SlideTransactionManager();
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -273,7 +280,7 @@ fileSet.addIncludeFile(".*xml$");
    * @todo description
    */
   protected TransactionManager getTransactionManager()  {
-    return Shell.transactionManager;
+    return transactionManager;
   }
 
   /////////////////////////////////////////////////////////////////////////////

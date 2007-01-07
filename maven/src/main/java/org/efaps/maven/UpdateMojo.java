@@ -22,14 +22,8 @@ package org.efaps.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import org.efaps.db.Context;
-import org.efaps.db.databases.AbstractDatabase;
-import org.efaps.js.Shell;
-import org.efaps.shell.method.install.Application;
-import org.efaps.shell.method.install.ApplicationVersion;
-import org.efaps.shell.method.install.FileSet;
+import org.efaps.maven.install.Application;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
 
 /**
  *

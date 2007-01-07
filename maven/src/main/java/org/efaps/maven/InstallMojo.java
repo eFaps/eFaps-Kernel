@@ -22,7 +22,7 @@ package org.efaps.maven;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import org.efaps.shell.method.install.Application;
+import org.efaps.maven.install.Application;
 import org.efaps.util.EFapsException;
 
 /**
