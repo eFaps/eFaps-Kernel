@@ -28,18 +28,18 @@ import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import org.efaps.shell.method.update.AccessSetUpdate;
-import org.efaps.shell.method.update.AccessTypeUpdate;
-import org.efaps.shell.method.update.datamodel.SQLTableUpdate;
-import org.efaps.shell.method.update.datamodel.TypeUpdate;
-import org.efaps.shell.method.update.integration.WebDAVUpdate;
-import org.efaps.shell.method.update.ui.CommandUpdate;
-import org.efaps.shell.method.update.ui.FormUpdate;
-import org.efaps.shell.method.update.ui.ImageUpdate;
-import org.efaps.shell.method.update.ui.MenuUpdate;
-import org.efaps.shell.method.update.ui.TableUpdate;
-import org.efaps.shell.method.update.user.JAASSystemUpdate;
-import org.efaps.shell.method.update.user.RoleUpdate;
+import org.efaps.update.access.AccessSetUpdate;
+import org.efaps.update.access.AccessTypeUpdate;
+import org.efaps.update.datamodel.SQLTableUpdate;
+import org.efaps.update.datamodel.TypeUpdate;
+import org.efaps.update.integration.WebDAVUpdate;
+import org.efaps.update.ui.CommandUpdate;
+import org.efaps.update.ui.FormUpdate;
+import org.efaps.update.ui.ImageUpdate;
+import org.efaps.update.ui.MenuUpdate;
+import org.efaps.update.ui.TableUpdate;
+import org.efaps.update.user.JAASSystemUpdate;
+import org.efaps.update.user.RoleUpdate;
 import org.efaps.util.EFapsException;
 
 /**
