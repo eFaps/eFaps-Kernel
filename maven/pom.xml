@@ -27,7 +27,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.efaps</groupId>
-  <packaging>maven-plugin</packaging><!-- must be war file to get all jar files! -->
+  <packaging>maven-plugin</packaging>
   <artifactId>efaps-maven-plugin</artifactId>
   <version>1.0-SNAPSHOT</version>
 
@@ -69,6 +69,14 @@
       <artifactId>eFaps-Kernel</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
+
+<!-- it's used for some depencies in the type class -->
+<dependency>
+  <groupId>javax.servlet</groupId>
+  <artifactId>servlet-api</artifactId>
+  <version>2.4</version>
+  <scope>compile</scope>
+</dependency>
 
     <!-- maven plugin api -->
     <dependency>
