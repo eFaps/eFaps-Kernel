@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.shell.method.update.integration;
+package org.efaps.update.integration;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
-import org.efaps.shell.method.update.AbstractUpdate;
+import org.efaps.update.AbstractUpdate;
 
 /**
  * @author tmo

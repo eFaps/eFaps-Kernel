@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.shell.method.update.ui;
+package org.efaps.update.ui;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.shell.method.update.AbstractUpdate;
+import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
 
 /**

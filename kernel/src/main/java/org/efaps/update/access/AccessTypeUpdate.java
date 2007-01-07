@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.shell.method.update;
+package org.efaps.update.access;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +36,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
+import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
 
 /**

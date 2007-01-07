@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.shell.method.update.ui;
+package org.efaps.update.ui;
 
 import java.io.File;
 import java.io.IOException;

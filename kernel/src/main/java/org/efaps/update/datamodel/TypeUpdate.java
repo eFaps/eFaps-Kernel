@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.shell.method.update.datamodel;
+package org.efaps.update.datamodel;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,8 +40,8 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
+import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
-import org.efaps.shell.method.update.AbstractUpdate;
 
 /**
  * @author tmo

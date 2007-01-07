@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:598 $
+ * Last Changed:    $Date:2007-01-07 18:09:40 +0100 (So, 07 Jan 2007) $
+ * Last Changed By: $Author:tmo $
  */
 
-package org.efaps.shell.method.update;
+package org.efaps.update;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,7 +51,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @version $Id$
+ * @version $Id:AbstractUpdate.java 598 2007-01-07 18:09:40 +0100 (So, 07 Jan 2007) tmo $
  */
 public abstract class AbstractUpdate  {
 
@@ -61,7 +61,7 @@ public abstract class AbstractUpdate  {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(AccessTypeUpdate.class);
+  private final static Log LOG = LogFactory.getLog(AbstractUpdate.class);
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables

@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.shell.method.update.datamodel;
+package org.efaps.update.datamodel;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +41,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.ConnectionResource;
-import org.efaps.shell.method.update.AbstractUpdate;
+import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
 
 /**
