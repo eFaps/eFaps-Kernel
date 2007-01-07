@@ -137,7 +137,7 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
 
     <!-- easy XML reader -->
@@ -145,7 +145,7 @@
       <groupId>commons-digester</groupId>
       <artifactId>commons-digester</artifactId>
       <version>1.8</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
 
     <!-- For interpreting expressions (e.g. of xml definitions) -->
@@ -153,7 +153,7 @@
       <groupId>commons-jexl</groupId>
       <artifactId>commons-jexl</artifactId>
       <version>1.1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -174,7 +174,7 @@
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.0.4</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
 
     <!-- Transaction Manager -->
@@ -182,26 +182,26 @@
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-jta</artifactId>
       <version>1.0-M1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>slide</groupId>
       <artifactId>slide-kernel</artifactId>
       <version>2.1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>commons-transaction</groupId>
       <artifactId>commons-transaction</artifactId>
       <version>1.1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>commons-vfs</groupId>
       <artifactId>commons-vfs</artifactId>
       <version>1.0</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
 <!--
       <url>http://jakarta.apache.org/commons/vfs/</url>
       <properties>
@@ -228,7 +228,7 @@
       <groupId>slide</groupId>
       <artifactId>slide-kernel</artifactId>
       <version>2.1</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
 <!--
       <url>http://jakarta.apache.org/slide</url>
       <properties>
