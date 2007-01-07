@@ -119,6 +119,7 @@
   <modules>
     <module>derby</module>
     <module>kernel</module>
+    <module>maven</module>
     <module>shell</module>
     <module>webapp</module>
 <!--
@@ -130,18 +131,29 @@
   * Depencies
   ************************************************************************+ -->
   <dependencies>
+
+     <!-- used for toString methods -->
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.1</version>
       <scope>provided</scope>
-<!--
-      <properties>
-        <war.bundle>true</war.bundle>
-        <comment>Needed from the Apache Jakarta String Taglibs component.</comment>
-      </properties>
-Needed from eFaps within toString methods.
--->
+    </dependency>
+
+    <!-- easy XML reader -->
+    <dependency>
+      <groupId>commons-digester</groupId>
+      <artifactId>commons-digester</artifactId>
+      <version>1.8</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- For interpreting expressions (e.g. of xml definitions) -->
+    <dependency>
+      <groupId>commons-jexl</groupId>
+      <artifactId>commons-jexl</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -157,51 +169,33 @@ Needed from eFaps within toString methods.
       </properties-->
     </dependency>
 
+    <!-- For Logging Purpose -->
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.0.4</version>
       <scope>provided</scope>
-<!--
-      <url>http://jakarta.apache.org/commons/logging/</url>
-      <properties>
-        <war.bundle>true</war.bundle>
-        <comment>For logging purpose the Apache Commons Loggin component is used (also used from slide and Java Server Faces).</comment>
-      </properties>
--->
     </dependency>
 
-    <dependency>
-      <groupId>commons-transaction</groupId>
-      <artifactId>commons-transaction</artifactId>
-      <version>1.1</version>
-      <scope>provided</scope>
-
-<!--
-      <url>http://jakarta.apache.org/commons/transaction/</url>
-      <properties>
-        <war.bundle>true</war.bundle>
-        <comment>
-        The Apache Commons Transaction component is used from eFaps for transaction handling.
-        The Apache Commons Transaction component is used also from the slide module (Version 1.0.1 must be used because slide Version 2.1 does not work with Commons Transaction Version 1.1!!)</comment>
-      </properties>
--->
-
-    </dependency>
-
+    <!-- Transaction Manager -->
     <dependency>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-jta</artifactId>
       <version>1.0-M1</version>
       <scope>provided</scope>
-<!--
-      <properties>
-        <war.bundle>true</war.bundle>
-        <comment>It defines the javax.transaction interfaces used by eFaps.</comment>
-      </properties>
--->
     </dependency>
-
+    <dependency>
+      <groupId>slide</groupId>
+      <artifactId>slide-kernel</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-transaction</groupId>
+      <artifactId>commons-transaction</artifactId>
+      <version>1.1</version>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>commons-vfs</groupId>
