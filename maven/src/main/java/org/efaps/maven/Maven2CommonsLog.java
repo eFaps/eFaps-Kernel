@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.shell.maven;
+package org.efaps.maven;
 
 import org.apache.commons.logging.Log;
 

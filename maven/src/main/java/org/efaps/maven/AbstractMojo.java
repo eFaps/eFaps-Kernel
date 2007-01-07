@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.shell.maven;
+package org.efaps.maven;
 
 import java.io.File;
 import java.io.IOException;
