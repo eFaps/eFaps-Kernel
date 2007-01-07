@@ -42,10 +42,16 @@ import org.efaps.util.EFapsException;
  */
 abstract class AbstractResource implements XAResource {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
   /**
    * Logging instance used in this class.
    */
-  private static Log log = LogFactory.getLog(AbstractResource.class);
+  private static Log LOG = LogFactory.getLog(AbstractResource.class);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
 
   /**
    * Stores the eFaps context which uses this connection resource.
@@ -58,6 +64,9 @@ abstract class AbstractResource implements XAResource {
    */
   private boolean opened = false;
 
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
+
   /**
    * Constructor used to set the instance variable {@link #context}.
    *
@@ -68,6 +77,9 @@ abstract class AbstractResource implements XAResource {
     this.context = _context;
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
+
   /**
    * Opens this connection resource and enlisted this resource in the
    * transaction.
@@ -76,22 +88,22 @@ abstract class AbstractResource implements XAResource {
    *         resource could not be enlisted
    */
   public void open() throws EFapsException  {
-    if (log.isDebugEnabled())  {
-      log.debug("open");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("open");
     }
     if (this.opened)  {
-      log.error("resource not opened, commit not possible");
+      LOG.error("resource not opened, commit not possible");
       throw new EFapsException(AbstractResource.class, "open.AlreadyOpened");
     }
     try  {
       getContext().getTransaction().enlistResource(this);
     } catch (RollbackException e)  {
-      log.error("exception occurs while delisting in transaction, "
+      LOG.error("exception occurs while delisting in transaction, "
                                                 + "commit not possible", e);
       throw new EFapsException(AbstractResource.class,
                                                 "open.RollbackException", e);
     } catch (SystemException e)  {
-      log.error("exception occurs while delisting in transaction, "
+      LOG.error("exception occurs while delisting in transaction, "
                                                 + "commit not possible", e);
       throw new EFapsException(AbstractResource.class,
                                                 "open.SystemException", e);
@@ -108,17 +120,17 @@ abstract class AbstractResource implements XAResource {
    *         could not delisted
    */
   public void commit() throws EFapsException  {
-    if (log.isDebugEnabled())  {
-      log.debug("commit");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("commit");
     }
     if (!this.opened)  {
-      log.error("resource not opened, commit not possible");
+      LOG.error("resource not opened, commit not possible");
       throw new EFapsException(AbstractResource.class, "commit.NotOpened");
     }
     try  {
       getContext().getTransaction().delistResource(this, TMSUCCESS);
     } catch (SystemException e)  {
-      log.error("exception occurs while delisting in transaction, "
+      LOG.error("exception occurs while delisting in transaction, "
                                                 + "commit not possible", e);
       throw new EFapsException(AbstractResource.class,
                                               "commit.SystemException", e);
@@ -137,8 +149,8 @@ abstract class AbstractResource implements XAResource {
    *         could not delisted
    */
   public void abort() throws EFapsException  {
-    if (log.isDebugEnabled())  {
-      log.debug("abort");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("abort");
     }
     if (!this.opened)  {
       throw new EFapsException(AbstractResource.class, "abort.NotOpened");
@@ -193,8 +205,8 @@ abstract class AbstractResource implements XAResource {
    * @param _xid      global transaction identifier
    */
   public void start(final Xid _xid, final int _flags) throws XAException  {
-    if (log.isDebugEnabled())  {
-      log.debug("start resource " + _xid + ", flags = " + _flags);
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("start resource " + _xid + ", flags = " + _flags);
     }
   }
 
@@ -206,8 +218,8 @@ abstract class AbstractResource implements XAResource {
    * @param _xid      global transaction identifier
    */
   public void end(final Xid _xid, final int _flags) throws XAException  {
-    if (log.isDebugEnabled())  {
-      log.debug("end resource " + _xid + ", flags = " + _flags);
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("end resource " + _xid + ", flags = " + _flags);
     }
   }
 
@@ -225,8 +237,8 @@ abstract class AbstractResource implements XAResource {
    * @see {@link javax.transaction.xa.XAResource#isSameRM}
    */
   public boolean isSameRM(final XAResource _xares)  {
-    if (log.isDebugEnabled())  {
-      log.debug("is Same RM " + _xares.toString().equals(this.toString()));
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("is Same RM " + _xares.toString().equals(this.toString()));
     }
     return _xares.toString().equals(this.toString());
   }

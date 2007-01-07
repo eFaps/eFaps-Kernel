@@ -46,10 +46,13 @@ import org.efaps.util.EFapsException;
  */
 public class JDBCStoreResource extends StoreResource  {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
   /**
    * Logging instance used in this class.
    */
-  private static Log log = LogFactory.getLog(JDBCStoreResource.class);
+  private static Log LOG = LogFactory.getLog(JDBCStoreResource.class);
 
   /**
    * Property Name of the name of the blob in the sql table defined with
@@ -68,10 +71,16 @@ public class JDBCStoreResource extends StoreResource  {
    */
   public final static String PROPERY_TABLE      = "StoreJDBCTable";
 
+  /////////////////////////////////////////////////////////////////////////////
+  // enums
+
   /**
    *
    */
   private enum StoreEvent  {DELETE, WRITE, READ, UNKNOWN};
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
    *
@@ -101,16 +110,24 @@ public class JDBCStoreResource extends StoreResource  {
    */
   private byte[] buffer = new byte[1024];
 
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
+
   /**
    *
    */
-  public JDBCStoreResource(final Context _context, final Type _type, final long _fileId)  {
+  public JDBCStoreResource(final Context _context, 
+                           final Type _type, 
+                           final long _fileId)  {
     super(_context, _type, _fileId);
 
     this.table      = getType().getProperty(PROPERY_TABLE);
     this.keyColumn  = getType().getProperty(PROPERY_KEY);
     this.blobColumn = getType().getProperty(PROPERY_BLOB);
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
   /**
@@ -153,7 +170,7 @@ size = _size;
       throw e;
     } catch (SQLException e)  {
       res.abort();
-      log.error("write of content failed", e);
+      LOG.error("write of content failed", e);
       throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
     }
     return size;
@@ -201,10 +218,10 @@ System.out.println("cmd.toString()="+cmd.toString());
       }
       res.commit();
     } catch (IOException e)  {
-      log.error("read of content failed", e);
+      LOG.error("read of content failed", e);
       throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
     } catch (SQLException e)  {
-      log.error("read of content failed", e);
+      LOG.error("read of content failed", e);
       throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
     } finally  {
       if ((res != null) && (res.isOpened()))  {
@@ -221,7 +238,9 @@ System.out.println("cmd.toString()="+cmd.toString());
    * (used for 2-phase commits)
    */
   public int prepare(final Xid _xid)  {
-System.out.println("VFSStore.öööööööööööööööööööööööööö.prepare="+_xid);
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("prepare (xid = " + _xid + ")");
+    }
     return 0;
   }
 
@@ -240,8 +259,8 @@ System.out.println("VFSStore.öööööööööööööööööööööööööö.prepare="+_xid);
    *         {@link java.lang.Throwable})
    */
   public void commit(final Xid _xid, final boolean _onePhase) throws XAException  {
-    if (log.isDebugEnabled())  {
-      log.debug("transaction commit");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("commit (xid = " + _xid + ", one phase = " + _onePhase + ")");
     }
   }
 
@@ -257,20 +276,27 @@ System.out.println("VFSStore.öööööööööööööööööööööööööö.prepare="+_xid);
    *         {@link java.lang.Throwable})
    */
   public void rollback(final Xid _xid) throws XAException  {
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("rollback (xid = " + _xid + ")");
+    }
   }
 
   /**
           Tells the resource manager to forget about a heuristically completed transaction branch.
    */
   public void forget(final Xid _xid)   {
-System.out.println("VFSStore.öööööööööööööööööööööööööö.forget="+_xid);
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("forget (xid = " + _xid + ")");
+    }
   }
 
   /**
           Obtains the current transaction timeout value set for this XAResource instance.
    */
   public int getTransactionTimeout()  {
-System.out.println("VFSStore.öööööööööööööööööööööööööö.getTransactionTimeout");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("getTransactionTimeout");
+    }
     return 0;
   }
 
@@ -278,7 +304,9 @@ System.out.println("VFSStore.öööööööööööööööööööööööööö.getTransactionTimeout");
           Obtains a list of prepared transaction branches from a resource manager.
    */
   public Xid[] recover(final int _flag)  {
-System.out.println("VFSStore.öööööööööööööööööööööööööö.recover");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("recover (flag = " + _flag + ")");
+    }
     return null;
   }
 
@@ -287,7 +315,9 @@ System.out.println("VFSStore.öööööööööööööööööööööööööö.recover");
           Sets the current transaction timeout value for this XAResource instance.
    */
   public boolean  setTransactionTimeout(final int _seconds)  {
-System.out.println("VFSStore.öööööööööööööööööööööööööö.setTransactionTimout");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("setTransactionTimeout (seconds = " + _seconds + ")");
+    }
     return true;
   }
 }

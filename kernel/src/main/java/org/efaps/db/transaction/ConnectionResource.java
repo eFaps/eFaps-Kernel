@@ -24,6 +24,9 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
@@ -33,10 +36,34 @@ import org.efaps.util.EFapsException;
  */
 public class ConnectionResource extends AbstractResource {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used in this class.
+   */
+  private final static Log LOG = LogFactory.getLog(ConnectionResource.class);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
   /**
    * Stores the SQL connection of this connection resource.
    */
   private Connection connection = null;
+
+  /**
+   *
+   */
+  public ConnectionResource(final Context _context,
+                            final Connection _connection) throws SQLException  {
+    super(_context);
+    this.connection = _connection;
+    this.connection.setAutoCommit(false);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * This is the getter method for instance variable {@link #connection}.
@@ -47,15 +74,6 @@ public class ConnectionResource extends AbstractResource {
    */
   public final Connection getConnection()  {
     return this.connection;
-  }
-
-  /**
-   *
-   */
-  public ConnectionResource(Context _context, Connection _connection) throws SQLException  {
-    super(_context);
-    this.connection = _connection;
-    this.connection.setAutoCommit(false);
   }
 
   /**
@@ -73,16 +91,21 @@ public class ConnectionResource extends AbstractResource {
           Ask the resource manager to prepare for a transaction commit of the transaction specified in xid.
    * (used for 2-phase commits)
    */
-  public int prepare(Xid xid)  {
-System.out.println("Connection.öööööööööööööööööööööööööö.prepare="+xid);
+  public int prepare(final Xid _xid)  {
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("prepare (xid = " + _xid + ")");
+    }
     return 0;
   }
 
   /**
           Commits the global transaction specified by xid.
    */
-  public void commit(Xid xid, boolean onePhase) throws XAException  {
-System.out.println("Connection.öööööööööööööööööööööööööö.commit="+xid);
+  public void commit(final Xid _xid,
+                     final boolean _onePhase) throws XAException  {
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("commit (xid = " + _xid + ", one phase = " + _onePhase + ")");
+    }
     try  {
 if (this.connection != null)  {
       this.connection.commit();
@@ -106,8 +129,10 @@ if (this.connection != null)  {
   /**
           Informs the resource manager to roll back work done on behalf of a transaction branch.
    */
-  public void rollback(Xid xid) throws XAException  {
-System.out.println("Connection.öööööööööööööööööööööööööö.rollback="+xid);
+  public void rollback(Xid _xid) throws XAException  {
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("rollback (xid = " + _xid + ")");
+    }
     try  {
 if (this.connection != null)  {
       this.connection.rollback();
@@ -135,15 +160,19 @@ if (this.connection != null)  {
   /**
           Tells the resource manager to forget about a heuristically completed transaction branch.
    */
-  public void forget(Xid xid)   {
-System.out.println("Connection.öööööööööööööööööööööööööö.forget="+xid);
+  public void forget(final Xid _xid)   {
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("forget (xid = " + _xid + ")");
+    }
   }
 
   /**
           Obtains the current transaction timeout value set for this XAResource instance.
    */
   public int getTransactionTimeout()  {
-System.out.println("Connection.öööööööööööööööööööööööööö.getTransactionTimeout");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("getTransactionTimeout");
+    }
     return 0;
   }
 
@@ -152,8 +181,10 @@ System.out.println("Connection.öööööööööööööööööööööööööö.getTransactionTimeout"
   /**
           Obtains a list of prepared transaction branches from a resource manager.
    */
-  public Xid[] recover(int flag)  {
-System.out.println("Connection.öööööööööööööööööööööööööö.recover");
+  public Xid[] recover(final int _flag)  {
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("recover (flag = " + _flag + ")");
+    }
     return null;
   }
 
@@ -161,8 +192,10 @@ System.out.println("Connection.öööööööööööööööööööööööööö.recover");
   /**
           Sets the current transaction timeout value for this XAResource instance.
    */
-  public boolean  setTransactionTimeout(int seconds)  {
-System.out.println("Connection.öööööööööööööööööööööööööö.setTransactionTimout");
+  public boolean  setTransactionTimeout(final int seconds)  {
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("setTransactionTimout");
+    }
     return true;
   }
 }

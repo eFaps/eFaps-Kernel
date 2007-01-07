@@ -292,7 +292,7 @@ throw new EFapsException(VFSStoreResource.class, "#####file no readable");
    */
   public int prepare(final Xid _xid)  {
     if (LOG.isDebugEnabled())  {
-      LOG.debug("transaction prepare (xid=" + _xid + ")");
+      LOG.debug("prepare (xid=" + _xid + ")");
     }
     return 0;
   }
@@ -376,7 +376,7 @@ throw new EFapsException(VFSStoreResource.class, "#####file no readable");
    */
   public void rollback(final Xid _xid) throws XAException  {
     if (LOG.isDebugEnabled())  {
-      LOG.debug("transaction rollback (xid = " + _xid + ")");
+      LOG.debug("rollback (xid = " + _xid + ")");
     }
     try  {
       FileObject tmpFile = this.res.findFile(this.fileName + EXTENSION_TEMP);
@@ -396,7 +396,7 @@ throw new EFapsException(VFSStoreResource.class, "#####file no readable");
    */
   public void forget(final Xid _xid)   {
     if (LOG.isDebugEnabled())  {
-      LOG.debug("transaction forget (xid=" + _xid + ")");
+      LOG.debug("forget (xid=" + _xid + ")");
     }
   }
 
@@ -405,7 +405,7 @@ throw new EFapsException(VFSStoreResource.class, "#####file no readable");
    */
   public int getTransactionTimeout()  {
     if (LOG.isDebugEnabled())  {
-      LOG.debug("transaction getTransactionTimeout ");
+      LOG.debug("getTransactionTimeout ");
     }
     return 0;
   }
@@ -415,7 +415,7 @@ throw new EFapsException(VFSStoreResource.class, "#####file no readable");
    */
   public Xid[] recover(final int _flag)  {
     if (LOG.isDebugEnabled())  {
-      LOG.debug("transaction recover (flag = " + _flag + ")");
+      LOG.debug("recover (flag = " + _flag + ")");
     }
     return null;
   }
@@ -426,8 +426,7 @@ throw new EFapsException(VFSStoreResource.class, "#####file no readable");
    */
   public boolean  setTransactionTimeout(final int _seconds)  {
     if (LOG.isDebugEnabled())  {
-      LOG.debug("transaction setTransactionTimeout (seconds=" 
-                                                    + _seconds + ")");
+      LOG.debug("setTransactionTimeout (seconds = " + _seconds + ")");
     }
     return true;
   }

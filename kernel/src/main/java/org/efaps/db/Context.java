@@ -367,7 +367,6 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
 } else  {
   storeRsrc = new VFSStoreResource(this, _type, _fileId);
 }
-System.out.println("storeRsrc.getContext()="+storeRsrc.getContext());
     storeRsrc.open();
     this.storeStore.add(storeRsrc);
     return storeRsrc;
