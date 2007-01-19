@@ -183,13 +183,13 @@ size = _size;
   }
 
   /**
+   * Returns for the file the input stream.
    *
-   *
-   * @param _out
-   * @throws EFapsException
-   * @todo exception throwing needed
+   * @return input stream of the file with the content
+   * @todo throw exception
    */
-  public void read(final OutputStream _out) throws EFapsException  {
+  public StoreResourceInputStream read() throws EFapsException  {
+    StoreResourceInputStream in = null;
     ConnectionResource res = null;
     try  {
       res = getContext().getConnectionResource();
@@ -201,33 +201,28 @@ size = _size;
           append("from ").append(this.table).append(" ").
           append("where ").append(this.keyColumn).append("=").append(getFileId())
     ;
-System.out.println("cmd.toString()="+cmd.toString());
+//System.out.println("cmd.toString()="+cmd.toString());
       ResultSet resultSet = stmt.executeQuery(cmd.toString());
       if (!resultSet.next()) {
 //              @todo exception throwing
 //throw new Exception("could not found file");
       }
 
-      InputStream in = resultSet.getBinaryStream(1);
-      int length = 1;
-      while (length > 0)  {
-        length = in.read(this.buffer);
-        if (length > 0)  {
-          _out.write(this.buffer, 0, length);
-        }
-      }
-      res.commit();
+      in = new JDBCStoreResourceInputStream(this, res,
+                                            resultSet.getBinaryStream(1));
     } catch (IOException e)  {
       LOG.error("read of content failed", e);
-      throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
+      throw new EFapsException(JDBCStoreResource.class, "read.SQLException", e);
     } catch (SQLException e)  {
       LOG.error("read of content failed", e);
-      throw new EFapsException(JDBCStoreResource.class, "write.SQLException", e);
+      throw new EFapsException(JDBCStoreResource.class, "read.SQLException", e);
     } finally  {
-      if ((res != null) && (res.isOpened()))  {
+      if (in == null)  {
         res.abort();
       }
     }
+
+    return in;
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -319,5 +314,33 @@ System.out.println("cmd.toString()="+cmd.toString());
       LOG.debug("setTransactionTimeout (seconds = " + _seconds + ")");
     }
     return true;
+  }
+  
+  /////////////////////////////////////////////////////////////////////////////
+  // input stream wrapper class
+  
+  private class JDBCStoreResourceInputStream extends StoreResourceInputStream  {
+    
+    private final ConnectionResource res;
+    
+    JDBCStoreResourceInputStream(final StoreResource _storeRes,
+                                 final ConnectionResource _res,
+                                 final InputStream _in)
+    throws IOException  {
+      super(_storeRes, _in);
+      this.res = _res;
+    }
+
+    /**
+     * @todo Java6 change IOException with throwable parameter
+     */
+    protected void beforeClose() throws IOException  {
+      super.beforeClose();
+      try  {
+        this.res.commit();
+      } catch (EFapsException e)  {
+        throw new IOException("commit of connection resource not possible" + e.toString());
+      }
+    }
   }
 }

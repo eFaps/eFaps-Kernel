@@ -23,9 +23,7 @@ package org.efaps.db.transaction;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.transaction.xa.XAException;
@@ -232,47 +230,31 @@ public class VFSStoreResource extends StoreResource  {
   }
 
   /**
+   * Returns for the file the input stream.
    *
-   *
+   * @return input stream of the file with the content
    */
-  public void read(final OutputStream _out) throws EFapsException  {
-    FileObject file = null;
+  public StoreResourceInputStream read() throws EFapsException  {
+    StoreResourceInputStream in = null;
     try  {
       this.storeEvent = StoreEvent.READ;
 
-      file = this.res.findFile(this.fileName + EXTENSION_NORMAL);
+      FileObject file = this.res.findFile(this.fileName + EXTENSION_NORMAL);
 
       if (!file.isReadable())  {
         LOG.error("file for " + this.fileName + " not readable");
 throw new EFapsException(VFSStoreResource.class, "#####file no readable");
       }
 
-      InputStream in = file.getContent().getInputStream();
-      if (this.compress.equals(Compress.GZIP))  {
-        in = new GZIPInputStream(in);
-      } else if (this.compress.equals(Compress.ZIP))  {
-        in = new ZipInputStream(in);
-      }
-      if (in!=null)  {
-        int length = 1;
-        while (length>0)  {
-          length = in.read(this.buffer);
-          if (length>0)  {
-            _out.write(this.buffer, 0, length);
-          }
-        }
-      }
+      in = new VFSStoreResourceInputStream(this, file);
 
     } catch (EFapsException e)  {
       throw e;
     } catch (Throwable e)  {
       LOG.error("read of " + this.fileName + " failed", e);
       throw new EFapsException(VFSStoreResource.class, "read.Throwable", e);
-    } finally  {
-      if (file != null)  {
-        try {file.close();} catch (FileSystemException e) {}
-      }
     }
+    return in;
   }
 
   /**
@@ -429,5 +411,29 @@ throw new EFapsException(VFSStoreResource.class, "#####file no readable");
       LOG.debug("setTransactionTimeout (seconds = " + _seconds + ")");
     }
     return true;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // input stream wrapper class
+  
+  private class VFSStoreResourceInputStream extends StoreResourceInputStream  {
+    
+    private final FileObject file;
+    
+    VFSStoreResourceInputStream(final StoreResource _storeRes,
+                                final FileObject _file) 
+    throws IOException, FileSystemException  {
+      super(_storeRes, _file.getContent().getInputStream());
+      this.file = _file;
+    }
+
+    /**
+     * The file object {@link #file} is closed. The method overwrites the 
+     * method to close the input stream, because if the file is closed, the
+     * input stream is also closed.
+     */
+    protected void beforeClose() throws IOException  {
+      this.file.close();
+    }
   }
 }

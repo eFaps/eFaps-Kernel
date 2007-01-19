@@ -134,8 +134,11 @@ public class Checkout extends AbstractAction  {
 //    }
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // output stream methods
+
   /**
-   * Executes the checkout.
+   * Executes the checkout with an output stream.
    *
    * @param _out      output stream where to write the file
    * @throws EFapsException if the current context user has now access to 
@@ -152,7 +155,7 @@ public class Checkout extends AbstractAction  {
   }
 
   /**
-   * Executes the checkout.
+   * Executes the checkout without an access check for output streams.
    *
    * @param _out      output stream where to write the file
    * @throws EFapsException if checkout action fails
@@ -178,6 +181,60 @@ public class Checkout extends AbstractAction  {
         store.abort();
       }
     }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // input stream methods
+
+  /**
+   * Executes the checkout and returns an input stream by calling method
+   * {@link #executeWithoutAccessCheck()}.
+   *
+   * @return input stream of the checked in file
+   * @throws EFapsException if the current context user has now access to 
+   *         checkout the file out of the eFaps object
+   * @see #executeWithoutAccessCheck()
+   */
+  public InputStream execute() throws EFapsException  {
+    boolean hasAccess = this.instance.getType()
+          .hasAccess(this.instance, 
+                     AccessTypeEnums.CHECKOUT.getAccessType());
+    if (!hasAccess)  {
+      throw new EFapsException(getClass(), "execute.NoAccess");
+    }
+    return executeWithoutAccessCheck();
+  }
+
+  /**
+   * Executes the checkout without an access check and returns an input streams
+   * of the checked in file. The returned input stream must be closed, because
+   * the returned inputs stream also commit the store resource. Otherwise the
+   * transaction is rolled back!
+   *
+   * @param _out      output stream where to write the file
+   * @throws EFapsException if checkout action fails
+   */
+  public InputStream executeWithoutAccessCheck()  throws EFapsException  {
+    Context context = Context.getThreadContext();
+    StoreResource store = null;
+    InputStream in = null;
+    try  {
+      store = context.getStoreResource(getInstance().getType(), 
+                                       getInstance().getId());
+      in = store.read();
+    } catch (EFapsException e)  {
+      LOG.error("could not checkout " + this.instance, e);
+      throw e;
+    } catch (Throwable e)  {
+      LOG.error("could not checkout " + this.instance, e);
+      throw new EFapsException(getClass(), 
+                               "executeWithoutAccessCheck.Throwable", e);
+    } finally  {
+      if ((in == null) && (store != null) && store.isOpened())  {
+        store.abort();
+      }
+    }
+    return in;
   }
 
   /////////////////////////////////////////////////////////////////////////////
