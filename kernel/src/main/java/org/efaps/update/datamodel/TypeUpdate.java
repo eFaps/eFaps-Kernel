@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,25 +140,144 @@ e.printStackTrace();
   private static class Attribute  {
     /** Name of the attribute. */
     private final String name;
-    /** Attribute Type of the attribute. */
-    private final long type;
-    /** SQL Table of the attribute. */
-    private final long sqlTable;
+    /** Name of the Attribute Type of the attribute. */
+    private final String type;
+    /** Name of the SQL Table of the attribute. */
+    private final String sqlTable;
     /** SQL Column of the attribute. */
     private final String sqlColumn;
-    /** Type Link Id (used for links to another type). */
-    private final long typeLinkId;
+    /** Name of the Linked Type  (used for links to another type). */
+    private final String typeLink;
 
     private Attribute(final String _name,
-                      final long _type,
-                      final long _sqlTable,
+                      final String _type,
+                      final String _sqlTable,
                       final String _sqlColumn,
-                      final long _typeLinkId)  {
+                      final String _typeLink)  {
       this.name = _name;
       this.type = _type;
       this.sqlTable = _sqlTable;
       this.sqlColumn = _sqlColumn;
-      this.typeLinkId = _typeLinkId;
+      this.typeLink = _typeLink;
+    }
+
+    /**
+     * For given type defined with the instance parameter, this attribute is
+     * searched by name. If the attribute exists, the attribute is updated.
+     * Otherwise the attribute is created for this type.
+     *
+     * @param _instance   type instance to update with this attribute
+     * @param _typeName   name of the type to update
+     * @see #getAttrTypeId
+     * @see #getSqlTableId
+     * @see #getTypeLinkId
+     * @todo throw Exception is not allowed
+     */
+    protected void updateInDB(final Instance _instance, 
+                              final String _typeName) throws Exception  {
+      long attrTypeId = getAttrTypeId(_typeName);
+      long sqlTableId = getSqlTableId(_typeName);
+      long typeLinkId = getTypeLinkId(_typeName);
+
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes("Admin_DataModel_Attribute");
+      query.addWhereExprEqValue("Name", this.name);
+      query.addWhereExprEqValue("ParentType", _instance.getId());
+      query.addSelect("OID");
+      query.executeWithoutAccessCheck();
+      Update update;
+
+      if (query.next())  {
+        update = new Update((String) query.get("OID"));
+      } else  {
+        update =  new Insert("Admin_DataModel_Attribute");
+        update.add("ParentType",     "" + _instance.getId());
+        update.add("Name",           this.name);
+      }
+      query.close();
+
+      update.add("AttributeType",  "" + attrTypeId);
+      update.add("Table",          "" + sqlTableId);
+      update.add("SQLColumn",      this.sqlColumn);
+      if (typeLinkId == 0)  {
+        update.add("TypeLink", null);
+      } else  {
+        update.add("TypeLink", "" + typeLinkId);
+      }
+      update.executeWithoutAccessCheck();
+    }
+
+    /**
+     * Makes a search query to return the id of the attribute type defined in
+     * {@link #type}.
+     *
+     * @return id of the attribute type
+     * @see #type
+     */
+    private long getAttrTypeId(final String _typeName) throws EFapsException  {
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes("Admin_DataModel_AttributeType");
+      query.addWhereExprEqValue("Name", this.type);
+      query.addSelect("OID");
+      query.executeWithoutAccessCheck();
+      if (!query.next())  {
+        LOG.error("type[" + _typeName + "]."
+                  + "attribute[" + this.name + "]: "
+                  + "attribute type '" + this.type + "' not found");
+      }
+      long attrTypeId = (new Instance((String) query.get("OID"))).getId();
+      query.close();
+      return attrTypeId;
+    }
+    
+    /**
+     * Makes a search query to return the id of the SQL table defined in
+     * {@link #sqlTable}.
+     *
+     * @return id of the SQL table
+     * @see #sqlTable
+     */
+    private long getSqlTableId(final String _typeName) throws EFapsException  {
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes("Admin_DataModel_SQLTable");
+      query.addWhereExprEqValue("Name", this.sqlTable);
+      query.addSelect("OID");
+      query.executeWithoutAccessCheck();
+      if (!query.next())  {
+        LOG.error("type[" + _typeName + "]."
+                  + "attribute[" + this.name + "]: "
+                  + "SQL table '" + this.sqlTable + "' not found");
+      }
+      long sqlTableId = (new Instance((String) query.get("OID"))).getId();
+      query.close();
+      return sqlTableId;
+    }
+
+    /**
+     * Makes a search query to return the id of the SQL table defined in
+     * {@link #typeLink}.
+     *
+     * @return id of the linked type (or 0 if no type link is defined)
+     * @see #typeLink
+     */
+    private long getTypeLinkId(final String _typeName) throws EFapsException  {
+      long typeLinkId = 0;
+      if ((this.typeLink != null) && (this.typeLink.length() > 0))  {
+        SearchQuery query = new SearchQuery();
+        query.setQueryTypes("Admin_DataModel_Type");
+        query.addWhereExprEqValue("Name", this.typeLink);
+        query.addSelect("ID");
+        query.executeWithoutAccessCheck();
+        if (!query.next())  {
+          LOG.error("type[" + _typeName + "]."
+                      + "attribute[" + this.name + "]: "
+                      + " Type '" + this.typeLink + "' as link not found");
+        } else  {
+          typeLinkId = (Long) query.get("ID");
+        }
+        query.close();
+      }
+      return typeLinkId;
     }
 
     /**
@@ -173,7 +292,7 @@ e.printStackTrace();
         .append("type",       this.type)
         .append("sqlTable",   this.sqlTable)
         .append("sqlColumn",  this.sqlColumn)
-        .append("typeLinkId", this.typeLinkId)
+        .append("typeLink",   this.typeLink)
         .toString();
     }
   }
@@ -193,47 +312,24 @@ e.printStackTrace();
     // instance methods
 
     /**
+     * After the type is updated (or inserted if needed), all attributes must
+     * be updated.
      *
+     * @todo throw Exception is not allowed
      */
     public Instance updateInDB(final Instance _instance,
-                           final Set < Link > _allLinkTypes,
-                           final Insert _insert) throws EFapsException, Exception  {
+                               final Set < Link > _allLinkTypes,
+                               final Insert _insert) throws EFapsException, Exception  {
 
       Instance instance = super.updateInDB(_instance, _allLinkTypes, _insert);
 
       for (Attribute attr : this.attributes)  {
-        SearchQuery query = new SearchQuery();
-        query.setQueryTypes("Admin_DataModel_Attribute");
-        query.addWhereExprEqValue("Name", attr.name);
-        query.addWhereExprEqValue("ParentType", instance.getId());
-        query.addSelect("OID");
-        query.executeWithoutAccessCheck();
-        Update update;
-
-        if (query.next())  {
-          update = new Update((String) query.get("OID"));
-        } else  {
-          update =  new Insert("Admin_DataModel_Attribute");
-          update.add("ParentType",     "" + instance.getId());
-          update.add("Name",           attr.name);
-        }
-        query.close();
-
-        update.add("AttributeType",  "" + attr.type);
-        update.add("Table",          "" + attr.sqlTable);
-        update.add("SQLColumn",      attr.sqlColumn);
-        if (attr.typeLinkId == 0)  {
-          update.add("TypeLink", null);
-        } else  {
-          update.add("TypeLink", "" + attr.typeLinkId);
-        }
-        update.executeWithoutAccessCheck();
+        attr.updateInDB(instance, getValue("Name"));
       }
       return instance;
     }
 
     /**
-     * @todo throw Exception is not allowed
      */
     public void setParent(final String _parent) throws EFapsException {
       if ((_parent != null) && (_parent.length() > 0))  {
@@ -259,50 +355,10 @@ e.printStackTrace();
                              final String _type,
                              final String _sqlTable,
                              final String _sqlColumn,
-                             final String _typeLink) throws EFapsException  {
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Admin_DataModel_AttributeType");
-      query.addWhereExprEqValue("Name", _type);
-      query.addSelect("OID");
-      query.executeWithoutAccessCheck();
-      if (!query.next())  {
-        LOG.error("type[" + getValue("Name") + "].attribute[" + _name + "]: "
-                  + "attribute type '" + _type + "' not found");
-      }
-      long attrTypeId = (new Instance((String) query.get("OID"))).getId();
-      query.close();
-      
-      query = new SearchQuery();
-      query.setQueryTypes("Admin_DataModel_SQLTable");
-      query.addWhereExprEqValue("Name", _sqlTable);
-      query.addSelect("OID");
-      query.executeWithoutAccessCheck();
-      if (!query.next())  {
-        LOG.error("type[" + getValue("Name") + "].attribute[" + _name + "]: "
-                  + "SQL table '" + _sqlTable + "' not found");
-      }
-      long sqlTableId = (new Instance((String) query.get("OID"))).getId();
-      query.close();
-
-      long typeLinkId = 0;
-      if ((_typeLink != null) && (_typeLink.length() > 0))  {
-        query = new SearchQuery();
-        query.setQueryTypes("Admin_DataModel_Type");
-        query.addWhereExprEqValue("Name", _typeLink);
-        query.addSelect("ID");
-        query.executeWithoutAccessCheck();
-        if (!query.next())  {
-          LOG.error("type[" + getValue("Name") + "].attribute[" + _name + "]: "
-                      + " Type '" + _typeLink + "' as link not found");
-        } else  {
-          typeLinkId = (Long) query.get("ID");
-        }
-        query.close();
-      }
-
-      this.attributes.add(new Attribute(_name, attrTypeId, 
-                                        sqlTableId, _sqlColumn, 
-                                        typeLinkId));
+                             final String _typeLink)  {
+      this.attributes.add(new Attribute(_name, _type, 
+                                        _sqlTable, _sqlColumn, 
+                                        _typeLink));
     }
   }
 }
