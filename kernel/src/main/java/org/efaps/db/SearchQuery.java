@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,7 +152,7 @@ this.type = type;
         attr = type.getAttribute(one);
       }
       if (attr==null)  {
-        LOG.debug("Could not found attribute or link with name "
+        LOG.error("Could not found attribute or link with name "
                   + "'" + one + "' for type '" + type.getName() + "'");
         throw new EFapsException(getClass(),
                                  "setExpand.AttributeOrLinkNotFound",
