@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev:586 $
+ Last Changed:    $Date:2007-01-04 14:59:51 +0100 (Do, 04 Jan 2007) $
+ Last Changed By: $Author:tmo $
+
+-->
+
+<ui-command>
+  <uuid>2e9bbe3c-d294-4bc6-952e-4db158a789af</uuid>
+
+  <!-- ************************************************************************
+    version definition used to create the command 
+  ************************************************************************* -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev:586 $</local>
+      <mode>true</mode>
+      <mode>(version==2)</mode>
+    </version>
+    <name>Admin_UI_FormMyDesk</name>
+  </definition>
+    
+  <!-- ************************************************************************
+    version definition used to define the command 
+  ************************************************************************* -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev:586 $</local>
+      <mode>true</mode>
+      <mode>(version>=3)</mode>
+    </version>
+    <name>Admin_UI_FormMyDesk</name>
+    <icon>Admin_UI_FormImage</icon>
+    <!-- access definitions -->
+    <access>
+      <role>Administration</role>
+    </access>
+    <!-- target definitions -->
+    <target>
+      <table>Admin_UI_AbstractList</table>
+      <menu>Admin_UI_FormMyDesk_Menu</menu>
+    </target>
+    <!-- properties -->
+    <property name="Target">content</property>
+    <property name="TargetQueryTypes">Admin_UI_Form</property>
+    <property name="TargetShowCheckBoxes">true</property>
+  </definition>
+
+</ui-command>
