@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev:586 $
+ Last Changed:    $Date:2007-01-04 14:59:51 +0100 (Do, 04 Jan 2007) $
+ Last Changed By: $Author:tmo $
+
+-->
+
+<ui-form>
+  <uuid>bc5909a5-9ea0-48e5-9f34-4aad4cb4ca41</uuid>
+
+  <!-- ************************************************************************
+    version definition used to create the table 
+  ************************************************************************* -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev:586 $</local>
+      <mode>true</mode>
+      <mode>(version==2)</mode>
+    </version>
+    <name>Admin_UI_AbstractForm</name>
+  </definition>
+    
+  <!-- ************************************************************************
+    version definition used to define the table 
+  ************************************************************************* -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev:586 $</local>
+      <mode>true</mode>
+      <mode>(version>=3)</mode>
+    </version>
+    <name>Admin_UI_AbstractForm</name>
+    <!-- fields -->
+    <field name="type">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Type</property>
+      <property name="Searchable">false</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="name">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Name</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
+    </field>
+    <field name="uuid">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">UUID</property>
+      <property name="Required">false</property>
+      <property name="Searchable">true</property>
+    </field>
+    <field name="revision">
+      <property name="Columns">20</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Revision</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
+    </field>
+    <field name="createGroup">
+      <property name="Creatable">false</property>
+      <property name="GroupCount">2</property>
+    </field>
+    <field name="creator">
+      <property name="AlternateOID">Creator.OID</property>
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Creator</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Searchable">true</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="created">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Created</property>
+      <property name="Searchable">true</property>
+    </field>
+    <field name="modifyGroup">
+      <property name="Creatable">false</property>
+      <property name="GroupCount">2</property>
+    </field>
+    <field name="modifier">
+      <property name="AlternateOID">Modifier.OID</property>
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Modifier</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Searchable">true</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="modified">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Modified</property>
+      <property name="Searchable">true</property>
+    </field>
+  </definition>
+
+</ui-form>
