@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,8 +118,8 @@ public class MenuUpdate extends CommandUpdate  {
       digester.addCallParam("ui-menu/definition/childs/child", 0);
 
       digester.addCallMethod("ui-menu/definition/property", "addProperty", 2);
-      digester.addCallParam("ui-menu/definition/property/name", 0);
-      digester.addCallParam("ui-menu/definition/property/value", 1);
+      digester.addCallParam("ui-menu/definition/property", 0, "name");
+      digester.addCallParam("ui-menu/definition/property", 1);
 
       ret = (MenuUpdate) digester.parse(_file);
     } catch (SAXException e)  {

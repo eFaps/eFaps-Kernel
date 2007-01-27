@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -44,15 +44,8 @@
       <sqlcolumn>PATH</sqlcolumn>
     </attribute>
     
-    <property>
-      <name>Icon</name>
-      <value>${ROOTURL}/servlet/image/Admin_Integration_WebDAVImage</value>
-    </property>
-    
-    <property>
-      <name>Tree</name>
-      <value>Admin_Integration_WebDAVTree</value>
-    </property>
+    <property name="Icon">${ROOTURL}/servlet/image/Admin_Integration_WebDAVImage</property>
+    <property name="Tree">Admin_Integration_WebDAVTree</property>
 
   </definition>
 </datamodel-type>

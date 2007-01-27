@@ -121,8 +121,8 @@ public class TypeUpdate extends AbstractUpdate  {
       digester.addCallParam("datamodel-type/definition/attribute/typelink", 4);
 
       digester.addCallMethod("datamodel-type/definition/property", "addProperty", 2);
-      digester.addCallParam("datamodel-type/definition/property/name", 0);
-      digester.addCallParam("datamodel-type/definition/property/value", 1);
+      digester.addCallParam("datamodel-type/definition/property", 0, "name");
+      digester.addCallParam("datamodel-type/definition/property", 1);
 
       ret = (TypeUpdate) digester.parse(_file);
     } catch (SAXException e)  {

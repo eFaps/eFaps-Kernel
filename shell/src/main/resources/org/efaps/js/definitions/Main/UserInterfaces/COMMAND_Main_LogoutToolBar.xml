@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -54,10 +54,7 @@
     <name>Main_LogoutToolBar</name>
     <icon>Main_Logout</icon>
     <!-- properties -->
-    <property>
-      <name>HRef</name>
-      <value>${ROOTURL}/servlet/logout</value>
-    </property>
+    <property name="HRef">${ROOTURL}/servlet/logout</property>
   </definition>
 
 </ui-command>

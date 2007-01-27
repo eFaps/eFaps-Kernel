@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,8 +161,8 @@ public class CommandUpdate extends AbstractUpdate  {
       digester.addCallParam("ui-command/definition/target/search", 0);
 
       digester.addCallMethod("ui-command/definition/property", "addProperty", 2);
-      digester.addCallParam("ui-command/definition/property/name", 0);
-      digester.addCallParam("ui-command/definition/property/value", 1);
+      digester.addCallParam("ui-command/definition/property", 0, "name");
+      digester.addCallParam("ui-command/definition/property", 1);
 
       ret = (CommandUpdate) digester.parse(_file);
     } catch (SAXException e)  {
