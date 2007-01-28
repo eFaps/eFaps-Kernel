@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.efaps.update.ui.CommandUpdate;
 import org.efaps.update.ui.FormUpdate;
 import org.efaps.update.ui.ImageUpdate;
 import org.efaps.update.ui.MenuUpdate;
+import org.efaps.update.ui.SearchUpdate;
 import org.efaps.update.ui.TableUpdate;
 import org.efaps.update.user.JAASSystemUpdate;
 import org.efaps.update.user.RoleUpdate;
@@ -131,6 +132,12 @@ public class ApplicationVersion implements Comparable /*< ApplicationVersion >*/
     }
     for (File file : files)  {
       TableUpdate update = TableUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+    for (File file : files)  {
+      SearchUpdate update = SearchUpdate.readXMLFile(file);
       if (update != null)  {
         update.updateInDB(jexlContext);
       }

@@ -52,7 +52,7 @@ public class MenuUpdate extends CommandUpdate  {
                                "FromMenu", 
                                "Admin_UI_Command", "ToCommand");
 
-  private final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
+  protected final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
     ALLLINKS.add(LINK2CHILD);
     ALLLINKS.addAll(CommandUpdate.ALLLINKS);
   }
@@ -65,6 +65,13 @@ public class MenuUpdate extends CommandUpdate  {
    */
   public MenuUpdate() {
     super("Admin_UI_Menu", ALLLINKS);
+  }
+
+  /**
+   *
+   */
+  protected MenuUpdate(final String _typeName, final Set < Link > _allLinks) {
+    super(_typeName, _allLinks);
   }
 
   /////////////////////////////////////////////////////////////////////////////

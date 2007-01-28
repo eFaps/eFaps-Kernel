@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ importClass(Packages.org.efaps.update.integration.WebDAVUpdate);
 importClass(Packages.org.efaps.update.ui.CommandUpdate);
 importClass(Packages.org.efaps.update.ui.FormUpdate);
 importClass(Packages.org.efaps.update.ui.MenuUpdate);
+importClass(Packages.org.efaps.update.ui.SearchUpdate);
 importClass(Packages.org.efaps.update.ui.TableUpdate);
 importClass(Packages.org.efaps.update.user.JAASSystemUpdate);
 importClass(Packages.org.efaps.update.user.RoleUpdate);
@@ -221,6 +222,17 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     var fileName = new Packages.java.lang.String(file.getName());
     if (fileName.endsWith(".xml"))  {
       var update = MenuUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // search
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SearchUpdate.readXMLFile(file);
       if (update != null)  {
         update.updateInDB(jexlContext);
       }
