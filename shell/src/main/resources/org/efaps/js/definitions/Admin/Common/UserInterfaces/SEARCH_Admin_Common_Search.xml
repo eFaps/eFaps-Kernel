@@ -17,47 +17,46 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev:586 $
+ Last Changed:    $Date:2007-01-04 14:59:51 +0100 (Do, 04 Jan 2007) $
+ Last Changed By: $Author:tmo $
 
 -->
 
-<ui-command>
-  <uuid>6914e298-9227-4210-ae28-0e1313610afa</uuid>
+<ui-search>
+  <uuid>fa4afe80-797e-4dab-9eea-7dd06b5a5d15</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the command 
+    version definition used to create the menu 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:586 $</local>
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>Admin_Common_SearchMyDesk</name>
+    <name>Admin_Common_Search</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the command 
+    version definition used to define the menu 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:586 $</local>
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>Admin_Common_SearchMyDesk</name>
-    <!-- target definitions -->
-    <target>
-      <search>Admin_Common_Search</search>
-    </target>
-    <!-- properties -->
-    <property name="Target">popup</property>
+    <name>Admin_Common_Search</name>
+    <!-- childs -->
+    <childs>
+      <child>Admin_User_AbstractSearch</child>
+      <child>Admin_UI_AbstractSearch</child>
+    </childs>
   </definition>
 
-</ui-command>
+</ui-search>
