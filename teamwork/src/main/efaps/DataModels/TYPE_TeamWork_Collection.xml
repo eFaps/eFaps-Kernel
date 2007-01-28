@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
     <version>
       <application>teamwork</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:586 $</local>
       <mode>(version==2)</mode>
     </version>
 
@@ -117,16 +117,9 @@
       <sqltable>TeamWork_CollectionSQLTable</sqltable>
       <sqlcolumn>LOCKED</sqlcolumn>
     </attribute>
-
-    <property>
-      <name>Icon</name>
-      <value>${ROOTURL}/servlet/image/TeamWork_CollectionImage</value>
-    </property>
-    
-    <property>
-      <name>Tree</name>
-      <value>TeamWork_CollectionTree</value>
-    </property>
+    <!-- property definitions -->
+    <property name="Icon">${ROOTURL}/servlet/image/TeamWork_CollectionImage</property>
+    <property name="Tree">TeamWork_CollectionTree</property>
 
   </definition>
 </datamodel-type>

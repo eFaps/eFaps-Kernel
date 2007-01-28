@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev:586 $
+ Last Changed:    $Date:2007-01-04 14:59:51 +0100 (Do, 04 Jan 2007) $
+ Last Changed By: $Author:tmo $
 
 -->
 
@@ -33,7 +33,7 @@
     <version>
       <application>teamwork</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:586 $</local>
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
@@ -47,25 +47,16 @@
     <version>
       <application>teamwork</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:586 $</local>
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_RootCollectionMyDesk_Menu_Action_Delete</name>
     <icon>TeamWork_RootCollectionRemoveImage</icon>
-    <!-- properties -->
-    <property>
-      <name>Action</name>
-      <value>delete</value>
-    </property>
-    <property>
-      <name>AskUser</name>
-      <value>true</value>
-    </property>
-    <property>
-      <name>Submit</name>
-      <value>true</value>
-    </property>
+    <!-- property definitions -->
+    <property name="Action">delete</property>
+    <property name="AskUser">true</property>
+    <property name="Submit">true</property>
   </definition>
 
 </ui-command>

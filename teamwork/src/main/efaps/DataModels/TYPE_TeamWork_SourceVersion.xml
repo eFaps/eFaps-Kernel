@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -111,35 +111,14 @@
       <sqlcolumn>FILELENGTH</sqlcolumn>
     </attribute>
 
-    <!-- properties -->
-    <property>
-      <name>Icon</name>
-      <value>${ROOTURL}/servlet/image/TeamWork_SourceVersionImage</value>
-    </property>
-    <property>
-      <name>Tree</name>
-      <value>TeamWork_SourceVersionTree</value>
-    </property>
-    <property>
-      <name>StoreAttributeFileLength</name>
-      <value>FileLength</value>
-    </property>
-    <property>
-      <name>StoreAttributeFileName</name>
-      <value>Name</value>
-    </property>
-    <property>
-      <name>StoreCompress</name>
-      <value>GZIP</value>
-    </property>
-    <property>
-      <name>StoreResource</name>
-      <value>org.efaps.db.transaction.VFSStoreResource</value>
-    </property>
-    <property>
-      <name>StoreVFSName</name>
-      <value>eFaps/store/documents</value>
-    </property>
+    <!-- property definitions -->
+    <property name="Icon">${ROOTURL}/servlet/image/TeamWork_SourceVersionImage</property>
+    <property name="Tree">TeamWork_SourceVersionTree</property>
+    <property name="StoreAttributeFileLength">FileLength</property>
+    <property name="StoreAttributeFileName">Name</property>
+    <property name="StoreCompress">GZIP</property>
+    <property name="StoreResource">org.efaps.db.transaction.VFSStoreResource</property>
+    <property name="StoreVFSName">eFaps/store/documents</property>
 
   </definition>
 </datamodel-type>

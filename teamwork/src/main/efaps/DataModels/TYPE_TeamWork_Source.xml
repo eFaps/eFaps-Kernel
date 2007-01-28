@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -111,15 +111,9 @@
       <sqlcolumn>LOCKED</sqlcolumn>
     </attribute>
 
-    <!-- properties -->
-    <property>
-      <name>Icon</name>
-      <value>${ROOTURL}/servlet/image/TeamWork_SourceImage</value>
-    </property>
-    <property>
-      <name>Tree</name>
-      <value>TeamWork_SourceTree</value>
-    </property>
+    <!-- property definitions -->
+    <property name="Icon">${ROOTURL}/servlet/image/TeamWork_SourceImage</property>
+    <property name="Tree">TeamWork_SourceTree</property>
 
   </definition>
 </datamodel-type>
