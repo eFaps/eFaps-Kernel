@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,31 +18,22 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.filter;
+package org.efaps.webapp.filter;
 
 import java.io.IOException;
 
-import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.db.Context;
-import org.efaps.jaas.LoginHandler;
 import org.efaps.util.EFapsException;
 
 /**
@@ -52,7 +43,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public class BasicAuthenticationFilter implements Filter  {
+public class BasicAuthenticationFilter extends AbstractAuthenticationFilter  {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
@@ -60,14 +51,8 @@ public class BasicAuthenticationFilter implements Filter  {
   /**
    * Logging instance used in this class.
    */
-  private final static Log LOG = LogFactory.getLog(SecurityFilter.class);
-
-  /**
-   * The string is name of the parameter used to define the application.
-   *
-   * @see #init 
-   */
-  final private static String INIT_PARAM_APPLICATION = "application";
+  private final static Log LOG 
+                          = LogFactory.getLog(BasicAuthenticationFilter.class);
 
   /**
    * The string is name of the parameter used to define the title.
@@ -78,14 +63,6 @@ public class BasicAuthenticationFilter implements Filter  {
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
-
-  /**
-   * Login handler used to check the login in method {@link #checkLogin}.
-   *
-   * @see #init 
-   * @see #checkLogin
-   */
-  private LoginHandler loginHandler = null;
 
   /**
    * Store the title which is shown in the realm dialog on the client side.
@@ -114,28 +91,14 @@ public class BasicAuthenticationFilter implements Filter  {
    * @todo description
    */
   public void init(final FilterConfig _filterConfig) throws ServletException  {
-    
+    super.init(_filterConfig);
     // sets the title
     String title = _filterConfig.getInitParameter(INIT_PARAM_TITLE);
     if (title != null)  {
       this.title = title;
     }
-    
-    // sets the login handler
-    String applInit = _filterConfig.getInitParameter(INIT_PARAM_APPLICATION);
-    this.loginHandler = new LoginHandler(applInit);
   }
   
- /**
-   * Destroys the filter. Is an empty method in this implementation.
-Called by the web container to indicate to a filter that it is being taken out of service. This method is only called once all threads within the filter's doFilter method have exited or after a timeout period has passed. After the web container calls this method, it will not call the doFilter method again on this instance of the filter.
-
-This method gives the filter an opportunity to clean up any resources that are being held (for example, memory, file handles, threads) and make sure that any persistent state is synchronized with the filter's current state in memory.
-   */
-  public void destroy()  {
-System.out.println("------ filter destroxy");
-  }
-
   /**
    * First the filtes tests, if the http(s) protokoll is used.
    * If the request is not implementing the {@link HttpServletRequest} and the
@@ -154,7 +117,7 @@ System.out.println("------ filter destroxy");
    * @see HttpServletResponse
    * @see #checkLogin
    */
-  public void doFilter(final ServletRequest _request, 
+/*  public void doFilter(final ServletRequest _request, 
                        final ServletResponse _response,
                        final FilterChain _chain) throws IOException, ServletException  {
     
@@ -170,94 +133,39 @@ System.out.println("------ filter destroxy");
       if (userName != null)  {
         _chain.doFilter(httpRequest, httpResponse);
       } else  {
-        String header = httpRequest.getHeader("Authorization");
-
-        if (header == null)  {
-          httpResponse.setHeader("WWW-Authenticate", 
-                                 "Basic realm=\"" + this.title + "\"");
-          httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        } else  {
-          String encoded = header.substring(header.indexOf(" ") + 1);
-          String decoded = new String(Base64.decodeBase64(encoded.getBytes()));
-          String name = decoded.substring(0, decoded.indexOf(":"));
-          String passwd = decoded.substring(decoded.indexOf(":") + 1);
-          if (checkLogin(name, passwd))  {
-            session.setAttribute(SecurityFilter.SESSIONPARAM_LOGIN_NAME, name);
-            _chain.doFilter(httpRequest, httpResponse);
-          } else  {
-            httpResponse.setHeader("WWW-Authenticate", 
-                                   "Basic realm=\"" + this.title + "\"");
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-          }
-        }
       }
     } else  {
       throw new ServletException("request not allowed");
     }
   }
-
+*/
   /**
-   * Checks if the user with given name and password is allowed to login.
    *
-   * @param _name   user name to check
-   * @param _passwd password to check
-   * @return <i>true</i> if the user is allowed to login (name and password is
-   *         correct), otherweise <i>false</i>
-   * @see #loginhandler
-   * @see #doFilter
    */
-  private boolean checkLogin(final String _name,
-                             final String _passwd)  {
-  
-    boolean loginOk = false;
+  protected void doAuthenticate(final HttpServletRequest _request,
+                                final HttpServletResponse _response,
+                                final FilterChain _chain)
+                                throws IOException, ServletException  {
+    String header = _request.getHeader("Authorization");
 
-    Context context = null;
-    try  {
-      SecurityFilter.transactionManager.begin();
-
-      context = Context.newThreadContext(SecurityFilter.transactionManager.getTransaction());
- 
-      boolean ok = false;
-
-      try {
-        if (this.loginHandler.checkLogin(_name, _passwd) != null)  {
-          loginOk = true;
-        }
-        ok = true;
-      } finally  {
-  
-        if (ok && context.allConnectionClosed()
-            && (SecurityFilter.transactionManager.getStatus() == Status.STATUS_ACTIVE))  {
-  
-          SecurityFilter.transactionManager.commit();
-        } else  {
-          if (SecurityFilter.transactionManager.getStatus() == Status.STATUS_MARKED_ROLLBACK)  {
-            LOG.error("transaction is marked to roll back");
-          } else if (!context.allConnectionClosed())  {
-            LOG.error("not all connection to database are closed");
-          } else  {
-            LOG.error("transaction manager in undefined status");
-          }
-          SecurityFilter.transactionManager.rollback();
-        }
+    if (header == null)  {
+      _response.setHeader("WWW-Authenticate", 
+                          "Basic realm=\"" + this.title + "\"");
+      _response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+    } else  {
+      String encoded = header.substring(header.indexOf(" ") + 1);
+      String decoded = new String(Base64.decodeBase64(encoded.getBytes()));
+      String name = decoded.substring(0, decoded.indexOf(":"));
+      String passwd = decoded.substring(decoded.indexOf(":") + 1);
+      if (checkLogin(name, passwd))  {
+//        session.setAttribute(TransactionFilter.SESSIONPARAM_LOGIN_NAME, name);
+//        _chain.doFilter(_request, _response);
+      } else  {
+        _response.setHeader("WWW-Authenticate", 
+                            "Basic realm=\"" + this.title + "\"");
+        _response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
       }
-    } catch (EFapsException e)  {
-      LOG.error("could not check name and password", e);
-    } catch (NotSupportedException e)  {
-      LOG.error("could not initialise the context", e);
-    } catch (RollbackException e)  {
-      LOG.error(e);
-    } catch (HeuristicRollbackException e)  {
-      LOG.error(e);
-    } catch (HeuristicMixedException e)  {
-      LOG.error(e);
-    } catch (javax.transaction.SystemException e)  {
-      LOG.error(e);
-    } finally  {
-      context.close();
     }
-    
-    return loginOk;
   }
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,13 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.filter;
+package org.efaps.webapp.filter;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.Principal;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -40,9 +35,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.transaction.NotSupportedException;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
@@ -57,22 +52,30 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.slide.transaction.SlideTransactionManager;
 
 import org.efaps.db.Context;
-import org.efaps.admin.user.Person;
+import org.efaps.jaas.LoginHandler;
 import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
  * @version $Id$
  */
-public class TransactionFilter implements Filter  {
+public abstract class AbstractAuthenticationFilter implements Filter  {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
+   * The static variable holds the transaction manager which is used within
+   * the eFaps web application.
+   */
+  final public static TransactionManager transactionManager 
+                                              = new SlideTransactionManager();
+
+  /**
    * Logging instance used in this class.
    */
-  private final static Log LOG = LogFactory.getLog(SecurityFilter.class);
+  private final static Log LOG 
+                      = LogFactory.getLog(AbstractAuthenticationFilter.class);
 
   /**
    * Name of the session variable for the login name.
@@ -80,35 +83,25 @@ public class TransactionFilter implements Filter  {
   final public static String SESSIONPARAM_LOGIN_NAME =   "login.name";
 
   /**
-   * Name of the session variable for the login forward (after the login is
-   * done this is the next page).
+   * The string is name of the parameter used to define the application.
+   *
+   * @see #init 
    */
-  final public static String SESSIONPARAM_LOGIN_FORWARD = "login.forward";
-
-  /**
-   * The string is name of the parameter used to define the url login page.
-   */
-  final public static String INIT_PARAM_URL_LOGIN_PAGE = "urlLoginPage";
+  final private static String INIT_PARAM_APPLICATION = "application";
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
+   * Login handler used to check the login in method {@link #checkLogin}.
    *
+   * @see #init 
+   * @see #checkLogin
    */
-  final public static TransactionManager transactionManager = new SlideTransactionManager();
+  private LoginHandler loginHandler = null;
 
-  /**
-   * All uris which are not needed filtered by security check (password check)
-   * are stored in this set variable.
-   */
-  private final Set exludeUris = new HashSet();
-
-  /**
-   * The string is URI to which a forward must be made if the user is not
-   * logged in.
-   */
-  private String notLoggedInForward = null;
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    *
@@ -117,82 +110,75 @@ public class TransactionFilter implements Filter  {
       The web container cannot place the filter into service if the init method either
       1.Throws a ServletException
       2.Does not return within a time period defined by the web container
-
+    // sets the login handler
+   * @param _filterConfig   filter configuration instance
+   * @see #INIT_PARAM_TITLE
+   * @see #title
+   * @see #INIT_PARAM_APPLICATION
+   * @see #loginhandler
+   * @todo description
    */
   public void init(final FilterConfig _filterConfig) throws ServletException  {
-    String root = "/" + _filterConfig.getServletContext().getServletContextName() + "/";
-
-    this.notLoggedInForward = "/" + _filterConfig.getInitParameter(INIT_PARAM_URL_LOGIN_PAGE);
-
-    if ((this.notLoggedInForward == null) || (this.notLoggedInForward.length() == 0))  {
-      throw new ServletException("Init parameter "
-          + "'" + INIT_PARAM_URL_LOGIN_PAGE + "' not defined");
-    }
-
-    this.exludeUris.add((root + this.notLoggedInForward).replaceAll("//+", "/"));
-    this.exludeUris.add((root + "/servlet/login").replaceAll("//+", "/"));
+    String applInit = _filterConfig.getInitParameter(INIT_PARAM_APPLICATION);
+    this.loginHandler = new LoginHandler(applInit);
   }
 
-  /**
+ /**
    * Destroys the filter. Is an empty method in this implementation.
 Called by the web container to indicate to a filter that it is being taken out of service. This method is only called once all threads within the filter's doFilter method have exited or after a timeout period has passed. After the web container calls this method, it will not call the doFilter method again on this instance of the filter.
 
 This method gives the filter an opportunity to clean up any resources that are being held (for example, memory, file handles, threads) and make sure that any persistent state is synchronized with the filter's current state in memory.
    */
   public void destroy()  {
-System.out.println("------ filter destroxy");
   }
 
-
   /**
-The doFilter method of the Filter is called by the container each time a request/response pair is passed through the chain due to a client request for a resource at the end of the chain. The FilterChain passed in to this method allows the Filter to pass on the request and response to the next entity in the chain.
-
-A typical implementation of this method would follow the following pattern:-
-1. Examine the request
-2. Optionally wrap the request object with a custom implementation to filter content or headers for input filtering
-3. Optionally wrap the response object with a custom implementation to filter content or headers for output filtering
-4. a) Either invoke the next entity in the chain using the FilterChain object (chain.doFilter()),
-4. b) or not pass on the request/response pair to the next entity in the filter chain to block the request processing
-5. Directly set headers on the response after invocation of the next entity in ther filter chain.
+   * First the filtes tests, if the http(s) protokoll is used.
+   * If the request is not implementing the {@link HttpServletRequest} and the
+   * response is not implementing the {@link HttpServletResponse} interface,
+   * a {@link ServletException} is thrown.<br/>
+   * If the current user is already logged in, nothing is filtered. If the user
+   * is not logged in and does not make authentication, the header for basic
+   * authentication is sent to the client. After the client makes the 
+   * authentication, the name and password is checked in {@link #checkLogin}.
+   * If the authentication fails, the header for basic authentication is sent
+   * again to the used, otherwise the nothing is filtered anymore.
    *
-   * @todo remove hard coded proof of the MenuTree.jsp to set the forwarding url
+   * @throws ServletException if the request and response does not use the 
+   *                          http(s) protokoll
+   * @see HttpServletRequest
+   * @see HttpServletResponse
+   * @see #checkLogin
    */
-  public void doFilter(ServletRequest _request, ServletResponse _response,
-                     FilterChain _chain) throws IOException, ServletException  {
+  public void doFilter(final ServletRequest _request, 
+                       final ServletResponse _response,
+                       final FilterChain _chain) throws IOException, ServletException  {
+    
+    if ((_request instanceof HttpServletRequest) 
+        && (_response instanceof HttpServletResponse))  {
 
-HttpServletRequest httpRequest = (HttpServletRequest) _request;
-System.out.println("------ filter doFilter="+_request.getAttributeNames());
+      HttpServletRequest httpRequest = (HttpServletRequest) _request;
+      HttpServletResponse httpResponse = (HttpServletResponse) _response;
+      
+      HttpSession session = httpRequest.getSession(true);
 
-System.out.println("       fitler output");
-for (java.util.Enumeration e = _request.getAttributeNames() ; e.hasMoreElements() ;) {
-         System.out.println(e.nextElement());
-
-}
-System.out.println("        filter doFilter="+_request.getParameterMap());
-System.out.println("        filter getScheme() ="+_request.getScheme() );
-System.out.println("        filter getServerName() ="+_request.getServerName() );
-System.out.println("        filter getServerName() ="+httpRequest.getContextPath() );
-System.out.println("        filter getAuthType()  ="+httpRequest.getAuthType()  );
-System.out.println("        filter getRequestURI()  ="+httpRequest.getRequestURI()+":");
-String uri = httpRequest.getRequestURI();
-
-    if (isLoggedIn(httpRequest))  {
-      String userName = (String)httpRequest.getSession().getAttribute(SESSIONPARAM_LOGIN_NAME);
-      doFilter(userName, httpRequest, _response, _chain);
-    } else if (this.exludeUris.contains(uri))  {
-      doFilter(null, _request, _response, _chain);
-    } else  {
-      if (httpRequest.getRequestURI().endsWith("common/MenuTree.jsp"))  {
-        String markUrl = httpRequest.getRequestURI();
-        if (httpRequest.getQueryString() != null)  {
-          markUrl += "?" + httpRequest.getQueryString();
-        }
-        httpRequest.getSession().setAttribute(SESSIONPARAM_LOGIN_FORWARD, markUrl);
+      if (isLoggedIn(httpRequest))  {
+        _chain.doFilter(httpRequest, httpResponse);
+      } else  {
+        doAuthenticate(httpRequest, httpResponse);
       }
-      _request.getRequestDispatcher(this.notLoggedInForward).forward(_request, _response);
+    } else  {
+      throw new ServletException("request not allowed");
     }
   }
 
+  /**
+   *
+   */
+  abstract protected void doAuthenticate(final HttpServletRequest _request,
+                                         final HttpServletResponse _response,
+                                         final FilterChain _chain)
+                                         throws IOException, ServletException;
 
   /**
    * @param _userName   name of the logged in user (or null if current user is 
@@ -201,7 +187,7 @@ String uri = httpRequest.getRequestURI();
    * @param _response   servlet response
    * @param _chain      filter chain
    */
-  private void doFilter(
+  protected void doFilter(
             final String _userName,
             final ServletRequest _request,
             final ServletResponse _response,
@@ -281,19 +267,15 @@ String uri = httpRequest.getRequestURI();
         }
       }
     } catch (RollbackException e)  {
-e.printStackTrace();
       LOG.error(e);
       throw new ServletException(e);
     } catch (HeuristicRollbackException e)  {
-e.printStackTrace();
       LOG.error(e);
       throw new ServletException(e);
     } catch (HeuristicMixedException e)  {
-e.printStackTrace();
       LOG.error(e);
       throw new ServletException(e);
     } catch (javax.transaction.SystemException e)  {
-e.printStackTrace();
       LOG.error(e);
       throw new ServletException(e);
     } finally  {
@@ -302,18 +284,82 @@ e.printStackTrace();
   }
 
   /**
+   * Checks if the user with given name and password is allowed to login.
+   *
+   * @param _name   user name to check
+   * @param _passwd password to check
+   * @return <i>true</i> if the user is allowed to login (name and password is
+   *         correct), otherweise <i>false</i>
+   * @see #loginhandler
+   * @see #doFilter
+   */
+  protected boolean checkLogin(final String _name,
+                             final String _passwd)  {
+  
+    boolean loginOk = false;
+
+    Context context = null;
+    try  {
+      transactionManager.begin();
+
+      context = Context.newThreadContext(transactionManager.getTransaction());
+ 
+      boolean ok = false;
+
+      try {
+        if (this.loginHandler.checkLogin(_name, _passwd) != null)  {
+          loginOk = true;
+        }
+        ok = true;
+      } finally  {
+  
+        if (ok && context.allConnectionClosed()
+            && (transactionManager.getStatus() == Status.STATUS_ACTIVE))  {
+  
+          transactionManager.commit();
+        } else  {
+          if (transactionManager.getStatus() == Status.STATUS_MARKED_ROLLBACK)  {
+            LOG.error("transaction is marked to roll back");
+          } else if (!context.allConnectionClosed())  {
+            LOG.error("not all connection to database are closed");
+          } else  {
+            LOG.error("transaction manager in undefined status");
+          }
+          transactionManager.rollback();
+        }
+      }
+    } catch (EFapsException e)  {
+      LOG.error("could not check name and password", e);
+    } catch (NotSupportedException e)  {
+      LOG.error("could not initialise the context", e);
+    } catch (RollbackException e)  {
+      LOG.error(e);
+    } catch (HeuristicRollbackException e)  {
+      LOG.error(e);
+    } catch (HeuristicMixedException e)  {
+      LOG.error(e);
+    } catch (javax.transaction.SystemException e)  {
+      LOG.error(e);
+    } finally  {
+      context.close();
+    }
+    
+    return loginOk;
+  }
+
+  /**
    * Check, if the session variable {@link #SESSIONPARAM_LOGIN_NAME} is set.
    * If not, user is not logged in. Normally then a redirect to login page
    * is made with method {@link #doRedirect2Login}.
    *
-   * @param _req request variable
+   * @param _request http servlet request variable
    * @return <i>true</i> if user logged in, otherwise <i>false</i>
    */
-  protected boolean isLoggedIn(HttpServletRequest _req)  {
+  protected boolean isLoggedIn(final HttpServletRequest _request)  {
     boolean ret = false;
 
-    HttpSession session = _req.getSession(true);
-    String userName = (String)session.getAttribute(SESSIONPARAM_LOGIN_NAME);
+    HttpSession session = _request.getSession(true);
+    String userName = (String) session.getAttribute(SESSIONPARAM_LOGIN_NAME);
     if (userName != null)  {
       ret = true;
     }
