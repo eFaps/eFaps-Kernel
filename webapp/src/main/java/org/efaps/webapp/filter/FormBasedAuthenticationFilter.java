@@ -21,6 +21,7 @@
 package org.efaps.webapp.filter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
@@ -30,16 +31,18 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.efaps.servlet.RequestHandler;
 
 /**
  * @author tmo
  * @version $Id$
  */
-public class FormBasedAuthenticationFilter 
-                                        extends AbstractAuthenticationFilter  {
+public class FormBasedAuthenticationFilter extends AbstractAuthenticationFilter  {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
@@ -57,24 +60,94 @@ public class FormBasedAuthenticationFilter
 
   /**
    * The string is name of the parameter used to define the url login page.
+   *
+   * @see #init
    */
   final public static String INIT_PARAM_URL_LOGIN_PAGE = "urlLoginPage";
+
+  /**
+   * The string is name of the parameter used to define the url login used
+   * to authenticate.
+   *
+   * @see #init
+   */
+  final public static String INIT_PARAM_URL_LOGIN = "urlLogin";
+
+  /**
+   * The string is name of the parameter used to define the url login used
+   * to authenticate.
+   *
+   * @see #init
+   */
+  final public static String INIT_PARAM_URL_LOGOUT = "urlLogout";
+
+  /**
+   * The string is name of the parameter used to define the url to which is
+   * forwared after correct authentication.
+   *
+   * @see #init
+   */
+  final private static String INIT_PARAM_URL_FORWARD = "urlForward";
+
+  final public static String INIT_PARAM_LOGIN_PARAM_NAME = "loginParamName";
+
+  final public static String INIT_PARAM_LOGIN_PARAM_PASSWORD = "loginParamPassword";
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
-
   /**
    * All uris which are not needed filtered by security check (password check)
    * are stored in this set variable.
+   *
+   * @see #init
    */
   private final Set exludeUris = new HashSet();
 
   /**
    * The string is URI to which a forward must be made if the user is not
-   * logged in.
+   * logged in. The default value is <code>login.jsp</code>
+   *
+   * @see #init
    */
-  private String notLoggedInForward = null;
+  private String urlNotLoggedInForward = null;
+
+  /**
+   * The string stores the URL of the login request. The default value is 
+   * <code>login</code> and set in method {@link #init}.
+   *
+   * @see #init
+   */
+  private String urlLogin = null;
+
+  /**
+   * The string stores the URL of the logout request. The default value is 
+   * <code>logout</code> and set in method {@link #init}.
+   *
+   * @see #init
+   */
+  private String urlLogout = null;
+
+  /**
+   * The forward URL used if the login is correct and the next page must be
+   * shown.
+   *
+   * @see #init
+   */
+  private String urlForward = "${COMMONURL}/Main.jsf";
+
+  /**
+   * name of the name parameter
+   */
+  private String paramLoginName = null;
+
+  /**
+   * name of the password parameter
+   */
+  private String paramLoginPassword = null;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    *
@@ -89,81 +162,102 @@ public class FormBasedAuthenticationFilter
     super.init(_filterConfig);
     String root = "/" + _filterConfig.getServletContext().getServletContextName() + "/";
 
-    this.notLoggedInForward = "/" + _filterConfig.getInitParameter(INIT_PARAM_URL_LOGIN_PAGE);
+    // define URL if the user is not logged in
+    this.urlNotLoggedInForward = _filterConfig.getInitParameter(INIT_PARAM_URL_LOGIN_PAGE);
+    if ((this.urlNotLoggedInForward == null) || (this.urlNotLoggedInForward.length() == 0))  {
+      this.urlNotLoggedInForward = "login.jsp";
+    }
+    this.urlNotLoggedInForward = ("/" + this.urlNotLoggedInForward)
+                                                    .replaceAll("//+", "/");
+    this.exludeUris.add((root + this.urlNotLoggedInForward)
+                                                    .replaceAll("//+", "/"));
 
-    if ((this.notLoggedInForward == null) || (this.notLoggedInForward.length() == 0))  {
-      throw new ServletException("Init parameter "
-          + "'" + INIT_PARAM_URL_LOGIN_PAGE + "' not defined");
+    // define URL used to authenticate
+    this.urlLogin = _filterConfig.getInitParameter(INIT_PARAM_URL_LOGIN);
+    if ((this.urlLogin == null)  || (this.urlLogin.length() == 0))  {
+      this.urlLogin = "login";
+    }
+    this.urlLogin = (root + "/" + this.urlLogin).replaceAll("//+", "/");
+
+    // define URL used to log out
+    this.urlLogout = _filterConfig.getInitParameter(INIT_PARAM_URL_LOGOUT);
+    if ((this.urlLogout == null)  || (this.urlLogout.length() == 0))  {
+      this.urlLogout = "logout";
+    }
+    this.urlLogout = (root + "/" + this.urlLogout).replaceAll("//+", "/");
+
+    // 
+    this.urlForward = _filterConfig.getInitParameter(INIT_PARAM_URL_FORWARD);
+    if ((this.urlForward == null)  || (this.urlForward.length() == 0))  {
+      this.urlForward = "${COMMONURL}/Main.jsf";
     }
 
-    this.exludeUris.add((root + this.notLoggedInForward).replaceAll("//+", "/"));
-    this.exludeUris.add((root + "/servlet/login").replaceAll("//+", "/"));
+    // define login parameter name for name
+    this.paramLoginName = _filterConfig.getInitParameter(INIT_PARAM_LOGIN_PARAM_NAME);
+    if ((this.paramLoginName == null)  || (this.paramLoginName.length() == 0))  {
+      this.paramLoginName = "name";
+    }
+
+    // define login parameter name for password
+    this.paramLoginPassword = _filterConfig.getInitParameter(INIT_PARAM_LOGIN_PARAM_PASSWORD);
+    if ((this.paramLoginPassword == null)  || (this.paramLoginPassword.length() == 0))  {
+      this.paramLoginPassword = "password";
+    }
+
+
+// hack
+//    this.exludeUris.add((root + "/servlet/login").replaceAll("//+", "/"));
   }
 
   /**
-The doFilter method of the Filter is called by the container each time a request/response pair is passed through the chain due to a client request for a resource at the end of the chain. The FilterChain passed in to this method allows the Filter to pass on the request and response to the next entity in the chain.
-
-A typical implementation of this method would follow the following pattern:-
-1. Examine the request
-2. Optionally wrap the request object with a custom implementation to filter content or headers for input filtering
-3. Optionally wrap the response object with a custom implementation to filter content or headers for output filtering
-4. a) Either invoke the next entity in the chain using the FilterChain object (chain.doFilter()),
-4. b) or not pass on the request/response pair to the next entity in the filter chain to block the request processing
-5. Directly set headers on the response after invocation of the next entity in ther filter chain.
+   * If the current user is already logged in, nothing is filtered. 
    *
-   * @todo remove hard coded proof of the MenuTree.jsp to set the forwarding url
+   * @see #doAuthenticate
    */
-/*  public void doFilter(ServletRequest _request, ServletResponse _response,
-                     FilterChain _chain) throws IOException, ServletException  {
-
-HttpServletRequest httpRequest = (HttpServletRequest) _request;
-System.out.println("------ filter doFilter="+_request.getAttributeNames());
-
-System.out.println("       fitler output");
-for (java.util.Enumeration e = _request.getAttributeNames() ; e.hasMoreElements() ;) {
-         System.out.println(e.nextElement());
-
-}
-System.out.println("        filter doFilter="+_request.getParameterMap());
-System.out.println("        filter getScheme() ="+_request.getScheme() );
-System.out.println("        filter getServerName() ="+_request.getServerName() );
-System.out.println("        filter getServerName() ="+httpRequest.getContextPath() );
-System.out.println("        filter getAuthType()  ="+httpRequest.getAuthType()  );
-System.out.println("        filter getRequestURI()  ="+httpRequest.getRequestURI()+":");
-String uri = httpRequest.getRequestURI();
-
-    if (isLoggedIn(httpRequest))  {
-      String userName = (String)httpRequest.getSession().getAttribute(SESSIONPARAM_LOGIN_NAME);
-      doFilter(userName, httpRequest, _response, _chain);
-    } else if (this.exludeUris.contains(uri))  {
-      doFilter(null, _request, _response, _chain);
+  protected void doFilter(final HttpServletRequest _request, 
+                          final HttpServletResponse _response,
+                          final FilterChain _chain) 
+                                        throws IOException, ServletException  {
+    String uri = _request.getRequestURI().replaceAll("//+", "/");
+    // logout
+    if (this.urlLogout.equals(uri))  {
+      setLoggedInUser(_request, null);
+      _request.getSession(true).removeAttribute(SESSIONPARAM_LOGIN_FORWARD);
+      _request.getRequestDispatcher("/").forward(_request, _response);
+    // otherwise normal behaviour
     } else  {
-      if (httpRequest.getRequestURI().endsWith("common/MenuTree.jsp"))  {
-        String markUrl = httpRequest.getRequestURI();
-        if (httpRequest.getQueryString() != null)  {
-          markUrl += "?" + httpRequest.getQueryString();
-        }
-        httpRequest.getSession().setAttribute(SESSIONPARAM_LOGIN_FORWARD, markUrl);
-      }
-      _request.getRequestDispatcher(this.notLoggedInForward).forward(_request, _response);
+      super.doFilter(_request, _response, _chain);
     }
   }
-*/
 
   /**
-   *
+   * @see #doSendLoginFrameNotCorrect
    */
   protected void doAuthenticate(final HttpServletRequest _request,
                                 final HttpServletResponse _response,
                                 final FilterChain _chain)
                                 throws IOException, ServletException  {
-    String uri = _request.getRequestURI();
-    if (isLoggedIn(_request))  {
-//      String userName = (String)httpRequest.getSession().getAttribute(SESSIONPARAM_LOGIN_NAME);
-//      doFilter(userName, httpRequest, _response, _chain);
-    } else if (this.exludeUris.contains(uri))  {
-//      doFilter(null, _request, _response, _chain);
-    } else  {
+    String uri = _request.getRequestURI().replaceAll("//+", "/");
+    if (this.exludeUris.contains(uri))  {
+      _chain.doFilter(_request, _response);
+    } else if (this.urlLogin.equals(uri))  {
+      String name = _request.getParameter(this.paramLoginName);
+      String passwd = _request.getParameter(this.paramLoginPassword);
+      if (checkLogin(name, passwd))  {
+        setLoggedInUser(_request, name); 
+        _response.setContentType("text/html");
+  
+        String newUrl = (String) _request.getSession().getAttribute(SESSIONPARAM_LOGIN_FORWARD);
+        if (newUrl == null)  {
+          newUrl = RequestHandler.replaceMacrosInUrl(this.urlForward);
+        } else  {
+          _request.getSession().removeAttribute(SESSIONPARAM_LOGIN_FORWARD);
+        }
+        _response.sendRedirect(newUrl);
+      } else  {
+        doSendLoginFrameNotCorrect(_request, _response);
+      }
+    } else {
       if (_request.getRequestURI().endsWith("common/MenuTree.jsp"))  {
         String markUrl = _request.getRequestURI();
         if (_request.getQueryString() != null)  {
@@ -171,8 +265,47 @@ String uri = httpRequest.getRequestURI();
         }
         _request.getSession().setAttribute(SESSIONPARAM_LOGIN_FORWARD, markUrl);
       }
-      _request.getRequestDispatcher(this.notLoggedInForward)
+      _request.getRequestDispatcher(this.urlNotLoggedInForward)
               .forward(_request, _response);
+    }
+  }
+
+  /**
+   * This page is sent if the login is not correct.
+   *
+   * @param _req  HttpServletRequest that encapsulates the request to the 
+   *              servlet
+   * @param _res  HttpServletResponse that encapsulates the response from the 
+   *              servlet
+   */
+  protected void doSendLoginFrameNotCorrect(final HttpServletRequest _req, 
+                                            final HttpServletResponse _res) 
+                                        throws ServletException, IOException  {
+    _res.setContentType("text/html");
+    PrintWriter pW = null;
+    try  {
+      pW = _res.getWriter();
+      pW.println(
+          "<html>"+
+            "<head>"+
+              "<title>eFaps</title>"+
+            "</head>"+
+            "<script type=\"text/javascript\">"+
+              "function wrongLogin() {"+
+              "}"+
+            "</script>"+
+            "<frameset>"+
+            "<frame src=\""+_req.getContextPath()+"\" name=\"Login\">"+
+          "</frameset>"+
+        "</html>"
+      );
+    } catch(IOException e)  {
+      throw e;
+    } catch (Exception e)  {
+      LOG.error("Could not write the frame for not correct login.", e);
+      throw new ServletException(e);
+    } finally  {
+      pW.close();
     }
   }
 }

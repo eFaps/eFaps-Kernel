@@ -50,7 +50,7 @@
     </script>
     <%-- /**  call the javascript function testing wrong login or not on top **/ --%>
     <body onload="test4top()">
-      <form method="post" action="<%=request.getContextPath()%>/servlet/login">
+      <form method="post" action="<%=request.getContextPath()%>/login">
         <center>
           <table border="0">
             <tr>

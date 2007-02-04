@@ -54,7 +54,7 @@
     <name>Main_LogoutToolBar</name>
     <icon>Main_Logout</icon>
     <!-- properties -->
-    <property name="HRef">${ROOTURL}/servlet/logout</property>
+    <property name="HRef">${ROOTURL}/logout</property>
   </definition>
 
 </ui-command>

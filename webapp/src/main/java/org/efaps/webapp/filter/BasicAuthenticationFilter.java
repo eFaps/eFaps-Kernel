@@ -98,48 +98,14 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationFilter  {
       this.title = title;
     }
   }
-  
+
   /**
-   * First the filtes tests, if the http(s) protokoll is used.
-   * If the request is not implementing the {@link HttpServletRequest} and the
-   * response is not implementing the {@link HttpServletResponse} interface,
-   * a {@link ServletException} is thrown.<br/>
-   * If the current user is already logged in, nothing is filtered. If the user
-   * is not logged in and does not make authentication, the header for basic
+   * If the user does not make authentication, the header for basic
    * authentication is sent to the client. After the client makes the 
-   * authentication, the name and password is checked in {@link #checkLogin}.
+   * authentication, the name and password is checked with method
+   * {@link AbstractAuthenticationFilter#checkLogin}.<br/>
    * If the authentication fails, the header for basic authentication is sent
    * again to the used, otherwise the nothing is filtered anymore.
-   *
-   * @throws ServletException if the request and response does not use the 
-   *                          http(s) protokoll
-   * @see HttpServletRequest
-   * @see HttpServletResponse
-   * @see #checkLogin
-   */
-/*  public void doFilter(final ServletRequest _request, 
-                       final ServletResponse _response,
-                       final FilterChain _chain) throws IOException, ServletException  {
-    
-    if ((_request instanceof HttpServletRequest) 
-        && (_response instanceof HttpServletResponse))  {
-
-      HttpServletRequest httpRequest = (HttpServletRequest) _request;
-      HttpServletResponse httpResponse = (HttpServletResponse) _response;
-      
-      HttpSession session = httpRequest.getSession(true);
-
-      String userName = (String) session.getAttribute(SecurityFilter.SESSIONPARAM_LOGIN_NAME);
-      if (userName != null)  {
-        _chain.doFilter(httpRequest, httpResponse);
-      } else  {
-      }
-    } else  {
-      throw new ServletException("request not allowed");
-    }
-  }
-*/
-  /**
    *
    */
   protected void doAuthenticate(final HttpServletRequest _request,
@@ -158,8 +124,8 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationFilter  {
       String name = decoded.substring(0, decoded.indexOf(":"));
       String passwd = decoded.substring(decoded.indexOf(":") + 1);
       if (checkLogin(name, passwd))  {
-//        session.setAttribute(TransactionFilter.SESSIONPARAM_LOGIN_NAME, name);
-//        _chain.doFilter(_request, _response);
+        setLoggedInUser(_request, name);
+        _chain.doFilter(_request, _response);
       } else  {
         _response.setHeader("WWW-Authenticate", 
                             "Basic realm=\"" + this.title + "\"");
