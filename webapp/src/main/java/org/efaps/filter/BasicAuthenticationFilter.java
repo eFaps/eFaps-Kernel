@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.servlet;
+package org.efaps.filter;
 
 import java.io.IOException;
 

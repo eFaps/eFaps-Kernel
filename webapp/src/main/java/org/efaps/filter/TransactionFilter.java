@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.servlet;
+package org.efaps.filter;
 
 import java.io.IOException;
 import java.net.URI;
@@ -64,7 +64,7 @@ import org.efaps.util.EFapsException;
  * @author tmo
  * @version $Id$
  */
-public class SecurityFilter implements Filter  {
+public class TransactionFilter implements Filter  {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
