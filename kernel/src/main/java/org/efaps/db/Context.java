@@ -22,6 +22,7 @@ package org.efaps.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -145,6 +146,16 @@ public class Context {
    */
   private final Map < String, FileItem > fileParameters;
 
+  /**
+   * A map to be able to set Attributes with a lifetime of a servlet request.
+   *
+   * @see #containsRequestAttribute
+   * @see #getRequestAttribute
+   * @see #setRequestAttribute
+   */
+  private Map < String, Object > requestAttributes 
+                                          = new HashMap < String, Object > ();
+
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
@@ -160,11 +171,20 @@ public class Context {
                   final Map < String, String[] > _parameters,
                   final Map < String, FileItem > _fileParameters)
                                                       throws EFapsException  {
-System.out.println("--------------------------------- new context");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("create new context for " + _person);
+    }
     this.transaction = _transaction;
     this.person = _person;
     this.locale = _locale;
-    this.parameters = _parameters;
+    if (_parameters != null)
+    {
+        this.parameters = new HashMap < String, String[] > (_parameters);
+    }
+    else
+    {
+        this.parameters = new HashMap < String, String[] > ();
+    }
     this.fileParameters = _fileParameters;
 try  {
     setConnection(getDataSource().getConnection());
@@ -181,7 +201,10 @@ e.printStackTrace();
    * Destructor of class <code>Context</code>.
    */
   public final void finalize()  {
-System.out.println("--------------------------------- context.finalize connection=" + getConnection());
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("finalize context for " + this.person);
+      LOG.debug("connection is " + getConnection());
+    }
     try  {
       getConnection().close();
     } catch (Exception e)  {
@@ -223,8 +246,17 @@ System.out.println("--------------------------------- context.finalize connectio
     return closed;
   }
 
+  /**
+   * Close this contexts, meaning this context object is removed as thread
+   * context.<br/>
+   * If not all connection are closed, all connection are closed.
+   * @todo better description
+   */
   public void close()  {
-System.out.println("--------------------------------- context.close");
+    if (LOG.isDebugEnabled())  {
+      LOG.debug("close context for " + this.person);
+      LOG.debug("connection is " + getConnection());
+    }
     try  {
       getConnection().close();
     } catch (Exception e)  {
@@ -233,67 +265,18 @@ System.out.println("--------------------------------- context.close");
     if ((threadContext.get() != null) && (threadContext.get() == this))  {
       threadContext.set(null);
     }
-// check if all JDBC connection are close...
-for (ConnectionResource con : this.connectionStore)  {
-  try  {
-// TODO: write in log-file...
-    if ((con.getConnection() != null) && !con.getConnection().isClosed())  {
-      con.getConnection().close();
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("");
-      System.out.println("");
-      System.out.println("connection not closed");
-      System.out.println("");
-      System.out.println("");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
+    // check if all JDBC connection are close...
+    for (ConnectionResource con : this.connectionStore)  {
+      try  {
+        if ((con.getConnection() != null) && !con.getConnection().isClosed())  {
+          con.getConnection().close();
+          LOG.error("connection was not closed!");
+        }
+      } catch (SQLException e)  {
+        LOG.error("QLException is thrown while trying to get close status of "
+                  + "connection or while trying to close", e);
+      }
     }
-  } catch (SQLException e)  {
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("");
-      System.out.println("");
-      System.out.println("SQLException is thrown while trying to get close status of connection or while trying to close");
-      System.out.println("");
-      System.out.println("");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-      System.out.println("ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-  }
-}
-
   }
 
 
@@ -404,6 +387,62 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
     return value;
   }
 
+  /**
+   * Returns true if request attributes maps one or more keys to the specified
+   * object. More formally, returns <i>true</i> if and only if the request
+   * attributes contains at least one mapping to a object o such that
+   * (o==null ? o==null : o.equals(o)).
+   *
+   * @param _key  key whose presence in the request attributes is to be tested
+   * @return <i>true</i> if the request attributes contains a mapping for given
+   *         key, otherwise <i>false</i>
+   * @see #requestAttributes
+   * @see #getRequestAttribute
+   * @see #setRequestAttribute
+   */
+  public boolean containsRequestAttribute(final String _key) {
+      return this.requestAttributes.containsKey(_key);
+  }
+
+  /**
+   * Returns the object to which this request attributes maps the specified
+   * key. Returns <code>null</code> if the request attributes  contains no
+   * mapping for this key. A return value of <code>null</code> does not
+   * necessarily indicate that the request attributes contains no mapping for
+   * the key; it's also possible that the request attributes explicitly maps 
+   * the key to null. The {@link #containsRequestAttribute} operation may be
+   * used to distinguish these two cases.<br/>
+   * More formally, if the request attributes contains a mapping from a key k 
+   * to a object o such that (key==null ? k==null : key.equals(k)), then this
+   * method returns o; otherwise it returns <code>null</code> (there can be at
+   * most one such mapping).
+   *
+   * @param _key    key name of the mapped attribute to be returned
+   * @return object to which the request attribute contains a mapping for
+   *         specified key, or <code>null</code> if not specified in the
+   *         request attributes 
+   * @see #requestAttributes
+   * @see #containsRequestAttribute
+   * @see #setRequestAttribute
+   */
+  public Object getRequestAttribute(final String _key) {
+      return this.requestAttributes.get(_key);
+  }
+
+  /**
+   * Associates the specified value with the specified key in the request
+   * attributes. If the request attributes previously contained a mapping for
+   * this key, the old value is replaced by the specified value.
+   *
+   * @param _key    key name of the attribute to set
+   * @return 
+   * @see #requestAttributes
+   * @see #containsRequestAttribute
+   * @see #getRequestAttribute
+   */
+  public Object setRequestAttribute(final String _key, final Object _value) {
+      return this.requestAttributes.put(_key, _value);
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
