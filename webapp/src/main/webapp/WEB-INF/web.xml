@@ -152,7 +152,6 @@
         The default value is '${COMMONURL}/Main.jsf'.
       </description>
     </init-param>
-
     <init-param>
       <param-name>loginParamName</param-name>
       <param-value>name</param-value>
