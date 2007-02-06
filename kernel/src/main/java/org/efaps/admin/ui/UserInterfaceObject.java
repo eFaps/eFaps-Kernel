@@ -290,21 +290,11 @@ throw new Exception("user " + userId + " does not exists!");
     Search.getCache().initialise();
     Form.getCache().initialise();
     Table.getCache().initialise();
-    for (Command command : Command.getCache().getCache4Id().values())  {
-      command.readFromDB();
-    }
-    for (Menu menu : Menu.getCache().getCache4Id().values())  {
-      menu.readFromDB();
-    }
-    for (Search search : Search.getCache().getCache4Id().values())  {
-      search.readFromDB();
-    }
-    for (Form form : Form.getCache().getCache4Id().values())  {
-      form.readFromDB();
-    }
-    for (Table table : Table.getCache().getCache4Id().values())  {
-      table.readFromDB();
-    }
+    Command.getCache().readFromDB();
+    Menu.getCache().readFromDB();
+    Search.getCache().readFromDB();
+    Form.getCache().readFromDB();
+    Table.getCache().readFromDB();
   }
 
 
@@ -325,13 +315,27 @@ throw new Exception("user " + userId + " does not exists!");
     }
 
     /**
+     * All cached user interface objects are read into the cache.
+     *
+     * @see #initialise
+     */
+    protected void readFromDB() throws CacheReloadException  {
+      for (UIObj uiObj : getCache4Id().values())  {
+        uiObj.readFromDB();
+      }
+    }
+
+    /**
      * Initialise the cache of a specific user interface object type.
      * Initialise means, that all all objects of this user interface type are
      * read from the database and stored in the cache. If the eFaps admin type
      * itself is not defined, that initialiase does nothing (this could happen
-     * in the create phase).
+     * in the create phase).<br/>
+     * After initialise, the user interface object itself is read with method
+     * {@link #readFromDB}.
      *
      * @param _context  eFaps context for this request
+     * @see #readFromDB
      */
     protected void initialise() throws CacheReloadException  {
       Class < UIObj > uiObjClass = getCallerClass();
