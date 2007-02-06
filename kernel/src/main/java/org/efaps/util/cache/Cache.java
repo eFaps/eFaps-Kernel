@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -161,7 +161,7 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
   /**
    *
    */
-  public Map < Long, K > getCache4Id()  {
+  protected Map < Long, K > getCache4Id()  {
     return this.cache4Id;
   }
 
