@@ -110,7 +110,6 @@ public class SearchUpdate extends MenuUpdate  {
       digester.addCallParam("ui-search/definition/property", 1);
 
       ret = (SearchUpdate) digester.parse(_file);
-System.out.println("search="+ret);
 
     } catch (SAXException e)  {
 e.printStackTrace();
