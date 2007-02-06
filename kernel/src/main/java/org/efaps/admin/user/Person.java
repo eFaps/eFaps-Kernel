@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,15 +98,7 @@ public class Person extends UserObject  {
    *
    * @see #getCache
    */
-  private final static Cache < Person > cache = new Cache < Person > (
-    new CacheReloadInterface()  {
-        public int priority()  {
-          return 0;
-        };
-        public void reloadCache() throws CacheReloadException  {
-        };
-    }
-  );
+  private final static Cache cache = new PersonCache();
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -333,7 +325,8 @@ public class Person extends UserObject  {
 
             int col = 1;
             for (AttrName attrName : this.attrUpdated)  {
-              stmt.setString(col, this.attrValues.get(attrName));
+              String tmp = this.attrValues.get(attrName);
+              stmt.setString(col, tmp == null ? null : tmp.trim());
               col++;
             }
 
@@ -462,6 +455,10 @@ public class Person extends UserObject  {
    */
   protected void readFromDB() throws EFapsException  {
     readFromDBAttributes();
+    this.roles.clear();
+    this.roles.addAll(getRolesFromDB());
+    this.groups.clear();
+    this.groups.addAll(getGroupsFromDB(null));
   }
 
   /**
@@ -489,7 +486,8 @@ public class Person extends UserObject  {
         ResultSet rs = stmt.executeQuery(cmd.toString());
         if (rs.next())  {
           for (AttrName attrName : AttrName.values())  {
-            setAttrValue(attrName, rs.getString(attrName.sqlColumn));
+            String tmp = rs.getString(attrName.sqlColumn);
+            setAttrValue(attrName, tmp == null ? null : tmp.trim());
           }
         }
         rs.close();
@@ -892,6 +890,7 @@ public class Person extends UserObject  {
   public static Person get(final long _id) throws EFapsException  {
     Person ret = getCache().get(_id);
     if (ret == null)  {
+System.out.println(" read person '"+_id+"' from db");
       ret = getFromDB(
           "select " +
             "V_USERPERSON.ID," +
@@ -1162,5 +1161,56 @@ public class Person extends UserObject  {
    */
   public static Cache < Person > getCache()  {
     return cache;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  
+  private static final class PersonCache extends Cache < Person > {
+
+    PersonCache()  {
+      super(new CacheReloadInterface()  {
+          public int priority()  {
+            return 0;
+          };
+          public void reloadCache() throws CacheReloadException  {
+          };
+        }
+      );
+    }
+
+    /**
+     *
+     */
+    protected Map < Long, Person > getCache4Id()  {
+System.out.println("person.getCache4Id");
+Map < Long, Person > map = null;
+try  {
+  map = (Map < Long, Person >)Context.getThreadContext().getSessionAttribute("PersonCacheId");
+  if (map == null)  {
+    map = new HashMap < Long, Person > ();
+    Context.getThreadContext().setSessionAttribute("PersonCacheId", map);
+  }
+} catch (EFapsException e)  {
+}
+return map;
+    }
+  
+    /**
+     *
+     */
+    protected Map < String, Person > getCache4Name()  {
+System.out.println("person.getCache4Name");
+Map < String, Person > map = null;
+try  {
+  map = (Map < String, Person >)Context.getThreadContext().getSessionAttribute("PersonCacheString");
+  if (map == null)  {
+    map = new HashMap < String, Person > ();
+    Context.getThreadContext().setSessionAttribute("PersonCacheString", map);
+  }
+} catch (EFapsException e)  {
+}
+return map;
+    }
+
   }
 }
