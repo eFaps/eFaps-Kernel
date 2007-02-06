@@ -221,8 +221,13 @@ public class FormBasedAuthenticationFilter extends AbstractAuthenticationFilter 
     String uri = _request.getRequestURI().replaceAll("//+", "/");
     // logout
     if (this.urlLogout.equals(uri))  {
-      setLoggedInUser(_request, null);
-      _request.getSession(true).removeAttribute(SESSIONPARAM_LOGIN_FORWARD);
+//      setLoggedInUser(_request, null);
+//      _request.getSession(true).removeAttribute(SESSIONPARAM_LOGIN_FORWARD);
+// remove all http session attributes! it's a logout!
+HttpSession session = _request.getSession();
+for (java.util.Enumeration e = session.getAttributeNames() ; e.hasMoreElements() ;) {
+  session.removeAttribute((String)e.nextElement());
+}
       _request.getRequestDispatcher("/").forward(_request, _response);
     // otherwise normal behaviour
     } else  {
