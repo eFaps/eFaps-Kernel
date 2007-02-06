@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,19 +81,8 @@ public class JAASSystem extends AdminObject  {
 
   /**
    * Stores all instances of class {@link JAASSystem}.
-   *
-   * @see #getCache
    */
-  private static final Cache < JAASSystem > cache = new Cache < JAASSystem > (
-    new CacheReloadInterface()  {
-        public int priority()  {
-          return CacheReloadInterface.Priority.JAASSystem.number;
-        };
-        public void reloadCache() throws CacheReloadException  {
-          JAASSystem.initialise();
-        };
-    }
-  );
+  private static final JAASSystemCache cache = new JAASSystemCache();
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -469,12 +458,38 @@ return getName();
    * @return set of all loaded and cached JAAS systems
    */
   public static Set < JAASSystem > getAllJAASSystems()  {
-    Set < JAASSystem > ret = new HashSet < JAASSystem > ();
-    for (Map.Entry < Long, JAASSystem > entry
-            : cache.getCache4Id().entrySet())  {
-
-      ret.add(entry.getValue());
-    }
-    return ret;
+    return cache.getAllJAASSystems();
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  private final static class JAASSystemCache extends Cache < JAASSystem >  {
+
+    JAASSystemCache()  {
+      super(new CacheReloadInterface()  {
+            public int priority()  {
+              return CacheReloadInterface.Priority.JAASSystem.number;
+            };
+            public void reloadCache() throws CacheReloadException  {
+              JAASSystem.initialise();
+            };
+        }
+      );
+    }
+
+    /**
+     * Returns all cached JAAS system in a set.
+     *
+     * @return set of all loaded and cached JAAS systems
+     */
+    public Set < JAASSystem > getAllJAASSystems()  {
+      Set < JAASSystem > ret = new HashSet < JAASSystem > ();
+      for (Map.Entry < Long, JAASSystem > entry : getCache4Id().entrySet())  {
+        ret.add(entry.getValue());
+      }
+      return ret;
+    }
+
+  };
+
 }
