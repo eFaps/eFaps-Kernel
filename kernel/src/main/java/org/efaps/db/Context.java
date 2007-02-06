@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,13 +147,25 @@ public class Context {
   private final Map < String, FileItem > fileParameters;
 
   /**
-   * A map to be able to set Attributes with a lifetime of a servlet request.
+   * A map to be able to set attributes with a lifetime of a request (e.g.
+   * servlet request).
    *
    * @see #containsRequestAttribute
    * @see #getRequestAttribute
    * @see #setRequestAttribute
    */
   private Map < String, Object > requestAttributes 
+                                          = new HashMap < String, Object > ();
+
+  /**
+   * A map to be able to set attributes with a lifetime of a session (e.g. as
+   * long as the user is logged in).
+   *
+   * @see #containsSessionAttribute
+   * @see #getSessionAttribute
+   * @see #setSessionAttribute
+   */
+  private Map < String, Object > sessionAttributes 
                                           = new HashMap < String, Object > ();
 
   /////////////////////////////////////////////////////////////////////////////
@@ -168,6 +180,7 @@ public class Context {
   private Context(final Transaction _transaction, 
                   final Person _person, 
                   final Locale _locale,
+                  final Map < String, Object > _sessionAttributes,
                   final Map < String, String[] > _parameters,
                   final Map < String, FileItem > _fileParameters)
                                                       throws EFapsException  {
@@ -177,15 +190,15 @@ public class Context {
     this.transaction = _transaction;
     this.person = _person;
     this.locale = _locale;
-    if (_parameters != null)
-    {
-        this.parameters = new HashMap < String, String[] > (_parameters);
-    }
-    else
-    {
-        this.parameters = new HashMap < String, String[] > ();
-    }
-    this.fileParameters = _fileParameters;
+    this.parameters = (_parameters == null)
+                              ? new HashMap < String, String[] > ()
+                              : _parameters;
+    this.fileParameters = (_fileParameters == null)
+                              ? new HashMap < String, FileItem > ()
+                              : _fileParameters;
+    this.sessionAttributes = (_sessionAttributes == null)
+                              ? new HashMap < String, Object > ()
+                              : _sessionAttributes;
 try  {
     setConnection(getDataSource().getConnection());
   getConnection().setAutoCommit(true);
@@ -444,6 +457,63 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
       return this.requestAttributes.put(_key, _value);
   }
 
+  /**
+   * Returns true if session attributes maps one or more keys to the specified
+   * object. More formally, returns <i>true</i> if and only if the session
+   * attributes contains at least one mapping to a object o such that
+   * (o==null ? o==null : o.equals(o)).
+   *
+   * @param _key  key whose presence in the session attributes is to be tested
+   * @return <i>true</i> if the session attributes contains a mapping for given
+   *         key, otherwise <i>false</i>
+   * @see #sessionAttributes
+   * @see #getSessionAttribute
+   * @see #setSessionAttribute
+   */
+  public boolean containsSessionAttribute(final String _key) {
+      return this.sessionAttributes.containsKey(_key);
+  }
+
+  /**
+   * Returns the object to which this session attributes maps the specified
+   * key. Returns <code>null</code> if the session attributes  contains no
+   * mapping for this key. A return value of <code>null</code> does not
+   * necessarily indicate that the session attributes contains no mapping for
+   * the key; it's also possible that the session attributes explicitly maps 
+   * the key to null. The {@link #containsSessionAttribute} operation may be
+   * used to distinguish these two cases.<br/>
+   * More formally, if the session attributes contains a mapping from a key k 
+   * to a object o such that (key==null ? k==null : key.equals(k)), then this
+   * method returns o; otherwise it returns <code>null</code> (there can be at
+   * most one such mapping).
+   *
+   * @param _key    key name of the mapped attribute to be returned
+   * @return object to which the session attribute contains a mapping for
+   *         specified key, or <code>null</code> if not specified in the
+   *         session attributes 
+   * @see #sessionAttributes
+   * @see #containsSessionAttribute
+   * @see #setSessionAttribute
+   */
+  public Object getSessionAttribute(final String _key) {
+      return this.sessionAttributes.get(_key);
+  }
+
+  /**
+   * Associates the specified value with the specified key in the session
+   * attributes. If the session attributes previously contained a mapping for
+   * this key, the old value is replaced by the specified value.
+   *
+   * @param _key    key name of the attribute to set
+   * @return 
+   * @see #sessionAttributes
+   * @see #containsSessionAttribute
+   * @see #getSessionAttribute
+   */
+  public Object setSessionAttribute(final String _key, final Object _value) {
+      return this.sessionAttributes.put(_key, _value);
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
 
@@ -572,7 +642,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   public static Context newThreadContext(final Transaction _transaction)
       throws EFapsException  {
 
-    return newThreadContext(_transaction, null, null, null, null);
+    return newThreadContext(_transaction, null, null, null, null, null);
   }
 
   /**
@@ -587,7 +657,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   public static Context newThreadContext(final Transaction _transaction, 
                         final String _userName)
                 throws EFapsException  {
-    return newThreadContext(_transaction, _userName, null, null, null);
+    return newThreadContext(_transaction, _userName, null, null, null, null);
   }
 
   /**
@@ -603,7 +673,8 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
                         final String _userName, final Locale _locale)
                 throws EFapsException  {
 
-    return newThreadContext(_transaction, _userName, _locale, null, null);
+    return newThreadContext(_transaction, _userName, _locale, 
+                            null, null, null);
   }
 
   /**
@@ -621,11 +692,13 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    */
   public static Context newThreadContext(final Transaction _transaction, 
                         final String _userName, final Locale _locale,
+                        final Map < String, Object > _sessionAttributes,
                         final Map < String, String[] > _parameters,
                         final Map < String, FileItem > _fileParameters)
                 throws EFapsException  {
 
     Context context = new Context(_transaction, null, _locale, 
+                                  _sessionAttributes, 
                                   _parameters, _fileParameters);
     setThreadContext(context);
     if (_userName != null)  {

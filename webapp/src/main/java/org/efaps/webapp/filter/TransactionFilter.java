@@ -81,9 +81,15 @@ public class TransactionFilter extends AbstractFilter  {
   final public static String SESSIONPARAM_LOGIN_FORWARD = "login.forward";
 
   /**
+   * Name of the session variable for the login forward (after the login is
+   * done this is the next page).
+   */
+  final private static String SESSION_CONTEXT_ATTRIBUTES = "contextAttributes";
+
+  /**
    * The string is name of the parameter used to define the url login page.
    */
-  final public static String INIT_PARAM_URL_LOGIN_PAGE = "urlLoginPage";
+  final private static String INIT_PARAM_URL_LOGIN_PAGE = "urlLoginPage";
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -212,10 +218,12 @@ String uri = httpRequest.getRequestURI();
           }
         }
       } else  {
-        params = _request.getParameterMap();
+        params = new HashMap < String, String[] > (_request.getParameterMap());
       }
-      context = Context.newThreadContext(transactionManager.getTransaction(), 
-                                         getLoggedInUser(_request), locale, 
+
+      context = Context.newThreadContext(transactionManager.getTransaction(),
+                                         getLoggedInUser(_request), locale,
+                                         getContextSessionAttributes(_request),
                                          params, fileParams);
     } catch (FileUploadException e)  {
       LOG.error("could not initialise the context", e);
@@ -271,5 +279,22 @@ String uri = httpRequest.getRequestURI();
     } finally  {
       context.close();
     }
+  }
+
+  /**
+   *
+   *
+   * @param _request  http servlet request
+   * @return map of session attributes used for the context object
+   */
+  protected Map < String, Object > getContextSessionAttributes(final HttpServletRequest _request)  {
+    Map < String, Object > map 
+                      = (Map < String, Object > ) _request.getSession()
+                         .getAttribute(SESSION_CONTEXT_ATTRIBUTES);
+    if (map == null)  {
+      map = new HashMap < String, Object > ();
+      _request.getSession().setAttribute(SESSION_CONTEXT_ATTRIBUTES, map);
+    }
+    return map;
   }
 }
