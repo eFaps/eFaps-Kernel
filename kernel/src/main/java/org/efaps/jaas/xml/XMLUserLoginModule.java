@@ -38,7 +38,6 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 
 import org.apache.commons.digester.Digester;
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

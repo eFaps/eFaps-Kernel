@@ -32,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
 import org.efaps.update.AbstractUpdate;
-import org.efaps.util.EFapsException;
 
 /**
  * @author tmo

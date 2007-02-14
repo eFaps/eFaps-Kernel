@@ -20,11 +20,9 @@
 
 package org.efaps.admin.event;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.sql.PreparedStatement;
 import java.sql.Types;
+import java.util.Map;
 
 import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Attribute;
@@ -32,7 +30,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-
 import org.efaps.db.transaction.ConnectionResource;
 
 /**

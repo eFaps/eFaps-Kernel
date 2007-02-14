@@ -20,15 +20,13 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import org.efaps.db.Context;
 import org.efaps.admin.ui.Field;
+import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**

@@ -25,10 +25,7 @@ import java.util.Map;
 
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.admin.ui.Field;
-import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Menu;
-import org.efaps.db.Context;
 
 /**
  * @author tmo

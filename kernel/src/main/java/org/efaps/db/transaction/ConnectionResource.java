@@ -21,14 +21,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.db.Context;
-import org.efaps.util.EFapsException;
 
 /**
  * The class implements the {@link javax.transaction.XAResource} interface for

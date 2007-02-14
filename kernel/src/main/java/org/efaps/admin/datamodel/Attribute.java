@@ -25,23 +25,20 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.HashSet;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
-import org.efaps.util.cache.CacheReloadInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * This is the class for the type description. The type description holds

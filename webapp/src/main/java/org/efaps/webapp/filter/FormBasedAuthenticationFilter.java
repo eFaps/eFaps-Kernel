@@ -22,7 +22,6 @@ package org.efaps.webapp.filter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 

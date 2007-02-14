@@ -20,15 +20,8 @@
 
 package org.efaps.beans;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
-import org.efaps.admin.ui.UserInterfaceObject;
 import org.efaps.db.Context;
-import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 

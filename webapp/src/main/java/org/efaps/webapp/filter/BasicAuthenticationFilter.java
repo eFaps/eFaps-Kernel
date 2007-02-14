@@ -27,14 +27,9 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.efaps.db.Context;
-import org.efaps.util.EFapsException;
 
 /**
  * The filter is used to make basic access authentication defined in RFC 2617.

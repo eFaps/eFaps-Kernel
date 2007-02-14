@@ -25,27 +25,15 @@ import java.io.IOException;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.transaction.NotSupportedException;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
-
-import org.apache.commons.fileupload.DiskFileUpload;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.slide.transaction.SlideTransactionManager;
-
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.util.EFapsException;

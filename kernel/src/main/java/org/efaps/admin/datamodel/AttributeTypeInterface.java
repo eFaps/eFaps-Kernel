@@ -20,13 +20,11 @@
 
 package org.efaps.admin.datamodel;
 
-import java.sql.ResultSet;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 

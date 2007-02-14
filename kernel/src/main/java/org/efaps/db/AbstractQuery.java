@@ -31,9 +31,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.JoinRowSet;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

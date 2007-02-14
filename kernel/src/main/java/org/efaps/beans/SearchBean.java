@@ -21,11 +21,6 @@
 package org.efaps.beans;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Collections;
-import java.util.Comparator;
-
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.efaps.admin.datamodel.Attribute;

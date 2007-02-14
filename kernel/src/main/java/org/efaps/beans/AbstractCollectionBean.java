@@ -22,11 +22,6 @@ package org.efaps.beans;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.fileupload.FileItem;
-
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;

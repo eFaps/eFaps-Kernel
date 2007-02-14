@@ -22,20 +22,14 @@ package org.efaps.beans;
 
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
 import java.util.List;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.UIInterface;
-import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Table;
 import org.efaps.beans.valueparser.ValueParser;
-import org.efaps.db.AbstractQuery;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;

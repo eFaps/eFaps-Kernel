@@ -20,8 +20,6 @@
 
 package org.efaps.admin.access;
 
-import java.util.List;
-
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 

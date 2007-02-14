@@ -23,15 +23,10 @@ package org.efaps.webdav.method;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
-import javax.xml.parsers.DocumentBuilder;
-
-import org.xml.sax.InputSource;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -40,7 +35,6 @@ import org.w3c.dom.NodeList;
 import org.efaps.webdav.WebDAVRequest;
 import org.efaps.webdav.resource.AbstractResource;
 import org.efaps.webdav.resource.CollectionResource;
-import org.efaps.webdav.resource.SourceResource;
 
 /**
  * @see RFC 2518 - 8.1 PROPFIND

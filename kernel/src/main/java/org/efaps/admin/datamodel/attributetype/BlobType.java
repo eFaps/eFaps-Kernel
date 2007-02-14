@@ -23,7 +23,6 @@ package org.efaps.admin.datamodel.attributetype;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;

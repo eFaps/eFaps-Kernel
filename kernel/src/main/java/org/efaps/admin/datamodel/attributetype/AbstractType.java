@@ -27,7 +27,6 @@ import java.util.Locale;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
-import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 

@@ -37,10 +37,6 @@
 
 package org.efaps.js;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,24 +49,9 @@ import org.mozilla.javascript.Scriptable;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.AbstractLinkType;
-import org.efaps.admin.datamodel.attributetype.BooleanType;
-import org.efaps.admin.datamodel.attributetype.DateTimeType;
-import org.efaps.admin.datamodel.attributetype.IntegerType;
-import org.efaps.admin.datamodel.attributetype.PersonLinkType;
-import org.efaps.admin.datamodel.attributetype.RealType;
-import org.efaps.admin.datamodel.attributetype.StatusLinkType;
-import org.efaps.admin.datamodel.attributetype.StringType;
-import org.efaps.admin.datamodel.attributetype.TypeType;
-import org.efaps.admin.datamodel.AttributeType;
-import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
-//import org.efaps.db.Checkin;
-//import org.efaps.db.Checkout;
-import org.efaps.db.Context;
-import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-import org.efaps.db.Update;
 
 
 /**

@@ -28,7 +28,6 @@ import javax.servlet.ServletException;
 import org.efaps.webdav.WebDAVRequest;
 import org.efaps.webdav.resource.AbstractResource;
 import org.efaps.webdav.resource.CollectionResource;
-import org.efaps.webdav.resource.SourceResource;
 
 /**
  *

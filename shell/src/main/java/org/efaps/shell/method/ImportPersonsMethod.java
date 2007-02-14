@@ -20,10 +20,6 @@
 
 package org.efaps.shell.method;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-
-import org.efaps.db.Context;
 import org.efaps.jaas.ImportHandler;
 import org.efaps.util.EFapsException;
 

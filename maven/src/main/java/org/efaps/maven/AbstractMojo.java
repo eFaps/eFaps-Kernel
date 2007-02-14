@@ -32,7 +32,6 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.digester.Digester;
 import org.apache.maven.plugin.Mojo;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.slide.transaction.SlideTransactionManager;
 

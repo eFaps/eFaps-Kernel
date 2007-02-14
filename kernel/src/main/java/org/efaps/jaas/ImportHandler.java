@@ -21,7 +21,6 @@
 package org.efaps.jaas;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,7 +34,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Person;
-import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**

@@ -22,7 +22,6 @@ package org.efaps.db;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +39,6 @@ import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.ui.Field;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 

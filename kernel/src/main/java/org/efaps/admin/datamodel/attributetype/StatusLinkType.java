@@ -20,12 +20,9 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Locale;
 
 import org.efaps.admin.lifecycle.Status;
-import org.efaps.db.Context;
 
 /**
  *

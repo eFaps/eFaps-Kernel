@@ -29,7 +29,6 @@ import java.util.ResourceBundle;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
-import org.efaps.admin.ui.Field;
 import org.efaps.db.query.CachedResult;
 
 /**

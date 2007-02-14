@@ -20,9 +20,6 @@
 
 package org.efaps.admin.ui;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,11 +32,8 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Role;
 import org.efaps.admin.user.UserObject;
-import org.efaps.beans.TableBean;
 import org.efaps.db.Context;
-import org.efaps.db.SearchQuery;
 import org.efaps.servlet.RequestHandler;
-import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
 
 /**

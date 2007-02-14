@@ -20,22 +20,19 @@
 
 package org.efaps.admin.lifecycle;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.efaps.admin.user.Role;
 import org.efaps.admin.access.AccessType;
+import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.util.cache.Cache;
-import org.efaps.util.cache.CacheReloadInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * @author tmo

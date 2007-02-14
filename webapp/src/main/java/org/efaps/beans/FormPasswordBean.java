@@ -22,10 +22,7 @@ package org.efaps.beans;
 
 import java.util.ArrayList;
 
-import org.efaps.admin.datamodel.AttributeTypeInterface;
-import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
-import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 public class FormPasswordBean extends FormBean  {

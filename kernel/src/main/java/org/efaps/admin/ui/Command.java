@@ -20,7 +20,6 @@
 
 package org.efaps.admin.ui;
 
-import org.efaps.util.EFapsException;
 
 /**
  * @author tmo

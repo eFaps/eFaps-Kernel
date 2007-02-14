@@ -21,12 +21,10 @@
 package org.efaps.admin.ui;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.efaps.admin.AdminObject;

@@ -43,7 +43,6 @@ import org.efaps.admin.user.Group;
 import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
-import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**

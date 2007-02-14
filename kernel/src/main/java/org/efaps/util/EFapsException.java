@@ -20,8 +20,6 @@
 
 package org.efaps.util;
 
-import org.efaps.db.Context;
-
 /**
  * The class is the exception class used to throw exception. This exceptions
  * are shown in the user interface (web browser). The exception text stands

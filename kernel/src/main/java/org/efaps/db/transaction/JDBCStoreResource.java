@@ -22,14 +22,12 @@ package org.efaps.db.transaction;
 
 import java.io.InputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.transaction.xa.XAException;
-import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
 import org.apache.commons.logging.Log;

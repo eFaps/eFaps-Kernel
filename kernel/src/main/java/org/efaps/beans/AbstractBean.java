@@ -28,7 +28,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 
-import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;

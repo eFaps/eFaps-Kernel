@@ -17,13 +17,8 @@
 
 package org.efaps.admin.datamodel;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Locale;
 
-import org.efaps.db.Context;
-import org.efaps.db.Instance;
-import org.efaps.util.EFapsException;
 import org.efaps.admin.ui.Field;
 
 /**

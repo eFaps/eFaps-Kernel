@@ -21,13 +21,11 @@
 package org.efaps.slide;
 
 import java.security.Principal;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
@@ -36,13 +34,10 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import org.apache.commons.transaction.file.ResourceManager;
-import org.apache.commons.transaction.file.ResourceManagerException;
 import org.apache.commons.transaction.util.xa.AbstractTransactionalResource;
 import org.apache.commons.transaction.util.xa.TransactionalResource;
 import org.apache.slide.authenticate.CredentialsToken;
 import org.apache.slide.common.*;
-import org.apache.slide.common.AbstractService;
 import org.apache.slide.content.*;
 import org.apache.slide.lock.*;
 import org.apache.slide.security.*;

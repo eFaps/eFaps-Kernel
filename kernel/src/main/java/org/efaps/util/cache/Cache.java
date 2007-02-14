@@ -20,10 +20,6 @@
 
 package org.efaps.util.cache;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -42,7 +38,6 @@ import org.efaps.admin.ui.UserInterfaceObject;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Role;
-import org.efaps.db.Context;
 
 /**
  * @author tmo

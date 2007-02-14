@@ -31,7 +31,6 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;

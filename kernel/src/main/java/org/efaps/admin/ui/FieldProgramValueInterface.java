@@ -17,8 +17,6 @@
 
 package org.efaps.admin.ui;
 
-import java.util.List;
-
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.db.AbstractQuery;
 import org.efaps.db.Context;

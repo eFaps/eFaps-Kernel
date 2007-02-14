@@ -26,9 +26,6 @@ import java.util.HashMap;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.JoinRowSet;
-
 /**
  */
 public abstract class AbstractDatabase  {

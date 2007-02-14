@@ -29,7 +29,6 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.MenuAbstract;
 import org.efaps.admin.ui.UserInterfaceObject;
 import org.efaps.db.Context;
-import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**

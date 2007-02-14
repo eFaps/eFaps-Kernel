@@ -41,7 +41,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.event.TriggerKeys4Values;
-import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;

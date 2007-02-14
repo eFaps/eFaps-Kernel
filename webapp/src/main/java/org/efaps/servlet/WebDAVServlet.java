@@ -21,7 +21,6 @@
 package org.efaps.servlet;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 

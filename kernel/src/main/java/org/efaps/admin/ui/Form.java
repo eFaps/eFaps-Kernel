@@ -23,9 +23,7 @@ package org.efaps.admin.ui;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Context;
-import org.efaps.util.EFapsException;
 
 /**
  *

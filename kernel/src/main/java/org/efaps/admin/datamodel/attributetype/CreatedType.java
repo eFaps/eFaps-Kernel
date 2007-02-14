@@ -20,10 +20,7 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.util.Locale;
-
 import org.efaps.db.Context;
-import org.efaps.admin.ui.Field;
 
 /**
  * The class is the attribute type representation for the created date time

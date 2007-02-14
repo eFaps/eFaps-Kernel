@@ -20,10 +20,7 @@
 
 package org.efaps.db;
 
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

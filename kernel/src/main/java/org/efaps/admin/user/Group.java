@@ -20,15 +20,9 @@
 
 package org.efaps.admin.user;
 
-import java.io.Serializable;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

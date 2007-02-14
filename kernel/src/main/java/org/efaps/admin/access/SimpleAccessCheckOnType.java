@@ -23,13 +23,9 @@ package org.efaps.admin.access;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;

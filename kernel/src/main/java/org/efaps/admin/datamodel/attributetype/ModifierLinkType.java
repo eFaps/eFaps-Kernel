@@ -22,10 +22,8 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Locale;
 
 import org.efaps.db.Context;
-import org.efaps.admin.ui.Field;
 
 /**
  * The class is the attribute type representation for the modifier person of a

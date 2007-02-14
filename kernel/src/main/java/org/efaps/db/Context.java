@@ -29,13 +29,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
-import javax.naming.NamingException;
 import javax.sql.DataSource;
-import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
-import javax.transaction.xa.XAResource;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

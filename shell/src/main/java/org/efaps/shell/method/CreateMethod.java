@@ -24,7 +24,6 @@ import java.io.StringReader;
 
 import org.mozilla.javascript.tools.shell.Main;
 
-import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**

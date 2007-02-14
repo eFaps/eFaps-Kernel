@@ -20,8 +20,6 @@
 
 package org.efaps.admin.ui;
 
-import org.efaps.db.Context;
-import org.efaps.util.EFapsException;
 
 /**
  *

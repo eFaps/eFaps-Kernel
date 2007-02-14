@@ -25,9 +25,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
 
-import javax.sql.rowset.CachedRowSet;
-import javax.sql.rowset.JoinRowSet;
-
 public class OracleDatabase extends AbstractDatabase  {
 
   public OracleDatabase()  {

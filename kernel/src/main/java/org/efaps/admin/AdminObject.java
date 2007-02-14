@@ -26,7 +26,6 @@ import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import org.efaps.db.Context;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 

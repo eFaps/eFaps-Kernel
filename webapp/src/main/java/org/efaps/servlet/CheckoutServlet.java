@@ -25,12 +25,10 @@ import java.io.IOException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import javax.servlet.ServletException;
 
 import org.efaps.db.Checkout;
 import org.efaps.db.Context;
-import org.efaps.db.SearchQuery;
 
 /**
  * The servlet checks out files from objects.
