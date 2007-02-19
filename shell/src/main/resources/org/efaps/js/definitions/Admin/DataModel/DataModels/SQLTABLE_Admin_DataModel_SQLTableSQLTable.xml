@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-sqltable>
+  <uuid>5ffb40ef-3518-46c8-a78f-da3ffbfea4c0</uuid>
+
+  <!-- sql table names for the data model -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>2</global>
+      <local>$Rev$</local>
+      <mode>(version==2)</mode>
+    </version>
+    <database>
+      <table-name>DMTABLE</table-name>
+      <parent-table>ABSTRACT</parent-table>
+      <create>true</create>
+      <update>true</update>
+      <!-- columns -->
+      <column name="SQLTABLE"       type="STRING_SHORT" length="35"     not-null="true"/>
+      <column name="SQLCOLUMNID"    type="STRING_SHORT" length="35"     not-null="true"/>
+      <column name="SQLCOLUMNTYPE"  type="STRING_SHORT" length="35"/>
+      <column name="DMTABLEMAIN"    type="INTEGER"/>
+      <!-- constraints -->
+      <unique name="DMTABLE_UK_SQLTBLE" columns="SQLTABLE"/>
+     </database>
+  </definition>
+
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>2</global>
+      <local>$Rev$</local>
+      <mode>(version==3)</mode>
+    </version>
+    <database>
+      <table-name>DMTABLE</table-name>
+      <update>true</update>
+      <!-- constraints -->
+      <foreign name="DMTABLE_FK_DMTBLMN"    key="DMTABLEMAIN"   reference="DMTABLE(ID)"/>
+    </database>
+  </definition>
+
+
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev$</local>
+      <mode>(version>=4)</mode>
+    </version>
+    <name>Admin_DataModel_SQLTableSQLTable</name>
+<!--<parent>Admin_AbstractSQLTable</parent>-->
+    <database>
+      <table-name>DMTABLE</table-name>
+    </database>
+  </definition>
+</datamodel-sqltable>
+

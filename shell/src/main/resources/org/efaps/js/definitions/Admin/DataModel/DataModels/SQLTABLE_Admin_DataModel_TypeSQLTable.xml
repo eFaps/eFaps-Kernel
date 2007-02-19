@@ -24,51 +24,47 @@
 -->
 
 <datamodel-sqltable>
-  <uuid>e76ff99d-0d3d-4154-b2ef-d65633d357c3</uuid>
+  <uuid>8f4df2db-8fda-4f00-9144-9a3e344d0abc</uuid>
 
-  <!-- create the SQL Table -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>1</local>
-      <mode>(version==1)</mode>
-    </version>
-
-    <database>
-      <create>true</create>
-      <update>true</update>
-      <table-name>ABSTRACT</table-name>
-      <!-- columns -->
-      <column name="TYPEID"     type="INTEGER"                    not-null="true"/>
-      <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
-      <column name="UUID"       type="STRING_SHORT" length="128"/>
-      <column name="REVISION"   type="STRING_SHORT" length="40"   not-null="true"/>
-      <column name="CREATOR"    type="INTEGER"                    not-null="true"/>
-      <column name="CREATED"    type="DATETIME"                   not-null="true"/>
-      <column name="MODIFIER"   type="INTEGER"                    not-null="true"/>
-      <column name="MODIFIED"   type="DATETIME"                   not-null="true"/>
-    </database>
-  </definition>
-
-  <!-- make the contraints for the SQL table -->
+  <!-- type definition -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
-      <local>1</local>
+      <local>$Rev$</local>
+      <mode>(version==2)</mode>
+    </version>
+
+    <database>
+      <table-name>DMTYPE</table-name>
+      <parent-table>ABSTRACT</parent-table>
+      <create>true</create>
+      <update>true</update>
+      <!-- columns -->
+      <column name="PARENTDMTYPE"  type="INTEGER"/>
+      <column name="SQLCACHEEXPR"  type="STRING_SHORT"  length="50"/>
+    </database>
+<!--
+     ["STATUS  int  default 10001 not null"],
+-->
+  </definition>
+
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>2</global>
+      <local>$Rev$</local>
       <mode>(version==3)</mode>
     </version>
+
     <database>
-      <create>false</create>
-      <update>false</update>
-      <table-name>ABSTRACT</table-name>
+      <table-name>DMTYPE</table-name>
+      <update>true</update>
       <!-- constraints -->
-      <foreign name="ABSTR_FK_TYPEID"       key="TYPEID"        reference="DMTYPE(ID)"/>
-      <foreign name="ABSTR_FK_CRTR"         key="CREATOR"       reference="USERPERSON(ID)"/>
-      <foreign name="ABSTR_FK_MDFR"         key="MODIFIER"      reference="USERPERSON(ID)"/>
+      <foreign name="DMTYPE_FK_PRNTDMTP"    key="PARENTDMTYPE"  reference="DMTYPE(ID)"/>
     </database>
   </definition>
+
 
   <definition>
     <version>
@@ -77,9 +73,12 @@
       <local>$Rev$</local>
       <mode>(version>=4)</mode>
     </version>
-    <name>Admin_Common_VersionSQLTable</name>
+
+    <name>Admin_DataModel_TypeSQLTable</name>
+<!--<parent>Admin_AbstractSQLTable</parent>-->
     <database>
-      <table-name>ABSTRACT</table-name>
+      <table-name>DMTYPE</table-name>
     </database>
   </definition>
 </datamodel-sqltable>
+

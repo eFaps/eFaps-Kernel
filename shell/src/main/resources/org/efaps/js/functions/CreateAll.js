@@ -795,7 +795,7 @@ var con = _context.getConnectionResource();
 var _con = con.getConnection();
 var _stmt = _con.createStatement();
 
-  eFapsCommonSQLTableCreate(_con, _stmt, "sql table names for the data model", "DMTABLE", "ABSTRACT",[
+/*  eFapsCommonSQLTableCreate(_con, _stmt, "sql table names for the data model", "DMTABLE", "ABSTRACT",[
       ["SQLTABLE              "+TYPE_STRING_SHORT+"(35)          not null"],
       ["SQLCOLUMNID           "+TYPE_STRING_SHORT+"(35)          not null"],
       ["SQLCOLUMNTYPE         "+TYPE_STRING_SHORT+"(35)"],
@@ -809,6 +809,7 @@ var _stmt = _con.createStatement();
       ["SQLCACHEEXPR          "+TYPE_STRING_SHORT+"(50)"],
       ["constraint DMTYPE_FK_PRNTDMTP  foreign key(PARENTDMTYPE) references DMTYPE(ID)"]
   ]);
+*/
 /*
   eFapsCommonSQLTableCreate(_con, _stmt, "connection of policies for type definitions", "DMTYPE2POLICY", null,[
       ["CREATOR               "+TYPE_INTEGER+"                   not null"],
@@ -823,6 +824,7 @@ var _stmt = _con.createStatement();
       ["constraint DMTPE2PLCY_FK_PLCY  foreign key(LCPOLICY)     references LCPOLICY(ID)"]
   ]);
 */
+/*
   _exec(_stmt, "Table 'DMATTRIBUTETYPE'", "attribute types",
     "create table DMATTRIBUTETYPE ("+
       "ID                    "+TYPE_INTEGER+"                   not null,"+
@@ -852,7 +854,8 @@ var _stmt = _con.createStatement();
       ["constraint DMATTR_FK_DMATTRTP  foreign key(DMATTRIBUTETYPE)  references DMATTRIBUTETYPE(ID)"],
       ["constraint DMATTR_FK_DMTPLINK  foreign key(DMTYPELINK)       references DMTYPE(ID)"]
   ]);
-//        "constraint DMATTR_UK_DMTP_NM   unique(DMTYPE,NAME),"+
+*/
+  //        "constraint DMATTR_UK_DMTP_NM   unique(DMTYPE,NAME),"+
 
   _exec(_stmt, "View 'V_ADMINTYPE'", "view representing all types",
     "create view V_ADMINTYPE as "+
@@ -893,27 +896,27 @@ var _stmt = _con.createStatement();
   );
 
   text = "Insert Attribute Types";
-  _exec(_stmt, text, "",   "insert into DMATTRIBUTETYPE values ( 99,'Type',           1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.TypeType',         'org.efaps.admin.datamodel.ui.TypeUI',    null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (100,'String',         1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (110,'Password',       1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.PasswordType',     'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (111,'OID',            1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OIDType',          'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (200,'Long',           1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LongType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (210,'Integer',        1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.IntegerType',      'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (220,'Real',           1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.RealType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (290,'Boolean',        1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.BooleanType',      'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (310,'Date',           1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (320,'Time',           1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (330,'DateTime',       1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.DateTimeType',     'org.efaps.admin.datamodel.ui.DateTimeUI',null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (331,'Created',        1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.CreatedType',      'org.efaps.admin.datamodel.ui.DateTimeUI',null, 1   )");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (332,'Modified',       1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.ModifiedType',     'org.efaps.admin.datamodel.ui.DateTimeUI',1,    null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (400,'Link',           1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LinkType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (401,'LinkWithRanges', 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LinkWithRanges',   'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (410,'PersonLink',     1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.PersonLinkType',   'org.efaps.admin.datamodel.ui.UserUI',    null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (411,'CreatorLink',    1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.CreatorLinkType',  'org.efaps.admin.datamodel.ui.UserUI',    null, 1   )");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (412,'ModifierLink',   1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.ModifierLinkType', 'org.efaps.admin.datamodel.ui.UserUI',    1,    null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (413,'OwnerLink',      1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OwnerLinkType',    'org.efaps.admin.datamodel.ui.UserUI',    null, 1   )");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (420,'PolicyLink',     1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (421,'StatusLink',     1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StatusLinkType',   'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, text, "",   "insert into DMATTRIBUTETYPE values ( 99,'Type',           null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.TypeType',         'org.efaps.admin.datamodel.ui.TypeUI',    null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (100,'String',         null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (110,'Password',       null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.PasswordType',     'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (111,'OID',            null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OIDType',          'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (200,'Long',           null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LongType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (210,'Integer',        null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.IntegerType',      'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (220,'Real',           null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.RealType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (290,'Boolean',        null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.BooleanType',      'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (310,'Date',           null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (320,'Time',           null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (330,'DateTime',       null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.DateTimeType',     'org.efaps.admin.datamodel.ui.DateTimeUI',null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (331,'Created',        null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.CreatedType',      'org.efaps.admin.datamodel.ui.DateTimeUI',null, 1   )");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (332,'Modified',       null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.ModifiedType',     'org.efaps.admin.datamodel.ui.DateTimeUI',1,    null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (400,'Link',           null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LinkType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (401,'LinkWithRanges', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LinkWithRanges',   'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (410,'PersonLink',     null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.PersonLinkType',   'org.efaps.admin.datamodel.ui.UserUI',    null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (411,'CreatorLink',    null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.CreatorLinkType',  'org.efaps.admin.datamodel.ui.UserUI',    null, 1   )");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (412,'ModifierLink',   null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.ModifierLinkType', 'org.efaps.admin.datamodel.ui.UserUI',    1,    null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (413,'OwnerLink',      null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OwnerLinkType',    'org.efaps.admin.datamodel.ui.UserUI',    null, 1   )");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (420,'PolicyLink',     null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (421,'StatusLink',     null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StatusLinkType',   'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
 con.commit();
 }
 
@@ -1061,10 +1064,11 @@ var _stmt = _con.createStatement();
   _exec(_stmt, "Table 'ABSTRACT'", "update type id for attributes",
     "update ABSTRACT set TYPEID=" + typeIdAttr + " where TYPEID=-22000"
   );
-
+/*
   eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "ABSTRACT", [
       ["constraint ABSTR_FK_TYPEID foreign key(TYPEID) references DMTYPE(ID)"]
   ]);
+*/
 /*
   eFapsCommonSQLTableCreate(_con, _stmt, "Common Version Table", "COMMONVERSION", null,[
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
