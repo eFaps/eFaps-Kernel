@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev: 569 $
+ Last Changed:    $Date: 2006-12-02 15:47:33 +0100 (Sa, 02 Dez 2006) $
+ Last Changed By: $Author: tmo $
+
+-->
+
+<datamodel-sqltable>
+  <uuid>5cf99cd6-06d6-4322-a344-55d206666c9c</uuid>
+
+  <!-- Common Properties -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>1</local>
+      <mode>(version==1)</mode>
+    </version>
+
+    <database>
+      <create>true</create>
+      <update>true</update>
+      <table-name>PROPERTY</table-name>
+      <!-- columns -->
+      <column name="ABSTRACT"   type="INTEGER"                    not-null="true"/>
+      <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
+      <column name="VALUE"      type="STRING_SHORT" length="128"/>
+      <!-- constraints -->
+      <unique name="PROPERTY_UK_ABNAME" columns="ABSTRACT,NAME"/>
+    </database>
+  </definition>
+
+  <!-- make the contraints for the SQL table -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>2</global>
+      <local>1</local>
+      <mode>(version==3)</mode>
+    </version>
+    <database>
+      <create>false</create>
+      <update>false</update>
+      <table-name>PROPERTY</table-name>
+      <!-- constraints -->
+      <foreign name="PROPERTY_FK_ABSTR"     key="ABSTRACT"      reference="ABSTRACT(ID)"/>
+<!-- on delete cascade -->
+     </database>
+  </definition>
+
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev: 473 $</local>
+      <mode>(version>=4)</mode>
+    </version>
+    <name>Admin_PropertyTable</name>
+    <database>
+      <table-name>PROPERTY</table-name>
+    </database>
+  </definition>
+</datamodel-sqltable>
