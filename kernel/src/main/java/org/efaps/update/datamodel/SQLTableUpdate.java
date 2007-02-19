@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -152,6 +153,7 @@ public class SQLTableUpdate extends AbstractUpdate  {
 
       ret = (SQLTableUpdate) digester.parse(_file);
     } catch (SAXException e)  {
+System.out.println("could not read file '" + _file + "'");
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);
     }
@@ -369,10 +371,24 @@ e.printStackTrace();
       this.foreignKeys.add(new ForeignKey(_name, _key, _reference));
     }
 
+public void updateInDB(final Type _dataModelType,
+                       final String _uuid,
+                       final Set < Link > _allLinkTypes) throws EFapsException,Exception {
+
+  if (this.create)  {
+    createSQLTable();
+  }
+  if (this.update)  {
+    updateSQLTable();
+  }
+  if (getValue("Name") != null)  {
+    super.updateInDB(_dataModelType, _uuid, _allLinkTypes);
+  }
+}
     /**
      *
      */
-    public Instance updateInDB(final Instance _instance,
+/*    public Instance updateInDB(final Instance _instance,
                                final Set < Link > _allLinkTypes,
                                final Insert _insert) throws EFapsException, Exception  {
       Instance instance = _instance;
@@ -388,7 +404,7 @@ e.printStackTrace();
       }
       return instance;
     }
-
+*/
 
     /**
      *
@@ -397,7 +413,7 @@ e.printStackTrace();
       Context context = Context.getThreadContext();
       ConnectionResource con = null;
       String tableName = getValue("SQLTable");
-      try  {  
+      try  {
         con = context.getConnectionResource();
 
         Context.getDbType().createTable(con.getConnection(), 

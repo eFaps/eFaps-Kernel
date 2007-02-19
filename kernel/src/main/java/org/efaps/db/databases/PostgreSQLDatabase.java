@@ -166,6 +166,7 @@ System.out.println("  - Table '" + tableName + "'");
       }
 
       cmd.append(") without OIDS;");
+//System.out.println("cmd.toString()="+cmd.toString());
       stmt.executeUpdate(cmd.toString());
 
     } finally  {
