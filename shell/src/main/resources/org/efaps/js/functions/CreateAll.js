@@ -173,7 +173,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     }
   }
   // sql table
-  for (i in fileList)  {
+/*  for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
     if (fileName.endsWith(".xml"))  {
@@ -183,7 +183,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
       }
     }
   }
-  // type
+*/  // type
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
@@ -293,6 +293,16 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
 function eFapsCreateAll()  {
   deleteAll();
   createAll();
+
+  print("############ Reload Cache");
+  reloadCache();
+
+  Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
+  Shell.setContext(context);
+  _eFapsCreateUserTablesStep4(context);
+  Shell.transactionManager.commit();
+  context.close();
 
   print("############ Reload Cache");
   reloadCache();
@@ -419,8 +429,11 @@ function _eFapsCreateInsertProp(_stmt, _abstractId, _key, _value)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateEventTablesStep3(_con, _stmt)  {
+function _eFapsCreateEventTablesStep3(_context)  {
   print("Create Event SQL Table");
+var con = _context.getConnectionResource();
+var _con = con.getConnection();
+var _stmt = _con.createStatement();
 
   eFapsCommonSQLTableCreate(_con, _stmt, "Definition of Events (e.g. Triggers)", "EVENTDEF", "ABSTRACT",[
       ["ABSTRACT              "+TYPE_INTEGER+"                   not null"],
@@ -449,6 +462,7 @@ function _eFapsCreateEventTablesStep3(_con, _stmt)  {
   var typeIdEventDef = _eFapsCreateInsertType(_stmt, text, "Admin_Event_Definition", "Admin_Abstract");
   _eFapsCreateInsertAttr(_stmt, sqlTableEventDef, typeIdEventDef, "IndexPosition",    "INDEXPOS",         210, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableEventDef, typeIdEventDef, "Abstract",         "ABSTRACT",         400, "Admin_Abstract");
+con.commit();
 }
 
 /**
@@ -456,90 +470,45 @@ function _eFapsCreateEventTablesStep3(_con, _stmt)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateUserTablesStep1(_con, _stmt)  {
+function _eFapsCreateUserTablesStep1(_context)  {
   print("Create User Tables");
 
-  eFapsCommonSQLTableCreate(_con, _stmt, "Abstract User", "USERABSTRACT", null,[
-      ["TYPEID                "+TYPE_INTEGER+"                   not null"],
-      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["UUID                  "+TYPE_STRING_SHORT+"(128)"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-["STATUS  int  default 10001 not null"],
-      ["constraint USERABSTR_UK_NAME   unique(NAME)"]
-  ]);
+  var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
 
-  eFapsCommonSQLTableCreate(_con, _stmt, "JAAS systems", "USERJAASSYSTEM", null,[
-      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["UUID                  "+TYPE_STRING_SHORT+"(128)"],
-      ["REVISION              "+TYPE_STRING_SHORT+"(40)"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["CLASSNAMEPERSON       "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["CLASSNAMEROLE         "+TYPE_STRING_SHORT+"(128)"],
-      ["CLASSNAMEGROUP        "+TYPE_STRING_SHORT+"(128)"],
-      ["METHODPERSONKEY       "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["METHODPERSONNAME      "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["METHODPERSONFIRSTNAME "+TYPE_STRING_SHORT+"(128)"],
-      ["METHODPERSONLASTNAME  "+TYPE_STRING_SHORT+"(128)"],
-      ["METHODPERSONEMAIL     "+TYPE_STRING_SHORT+"(128)"],
-      ["METHODPERSONORG       "+TYPE_STRING_SHORT+"(128)"],
-      ["METHODPERSONURL       "+TYPE_STRING_SHORT+"(128)"],
-      ["METHODPERSONPHONE     "+TYPE_STRING_SHORT+"(128)"],
-      ["METHODPERSONMOBILE    "+TYPE_STRING_SHORT+"(128)"],
-      ["METHODPERSONFAX       "+TYPE_STRING_SHORT+"(128)"],
-      ["METHODROLEKEY         "+TYPE_STRING_SHORT+"(128)"],
-      ["METHODGROUPKEY        "+TYPE_STRING_SHORT+"(128)"],
-      ["constraint USERJAASSYS_UK_NAME unique(NAME)"],
-      ["constraint USERJAASSYS_UK_UUID unique(UUID)"]
-  ]);
+  var jexlContext = JexlHelper.createContext();
+  jexlContext.getVars().put("version", 
+                            Packages.java.lang.Integer.parseInt("1"));
 
-  eFapsCommonSQLTableCreate(_con, _stmt, "Mapping to external JAAS systems", "USERJAASKEY", null,[
-      ["KEY                   "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["USERABSTRACT          "+TYPE_INTEGER+"                   not null"],
-      ["USERJAASSYSTEM        "+TYPE_INTEGER+"                   not null"],
-      ["constraint USRJAASKY_UK_SYSKEY unique(USERJAASSYSTEM,KEY)"],
-      ["constraint USRJAASKY_FK_USER   foreign key(USERABSTRACT)     references USERABSTRACT(ID)"],
-      ["constraint USRJAASKY_FK_SYSTEM foreign key(USERJAASSYSTEM)   references USERJAASSYSTEM(ID)"]
-  ]);
+  // sql table
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SQLTableUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
 
-  eFapsCommonSQLTableCreate(_con, _stmt, "Person object", "USERPERSON", "USERABSTRACT",[
-      ["FIRSTNAME             "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["LASTNAME              "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["EMAIL                 "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["ORG                   "+TYPE_STRING_SHORT+"(128)"],
-      ["URL                   "+TYPE_STRING_SHORT+"(254)"],
-      ["PHONE                 "+TYPE_STRING_SHORT+"(32)"],
-      ["MOBILE                "+TYPE_STRING_SHORT+"(32)"],
-      ["FAX                   "+TYPE_STRING_SHORT+"(32)"],
-      ["PASSWORD              "+TYPE_STRING_SHORT+"(128)"],
-      ["LASTLOGIN             "+TYPE_DATETIME]
-  ]);
+  jexlContext.getVars().put("version", 
+                            Packages.java.lang.Integer.parseInt("2"));
 
-  eFapsCommonSQLTableCreate(_con, _stmt, "Connection between Abstract User and Abstract User", "USERABSTRACT2ABSTRACT", null,[
-      ["TYPEID                "+TYPE_INTEGER+"                   not null"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["USERABSTRACTFROM      "+TYPE_INTEGER+"                   not null"],
-      ["USERABSTRACTTO        "+TYPE_INTEGER+"                   not null"],
-      ["USERJAASSYSTEM        "+TYPE_INTEGER+"                   not null"],
-      ["constraint USRABS2ABS_UK_FRTO  unique(USERABSTRACTFROM,USERABSTRACTTO,USERJAASSYSTEM)"],
-      ["constraint USRABS2ABS_FK_CRTR  foreign key(CREATOR)          references USERABSTRACT(ID)"],
-      ["constraint USRABS2ABS_FK_MDFR  foreign key(MODIFIER)         references USERABSTRACT(ID)"],
-      ["constraint USRABS2ABS_FK_FROM  foreign key(USERABSTRACTFROM) references USERABSTRACT(ID)"],
-      ["constraint USRABS2ABS_FK_TO    foreign key(USERABSTRACTTO)   references USERABSTRACT(ID)"],
-      ["constraint USRABS2ABS_FK_SYSTM foreign key(USERJAASSYSTEM)   references USERJAASSYSTEM(ID)"]
-  ]);
+  // sql table
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SQLTableUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+
+  var con = _context.getConnectionResource();
+var _con = con.getConnection();
+var _stmt = _con.createStatement();
 
   _exec(_stmt, "Insert JAAS System eFaps", null,
     "insert into USERJAASSYSTEM(NAME, UUID, "
@@ -593,15 +562,9 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
         "values (-12000, 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 1, 2, 1)"
   );
 
-  eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column CREATOR and MODIFIER", "USERABSTRACT", [
-      ["constraint USRABSTR_FK_CRTR   foreign key(CREATOR)          references USERPERSON(ID)"],
-      ["constraint USRABSTR_MDFR      foreign key(MODIFIER)         references USERPERSON(ID)"]
-  ]);
 
-  eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column CREATOR and MODIFIER", "USERJAASSYSTEM", [
-      ["constraint USERJAASSYS_FK_CRTR foreign key(CREATOR)          references USERABSTRACT(ID)"],
-      ["constraint USERJAASSYS_FK_MDFR foreign key(MODIFIER)         references USERABSTRACT(ID)"]
-  ]);
+
+con.commit();
 }
 
 /**
@@ -609,9 +572,12 @@ function _eFapsCreateUserTablesStep1(_con, _stmt)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateUserTablesStep2(_con, _stmt)  {
+function _eFapsCreateUserTablesStep2(_context)  {
 
     print("Insert User Types and create User Views");
+var con = _context.getConnectionResource();
+var _con = con.getConnection();
+var _stmt = _con.createStatement();
 
     text = "Insert Person Policy";
     var newId = _insert(_stmt, text, "",   "insert into LCPOLICY(NAME,CREATOR,CREATED,MODIFIER,MODIFIED) values ('Admin_User_Person',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")","LCPOLICY");
@@ -772,6 +738,50 @@ function _eFapsCreateUserTablesStep2(_con, _stmt)  {
         +   "from USERABSTRACT2ABSTRACT "
         +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Group
     );
+con.commit();
+}
+function _eFapsCreateStep3(_context)  {
+  print("Update Tables");
+
+  var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
+
+  var jexlContext = JexlHelper.createContext();
+  jexlContext.getVars().put("version", 
+                            Packages.java.lang.Integer.parseInt("3"));
+
+  // sql table
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SQLTableUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+}
+
+function _eFapsCreateUserTablesStep4(_context)  {
+  print("Create User Tables");
+
+  var fileList = eFapsGetAllFiles("org/efaps/js/definitions/Admin/User/DataModels", true);
+
+  var jexlContext = JexlHelper.createContext();
+  jexlContext.getVars().put("version", 
+                            Packages.java.lang.Integer.parseInt("4"));
+
+  // sql table
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SQLTableUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
 }
 
 /**
@@ -779,8 +789,11 @@ function _eFapsCreateUserTablesStep2(_con, _stmt)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateDataModelTablesStep1(_con, _stmt)  {
+function _eFapsCreateDataModelTablesStep1(_context)  {
   print("Create Data Model Tables");
+var con = _context.getConnectionResource();
+var _con = con.getConnection();
+var _stmt = _con.createStatement();
 
   eFapsCommonSQLTableCreate(_con, _stmt, "sql table names for the data model", "DMTABLE", "ABSTRACT",[
       ["SQLTABLE              "+TYPE_STRING_SHORT+"(35)          not null"],
@@ -901,6 +914,7 @@ function _eFapsCreateDataModelTablesStep1(_con, _stmt)  {
   _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (413,'OwnerLink',      1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OwnerLinkType',    'org.efaps.admin.datamodel.ui.UserUI',    null, 1   )");
   _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (420,'PolicyLink',     1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
   _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (421,'StatusLink',     1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StatusLinkType',   'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+con.commit();
 }
 
 /**
@@ -908,9 +922,12 @@ function _eFapsCreateDataModelTablesStep1(_con, _stmt)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateDataModelTablesStep2(_con, _stmt)  {
+function _eFapsCreateDataModelTablesStep2(_context)  {
   /////////////////////////////////////////
   // insert 'sql table' 
+var con = _context.getConnectionResource();
+var _con = con.getConnection();
+var _stmt = _con.createStatement();
 
   text = "Insert Table for 'Admin_DataModel_SQLTable'";
   var sqlTableIdSQLTable = _eFapsCreateInsertSQLTable(_stmt, text, "Admin_DataModel_SQLTableSQLTable", "DMTABLE", "ID", null, "Admin_AbstractSQLTable");
@@ -978,6 +995,7 @@ function _eFapsCreateDataModelTablesStep2(_con, _stmt)  {
   _eFapsCreateInsertAttr(_stmt, sqlTableIdProp, typeIdProp, 'Abstract',         'ABSTRACT',         400, "Admin_Abstract");
   _eFapsCreateInsertProp(_stmt, typeIdProp, "Tree", "Admin_PropertyTree");
   _eFapsCreateInsertProp(_stmt, typeIdProp, "Icon", "${ROOTURL}/servlet/image/Admin_PropertyImage");
+con.commit();
 }
 
 /**
@@ -985,38 +1003,11 @@ function _eFapsCreateDataModelTablesStep2(_con, _stmt)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateCommonTablesStep1(_con, _stmt)  {
-  print("Create Common Tables Step 1");
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "Common Abstract Table", "ABSTRACT", null,[
-      ["TYPEID                "+TYPE_INTEGER+"                   not null"],
-      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["UUID                  "+TYPE_STRING_SHORT+"(128)"],
-      ["REVISION              "+TYPE_STRING_SHORT+"(40)"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["constraint ABSTR_FK_CRTR       foreign key(CREATOR)      references USERPERSON(ID)"],
-      ["constraint ABSTR_FK_MDFR       foreign key(MODIFIER)     references USERPERSON(ID)"]
-  ]);
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "Common Properties", "PROPERTY", null,[
-      ["ABSTRACT              "+TYPE_INTEGER+"                   not null"],
-      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["VALUE                 "+TYPE_STRING_SHORT+"(128)"],
-      ["constraint PROPERTY_UK_ABNAME  unique(ABSTRACT,NAME)"],
-      ["constraint PROPERTY_FK_ABSTR   foreign key(ABSTRACT)     references ABSTRACT(ID) on delete cascade"]
-  ]);
-}
-
-/**
- * The private functions creates all common tables
- *
- * @param _stmt SQL statement to work on
- */
-function _eFapsCreateCommonTablesStep2(_con, _stmt)  {
+function _eFapsCreateCommonTablesStep2(_context)  {
   print("Create Common Tables Step 2");
+var con = _context.getConnectionResource();
+var _con = con.getConnection();
+var _stmt = _con.createStatement();
 
   text = "Insert Table for 'Admin_Abstract'";
   var sqlTableIdAbstract = _eFapsCreateInsertSQLTable(_stmt, text, "Admin_AbstractSQLTable", "ABSTRACT", "ID", "TYPEID", null);
@@ -1033,6 +1024,7 @@ function _eFapsCreateCommonTablesStep2(_con, _stmt)  {
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'Name',             'NAME',             100, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'UUID',             'UUID',             100, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'Revision',         'REVISION',         100, null);
+con.commit();
 }
 
 /**
@@ -1040,8 +1032,11 @@ function _eFapsCreateCommonTablesStep2(_con, _stmt)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateCommonTablesStep3(_con, _stmt)  {
+function _eFapsCreateCommonTablesStep3(_context)  {
   print("Create Common Tables Step 3 (Activate foreign key for type id in table abstract)");
+var con = _context.getConnectionResource();
+var _con = con.getConnection();
+var _stmt = _con.createStatement();
 
   var rs = _stmt.executeQuery("select ID from ABSTRACT where NAME='Admin_DataModel_SQLTable'");
   rs.next();
@@ -1070,7 +1065,7 @@ function _eFapsCreateCommonTablesStep3(_con, _stmt)  {
   eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "ABSTRACT", [
       ["constraint ABSTR_FK_TYPEID foreign key(TYPEID) references DMTYPE(ID)"]
   ]);
-
+/*
   eFapsCommonSQLTableCreate(_con, _stmt, "Common Version Table", "COMMONVERSION", null,[
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
       ["REVISION              "+TYPE_INTEGER+"                   not null"],
@@ -1082,7 +1077,7 @@ function _eFapsCreateCommonTablesStep3(_con, _stmt)  {
       ["constraint COMVER_FK_CRTR      foreign key(CREATOR)      references USERPERSON(ID)"],
       ["constraint COMVER_FK_MDFR      foreign key(MODIFIER)     references USERPERSON(ID)"]
   ]);
-
+*/
   _exec(_stmt, "View 'V_COMMONVERSION'", "view representing all versions",
     "create view V_COMMONVERSION as "
       + "select "
@@ -1091,6 +1086,7 @@ function _eFapsCreateCommonTablesStep3(_con, _stmt)  {
       +     "from COMMONVERSION "
       +     "group by NAME"
   );
+con.commit();
 }
 
 /**
@@ -1098,8 +1094,11 @@ function _eFapsCreateCommonTablesStep3(_con, _stmt)  {
  *
  * @param _stmt SQL statement to work on
  */
-function _eFapsCreateLifeCycleTablesStep1(_con, _stmt)  {
+function _eFapsCreateLifeCycleTablesStep1(_context)  {
   print("Create LifeCycle Tables");
+var con = _context.getConnectionResource();
+var _con = con.getConnection();
+var _stmt = _con.createStatement();
 
   eFapsCommonSQLTableCreate(_con, _stmt, "Policy object", "LCPOLICY", null,[
       ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
@@ -1141,133 +1140,7 @@ function _eFapsCreateLifeCycleTablesStep1(_con, _stmt)  {
       ["constraint LCSTSACS_FK_ACSTP   foreign key(LCACCESSTYPE) references ACCESSTYPE(ID)"],
       ["constraint LCSTSACS_FK_USR     foreign key(USERABSTRACT) references USERABSTRACT(ID)"]
   ]);
-}
-
-/**
- * The private functions creates all access tables
- *
- * @param _stmt SQL statement to work on
- */
-function _eFapsCreateAccessTablesStep1(_con, _stmt)  {
-  print("Create Access Tables");
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "Access Types", "ACCESSTYPE", null,[
-      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["UUID                  "+TYPE_STRING_SHORT+"(128)"],
-      ["REVISION              "+TYPE_STRING_SHORT+"(40)"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["constraint ACCESSTP_UK_NAME    unique(NAME)"],
-      ["constraint ACCESSTP_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID)"],
-      ["constraint ACCESSTP_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"]
-  ]);
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "Access Sets", "ACCESSSET", null,[
-      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["UUID                  "+TYPE_STRING_SHORT+"(128)"],
-      ["REVISION              "+TYPE_STRING_SHORT+"(40)"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["constraint ACSST_NAME_UQ       unique(NAME)"],
-      ["constraint ACSST_UUID_UQ       unique(UUID)"],
-      ["constraint ACSST_FK_CRTR       foreign key(CREATOR)      references USERPERSON(ID)"],
-      ["constraint ACSST_FK_MDFR       foreign key(MODIFIER)     references USERPERSON(ID)"]
-  ]);
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "Link from Access Sets to Access Types", "ACCESSSET2TYPE", null,[
-      ["ACCESSSET             "+TYPE_INTEGER+"                   not null"],
-      ["ACCESSTYPE            "+TYPE_INTEGER+"                   not null"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["constraint ACSST2TP_UNIQUE     unique(ACCESSSET,ACCESSTYPE)"],
-      ["constraint ACSST2TP_FK_SET     foreign key(ACCESSSET)    references ACCESSSET(ID)"],
-      ["constraint ACSST2TP_FK_TYPE    foreign key(ACCESSTYPE)   references ACCESSTYPE(ID)"],
-      ["constraint ACSST2TP_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID)"],
-      ["constraint ACSST2TP_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"]
-  ]);
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "Link from Access Sets to Data Model Types", "ACCESSSET2DMTYPE", null,[
-      ["ACCESSSET             "+TYPE_INTEGER+"                   not null"],
-      ["DMTYPE                "+TYPE_INTEGER+"                   not null"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["constraint ACSST2DMTP_UNIQUE   unique(ACCESSSET,DMTYPE)"],
-      ["constraint ACSST2DMTP_FK_SET   foreign key(ACCESSSET)    references ACCESSSET(ID)"],
-      ["constraint ACSST2DMTP_FK_TYPE  foreign key(DMTYPE)       references DMTYPE(ID)"],
-      ["constraint ACSST2DMTP_FK_CRTR  foreign key(CREATOR)      references USERPERSON(ID)"],
-      ["constraint ACSST2DMTP_FK_MDFR  foreign key(MODIFIER)     references USERPERSON(ID)"]
-  ]);
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "Link from Access Sets to Users", "ACCESSSET2USER", null,[
-      ["ACCESSSET             "+TYPE_INTEGER+"                   not null"],
-      ["USERABSTRACT          "+TYPE_INTEGER+"                   not null"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["constraint ACSST2USER_UNIQUE   unique(ACCESSSET,USERABSTRACT)"],
-      ["constraint ACSST2USER_FK_SET   foreign key(ACCESSSET)    references ACCESSSET(ID)"],
-      ["constraint ACSST2USER_FK_TYPE  foreign key(USERABSTRACT) references USERABSTRACT(ID)"],
-      ["constraint ACSST2USER_FK_CRTR  foreign key(CREATOR)      references USERPERSON(ID)"],
-      ["constraint ACSST2USER_FK_MDFR  foreign key(MODIFIER)     references USERPERSON(ID)"]
-  ]);
-}
-
-/**
- * The private function creates all user interface tables.
- *
- * @param _stmt SQL statement to work on
- */
-function _eFapsCreateUITablesStep1(_con, _stmt)  {
-  print("Create User Interface Tables");
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "table used to import files for user interface objects", "UIFILE", "ABSTRACT",[
-      ["FILENAME              "+TYPE_STRING_SHORT+"(128)"],
-      ["FILELENGTH            "+TYPE_INTEGER],
-      ["FILECONTENT           "+TYPE_BLOB]
-  ]);
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "connection between UI objects", "UIABSTRACT2UIABSTRACT", null,[
-      ["TYPEID                "+TYPE_INTEGER+"                       not null"],
-      ["CREATOR               "+TYPE_INTEGER+"                       not null"],
-      ["CREATED               "+TYPE_DATETIME+"                      not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                       not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                      not null"],
-      ["FROMID                "+TYPE_INTEGER+"                       not null"],
-      ["TOID                  "+TYPE_INTEGER+"                       not null"],
-      ["constraint UIABS2ABS_FK_CRTR   foreign key(CREATOR)          references USERPERSON(ID)"],
-      ["constraint UIABS2ABS_FK_MDFR   foreign key(MODIFIER)         references USERPERSON(ID)"],
-      ["constraint UIABS2ABS_FK_FRMID  foreign key(FROMID)           references ABSTRACT(ID)"],
-      ["constraint UIABS2ABS_FK_TOID   foreign key(TOID)             references ABSTRACT(ID)"]
-  ]);
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "user access for one UI object", "UIACCESS", null,[
-      ["UIABSTRACT            "+TYPE_INTEGER+"                       not null"],
-      ["USERABSTRACT          "+TYPE_INTEGER+"                       not null"],
-      ["CREATOR               "+TYPE_INTEGER+"                       not null"],
-      ["CREATED               "+TYPE_DATETIME+"                      not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                       not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                      not null"],
-      ["constraint UIACS_FK_USRABSTR   foreign key(USERABSTRACT)     references USERABSTRACT(ID)"],
-      ["constraint UIACS_FK_CRTR       foreign key(CREATOR)          references USERPERSON(ID)"],
-      ["constraint UIACS_FK_MDFR       foreign key(MODIFIER)         references USERPERSON(ID)"],
-      ["constraint UIACS_FK_UIABSTR    foreign key(UIABSTRACT)       references ABSTRACT(ID)"]
-  ]);
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "fields for forms and tables", "UIFIELD", "ABSTRACT",[
-      ["COLLECTION            "+TYPE_INTEGER+"                       not null"],
-      ["constraint UIFLD_FK_CLCT       foreign key(COLLECTION)       references ABSTRACT(ID)"]
-  ]);
-//      "constraint UIFLD_UK_NAME_CLCT  unique(NAME, COLLECTION),"+
-
+con.commit();
 }
 
 function createAll()  {
@@ -1278,29 +1151,30 @@ function createAll()  {
   Shell.setContext(context);
 
   try  {
-    var con = context.getConnection();
-    var stmt = con.createStatement();
-
-    if (eFapsCommonVersionGet(con,stmt) < 1)  {
-      _eFapsCreateUserTablesStep1     (con, stmt);
-      _eFapsCreateCommonTablesStep1   (con, stmt);
-      _eFapsCreateDataModelTablesStep1(con, stmt);
-      _eFapsCreateAccessTablesStep1   (con, stmt);
-      _eFapsCreateLifeCycleTablesStep1(con, stmt);
-      _eFapsCreateUITablesStep1       (con, stmt);
-      _eFapsCreateCommonTablesStep2   (con, stmt);
-      _eFapsCreateDataModelTablesStep2(con, stmt);
-      _eFapsCreateUserTablesStep2     (con, stmt);
-      _eFapsCreateCommonTablesStep3   (con, stmt);
-      _eFapsCreateEventTablesStep3    (con, stmt);
-      eFapsCommonVersionInsert(con, stmt, "eFaps", 1);
-    }
+//    var con = context.getConnection();
+//    var stmt = con.createStatement();
+//var con = context.getConnectionResource();
+//var stmt = con.getConnection().createStatement();
+    
+//    if (eFapsCommonVersionGet(con.getConnection(),stmt) < 1)  {
+      _eFapsCreateUserTablesStep1     (context);
+      _eFapsCreateDataModelTablesStep1(context);
+      _eFapsCreateLifeCycleTablesStep1(context);
+      _eFapsCreateCommonTablesStep2   (context);
+      _eFapsCreateDataModelTablesStep2(context);
+      _eFapsCreateUserTablesStep2     (context);
+      _eFapsCreateCommonTablesStep3   (context);
+      _eFapsCreateStep3               (context);
+      _eFapsCreateEventTablesStep3    (context);
+//      eFapsCommonVersionInsert(con.getConnection(), stmt, "eFaps", 1);
+//    }
 
 //    if (eFapsCommonVersionGet(con,stmt) < 2)  {
 //    }
     Shell.transactionManager.commit();
 
-    stmt.close();
+//    stmt.close();
+//con.commit();
   } catch (e)  {
     print(e);
     Shell.transactionManager.abort();

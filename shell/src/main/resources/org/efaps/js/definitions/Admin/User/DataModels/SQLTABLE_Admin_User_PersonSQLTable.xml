@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -24,8 +24,9 @@
 -->
 
 <datamodel-sqltable>
-  <uuid>4debddf9-3c84-4d83-9331-4332098ce0cc</uuid>
+  <uuid>a3a1ab4b-f3c3-49ad-a5cf-fc776ba1990c</uuid>
 
+  <!-- Person object -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -35,15 +36,22 @@
     </version>
 
     <database>
-      <table-name>ITWEBDAV</table-name>
-      <parent-table>ABSTRACT</parent-table>
+      <table-name>USERPERSON</table-name>
+      <parent-table>USERABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="PATH"       type="STRING_SHORT" length="30" not-null="true"/>
-      <!-- constraints -->
-      <unique name="ITWEBDAV_UK_PATH" columns="PATH"/>
-    </database>
+      <column name="FIRSTNAME"  type="STRING_SHORT" length="128" not-null="true"/>
+      <column name="LASTNAME"   type="STRING_SHORT" length="128" not-null="true"/>
+      <column name="EMAIL"      type="STRING_SHORT" length="128" not-null="true"/>
+      <column name="ORG"        type="STRING_SHORT" length="128"/>
+      <column name="URL"        type="STRING_SHORT" length="254"/>
+      <column name="PHONE"      type="STRING_SHORT" length="32"/>
+      <column name="MOBILE"     type="STRING_SHORT" length="32"/>
+      <column name="FAX"        type="STRING_SHORT" length="32"/>
+      <column name="PASSWORD"   type="STRING_SHORT" length="128"/>
+      <column name="LASTLOGIN"  type="DATETIME"/>
+     </database>
   </definition>
 
   <definition>
@@ -51,14 +59,15 @@
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version>=5)</mode>
+      <mode>(version>=4)</mode>
     </version>
 
-    <name>Admin_Integration_WebDAVSQLTable</name>
-<!--    <parent>Admin_AbstractSQLTable</parent>-->
+    <name>Admin_User_PersonSQLTable</name>
+    <!--
+<parent>Admin_User_AbstractSQLTable</parent>-->
     <database>
-      <table-name>ITWEBDAV</table-name>
+      <table-name>USERPERSON</table-name>
     </database>
   </definition>
-
 </datamodel-sqltable>
+

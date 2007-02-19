@@ -35,9 +35,6 @@
       <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
-
-    <name>Admin_Program_AbstractSQLTable</name>
-
     <database>
       <table-name>PRGABSTRACT</table-name>
       <parent-table>ABSTRACT</parent-table>
@@ -53,10 +50,14 @@
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version>2)</mode>
+      <mode>(version>=4)</mode>
     </version>
 
     <name>Admin_Program_AbstractSQLTable</name>
-    <parent>Admin_AbstractSQLTable</parent>
+<!--
+    <parent>Admin_AbstractSQLTable</parent>-->
+    <database>
+      <table-name>PRGABSTRACT</table-name>
+    </database>
   </definition>
 </datamodel-sqltable>

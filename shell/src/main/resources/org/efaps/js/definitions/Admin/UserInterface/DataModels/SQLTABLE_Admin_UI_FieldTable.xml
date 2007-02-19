@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -24,26 +24,38 @@
 -->
 
 <datamodel-sqltable>
-  <uuid>4debddf9-3c84-4d83-9331-4332098ce0cc</uuid>
+  <uuid>93add055-d39c-44b8-9e01-6410182f8076</uuid>
+
+  <!-- fields for forms and tables -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>2</global>
+      <local>$Rev$</local>
+      <mode>(version==1)</mode>
+    </version>
+    <database>
+      <table-name>UIFIELD</table-name>
+      <parent-table>ABSTRACT</parent-table>
+      <create>true</create>
+      <update>true</update>
+      <!-- columns -->
+      <column name="COLLECTION" type="INTEGER"                      not-null="true"/>
+    </database>
+  </definition>
 
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==2)</mode>
+      <mode>(version==3)</mode>
     </version>
-
     <database>
-      <table-name>ITWEBDAV</table-name>
-      <parent-table>ABSTRACT</parent-table>
-      <create>true</create>
+      <table-name>UIFIELD</table-name>
       <update>true</update>
-      <!-- columns -->
-      <column name="PATH"       type="STRING_SHORT" length="30" not-null="true"/>
-      <!-- constraints -->
-      <unique name="ITWEBDAV_UK_PATH" columns="PATH"/>
-    </database>
+      <foreign name="UIFLD_FK_CLCT"         key="COLLECTION"    reference="ABSTRACT(ID)"/>
+     </database>
   </definition>
 
   <definition>
@@ -51,14 +63,12 @@
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version>=5)</mode>
+      <mode>(version>=4)</mode>
     </version>
-
-    <name>Admin_Integration_WebDAVSQLTable</name>
-<!--    <parent>Admin_AbstractSQLTable</parent>-->
+    <name>Admin_UI_FieldTable</name>
+<!--<parent>Admin_AbstractSQLTable</parent>-->
     <database>
-      <table-name>ITWEBDAV</table-name>
+      <table-name>UIFIELD</table-name>
     </database>
   </definition>
-
 </datamodel-sqltable>
