@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev: 683 $
+ Last Changed:    $Date: 2007-02-19 14:12:40 +0100 (Mo, 19 Feb 2007) $
+ Last Changed By: $Author: tmo $
+
+-->
+
+<datamodel-sqltable>
+  <uuid>18bd1cff-c982-47ac-81e5-a4df96ee4b6f</uuid>
+
+  <!-- History of Events for Objects -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>2</global>
+      <local>$Rev: 683 $</local>
+      <mode>(version==2)</mode>
+    </version>
+    <database>
+      <table-name>HISTORY</table-name>
+      <create>true</create>
+      <update>true</update>
+      <!-- columns -->
+      <column name="EVENTTYPEID"        type="INTEGER"                      not-null="true"/>
+      <column name="FORTYPEID"          type="INTEGER"                      not-null="true"/>
+      <column name="FORID"              type="INTEGER"                      not-null="true"/>
+      <column name="MODIFIER"           type="INTEGER"                      not-null="true"/>
+      <column name="MODIFIED"           type="DATETIME"                     not-null="true"/>
+      <column name="ATTRID"             type="INTEGER"/>
+      <column name="ATTRVALUE"          type="STRING_LONG"/>
+     </database>
+  </definition>
+
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>2</global>
+      <local>$Rev: 683 $</local>
+      <mode>(version==3)</mode>
+    </version>
+    <database>
+      <table-name>HISTORY</table-name>
+      <update>true</update>
+      <!-- constraints -->
+      <foreign name="HIST_FK_EVNTYPEID"     key="EVENTTYPEID"   reference="DMTYPE(ID)"/>
+      <foreign name="HIST_FK_FORTYPEID"     key="FORTYPEID"     reference="DMTYPE(ID)"/>
+      <foreign name="HIST_FK_MODIFIER"      key="MODIFIER"      reference="USERABSTRACT(ID)"/>
+    </database>
+  </definition>
+
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev: 683 $</local>
+      <mode>(version>=4)</mode>
+    </version>
+    <name>Admin_Event_HistorySQLTable</name>
+    <database>
+      <table-name>HISTORY</table-name>
+    </database>
+  </definition>
+</datamodel-sqltable>

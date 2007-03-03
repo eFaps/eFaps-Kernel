@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -340,7 +340,7 @@ function eFapsCreateAll()  {
   _eFapsCreateAllUpdatePassword();
 }
 
-function _eFapsCreateInsertSQLTable(_stmt, _text, _name, _sqlTable, _sqlColId, _sqlColType, _tableMain)  {
+function _eFapsCreateInsertSQLTable(_stmt, _text, _uuid, _name, _sqlTable, _sqlColId, _sqlColType, _tableMain)  {
   var sqlColType = (_sqlColType==null ? "null" : "'"+_sqlColType+"'");
 
   var rs = _stmt.executeQuery("select ID from ABSTRACT where NAME='Admin_DataModel_SQLTable'");
@@ -361,8 +361,15 @@ function _eFapsCreateInsertSQLTable(_stmt, _text, _name, _sqlTable, _sqlColId, _
 
   var ret = _insert(_stmt, _text, null, 
       "insert into ABSTRACT "+
-          "(TYPEID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
-          +"values  (" + typeIdSQLTable + ", '" + _name + "', '', 1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")", "ABSTRACT");
+          "(TYPEID,UUID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
+          +"values  (" + typeIdSQLTable 
+                        + ", '" + _uuid + "'"
+                        + ",'" + _name + "'"
+                        + ",''"
+                        + ", 1"
+                        + "," + CURRENT_TIMESTAMP 
+                        + ",1"
+                        + "," + CURRENT_TIMESTAMP + ")", "ABSTRACT");
   _exec(_stmt, null, null,  "insert into DMTABLE values  (" + ret + ",'" + _sqlTable + "','" + _sqlColId + "'," + sqlColType + "," + tableMainId + ")");
   return ret;
 }
@@ -434,13 +441,12 @@ function _eFapsCreateEventTablesStep3(_context)  {
 var con = _context.getConnectionResource();
 var _con = con.getConnection();
 var _stmt = _con.createStatement();
-
+/*
   eFapsCommonSQLTableCreate(_con, _stmt, "Definition of Events (e.g. Triggers)", "EVENTDEF", "ABSTRACT",[
       ["ABSTRACT              "+TYPE_INTEGER+"                   not null"],
       ["INDEXPOS              "+TYPE_INTEGER+"                   not null"],
       ["constraint EVENTDEF_UK_ID_INDEXPOS unique(ID,INDEXPOS)"]
   ]);
-
   eFapsCommonSQLTableCreate(_con, _stmt, "History of Events for Objects", "HISTORY", null,[
       ["EVENTTYPEID     "+TYPE_INTEGER+" not null"],
       ["FORTYPEID       "+TYPE_INTEGER+" not null"],
@@ -453,10 +459,10 @@ var _stmt = _con.createStatement();
       ["constraint HIST_FK_FORTYPEID foreign key(FORTYPEID)    references DMTYPE(ID)"],
       ["constraint HIST_FK_MODIFIER  foreign key(MODIFIER)     references USERABSTRACT(ID)"]
   ]);
-
+*/
   // must be created for reload-cache-functionality and possibility to define types
   text = "Insert Table for 'Admin_Event_Definition'";
-  var sqlTableEventDef = _eFapsCreateInsertSQLTable(_stmt, text, "Admin_Event_DefinitionSQLTable", "EVENTDEF", "ID", null, "Admin_AbstractSQLTable");
+  var sqlTableEventDef = _eFapsCreateInsertSQLTable(_stmt, text, "1238f647-9cf5-4d9f-883e-c6d24db538f5", "Admin_Event_DefinitionSQLTable", "EVENTDEF", "ID", null, "Admin_AbstractSQLTable");
 
   text = "Insert Type for 'Admin_Event_Definition'";
   var typeIdEventDef = _eFapsCreateInsertType(_stmt, text, "Admin_Event_Definition", "Admin_Abstract");
@@ -472,39 +478,6 @@ con.commit();
  */
 function _eFapsCreateUserTablesStep1(_context)  {
   print("Create User Tables");
-
-  var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
-
-  var jexlContext = JexlHelper.createContext();
-  jexlContext.getVars().put("version", 
-                            Packages.java.lang.Integer.parseInt("1"));
-
-  // sql table
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = SQLTableUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-
-  jexlContext.getVars().put("version", 
-                            Packages.java.lang.Integer.parseInt("2"));
-
-  // sql table
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = SQLTableUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
 
   var con = _context.getConnectionResource();
 var _con = con.getConnection();
@@ -756,6 +729,7 @@ function _eFapsCreateStep3(_context)  {
     if (fileName.endsWith(".xml"))  {
       var update = SQLTableUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -933,7 +907,7 @@ var _con = con.getConnection();
 var _stmt = _con.createStatement();
 
   text = "Insert Table for 'Admin_DataModel_SQLTable'";
-  var sqlTableIdSQLTable = _eFapsCreateInsertSQLTable(_stmt, text, "Admin_DataModel_SQLTableSQLTable", "DMTABLE", "ID", null, "Admin_AbstractSQLTable");
+  var sqlTableIdSQLTable = _eFapsCreateInsertSQLTable(_stmt, text, "5ffb40ef-3518-46c8-a78f-da3ffbfea4c0", "Admin_DataModel_SQLTableSQLTable", "DMTABLE", "ID", null, "Admin_AbstractSQLTable");
 
   text = "Insert Type for 'Admin_DataModel_SQLTable'";
   var typeIdSQLTable = _eFapsCreateInsertType(_stmt, text, "Admin_DataModel_SQLTable", "Admin_Abstract");
@@ -946,7 +920,7 @@ var _stmt = _con.createStatement();
   // insert 'type' 
 
   text = "Insert Table for 'Admin_DataModel_Type'";
-  var sqlTableIdType = _eFapsCreateInsertSQLTable(_stmt, text, "Admin_DataModel_TypeSQLTable", "DMTYPE", "ID", null, "Admin_AbstractSQLTable");
+  var sqlTableIdType = _eFapsCreateInsertSQLTable(_stmt, text, "8f4df2db-8fda-4f00-9144-9a3e344d0abc", "Admin_DataModel_TypeSQLTable", "DMTYPE", "ID", null, "Admin_AbstractSQLTable");
 
   text = "Insert Type for 'Admin_DataModel_Type'";
   var typeIdType = _eFapsCreateInsertType(_stmt, text, "Admin_DataModel_Type", "Admin_Abstract");
@@ -957,7 +931,7 @@ var _stmt = _con.createStatement();
   // insert 'attribute type' 
 
   text = "Insert Table for 'Admin_DataModel_AttributeType'";
-  var sqlTableIdAttrType = _eFapsCreateInsertSQLTable(_stmt, text, "Admin_DataModel_AttributeTypeSQLTable", "DMATTRIBUTETYPE", "ID", null, null);
+  var sqlTableIdAttrType = _eFapsCreateInsertSQLTable(_stmt, text, "30152cda-e5a3-418d-ad1e-ad44be1307c2", "Admin_DataModel_AttributeTypeSQLTable", "DMATTRIBUTETYPE", "ID", null, null);
 
   text = "Insert Type for 'Admin_DataModel_AttributeType'";
   var typeIdAttrType = _eFapsCreateInsertType(_stmt, text, "Admin_DataModel_AttributeType", null);
@@ -973,7 +947,7 @@ var _stmt = _con.createStatement();
   // insert 'attribute' 
 
   text = "Insert Table for 'Admin_DataModel_Attribute'";
-  var sqlTableIdAttr = _eFapsCreateInsertSQLTable(_stmt, text, "Admin_DataModel_AttributeSQLTable", "DMATTRIBUTE", "ID", null, "Admin_AbstractSQLTable");
+  var sqlTableIdAttr = _eFapsCreateInsertSQLTable(_stmt, text, "d3a64746-3666-4678-9603-f304bf16bb92", "Admin_DataModel_AttributeSQLTable", "DMATTRIBUTE", "ID", null, "Admin_AbstractSQLTable");
 
   text = "Insert Type for 'Admin_DataModel_Attribute'";
   var typeIdAttr = _eFapsCreateInsertType(_stmt, text, "Admin_DataModel_Attribute", "Admin_Abstract");
@@ -987,7 +961,7 @@ var _stmt = _con.createStatement();
   // insert 'admin property' 
 
   text = "Insert Table for 'Admin_Property'";
-  var sqlTableIdProp = _eFapsCreateInsertSQLTable(_stmt, text, "Admin_PropertyTable", "PROPERTY", "ID", null, null);
+  var sqlTableIdProp = _eFapsCreateInsertSQLTable(_stmt, text, "5cf99cd6-06d6-4322-a344-55d206666c9c", "Admin_PropertyTable", "PROPERTY", "ID", null, null);
 
   text = "Insert Type for 'Admin_Property'";
   var typeIdProp = _eFapsCreateInsertType(_stmt, text, "Admin_Property", null);
@@ -1013,7 +987,7 @@ var _con = con.getConnection();
 var _stmt = _con.createStatement();
 
   text = "Insert Table for 'Admin_Abstract'";
-  var sqlTableIdAbstract = _eFapsCreateInsertSQLTable(_stmt, text, "Admin_AbstractSQLTable", "ABSTRACT", "ID", "TYPEID", null);
+  var sqlTableIdAbstract = _eFapsCreateInsertSQLTable(_stmt, text, "e76ff99d-0d3d-4154-b2ef-d65633d357c3", "Admin_AbstractSQLTable", "ABSTRACT", "ID", "TYPEID", null);
 
   text = "Insert Type for 'Admin_Abstract'";
   var typeIdAbstract = _eFapsCreateInsertType(_stmt, text, "Admin_Abstract", null);
@@ -1161,6 +1135,39 @@ function createAll()  {
 //var stmt = con.getConnection().createStatement();
     
 //    if (eFapsCommonVersionGet(con.getConnection(),stmt) < 1)  {
+  var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
+
+  var jexlContext = JexlHelper.createContext();
+  jexlContext.getVars().put("version", 
+                            Packages.java.lang.Integer.parseInt("1"));
+
+  // sql table
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SQLTableUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+
+  jexlContext.getVars().put("version", 
+                            Packages.java.lang.Integer.parseInt("2"));
+
+  // sql table
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SQLTableUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+
       _eFapsCreateUserTablesStep1     (context);
       _eFapsCreateDataModelTablesStep1(context);
       _eFapsCreateLifeCycleTablesStep1(context);
