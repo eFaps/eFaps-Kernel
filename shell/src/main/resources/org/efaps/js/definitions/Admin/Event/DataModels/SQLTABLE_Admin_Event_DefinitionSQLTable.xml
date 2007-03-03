@@ -52,12 +52,12 @@
     <version>
       <application>eFaps</application>
       <global>3</global>
-      <local>$Rev$</local>
+      <local>$Rev:691 $</local>
       <mode>(version>=4)</mode>
     </version>
 
     <name>Admin_Event_DefinitionSQLTable</name>
-<!--<parent>Admin_AbstractSQLTable</parent>-->
+    <parent>Admin_AbstractSQLTable</parent>
     <database>
       <table-name>EVENTDEF</table-name>
     </database>

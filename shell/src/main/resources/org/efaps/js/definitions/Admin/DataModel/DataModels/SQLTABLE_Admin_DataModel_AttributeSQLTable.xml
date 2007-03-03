@@ -78,7 +78,7 @@
     </version>
 
     <name>Admin_DataModel_AttributeSQLTable</name>
-<!--<parent>Admin_AbstractSQLTable</parent>-->
+    <parent>Admin_AbstractSQLTable</parent>
     <database>
       <table-name>DMATTRIBUTE</table-name>
     </database>

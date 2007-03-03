@@ -73,7 +73,7 @@
       <mode>(version>=4)</mode>
     </version>
     <name>Admin_DataModel_SQLTableSQLTable</name>
-<!--<parent>Admin_AbstractSQLTable</parent>-->
+    <parent>Admin_AbstractSQLTable</parent>
     <database>
       <table-name>DMTABLE</table-name>
     </database>

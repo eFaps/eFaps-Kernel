@@ -54,7 +54,7 @@
       <mode>(version>=4)</mode>
     </version>
     <name>Admin_UI_FileTable</name>
-<!--<parent>Admin_AbstractSQLTable</parent>-->
+    <parent>Admin_AbstractSQLTable</parent>
     <database>
       <table-name>UIFILE</table-name>
     </database>

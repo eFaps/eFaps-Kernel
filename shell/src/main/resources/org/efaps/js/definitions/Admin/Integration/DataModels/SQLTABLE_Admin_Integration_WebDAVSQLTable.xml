@@ -55,7 +55,7 @@
     </version>
 
     <name>Admin_Integration_WebDAVSQLTable</name>
-<!--    <parent>Admin_AbstractSQLTable</parent>-->
+    <parent>Admin_AbstractSQLTable</parent>
     <database>
       <table-name>ITWEBDAV</table-name>
     </database>

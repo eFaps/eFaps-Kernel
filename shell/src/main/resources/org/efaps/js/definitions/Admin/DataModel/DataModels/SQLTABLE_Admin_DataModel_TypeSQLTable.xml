@@ -75,7 +75,7 @@
     </version>
 
     <name>Admin_DataModel_TypeSQLTable</name>
-<!--<parent>Admin_AbstractSQLTable</parent>-->
+    <parent>Admin_AbstractSQLTable</parent>
     <database>
       <table-name>DMTYPE</table-name>
     </database>
