@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -276,10 +276,15 @@ e.printStackTrace();
     // instance variables
 
     /**
-     * The SQL table name of the parent table.
+     * The SQL table name of the parent table (as name in the SQL database).
      */
     private String parentSQLTableName = null;
 
+    /**
+     * The SQL table name of the parent table (as internal name in eFaps).
+     */
+    private String parent = null;
+    
     private boolean create = false;
     
     private boolean update = false;
@@ -323,21 +328,7 @@ e.printStackTrace();
      */
     public void setParent(final String _parent) throws Exception {
       if ((_parent != null) && (_parent.length() > 0))  {
-        // search for the instance
-        SearchQuery query = new SearchQuery();
-        query.setQueryTypes("Admin_DataModel_SQLTable");
-        query.addWhereExprEqValue("Name", _parent);
-        query.addSelect("OID");
-        query.executeWithoutAccessCheck();
-        if (query.next())  {
-          Instance instance = new Instance((String) query.get("OID"));
-          addValue("DMTableMain", "" + instance.getId());
-        }  else  {
-          addValue("DMTableMain", null);
-        }
-        query.close();
-      } else  {
-        addValue("DMTableMain", null);
+        this.parent = _parent;
       }
     }
 
@@ -382,6 +373,21 @@ public void updateInDB(final Type _dataModelType,
     updateSQLTable();
   }
   if (getValue("Name") != null)  {
+      
+    // search for the parent SQL table name instance (if defined)
+    if (this.parent != null)  {
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes("Admin_DataModel_SQLTable");
+      query.addWhereExprEqValue("Name", this.parent);
+      query.addSelect("OID");
+      query.executeWithoutAccessCheck();
+      if (query.next())  {
+        Instance instance = new Instance((String) query.get("OID"));
+        addValue("DMTableMain", "" + instance.getId());
+      }
+      query.close();
+    }
+
     super.updateInDB(_dataModelType, _uuid, _allLinkTypes);
   }
 }
