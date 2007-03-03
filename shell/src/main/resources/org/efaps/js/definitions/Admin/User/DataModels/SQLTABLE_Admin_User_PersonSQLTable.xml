@@ -63,8 +63,7 @@
     </version>
 
     <name>Admin_User_PersonSQLTable</name>
-    <!--
-<parent>Admin_User_AbstractSQLTable</parent>-->
+    <parent>Admin_User_AbstractSQLTable</parent>
     <database>
       <table-name>USERPERSON</table-name>
     </database>

@@ -48,7 +48,7 @@
       <column name="CREATED"    type="DATETIME"                     not-null="true"/>
       <column name="MODIFIER"   type="INTEGER"                      not-null="true"/>
       <column name="MODIFIED"   type="DATETIME"                     not-null="true"/>
-      <column name="STATUS"     type="INTEGER"                      not-null="true"/>
+      <column name="STATUS"     type="INTEGER"/>
       <!-- constraints -->
       <unique name="USERABSTR_UK_NAME" columns="NAME"/>
      </database>

@@ -139,12 +139,12 @@ Type.prototype.addAttribute = function(_name)  {
     var attrOid = query.get(Shell.getContext(), "OID");
     attr = new Attribute(new Instance(Shell.getContext(), attrOid));
   } else  {
-    var insert = new Insert(Shell.getContext(), "Admin_DataModel_Attribute");
-    insert.add(Shell.getContext(), "ParentType", this.getId());
-    insert.add(Shell.getContext(), "Name", _name);
-    insert.add(Shell.getContext(), "AttributeType", (new DMAttributeType("Type")).getId());
-    insert.add(Shell.getContext(), "Table", (new SQLTable("Admin_AbstractSQLTable")).getId());
-    insert.add(Shell.getContext(), "SQLColumn", "-"+_name);
+    var insert = new Insert("Admin_DataModel_Attribute");
+    insert.add("ParentType", this.getId());
+    insert.add("Name", _name);
+    insert.add("AttributeType", (new DMAttributeType("Type")).getId());
+    insert.add("Table", (new SQLTable("Admin_AbstractSQLTable")).getId());
+    insert.add("SQLColumn", "-"+_name);
     insert.executeWithoutAccessCheck();
 
     attr = new Attribute(insert.getInstance());
@@ -233,7 +233,11 @@ Type.prototype.update = function(_fileName, _objName)  {
   }
   TYPE = this;
   print("  - import");
+try {
   load(_fileName);
+} catch (e)  {
+print(e);
+}
   TYPE = null;
 }
 

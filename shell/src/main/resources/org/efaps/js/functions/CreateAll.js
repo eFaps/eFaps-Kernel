@@ -190,6 +190,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = TypeUpdate.readXMLFile(file);
       if (update != null)  {
+print('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -293,6 +294,16 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
 function eFapsCreateAll()  {
   deleteAll();
   createAll();
+
+  print("############ Reload Cache");
+  reloadCache();
+
+  Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
+  Shell.setContext(context);
+  _eFapsUpdateSQLTables(context, "4");
+  Shell.transactionManager.commit();
+  context.close();
 
   print("############ Reload Cache");
   reloadCache();
@@ -552,11 +563,11 @@ var con = _context.getConnectionResource();
 var _con = con.getConnection();
 var _stmt = _con.createStatement();
 
-    text = "Insert Person Policy";
+/*    text = "Insert Person Policy";
     var newId = _insert(_stmt, text, "",   "insert into LCPOLICY(NAME,CREATOR,CREATED,MODIFIER,MODIFIED) values ('Admin_User_Person',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")","LCPOLICY");
     _exec(_stmt, null, null, "insert into LCSTATUS(NAME,CREATOR,CREATED,MODIFIER,MODIFIED,LCPOLICY) values ('Inactive',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+","+newId+")");
     _exec(_stmt, null, null, "insert into LCSTATUS(NAME,CREATOR,CREATED,MODIFIER,MODIFIED,LCPOLICY) values ('Active',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+","+newId+")");
-
+*/
 //alter table USERABSTRACT add constraint USRABSTR_FK_STS     foreign key(STATUS)     references LCSTATUS(ID);
 
     text = "Insert Type for 'Admin_User_Person' (only to store ID for type)";
@@ -713,14 +724,14 @@ var _stmt = _con.createStatement();
     );
 con.commit();
 }
-function _eFapsCreateStep3(_context)  {
+function _eFapsUpdateSQLTables(_context, _version)  {
   print("Update Tables");
 
   var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
 
   var jexlContext = JexlHelper.createContext();
   jexlContext.getVars().put("version", 
-                            Packages.java.lang.Integer.parseInt("3"));
+                            Packages.java.lang.Integer.parseInt(_version));
 
   // sql table
   for (i in fileList)  {
@@ -1135,47 +1146,18 @@ function createAll()  {
 //var stmt = con.getConnection().createStatement();
     
 //    if (eFapsCommonVersionGet(con.getConnection(),stmt) < 1)  {
-  var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
 
-  var jexlContext = JexlHelper.createContext();
-  jexlContext.getVars().put("version", 
-                            Packages.java.lang.Integer.parseInt("1"));
-
-  // sql table
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = SQLTableUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-
-  jexlContext.getVars().put("version", 
-                            Packages.java.lang.Integer.parseInt("2"));
-
-  // sql table
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = SQLTableUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
+      _eFapsUpdateSQLTables(context, "1");
+      _eFapsUpdateSQLTables(context, "2");
 
       _eFapsCreateUserTablesStep1     (context);
       _eFapsCreateDataModelTablesStep1(context);
-      _eFapsCreateLifeCycleTablesStep1(context);
+//      _eFapsCreateLifeCycleTablesStep1(context);
       _eFapsCreateCommonTablesStep2   (context);
       _eFapsCreateDataModelTablesStep2(context);
       _eFapsCreateUserTablesStep2     (context);
       _eFapsCreateCommonTablesStep3   (context);
-      _eFapsCreateStep3               (context);
+      _eFapsUpdateSQLTables(context, "3");
       _eFapsCreateEventTablesStep3    (context);
 //      eFapsCommonVersionInsert(con.getConnection(), stmt, "eFaps", 1);
 //    }

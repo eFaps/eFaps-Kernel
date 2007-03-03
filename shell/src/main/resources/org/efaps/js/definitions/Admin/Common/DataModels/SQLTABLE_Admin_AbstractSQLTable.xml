@@ -43,7 +43,7 @@
       <column name="TYPEID"     type="INTEGER"                    not-null="true"/>
       <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
       <column name="UUID"       type="STRING_SHORT" length="128"/>
-      <column name="REVISION"   type="STRING_SHORT" length="40"   not-null="true"/>
+      <column name="REVISION"   type="STRING_SHORT" length="40"/>
       <column name="CREATOR"    type="INTEGER"                    not-null="true"/>
       <column name="CREATED"    type="DATETIME"                   not-null="true"/>
       <column name="MODIFIER"   type="INTEGER"                    not-null="true"/>
@@ -77,7 +77,7 @@
       <local>$Rev$</local>
       <mode>(version>=4)</mode>
     </version>
-    <name>Admin_Common_VersionSQLTable</name>
+    <name>Admin_AbstractSQLTable</name>
     <database>
       <table-name>ABSTRACT</table-name>
     </database>

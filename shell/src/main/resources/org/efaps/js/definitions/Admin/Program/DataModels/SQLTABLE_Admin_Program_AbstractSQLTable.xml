@@ -54,8 +54,7 @@
     </version>
 
     <name>Admin_Program_AbstractSQLTable</name>
-<!--
-    <parent>Admin_AbstractSQLTable</parent>-->
+    <parent>Admin_AbstractSQLTable</parent>
     <database>
       <table-name>PRGABSTRACT</table-name>
     </database>
