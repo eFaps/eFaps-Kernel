@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev: 683 $
- Last Changed:    $Date: 2007-02-19 14:12:40 +0100 (Mo, 19 Feb 2007) $
- Last Changed By: $Author: tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -31,7 +31,7 @@
     <version>
       <application>eFaps</application>
       <global>2</global>
-      <local>$Rev: 683 $</local>
+      <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
     <database>
@@ -53,7 +53,7 @@
     <version>
       <application>eFaps</application>
       <global>2</global>
-      <local>$Rev: 683 $</local>
+      <local>$Rev$</local>
       <mode>(version==3)</mode>
     </version>
     <database>
@@ -70,7 +70,7 @@
     <version>
       <application>eFaps</application>
       <global>3</global>
-      <local>$Rev: 683 $</local>
+      <local>$Rev$</local>
       <mode>(version>=4)</mode>
     </version>
     <name>Admin_Event_HistorySQLTable</name>
