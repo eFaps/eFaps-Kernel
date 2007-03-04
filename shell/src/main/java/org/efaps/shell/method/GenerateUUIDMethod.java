@@ -22,6 +22,9 @@ package org.efaps.shell.method;
 
 import java.util.UUID;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+
 import org.efaps.util.EFapsException;
 
 /**
@@ -32,6 +35,12 @@ import org.efaps.util.EFapsException;
  */
 public final class GenerateUUIDMethod extends AbstractMethod  {
   
+  private final static Option PROPERTY_NUMBER  = OptionBuilder
+        .withArgName("number")
+        .hasArg()
+        .withDescription("number of unique identifiers to create")
+        .create("count");
+
   /////////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
   
@@ -39,7 +48,8 @@ public final class GenerateUUIDMethod extends AbstractMethod  {
    *
    */
   public GenerateUUIDMethod()  {
-    super("generateUUID", "generate unique univeral identifier");
+    super("generateUUID", "generate unique univeral identifier",
+          PROPERTY_NUMBER);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -52,7 +62,16 @@ public final class GenerateUUIDMethod extends AbstractMethod  {
    * @todo remove Exception
    */
   public void doMethod() throws EFapsException,Exception {
-    UUID uuid = UUID.randomUUID();
-    System.out.println("UUID = " + uuid.toString());
+    int count = 1;
+
+    String countString = getCommandLine().getOptionValue("count");
+    if (countString != null)  {
+      count = Integer.parseInt(countString);
+    }
+
+    for (int i = 0; i < count; i++)  {
+      UUID uuid = UUID.randomUUID();
+      System.out.println("UUID[" + (i + 1) + "] = " + uuid.toString());
+    }
   }
 }
