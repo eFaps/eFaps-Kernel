@@ -452,25 +452,6 @@ function _eFapsCreateEventTablesStep3(_context)  {
 var con = _context.getConnectionResource();
 var _con = con.getConnection();
 var _stmt = _con.createStatement();
-/*
-  eFapsCommonSQLTableCreate(_con, _stmt, "Definition of Events (e.g. Triggers)", "EVENTDEF", "ABSTRACT",[
-      ["ABSTRACT              "+TYPE_INTEGER+"                   not null"],
-      ["INDEXPOS              "+TYPE_INTEGER+"                   not null"],
-      ["constraint EVENTDEF_UK_ID_INDEXPOS unique(ID,INDEXPOS)"]
-  ]);
-  eFapsCommonSQLTableCreate(_con, _stmt, "History of Events for Objects", "HISTORY", null,[
-      ["EVENTTYPEID     "+TYPE_INTEGER+" not null"],
-      ["FORTYPEID       "+TYPE_INTEGER+" not null"],
-      ["FORID           "+TYPE_INTEGER+" not null"],
-      ["MODIFIER        "+TYPE_INTEGER+" not null"],
-      ["MODIFIED        "+TYPE_DATETIME+" not null"],
-      ["ATTRID          "+TYPE_INTEGER],
-      ["ATTRVALUE       "+TYPE_STRING_LONG+"(4000)"],
-      ["constraint HIST_FK_EVNTYPEID foreign key(EVENTTYPEID)  references DMTYPE(ID)"],
-      ["constraint HIST_FK_FORTYPEID foreign key(FORTYPEID)    references DMTYPE(ID)"],
-      ["constraint HIST_FK_MODIFIER  foreign key(MODIFIER)     references USERABSTRACT(ID)"]
-  ]);
-*/
   // must be created for reload-cache-functionality and possibility to define types
   text = "Insert Table for 'Admin_Event_Definition'";
   var sqlTableEventDef = _eFapsCreateInsertSQLTable(_stmt, text, "1238f647-9cf5-4d9f-883e-c6d24db538f5", "Admin_Event_DefinitionSQLTable", "EVENTDEF", "ID", null, "Admin_AbstractSQLTable");
@@ -546,8 +527,6 @@ var _stmt = _con.createStatement();
         "values (-12000, 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 1, 2, 1)"
   );
 
-
-
 con.commit();
 }
 
@@ -563,18 +542,8 @@ var con = _context.getConnectionResource();
 var _con = con.getConnection();
 var _stmt = _con.createStatement();
 
-/*    text = "Insert Person Policy";
-    var newId = _insert(_stmt, text, "",   "insert into LCPOLICY(NAME,CREATOR,CREATED,MODIFIER,MODIFIED) values ('Admin_User_Person',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")","LCPOLICY");
-    _exec(_stmt, null, null, "insert into LCSTATUS(NAME,CREATOR,CREATED,MODIFIER,MODIFIED,LCPOLICY) values ('Inactive',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+","+newId+")");
-    _exec(_stmt, null, null, "insert into LCSTATUS(NAME,CREATOR,CREATED,MODIFIER,MODIFIED,LCPOLICY) values ('Active',1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+","+newId+")");
-*/
-//alter table USERABSTRACT add constraint USRABSTR_FK_STS     foreign key(STATUS)     references LCSTATUS(ID);
-
     text = "Insert Type for 'Admin_User_Person' (only to store ID for type)";
     var typeIdPerson        = _eFapsCreateInsertType(_stmt, text, "Admin_User_Person", null);
-/*    
-    _exec(_stmt, null, null, "insert into DMTYPE2POLICY       values (1,1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",10000,10000)");
-*/
 
     text = "Insert Type for 'Admin_User_Role' (only to store ID for type)";
     var typeIdRole          = _eFapsCreateInsertType(_stmt, text, "Admin_User_Role", null);
@@ -779,68 +748,6 @@ function _eFapsCreateDataModelTablesStep1(_context)  {
 var con = _context.getConnectionResource();
 var _con = con.getConnection();
 var _stmt = _con.createStatement();
-
-/*  eFapsCommonSQLTableCreate(_con, _stmt, "sql table names for the data model", "DMTABLE", "ABSTRACT",[
-      ["SQLTABLE              "+TYPE_STRING_SHORT+"(35)          not null"],
-      ["SQLCOLUMNID           "+TYPE_STRING_SHORT+"(35)          not null"],
-      ["SQLCOLUMNTYPE         "+TYPE_STRING_SHORT+"(35)"],
-      ["DMTABLEMAIN           "+TYPE_INTEGER],
-      ["constraint DMTABLE_UK_SQLTBLE  unique(SQLTABLE)"],
-      ["constraint DMTABLE_FK_DMTBLMN  foreign key(DMTABLEMAIN)  references DMTABLE(ID)"]
-  ]);
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "type definition", "DMTYPE", "ABSTRACT",[
-      ["PARENTDMTYPE          "+TYPE_INTEGER],
-      ["SQLCACHEEXPR          "+TYPE_STRING_SHORT+"(50)"],
-      ["constraint DMTYPE_FK_PRNTDMTP  foreign key(PARENTDMTYPE) references DMTYPE(ID)"]
-  ]);
-*/
-/*
-  eFapsCommonSQLTableCreate(_con, _stmt, "connection of policies for type definitions", "DMTYPE2POLICY", null,[
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["DMTYPE                "+TYPE_INTEGER+"                   not null"],
-      ["LCPOLICY              "+TYPE_INTEGER+"                   not null"],
-      ["constraint DMTPE2PLCY_FK_CRTR  foreign key(CREATOR)      references USERPERSON(ID)"],
-      ["constraint DMTPE2PLCY_FK_MDFR  foreign key(MODIFIER)     references USERPERSON(ID)"],
-      ["constraint DMTPE2PLCY_FK_DMTP  foreign key(DMTYPE)       references DMTYPE(ID)"],
-      ["constraint DMTPE2PLCY_FK_PLCY  foreign key(LCPOLICY)     references LCPOLICY(ID)"]
-  ]);
-*/
-/*
-  _exec(_stmt, "Table 'DMATTRIBUTETYPE'", "attribute types",
-    "create table DMATTRIBUTETYPE ("+
-      "ID                    "+TYPE_INTEGER+"                   not null,"+
-      "NAME                  "+TYPE_STRING_SHORT+"(128)         not null,"+
-      "CREATOR               "+TYPE_INTEGER+"                   not null,"+
-      "CREATED               "+TYPE_DATETIME+"                  not null,"+
-      "MODIFIER              "+TYPE_INTEGER+"                   not null,"+
-      "MODIFIED              "+TYPE_DATETIME+"                  not null,"+
-      "CLASSNAME             "+TYPE_STRING_SHORT+"(128)         not null,"+
-      "CLASSNAMEUI           "+TYPE_STRING_SHORT+"(128)         not null,"+
-      "ALWAYSUPDATE          "+TYPE_INTEGER+","+
-      "CREATEUPDATE          "+TYPE_INTEGER+","+
-      "constraint DMATTRTP_PK_ID      primary key(ID),"+
-      "constraint DMATTRTP_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID),"+
-      "constraint DMATTRTP_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"+
-    ")"
-  );
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "attributes of types", "DMATTRIBUTE", "ABSTRACT",[
-      ["DMTABLE               "+TYPE_INTEGER+"                       not null"],
-      ["DMTYPE                "+TYPE_INTEGER+"                       not null"],
-      ["DMATTRIBUTETYPE       "+TYPE_INTEGER+"                       not null"],
-      ["DMTYPELINK            "+TYPE_INTEGER],
-      ["SQLCOLUMN             "+TYPE_STRING_SHORT+"(50)              not null"],
-      ["constraint DMATTR_FK_DMTABLE   foreign key(DMTABLE)          references DMTABLE(ID)"],
-      ["constraint DMATTR_FK_DMTYPE    foreign key(DMTYPE)           references DMTYPE(ID)"],
-      ["constraint DMATTR_FK_DMATTRTP  foreign key(DMATTRIBUTETYPE)  references DMATTRIBUTETYPE(ID)"],
-      ["constraint DMATTR_FK_DMTPLINK  foreign key(DMTYPELINK)       references DMTYPE(ID)"]
-  ]);
-*/
-  //        "constraint DMATTR_UK_DMTP_NM   unique(DMTYPE,NAME),"+
 
   _exec(_stmt, "View 'V_ADMINTYPE'", "view representing all types",
     "create view V_ADMINTYPE as "+
@@ -1049,24 +956,7 @@ var _stmt = _con.createStatement();
   _exec(_stmt, "Table 'ABSTRACT'", "update type id for attributes",
     "update ABSTRACT set TYPEID=" + typeIdAttr + " where TYPEID=-22000"
   );
-/*
-  eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "ABSTRACT", [
-      ["constraint ABSTR_FK_TYPEID foreign key(TYPEID) references DMTYPE(ID)"]
-  ]);
-*/
-/*
-  eFapsCommonSQLTableCreate(_con, _stmt, "Common Version Table", "COMMONVERSION", null,[
-      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["REVISION              "+TYPE_INTEGER+"                   not null"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["constraint COMVER_UK_NAMEREV   unique(NAME,REVISION)"],
-      ["constraint COMVER_FK_CRTR      foreign key(CREATOR)      references USERPERSON(ID)"],
-      ["constraint COMVER_FK_MDFR      foreign key(MODIFIER)     references USERPERSON(ID)"]
-  ]);
-*/
+
   _exec(_stmt, "View 'V_COMMONVERSION'", "view representing all versions",
     "create view V_COMMONVERSION as "
       + "select "
@@ -1075,60 +965,6 @@ var _stmt = _con.createStatement();
       +     "from COMMONVERSION "
       +     "group by NAME"
   );
-con.commit();
-}
-
-/**
- * The private functions creates all lifecycle tables
- *
- * @param _stmt SQL statement to work on
- */
-function _eFapsCreateLifeCycleTablesStep1(_context)  {
-  print("Create LifeCycle Tables");
-var con = _context.getConnectionResource();
-var _con = con.getConnection();
-var _stmt = _con.createStatement();
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "Policy object", "LCPOLICY", null,[
-      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["constraint LCPOLICY_UK_NAME    unique(NAME)"],
-      ["constraint LCPOLICY_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID)"],
-      ["constraint LCPOLICY_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"]
-  ]);
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "Status object", "LCSTATUS", null,[
-      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["LCPOLICY              "+TYPE_INTEGER+"                   not null"],
-      ["constraint LCSTS_UK_NM_PLCY    unique(NAME,LCPOLICY)"],
-      ["constraint LCSTS_FK_CREATOR    foreign key(CREATOR)      references USERPERSON(ID)"],
-      ["constraint LCSTS_FK_MODIFIER   foreign key(MODIFIER)     references USERPERSON(ID)"],
-      ["constraint LCSTS_FK_LCPOLICY   foreign key(LCPOLICY)     references LCPOLICY(ID)"]
-  ]);
-
-  eFapsCommonSQLTableCreate(_con, _stmt, "Access Itself", "LCSTATUSACCESS", null,[
-      ["NAME                  "+TYPE_STRING_SHORT+"(128)         not null"],
-      ["CREATOR               "+TYPE_INTEGER+"                   not null"],
-      ["CREATED               "+TYPE_DATETIME+"                  not null"],
-      ["MODIFIER              "+TYPE_INTEGER+"                   not null"],
-      ["MODIFIED              "+TYPE_DATETIME+"                  not null"],
-      ["LCSTATUS              "+TYPE_INTEGER+"                   not null"],
-      ["LCACCESSTYPE          "+TYPE_INTEGER+"                   not null"],
-      ["USERABSTRACT          "+TYPE_INTEGER+"                   not null"],
-      ["constraint LCSTSACS_UNIQUE     unique(LCSTATUS,LCACCESSTYPE,USERABSTRACT)"],
-      ["constraint LCSTSACS_FK_CRTR    foreign key(CREATOR)      references USERPERSON(ID)"],
-      ["constraint LCSTSACS_FK_MDFR    foreign key(MODIFIER)     references USERPERSON(ID)"],
-      ["constraint LCSTSACS_FK_STS     foreign key(LCSTATUS)     references LCSTATUS(ID)"],
-      ["constraint LCSTSACS_FK_ACSTP   foreign key(LCACCESSTYPE) references ACCESSTYPE(ID)"],
-      ["constraint LCSTSACS_FK_USR     foreign key(USERABSTRACT) references USERABSTRACT(ID)"]
-  ]);
 con.commit();
 }
 
@@ -1152,7 +988,6 @@ function createAll()  {
 
       _eFapsCreateUserTablesStep1     (context);
       _eFapsCreateDataModelTablesStep1(context);
-//      _eFapsCreateLifeCycleTablesStep1(context);
       _eFapsCreateCommonTablesStep2   (context);
       _eFapsCreateDataModelTablesStep2(context);
       _eFapsCreateUserTablesStep2     (context);
