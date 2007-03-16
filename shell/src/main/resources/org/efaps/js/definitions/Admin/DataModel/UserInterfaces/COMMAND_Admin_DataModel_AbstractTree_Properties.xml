@@ -56,7 +56,7 @@
     <!-- target definitions -->
     <target>
       <menu>Admin_DataModel_AbstractTree_Properties_Menu</menu>
-      <table>Admin_PropertyList</table>
+      <table>Admin_PropertyTable</table>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
