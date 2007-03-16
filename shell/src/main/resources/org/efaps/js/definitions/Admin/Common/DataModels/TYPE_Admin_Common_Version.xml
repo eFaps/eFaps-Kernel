@@ -39,7 +39,7 @@
 
   <definition>
     <version>
-      <application>teamwork</application>
+      <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>(version>=3)</mode>
