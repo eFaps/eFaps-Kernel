@@ -58,7 +58,6 @@
       <child>Admin_DataModel_AbstractMyDesk</child>
       <child>Admin_Program_AbstractMyDesk</child>
       <child>Admin_Access_AbstractMyDesk</child>
-      <child>Admin_LifeCycle_AbstractMyDesk</child>
       <child>Admin_UI_AbstractMyDesk</child>
       <child>Admin_Integration_AbstractMyDesk</child>
       <child>Admin_Common_VersionMyDesk</child>
