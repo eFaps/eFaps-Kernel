@@ -32,6 +32,7 @@ importClass(Packages.org.efaps.update.datamodel.TypeUpdate);
 importClass(Packages.org.efaps.update.integration.WebDAVUpdate);
 importClass(Packages.org.efaps.update.ui.CommandUpdate);
 importClass(Packages.org.efaps.update.ui.FormUpdate);
+importClass(Packages.org.efaps.update.ui.ImageUpdate);
 importClass(Packages.org.efaps.update.ui.MenuUpdate);
 importClass(Packages.org.efaps.update.ui.SearchUpdate);
 importClass(Packages.org.efaps.update.ui.TableUpdate);
@@ -109,27 +110,6 @@ function _eFapsCreateAllImportDataModel()  {
 }
   
 /**
- * Import all predefined user interface configuration items
- * found in the jar file under the path <code>org/efaps/js/definitions</code>.
- *
- * @see #eFapsCreateAll
- */
-function _eFapsCreateAllImportUserInterface()  {
-  var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
-
-  importImages(fileList);
-  importForms(fileList);
-  importTables(fileList);
-
-  createMenus(fileList);
-  createSearches(fileList);
-
-  importCommands(fileList);
-  importMenus(fileList);
-  importSearches(fileList);
-}
-
-/**
  * Import all XML files found in the sub directories.
  */
 function _eFapsCreateAllImportXMLFiles(_version)  {
@@ -139,6 +119,18 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
   jexlContext.getVars().put("version", 
                             Packages.java.lang.Integer.parseInt(_version));
 
+  // image
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = ImageUpdate.readXMLFile(file);
+      if (update != null)  {
+        print ('  - ' + fileName);
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
   // rolle
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
@@ -146,6 +138,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = RoleUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -157,6 +150,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = AccessTypeUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -168,6 +162,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = AccessSetUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -179,6 +174,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = SQLTableUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -190,7 +186,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = TypeUpdate.readXMLFile(file);
       if (update != null)  {
-print('  - ' + fileName);
+       print('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -202,6 +198,7 @@ print('  - ' + fileName);
     if (fileName.endsWith(".xml"))  {
       var update = JAASSystemUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -213,6 +210,7 @@ print('  - ' + fileName);
     if (fileName.endsWith(".xml"))  {
       var update = CommandUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -224,6 +222,7 @@ print('  - ' + fileName);
     if (fileName.endsWith(".xml"))  {
       var update = MenuUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -235,6 +234,7 @@ print('  - ' + fileName);
     if (fileName.endsWith(".xml"))  {
       var update = SearchUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -246,6 +246,7 @@ print('  - ' + fileName);
     if (fileName.endsWith(".xml"))  {
       var update = FormUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -257,6 +258,7 @@ print('  - ' + fileName);
     if (fileName.endsWith(".xml"))  {
       var update = TableUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -268,6 +270,7 @@ print('  - ' + fileName);
     if (fileName.endsWith(".xml"))  {
       var update = WebDAVUpdate.readXMLFile(file);
       if (update != null)  {
+        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -322,16 +325,6 @@ function eFapsCreateAll()  {
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
   _eFapsCreateAllImportDataModel();
-  Shell.transactionManager.commit();
-  context.close();
-
-  print("############ Reload Cache");
-  reloadCache();
-
-  Shell.transactionManager.begin();
-  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  Shell.setContext(context);
-  _eFapsCreateAllImportUserInterface();
   Shell.transactionManager.commit();
   context.close();
 
