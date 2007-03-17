@@ -35,6 +35,16 @@ with (TYPE)  {
     setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
     setSQLColumn("NAME");
   }
+  with (addAttribute("UUID"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
+    setSQLColumn("UUID");
+  }
+  with (addAttribute("Revision"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_DataModel_AttributeTypeSQLTable");
+    setSQLColumn("REVISION");
+  }
   with (addAttribute("Creator"))  {
     setAttributeType("CreatorLink");
     setSQLTable("Admin_DataModel_AttributeTypeSQLTable");

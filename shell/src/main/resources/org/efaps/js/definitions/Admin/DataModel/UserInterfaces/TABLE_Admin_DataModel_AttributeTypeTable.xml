@@ -53,15 +53,27 @@
     </version>
     <name>Admin_DataModel_AttributeTypeTable</name>
     <!-- fields -->
-    <field name="name">
+    <field name="Name">
       <property name="Expression">Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DataModel_AttributeType/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
     </field>
-    <field name="classname">
+    <field name="UUID">
+      <property name="Expression">UUID</property>
+      <property name="Label">Admin_DataModel_AttributeType/UUID.Label</property>
+    </field>
+    <field name="Revision">
+      <property name="Expression">Revision</property>
+      <property name="Label">Admin_DataModel_AttributeType/Revision.Label</property>
+    </field>
+    <field name="Classname">
       <property name="Expression">Classname</property>
       <property name="Label">Admin_DataModel_AttributeType/Classname.Label</property>
+    </field>
+    <field name="Classname">
+      <property name="Expression">ClassnameUI</property>
+      <property name="Label">Admin_DataModel_AttributeType/ClassnameUI.Label</property>
     </field>
     <field name="alwaysupdate">
       <property name="Expression">AlwaysUpdate</property>

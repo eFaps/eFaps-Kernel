@@ -68,6 +68,12 @@
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
+    <field name="UUID">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">UUID</property>
+      <property name="Searchable">true</property>
+    </field>
     <field name="revision">
       <property name="Columns">20</property>
       <property name="Creatable">true</property>
