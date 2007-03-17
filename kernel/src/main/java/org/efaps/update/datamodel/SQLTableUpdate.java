@@ -118,6 +118,9 @@ public class SQLTableUpdate extends AbstractUpdate  {
       digester.addCallMethod("datamodel-sqltable/definition/parent", "setParent", 1);
       digester.addCallParam("datamodel-sqltable/definition/parent", 0);
 
+      digester.addCallMethod("datamodel-sqltable/definition/database/sql", "setSQL", 1);
+      digester.addCallParam("datamodel-sqltable/definition/database/sql", 0);
+
       digester.addCallMethod("datamodel-sqltable/definition/database/table-name", "setSQLTableName", 1);
       digester.addCallParam("datamodel-sqltable/definition/database/table-name", 0);
 
@@ -285,6 +288,11 @@ e.printStackTrace();
      */
     private String parent = null;
     
+    /**
+     * SQL statement which is directly executed (e.g. to create a SQL view).
+     */
+    private String sql = null;
+    
     private boolean create = false;
     
     private boolean update = false;
@@ -321,6 +329,17 @@ e.printStackTrace();
      */
     public void setParentSQLTableName(final String _parentSQLTableName)  {
       this.parentSQLTableName = _parentSQLTableName;
+    }
+
+    /**
+     * Defines the sql statement which is directly executed (e.g. to create a
+     * view.
+     *
+     * @param _sql  sql statement to execute
+     * @see #sql
+     */
+    public void setSQL(final String _sql)  {
+      this.sql = _sql;
     }
 
     /**
@@ -362,43 +381,18 @@ e.printStackTrace();
       this.foreignKeys.add(new ForeignKey(_name, _key, _reference));
     }
 
-public void updateInDB(final Type _dataModelType,
-                       final String _uuid,
-                       final Set < Link > _allLinkTypes) throws EFapsException,Exception {
-
-  if (this.create)  {
-    createSQLTable();
-  }
-  if (this.update)  {
-    updateSQLTable();
-  }
-  if (getValue("Name") != null)  {
-      
-    // search for the parent SQL table name instance (if defined)
-    if (this.parent != null)  {
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Admin_DataModel_SQLTable");
-      query.addWhereExprEqValue("Name", this.parent);
-      query.addSelect("OID");
-      query.executeWithoutAccessCheck();
-      if (query.next())  {
-        Instance instance = new Instance((String) query.get("OID"));
-        addValue("DMTableMain", "" + instance.getId());
-      }
-      query.close();
-    }
-
-    super.updateInDB(_dataModelType, _uuid, _allLinkTypes);
-  }
-}
     /**
-     *
+     * @see #executeSQL
+     * @see #createSQLTable
+     * @see #updateSQLTable
      */
-/*    public Instance updateInDB(final Instance _instance,
-                               final Set < Link > _allLinkTypes,
-                               final Insert _insert) throws EFapsException, Exception  {
-      Instance instance = _instance;
-      
+    public void updateInDB(final Type _dataModelType,
+                           final String _uuid,
+                           final Set < Link > _allLinkTypes) throws EFapsException,Exception {
+    
+      if (this.sql != null)  {
+        executeSQL();
+      }
       if (this.create)  {
         createSQLTable();
       }
@@ -406,14 +400,58 @@ public void updateInDB(final Type _dataModelType,
         updateSQLTable();
       }
       if (getValue("Name") != null)  {
-        instance = super.updateInDB(_instance, _allLinkTypes, _insert);
+          
+        // search for the parent SQL table name instance (if defined)
+        if (this.parent != null)  {
+          SearchQuery query = new SearchQuery();
+          query.setQueryTypes("Admin_DataModel_SQLTable");
+          query.addWhereExprEqValue("Name", this.parent);
+          query.addSelect("OID");
+          query.executeWithoutAccessCheck();
+          if (query.next())  {
+            Instance instance = new Instance((String) query.get("OID"));
+            addValue("DMTableMain", "" + instance.getId());
+          }
+          query.close();
+        }
+    
+        super.updateInDB(_dataModelType, _uuid, _allLinkTypes);
       }
-      return instance;
     }
-*/
 
     /**
+     * Execute defined SQL statement in the database.
      *
+     * @see #sql
+     * @see #updateInDB
+     */
+    protected void executeSQL() throws EFapsException  {
+      Context context = Context.getThreadContext();
+      ConnectionResource con = null;
+      try  {  
+        con = context.getConnectionResource();
+        Statement stmt = con.getConnection().createStatement();
+        stmt.execute(this.sql);
+        con.commit();
+      } catch (EFapsException e)  {
+        LOG.error(e);
+        if (con != null)  {
+          con.abort();
+        }
+        throw e;
+      } catch (Throwable e)  {
+        LOG.error(e);
+        if (con != null)  {
+          con.abort();
+        }
+        throw new EFapsException(getClass(), "executeSQL.Throwable", e);
+      }
+    }
+
+    /**
+     * Create the SQL table in the database.
+     *
+     * @see #updateInDB
      */
     protected void createSQLTable() throws EFapsException  {
       Context context = Context.getThreadContext();
@@ -443,7 +481,9 @@ public void updateInDB(final Type _dataModelType,
     }
 
     /**
+     * Udpate the SQL table in the database.
      *
+     * @see #updateInDB
      */
     protected void updateSQLTable() throws EFapsException  {
       Context context = Context.getThreadContext();
