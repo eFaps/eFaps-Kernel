@@ -20,6 +20,7 @@
 
 package org.efaps.update;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -57,6 +58,11 @@ public abstract class AbstractUpdate  {
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
+
+  /**
+   * The file is stored in this instance variable.
+   */
+  private File file = null;
 
   /**
    * The name of the data model type is store in this instance variable.
@@ -167,6 +173,9 @@ try  {
       boolean exec = new Boolean(jexlExpr.evaluate(_jexlContext).toString());
       if (exec)  {
 //        def.updateInDB(instance, this.allLinkTypes, insert);
+if ((this.file != null) && LOG.isInfoEnabled())  {
+  LOG.info("Executing '" + this.file.getName() + "'");
+}
 def.updateInDB(this.dataModelType, this.uuid, this.allLinkTypes);
       }
 //      _jexlContext.getVars().remove("exists");
@@ -179,6 +188,13 @@ throw e;
 
   /////////////////////////////////////////////////////////////////////////////
   // getter and setter methods
+
+  /**
+   * @see #file
+   */
+  protected void setFile(final File _file)  {
+    this.file = _file;
+  }
 
   /**
    * @see #uuid
@@ -407,7 +423,7 @@ public void updateInDB(final Type _dataModelType,
           _insert.add(entry.getKey(), entry.getValue());
         }
         if (LOG.isInfoEnabled() && (name != null))  {
-          LOG.info("Insert " + _insert.getInstance().getType().getName() + " " 
+          LOG.info("    Insert " + _insert.getInstance().getType().getName() + " " 
                    + "'" + name + "'");
         }
         _insert.executeWithoutAccessCheck();
@@ -422,7 +438,7 @@ public void updateInDB(final Type _dataModelType,
           update.add(entry.getKey(), entry.getValue());
         }
         if (LOG.isInfoEnabled() && (name != null))  {
-          LOG.info("Update " + _instance.getType().getName() + " " 
+          LOG.info("    Update " + _instance.getType().getName() + " " 
                    + "'" + name + "'");
         }
         update.executeWithoutAccessCheck();

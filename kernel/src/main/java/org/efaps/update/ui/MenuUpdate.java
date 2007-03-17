@@ -129,6 +129,10 @@ public class MenuUpdate extends CommandUpdate  {
       digester.addCallParam("ui-menu/definition/property", 1);
 
       ret = (MenuUpdate) digester.parse(_file);
+
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);

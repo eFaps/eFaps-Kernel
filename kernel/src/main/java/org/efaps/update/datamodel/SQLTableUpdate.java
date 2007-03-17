@@ -155,6 +155,10 @@ public class SQLTableUpdate extends AbstractUpdate  {
       digester.addCallParam("datamodel-sqltable/definition/database/foreign", 2, "reference");
 
       ret = (SQLTableUpdate) digester.parse(_file);
+      
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
 System.out.println("could not read file '" + _file + "'");
 e.printStackTrace();
@@ -460,6 +464,9 @@ e.printStackTrace();
       Context context = Context.getThreadContext();
       ConnectionResource con = null;
       String tableName = getValue("SQLTable");
+      if (LOG.isInfoEnabled())  {
+        LOG.info("    Create DB SQL Table '" + tableName + "'");
+      }
       try  {
         con = context.getConnectionResource();
 
@@ -492,6 +499,9 @@ e.printStackTrace();
       Context context = Context.getThreadContext();
       ConnectionResource con = null;
       String tableName = getValue("SQLTable");
+      if (LOG.isInfoEnabled())  {
+        LOG.info("    Update DB SQL Table '" + tableName + "'");
+      }
       try  {  
         con = context.getConnectionResource();
 

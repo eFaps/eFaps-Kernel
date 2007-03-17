@@ -165,6 +165,10 @@ public class CommandUpdate extends AbstractUpdate  {
       digester.addCallParam("ui-command/definition/property", 1);
 
       ret = (CommandUpdate) digester.parse(_file);
+
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);

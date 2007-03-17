@@ -111,6 +111,9 @@ public class SearchUpdate extends MenuUpdate  {
 
       ret = (SearchUpdate) digester.parse(_file);
 
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);

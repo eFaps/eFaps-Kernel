@@ -144,6 +144,10 @@ public class AccessSetUpdate extends AbstractUpdate  {
       digester.addCallParam("access-set/definition/group", 0);
 
       ret = (AccessSetUpdate) digester.parse(_file);
+
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);

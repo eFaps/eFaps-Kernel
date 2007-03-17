@@ -122,6 +122,10 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate  {
       digester.addCallParam(_xmlTagName + "/definition/field/property", 1);
 
       ret = (AbstractCollectionUpdate) digester.parse(_file);
+
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);

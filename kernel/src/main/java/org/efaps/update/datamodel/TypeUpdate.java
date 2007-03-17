@@ -123,6 +123,10 @@ public class TypeUpdate extends AbstractUpdate  {
       digester.addCallParam("datamodel-type/definition/property", 1);
 
       ret = (TypeUpdate) digester.parse(_file);
+
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);

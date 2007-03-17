@@ -109,6 +109,7 @@ public class ImageUpdate extends AbstractUpdate  {
       
       if (ret != null)  {
         ret.setRootPath(_file.getParent());
+        ret.setFile(_file);
       }
     } catch (SAXException e)  {
 e.printStackTrace();

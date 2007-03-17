@@ -102,6 +102,10 @@ public class RoleUpdate extends AbstractUpdate  {
       digester.addCallParam("user-role/definition/name", 0);
 
       ret = (RoleUpdate) digester.parse(_file);
+
+      if (ret != null)  {
+        ret.setFile(_file);
+      }
     } catch (SAXException e)  {
 e.printStackTrace();
       //      LOG.error("could not read file '" + _fileName + "'", e);
