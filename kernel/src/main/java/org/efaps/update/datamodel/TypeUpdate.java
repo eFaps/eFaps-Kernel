@@ -202,7 +202,7 @@ e.printStackTrace();
       update.add("Table",          "" + sqlTableId);
       update.add("SQLColumn",      this.sqlColumn);
       if (typeLinkId == 0)  {
-        update.add("TypeLink", null);
+        update.add("TypeLink", (String) null);
       } else  {
         update.add("TypeLink", "" + typeLinkId);
       }

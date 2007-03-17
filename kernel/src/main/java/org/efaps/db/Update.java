@@ -22,6 +22,7 @@ package org.efaps.db;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -234,9 +235,33 @@ if (attr==null)  {
     add(_attr, (Object) _value, _triggerRelevant);
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // timestamp methods
+
+  public void add(final String _attr,
+                  final Timestamp _value) throws EFapsException  {
+    Attribute attr = getInstance().getType().getAttribute(_attr);
+    if (attr==null)  {
+      throw new EFapsException(getClass(), "add.UnknownAttributeName");
+    }
+    add(attr, (Object) _value, true);
+  }
+
+  /**
+   * @param _attr   attribute to update
+   * @param _value  new attribute value
+   */
   public void add(final Attribute _attr, 
-                  final Object _value, 
-                  final boolean _triggerRelevant) throws EFapsException  {
+                  final Timestamp _value) throws EFapsException  {
+    add(_attr, (Object) _value, true);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // private common method
+
+  private void add(final Attribute _attr, 
+                   final Object _value, 
+                   final boolean _triggerRelevant) throws EFapsException  {
     Map<String,AttributeTypeInterface> expressions = getExpr4Tables().get(_attr.getTable());
 
     if (expressions==null)  {
