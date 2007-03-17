@@ -59,7 +59,7 @@
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetExpand">Admin_UI_Access\UILink.UserLink</property>
+    <property name="TargetExpand">Admin_DataModel_Attribute\ParentType</property>
     <property name="TargetMode">view</property>
   </definition>
 
