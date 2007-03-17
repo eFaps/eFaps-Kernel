@@ -118,7 +118,7 @@ public class SQLTableUpdate extends AbstractUpdate  {
       digester.addCallMethod("datamodel-sqltable/definition/parent", "setParent", 1);
       digester.addCallParam("datamodel-sqltable/definition/parent", 0);
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/sql", "setSQL", 1);
+      digester.addCallMethod("datamodel-sqltable/definition/database/sql", "addSQL", 1);
       digester.addCallParam("datamodel-sqltable/definition/database/sql", 0);
 
       digester.addCallMethod("datamodel-sqltable/definition/database/table-name", "setSQLTableName", 1);
@@ -290,8 +290,11 @@ e.printStackTrace();
     
     /**
      * SQL statement which is directly executed (e.g. to create a SQL view).
+     *
+     * @see #addSQL
+     * @see #executeSQLs
      */
-    private String sql = null;
+    private final List < String > sqls = new ArrayList < String > ();
     
     private boolean create = false;
     
@@ -332,14 +335,14 @@ e.printStackTrace();
     }
 
     /**
-     * Defines the sql statement which is directly executed (e.g. to create a
-     * view.
+     * Defines sql statements which is directly executed (e.g. to create a
+     * view).
      *
      * @param _sql  sql statement to execute
-     * @see #sql
+     * @see #sqls
      */
-    public void setSQL(final String _sql)  {
-      this.sql = _sql;
+    public void addSQL(final String _sql)  {
+      this.sqls.add(_sql);
     }
 
     /**
@@ -390,9 +393,7 @@ e.printStackTrace();
                            final String _uuid,
                            final Set < Link > _allLinkTypes) throws EFapsException,Exception {
     
-      if (this.sql != null)  {
-        executeSQL();
-      }
+      executeSQLs();
       if (this.create)  {
         createSQLTable();
       }
@@ -422,16 +423,18 @@ e.printStackTrace();
     /**
      * Execute defined SQL statement in the database.
      *
-     * @see #sql
+     * @see #sqls
      * @see #updateInDB
      */
-    protected void executeSQL() throws EFapsException  {
+    protected void executeSQLs() throws EFapsException  {
       Context context = Context.getThreadContext();
       ConnectionResource con = null;
       try  {  
         con = context.getConnectionResource();
         Statement stmt = con.getConnection().createStatement();
-        stmt.execute(this.sql);
+        for (String sql : this.sqls)  {
+          stmt.execute(sql);
+        }
         con.commit();
       } catch (EFapsException e)  {
         LOG.error(e);
