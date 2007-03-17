@@ -57,6 +57,20 @@
       <mode>(version==3)</mode>
     </version>
     <database>
+      <!-- create view representing all sql tables -->
+      <sql>
+        create view V_ADMINSQLTABLE as
+          select
+                ABSTRACT.ID,
+                ABSTRACT.NAME,
+                DMTABLE.SQLTABLE,
+                DMTABLE.SQLCOLUMNID,
+                DMTABLE.SQLCOLUMNTYPE,
+                DMTABLE.DMTABLEMAIN
+            from DMTABLE,ABSTRACT
+            where ABSTRACT.ID=DMTABLE.ID
+      </sql>
+      <!-- update of the sql table -->
       <table-name>DMTABLE</table-name>
       <update>true</update>
       <!-- constraints -->

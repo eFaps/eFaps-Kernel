@@ -60,6 +60,25 @@
       <mode>(version==3)</mode>
     </version>
     <database>
+      <!-- update type id for sql tables -->
+      <sql>
+        update ABSTRACT
+            set TYPEID=(select ID from ABSTRACT where NAME='Admin_DataModel_SQLTable')
+            where TYPEID=-20000
+      </sql>
+      <!-- update type id for types -->
+      <sql>
+        update ABSTRACT
+            set TYPEID=(select ID from ABSTRACT where NAME='Admin_DataModel_Type')
+            where TYPEID=-21000
+      </sql>
+      <!-- update type id for attributes -->
+      <sql>
+        update ABSTRACT
+            set TYPEID=(select ID from ABSTRACT where NAME='Admin_DataModel_Attribute')
+            where TYPEID=-22000
+      </sql>
+      <!-- update of the sql table -->
       <create>false</create>
       <update>false</update>
       <table-name>ABSTRACT</table-name>

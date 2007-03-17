@@ -58,6 +58,18 @@
     </version>
 
     <database>
+      <!-- create view  representing all types -->
+      <sql>
+        create view V_ADMINTYPE as
+            select 
+                ABSTRACT.ID,
+                ABSTRACT.NAME,
+                DMTYPE.PARENTDMTYPE,
+                DMTYPE.SQLCACHEEXPR
+            from DMTYPE,ABSTRACT
+            where ABSTRACT.ID=DMTYPE.ID
+      </sql>
+      <!-- update of the sql table -->
       <table-name>DMTYPE</table-name>
       <update>true</update>
       <!-- constraints -->

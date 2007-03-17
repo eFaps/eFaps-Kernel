@@ -314,16 +314,6 @@ function eFapsCreateAll()  {
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
-  _eFapsCreateUserTablesStep4(context);
-  Shell.transactionManager.commit();
-  context.close();
-
-  print("############ Reload Cache");
-  reloadCache();
-
-  Shell.transactionManager.begin();
-  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  Shell.setContext(context);
   _eFapsCreateAllImportDataModel();
   Shell.transactionManager.commit();
   context.close();
@@ -378,7 +368,7 @@ function _eFapsCreateInsertSQLTable(_stmt, _text, _uuid, _name, _sqlTable, _sqlC
   return ret;
 }
 
-function _eFapsCreateInsertType(_stmt, _text, _name, _parentType)  {
+function _eFapsCreateInsertType(_stmt, _text, _uuid, _name, _parentType)  {
   // get id for type 'Admin_DataModel_Type'
   var rs = _stmt.executeQuery("select ID from ABSTRACT where NAME='Admin_DataModel_Type'");
   var typeIdType = "-21000";
@@ -398,8 +388,8 @@ function _eFapsCreateInsertType(_stmt, _text, _name, _parentType)  {
 
   var ret = _insert(_stmt, _text, null, 
       "insert into ABSTRACT "+
-          "(TYPEID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
-          +"values  (" + typeIdType + ", '" + _name + "', '', 1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")", "ABSTRACT");
+          "(TYPEID,NAME,UUID,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
+          +"values  (" + typeIdType + ", '" + _name + "','" + _uuid + "','',1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")", "ABSTRACT");
   _exec(_stmt, null, null, "insert into DMTYPE values  (" + ret + ", " + parentTypeId + ", null)");
   return ret;
 }
@@ -450,7 +440,7 @@ var _stmt = _con.createStatement();
   var sqlTableEventDef = _eFapsCreateInsertSQLTable(_stmt, text, "1238f647-9cf5-4d9f-883e-c6d24db538f5", "Admin_Event_DefinitionSQLTable", "EVENTDEF", "ID", null, "Admin_AbstractSQLTable");
 
   text = "Insert Type for 'Admin_Event_Definition'";
-  var typeIdEventDef = _eFapsCreateInsertType(_stmt, text, "Admin_Event_Definition", "Admin_Abstract");
+  var typeIdEventDef = _eFapsCreateInsertType(_stmt, text, "9c1d52f4-94d6-4f95-ab81-bed23884cf03", "Admin_Event_Definition", "Admin_Abstract");
   _eFapsCreateInsertAttr(_stmt, sqlTableEventDef, typeIdEventDef, "IndexPosition",    "INDEXPOS",         210, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableEventDef, typeIdEventDef, "Abstract",         "ABSTRACT",         400, "Admin_Abstract");
 con.commit();
@@ -536,19 +526,19 @@ var _con = con.getConnection();
 var _stmt = _con.createStatement();
 
     text = "Insert Type for 'Admin_User_Person' (only to store ID for type)";
-    var typeIdPerson        = _eFapsCreateInsertType(_stmt, text, "Admin_User_Person", null);
+    var typeIdPerson        = _eFapsCreateInsertType(_stmt, text, "fe9d94fd-2ed8-4c44-b1f0-00e150555888", "Admin_User_Person", null);
 
     text = "Insert Type for 'Admin_User_Role' (only to store ID for type)";
-    var typeIdRole          = _eFapsCreateInsertType(_stmt, text, "Admin_User_Role", null);
+    var typeIdRole          = _eFapsCreateInsertType(_stmt, text, "e4d6ecbe-f198-4f84-aa69-5a9fd3165112", "Admin_User_Role", null);
 
     text = "Insert Type for 'Admin_User_Group' (only to store ID for type)";
-    var typeIdGroup         = _eFapsCreateInsertType(_stmt, text, "Admin_User_Group", null);
+    var typeIdGroup         = _eFapsCreateInsertType(_stmt, text, "f5e1e2ff-bfa9-40d9-8340-a259f48d5ad9", "Admin_User_Group", null);
    
     text = "Insert Type for 'Admin_User_Person2Role' (only to store ID for type)";
-    var typeIdPerson2Role   = _eFapsCreateInsertType(_stmt, text, "Admin_User_Person2Role", null);
+    var typeIdPerson2Role   = _eFapsCreateInsertType(_stmt, text, "37deb6ae-3e1c-4642-8823-715120386fc3", "Admin_User_Person2Role", null);
 
     text = "Insert Type for 'Admin_User_Person2Group' (only to store ID for type)";
-    var typeIdPerson2Group  = _eFapsCreateInsertType(_stmt, text, "Admin_User_Person2Group", null);
+    var typeIdPerson2Group  = _eFapsCreateInsertType(_stmt, text, "fec64148-a39b-4f69-bedd-9c3bcfe8e1602", "Admin_User_Person2Group", null);
 
     _exec(_stmt, "Table 'USERABSTRACT'", "update type id for persons",
       "update USERABSTRACT set TYPEID=" + typeIdPerson + " where TYPEID=-10000"
@@ -566,47 +556,6 @@ var _stmt = _con.createStatement();
     eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "USERABSTRACT2ABSTRACT", [
         ["constraint USRABS2ABS_FK_TYPEID foreign key(TYPEID) references DMTYPE(ID)"]
     ]);
-
-    _exec(_stmt, "View 'V_USERJAASSYSTEM'", "view representing all JAAS system",
-      "create or replace view V_USERJAASSYSTEM as "
-        + "select "
-        +     "ID,"
-        +     "NAME,"
-        +     "CLASSNAMEPERSON,"
-        +     "CLASSNAMEROLE,"
-        +     "CLASSNAMEGROUP,"
-        +     "METHODPERSONKEY,"
-        +     "METHODPERSONNAME,"
-        +     "METHODPERSONFIRSTNAME,"
-        +     "METHODPERSONLASTNAME,"
-        +     "METHODPERSONEMAIL,"
-        +     "METHODPERSONORG,"
-        +     "METHODPERSONURL,"
-        +     "METHODPERSONPHONE,"
-        +     "METHODPERSONMOBILE,"
-        +     "METHODPERSONFAX,"
-        +     "METHODROLEKEY,"
-        +     "METHODGROUPKEY "
-        +   "from USERJAASSYSTEM"
-    );
-
-    _exec(_stmt, "View 'V_USERPERSON'", "view representing all persons",
-      "create or replace view V_USERPERSON as "
-        + "select "
-        +       "USERABSTRACT.ID,"
-        +       "USERABSTRACT.NAME,"
-        +       "USERPERSON.FIRSTNAME,"
-        +       "USERPERSON.LASTNAME,"
-        +       "USERPERSON.EMAIL,"
-        +       "USERPERSON.ORG,"
-        +       "USERPERSON.URL,"
-        +       "USERPERSON.PHONE,"
-        +       "USERPERSON.MOBILE,"
-        +       "USERPERSON.FAX,"
-        +       "USERPERSON.PASSWORD "
-        +   "from USERABSTRACT,USERPERSON "
-        +   "where USERABSTRACT.ID=USERPERSON.ID"
-    );
 
     _exec(_stmt, "View 'V_USERPERSONJASSKEY'", "view representing all persons related to the JAAS keys",
       "create or replace view V_USERPERSONJASSKEY as "
@@ -709,28 +658,6 @@ function _eFapsUpdateSQLTables(_context, _version)  {
   }
 }
 
-function _eFapsCreateUserTablesStep4(_context)  {
-  print("Create User Tables");
-
-  var fileList = eFapsGetAllFiles("org/efaps/js/definitions/Admin/User/DataModels", true);
-
-  var jexlContext = JexlHelper.createContext();
-  jexlContext.getVars().put("version", 
-                            Packages.java.lang.Integer.parseInt("4"));
-
-  // sql table
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = SQLTableUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-}
-
 /**
  * The private functions creates all data model tables
  *
@@ -742,44 +669,7 @@ var con = _context.getConnectionResource();
 var _con = con.getConnection();
 var _stmt = _con.createStatement();
 
-  _exec(_stmt, "View 'V_ADMINTYPE'", "view representing all types",
-    "create view V_ADMINTYPE as "+
-      "select "+
-          "ABSTRACT.ID,"+
-          "ABSTRACT.NAME,"+
-          "DMTYPE.PARENTDMTYPE,"+
-          "DMTYPE.SQLCACHEEXPR "+
-        "from DMTYPE,ABSTRACT "+
-        "where ABSTRACT.ID=DMTYPE.ID"
-  );
-
-  _exec(_stmt, "View 'V_ADMINATTRIBUTE'", "view representing all attributes",
-    "create view V_ADMINATTRIBUTE as "+
-      "select "+
-          "ABSTRACT.ID,"+
-          "ABSTRACT.NAME,"+
-          "DMATTRIBUTE.DMTABLE,"+
-          "DMATTRIBUTE.DMTYPE,"+
-          "DMATTRIBUTE.DMATTRIBUTETYPE,"+
-          "DMATTRIBUTE.DMTYPELINK,"+
-          "DMATTRIBUTE.SQLCOLUMN "+
-        "from DMATTRIBUTE,ABSTRACT "+
-        "where ABSTRACT.ID=DMATTRIBUTE.ID"
-  );
-
-  _exec(_stmt, "View 'V_ADMINSQLTABLE'", "view representing all sql tables",
-    "create view V_ADMINSQLTABLE as "+
-      "select "+
-            "ABSTRACT.ID,"+
-            "ABSTRACT.NAME,"+
-            "DMTABLE.SQLTABLE,"+
-            "DMTABLE.SQLCOLUMNID,"+
-            "DMTABLE.SQLCOLUMNTYPE,"+
-            "DMTABLE.DMTABLEMAIN "+
-        "from DMTABLE,ABSTRACT "+
-        "where ABSTRACT.ID=DMTABLE.ID"
-  );
-
+ 
   text = "Insert Attribute Types";
   _exec(_stmt, text, "",   "insert into DMATTRIBUTETYPE values ( 99,'Type',           'acfb7dd8-71e9-43c0-9f22-8d98190f7290', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.TypeType',         'org.efaps.admin.datamodel.ui.TypeUI',    null, null)");
   _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (100,'String',         '72221a59-df5d-4c56-9bec-c9167de80f2b', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
@@ -821,7 +711,7 @@ var _stmt = _con.createStatement();
   var sqlTableIdSQLTable = _eFapsCreateInsertSQLTable(_stmt, text, "5ffb40ef-3518-46c8-a78f-da3ffbfea4c0", "Admin_DataModel_SQLTableSQLTable", "DMTABLE", "ID", null, "Admin_AbstractSQLTable");
 
   text = "Insert Type for 'Admin_DataModel_SQLTable'";
-  var typeIdSQLTable = _eFapsCreateInsertType(_stmt, text, "Admin_DataModel_SQLTable", "Admin_Abstract");
+  var typeIdSQLTable = _eFapsCreateInsertType(_stmt, text, "ebf29cc2-cf42-4cd0-9b6e-92d9b644062b", "Admin_DataModel_SQLTable", "Admin_Abstract");
   _eFapsCreateInsertAttr(_stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLTable',         'SQLTABLE',         100, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLColumnID',      'SQLCOLUMNID',      100, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLColumnType',    'SQLCOLUMNTYPE',    100, null);
@@ -834,7 +724,7 @@ var _stmt = _con.createStatement();
   var sqlTableIdType = _eFapsCreateInsertSQLTable(_stmt, text, "8f4df2db-8fda-4f00-9144-9a3e344d0abc", "Admin_DataModel_TypeSQLTable", "DMTYPE", "ID", null, "Admin_AbstractSQLTable");
 
   text = "Insert Type for 'Admin_DataModel_Type'";
-  var typeIdType = _eFapsCreateInsertType(_stmt, text, "Admin_DataModel_Type", "Admin_Abstract");
+  var typeIdType = _eFapsCreateInsertType(_stmt, text, "8770839d-60fd-4bb4-81fd-3903d4c916ec", "Admin_DataModel_Type", "Admin_Abstract");
   _eFapsCreateInsertAttr(_stmt, sqlTableIdType, typeIdType, 'SQLCacheExpr',     'SQLCACHEEXPR',     100, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdType, typeIdType, 'ParentType',       'PARENTDMTYPE',     400, "Admin_DataModel_Type");
 
@@ -845,7 +735,7 @@ var _stmt = _con.createStatement();
   var sqlTableIdAttrType = _eFapsCreateInsertSQLTable(_stmt, text, "30152cda-e5a3-418d-ad1e-ad44be1307c2", "Admin_DataModel_AttributeTypeSQLTable", "DMATTRIBUTETYPE", "ID", null, null);
 
   text = "Insert Type for 'Admin_DataModel_AttributeType'";
-  var typeIdAttrType = _eFapsCreateInsertType(_stmt, text, "Admin_DataModel_AttributeType", null);
+  var typeIdAttrType = _eFapsCreateInsertType(_stmt, text, "c482e3d3-8387-4406-a1c2-b0e708af78f3", "Admin_DataModel_AttributeType", null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAttrType, typeIdAttrType, 'OID',              'ID',               111, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAttrType, typeIdAttrType, 'ID',               'ID',               210, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAttrType, typeIdAttrType, 'Name',             'NAME',             100, null);
@@ -861,7 +751,7 @@ var _stmt = _con.createStatement();
   var sqlTableIdAttr = _eFapsCreateInsertSQLTable(_stmt, text, "d3a64746-3666-4678-9603-f304bf16bb92", "Admin_DataModel_AttributeSQLTable", "DMATTRIBUTE", "ID", null, "Admin_AbstractSQLTable");
 
   text = "Insert Type for 'Admin_DataModel_Attribute'";
-  var typeIdAttr = _eFapsCreateInsertType(_stmt, text, "Admin_DataModel_Attribute", "Admin_Abstract");
+  var typeIdAttr = _eFapsCreateInsertType(_stmt, text, "518a9802-cf0e-4359-9b3c-880f71e1387f", "Admin_DataModel_Attribute", "Admin_Abstract");
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAttr, typeIdAttr, 'Table',             'DMTABLE',         400, "Admin_DataModel_SQLTable");
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAttr, typeIdAttr, 'ParentType',        'DMTYPE',          400, "Admin_DataModel_Type");
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAttr, typeIdAttr, 'AttributeType',     'DMATTRIBUTETYPE', 400, "Admin_DataModel_AttributeType");
@@ -875,7 +765,7 @@ var _stmt = _con.createStatement();
   var sqlTableIdProp = _eFapsCreateInsertSQLTable(_stmt, text, "5cf99cd6-06d6-4322-a344-55d206666c9c", "Admin_PropertyTable", "PROPERTY", "ID", null, null);
 
   text = "Insert Type for 'Admin_Property'";
-  var typeIdProp = _eFapsCreateInsertType(_stmt, text, "Admin_Property", null);
+  var typeIdProp = _eFapsCreateInsertType(_stmt, text, "f3d54a86-c323-43d8-9c78-284d61d955b3", "Admin_Property", null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdProp, typeIdProp, 'OID',              'ID',               111, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdProp, typeIdProp, 'ID',               'ID',               210, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdProp, typeIdProp, 'Name',             'NAME',             100, null);
@@ -901,7 +791,7 @@ var _stmt = _con.createStatement();
   var sqlTableIdAbstract = _eFapsCreateInsertSQLTable(_stmt, text, "e76ff99d-0d3d-4154-b2ef-d65633d357c3", "Admin_AbstractSQLTable", "ABSTRACT", "ID", "TYPEID", null);
 
   text = "Insert Type for 'Admin_Abstract'";
-  var typeIdAbstract = _eFapsCreateInsertType(_stmt, text, "Admin_Abstract", null);
+  var typeIdAbstract = _eFapsCreateInsertType(_stmt, text, "2a869f46-0ec7-4afb-98e7-8b1125e1c43c", "Admin_Abstract", null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'Type',             'TYPEID',            99, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'OID',              'TYPEID,ID',        111, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'ID',               'ID',               210, null);
@@ -912,52 +802,6 @@ var _stmt = _con.createStatement();
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'Name',             'NAME',             100, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'UUID',             'UUID',             100, null);
   _eFapsCreateInsertAttr(_stmt, sqlTableIdAbstract, typeIdAbstract, 'Revision',         'REVISION',         100, null);
-con.commit();
-}
-
-/**
- * The private functions creates all common tables
- *
- * @param _stmt SQL statement to work on
- */
-function _eFapsCreateCommonTablesStep3(_context)  {
-  print("Create Common Tables Step 3 (Activate foreign key for type id in table abstract)");
-var con = _context.getConnectionResource();
-var _con = con.getConnection();
-var _stmt = _con.createStatement();
-
-  var rs = _stmt.executeQuery("select ID from ABSTRACT where NAME='Admin_DataModel_SQLTable'");
-  rs.next();
-  var typeIdSQLTable = rs.getString(1);
-  rs.close();
-  _exec(_stmt, "Table 'ABSTRACT'", "update type id for sql tables",
-    "update ABSTRACT set TYPEID=" + typeIdSQLTable + " where TYPEID=-20000"
-  );
-
-  rs = _stmt.executeQuery("select ID from ABSTRACT where NAME='Admin_DataModel_Type'");
-  rs.next();
-  var typeIdType = rs.getString(1);
-  rs.close();
-  _exec(_stmt, "Table 'ABSTRACT'", "update type id for types",
-    "update ABSTRACT set TYPEID=" + typeIdType + " where TYPEID=-21000"
-  );
-
-  rs = _stmt.executeQuery("select ID from ABSTRACT where NAME='Admin_DataModel_Attribute'");
-  rs.next();
-  var typeIdAttr = rs.getString(1);
-  rs.close();
-  _exec(_stmt, "Table 'ABSTRACT'", "update type id for attributes",
-    "update ABSTRACT set TYPEID=" + typeIdAttr + " where TYPEID=-22000"
-  );
-
-  _exec(_stmt, "View 'V_COMMONVERSION'", "view representing all versions",
-    "create view V_COMMONVERSION as "
-      + "select "
-      +         "NAME,"
-      +         "max(REVISION) as VERSION "
-      +     "from COMMONVERSION "
-      +     "group by NAME"
-  );
 con.commit();
 }
 
@@ -984,7 +828,6 @@ function createAll()  {
       _eFapsCreateCommonTablesStep2   (context);
       _eFapsCreateDataModelTablesStep2(context);
       _eFapsCreateUserTablesStep2     (context);
-      _eFapsCreateCommonTablesStep3   (context);
       _eFapsUpdateSQLTables(context, "3");
       _eFapsCreateEventTablesStep3    (context);
 //      eFapsCommonVersionInsert(con.getConnection(), stmt, "eFaps", 1);

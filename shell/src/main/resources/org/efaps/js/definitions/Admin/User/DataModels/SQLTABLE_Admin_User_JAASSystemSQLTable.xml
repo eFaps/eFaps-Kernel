@@ -81,7 +81,30 @@
        <!-- constraints -->
       <foreign name="USERJAASSYS_FK_CRTR"   key="CREATOR"       reference="USERPERSON(ID)"/>
       <foreign name="USERJAASSYS_FK_MDFR"   key="CREATOR"       reference="USERPERSON(ID)"/>
-   </database>
+      <!-- create view representing all JAAS systems -->
+      <sql>
+        create or replace view V_USERJAASSYSTEM as
+           select
+               ID,
+               NAME,
+               CLASSNAMEPERSON,
+               CLASSNAMEROLE,
+               CLASSNAMEGROUP,
+               METHODPERSONKEY,
+               METHODPERSONNAME,
+               METHODPERSONFIRSTNAME,
+               METHODPERSONLASTNAME,
+               METHODPERSONEMAIL,
+               METHODPERSONORG,
+               METHODPERSONURL,
+               METHODPERSONPHONE,
+               METHODPERSONMOBILE,
+               METHODPERSONFAX,
+               METHODROLEKEY,
+               METHODGROUPKEY
+           from USERJAASSYSTEM
+      </sql>
+    </database>
   </definition>
 
   <definition>

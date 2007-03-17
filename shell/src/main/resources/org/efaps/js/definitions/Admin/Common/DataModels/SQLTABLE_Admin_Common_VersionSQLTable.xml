@@ -53,6 +53,27 @@
     </database>
   </definition>
 
+  <!-- make the views for the SQL table -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>2</global>
+      <local>1</local>
+      <mode>(version==3)</mode>
+    </version>
+    <database>
+      <!-- view representing all versions -->
+      <sql>
+        create view V_COMMONVERSION as
+           select
+                   NAME,
+                   max(REVISION) as VERSION
+               from COMMONVERSION
+               group by NAME
+      </sql>
+    </database>
+  </definition>
+
   <!-- make the contraints for the SQL table -->
   <definition>
     <version>
@@ -61,9 +82,7 @@
       <local>1</local>
       <mode>(version==4)</mode>
     </version>
-    
     <name>Admin_Common_VersionSQLTable</name>
-
     <database>
       <table-name>COMMONVERSION</table-name>
     </database>

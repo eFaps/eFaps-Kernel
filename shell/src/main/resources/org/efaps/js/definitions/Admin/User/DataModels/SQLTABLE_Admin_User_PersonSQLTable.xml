@@ -34,7 +34,6 @@
       <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
-
     <database>
       <table-name>USERPERSON</table-name>
       <parent-table>USERABSTRACT</parent-table>
@@ -57,11 +56,39 @@
   <definition>
     <version>
       <application>eFaps</application>
+      <global>2</global>
+      <local>$Rev$</local>
+      <mode>(version==3)</mode>
+    </version>
+    <database>
+      <!-- create view representing all persons -->
+      <sql>
+        create or replace view V_USERPERSON as
+           select
+                 USERABSTRACT.ID,
+                 USERABSTRACT.NAME,
+                 USERPERSON.FIRSTNAME,
+                 USERPERSON.LASTNAME,
+                 USERPERSON.EMAIL,
+                 USERPERSON.ORG,
+                 USERPERSON.URL,
+                 USERPERSON.PHONE,
+                 USERPERSON.MOBILE,
+                 USERPERSON.FAX,
+                 USERPERSON.PASSWORD
+             from USERABSTRACT,USERPERSON
+             where USERABSTRACT.ID=USERPERSON.ID
+      </sql>
+    </database>
+  </definition>
+
+  <definition>
+    <version>
+      <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
       <mode>(version>=4)</mode>
     </version>
-
     <name>Admin_User_PersonSQLTable</name>
     <parent>Admin_User_AbstractSQLTable</parent>
     <database>

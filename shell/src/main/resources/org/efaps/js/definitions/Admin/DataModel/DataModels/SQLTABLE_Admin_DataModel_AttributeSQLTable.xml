@@ -58,6 +58,21 @@
     </version>
 
     <database>
+      <!-- create representing all attributes -->
+      <sql>
+        create view V_ADMINATTRIBUTE as
+          select
+                ABSTRACT.ID,
+                ABSTRACT.NAME,
+                DMATTRIBUTE.DMTABLE,
+                DMATTRIBUTE.DMTYPE,
+                DMATTRIBUTE.DMATTRIBUTETYPE,
+                DMATTRIBUTE.DMTYPELINK,
+                DMATTRIBUTE.SQLCOLUMN
+            from DMATTRIBUTE,ABSTRACT
+            where ABSTRACT.ID=DMATTRIBUTE.ID
+      </sql>
+      <!-- update of the sql table -->
       <table-name>DMATTRIBUTE</table-name>
       <update>true</update>
       <!-- constraints -->
