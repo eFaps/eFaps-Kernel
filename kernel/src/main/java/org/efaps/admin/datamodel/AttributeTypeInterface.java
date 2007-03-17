@@ -71,9 +71,9 @@ public interface AttributeTypeInterface  {
    * interface. The string is a localised value!
    *
    * @param _context  context for this request
-   * @param _value    new string value to set
+   * @param _value    new object value to set
    */
-  public void set(Context _context, String _value);
+  public void set(final Context _context, final Object _value);
 
   /**
    * The method returns a string as the viewable value of the attribute type.

@@ -175,14 +175,14 @@ public class CachedResult  {
   /**
    * @param _index  column index
    */
-  public Date getTimestamp(final int _index)  {
-    Date ret = null;
+  public Timestamp getTimestamp(final int _index)  {
+    Timestamp ret = null;
     Object obj = getObject(_index);
 // TODO: timestamp from Oracle database does not work!
     if (obj instanceof Timestamp)  {
-      ret = new Date(((Timestamp) obj).getTime());
-    } else if (obj instanceof Date)  {
-      ret = (Date) obj;
+      ret = (Timestamp) obj;
+    } else if (obj instanceof Timestamp)  {
+      ret = new Timestamp(((Date) obj).getTime());
     }
     return ret;
   }

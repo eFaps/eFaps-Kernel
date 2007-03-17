@@ -80,8 +80,8 @@ public class Update  {
 
   private final Map<String,AttributeTypeInterface> mapAttr2Value = new HashMap<String,AttributeTypeInterface>();
 
-  protected final Map < Attribute , String > values 
-                                        = new HashMap < Attribute, String > ();
+  protected final Map < Attribute , Object > values 
+                                        = new HashMap < Attribute, Object > ();
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -231,6 +231,12 @@ if (attr==null)  {
   public void add(final Attribute _attr, 
                   final String _value, 
                   final boolean _triggerRelevant) throws EFapsException  {
+    add(_attr, (Object) _value, _triggerRelevant);
+  }
+
+  public void add(final Attribute _attr, 
+                  final Object _value, 
+                  final boolean _triggerRelevant) throws EFapsException  {
     Map<String,AttributeTypeInterface> expressions = getExpr4Tables().get(_attr.getTable());
 
     if (expressions==null)  {
@@ -251,7 +257,6 @@ this.mapAttr2Value.put(_attr.getName(), attrType);
       this.values.put(_attr, _value);
     }
   }
-
 
 protected boolean test4Unique(Context _context)  throws Exception  {
   return test4Unique(_context, getType());

@@ -57,9 +57,13 @@ setValue(_rs.getLong(_indexes.get(0).intValue()).intValue());
    * @param _context  context for this request
    * @param _value    new value to set
    */
-  public void set(Context _context, String _value)  throws NumberFormatException  {
-    if (_value!=null)  {
-      setValue(Integer.parseInt(_value));
+  public void set(final Context _context, final Object _value)  {
+    if (_value != null)  {
+      if ((_value instanceof String) && (((String) _value).length() > 0))  {
+        setValue(Integer.parseInt((String) _value));
+      } else if (_value instanceof Number)  {
+        setValue(((Number) _value).intValue());
+      }
     }
   }
 

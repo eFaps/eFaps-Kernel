@@ -64,6 +64,15 @@ setValue(_rs.getDouble(_indexes.get(0).intValue()));
       setValue(Double.parseDouble(_value));
     }
   }
+  public void set(final Context _context, final Object _value)  {
+    if (_value != null)  {
+      if ((_value instanceof String) && (((String) _value).length() > 0))  {
+        setValue(Double.parseDouble((String) _value));
+      } else if (_value instanceof Number)  {
+        setValue(((Number) _value).doubleValue());
+      }
+    }
+  }
 
   /**
    * The method returns a string as the viewable value of the attribute type.

@@ -61,8 +61,12 @@ setValue(_rs.getString(_indexes.get(0).intValue()));
    * @param _context  context for this request
    * @param _value    new value to set
    */
-  public void set(Context _context, String _value)  {
-    setValue(_value);
+  public void set(final Context _context, final Object _value)  {
+    if (_value instanceof String)  {
+      setValue((String) _value);
+    } else if (_value != null)  {
+      setValue(_value.toString());
+    }
   }
 
   /**

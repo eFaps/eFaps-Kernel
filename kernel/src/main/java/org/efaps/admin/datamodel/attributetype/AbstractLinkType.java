@@ -37,9 +37,13 @@ public abstract class AbstractLinkType extends AbstractType  {
    * @param _context  context for this request
    * @param _value    new value to set
    */
-  public void set(Context _context, String _value)  {
-    if (_value!=null && _value.length()>0)  {
-      setValue(Long.parseLong(_value));
+  public void set(final Context _context, final Object _value)  {
+    if (_value != null)  {
+      if ((_value instanceof String) && (((String) _value).length() > 0))  {
+        setValue(Long.parseLong((String) _value));
+      } else if (_value instanceof Long)  {
+        setValue((Long) _value);
+      }
     }
   }
 

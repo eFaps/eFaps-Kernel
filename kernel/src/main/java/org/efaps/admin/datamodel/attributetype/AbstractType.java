@@ -52,7 +52,7 @@ abstract public class AbstractType implements AttributeTypeInterface  {
   /////////////////////////////////////////////////////////////////////////////
   // methods for the user interface
 
-  abstract public void set(Context _context, String _value);
+  abstract public void set(final Context _context, final Object _value);
 
   /**
    * The method returns a string as the viewable value of the attribute type.

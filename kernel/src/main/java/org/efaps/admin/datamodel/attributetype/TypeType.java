@@ -63,7 +63,7 @@ setValue(value);
 /**
  * @todo must an exception thrown?
  */
-public void set(Context _context, String _value)  {
+public void set(final Context _context, final Object _value)  {
 }
 
   /**
