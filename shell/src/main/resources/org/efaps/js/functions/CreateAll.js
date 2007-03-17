@@ -179,7 +179,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
       }
     }
   }
-*/  // type
+  // type
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
@@ -191,6 +191,7 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
       }
     }
   }
+*/
   // JAAS system
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
@@ -305,6 +306,26 @@ function eFapsCreateAll()  {
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
   _eFapsUpdateSQLTables(context, "4");
+  Shell.transactionManager.commit();
+  context.close();
+
+  print("############ Reload Cache");
+  reloadCache();
+
+  Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
+  Shell.setContext(context);
+  _eFapsUpdateSQLTables(context, "5");
+  Shell.transactionManager.commit();
+  context.close();
+
+  print("############ Reload Cache");
+  reloadCache();
+
+  Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
+  Shell.setContext(context);
+  _eFapsUpdateSQLTables(context, "6");
   Shell.transactionManager.commit();
   context.close();
 
@@ -636,7 +657,7 @@ var _stmt = _con.createStatement();
 con.commit();
 }
 function _eFapsUpdateSQLTables(_context, _version)  {
-  print("Update Tables");
+  print("Update Tables Version " + _version);
 
   var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
 
@@ -652,6 +673,18 @@ function _eFapsUpdateSQLTables(_context, _version)  {
       var update = SQLTableUpdate.readXMLFile(file);
       if (update != null)  {
         print ('  - ' + fileName);
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // type
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = TypeUpdate.readXMLFile(file);
+      if (update != null)  {
+       print('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }

@@ -26,37 +26,35 @@
 <datamodel-type>
   <uuid>e6ddf834-e4f4-481e-8afb-95bf3760b6ba</uuid>
 
+  <!-- create type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==2)</mode>
+      <mode>(version==5)</mode>
     </version>
-
     <name>Admin_Program_Abstract</name>
   </definition>
 
+  <!-- define type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version>2)</mode>
+      <mode>(version==6)</mode>
     </version>
-
     <name>Admin_Program_Abstract</name>
     <parent>Admin_Abstract</parent>
-
     <attribute>
       <name>Code</name>
       <type>String</type>
       <sqltable>Admin_Program_AbstractSQLTable</sqltable>
       <sqlcolumn>PATH</sqlcolumn>
     </attribute>
-
     <!-- properties -->
     <property name="StoreAttributeFileName">Name</property>
-
   </definition>
+
 </datamodel-type>

@@ -26,29 +26,29 @@
 <datamodel-type>
   <uuid>11043a35-f73c-481c-8c77-00306dbce824</uuid>
 
+  <!-- create type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==2)</mode>
+      <mode>(version==5)</mode>
     </version>
-
     <name>Admin_Program_Java</name>
   </definition>
 
+  <!-- define type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version>2)</mode>
+      <mode>(version==6)</mode>
     </version>
-
     <name>Admin_Program_Java</name>
     <parent>Admin_Program_Abstract</parent>
-
+    <!-- properties -->
     <property name="Tree">Admin_Program_JavaTree</property>
-
   </definition>
+
 </datamodel-type>

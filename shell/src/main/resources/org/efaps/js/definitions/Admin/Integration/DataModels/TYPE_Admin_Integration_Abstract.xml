@@ -26,22 +26,24 @@
 <datamodel-type>
   <uuid>6be67940-0f1d-477b-85ec-159032826b79</uuid>
 
+  <!-- create type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==2)</mode>
+      <mode>(version==5)</mode>
     </version>
     <name>Admin_Integration_Abstract</name>
   </definition>
 
+  <!-- define type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version>=3)</mode>
+      <mode>(version==6)</mode>
     </version>
     <name>Admin_Integration_Abstract</name>
     <parent>Admin_Abstract</parent>
