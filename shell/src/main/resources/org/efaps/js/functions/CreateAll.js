@@ -126,7 +126,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = ImageUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -138,7 +137,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = RoleUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -150,7 +148,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = AccessTypeUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -162,7 +159,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = AccessSetUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -174,7 +170,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = SQLTableUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -186,7 +181,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = TypeUpdate.readXMLFile(file);
       if (update != null)  {
-       print('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -199,7 +193,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = JAASSystemUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -211,7 +204,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = CommandUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -223,7 +215,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = MenuUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -235,7 +226,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = SearchUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -247,7 +237,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = FormUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -259,7 +248,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = TableUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -271,7 +259,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
     if (fileName.endsWith(".xml"))  {
       var update = WebDAVUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -672,7 +659,6 @@ function _eFapsUpdateSQLTables(_context, _version)  {
     if (fileName.endsWith(".xml"))  {
       var update = SQLTableUpdate.readXMLFile(file);
       if (update != null)  {
-        print ('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
@@ -684,7 +670,6 @@ function _eFapsUpdateSQLTables(_context, _version)  {
     if (fileName.endsWith(".xml"))  {
       var update = TypeUpdate.readXMLFile(file);
       if (update != null)  {
-       print('  - ' + fileName);
         update.updateInDB(jexlContext);
       }
     }
