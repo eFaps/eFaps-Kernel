@@ -302,27 +302,18 @@ function eFapsCreateAll()  {
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
-  _eFapsUpdateSQLTables(context, "5");
-  Shell.transactionManager.commit();
-  context.close();
-
-  print("############ Reload Cache");
-  reloadCache();
-
-  Shell.transactionManager.begin();
-  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  Shell.setContext(context);
-  _eFapsUpdateSQLTables(context, "6");
-  Shell.transactionManager.commit();
-  context.close();
-
-  print("############ Reload Cache");
-  reloadCache();
-
-  Shell.transactionManager.begin();
-  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  Shell.setContext(context);
   _eFapsCreateAllImportDataModel();
+  Shell.transactionManager.commit();
+  context.close();
+
+  print("############ Reload Cache");
+  reloadCache();
+
+  Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
+  Shell.setContext(context);
+  _eFapsUpdateSQLTables(context, "5");
+  _eFapsUpdateSQLTables(context, "6");
   Shell.transactionManager.commit();
   context.close();
 
