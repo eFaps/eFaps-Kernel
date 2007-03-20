@@ -109,7 +109,13 @@ public class CachedResult  {
       while (_rs.next())  {
         List list = new ArrayList(columnCount);
         for (int i = 1; i <= columnCount; i++)  {
-          list.add(_rs.getObject(i));
+          switch (metaData.getColumnType(i))  {
+            case java.sql.Types.TIMESTAMP:
+              list.add(_rs.getTimestamp(i));
+              break;
+            default:
+              list.add(_rs.getObject(i));
+          }
         }
         this.cache.put(_rs.getObject(_keyIndex), list);
         this.rows.add(list);
@@ -120,7 +126,13 @@ public class CachedResult  {
         if (list != null)  {
           for (int i = 1; i <= columnCount; i++)  {
             if (i != _keyIndex)  {
-              list.add(_rs.getObject(i));
+              switch (metaData.getColumnType(i))  {
+                case java.sql.Types.TIMESTAMP:
+                  list.add(_rs.getTimestamp(i));
+                  break;
+                default:
+                  list.add(_rs.getObject(i));
+              }
             }
           }
         }
@@ -178,10 +190,9 @@ public class CachedResult  {
   public Timestamp getTimestamp(final int _index)  {
     Timestamp ret = null;
     Object obj = getObject(_index);
-// TODO: timestamp from Oracle database does not work!
     if (obj instanceof Timestamp)  {
       ret = (Timestamp) obj;
-    } else if (obj instanceof Timestamp)  {
+    } else if (obj instanceof Date)  {
       ret = new Timestamp(((Date) obj).getTime());
     }
     return ret;
