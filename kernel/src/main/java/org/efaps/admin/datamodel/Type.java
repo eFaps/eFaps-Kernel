@@ -271,7 +271,7 @@ public class Type extends DataModelObject  {
    * @param _name   name of the instance
    */
   private Type(final long _id, final String _name)  {
-    super(_id, _name);
+    super(_id, null, _name);
     Attribute typeAttr = new Attribute(0, "Type", "");
     typeAttr.setAttributeType(AttributeType.get("Type"));
     addAttribute(typeAttr);

@@ -41,43 +41,51 @@ public abstract class AdminObject implements CacheObjectInterface  {
    *
    */
   public enum EFapsClassName  {
-    DATAMODEL_TYPE("Admin_DataModel_Type"),
 
-    USER_ABSTRACT("Admin_User_Abstract"),
-    USER_PERSON("Admin_User_Person"),
-    USER_ROLE("Admin_User_Role"),
-    USER_GROUP("Admin_User_Group"),
-    USER_JAASKEY("Admin_User_JAASKey"),
-    USER_JAASSYSTEM("Admin_User_JAASSystem"),
+    ATTRTYPE_LINK("Link", "440f472f-7be2-41d3-baec-4a2f0e4e5b31"),
+    ATTRTYPE_LINK_WITH_RANGES("LinkWithRanges", "9d6b2e3e-68ce-4509-a5f0-eae42323a696"),
+    ATTRTYPE_CREATOR_LINK("CreatorLink", "76122fe9-8fde-4dd4-a229-e48af0fb4083"),
+    ATTRTYPE_MODIFIER_LINK("ModifierLink", "447a7c87-8395-48c4-b2ed-d4e96d46332c"),
 
-    USER_ABSTRACT2ABSTRACT("Admin_User_Abstract2Abstract"),
-    USER_PERSON2ROLE("Admin_User_Person2Role"),
-    USER_PERSON2GROUP("Admin_User_Person2Group"),
+    DATAMODEL_TYPE("Admin_DataModel_Type", null),
 
-    LIFECYCLE_POLICY("Admin_LifeCycle_Policy"),
-    LIFECYCLE_STATUS("Admin_LifeCycle_Status"),
+    USER_ABSTRACT("Admin_User_Abstract", null),
+    USER_PERSON("Admin_User_Person", null),
+    USER_ROLE("Admin_User_Role", null),
+    USER_GROUP("Admin_User_Group", null),
+    USER_JAASKEY("Admin_User_JAASKey", null),
+    USER_JAASSYSTEM("Admin_User_JAASSystem", null),
 
-    EVENT_DEFINITION("Admin_Event_Definition"),
+    USER_ABSTRACT2ABSTRACT("Admin_User_Abstract2Abstract", null),
+    USER_PERSON2ROLE("Admin_User_Person2Role", null),
+    USER_PERSON2GROUP("Admin_User_Person2Group", null),
 
-    COLLECTION("Admin_UI_Collection"),
-    FIELD("Admin_UI_Field"),
-    FORM("Admin_UI_Form"),
-    TABLE("Admin_UI_Table"),
-    COMMAND("Admin_UI_Command"),
-    MENU("Admin_UI_Menu"),
-    SEARCH("Admin_UI_Search"),
-    IMAGE("Admin_UI_Image"),
+    LIFECYCLE_POLICY("Admin_LifeCycle_Policy", null),
+    LIFECYCLE_STATUS("Admin_LifeCycle_Status", null),
 
-    LINK_ICON("Admin_UI_LinkIcon"),
-    LINK_TARGET_FORM("Admin_UI_LinkTargetForm"),
-    LINK_TARGET_MENU("Admin_UI_LinkTargetMenu"),
-    LINK_TARGET_SEARCH("Admin_UI_LinkTargetSearch"),
-    LINK_TARGET_TABLE("Admin_UI_LinkTargetTable");
+    EVENT_DEFINITION("Admin_Event_Definition", null),
+
+    COLLECTION("Admin_UI_Collection", null),
+    FIELD("Admin_UI_Field", null),
+    FORM("Admin_UI_Form", null),
+    TABLE("Admin_UI_Table", null),
+    COMMAND("Admin_UI_Command", null),
+    MENU("Admin_UI_Menu", null),
+    SEARCH("Admin_UI_Search", null),
+    IMAGE("Admin_UI_Image", null),
+
+    LINK_ICON("Admin_UI_LinkIcon", null),
+    LINK_TARGET_FORM("Admin_UI_LinkTargetForm", null),
+    LINK_TARGET_MENU("Admin_UI_LinkTargetMenu", null),
+    LINK_TARGET_SEARCH("Admin_UI_LinkTargetSearch", null),
+    LINK_TARGET_TABLE("Admin_UI_LinkTargetTable", null);
 
     public final String name;
+    public final UUID uuid;
 
-    private EFapsClassName(final String _name)  {
+    private EFapsClassName(final String _name, final String _uuid)  {
       this.name = _name;
+      this.uuid = (_uuid == null) ? null : UUID.fromString(_uuid);
 mapper.put(this.name, this);
     }
 

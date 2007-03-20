@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
+import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
@@ -77,7 +78,7 @@ public class Attribute extends DataModelObject  {
    * @param _sqlColNames  name of the sql columns
    */
   protected Attribute(long _id, String _name, String _sqlColNames)  {
-    super(_id, _name);
+    super(_id, null, _name);
     StringTokenizer tokens = new StringTokenizer(_sqlColNames, ",");
     while (tokens.hasMoreTokens())  {
       getSqlColNames().add(tokens.nextToken());
@@ -96,7 +97,7 @@ public class Attribute extends DataModelObject  {
    * @see #copy
    */
   protected Attribute(long _id, String _name)  {
-    super(_id, _name);
+    super(_id, null, _name);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -395,7 +396,22 @@ public class Attribute extends DataModelObject  {
           attr.setAttributeType(AttributeType.get(attrType));
 attr.setParent(type);
 
-          if ((attrType == 400) || (attrType == 401))  {
+UUID uuid = attr.getAttributeType().getUUID();
+          if (uuid.equals(EFapsClassName.ATTRTYPE_LINK.uuid)
+              || uuid.equals(EFapsClassName.ATTRTYPE_LINK_WITH_RANGES.uuid))  {
+            Type linkType = Type.get(typeLinkId);
+            attr.setLink(linkType);
+            linkType.addLink(attr);
+          } else if (uuid.equals(EFapsClassName.ATTRTYPE_CREATOR_LINK.uuid))  {
+            Type linkType = Type.get("Admin_User_Person");
+            attr.setLink(linkType);
+            linkType.addLink(attr);
+          } else if (uuid.equals(EFapsClassName.ATTRTYPE_MODIFIER_LINK.uuid))  {
+            Type linkType = Type.get("Admin_User_Person");
+            attr.setLink(linkType);
+            linkType.addLink(attr);
+          }
+/*          if ((attrType == 400) || (attrType == 401))  {
             Type linkType = Type.get(typeLinkId);
             attr.setLink(linkType);
             linkType.addLink(attr);
@@ -412,6 +428,7 @@ attr.setParent(type);
             attr.setLink(linkType);
             linkType.addLink(attr);
           }
+*/
 type.addAttribute(attr);
 
           getCache().add(attr);

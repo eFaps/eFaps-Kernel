@@ -90,7 +90,7 @@ public class SQLTable extends DataModelObject  {
    * @param _name       name of the instance
    */
   private SQLTable(long _id, String _name)  {
-    super(_id, _name);
+    super(_id, null, _name);
   }
 
   /**

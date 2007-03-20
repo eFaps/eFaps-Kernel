@@ -39,10 +39,13 @@ public abstract class DataModelObject extends AdminObject  {
    * Constructor to set the id and name of the data model object.
    *
    * @param _id         id to set
+   * @param _uuid       universal unique identifier
    * @param _name name  to set
    */
-  protected DataModelObject(long _id, String _name)  {
-    super(_id, null, _name);
+  protected DataModelObject(final long _id,
+                            final String _uuid,
+                            final String _name)  {
+    super(_id, _uuid, _name);
   }
 
   /////////////////////////////////////////////////////////////////////////////

@@ -47,7 +47,7 @@ public class AttributeType extends DataModelObject  {
   /**
    * Logging instance used in this class.
    */
-  private final static Log log = LogFactory.getLog(AttributeType.class);
+  private final static Log LOG = LogFactory.getLog(AttributeType.class);
 
   /**
    * This is the sql select statement to select all attribute types from the
@@ -56,6 +56,7 @@ public class AttributeType extends DataModelObject  {
   private final static String SQL_SELECT  = "select "+
                                                 "ID,"+
                                                 "NAME,"+
+                                                "UUID,"+
                                                 "CLASSNAME,"+
                                                 "CLASSNAMEUI,"+
                                                 "ALWAYSUPDATE,"+
@@ -68,10 +69,13 @@ public class AttributeType extends DataModelObject  {
    * an identifier (parameter <i>_id</i>).
    *
    * @param _id         id of the attribute
+   * @param _uuid       universal unique identifier
    * @param _name       name of the instance
    */
-  protected AttributeType(long _id, String _name)  {
-    super(_id, _name);
+  protected AttributeType(final long _id, 
+                          final String _uuid,
+                          final String _name)  {
+    super(_id, _uuid, _name);
   }
 
   /**
@@ -297,16 +301,21 @@ return getName();
         while (rs.next())  {
           long id = rs.getLong(1);
           String name = rs.getString(2).trim();
+          String uuid = rs.getString(3);
+          uuid = (uuid == null) ? null : uuid.trim();
 
-          log.debug("read attribute type '" + name + "' (id = " + id + ")");
+          if (LOG.isDebugEnabled())  {
+            LOG.debug("read attribute type '" + name + "' "
+                      + "(id = " + id + ", uuid = '" + uuid + "')");
+          }
 
-          AttributeType attrType = new AttributeType(id, name);
-          attrType.setClassRepr(rs.getString(3).trim());
-          attrType.setUI(rs.getString(4).trim());
-          if (rs.getInt(5)!=0)  {
+          AttributeType attrType = new AttributeType(id, uuid, name);
+          attrType.setClassRepr(rs.getString(4).trim());
+          attrType.setUI(rs.getString(5).trim());
+          if (rs.getInt(6) != 0)  {
             attrType.setAlwaysUpdate(true);
           }
-          if (rs.getInt(6)!=0)  {
+          if (rs.getInt(7) != 0)  {
             attrType.setCreateUpdate(true);
           }
           getCache().add(attrType);
