@@ -437,6 +437,9 @@ e.printStackTrace();
         con = context.getConnectionResource();
         Statement stmt = con.getConnection().createStatement();
         for (String sql : this.sqls)  {
+          if (LOG.isDebugEnabled())  {
+            LOG.info("    ..SQL> " + sql);
+          }
           stmt.execute(sql);
         }
         con.commit();
@@ -519,6 +522,9 @@ e.printStackTrace();
           if (column.isNotNull)  {
             cmd.append(" not null");
           }
+          if (LOG.isDebugEnabled())  {
+            LOG.info("    ..SQL> " + cmd.toString());
+          }
           stmt.execute(cmd.toString());
         }
         
@@ -528,6 +534,9 @@ e.printStackTrace();
           cmd.append("alter table ").append(tableName).append(" ")
              .append("add constraint ").append(uniqueKey.name).append(" ")
              .append("unique(").append(uniqueKey.columns).append(")");
+          if (LOG.isDebugEnabled())  {
+            LOG.info("    ..SQL> " + cmd.toString());
+          }
           stmt.execute(cmd.toString());
         }
         
@@ -538,6 +547,9 @@ e.printStackTrace();
              .append("add constraint ").append(foreignKey.name).append(" ")
              .append("foreign key(").append(foreignKey.key).append(") ")
              .append("references ").append(foreignKey.reference);
+          if (LOG.isDebugEnabled())  {
+            LOG.info("    ..SQL> " + cmd.toString());
+          }
           stmt.execute(cmd.toString());
         }
         
