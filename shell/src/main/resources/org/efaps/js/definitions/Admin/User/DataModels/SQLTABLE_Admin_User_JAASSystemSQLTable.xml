@@ -80,7 +80,7 @@
       <update>true</update>
        <!-- constraints -->
       <foreign name="USERJAASSYS_FK_CRTR"   key="CREATOR"       reference="USERPERSON(ID)"/>
-      <foreign name="USERJAASSYS_FK_MDFR"   key="CREATOR"       reference="USERPERSON(ID)"/>
+      <foreign name="USERJAASSYS_FK_MDFR"   key="MODIFIER"      reference="USERPERSON(ID)"/>
       <!-- create view representing all JAAS systems -->
       <sql>
         create or replace view V_USERJAASSYSTEM as
