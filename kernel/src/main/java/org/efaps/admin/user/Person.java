@@ -1182,7 +1182,6 @@ System.out.println(" read person '"+_id+"' from db");
      *
      */
     protected Map < Long, Person > getCache4Id()  {
-System.out.println("person.getCache4Id");
 Map < Long, Person > map = null;
 try  {
   map = (Map < Long, Person >)Context.getThreadContext().getSessionAttribute("PersonCacheId");
@@ -1199,7 +1198,6 @@ return map;
      *
      */
     protected Map < String, Person > getCache4Name()  {
-System.out.println("person.getCache4Name");
 Map < String, Person > map = null;
 try  {
   map = (Map < String, Person >)Context.getThreadContext().getSessionAttribute("PersonCacheString");
