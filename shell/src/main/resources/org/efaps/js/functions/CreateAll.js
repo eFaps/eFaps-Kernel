@@ -51,13 +51,22 @@ function _exec(_stmt, _subject, _text, _cmd)  {
   var bck = _stmt.execute(_cmd);
 }
 
-function _insert(_stmt, _subject, _text, _cmd, _table)  {
+function _insert(_stmt, _subject, _text, _table, _columns, _values)  {
   var ret;
 
   eFapsCommonLog(_subject, _text);
 
-  _stmt.execute(_cmd);
-
+  var cmd =  "insert into " + _table + " (";
+  if (!Context.getDbType().supportsGetGeneratedKeys())  {
+    cmd += "ID,";
+  }
+  cmd += _columns + ") values  (";
+  if (!Context.getDbType().supportsGetGeneratedKeys())  {
+    var newId = Context.getDbType().getNewId(_stmt.getConnection(), _table, "ID");
+    cmd += newId  + ",";
+  }
+  cmd += _values + ")";
+  _stmt.execute(cmd);
   var rs = _stmt.executeQuery("select max(ID) from " + _table);
   
   if (rs.next())  {
@@ -352,17 +361,17 @@ function _eFapsCreateInsertSQLTable(_stmt, _text, _uuid, _name, _sqlTable, _sqlC
     rs.close();
   }
 
-  var ret = _insert(_stmt, _text, null, 
-      "insert into ABSTRACT "+
-          "(TYPEID,UUID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
-          +"values  (" + typeIdSQLTable 
+  var ret = _insert(_stmt, _text, null,
+                    "ABSTRACT",
+                    "TYPEID,UUID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
+                    typeIdSQLTable 
                         + ", '" + _uuid + "'"
                         + ",'" + _name + "'"
                         + ",''"
                         + ", 1"
                         + "," + CURRENT_TIMESTAMP 
                         + ",1"
-                        + "," + CURRENT_TIMESTAMP + ")", "ABSTRACT");
+                        + "," + CURRENT_TIMESTAMP);
   _exec(_stmt, null, null,  "insert into DMTABLE values  (" + ret + ",'" + _sqlTable + "','" + _sqlColId + "'," + sqlColType + "," + tableMainId + ")");
   return ret;
 }
@@ -386,9 +395,9 @@ function _eFapsCreateInsertType(_stmt, _text, _uuid, _name, _parentType)  {
   }
 
   var ret = _insert(_stmt, _text, null, 
-      "insert into ABSTRACT "+
-          "(TYPEID,NAME,UUID,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
-          +"values  (" + typeIdType + ", '" + _name + "','" + _uuid + "','',1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP + ")", "ABSTRACT");
+                    "ABSTRACT",
+                    "TYPEID,NAME,UUID,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
+                    typeIdType + ", '" + _name + "','" + _uuid + "','',1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP);
   _exec(_stmt, null, null, "insert into DMTYPE values  (" + ret + ", " + parentTypeId + ", null)");
   return ret;
 }
@@ -418,17 +427,18 @@ function _eFapsCreateInsertAttr(_stmt, _tableId, _typeId, _name, _sqlColumn, _at
   rs.close();
 
   var ret = _insert(_stmt, null, null, 
-      "insert into ABSTRACT "+
-          "(TYPEID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
-          +"values  (" + typeIdAttr + ", '"+_name+"', '', 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+")", "ABSTRACT");
+                    "ABSTRACT",
+                    "TYPEID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
+                    typeIdAttr + ", '" + _name + "', '', 1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP);
   _exec(_stmt, null, null, "insert into DMATTRIBUTE values  (" + ret + ", " + _tableId + ", " + _typeId + ",  " + attrTypeId + ", " + typeLinkId + ", '" + _sqlColumn + "')");
   return ret;
 }
 
 function _eFapsCreateInsertProp(_stmt, _abstractId, _key, _value)  {
-  _exec(_stmt, null, null, 
-      "insert into PROPERTY (ABSTRACT,NAME,VALUE) "
-          +"values("+_abstractId+",'"+_key+"','"+_value+"')");
+  _insert(_stmt, null, null, 
+          "PROPERTY",
+          "ABSTRACT,NAME,VALUE",
+          _abstractId + ",'" + _key + "','" + _value + "'");
 }
 
 /**
@@ -464,56 +474,59 @@ function _eFapsCreateUserTablesStep1(_context)  {
 var _con = con.getConnection();
 var _stmt = _con.createStatement();
 
-  _exec(_stmt, "Insert JAAS System eFaps", null,
-    "insert into USERJAASSYSTEM(NAME, UUID, "
-            + "CREATOR, CREATED, MODIFIER, MODIFIED, "
-            + "CLASSNAMEPERSON,"
-            + "CLASSNAMEROLE,"
-            + "CLASSNAMEGROUP,"
-            + "METHODPERSONKEY,"
-            + "METHODPERSONNAME,"
-            + "METHODROLEKEY,"
-            + "METHODGROUPKEY"
-            + ") "+
-        "values ('eFaps', '878a1347-a5f3-4a68-a9a4-d214e3570a62',"
-            + "1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", "
-            + "'org.efaps.jaas.efaps.PersonPrincipal',"
-            + "'org.efaps.jaas.efaps.RolePrincipal',"
-            + "'org.efaps.jaas.efaps.GroupPrincipal',"
-            + "'getName',"
-            + "'getName',"
-            + "'getName',"
-            + "'getName'"
-            + ")"
-  );
+  _insert(_stmt, "Insert JAAS System eFaps", null,
+          "USERJAASSYSTEM",
+          "NAME, UUID, "
+                + "CREATOR, CREATED, MODIFIER, MODIFIED, "
+                + "CLASSNAMEPERSON,"
+                + "CLASSNAMEROLE,"
+                + "CLASSNAMEGROUP,"
+                + "METHODPERSONKEY,"
+                + "METHODPERSONNAME,"
+                + "METHODROLEKEY,"
+                + "METHODGROUPKEY",
+          "'eFaps', '878a1347-a5f3-4a68-a9a4-d214e3570a62',"
+                + "1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", "
+                + "'org.efaps.jaas.efaps.PersonPrincipal',"
+                + "'org.efaps.jaas.efaps.RolePrincipal',"
+                + "'org.efaps.jaas.efaps.GroupPrincipal',"
+                + "'getName',"
+                + "'getName',"
+                + "'getName',"
+                + "'getName'");
 
-  _exec(_stmt, "Insert Administrator Person", null,
-    "insert into USERABSTRACT(TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS) "+
-        "values (-10000, 'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 10001)"
+  _insert(_stmt, "Insert Administrator Person", null,
+          "USERABSTRACT",
+          "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS",
+          "-10000, 'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 10001"
   );
   _exec(_stmt, null, null,
     "insert into USERPERSON(ID, FIRSTNAME, LASTNAME, EMAIL, URL, PASSWORD) "+
         "values (1,'The','Administrator','info@efaps.org','www.efaps.org', '')"
   );
 
-  _exec(_stmt, "Assign Person Administrator to JAAS System eFaps", null,
-    "insert into USERJAASKEY(KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM) "+
-        "values ('Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 1, 1)"
+  _insert(_stmt, "Assign Person Administrator to JAAS System eFaps", null,
+          "USERJAASKEY",
+          "KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM",
+          "'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 1, 1"
   );
 
-  _exec(_stmt, "Insert Administrator Role",  null,
-    "insert into USERABSTRACT(TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS) "+
-        "values (-11000, 'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 10001)"
+  _insert(_stmt, "Insert Administrator Role",  null,
+          "USERABSTRACT",
+          "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS",
+          "-11000, 'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 10001"
   );
 
-  _exec(_stmt, "Assign Role Administration to JAAS System eFaps", null,
-    "insert into USERJAASKEY(KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM) "+
-        "values ('Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 2, 1)"
+  _insert(_stmt, "Assign Role Administration to JAAS System eFaps", null,
+          "USERJAASKEY",
+          "KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM",
+          "'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 2, 1"
   );
 
-  _exec(_stmt, "Connect Administrator Person to Role Administration", null,
-    "insert into USERABSTRACT2ABSTRACT(TYPEID,CREATOR,CREATED,MODIFIER,MODIFIED,USERABSTRACTFROM,USERABSTRACTTO,USERJAASSYSTEM) "+
-        "values (-12000, 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 1, 2, 1)"
+  _insert(_stmt, "Connect Administrator Person to Role Administration", null,
+          "USERABSTRACT2ABSTRACT",
+          "TYPEID,CREATOR,CREATED,MODIFIER,MODIFIED,USERABSTRACTFROM,USERABSTRACTTO,USERJAASSYSTEM",
+          "-12000, 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 1, 2, 1"
   );
 
 con.commit();
@@ -686,28 +699,30 @@ var _con = con.getConnection();
 var _stmt = _con.createStatement();
 
  
-  text = "Insert Attribute Types";
-  _exec(_stmt, text, "",   "insert into DMATTRIBUTETYPE values ( 99,'Type',           'acfb7dd8-71e9-43c0-9f22-8d98190f7290', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.TypeType',         'org.efaps.admin.datamodel.ui.TypeUI',    null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (100,'String',         '72221a59-df5d-4c56-9bec-c9167de80f2b', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (110,'Password',       '87a372f0-9e71-45ed-be32-f2a95480a7ee', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.PasswordType',     'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (111,'OID',            'bb1d4c0b-4fee-4607-94b9-7c742949c099', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OIDType',          'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (200,'Long',           'b9d0e298-f96b-4b78-aa6c-ae8c71952f6c', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LongType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (210,'Integer',        '41451b64-cb24-4e77-8d9e-5b6eb58df56f', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.IntegerType',      'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (220,'Real',           'd4a96228-1af9-448b-8f0b-7fe2790835af', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.RealType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (290,'Boolean',        '7fb3799d-4e31-45a3-8c5e-4fbf445ec3c1', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.BooleanType',      'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (310,'Date',           '68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (320,'Time',           'd8ddc848-115e-4abf-be66-0856ac64b21a', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (330,'DateTime',       'e764db0f-70f2-4cd4-b2fe-d23d3da72f78', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.DateTimeType',     'org.efaps.admin.datamodel.ui.DateTimeUI',null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (331,'Created',        '513d35f5-58e2-4243-acd2-5fec5359778a', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.CreatedType',      'org.efaps.admin.datamodel.ui.DateTimeUI',null, 1   )");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (332,'Modified',       'a8556408-a15d-4f4f-b740-6824f774dc1d', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.ModifiedType',     'org.efaps.admin.datamodel.ui.DateTimeUI',1,    null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (400,'Link',           '440f472f-7be2-41d3-baec-4a2f0e4e5b31', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LinkType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (401,'LinkWithRanges', '9d6b2e3e-68ce-4509-a5f0-eae42323a696', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LinkWithRanges',   'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (410,'PersonLink',     '7b8f98de-1967-44e0-b174-027349868a61', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.PersonLinkType',   'org.efaps.admin.datamodel.ui.UserUI',    null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (411,'CreatorLink',    '76122fe9-8fde-4dd4-a229-e48af0fb4083', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.CreatorLinkType',  'org.efaps.admin.datamodel.ui.UserUI',    null, 1   )");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (412,'ModifierLink',   '447a7c87-8395-48c4-b2ed-d4e96d46332c', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.ModifierLinkType', 'org.efaps.admin.datamodel.ui.UserUI',    1,    null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (413,'OwnerLink',      'a5367e5a-78b7-47b4-be7f-abf5423171f0', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OwnerLinkType',    'org.efaps.admin.datamodel.ui.UserUI',    null, 1   )");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (420,'PolicyLink',     'c9c98b47-d5da-4665-939c-9686c82914ac', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
-  _exec(_stmt, null, null, "insert into DMATTRIBUTETYPE values (421,'StatusLink',     '33b086bf-c993-4ae1-8b83-6d0eea5f41e9', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StatusLinkType',   'org.efaps.admin.datamodel.ui.StringUI',  null, null)");
+  var text = "Insert Attribute Types";
+  var cols = "NAME,UUID,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED,CLASSNAME,CLASSNAMEUI,ALWAYSUPDATE,CREATEUPDATE";
+
+  _insert(_stmt, text, "",   "DMATTRIBUTETYPE", cols, "'Type',           'acfb7dd8-71e9-43c0-9f22-8d98190f7290', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.TypeType',         'org.efaps.admin.datamodel.ui.TypeUI',    null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'String',         '72221a59-df5d-4c56-9bec-c9167de80f2b', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'Password',       '87a372f0-9e71-45ed-be32-f2a95480a7ee', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.PasswordType',     'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'OID',            'bb1d4c0b-4fee-4607-94b9-7c742949c099', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OIDType',          'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'Long',           'b9d0e298-f96b-4b78-aa6c-ae8c71952f6c', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LongType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'Integer',        '41451b64-cb24-4e77-8d9e-5b6eb58df56f', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.IntegerType',      'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'Real',           'd4a96228-1af9-448b-8f0b-7fe2790835af', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.RealType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'Boolean',        '7fb3799d-4e31-45a3-8c5e-4fbf445ec3c1', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.BooleanType',      'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'Date',           '68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'Time',           'd8ddc848-115e-4abf-be66-0856ac64b21a', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'DateTime',       'e764db0f-70f2-4cd4-b2fe-d23d3da72f78', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.DateTimeType',     'org.efaps.admin.datamodel.ui.DateTimeUI',null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'Created',        '513d35f5-58e2-4243-acd2-5fec5359778a', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.CreatedType',      'org.efaps.admin.datamodel.ui.DateTimeUI',null, 1   ");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'Modified',       'a8556408-a15d-4f4f-b740-6824f774dc1d', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.ModifiedType',     'org.efaps.admin.datamodel.ui.DateTimeUI',1,    null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'Link',           '440f472f-7be2-41d3-baec-4a2f0e4e5b31', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LinkType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'LinkWithRanges', '9d6b2e3e-68ce-4509-a5f0-eae42323a696', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LinkWithRanges',   'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'PersonLink',     '7b8f98de-1967-44e0-b174-027349868a61', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.PersonLinkType',   'org.efaps.admin.datamodel.ui.UserUI',    null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'CreatorLink',    '76122fe9-8fde-4dd4-a229-e48af0fb4083', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.CreatorLinkType',  'org.efaps.admin.datamodel.ui.UserUI',    null, 1   ");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'ModifierLink',   '447a7c87-8395-48c4-b2ed-d4e96d46332c', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.ModifierLinkType', 'org.efaps.admin.datamodel.ui.UserUI',    1,    null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'OwnerLink',      'a5367e5a-78b7-47b4-be7f-abf5423171f0', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OwnerLinkType',    'org.efaps.admin.datamodel.ui.UserUI',    null, 1   ");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'PolicyLink',     'c9c98b47-d5da-4665-939c-9686c82914ac', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null");
+  _insert(_stmt, null, null, "DMATTRIBUTETYPE", cols, "'StatusLink',     '33b086bf-c993-4ae1-8b83-6d0eea5f41e9', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StatusLinkType',   'org.efaps.admin.datamodel.ui.StringUI',  null, null");
 con.commit();
 }
 
