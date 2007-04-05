@@ -36,12 +36,12 @@
       <mode>(version==2)</mode>
     </version>
     <database>
-      <table-name>PRGABSTRACT</table-name>
+      <table-name>T_PRGABSTRACT</table-name>
       <parent-table>ABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="CODE"   type="BLOB"/>
+      <column name="CODE"   type="CLOB"/>
      </database>
   </definition>
 
@@ -56,7 +56,7 @@
     <name>Admin_Program_AbstractSQLTable</name>
     <parent>Admin_AbstractSQLTable</parent>
     <database>
-      <table-name>PRGABSTRACT</table-name>
+      <table-name>T_PRGABSTRACT</table-name>
     </database>
   </definition>
 </datamodel-sqltable>
