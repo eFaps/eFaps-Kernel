@@ -330,9 +330,8 @@
     <dependency>
       <groupId>commons-vfs</groupId>
       <artifactId>commons-vfs</artifactId>
-      <version>1.0-RC8-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/commons-vfs-1.0-RC8-SNAPSHOT.jar</systemPath>
+      <version>1.0</version>
+      <scope>compile</scope>
     </dependency>
 
     <!-- To Create HTML Codes used in the WebDAV integration -->
