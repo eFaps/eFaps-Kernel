@@ -47,11 +47,12 @@
     </version>
     <name>Admin_Program_Abstract</name>
     <parent>Admin_Abstract</parent>
+    <!-- attributes -->
     <attribute>
       <name>Code</name>
       <type>String</type>
       <sqltable>Admin_Program_AbstractSQLTable</sqltable>
-      <sqlcolumn>PATH</sqlcolumn>
+      <sqlcolumn>CODE</sqlcolumn>
     </attribute>
     <!-- properties -->
     <property name="StoreAttributeFileName">Name</property>
