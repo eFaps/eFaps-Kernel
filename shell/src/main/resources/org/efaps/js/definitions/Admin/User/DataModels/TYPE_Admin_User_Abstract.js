@@ -45,6 +45,11 @@ with (TYPE)  {
     setSQLTable("Admin_User_AbstractSQLTable");
     setSQLColumn("UUID");
   }
+  with (addAttribute("Revision"))  {
+    setAttributeType("String");
+    setSQLTable("Admin_User_AbstractSQLTable");
+    setSQLColumn("REVISION");
+  }
   with (addAttribute("Creator"))  {
     setAttributeType("CreatorLink");
     setSQLTable("Admin_User_AbstractSQLTable");
