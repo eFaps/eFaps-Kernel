@@ -20,36 +20,28 @@
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
+ Original License:Free to Use since October 2006
+                  (Sun said the 'Duke' has been Open Sources!, see
+                  [ http://java.sun.com/logos/ ])
 
 -->
 
-<datamodel-type>
-  <uuid>11043a35-f73c-481c-8c77-00306dbce824</uuid>
+<ui-image>
+  <uuid>ac12aeec-cfd2-4a30-86eb-e1edf5321dc0</uuid>
 
-  <!-- create type -->
+  <!-- ************************************************************************
+    version definition used to create / update the image 
+  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==5)</mode>
+      <mode>true</mode>
+      <mode>(version==2)</mode>
     </version>
-    <name>Admin_Program_Java</name>
+    <name>Admin_Program_JavaImage</name>
+    <file>IMAGE_Admin_Program_JavaImage.gif</file>
   </definition>
 
-  <!-- define type -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==6)</mode>
-    </version>
-    <name>Admin_Program_Java</name>
-    <parent>Admin_Program_Abstract</parent>
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_Program_JavaImage</property>
-    <property name="Tree">Admin_Program_JavaTree</property>
-  </definition>
-
-</datamodel-type>
+</ui-image>

@@ -52,6 +52,7 @@
       <mode>(version>=3)</mode>
     </version>
     <name>Admin_Program_JavaMyDesk</name>
+    <icon>Admin_Program_JavaImage</icon>
     <!-- target definitions -->
     <target>
       <table>Admin_Program_AbstractTable</table>
