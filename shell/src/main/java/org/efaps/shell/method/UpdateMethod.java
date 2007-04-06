@@ -30,6 +30,7 @@ import org.efaps.update.access.AccessTypeUpdate;
 import org.efaps.update.datamodel.SQLTableUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
+import org.efaps.update.program.JavaUpdate;
 import org.efaps.update.ui.CommandUpdate;
 import org.efaps.update.ui.FormUpdate;
 import org.efaps.update.ui.ImageUpdate;
@@ -85,7 +86,13 @@ public final class UpdateMethod extends AbstractMethod  {
       jexlContext.getVars().put("version", 
                                 Integer.parseInt(version));
     }
-    
+
+    for (String fileName : getCommandLine().getArgs())  {
+      JavaUpdate update = JavaUpdate.readXMLFile(fileName);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
     for (String fileName : getCommandLine().getArgs())  {
       RoleUpdate update = RoleUpdate.readXMLFile(fileName);
       if (update != null)  {
@@ -158,7 +165,6 @@ public final class UpdateMethod extends AbstractMethod  {
         update.updateInDB(jexlContext);
       }
     }
-
     commitTransaction();
   }
 }
