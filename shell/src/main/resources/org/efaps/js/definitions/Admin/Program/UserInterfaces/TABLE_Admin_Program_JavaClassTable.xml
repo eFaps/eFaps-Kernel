@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>9aad99ec-5421-47a1-b556-bd63d70004c2</uuid>
+<ui-table>
+  <uuid>89dd39dc-709f-456e-b1a1-44f73e426df3</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>Admin_Program_JavaTree</name>
+    <name>Admin_Program_JavaClassTable</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,18 +51,32 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>Admin_Program_JavaTree</name>
-    <target>
-      <form>Admin_Program_JavaForm</form>
-      <!--menu>TeamWork_CollectionTree_Menu</menu-->
-    </target>
-    <!-- childs -->
-    <childs>
-      <child>Admin_Program_JavaTree_Classes</child>
-    </childs>
-    <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
+    <name>Admin_Program_JavaClassTable</name>
+    <!-- fields -->
+    <field name="name">
+      <property name="Expression">Name</property>
+      <property name="Label">Admin_Program_JavaClass/Name.Label</property>
+    </field>
+    <field name="filelength">
+      <property name="Expression">FileLength</property>
+      <property name="Label">Admin_Program_JavaClass/FileLength.Label</property>
+    </field>
+    <field name="creator">
+      <property name="Expression">Creator</property>
+      <property name="Label">Admin_Program_JavaClass/Creator.Label</property>
+    </field>
+    <field name="ceated">
+      <property name="Expression">Created</property>
+      <property name="Label">Admin_Program_JavaClass/Created.Label</property>
+    </field>
+    <field name="modifier">
+      <property name="Expression">Modifier</property>
+      <property name="Label">Admin_Program_JavaClass/Modifier.Label</property>
+    </field>
+    <field name="modified">
+      <property name="Expression">Modified</property>
+      <property name="Label">Admin_Program_JavaClass/Modified.Label</property>
+    </field>
   </definition>
 
-</ui-menu>
+</ui-table>
