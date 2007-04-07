@@ -53,6 +53,7 @@ public class Shell {
   final private static Set < AbstractMethod > methods 
                                  = new HashSet  < AbstractMethod > ();
   {
+    methods.add(new org.efaps.shell.method.CompileMethod());
     methods.add(new org.efaps.shell.method.CreateMethod());
     methods.add(new org.efaps.shell.method.GenerateUUIDMethod());
     methods.add(new org.efaps.shell.method.ImportPersonsMethod());
