@@ -89,22 +89,25 @@ this.type = type;
   }
 
   /**
+   * @see #setObject(Instance)
+   */
+  public void setObject(final String _oid) throws EFapsException  {
+    setObject(new Instance(_oid));
+  }
+
+  /**
+   * @see #setObject(Instance)
+   */
+  public void setObject(final Type _type, final long _id)
+                                                    throws EFapsException  {
+    setObject(new Instance(_type, _id));
+  }
+
+  /**
    * @deprecated
    */
   public void setObject(Context _context, Instance _instance) throws EFapsException  {
     setObject(_instance);
-  }
-
-  /**
-   *
-   */
-  public void setObject(final String _oid) throws EFapsException  {
-    Instance instance = new Instance(_oid);
-    Type type = instance.getType();
-addSelect(true, type, type, "OID");
-types.add(this.type);
-this.type = type;
-    addWhereExprEqValue("ID", ""+instance.getId());
   }
 
   /**
