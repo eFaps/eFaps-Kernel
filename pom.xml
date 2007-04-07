@@ -1,6 +1,6 @@
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -86,6 +86,18 @@
       <roles>
         <role>Architect</role>
         <role>Release Manager</role>
+      </roles>
+      <timezone>+1</timezone>
+      <properties/>
+    </developer>
+    <developer>
+      <id>jmo</id>
+      <name>Jan Moxter</name>
+      <email>jan.moxter@moxter.net</email>
+      <url>www.moxter.net</url>
+      <organization>Moxter.Net Ltd. &amp; Co. KG</organization>
+      <organizationUrl/>
+      <roles>
       </roles>
       <timezone>+1</timezone>
       <properties/>
