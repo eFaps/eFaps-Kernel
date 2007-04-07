@@ -2,7 +2,7 @@
 #
 #------------------------------------------------------------------------------
 #
-# Copyright 2006 The eFaps Team
+# Copyright 2003-2007 The eFaps Team
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -70,6 +70,7 @@ shellPath=$EFAPS_HOME/shell/target
 shellPathLib=$shellPath/eFaps-Shell-1.0-SNAPSHOT/WEB-INF/lib
 
 CP=.
+CP=$CP:$EFAPS_HOME/ojdbc14_g.jar
 
 # eFaps itself
 CP=$CP:$shellPath/classes
@@ -80,11 +81,11 @@ CP=$CP:$shellPathLib/js-1.6R1.jar
 
 # Logging with log4j
 CP=$CP:$shellPathLib/log4j-1.2.9.jar
-CP=$CP:$shellPathLib/commons-logging-1.0.4.jar
+CP=$CP:$shellPathLib/commons-logging-1.1.jar
 
 # digester to read xml files
-CP=$CP:$shellPathLib/commons-digester-1.7.jar
-CP=$CP:$shellPathLib/commons-beanutils-1.6.jar
+CP=$CP:$shellPathLib/commons-digester-1.8.jar
+CP=$CP:$shellPathLib/commons-beanutils-1.7.0.jar
 
 # command line parser
 CP=$CP:$shellPathLib/commons-cli-1.0.jar
@@ -93,7 +94,7 @@ CP=$CP:$shellPathLib/commons-cli-1.0.jar
 CP=$CP:$shellPathLib/commons-jexl-1.1.jar
 
 # used for toString methods
-CP=$CP:$shellPathLib/commons-lang-2.1.jar
+CP=$CP:$shellPathLib/commons-lang-2.3.jar
 
 # HTTP Servlet Api
 CP=$CP:$shellPathLib/servlet-api-2.4.jar
@@ -102,10 +103,20 @@ CP=$CP:$shellPathLib/servlet-api-2.4.jar
 CP=$CP:$shellPathLib/geronimo-spec-jta-1.0-M1.jar
 CP=$CP:$shellPathLib/slide-kernel-2.1.jar
 
+# Java compiler
+CP=$CP:$shellPathLib/commons-jci-core-1.0-RC1.jar
+CP=$CP:$shellPathLib/commons-jci-fam-1.0-RC1.jar
+CP=$CP:$shellPathLib/commons-jci-javac-1.0-RC1.jar
+CP=$CP:$shellPathLib/asm-2.2.jar
+CP=$CP:$shellPathLib/asm-util-2.2.1.jar
+CP=$CP:$shellPathLib/asm-tree-2.2.1.jar
+CP=$CP:$shellPathLib/asm-analysis-2.2.1.jar
+CP=$CP:$shellPathLib/dependency-0.2.jar
+
 # Connection Pooling
-CP=$CP:$shellPathLib/commons-dbcp-1.2.1.jar
-CP=$CP:$shellPathLib/commons-pool-1.2.jar
-CP=$CP:$shellPathLib/commons-collections-2.1.jar
+CP=$CP:$shellPathLib/commons-dbcp-1.2.2.jar
+CP=$CP:$shellPathLib/commons-pool-1.3.jar
+CP=$CP:$shellPathLib/commons-collections-3.1.jar
 
 # Database Driver
 CP=$CP:$shellPathLib/derbyclient-10.1.2.1.jar
