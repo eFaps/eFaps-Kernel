@@ -144,12 +144,13 @@
   ************************************************************************+ -->
   <dependencies>
 
-     <!-- used for toString methods -->
+    <!-- used for toString methods
+         http://jakarta.apache.org/commons/lang
+    -->
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
-      <version>2.1</version>
-      <scope>compile</scope>
+      <version>2.3</version>
     </dependency>
 
     <!-- easy XML reader -->
@@ -157,7 +158,6 @@
       <groupId>commons-digester</groupId>
       <artifactId>commons-digester</artifactId>
       <version>1.8</version>
-      <scope>compile</scope>
     </dependency>
 
     <!-- For interpreting expressions (e.g. of xml definitions) -->
