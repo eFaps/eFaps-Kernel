@@ -164,22 +164,6 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- For reading XML files -->
-    <dependency>
-      <groupId>commons-digester</groupId>
-      <artifactId>commons-digester</artifactId>
-      <version>1.7</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- logging purpose -->
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.0.4</version>
-      <scope>compile</scope>
-    </dependency>
-
     <!-- to define a higher version (needed from another tool) -->
     <dependency>
       <groupId>commons-collections</groupId>
