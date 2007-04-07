@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@
 
 package org.efaps.db;
 
+import java.sql.SQLException;
 import java.sql.Statement;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -81,6 +83,16 @@ public class Delete  {
   }
 
   /**
+   *
+   * @param _type
+   * @param _id
+   * @todo description
+   */
+  public Delete(final Type _type, final long _id)  {
+    this.instance = new Instance(_type, _id);
+  }
+
+  /**
    * @param _oid
    * @todo description
    */
@@ -101,12 +113,12 @@ public class Delete  {
    *         on given eFaps object.
    * @see #executeWithoutAccessCheck
    */
-  public void execute() throws Exception  {
+  public void execute() throws EFapsException  {
     boolean hasAccess = this.instance.getType()
           .hasAccess(this.instance, 
                      AccessTypeEnums.DELETE.getAccessType());
     if (!hasAccess)  {
-      throw new EFapsException(getClass(), "execute.NoAccess");
+      throw new EFapsException(getClass(), "execute.NoAccess", this.instance);
     }
     executeWithoutAccessCheck();
   }
@@ -123,7 +135,7 @@ public class Delete  {
    *
    * @see SQLTable#readOnly
    */
-  public void executeWithoutAccessCheck() throws Exception  {
+  public void executeWithoutAccessCheck() throws EFapsException  {
     Context context = Context.getThreadContext();
     ConnectionResource con = null;
 
@@ -155,8 +167,10 @@ public class Delete  {
         stmt.addBatch(buf.toString());
 
         stmt.executeBatch();
-      } catch (Exception e)  {
-        throw e;
+      } catch (SQLException e)  {
+        throw new EFapsException(getClass(),
+                                 "executeWithoutAccessCheck.SQLException",
+                                 e, this.instance);
       } finally  {
         try  {
           if (stmt != null)  {
