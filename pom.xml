@@ -197,18 +197,25 @@
       <scope>compile</scope>
     </dependency>
 
+    <!-- Java program compiler -->
+    <!-- http://jakarta.apache.org/commons/jci/ -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-core</artifactId>
+      <version>1.0-RC1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-javac</artifactId>
+      <version>1.0-RC1</version>
+    </dependency>
+
+    <!-- file system used for checkin / checkout on external resources -->
+    <!-- http://jakarta.apache.org/commons/vfs/ -->
     <dependency>
       <groupId>commons-vfs</groupId>
       <artifactId>commons-vfs</artifactId>
       <version>1.0</version>
-      <scope>compile</scope>
-<!--
-      <url>http://jakarta.apache.org/commons/vfs/</url>
-      <properties>
-        <war.bundle>true</war.bundle>
-        <comment>Used from eFaps to access (load and store) files on external resources.</comment>
-      </properties>
--->
     </dependency>
 
     <dependency>
