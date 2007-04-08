@@ -233,4 +233,17 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
     }
   }
 
+  /**
+   * The static method removes all values in the caches. The datamodel cache
+   * is initialised automatically.
+   */
+  public static void cleanCache() throws Exception {
+    synchronized(caches)  {
+      for (Cache cache : caches)  {
+        cache.cache4Id.clear();
+        cache.cache4Name.clear();
+        cache.cache4UUID.clear();
+      }
+    }
+  }
 }

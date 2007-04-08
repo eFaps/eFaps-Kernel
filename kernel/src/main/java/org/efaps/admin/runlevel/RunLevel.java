@@ -18,8 +18,9 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.util;
+package org.efaps.admin.runlevel;
 
+import java.lang.reflect.Method;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -39,11 +40,11 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.slide.transaction.SlideTransactionManager;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.cache.Cache;
+import org.efaps.util.EFapsException;
 
 /**
  * This Class is the Runlevel for eFaps. It provides the possibilty to load only
@@ -51,20 +52,18 @@ import org.efaps.util.cache.Cache;
  * database.
  * 
  * @author jmo
- * 
  */
 public class RunLevel {
   /**
    * Logger for this class
    */
-  private static final Log         LOG          = LogFactory
-                                                    .getLog(RunLevel.class);
+  private static final Log LOG = LogFactory.getLog(RunLevel.class);
 
   /**
    * This is the sql select statement to select all RunLevel from the database.
    */
   private final static String      SQL_SELECT   = "select ID, RUNLEVEL, UUID, PARENT "
-                                                    + "from T_ADRUNLEVEL ";
+                                                    + "from T_RUNLEVEL ";
 
   private static List<CacheMethod> CACHEMETHODS = new ArrayList<CacheMethod>();
 
@@ -76,8 +75,30 @@ public class RunLevel {
 
   private static List<String>      PARENTS      = new ArrayList<String>();
 
-  public static void main(String[] args) {
-    new RunLevel("initDB");
+  /**
+   * The static method first removes all values in the caches. Then the cache is
+   * initialised automatically debending on the desired RunLevel
+   *
+   * @param _runLevel   name of run level to initialise
+   * @todo exception handling
+   */
+  public static void init(final String _runLevel) throws Exception {
+    new RunLevel(_runLevel);
+    Cache.cleanCache();
+
+    for (CacheMethod method : CACHEMETHODS)  {
+        Class<?> cls = Class.forName(method.getClassName());
+        if (method.hasParameter()) {
+          Method m = cls.getMethod(method.getMethodName(),
+              new Class[] { String.class });
+          m.invoke(cls, (String) method.getParameter());
+        } else {
+
+          Method m = cls.getMethod(method.getMethodName(), new Class[] {});
+          m.invoke(cls, (Object[]) null);
+
+        }
+    }
   }
 
   /**
@@ -91,17 +112,8 @@ public class RunLevel {
   }
 
   public RunLevel(String _RunLevel) {
-    initDatabase();
     setRunLevel(_RunLevel);
     initialise();
-    try {
-      Cache.reloadCacheRunLevel();
-      this.abortTransaction();
-    } catch (Exception e) {
-
-      LOG.error("RunLevel(String)", e);
-    }
-
   }
 
   private void setRunLevel(String _RunLevel) {
@@ -118,7 +130,7 @@ public class RunLevel {
 
     StringBuilder stmt = new StringBuilder();
     stmt
-        .append("select CLASS, METHOD, PARAMETER from T_ADRUNLEVELDEF where RUNLEVELID  in (");
+        .append("select CLASS, METHOD, PARAMETER from T_RUNLEVELDEF where RUNLEVELID  in (");
     stmt.append(getId());
     for (Iterator iter = PARENTS.iterator(); iter.hasNext();) {
       String element = (String) iter.next();
@@ -136,7 +148,6 @@ public class RunLevel {
     String parentID = null;
     ConnectionResource con = null;
     try {
-      startTransaction();
 
       con = Context.getThreadContext().getConnectionResource();
 
@@ -154,15 +165,13 @@ public class RunLevel {
       while (parentID != null) {
         PARENTS.add(parentID);
 
-        rs = stmt.executeQuery("select PARENT from T_ADRUNLEVEL where ID= "
+        rs = stmt.executeQuery("select PARENT from T_RUNLEVEL where ID= "
             + parentID);
-
         if (rs.next()) {
           parentID = rs.getString(1);
         } else {
           parentID = null;
         }
-
       }
       rs.close();
 
@@ -176,33 +185,24 @@ public class RunLevel {
               .getString(2).trim()));
         }
       }
-
     } catch (EFapsException e) {
-
       LOG.error("initialise()", e);
     } catch (SQLException e) {
-
       LOG.error("initialise()", e);
     } catch (Exception e) {
-
       LOG.error("initialise()", e);
-    }
-
-    finally {
+    } finally {
       if (stmt != null) {
         try {
           stmt.close();
           con.commit();
         } catch (SQLException e) {
-
           LOG.error("initialise()", e);
         } catch (EFapsException e) {
-
           LOG.error("initialise()", e);
         }
       }
     }
-
   }
 
   public static String getId() {
@@ -222,104 +222,6 @@ public class RunLevel {
     UUID = _UUID;
   }
 
-  protected boolean initDatabase() {
-    boolean initialised = false;
-    String bootstrap = "/Users/janmoxter/Documents/workspace/eFaps/bootstrap.xml";
-
-    Properties props = new Properties();
-    try {
-      // read bootstrap properties
-      FileInputStream fstr = new FileInputStream(bootstrap);
-      props.loadFromXML(fstr);
-      fstr.close();
-    } catch (FileNotFoundException e) {
-      LOG.error("could not open file '" + bootstrap + "'", e);
-    } catch (IOException e) {
-      LOG.error("could not read file '" + bootstrap + "'", e);
-    }
-
-    // configure database type
-    String dbClass = null;
-    try {
-      Object dbTypeObj = props.get("dbType");
-      if ((dbTypeObj == null) || (dbTypeObj.toString().length() == 0)) {
-        LOG.error("could not initaliase database type");
-      } else {
-        dbClass = dbTypeObj.toString();
-        AbstractDatabase dbType = (AbstractDatabase) Class.forName(dbClass)
-            .newInstance();
-        if (dbType == null) {
-          LOG.error("could not initaliase database type");
-        }
-        Context.setDbType(dbType);
-        initialised = true;
-      }
-    } catch (ClassNotFoundException e) {
-      LOG.error("could not found database description class " + "'" + dbClass
-          + "'", e);
-    } catch (InstantiationException e) {
-      LOG.error("could not initialise database description class " + "'"
-          + dbClass + "'", e);
-    } catch (IllegalAccessException e) {
-      LOG.error("could not access database description class " + "'" + dbClass
-          + "'", e);
-    }
-
-    // buildup reference and initialise datasource object
-    String factory = props.get("factory").toString();
-    Reference ref = new Reference(DataSource.class.getName(), factory, null);
-    for (Object key : props.keySet()) {
-      Object value = props.get(key);
-      ref.add(new StringRefAddr(key.toString(), (value == null) ? null : value
-          .toString()));
-    }
-    ObjectFactory of = null;
-    try {
-      Class factClass = Class.forName(ref.getFactoryClassName());
-      of = (ObjectFactory) factClass.newInstance();
-    } catch (ClassNotFoundException e) {
-      LOG.error("could not found data source class " + "'"
-          + ref.getFactoryClassName() + "'", e);
-    } catch (InstantiationException e) {
-      LOG.error("could not initialise data source class " + "'"
-          + ref.getFactoryClassName() + "'", e);
-    } catch (IllegalAccessException e) {
-      LOG.error("could not access data source class " + "'"
-          + ref.getFactoryClassName() + "'", e);
-    }
-    if (of != null) {
-      DataSource ds = null;
-      try {
-        ds = (DataSource) of.getObjectInstance(ref, null, null, null);
-      } catch (Exception e) {
-        LOG.error("coud not get object instance of factory " + "'"
-            + ref.getFactoryClassName() + "'", e);
-      }
-      if (ds != null) {
-        Context.setDataSource(ds);
-        initialised = initialised && true;
-      }
-    }
-
-    return initialised;
-  }
-
-  protected void startTransaction() throws EFapsException, Exception {
-    getTransactionManager().begin();
-    Context.newThreadContext(getTransactionManager().getTransaction(), "Admin");
-  }
-
-  protected TransactionManager getTransactionManager() {
-    return transactionManager;
-  }
-
-  final public static TransactionManager transactionManager = new SlideTransactionManager();
-
-  protected void abortTransaction() throws EFapsException, Exception {
-    getTransactionManager().rollback();
-    Context.getThreadContext().close();
-  }
-
   /**
    * Cache for the Methods, wich are defined for the Runlevel. The stored
    * String-Values can be used to invoke the Methods. Therefor the Cache is
@@ -329,17 +231,14 @@ public class RunLevel {
    * String-Parameter</li>
    * <li><i>optional PARAMETER: the String-Value coresponding with the Method</i></li>
    * <br>
-   * 
-   * @author jmo
-   * 
    */
   public class CacheMethod {
 
-    private String CLASSNAME  = null;
+    final private String className;
 
-    private String METHODNAME = null;
+    final private String methodName;
 
-    private String PARAMETER  = null;
+    final private String parameter;
 
     /**
      * Constructor for the ChacheMethod in the Case that there are only
@@ -352,30 +251,25 @@ public class RunLevel {
      * @param _MethodName
      *          Name of the Method
      */
-    public CacheMethod(String _ClassName, String _MethodName) {
-      CLASSNAME = _ClassName;
-
-      METHODNAME = _MethodName;
-
+    public CacheMethod(final String _className,
+                       final String _methodName) {
+      this(_className, _methodName, null);
     }
 
     /**
      * Constructor for the Cache with ClassName, MethodName and Parameter
      * 
      * @see CacheMethod(String _ClassName, String _MethodName)
-     * @param _ClassName
-     *          Name of the Class
-     * @param _MethodName
-     *          Name of the Method
-     * @param _Parameter
-     *          Value of the Parameter
+     * @param _className    Name of the Class
+     * @param _methodName   Name of the Method
+     * @param _parameter    Value of the Parameter
      */
-    public CacheMethod(String _ClassName, String _MethodName, String _Parameter) {
-      CLASSNAME = _ClassName;
-
-      METHODNAME = _MethodName;
-
-      PARAMETER = _Parameter;
+    public CacheMethod(final String _className,
+                       final String _methodName,
+                       final String _parameter) {
+      this.className = _className;
+      this.methodName = _methodName;
+      this.parameter = _parameter;
     }
 
     /**
@@ -384,7 +278,7 @@ public class RunLevel {
      * @return Name of the Class
      */
     public String getClassName() {
-      return CLASSNAME;
+      return this.className;
     }
 
     /**
@@ -393,7 +287,7 @@ public class RunLevel {
      * @return Name of the Method
      */
     public String getMethodName() {
-      return METHODNAME;
+      return this.methodName;
     }
 
     /**
@@ -402,7 +296,7 @@ public class RunLevel {
      * @return Value of the Parameter, null if not initialised
      */
     public String getParameter() {
-      return PARAMETER;
+      return this.parameter;
     }
 
     /**
@@ -411,12 +305,7 @@ public class RunLevel {
      * @return true if a Parameter is given, else false
      */
     public boolean hasParameter() {
-      if (PARAMETER != null) {
-        return true;
-      }
-
-      return false;
-
+      return this.parameter != null;
     }
 
   }
