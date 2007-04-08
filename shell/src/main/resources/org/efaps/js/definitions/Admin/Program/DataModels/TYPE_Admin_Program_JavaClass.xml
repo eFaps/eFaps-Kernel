@@ -73,6 +73,12 @@
       <typelink>Admin_Program_Java</typelink>
     </attribute>
     <attribute>
+      <name>FileName</name>
+      <type>String</type>
+      <sqltable>Admin_Program_JavaClassSQLTable</sqltable>
+      <sqlcolumn>FILENAME</sqlcolumn>
+    </attribute>
+    <attribute>
       <name>FileLength</name>
       <type>Long</type>
       <sqltable>Admin_Program_JavaClassSQLTable</sqltable>
@@ -104,7 +110,7 @@
     </attribute>
     <!-- properties -->
     <property name="StoreAttributeFileLength">FileLength</property>
-    <property name="StoreAttributeFileName">Name</property>
+    <property name="StoreAttributeFileName">FileName</property>
     <property name="StoreJDBCBlob">CLASS</property>
     <property name="StoreJDBCKey">ID</property>
     <property name="StoreJDBCTable">T_PRGJAVACLASS</property>
