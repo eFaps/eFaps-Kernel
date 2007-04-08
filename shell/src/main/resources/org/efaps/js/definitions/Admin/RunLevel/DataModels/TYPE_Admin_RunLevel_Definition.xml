@@ -17,79 +17,79 @@
  limitations under the License.
 
  Author:          jmo
- Revision:        $Rev:  $
- Last Changed:    $Date:  $
- Last Changed By: $Author:  $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
 <datamodel-type>
   <uuid>f9958e29-79ab-40f8-a947-0e22ce6c3fa3</uuid>
 
+  <!-- create type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:  $</local>
-      <mode>(version==3)</mode>
+      <local>$Rev$</local>
+      <mode>(version==5)</mode>
     </version>
-
-    <name>Admin_RunLevel_Defenition</name>
-  
-  <attribute>
+    <name>Admin_RunLevel_Definition</name>
+  </definition>
+    
+  <!-- define type -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==6)</mode>
+    </version>
+    <name>Admin_RunLevel_Definition</name>
+    <!-- attributes -->
+    <attribute>
       <name>OID</name>
       <type>OID</type>
       <sqltable>Admin_RunLevel_DefinitionSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
-   </attribute>
-
+    </attribute>
     <attribute>
       <name>ID</name>
       <type>Integer</type>
       <sqltable>Admin_RunLevel_DefinitionSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
-
-
     <attribute>
       <name>RunLevelID</name>
       <type>Link</type>
-      <typelink>Admin_RunLevel</typelink>
+      <typelink>Admin_RunLevel_RunLevel</typelink>
       <sqltable>Admin_RunLevel_DefinitionSQLTable</sqltable>
       <sqlcolumn>RUNLEVEL</sqlcolumn>
     </attribute>
-
     <attribute>
       <name>Priority</name>
       <type>Integer</type>
       <sqltable>Admin_RunLevel_DefinitionSQLTable</sqltable>
       <sqlcolumn>PRIORITY</sqlcolumn>
     </attribute>
-    
     <attribute>
       <name>Class</name>
       <type>String</type>
       <sqltable>Admin_RunLevel_DefinitionSQLTable</sqltable>
       <sqlcolumn>CLASS</sqlcolumn>
     </attribute>
-    
     <attribute>
       <name>Method</name>
       <type>String</type>
       <sqltable>Admin_RunLevel_DefinitionSQLTable</sqltable>
       <sqlcolumn>METHOD</sqlcolumn>
     </attribute>
-    
     <attribute>
       <name>Parameter</name>
       <type>String</type>
       <sqltable>Admin_RunLevel_DefinitionSQLTable</sqltable>
       <sqlcolumn>PARAMETER</sqlcolumn>
     </attribute>
-    
-    
-    <!-- properties -->
-    
-
   </definition>
+
 </datamodel-type>

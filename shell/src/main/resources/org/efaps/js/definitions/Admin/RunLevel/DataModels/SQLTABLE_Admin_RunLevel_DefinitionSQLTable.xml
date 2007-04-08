@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          jmo
- Revision:        $Rev:  $
- Last Changed:    $Date:  $
- Last Changed By: $Author:  $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -28,18 +28,16 @@
 
   <!-- SQL Table to hold the RunLevel Basic Definitons -->
 
+  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev: $</local>
-      <mode>(version==3)</mode>
+      <global>2</global>
+      <local>$Rev$</local>
+      <mode>(version==2)</mode>
     </version>
-
-    <name>Admin_RunLevel_DefinitionSQLTable</name>
-
     <database>
-      <table-name>T_ADRUNLEVELDEF</table-name>
+      <table-name>T_RUNLEVELDEF</table-name>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
@@ -48,7 +46,37 @@
       <column name="CLASS"      type="STRING_SHORT" not-null="true" length="255"/> 
       <column name="METHOD"     type="STRING_SHORT" not-null="true" length="128"/> 
       <column name="PARAMETER"  type="STRING_SHORT"                 length="128"/>
-     <foreign name="T_ADRUNLEVELDEF_FK_T_ADRUNLEVEL"	key="RUNLEVELID"  	reference="T_ADRUNLEVEL(ID)"/>
+     </database>
+  </definition>
+
+  <!-- define constraints -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>2</global>
+      <local>$Rev$</local>
+      <mode>(version==3)</mode>
+    </version>
+    <database>
+      <table-name>T_RUNLEVELDEF</table-name>
+      <update>true</update>
+      <!-- constraints -->
+      <foreign name="T_RUNLEVELDEF_FK_RNLVL"    key="RUNLEVELID"    reference="T_RUNLEVEL(ID)"/>
     </database>
   </definition>
+
+  <!-- define datamodel -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev$</local>
+      <mode>(version==4)</mode>
+    </version>
+    <name>Admin_RunLevel_DefinitionSQLTable</name>
+    <database>
+      <table-name>T_RUNLEVELDEF</table-name>
+    </database>
+  </definition>
+
 </datamodel-sqltable>
