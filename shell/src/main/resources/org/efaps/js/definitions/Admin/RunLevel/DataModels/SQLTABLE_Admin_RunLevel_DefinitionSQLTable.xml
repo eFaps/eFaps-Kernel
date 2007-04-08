@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmo
+ Revision:        $Rev:  $
+ Last Changed:    $Date:  $
+ Last Changed By: $Author:  $
+
+-->
+
+<datamodel-sqltable>
+  <uuid>ffdf2e8f-ff2b-4cc8-85bf-481c167302ab</uuid>
+
+  <!-- SQL Table to hold the RunLevel Basic Definitons -->
+
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev: $</local>
+      <mode>(version==3)</mode>
+    </version>
+
+    <name>Admin_RunLevel_DefinitionSQLTable</name>
+
+    <database>
+      <table-name>T_ADRUNLEVELDEF</table-name>
+      <create>true</create>
+      <update>true</update>
+      <!-- columns -->
+      <column name="RUNLEVELID" type="INTEGER"      not-null="true" />
+      <column name="PRIORITY"   type="INTEGER"      not-null="true" />
+      <column name="CLASS"      type="STRING_SHORT" not-null="true" length="255"/> 
+      <column name="METHOD"     type="STRING_SHORT" not-null="true" length="128"/> 
+      <column name="PARAMETER"  type="STRING_SHORT"                 length="128"/>
+     <foreign name="T_ADRUNLEVELDEF_FK_T_ADRUNLEVEL"	key="RUNLEVELID"  	reference="T_ADRUNLEVEL(ID)"/>
+    </database>
+  </definition>
+</datamodel-sqltable>
