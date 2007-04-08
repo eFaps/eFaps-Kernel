@@ -17,74 +17,66 @@
  limitations under the License.
 
  Author:          jmo
- Revision:        $Rev:  $
- Last Changed:    $Date:  $
- Last Changed By: $Author:  $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
 <datamodel-type>
   <uuid>a35ffe76-d9ef-44de-975c-56384a3cf694</uuid>
 
+  <!-- create type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==2)</mode>
+      <mode>(version==5)</mode>
     </version>
-
-    <name>Admin_RunLevel</name>
+    <name>Admin_RunLevel_RunLevel</name>
   </definition>
 
+  <!-- define type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:  $</local>
-      <mode>(version>2)</mode>
+      <local>$Rev$</local>
+      <mode>(version==6)</mode>
     </version>
-
-    <name>Admin_RunLevel</name>
-    
-
-   <attribute>
+    <name>Admin_RunLevel_RunLevel</name>
+    <!-- attributes -->
+    <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_RunLevelSQLTable</sqltable>
+      <sqltable>Admin_RunLevel_RunLevelSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
-   </attribute>
-
+    </attribute>
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_RunLevelSQLTable</sqltable>
+      <sqltable>Admin_RunLevel_RunLevelSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
-
-
     <attribute>
       <name>RunLevel</name>
       <type>String</type>
-      <sqltable>Admin_RunLevelSQLTable</sqltable>
+      <sqltable>Admin_RunLevel_RunLevelSQLTable</sqltable>
       <sqlcolumn>RUNLEVEL</sqlcolumn>
     </attribute>
-
     <attribute>
       <name>UUID</name>
       <type>String</type>
-      <sqltable>Admin_RunLevelSQLTable</sqltable>
+      <sqltable>Admin_RunLevel_RunLevelSQLTable</sqltable>
       <sqlcolumn>UUID</sqlcolumn>
     </attribute>
-    
     <attribute>
       <name>Parent</name>
       <type>Integer</type>
-      <sqltable>Admin_RunLevelSQLTable</sqltable>
+      <sqltable>Admin_RunLevel_RunLevelSQLTable</sqltable>
       <sqlcolumn>PARENT</sqlcolumn>
     </attribute>
-    <!-- properties -->
-    
-
   </definition>
+
 </datamodel-type>
