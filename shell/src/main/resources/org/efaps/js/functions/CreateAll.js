@@ -296,7 +296,7 @@ function eFapsCreateAll()  {
   createAll();
 
   print("############ Reload Cache");
-  reloadCache();
+  initRunLevel("shell");
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
@@ -306,7 +306,7 @@ function eFapsCreateAll()  {
   context.close();
 
   print("############ Reload Cache");
-  reloadCache();
+  initRunLevel("shell");
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
@@ -316,7 +316,7 @@ function eFapsCreateAll()  {
   context.close();
 
   print("############ Reload Cache");
-  reloadCache();
+  initRunLevel("shell");
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
@@ -327,7 +327,7 @@ function eFapsCreateAll()  {
   context.close();
 
   print("############ Reload Cache");
-  reloadCache();
+  initRunLevel("shell");
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
@@ -337,7 +337,7 @@ function eFapsCreateAll()  {
   context.close();
 
   print("############ Reload Cache");
-  reloadCache();
+  initRunLevel("shell");
 
   _eFapsCreateAllUpdatePassword();
 }
@@ -836,6 +836,48 @@ var _stmt = _con.createStatement();
 con.commit();
 }
 
+
+function _eFapsInitRunLevel(_context)  {
+var con = _context.getConnectionResource();
+var _con = con.getConnection();
+var _stmt = _con.createStatement();
+
+  var id = _insert(_stmt, "Insert shell Runlevel", null,
+          "T_RUNLEVEL",
+          "RUNLEVEL,UUID", 
+          "'shell','edfb9537-9d91-4fa0-acb1-cf3f2678a245'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",1, 'org.efaps.admin.user.JAASSystem', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",2, 'org.efaps.admin.user.Role', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",3, 'org.efaps.admin.user.Group', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",4, 'org.efaps.admin.datamodel.AttributeType', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",5, 'org.efaps.admin.datamodel.SQLTable', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",6, 'org.efaps.admin.datamodel.Type', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",7, 'org.efaps.admin.datamodel.Attribute', 'initialise'");
+  
+con.commit();
+}
+
 function createAll()  {
 
   Shell.transactionManager.begin();
@@ -861,6 +903,7 @@ function createAll()  {
       _eFapsCreateUserTablesStep2     (context);
       _eFapsUpdateSQLTables(context, "3");
       _eFapsCreateEventTablesStep3    (context);
+      _eFapsInitRunLevel(context);
 //      eFapsCommonVersionInsert(con.getConnection(), stmt, "eFaps", 1);
 //    }
 
