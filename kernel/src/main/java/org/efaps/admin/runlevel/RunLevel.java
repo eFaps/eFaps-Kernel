@@ -20,30 +20,24 @@
 
 package org.efaps.admin.runlevel;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
-import javax.naming.spi.ObjectFactory;
-import javax.sql.DataSource;
-import javax.transaction.TransactionManager;
+import java.util.UUID;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.efaps.db.Context;
-import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.ConnectionResource;
-import org.efaps.util.cache.Cache;
 import org.efaps.util.EFapsException;
 
 /**
@@ -52,8 +46,10 @@ import org.efaps.util.EFapsException;
  * database.
  * 
  * @author jmo
+ * @author tmo
  */
 public class RunLevel {
+
   /**
    * Logger for this class
    */
@@ -62,19 +58,37 @@ public class RunLevel {
   /**
    * This is the sql select statement to select all RunLevel from the database.
    */
-  private final static String      SQL_SELECT   = "select ID, RUNLEVEL, UUID, PARENT "
-                                                    + "from T_RUNLEVEL ";
+  private final static String SQL_RUNLEVEL
+          = "select ID,PARENT "
+              + "from T_RUNLEVEL "
+              + "WHERE ";
 
-  private static List<CacheMethod> CACHEMETHODS = new ArrayList<CacheMethod>();
+  private final static String SQL_DEF_PRE
+          = "select CLASS, METHOD, PARAMETER "
+              + "from T_RUNLEVELDEF "
+              + "where RUNLEVELID=";
 
-  private static String            ID           = null;
+  private final static String SQL_DEF_POST
+          = " order by PRIORITY";
 
-  private static String            RUNLEVEL     = null;
+  private static RunLevel RUNLEVEL = null;
+  
+  private final static Map < Long, RunLevel > ALL_RUNLEVELS
+      = new HashMap < Long, RunLevel > ();
+  
+  /**
+   * All cache initialise methods for this runlevel are stored in this instance
+   * variable. They are ordered by the priority.
+   */
+  private List < CacheMethod > cacheMethods = new ArrayList < CacheMethod > ();
 
-  private static String            UUID         = null;
+  /**
+   * The id in the eFaps database of this runlevel.
+   */
+  private long id = 0;
 
-  private static List<String>      PARENTS      = new ArrayList<String>();
-
+  private RunLevel parent = null;
+  
   /**
    * The static method first removes all values in the caches. Then the cache is
    * initialised automatically debending on the desired RunLevel
@@ -83,143 +97,109 @@ public class RunLevel {
    * @todo exception handling
    */
   public static void init(final String _runLevel) throws Exception {
-    new RunLevel(_runLevel);
-    Cache.cleanCache();
+    ALL_RUNLEVELS.clear();
+    RUNLEVEL = new RunLevel(_runLevel);
+  }
 
-    for (CacheMethod method : CACHEMETHODS)  {
-        Class<?> cls = Class.forName(method.getClassName());
-        if (method.hasParameter()) {
-          Method m = cls.getMethod(method.getMethodName(),
-              new Class[] { String.class });
-          m.invoke(cls, (String) method.getParameter());
-        } else {
+  public static void execute() throws EFapsException {
+    RUNLEVEL.executeMethods();
+  }
 
-          Method m = cls.getMethod(method.getMethodName(), new Class[] {});
-          m.invoke(cls, (Object[]) null);
+  private RunLevel(final String _name) throws EFapsException  {
+    initialise(SQL_RUNLEVEL + " RUNLEVEL='" + _name + "'");
+  }
 
-        }
+  private RunLevel(final long _id) throws EFapsException  {
+    initialise(SQL_RUNLEVEL + " ID=" + _id);
+  }
+
+  /**
+   * All cache initialise methods stored in {@link #cacheMethods} are called.
+   *
+   * @see #cacheMethods
+   */
+  protected void executeMethods() throws EFapsException  {
+    if (this.parent != null)  {
+      this.parent.executeMethods();
+    }
+    for (CacheMethod cacheMethod : this.cacheMethods)  {
+      cacheMethod.callMethod();
     }
   }
 
   /**
-   * get the List of the CachedMethods
-   * 
-   * @return List
+   * Reads the id and the parent id of this runlevel. All defined methods for
+   * this runlevel are loaded. If a parent id is defined, the parent is
+   * initialised.
+   *
+   * @param _sql    sql statement to get the id and parent id for this runlevel
+   * @see #parent
+   * @see #cacheMethods
    */
-  public static List getCacheMethods() {
-    return CACHEMETHODS;
+  protected void initialise(final String _sql) throws EFapsException  {
 
-  }
-
-  public RunLevel(String _RunLevel) {
-    setRunLevel(_RunLevel);
-    initialise();
-  }
-
-  private void setRunLevel(String _RunLevel) {
-    RUNLEVEL = _RunLevel;
-  }
-
-  private static String getSelectStmt() {
-
-    return SQL_SELECT + " WHERE RUNLEVEL = '" + RUNLEVEL + "'";
-
-  }
-
-  private static String getMethodSelectStmt() {
-
-    StringBuilder stmt = new StringBuilder();
-    stmt
-        .append("select CLASS, METHOD, PARAMETER from T_RUNLEVELDEF where RUNLEVELID  in (");
-    stmt.append(getId());
-    for (Iterator iter = PARENTS.iterator(); iter.hasNext();) {
-      String element = (String) iter.next();
-      stmt.append(",");
-      stmt.append(element);
-    }
-    stmt.append(") order by PRIORITY");
-    return stmt.toString();
-
-  }
-
-  private void initialise() {
-
-    Statement stmt = null;
     String parentID = null;
     ConnectionResource con = null;
     try {
 
       con = Context.getThreadContext().getConnectionResource();
 
-      stmt = con.getConnection().createStatement();
+      Statement stmt = null;
+      
+      long parentId = 0;
+      
+      try   {
+        stmt = con.getConnection().createStatement();
 
-      ResultSet rs = stmt.executeQuery(getSelectStmt());
-      if (rs.next()) {
-        setId(rs.getString(1));
-        setUUID(rs.getString(3));
-        parentID = (rs.getString(4));
-      } else {
-        LOG.error("RunLevel not found");
-      }
-      rs.close();
-      while (parentID != null) {
-        PARENTS.add(parentID);
-
-        rs = stmt.executeQuery("select PARENT from T_RUNLEVEL where ID= "
-            + parentID);
+        // read runlevel itself
+        ResultSet rs = stmt.executeQuery(_sql);
         if (rs.next()) {
-          parentID = rs.getString(1);
+          this.id = rs.getLong(1);
+          parentId = rs.getLong(2);
         } else {
-          parentID = null;
+LOG.error("RunLevel not found");
         }
-      }
-      rs.close();
+        rs.close();
 
-      rs = stmt.executeQuery(getMethodSelectStmt());
-      while (rs.next()) {
-        if (rs.getString(3) != null) {
-          CACHEMETHODS.add(this.new CacheMethod(rs.getString(1).trim(), rs
-              .getString(2).trim(), rs.getString(3).trim()));
-        } else {
-          CACHEMETHODS.add(this.new CacheMethod(rs.getString(1).trim(), rs
-              .getString(2).trim()));
+        // read all methods for one runlevel
+        rs = stmt.executeQuery(SQL_DEF_PRE + this.id + SQL_DEF_POST);
+        while (rs.next()) {
+          if (rs.getString(3) != null) {
+            this.cacheMethods.add(new CacheMethod(rs.getString(1).trim(), 
+                rs.getString(2).trim(), rs.getString(3).trim()));
+          } else {
+            this.cacheMethods.add(new CacheMethod(rs.getString(1).trim(),
+                rs.getString(2).trim()));
+          }
+        }
+
+      } finally  {
+        if (stmt != null)  {
+          stmt.close();
         }
       }
+
+      con.commit();
+      
+      ALL_RUNLEVELS.put(this.id, this);
+      
+      if (parentId != 0)  {
+        this.parent = ALL_RUNLEVELS.get(parentId);
+        
+        if (this.parent == null)  {
+          this.parent = new RunLevel(parentId);
+        }
+      }
+
     } catch (EFapsException e) {
       LOG.error("initialise()", e);
     } catch (SQLException e) {
       LOG.error("initialise()", e);
-    } catch (Exception e) {
-      LOG.error("initialise()", e);
     } finally {
-      if (stmt != null) {
-        try {
-          stmt.close();
-          con.commit();
-        } catch (SQLException e) {
-          LOG.error("initialise()", e);
-        } catch (EFapsException e) {
-          LOG.error("initialise()", e);
-        }
+      if ((con != null) && con.isOpened())  {
+        con.abort();
       }
     }
-  }
-
-  public static String getId() {
-    return ID;
-  }
-
-  private static void setId(String _ID) {
-    ID = _ID;
-
-  }
-
-  public static String getUUID() {
-    return UUID;
-  }
-
-  public static void setUUID(String _UUID) {
-    UUID = _UUID;
   }
 
   /**
@@ -234,8 +214,14 @@ public class RunLevel {
    */
   public class CacheMethod {
 
+    /**
+     * Name of the class which must be initiliased.
+     */
     final private String className;
 
+    /**
+     * Name of the static method used to initiliase the cache.
+     */
     final private String methodName;
 
     final private String parameter;
@@ -273,41 +259,48 @@ public class RunLevel {
     }
 
     /**
-     * get the Name of the Class
-     * 
-     * @return Name of the Class
+     * Calls the static cache initialise method defined by this instance.
      */
-    public String getClassName() {
-      return this.className;
+    public void callMethod() throws EFapsException  {
+      try  {
+        Class cls = Class.forName(this.className);
+        if (this.parameter != null) {
+          Method m = cls.getMethod(this.methodName, String.class);
+          m.invoke(cls, (String) this.parameter);
+        } else {
+          Method m = cls.getMethod(this.methodName, new Class[] {});
+          m.invoke(cls);
+        }
+      } catch (ClassNotFoundException e)  {
+        LOG.error("class '" + this.className + "' not found", e);
+        throw new EFapsException(getClass(),
+              "callMethod.ClassNotFoundException", null, e, this.className);
+      } catch (NoSuchMethodException e)  {
+        LOG.error("class '" + this.className + "' does not own method '" 
+              + this.methodName + "'", e);
+        throw new EFapsException(getClass(),
+              "callMethod.NoSuchMethodException", null, e,
+              this.className, this.methodName);
+      } catch (IllegalAccessException e)  {
+        LOG.error("could not access class '" + this.className + "' method '" 
+              + this.methodName + "'", e);
+        throw new EFapsException(getClass(),
+              "callMethod.IllegalAccessException", null, e,
+              this.className, this.methodName);
+      } catch (InvocationTargetException e)  {
+        LOG.error("could not execute class '" + this.className + "' method '" 
+              + this.methodName + "' because an exception was thrown.", e);
+        if (e.getCause() != null)  {
+          throw new EFapsException(getClass(),
+                "callMethod.InvocationTargetException", null, e.getCause(),
+                this.className, this.methodName);
+        } else  {
+          throw new EFapsException(getClass(),
+                "callMethod.InvocationTargetException", null, e,
+                this.className, this.methodName);
+        }
+      }
     }
-
-    /**
-     * get the Name of the Method
-     * 
-     * @return Name of the Method
-     */
-    public String getMethodName() {
-      return this.methodName;
-    }
-
-    /**
-     * get the value of a String Parameter
-     * 
-     * @return Value of the Parameter, null if not initialised
-     */
-    public String getParameter() {
-      return this.parameter;
-    }
-
-    /**
-     * has the Method a Parameter
-     * 
-     * @return true if a Parameter is given, else false
-     */
-    public boolean hasParameter() {
-      return this.parameter != null;
-    }
-
   }
 
 }

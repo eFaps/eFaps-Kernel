@@ -296,7 +296,7 @@ function eFapsCreateAll()  {
   createAll();
 
   print("############ Reload Cache");
-  initRunLevel("shell");
+  reloadCache("shell");
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
@@ -306,7 +306,7 @@ function eFapsCreateAll()  {
   context.close();
 
   print("############ Reload Cache");
-  initRunLevel("shell");
+  reloadCache("shell");
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
@@ -316,7 +316,7 @@ function eFapsCreateAll()  {
   context.close();
 
   print("############ Reload Cache");
-  initRunLevel("shell");
+  reloadCache("shell");
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
@@ -327,7 +327,7 @@ function eFapsCreateAll()  {
   context.close();
 
   print("############ Reload Cache");
-  initRunLevel("shell");
+  reloadCache("shell");
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
@@ -337,7 +337,7 @@ function eFapsCreateAll()  {
   context.close();
 
   print("############ Reload Cache");
-  initRunLevel("shell");
+  reloadCache("shell");
 
   _eFapsCreateAllUpdatePassword();
 }

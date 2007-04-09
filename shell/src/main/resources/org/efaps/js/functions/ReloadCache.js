@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,31 +21,16 @@
 
 importClass(Packages.org.efaps.db.Context);
 importClass(Packages.org.efaps.util.cache.Cache);
-importClass(Packages.org.efaps.admin.runlevel.RunLevel);
 
 /**
  * Reloades the complete eFaps cache.
  */
-function reloadCache()  {
+function reloadCache(_runLevel)  {
   try  {
     Shell.transactionManager.begin();
     var context = new Context.newThreadContext(
                                     Shell.transactionManager.getTransaction());
-    Cache.reloadCache();
-    Shell.transactionManager.rollback();
-    context.close();
-
-  } catch (e)  {
-    print(e);
-  }
-}
-
-function initRunLevel(_runLevel)  {
-  try  {
-    Shell.transactionManager.begin();
-    var context = new Context.newThreadContext(
-                                    Shell.transactionManager.getTransaction());
-    RunLevel.init(_runLevel);
+    Cache.reloadCache(_runLevel);
     Shell.transactionManager.rollback();
     context.close();
 

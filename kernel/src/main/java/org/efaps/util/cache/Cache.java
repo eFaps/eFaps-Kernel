@@ -38,6 +38,7 @@ import org.efaps.admin.ui.UserInterfaceObject;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Role;
+import org.efaps.admin.runlevel.RunLevel;
 
 /**
  * @author tmo
@@ -199,6 +200,25 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
   /**
    * The static method removes all values in the caches. The datamodel cache
    * is initialised automatically.
+   *   
+   * @deprecated
+   */
+  public static void reloadCache(final String _runLevel) throws Exception {
+    synchronized(caches)  {
+      for (Cache cache : caches)  {
+        cache.cache4Id.clear();
+        cache.cache4Name.clear();
+        cache.cache4UUID.clear();
+      }
+
+      RunLevel.init(_runLevel);
+      RunLevel.execute();
+    }
+  }
+
+  /**
+   * The static method removes all values in the caches. The datamodel cache
+   * is initialised automatically.
    */
   public static void reloadCache() throws Exception {
     synchronized(caches)  {
@@ -230,20 +250,6 @@ System.out.println("cacheexpression = select ID,"+_cacheExpr+" from "+_tableName
       UserInterfaceObject.initialise(_context);
       EventDefinition.initialise(_context);
 */
-    }
-  }
-
-  /**
-   * The static method removes all values in the caches. The datamodel cache
-   * is initialised automatically.
-   */
-  public static void cleanCache() throws Exception {
-    synchronized(caches)  {
-      for (Cache cache : caches)  {
-        cache.cache4Id.clear();
-        cache.cache4Name.clear();
-        cache.cache4UUID.clear();
-      }
     }
   }
 }
