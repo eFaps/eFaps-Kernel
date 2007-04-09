@@ -47,6 +47,7 @@ import org.efaps.util.EFapsException;
  * 
  * @author jmo
  * @author tmo
+ * @version $Id$
  */
 public class RunLevel {
 
