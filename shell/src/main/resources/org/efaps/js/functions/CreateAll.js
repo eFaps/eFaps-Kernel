@@ -280,21 +280,43 @@ function _eFapsCreateAllImportXMLFiles(_context, _version)  {
  * @see #_eFapsCreateAllUpdatePassword
  */
 function eFapsCreateAll()  {
-  deleteAll();
 
   Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
+  context.getDbType().deleteAll(context.getConnection());
+  Shell.transactionManager.commit();
+  context.close();
 
+  Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
   Shell.setContext(context);
   _eFapsCreateAllImportXMLFiles(context, "1");
+  Shell.transactionManager.commit();
+  context.close();
+
+  Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
+  Shell.setContext(context);
   _eFapsCreateAllImportXMLFiles(context, "2");
+  Shell.transactionManager.commit();
+  context.close();
+
+  Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
+  Shell.setContext(context);
   _eFapsCreateUserTablesStep1(context);
   _eFapsCreateDataModelTablesStep1(context);
   _eFapsCreateCommonTablesStep2(context);
   _eFapsCreateDataModelTablesStep2(context);
   _eFapsCreateUserTablesStep2(context);
-  _eFapsCreateAllImportXMLFiles(context, "3");
   _eFapsInitRunLevel(context);
+  Shell.transactionManager.commit();
+  context.close();
+
+  Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
+  Shell.setContext(context);
+  _eFapsCreateAllImportXMLFiles(context, "3");
   Shell.transactionManager.commit();
   context.close();
 
@@ -343,6 +365,11 @@ function eFapsCreateAll()  {
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   _eFapsCreateAllImportXMLFiles(context, "10");
+  Shell.transactionManager.commit();
+  context.close();
+
+  Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   _eFapsCreateAllImportXMLFiles(context, "11");
   Shell.transactionManager.commit();
   context.close();
