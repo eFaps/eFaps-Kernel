@@ -126,27 +126,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
       }
     }
   }
-  // search
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = SearchUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = WebDAVUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
 }
 
 /**
@@ -632,6 +611,17 @@ function _eFapsUpdateSQLTables(_context, _version)  {
       }
     }
   }
+  // search
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SearchUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
   // form
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
@@ -654,7 +644,17 @@ function _eFapsUpdateSQLTables(_context, _version)  {
       }
     }
   }
-  // webDAV
+  // webdav
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = WebDAVUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
 }
 
 /**
