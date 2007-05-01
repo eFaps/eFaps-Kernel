@@ -35,7 +35,7 @@
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==2)</mode>
+      <mode>(version==7)</mode>
     </version>
     <name>Admin_Access_AccessTypeImage</name>
     <file>IMAGE_Admin_Access_AccessTypeImage.gif</file>

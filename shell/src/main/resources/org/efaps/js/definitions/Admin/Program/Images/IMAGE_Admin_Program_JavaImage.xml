@@ -38,7 +38,7 @@
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==2)</mode>
+      <mode>(version==7)</mode>
     </version>
     <name>Admin_Program_JavaImage</name>
     <file>IMAGE_Admin_Program_JavaImage.gif</file>

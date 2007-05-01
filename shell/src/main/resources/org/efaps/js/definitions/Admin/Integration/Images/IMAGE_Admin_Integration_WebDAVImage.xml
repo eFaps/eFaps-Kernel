@@ -42,7 +42,7 @@
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==2)</mode>
+      <mode>(version==7)</mode>
     </version>
     <name>Admin_Integration_WebDAVImage</name>
     <file>IMAGE_Admin_Integration_WebDAVImage.gif</file>

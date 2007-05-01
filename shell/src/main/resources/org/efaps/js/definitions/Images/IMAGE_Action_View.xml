@@ -35,7 +35,7 @@
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==2)</mode>
+      <mode>(version==7)</mode>
     </version>
     <name>Action_View</name>
     <file>IMAGE_Action_View.gif</file>

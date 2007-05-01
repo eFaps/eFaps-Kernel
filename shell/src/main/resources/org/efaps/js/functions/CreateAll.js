@@ -115,17 +115,6 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
   jexlContext.getVars().put("version", 
                             Packages.java.lang.Integer.parseInt(_version));
 
-  // image
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = ImageUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
   // rolle
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
@@ -323,6 +312,7 @@ function eFapsCreateAll()  {
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
+  _eFapsUpdateSQLTables(context, "7");
   _eFapsCreateAllImportXMLFiles('2');
   _eFapsCreateAllImportXMLFiles('3');
   Shell.transactionManager.commit();
@@ -626,7 +616,7 @@ var _stmt = _con.createStatement();
 con.commit();
 }
 function _eFapsUpdateSQLTables(_context, _version)  {
-  print("Update Tables Version " + _version);
+  print("##################################### Update to Version " + _version);
 
   var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
 
@@ -634,6 +624,17 @@ function _eFapsUpdateSQLTables(_context, _version)  {
   jexlContext.getVars().put("version", 
                             Packages.java.lang.Integer.parseInt(_version));
 
+  // image
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = ImageUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
   // sql table
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
