@@ -106,19 +106,6 @@ function _eFapsCreateAllUpdatePassword()  {
 }
 
 /**
- * Import all predefined data model and configuration items
- * found in the jar file under the path <code>org/efaps/js/definitions</code>.
- *
- * @see #eFapsCreateAll
- */
-function _eFapsCreateAllImportDataModel()  {
-  var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
-
-  importSQLTables(fileList);
-  importTypes(fileList);
-}
-  
-/**
  * Import all XML files found in the sub directories.
  */
 function _eFapsCreateAllImportXMLFiles(_version)  {
@@ -302,16 +289,6 @@ function eFapsCreateAll()  {
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
   _eFapsUpdateSQLTables(context, "4");
-  Shell.transactionManager.commit();
-  context.close();
-
-  print("############ Reload Cache");
-  reloadCache("shell");
-
-  Shell.transactionManager.begin();
-  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  Shell.setContext(context);
-  _eFapsCreateAllImportDataModel();
   Shell.transactionManager.commit();
   context.close();
 
@@ -505,11 +482,11 @@ var _stmt = _con.createStatement();
         "values (1,'The','Administrator','info@efaps.org','www.efaps.org', '')"
   );
 
-  _insert(_stmt, "Assign Person Administrator to JAAS System eFaps", null,
-          "USERJAASKEY",
-          "KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM",
-          "'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 1, 1"
-  );
+//  _insert(_stmt, "Assign Person Administrator to JAAS System eFaps", null,
+//          "USERJAASKEY",
+//          "KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM",
+//          "'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 1, 1"
+//  );
 
   _insert(_stmt, "Insert Administrator Role",  null,
           "USERABSTRACT",
@@ -517,11 +494,11 @@ var _stmt = _con.createStatement();
           "-11000, 'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 10001"
   );
 
-  _insert(_stmt, "Assign Role Administration to JAAS System eFaps", null,
-          "USERJAASKEY",
-          "KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM",
-          "'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 2, 1"
-  );
+//  _insert(_stmt, "Assign Role Administration to JAAS System eFaps", null,
+//          "USERJAASKEY",
+//          "KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM",
+//          "'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 2, 1"
+//  );
 
   _insert(_stmt, "Connect Administrator Person to Role Administration", null,
           "USERABSTRACT2ABSTRACT",
