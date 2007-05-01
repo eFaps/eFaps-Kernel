@@ -51,7 +51,7 @@
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version>=4)</mode>
+      <mode>(version==4)</mode>
     </version>
     <name>Admin_UI_FileTable</name>
     <parent>Admin_AbstractSQLTable</parent>

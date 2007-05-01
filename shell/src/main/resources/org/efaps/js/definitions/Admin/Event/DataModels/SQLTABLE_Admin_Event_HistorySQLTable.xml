@@ -45,7 +45,7 @@
       <column name="MODIFIER"           type="INTEGER"                      not-null="true"/>
       <column name="MODIFIED"           type="DATETIME"                     not-null="true"/>
       <column name="ATTRID"             type="INTEGER"/>
-      <column name="ATTRVALUE"          type="STRING_LONG"  length="4000"/>
+      <column name="ATTRVALUE"          type="STRING_LONG"  length="2000"/>
      </database>
   </definition>
 
@@ -71,7 +71,7 @@
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version>=4)</mode>
+      <mode>(version==4)</mode>
     </version>
     <name>Admin_Event_HistorySQLTable</name>
     <database>

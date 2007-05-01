@@ -75,7 +75,7 @@
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version>=4)</mode>
+      <mode>(version==4)</mode>
     </version>
     <name>Admin_Program_JavaClassSQLTable</name>
     <database>
