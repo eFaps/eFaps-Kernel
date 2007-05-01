@@ -31,7 +31,7 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>!(exists)</mode>
+      <mode>(version==7)</mode>
     </version>
 
     <name>show</name>
