@@ -108,19 +108,153 @@ function _eFapsCreateAllUpdatePassword()  {
 /**
  * Import all XML files found in the sub directories.
  */
-function _eFapsCreateAllImportXMLFiles(_version)  {
+function _eFapsCreateAllImportXMLFiles(_context, _version)  {
+  print("##################################### Update to Version " + _version);
+
   var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
-  
+
   var jexlContext = JexlHelper.createContext();
   jexlContext.getVars().put("version", 
                             Packages.java.lang.Integer.parseInt(_version));
 
+  // image
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = ImageUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // rolle
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = RoleUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // access type
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = AccessTypeUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // access set
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = AccessSetUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // sql table
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SQLTableUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // type
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = TypeUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // JAAS system
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = JAASSystemUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // command
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = CommandUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
   // menu
   for (i in fileList)  {
     var file = new Packages.java.io.File(fileList[i]);
     var fileName = new Packages.java.lang.String(file.getName());
     if (fileName.endsWith(".xml"))  {
       var update = MenuUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // search
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = SearchUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // form
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = FormUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // table
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = TableUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  // webdav
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = WebDAVUpdate.readXMLFile(file);
       if (update != null)  {
         update.updateInDB(jexlContext);
       }
@@ -152,14 +286,14 @@ function eFapsCreateAll()  {
 
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
   Shell.setContext(context);
-  _eFapsUpdateSQLTables(context, "1");
-  _eFapsUpdateSQLTables(context, "2");
+  _eFapsCreateAllImportXMLFiles(context, "1");
+  _eFapsCreateAllImportXMLFiles(context, "2");
   _eFapsCreateUserTablesStep1(context);
   _eFapsCreateDataModelTablesStep1(context);
   _eFapsCreateCommonTablesStep2(context);
   _eFapsCreateDataModelTablesStep2(context);
   _eFapsCreateUserTablesStep2(context);
-  _eFapsUpdateSQLTables(context, "3");
+  _eFapsCreateAllImportXMLFiles(context, "3");
   _eFapsInitRunLevel(context);
   Shell.transactionManager.commit();
   context.close();
@@ -170,7 +304,7 @@ function eFapsCreateAll()  {
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
-  _eFapsUpdateSQLTables(context, "4");
+  _eFapsCreateAllImportXMLFiles(context, "4");
   Shell.transactionManager.commit();
   context.close();
 
@@ -180,8 +314,8 @@ function eFapsCreateAll()  {
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
-  _eFapsUpdateSQLTables(context, "5");
-  _eFapsUpdateSQLTables(context, "6");
+  _eFapsCreateAllImportXMLFiles(context, "5");
+  _eFapsCreateAllImportXMLFiles(context, "6");
   Shell.transactionManager.commit();
   context.close();
 
@@ -190,30 +324,26 @@ function eFapsCreateAll()  {
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  _eFapsUpdateSQLTables(context, "7");
+  _eFapsCreateAllImportXMLFiles(context, "7");
   Shell.transactionManager.commit();
   context.close();
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  _eFapsUpdateSQLTables(context, "8");
+  _eFapsCreateAllImportXMLFiles(context, "8");
   Shell.transactionManager.commit();
   context.close();
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  _eFapsUpdateSQLTables(context, "9");
+  _eFapsCreateAllImportXMLFiles(context, "9");
   Shell.transactionManager.commit();
   context.close();
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  _eFapsUpdateSQLTables(context, "10");
-print("##### ---> old version 2");
-  _eFapsCreateAllImportXMLFiles('2');
-  _eFapsUpdateSQLTables(context, "11");
-print("##### ---> old version 3");
-  _eFapsCreateAllImportXMLFiles('3');
+  _eFapsCreateAllImportXMLFiles(context, "10");
+  _eFapsCreateAllImportXMLFiles(context, "11");
   Shell.transactionManager.commit();
   context.close();
 
@@ -513,148 +643,6 @@ var _stmt = _con.createStatement();
         +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Group
     );
 con.commit();
-}
-function _eFapsUpdateSQLTables(_context, _version)  {
-  print("##################################### Update to Version " + _version);
-
-  var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
-
-  var jexlContext = JexlHelper.createContext();
-  jexlContext.getVars().put("version", 
-                            Packages.java.lang.Integer.parseInt(_version));
-
-  // image
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = ImageUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  // rolle
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = RoleUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  // access type
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = AccessTypeUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  // access set
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = AccessSetUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  // sql table
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = SQLTableUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  // type
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = TypeUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  // JAAS system
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = JAASSystemUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  // command
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = CommandUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  // search
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = SearchUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  // form
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = FormUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  // table
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = TableUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
-  // webdav
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var update = WebDAVUpdate.readXMLFile(file);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-  }
 }
 
 /**

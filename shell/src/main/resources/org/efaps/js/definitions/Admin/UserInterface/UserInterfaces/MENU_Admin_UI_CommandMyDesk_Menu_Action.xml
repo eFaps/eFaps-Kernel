@@ -35,7 +35,7 @@
       <global>1</global>
       <local>$Rev:586 $</local>
       <mode>true</mode>
-      <mode>(version==2)</mode>
+      <mode>(version==10)</mode>
     </version>
     <name>Admin_UI_CommandMyDesk_Menu_Action</name>
   </definition>
@@ -49,7 +49,7 @@
       <global>1</global>
       <local>$Rev:586 $</local>
       <mode>true</mode>
-      <mode>(version>=3)</mode>
+      <mode>(version==11)</mode>
     </version>
     <name>Admin_UI_CommandMyDesk_Menu_Action</name>
     <childs>
