@@ -263,9 +263,6 @@ throw e;
      */
     private final String childTypeName;
 
-    /** Child Type extracted from the child type name. */
-    private final Type childType;
-
     /** Name of the child attribute in the link. */
     private final String childAttrName;
     
@@ -287,8 +284,16 @@ throw e;
       this.linkName = _linkName;
       this.parentAttrName = _parentAttrName;
       this.childTypeName = _childTypeName;
-      this.childType = Type.get(this.childTypeName);
       this.childAttrName = _childAttrName;
+    }
+
+    /**
+     * Child Type extracted from the child type name.
+     *
+     * @return child type extracted from the child type name
+     */
+    public Type getChildType()  {
+        return Type.get(this.childTypeName);
     }
 
     /**
@@ -483,7 +488,7 @@ public void updateInDB(final Type _dataModelType,
       query.executeWithoutAccessCheck();
       while (query.next())  {
         Type type = (Type) query.get(_linkType.childAttrName + ".Type");
-        if (type.isKindOf(_linkType.childType))  {
+        if (type.isKindOf(_linkType.getChildType()))  {
           if (_linkType instanceof OrderedLink)  {
             Delete del = new Delete((String) query.get("OID"));
             del.executeWithoutAccessCheck();
