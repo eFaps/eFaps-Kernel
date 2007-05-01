@@ -280,7 +280,22 @@ function _eFapsCreateAllImportXMLFiles(_version)  {
  */
 function eFapsCreateAll()  {
   deleteAll();
-  createAll();
+
+  Shell.transactionManager.begin();
+
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
+  Shell.setContext(context);
+  _eFapsUpdateSQLTables(context, "1");
+  _eFapsUpdateSQLTables(context, "2");
+  _eFapsCreateUserTablesStep1(context);
+  _eFapsCreateDataModelTablesStep1(context);
+  _eFapsCreateCommonTablesStep2(context);
+  _eFapsCreateDataModelTablesStep2(context);
+  _eFapsCreateUserTablesStep2(context);
+  _eFapsUpdateSQLTables(context, "3");
+  _eFapsInitRunLevel(context);
+  Shell.transactionManager.commit();
+  context.close();
 
   print("############ Reload Cache");
   reloadCache("shell");
@@ -416,27 +431,6 @@ function _eFapsCreateInsertProp(_stmt, _abstractId, _key, _value)  {
           "PROPERTY",
           "ABSTRACT,NAME,VALUE",
           _abstractId + ",'" + _key + "','" + _value + "'");
-}
-
-/**
- * The private function inserts the SQL Tables for the event definitions.
- *
- * @param _stmt SQL statement to work on
- */
-function _eFapsCreateEventTablesStep3(_context)  {
-  print("Create Event SQL Table");
-var con = _context.getConnectionResource();
-var _con = con.getConnection();
-var _stmt = _con.createStatement();
-  // must be created for reload-cache-functionality and possibility to define types
-  text = "Insert Table for 'Admin_Event_Definition'";
-  var sqlTableEventDef = _eFapsCreateInsertSQLTable(_stmt, text, "1238f647-9cf5-4d9f-883e-c6d24db538f5", "Admin_Event_DefinitionSQLTable", "EVENTDEF", "ID", null, "Admin_AbstractSQLTable");
-
-  text = "Insert Type for 'Admin_Event_Definition'";
-  var typeIdEventDef = _eFapsCreateInsertType(_stmt, text, "9c1d52f4-94d6-4f95-ab81-bed23884cf03", "Admin_Event_Definition", "Admin_Abstract");
-  _eFapsCreateInsertAttr(_stmt, sqlTableEventDef, typeIdEventDef, "IndexPosition",    "INDEXPOS",         'Integer',    null);
-  _eFapsCreateInsertAttr(_stmt, sqlTableEventDef, typeIdEventDef, "Abstract",         "ABSTRACT",         'Link',       "Admin_Abstract");
-con.commit();
 }
 
 /**
@@ -853,48 +847,4 @@ var _stmt = _con.createStatement();
           "" + id + ",7, 'org.efaps.admin.datamodel.Attribute', 'initialise'");
   
 con.commit();
-}
-
-function createAll()  {
-
-  Shell.transactionManager.begin();
-
-  var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
-  Shell.setContext(context);
-
-  try  {
-//    var con = context.getConnection();
-//    var stmt = con.createStatement();
-//var con = context.getConnectionResource();
-//var stmt = con.getConnection().createStatement();
-    
-//    if (eFapsCommonVersionGet(con.getConnection(),stmt) < 1)  {
-
-      _eFapsUpdateSQLTables(context, "1");
-      _eFapsUpdateSQLTables(context, "2");
-
-      _eFapsCreateUserTablesStep1     (context);
-      _eFapsCreateDataModelTablesStep1(context);
-      _eFapsCreateCommonTablesStep2   (context);
-      _eFapsCreateDataModelTablesStep2(context);
-      _eFapsCreateUserTablesStep2     (context);
-      _eFapsUpdateSQLTables(context, "3");
-      _eFapsCreateEventTablesStep3    (context);
-      _eFapsInitRunLevel(context);
-//      eFapsCommonVersionInsert(con.getConnection(), stmt, "eFaps", 1);
-//    }
-
-//    if (eFapsCommonVersionGet(con,stmt) < 2)  {
-//    }
-    Shell.transactionManager.commit();
-
-//    stmt.close();
-//con.commit();
-  } catch (e)  {
-    print(e);
-    Shell.transactionManager.abort();
-    throw e;
-  } finally  {
-    context.close();
-  }
 }
