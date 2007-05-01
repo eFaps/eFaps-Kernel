@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-type>
+  <uuid>fe9d94fd-2ed8-4c44-b1f0-00e150555888</uuid>
+
+  <!-- define type (is already defined) -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==6)</mode>
+    </version>
+    <name>Admin_User_Person</name>
+    <parent>Admin_User_Abstract</parent>
+    <!-- attributes -->
+    <attribute>
+      <name>FirstName</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>FIRSTNAME</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>LastName</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LASTNAME</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Email</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>EMAIL</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Organisation</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>ORG</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Url</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>URL</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Phone</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>PHONE</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Mobile</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>MOBILE</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Fax</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>FAX</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Fax</name>
+      <type>String</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>FAX</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Password</name>
+      <type>Password</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>PASSWORD</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>LastLogin</name>
+      <type>DateTime</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LASTLOGIN</sqlcolumn>
+    </attribute>
+    <!-- properties -->
+    <property name="AccessCheckClass">org.efaps.admin.access.SimpleAccessCheckOnType</property>
+    <property name="Icon">${ROOTURL}/servlet/image/Admin_User_PersonImage</property>
+    <property name="Tree">Admin_User_PersonTree</property>
+   </definition>
+
+</datamodel-type>
