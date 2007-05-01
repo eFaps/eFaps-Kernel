@@ -39,11 +39,6 @@ importClass(Packages.org.efaps.update.ui.TableUpdate);
 importClass(Packages.org.efaps.update.user.JAASSystemUpdate);
 importClass(Packages.org.efaps.update.user.RoleUpdate);
 
-var TYPE_INTEGER      = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.INTEGER);
-var TYPE_STRING_SHORT = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.STRING_SHORT);
-var TYPE_STRING_LONG  = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.STRING_LONG);
-var TYPE_DATETIME     = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.DATETIME);
-var TYPE_BLOB         = Context.getDbType().getColumnType(AbstractDatabase.ColumnType.BLOB);
 var CURRENT_TIMESTAMP = Context.getDbType().getCurrentTimeStamp();
 
 function _exec(_stmt, _subject, _text, _cmd)  {
@@ -522,23 +517,11 @@ var _stmt = _con.createStatement();
         "values (1,'The','Administrator','info@efaps.org','www.efaps.org', '')"
   );
 
-//  _insert(_stmt, "Assign Person Administrator to JAAS System eFaps", null,
-//          "USERJAASKEY",
-//          "KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM",
-//          "'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 1, 1"
-//  );
-
   _insert(_stmt, "Insert Administrator Role",  null,
           "USERABSTRACT",
           "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS",
           "-11000, 'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 10001"
   );
-
-//  _insert(_stmt, "Assign Role Administration to JAAS System eFaps", null,
-//          "USERJAASKEY",
-//          "KEY, CREATOR, CREATED, MODIFIER, MODIFIED,USERABSTRACT,USERJAASSYSTEM",
-//          "'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 2, 1"
-//  );
 
   _insert(_stmt, "Connect Administrator Person to Role Administration", null,
           "USERABSTRACT2ABSTRACT",
