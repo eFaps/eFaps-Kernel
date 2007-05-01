@@ -48,6 +48,12 @@
     <name>Admin_User_Abstract</name>
     <!-- attributes -->
     <attribute>
+      <name>Type</name>
+      <type>Type</type>
+      <sqltable>Admin_User_AbstractSQLTable</sqltable>
+      <sqlcolumn>TYPEID</sqlcolumn>
+    </attribute>
+    <attribute>
       <name>OID</name>
       <type>OID</type>
       <sqltable>Admin_User_AbstractSQLTable</sqltable>
