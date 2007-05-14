@@ -29,41 +29,47 @@ import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- *
+ * 
  */
-public class PersonLinkType extends AbstractLinkType  {
+public class PersonLinkType extends AbstractLinkType {
 
   /**
-   *
+   * 
    * @param _rs
    * @param _index
    */
-  public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes)  {
+  public Object readValue(Context _context, CachedResult _rs,
+                          ArrayList<Integer> _indexes) {
     Object ret = null;
 
     Long userId = (Long) super.readValue(_context, _rs, _indexes);
-    if (userId != null)  {
-try {
-    ret = Person.get(getValue());
-    if (ret==null)  {
-      ret = Role.get(getValue());
-    }
-} catch (Exception e)  {
-  e.printStackTrace();
-}
+    if (userId != null) {
+      try {
+        ret = Person.get(getValue());
+        if (ret == null) {
+          ret = Role.get(getValue());
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
 
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param _locale locale object
+   * @param _locale
+   *          locale object
    * @todo exception handling
    */
-  public String getViewableString(Locale _locale)  {
+  public String getViewableString(Locale _locale) {
     String ret = "";
     return ret;
+  }
+
+  public String toString() {
+    return "" + getValue();
   }
 }

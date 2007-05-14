@@ -30,101 +30,111 @@ import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- *
+ * 
  */
-public class BooleanType extends AbstractType  {
+public class BooleanType extends AbstractType {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // interface to the data base
 
-  public void update(Context _context, PreparedStatement _stmt, int _index)  throws SQLException  {
-    if (getValue())  {
+  public void update(Context _context, PreparedStatement _stmt, int _index)
+                                                                           throws SQLException {
+    if (getValue()) {
       _stmt.setInt(_index, 1);
-    } else  {
+    } else {
       _stmt.setNull(_index, Types.INTEGER);
     }
   }
 
   /**
-   *
-   *
+   * 
+   * 
    * @todo test that only one value is given for indexes
    */
-  public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes) throws SQLException  {
+  public Object readValue(Context _context, CachedResult _rs,
+                          ArrayList<Integer> _indexes) throws SQLException {
     Boolean value = false;
     Long longValue = _rs.getLong(_indexes.get(0).intValue());
-    if ((longValue != null) && (longValue != 0))  {
+    if ((longValue != null) && (longValue != 0)) {
       value = true;
     }
     setValue(value);
     return value;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // interface to the user interface
 
-   /**
-   *
-   * @param _context  context for this request
-   * @param _value    new value to set
+  /**
+   * 
+   * @param _context
+   *          context for this request
+   * @param _value
+   *          new value to set
    */
-  public void set(Context _context, Object _value)  {
-    if (_value != null)  {
-      if (_value instanceof String)  {
-        if (((String) _value).equalsIgnoreCase("TRUE"))  {
+  public void set(Context _context, Object _value) {
+    if (_value != null) {
+      if (_value instanceof String) {
+        if (((String) _value).equalsIgnoreCase("TRUE")) {
           setValue(true);
-        } else  {
+        } else {
           setValue(false);
         }
-      } else if (_value instanceof Boolean)  {
+      } else if (_value instanceof Boolean) {
         setValue((Boolean) _value);
       }
-    } else  {
+    } else {
       setValue(false);
     }
   }
 
   /**
    * The method returns a string as the viewable value of the attribute type.
-   *
-   * @param _locale locale object
+   * 
+   * @param _locale
+   *          locale object
    */
-  public String getViewableString(Locale _locale)  {
-    return ""+getValue();
+  public String getViewableString(Locale _locale) {
+    return "" + getValue();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   *
-   *
+   * 
+   * 
    * @see #getValue
    * @see #setValue
    */
   private boolean value = false;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value new value for instance variable {@link #value}
+   * 
+   * @param _value
+   *          new value for instance variable {@link #value}
    * @see #value
    * @see #getValue
    */
-  public void setValue(boolean _value)  {
+  public void setValue(boolean _value) {
     this.value = _value;
   }
 
   /**
    * This is the getter method for instance variable {@link #value}.
-   *
+   * 
    * @return the value of the instance variable {@link #value}.
    * @see #value
    * @see #setValue
    */
-  public boolean getValue()  {
+  public boolean getValue() {
     return this.value;
+  }
+
+  public String toString() {
+    return "" + getValue();
   }
 
 }

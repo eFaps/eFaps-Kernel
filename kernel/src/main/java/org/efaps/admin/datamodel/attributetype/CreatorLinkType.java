@@ -29,35 +29,43 @@ import org.efaps.db.Context;
  * The class is the attribute type representation for the creator person of a
  * business object.
  */
-public class CreatorLinkType extends PersonLinkType  {
+public class CreatorLinkType extends PersonLinkType {
 
-
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // interface to the data base
 
   /**
    * The value of the modifier is added via the prepared statement setter
-   * method. So only  a question mark ('?') is added to the statement.
-   * The value is set with method {@link #update}.
-   *
-   * @param _stmt string buffer with the statement
+   * method. So only a question mark ('?') is added to the statement. The value
+   * is set with method {@link #update}.
+   * 
+   * @param _stmt
+   *          string buffer with the statement
    * @see #update
    */
-  public boolean prepareUpdate(StringBuilder _stmt)  {
+  public boolean prepareUpdate(StringBuilder _stmt) {
     _stmt.append("?");
     return false;
   }
 
   /**
-   * The instance method sets the value in the prepared statement to the
-   * id of the current context user.
-   *
-   * @param _context  context for this request
-   * @param _stmt     sql prepared statement where to set the value
-   * @param _index    index in the prepared statement to set the value
+   * The instance method sets the value in the prepared statement to the id of
+   * the current context user.
+   * 
+   * @param _context
+   *          context for this request
+   * @param _stmt
+   *          sql prepared statement where to set the value
+   * @param _index
+   *          index in the prepared statement to set the value
    * @see #prepareUpdate
    */
-  public void update(Context _context, PreparedStatement _stmt, int _index)  throws SQLException  {
+  public void update(Context _context, PreparedStatement _stmt, int _index)
+                                                                           throws SQLException {
     _stmt.setLong(_index, _context.getPerson().getId());
+  }
+
+  public String toString() {
+    return "" + getValue();
   }
 }

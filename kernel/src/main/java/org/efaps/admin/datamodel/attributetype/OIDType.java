@@ -28,31 +28,38 @@ import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- *
+ * 
  */
-public class OIDType extends StringType  {
+public class OIDType extends StringType {
 
-  public void update(Context _context, PreparedStatement _stmt, int _index)  throws SQLException  {
+  public void update(Context _context, PreparedStatement _stmt, int _index)
+                                                                           throws SQLException {
     throw new SQLException("Update value for OID not allowed!!!");
   }
 
   /**
-   * The oid (object id) is the type id, than a point and the id itself.
-   * If in the attribute the attribute has no defined type id SQL column name,
-   * the type from the attribute is used (this means, the type itself is
-   * not derived and has no childs).
-   *
-   * @param _context  eFaps context for this request
+   * The oid (object id) is the type id, than a point and the id itself. If in
+   * the attribute the attribute has no defined type id SQL column name, the
+   * type from the attribute is used (this means, the type itself is not derived
+   * and has no childs).
+   * 
+   * @param _context
+   *          eFaps context for this request
    */
-  public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes)  {
-    if (getAttribute().getSqlColNames().size()>1)  {
+  public Object readValue(Context _context, CachedResult _rs,
+                          ArrayList<Integer> _indexes) {
+    if (getAttribute().getSqlColNames().size() > 1) {
       long typeId = _rs.getLong(_indexes.get(0).intValue());
-      long id     = _rs.getLong(_indexes.get(1).intValue());
-      setValue(typeId+"."+id);
-    } else  {
+      long id = _rs.getLong(_indexes.get(1).intValue());
+      setValue(typeId + "." + id);
+    } else {
       long id = _rs.getLong(_indexes.get(0).intValue());
-      setValue(getAttribute().getParent().getId()+"."+id);
+      setValue(getAttribute().getParent().getId() + "." + id);
     }
-return getValue();
+    return getValue();
+  }
+
+  public String toString() {
+    return "" + getValue();
   }
 }

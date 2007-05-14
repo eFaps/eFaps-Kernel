@@ -59,4 +59,8 @@ public class ModifierLinkType extends PersonLinkType  {
   public void update(Context _context, PreparedStatement _stmt, int _index)  throws SQLException  {
     _stmt.setLong(_index, _context.getPerson().getId());
   }
+  
+  public String toString(){
+    return "" + getValue();
+  }
 }

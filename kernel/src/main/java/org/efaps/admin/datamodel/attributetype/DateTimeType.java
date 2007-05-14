@@ -33,33 +33,37 @@ import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- *
+ * 
  */
-public class DateTimeType extends AbstractType  {
+public class DateTimeType extends AbstractType {
 
-  public void update(Context _context, final PreparedStatement _stmt, final int _index)  throws SQLException  {
+  public void update(Context _context, final PreparedStatement _stmt,
+                     final int _index) throws SQLException {
     _stmt.setTimestamp(_index, getValue());
   }
 
   /**
-   *
-   *
+   * 
+   * 
    * @todo test that only one value is given for indexes
    */
-  public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes)  {
+  public Object readValue(Context _context, CachedResult _rs,
+                          ArrayList<Integer> _indexes) {
     setValue(_rs.getTimestamp(_indexes.get(0).intValue()));
     return getValue();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   *
-   * @param _context  context for this request
-   * @param _value    new value to set
+   * 
+   * @param _context
+   *          context for this request
+   * @param _value
+   *          new value to set
    */
-  public void set(final Context _context, final Object _value)  {
-    if (_value instanceof Date)  {
+  public void set(final Context _context, final Object _value) {
+    if (_value instanceof Date) {
       setValue(new Timestamp((((Date) _value)).getTime()));
     }
   }
@@ -67,64 +71,74 @@ public class DateTimeType extends AbstractType  {
   /**
    * The method returns a string as the viewable value of the attribute type.
    * Here, the date time value is converted to a localised viewing string.
-   *
-   * @param _locale locale object
+   * 
+   * @param _locale
+   *          locale object
    */
-  public String getViewableString(Locale _locale)  {
+  public String getViewableString(Locale _locale) {
     String ret = null;
-    if (getValue()!=null)  {
-      DateFormat format = DateFormat.getDateTimeInstance(DateFormat.DEFAULT, DateFormat.DEFAULT, _locale);
+    if (getValue() != null) {
+      DateFormat format = DateFormat.getDateTimeInstance(DateFormat.DEFAULT,
+          DateFormat.DEFAULT, _locale);
       ret = format.format(getValue());
-    } else  {
+    } else {
       ret = "";
     }
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param _context  context for this request
-   * @param _name     name of the field
-   * @param _columns  columns
-   * @param _rows     rows
+   * @param _context
+   *          context for this request
+   * @param _name
+   *          name of the field
+   * @param _columns
+   *          columns
+   * @param _rows
+   *          rows
    */
-  public String getSearchHtml(Locale _locale, Field _field)  {
+  public String getSearchHtml(Locale _locale, Field _field) {
     return "";
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   *
-   *
+   * 
+   * 
    * @see #getValue
    * @see #setValue
    */
   private Timestamp value = null;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value new value for instance variable {@link #value}
+   * 
+   * @param _value
+   *          new value for instance variable {@link #value}
    * @see #value
    * @see #getValue
    */
-  public void setValue(final Timestamp _value)  {
+  public void setValue(final Timestamp _value) {
     this.value = _value;
   }
 
   /**
    * This is the getter method for instance variable {@link #value}.
-   *
+   * 
    * @return the value of the instance variable {@link #value}.
    * @see #value
    * @see #setValue
    */
-  public Timestamp getValue()  {
+  public Timestamp getValue() {
     return this.value;
   }
 
+  public String toString() {
+    return "" + getValue();
+  }
 }

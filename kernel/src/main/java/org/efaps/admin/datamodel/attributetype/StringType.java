@@ -29,42 +29,46 @@ import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- *
+ * 
  */
-public class StringType extends AbstractType  {
+public class StringType extends AbstractType {
 
-  public void update(Context _context, PreparedStatement _stmt, int _index)  throws SQLException  {
+  public void update(Context _context, PreparedStatement _stmt, int _index)
+                                                                           throws SQLException {
     _stmt.setString(_index, getValue());
   }
 
   /**
-   *
-   *
+   * 
+   * 
    * @todo test that only one value is given for indexes
    */
-  public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes)  {
-//    setValue(_rs.getString(_index));
-setValue(_rs.getString(_indexes.get(0).intValue()));
+  public Object readValue(Context _context, CachedResult _rs,
+                          ArrayList<Integer> _indexes) {
+    // setValue(_rs.getString(_index));
+    setValue(_rs.getString(_indexes.get(0).intValue()));
     String ret = _rs.getString(_indexes.get(0).intValue());
-    if (ret!=null)  {
+    if (ret != null) {
       ret = ret.trim();
     }
     return ret;
   }
 
-  ////////////////////////////////////////////////////////////////////////////7
+  // //////////////////////////////////////////////////////////////////////////7
 
   /**
    * The localised string and the internal string value are equal. So the
    * internal value can be set directly with method {@link #setValue}.
-   *
-   * @param _context  context for this request
-   * @param _value    new value to set
+   * 
+   * @param _context
+   *          context for this request
+   * @param _value
+   *          new value to set
    */
-  public void set(final Context _context, final Object _value)  {
-    if (_value instanceof String)  {
+  public void set(final Context _context, final Object _value) {
+    if (_value instanceof String) {
       setValue((String) _value);
-    } else if (_value != null)  {
+    } else if (_value != null) {
       setValue(_value.toString());
     }
   }
@@ -72,45 +76,50 @@ setValue(_rs.getString(_indexes.get(0).intValue()));
   /**
    * The method returns a string as the viewable value of the attribute type.
    * Here, the original value of the string is returned.
-   *
-   * @param _locale locale object
+   * 
+   * @param _locale
+   *          locale object
    */
-  public String getViewableString(Locale _locale)  {
-    return (getValue()!=null ? getValue() : "");
+  public String getViewableString(Locale _locale) {
+    return (getValue() != null ? getValue() : "");
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   *
-   *
+   * 
+   * 
    * @see #getValue
    * @see #setValue
    */
   private String value = null;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value new value for instance variable {@link #value}
+   * 
+   * @param _value
+   *          new value for instance variable {@link #value}
    * @see #value
    * @see #getValue
    */
-  public void setValue(String _value)  {
-    this.value = (_value!=null ? _value.trim() : null);
+  public void setValue(String _value) {
+    this.value = (_value != null ? _value.trim() : null);
   }
 
   /**
    * This is the getter method for instance variable {@link #value}.
-   *
+   * 
    * @return the value of the instance variable {@link #value}.
    * @see #value
    * @see #setValue
    */
-  public String getValue()  {
+  public String getValue() {
     return this.value;
   }
 
+  public String toString(){
+    return "" + getValue();
+  }
 }

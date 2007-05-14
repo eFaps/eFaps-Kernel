@@ -25,36 +25,41 @@ import java.util.Locale;
 import org.efaps.admin.lifecycle.Status;
 
 /**
- *
+ * 
  */
-public class StatusLinkType extends AbstractLinkType  {
-
+public class StatusLinkType extends AbstractLinkType {
 
   /**
    * The method returns a string as the viewable value of the attribute type.
-   * Here, the id of the status is converted in the status string name with
-   * the method {@link Status.getViewableName}.
-   *
-   * @param _locale locale object
+   * Here, the id of the status is converted in the status string name with the
+   * method {@link Status.getViewableName}.
+   * 
+   * @param _locale
+   *          locale object
    * @return status string
    * @see #getStatus
    */
-  public String getViewableString(final Locale _locale)  {
+  public String getViewableString(final Locale _locale) {
     return getStatus().getViewableName(null);
   }
 
   /**
    * The instance method returns the status object for the given value. The
    * value is an id.
-   *
+   * 
    * @return status object
    */
-  public Status getStatus()  {
-try  {
-    return Status.get(getValue());
-} catch (Throwable e)  {
-  e.printStackTrace();
-}
-return null;
+  public Status getStatus() {
+    try {
+      return Status.get(getValue());
+    } catch (Throwable e) {
+      e.printStackTrace();
+    }
+    return null;
   }
+
+  public String toString() {
+    return "" + getValue();
+  }
+
 }

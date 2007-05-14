@@ -35,4 +35,7 @@ public class LinkType extends AbstractLinkType  {
   public String getViewableString(Locale _locale)  {
     return ""+getValue();
   }
+  public String toString(){
+    return "" + getValue();
+  }
 }

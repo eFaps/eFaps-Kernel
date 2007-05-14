@@ -32,11 +32,12 @@ import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- *
+ * 
  */
-public class TypeType extends AbstractType  {
+public class TypeType extends AbstractType {
 
-  public void update(Context _context, PreparedStatement _stmt, int _index)  throws SQLException  {
+  public void update(Context _context, PreparedStatement _stmt, int _index)
+                                                                           throws SQLException {
     throw new SQLException("Update value for Type not allowed!!!");
   }
 
@@ -44,82 +45,88 @@ public class TypeType extends AbstractType  {
    * The method reads from a SQL result set the value for the type. If no type
    * sql column is given in the type description, the value is read directly
    * from the attribute.
-   *
+   * 
    */
-  public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes) throws Exception  {
+  public Object readValue(Context _context, CachedResult _rs,
+                          ArrayList<Integer> _indexes) throws Exception {
     Type value;
 
-    if (getAttribute().getSqlColNames().size()>0)  {
-      value = Type.get( _rs.getLong(_indexes.get(0).intValue()));
-    } else  {
+    if (getAttribute().getSqlColNames().size() > 0) {
+      value = Type.get(_rs.getLong(_indexes.get(0).intValue()));
+    } else {
       value = getAttribute().getParent();
     }
-setValue(value);
+    setValue(value);
     return value;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
-/**
- * @todo must an exception thrown?
- */
-public void set(final Context _context, final Object _value)  {
-}
+  /**
+   * @todo must an exception thrown?
+   */
+  public void set(final Context _context, final Object _value) {
+  }
 
   /**
    * The method takes the name of the type and translates them with the help of
    * the resourcebundle (and the string resource properties).
-   *
-   * @param _locale locale object
+   * 
+   * @param _locale
+   *          locale object
    * @return localised type name
    */
-  public String getViewableString(Locale _locale)  {
+  public String getViewableString(Locale _locale) {
     String name = getValue().getName();
 
-    if (_locale!=null)  {
+    if (_locale != null) {
       ResourceBundle msgs = ResourceBundle.getBundle("StringResource", _locale);
-      try  {
-        name = msgs.getString(name+".Label");
-      } catch (MissingResourceException e)  {
+      try {
+        name = msgs.getString(name + ".Label");
+      } catch (MissingResourceException e) {
         name = "???" + name + ".Label???";
       }
     }
     return name;
   }
 
-
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The value stores the instance of {@link org.efaps.admin.datamodel.Type}
    * which represents current value.
-   *
+   * 
    * @see #setType
    * @see #getType
    */
   private Type value = null;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value new value for instance variable {@link #value}
+   * 
+   * @param _value
+   *          new value for instance variable {@link #value}
    * @see #value
    * @see #getValue
    */
-  public void setValue(Type _value)  {
+  public void setValue(Type _value) {
     this.value = _value;
   }
 
   /**
    * This is the getter method for instance variable {@link #value}.
-   *
+   * 
    * @return the value of the instance variable {@link #value}.
    * @see #value
    * @see #setValue
    */
-  public Type getValue()  {
+  public Type getValue() {
     return this.value;
+  }
+
+  public String toString() {
+    return "" + getValue();
   }
 }

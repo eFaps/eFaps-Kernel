@@ -23,24 +23,29 @@ package org.efaps.admin.datamodel.attributetype;
 import org.efaps.db.Context;
 
 /**
- * The class is the attribute type representation for the modified date time
- * of a business object.
+ * The class is the attribute type representation for the modified date time of
+ * a business object.
  */
-public class ModifiedType extends DateTimeType  {
+public class ModifiedType extends DateTimeType {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // interface to the data base
 
   /**
    * The instance method appends <i>SYSDATE</i> to the sql statement. Because
-   * This is not a value, the method returns a <i>true</i>, that the value
-   * is hard coded and must not updated via a prepared sql statement.
-   *
-   * @param _stmt string buffer with the statement
+   * This is not a value, the method returns a <i>true</i>, that the value is
+   * hard coded and must not updated via a prepared sql statement.
+   * 
+   * @param _stmt
+   *          string buffer with the statement
    * @return always <i>true</i>
    */
-  public boolean prepareUpdate(StringBuilder _stmt)  {
+  public boolean prepareUpdate(StringBuilder _stmt) {
     _stmt.append(Context.getDbType().getCurrentTimeStamp());
     return true;
+  }
+
+  public String toString() {
+    return "" + getValue();
   }
 }

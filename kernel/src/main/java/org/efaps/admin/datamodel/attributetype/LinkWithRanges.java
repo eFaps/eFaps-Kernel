@@ -23,16 +23,21 @@ package org.efaps.admin.datamodel.attributetype;
 import java.util.Locale;
 
 /**
- *
+ * 
  */
-public class LinkWithRanges extends AbstractLinkType  {
+public class LinkWithRanges extends AbstractLinkType {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param _locale locale object
+   * @param _locale
+   *          locale object
    */
-  public String getViewableString(Locale _locale)  {
-    return ""+getValue();
+  public String getViewableString(Locale _locale) {
+    return "" + getValue();
+  }
+
+  public String toString() {
+    return "" + getValue();
   }
 }
