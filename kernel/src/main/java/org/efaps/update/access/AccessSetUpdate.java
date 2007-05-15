@@ -26,12 +26,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.xml.sax.SAXException;
-
 import org.efaps.update.AbstractUpdate;
+import org.xml.sax.SAXException;
 
 /**
  * @author tmo
@@ -43,11 +39,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static variables
 
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Log LOG = LogFactory.getLog(AccessSetUpdate.class);
-
+  
   /** Link to access types. */
   private final static Link LINK2ACCESSTYPE
                     = new Link("Admin_Access_AccessSet2Type", 
@@ -198,7 +190,7 @@ e.printStackTrace();
      * @param _group group to add (defined with the name of the group)
      * @see #groups
      */
-    public void addGroup(final String _group)  {
+    public void addGroup(final String _group) {
       addLink(LINK2GROUP, _group);
     }
   }

@@ -20,11 +20,6 @@
 
 package org.efaps.shell.method;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.jexl.JexlHelper;
-import org.apache.commons.jexl.JexlContext;
-
 import org.efaps.admin.program.java.Compiler;
 import org.efaps.util.EFapsException;
 

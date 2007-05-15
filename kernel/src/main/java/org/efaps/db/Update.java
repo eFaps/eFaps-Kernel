@@ -48,76 +48,76 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @version $Id$
+ * @version $Id: Update.java 726 2007-03-17 22:14:14 +0000 (Sat, 17 Mar 2007)
+ *          tmo $
  */
-public class Update  {
+public class Update {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(Update.class);
+  private static final Log                                   LOG           = LogFactory
+                                                                               .getLog(Update.class);
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * The instance variable stores the instance for which this update is made.
-   *
+   * 
    * @see #getInstance
    * @see #setInstance
    */
-  private Instance instance = null;
+  private Instance                                           instance      = null;
 
   /**
    * The string instance variable stores the table names of the select
    * statement.
-   *
+   * 
    * @see #getExpr4Tables
    */
-  private Map<SQLTable,Map<String,AttributeTypeInterface>> expr4Tables = new Hashtable<SQLTable,Map<String,AttributeTypeInterface>>();
+  private Map<SQLTable, Map<String, AttributeTypeInterface>> expr4Tables   = new Hashtable<SQLTable, Map<String, AttributeTypeInterface>>();
 
-  private final Map<String,AttributeTypeInterface> mapAttr2Value = new HashMap<String,AttributeTypeInterface>();
+  private final Map<String, AttributeTypeInterface>          mapAttr2Value = new HashMap<String, AttributeTypeInterface>();
 
-  protected final Map < Attribute , Object > values 
-                                        = new HashMap < Attribute, Object > ();
+  protected final Map<Attribute, Object>                     values        = new HashMap<Attribute, Object>();
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
   /**
    */
-  public Update(final Type _type, 
-                final String _id) throws EFapsException  {
+  public Update(final Type _type, final String _id) throws EFapsException {
     this(new Instance(_type, _id));
   }
 
   /**
    * @deprecated
    */
-  public Update(Context _context, Type _type, String _id) throws EFapsException  {
+  public Update(Context _context, Type _type, String _id) throws EFapsException {
     this(new Instance(_type, _id));
   }
 
   /**
    */
-  public Update(final String _oid) throws EFapsException  {
+  public Update(final String _oid) throws EFapsException {
     this(new Instance(_oid));
   }
 
   /**
    * @deprecated
    */
-  public Update(Context _context, String _oid) throws EFapsException  {
+  public Update(Context _context, String _oid) throws EFapsException {
     this(new Instance(_oid));
   }
 
   /**
-   *
+   * 
    */
-  public Update(final Instance _instance) throws EFapsException  {
+  public Update(final Instance _instance) throws EFapsException {
     setInstance(_instance);
     addAlwaysUpdateAttributes();
   }
@@ -125,25 +125,27 @@ public class Update  {
   /**
    * @deprecated
    */
-  public Update(Context _context, Instance _instance) throws EFapsException  {
+  public Update(Context _context, Instance _instance) throws EFapsException {
     this(_instance);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * Add all attributes of the type which must be always updated.
-   *
-   * @param _type     data model type
+   * 
+   * @param _type
+   *          data model type
    */
-  protected void addAlwaysUpdateAttributes() throws EFapsException  {
-    Iterator iter = getInstance().getType().getAttributes().entrySet().iterator();
-    while (iter.hasNext())  {
-      Map.Entry entry = (Map.Entry)iter.next();
-      Attribute attr = (Attribute)entry.getValue();
+  protected void addAlwaysUpdateAttributes() throws EFapsException {
+    Iterator iter = getInstance().getType().getAttributes().entrySet()
+        .iterator();
+    while (iter.hasNext()) {
+      Map.Entry entry = (Map.Entry) iter.next();
+      Attribute attr = (Attribute) entry.getValue();
       AttributeType attrType = attr.getAttributeType();
-      if (attrType.isAlwaysUpdate())  {
+      if (attrType.isAlwaysUpdate()) {
         add(attr, null, false);
       }
     }
@@ -151,274 +153,287 @@ public class Update  {
 
   /**
    * The method closes the SQL statement.
-   *
+   * 
    * @see #statement
    */
-  public void close() throws Exception  {
-/*    if (getStatement()!=null)  {
-      try  {
-        getStatement().close();
-      } catch (Exception e)  {
-        throw e;
-      } finally  {
-        setStatement(null);
-      }
-    }
-*/
+  public void close() throws Exception {
+    /*
+     * if (getStatement()!=null) { try { getStatement().close(); } catch
+     * (Exception e) { throw e; } finally { setStatement(null); } }
+     */
   }
 
   /**
-   * The method gets all triggers for the given trigger event and executes
-   * them in the given order. If no triggers are defined, nothing is done.
-   *
-   * @param _context      eFaps context for this request
-   * @param _triggerEvent trigger events to execute
-   * @throws EFapsException from trigger execution
+   * The method gets all triggers for the given trigger event and executes them
+   * in the given order. If no triggers are defined, nothing is done.
+   * 
+   * @param _context
+   *          eFaps context for this request
+   * @param _triggerEvent
+   *          trigger events to execute
+   * @throws EFapsException
+   *           from trigger execution
    */
-  protected void executeTrigger(final Context _context, 
-                                final TriggerEvent _triggerEvent) throws EFapsException  {
-    List < EventDefinition > triggers = getInstance().getType().getTrigger(_triggerEvent);
-    if (triggers != null)  {
-      Map < TriggerKeys4Values, Map > map = new HashMap < TriggerKeys4Values, Map >();
+  protected void executeTrigger(final Context _context,
+                                final TriggerEvent _triggerEvent)
+                                                                 throws EFapsException {
+    List<EventDefinition> triggers = getInstance().getType().getTrigger(
+        _triggerEvent);
+    if (triggers != null) {
+      Map<TriggerKeys4Values, Map> map = new HashMap<TriggerKeys4Values, Map>();
       map.put(TriggerKeys4Values.NEW_VALUES, this.values);
-      for (EventDefinition evenDef : triggers)  {
+      for (EventDefinition evenDef : triggers) {
         evenDef.execute(_context, getInstance(), map);
       }
     }
   }
 
   /**
-   * @param _attr   name of attribute to update
-   * @param _value  attribute value
+   * @param _attr
+   *          name of attribute to update
+   * @param _value
+   *          attribute value
    */
-  public void add(final String _attr, 
-                  final String _value) throws EFapsException  {
+  public void add(final String _attr, final String _value)
+                                                          throws EFapsException {
     Attribute attr = getInstance().getType().getAttribute(_attr);
-if (attr==null)  {
-  throw new EFapsException(getClass(), "add.UnknownAttributeName");
-}
+    if (attr == null) {
+      throw new EFapsException(getClass(), "add.UnknownAttributeName");
+    }
     add(attr, _value, true);
   }
 
   /**
    * @deprecated use {@link #add(String,String)}
    */
-  public void add(Context _context, String _attr, String _value) throws EFapsException  {
+  public void add(Context _context, String _attr, String _value)
+                                                                throws EFapsException {
     add(_attr, _value);
   }
 
   /**
-   * @param _attr   attribute to update
-   * @param _value  new attribute value
+   * @param _attr
+   *          attribute to update
+   * @param _value
+   *          new attribute value
    */
-  public void add(final Attribute _attr, 
-                  final String _value) throws EFapsException  {
+  public void add(final Attribute _attr, final String _value)
+                                                             throws EFapsException {
     add(_attr, _value, true);
   }
 
   /**
    * @deprecated use {@link #add(Attribute,String)}
    */
-  public void add(Context _context, Attribute _attr, String _value) throws EFapsException  {
+  public void add(Context _context, Attribute _attr, String _value)
+                                                                   throws EFapsException {
     add(_attr, _value, true);
   }
 
-
   /**
-   * @param _attr             attribute to update
-   * @param _value            new attribute value
+   * @param _attr
+   *          attribute to update
+   * @param _value
+   *          new attribute value
    * @param _triggerRelevant
    */
-  public void add(final Attribute _attr, 
-                  final String _value, 
-                  final boolean _triggerRelevant) throws EFapsException  {
+  public void add(final Attribute _attr, final String _value,
+                  final boolean _triggerRelevant) throws EFapsException {
     add(_attr, (Object) _value, _triggerRelevant);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // timestamp methods
 
-  public void add(final String _attr,
-                  final Timestamp _value) throws EFapsException  {
+  public void add(final String _attr, final Timestamp _value)
+                                                             throws EFapsException {
     Attribute attr = getInstance().getType().getAttribute(_attr);
-    if (attr==null)  {
+    if (attr == null) {
       throw new EFapsException(getClass(), "add.UnknownAttributeName");
     }
     add(attr, (Object) _value, true);
   }
 
   /**
-   * @param _attr   attribute to update
-   * @param _value  new attribute value
+   * @param _attr
+   *          attribute to update
+   * @param _value
+   *          new attribute value
    */
-  public void add(final Attribute _attr, 
-                  final Timestamp _value) throws EFapsException  {
+  public void add(final Attribute _attr, final Timestamp _value)
+                                                                throws EFapsException {
     add(_attr, (Object) _value, true);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // private common method
 
-  private void add(final Attribute _attr, 
-                   final Object _value, 
-                   final boolean _triggerRelevant) throws EFapsException  {
-    Map<String,AttributeTypeInterface> expressions = getExpr4Tables().get(_attr.getTable());
+  private void add(final Attribute _attr, final Object _value,
+                   final boolean _triggerRelevant) throws EFapsException {
+    Map<String, AttributeTypeInterface> expressions = getExpr4Tables().get(
+        _attr.getTable());
 
-    if (expressions==null)  {
-      expressions = new HashMap<String,AttributeTypeInterface>();
+    if (expressions == null) {
+      expressions = new HashMap<String, AttributeTypeInterface>();
       getExpr4Tables().put(_attr.getTable(), expressions);
     }
 
     AttributeTypeInterface attrType = _attr.newInstance();
     attrType.setAttribute(_attr);
     attrType.set(Context.getThreadContext(), _value);
-// TODO: was, wenn ein attribute mehr als ein SQL Column hat?
-//    expressions.put(_attr.getSqlColName(), attrType);
-expressions.put(_attr.getSqlColNames().get(0), attrType);
+    // TODO: was, wenn ein attribute mehr als ein SQL Column hat?
+    // expressions.put(_attr.getSqlColName(), attrType);
+    expressions.put(_attr.getSqlColNames().get(0), attrType);
 
-this.mapAttr2Value.put(_attr.getName(), attrType);
+    this.mapAttr2Value.put(_attr.getName(), attrType);
 
-    if (_triggerRelevant)  {
+    if (_triggerRelevant) {
       this.values.put(_attr, _value);
     }
   }
 
-protected boolean test4Unique(Context _context)  throws Exception  {
-  return test4Unique(_context, getType());
-}
+  protected boolean test4Unique(Context _context) throws Exception {
+    return test4Unique(_context, getType());
+  }
 
-private boolean test4Unique(Context _context, Type _type)  throws Exception  {
-  boolean ret = false;
+  private boolean test4Unique(Context _context, Type _type) throws Exception {
+    boolean ret = false;
 
-  if (_type.getUniqueKeys()!=null)  {
-    for (org.efaps.admin.datamodel.UniqueKey uk : _type.getUniqueKeys())  {
+    if (_type.getUniqueKeys() != null) {
+      for (org.efaps.admin.datamodel.UniqueKey uk : _type.getUniqueKeys()) {
 
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes(_context, _type.getName());
-      query.setExpandChildTypes(true);
+        SearchQuery query = new SearchQuery();
+        query.setQueryTypes(_type.getName());
+        query.setExpandChildTypes(true);
 
-boolean testNeeded = false;
-      for (Attribute attr : uk.getAttributes())  {
-        AttributeTypeInterface value = mapAttr2Value.get(attr.getName());
-        if (value!=null)  {
-          query.addWhereAttrEqValue(_context, attr, value.getViewableString(null));
-testNeeded = true;
+        boolean testNeeded = false;
+        for (Attribute attr : uk.getAttributes()) {
+          AttributeTypeInterface value = mapAttr2Value.get(attr.getName());
+          if (value != null) {
+            query.addWhereAttrEqValue(attr, value.getViewableString(null));
+            testNeeded = true;
+          }
+        }
+        if (testNeeded) {
+          query.addSelect("ID");
+          query.executeWithoutAccessCheck();
+
+          while (query.next()) {
+            long id = (Long) query.get("ID");
+            if (id != getInstance().getId()) {
+              ret = true;
+              break;
+            }
+          }
         }
       }
-if (testNeeded)  {
-      query.addSelect(_context, "ID");
-      query.executeWithoutAccessCheck();
-
-      while (query.next())  {
-        long id = (Long)query.get(_context, "ID");
-        if (id!=getInstance().getId())  {
-          ret = true;
-          break;
-        }
-      }
-}
     }
+    if (_type.getParentType() != null && ret == false) {
+      ret = test4Unique(_context, _type.getParentType());
+    }
+    return ret;
   }
-  if (_type.getParentType()!=null && ret==false)  {
-    ret = test4Unique(_context, _type.getParentType());
-  }
-  return ret;
-}
 
   /**
-   *
+   * 
    */
-  public void execute() throws Exception  {
-    boolean hasAccess = getType()
-          .hasAccess(getInstance(), 
-                     AccessTypeEnums.MODIFY.getAccessType());
+  public void execute() throws Exception {
+    boolean hasAccess = getType().hasAccess(getInstance(),
+        AccessTypeEnums.MODIFY.getAccessType());
 
-    if (!hasAccess)  {
+    if (!hasAccess) {
       throw new EFapsException(getClass(), "execute.NoAccess");
     }
     executeWithoutAccessCheck();
   }
 
   /**
-   *
+   * 
    */
-  public void executeWithoutAccessCheck() throws Exception  {
+  public void executeWithoutAccessCheck() throws Exception {
     Context context = Context.getThreadContext();
     ConnectionResource con = null;
-    try  {
+    try {
       executeTrigger(context, TriggerEvent.UPDATE_PRE);
 
       con = context.getConnectionResource();
 
-      if (test4Unique(context))  {
-        throw new EFapsException(getClass(), "executeWithoutAccessCheck.UniqueKeyError");
+      if (test4Unique(context)) {
+        throw new EFapsException(getClass(),
+            "executeWithoutAccessCheck.UniqueKeyError");
       }
 
-      for (Map.Entry < SQLTable, Map < String, AttributeTypeInterface > > entry 
-                                              : getExpr4Tables().entrySet())  {
+      for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
+          .entrySet()) {
         SQLTable table = entry.getKey();
-        Map expressions = (Map)entry.getValue();
+        Map expressions = (Map) entry.getValue();
 
         PreparedStatement stmt = null;
         try {
           stmt = createOneStatement(context, con, table, expressions);
           int rows = stmt.executeUpdate();
-          if (rows==0)  {
-throw new Exception("Can not update! It exists not!");
+          if (rows == 0) {
+            throw new Exception("Can not update! It exists not!");
           }
-        } catch (Exception e)  {
+        } catch (Exception e) {
           throw e;
-        } finally  {
+        }
+        finally {
           stmt.close();
         }
       }
       con.commit();
 
       executeTrigger(context, TriggerEvent.UPDATE_POST);
-    } catch (Exception e)  {
-e.printStackTrace();
+    } catch (Exception e) {
+      e.printStackTrace();
       throw e;
-    } finally  {
-      if ((con != null) && con.isOpened())  {
+    }
+    finally {
+      if ((con != null) && con.isOpened()) {
         con.abort();
       }
     }
   }
 
-  private PreparedStatement createOneStatement(final Context _context, 
-                                               final ConnectionResource _con, 
-                                               final SQLTable _table, 
-                                               final Map _expressions) throws SQLException, EFapsException  {
+  private PreparedStatement createOneStatement(final Context _context,
+                                               final ConnectionResource _con,
+                                               final SQLTable _table,
+                                               final Map _expressions)
+                                                                      throws SQLException,
+                                                                      EFapsException {
     List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
     StringBuilder cmd = new StringBuilder();
     cmd.append("update ").append(_table.getSqlTable()).append(" set ");
     Iterator iter = _expressions.entrySet().iterator();
     boolean command = false;
-    while (iter.hasNext())  {
-      Map.Entry entry = (Map.Entry)iter.next();
+    while (iter.hasNext()) {
+      Map.Entry entry = (Map.Entry) iter.next();
 
-      if (command)  {
+      if (command) {
         cmd.append(",");
-      } else  {
+      } else {
         command = true;
       }
       cmd.append(entry.getKey()).append("=");
 
-      AttributeTypeInterface attr = (AttributeTypeInterface)entry.getValue();
-      if (!attr.prepareUpdate(cmd))  {
+      AttributeTypeInterface attr = (AttributeTypeInterface) entry.getValue();
+      if (!attr.prepareUpdate(cmd)) {
         list.add(attr);
       }
     }
-    cmd.append(" where ").append(_table.getSqlColId()).append("=").append(getId()).append("");
+    cmd.append(" where ").append(_table.getSqlColId()).append("=").append(
+        getId()).append("");
 
-    if (LOG.isTraceEnabled())  {
+    if (LOG.isTraceEnabled()) {
       LOG.trace(cmd.toString());
     }
 
-    PreparedStatement stmt = _con.getConnection().prepareStatement(cmd.toString());
-    for (int i=0, j=1; i<list.size(); i++, j++)  {
-      AttributeTypeInterface attr = (AttributeTypeInterface)list.get(i);
-      if (LOG.isTraceEnabled())  {
+    PreparedStatement stmt = _con.getConnection().prepareStatement(
+        cmd.toString());
+    for (int i = 0, j = 1; i < list.size(); i++, j++) {
+      AttributeTypeInterface attr = (AttributeTypeInterface) list.get(i);
+      if (LOG.isTraceEnabled()) {
         LOG.trace(attr.toString());
       }
       attr.update(_context, stmt, j);
@@ -428,57 +443,58 @@ e.printStackTrace();
 
   /**
    * The instance method returns the Type instance of {@link #instance}.
-   *
+   * 
    * @return type of {@link #instance}
    * @see #instance
    */
-  protected Type getType()   {
+  protected Type getType() {
     return getInstance().getType();
   }
 
   /**
    * The instance method returns the id of {@link #instance}.
-   *
+   * 
    * @return id of {@link #instance}
    * @see #instance
    */
-  public String getId()   {
-    return ""+getInstance().getId();
+  public String getId() {
+    return "" + getInstance().getId();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // getter / setter methods
 
   /**
    * This is the getter method for instance variable {@link #instance}.
-   *
+   * 
    * @return value of instance variable {@link #instance}
    * @see #instance
    * @see #setInstance
    */
-  public Instance getInstance()  {
+  public Instance getInstance() {
     return this.instance;
   }
 
   /**
    * This is the setter method for instance variable {@link #instance}.
-   *
-   * @param _out new value for instance variable {@link #instance}
+   * 
+   * @param _out
+   *          new value for instance variable {@link #instance}
    * @see #instance
    * @see #getInstance
    */
-  protected void setInstance(Instance _instance)  {
+  protected void setInstance(Instance _instance) {
     this.instance = _instance;
   }
 
   /**
    * This is the getter method for instance variable {@link #tableNames}.
-   *
+   * 
    * @return value of instance variable {@link #tableNames}
    * @see #tableNames
    * @see #setTableNames
    */
-  protected Map<SQLTable,Map<String,AttributeTypeInterface>> getExpr4Tables()   {
+  protected Map<SQLTable, Map<String, AttributeTypeInterface>> getExpr4Tables() {
     return this.expr4Tables;
   }
 

@@ -164,7 +164,7 @@ public class Insert extends Update {
       long id = executeOneStatement(context, con, mainTable, getExpr4Tables()
           .get(mainTable), 0);
 
-      setInstance(new Instance(context, getInstance().getType(), id));
+      setInstance(new Instance(getInstance().getType(), id));
 
       for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
           .entrySet()) {

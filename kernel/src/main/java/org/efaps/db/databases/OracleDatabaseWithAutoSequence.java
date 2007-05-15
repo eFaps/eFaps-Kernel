@@ -21,9 +21,8 @@
 package org.efaps.db.databases;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * The database driver is used for Oracle databases starting with version 9i.

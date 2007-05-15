@@ -27,93 +27,97 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @version $Id$
+ * @version $Id: MenuTreeBean.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
+ *          2007) jmo $
  * @todo description
  */
-public class MenuTreeBean extends MenuAbstractBean  {
+public class MenuTreeBean extends MenuAbstractBean {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * The instance variable stores the menu label for this menu tree bean.
-   *
+   * 
    * @see #setMenuLabel
    * @see #getMenuLabel
    */
   private String menuLabel = null;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
-  public MenuTreeBean() throws EFapsException  {
+  public MenuTreeBean() throws EFapsException {
     super();
-System.out.println("MenuTreeBean.constructor");
+    System.out.println("MenuTreeBean.constructor");
   }
 
-  public void finalize()  {
+  public void finalize() {
     super.finalize();
-System.out.println("MenuTreeBean.destructor");
+    System.out.println("MenuTreeBean.destructor");
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
    * Following steps are made from this method;
    * <ul>
-   *   <li>The method sets the menu from the type (setting 'Tree').</li>
-   *   <li>If for the type a icon is specified, this icon is set if no icon
-   *       is set for the menu.</li>
-   *   <li>The object value are substitued in the label of the menu.</li>
+   * <li>The method sets the menu from the type (setting 'Tree').</li>
+   * <li>If for the type a icon is specified, this icon is set if no icon is
+   * set for the menu.</li>
+   * <li>The object value are substitued in the label of the menu.</li>
    * </ul>
-   *
-   * @param _context  eFaps context for this request
+   * 
+   * @param _context
+   *          eFaps context for this request
    */
-  protected void execute(Context _context) throws Exception  {
+  protected void execute(Context _context) throws Exception {
     Menu menu = getInstance().getType().getTreeMenu();
-    if (menu==null)  {
-throw new Exception("no tree menu defined for type "+getInstance().getType().getName());
+    if (menu == null) {
+      throw new Exception("no tree menu defined for type "
+          + getInstance().getType().getName());
     }
     setMenu(_context, menu);
 
-    if (getMenuHolder().getIcon()==null)  {
+    if (getMenuHolder().getIcon() == null) {
       getMenuHolder().setIcon(getInstance().getType().getIcon());
     }
 
     SearchQuery query = new SearchQuery();
-    query.setObject(_context, getInstance());
+    query.setObject(getInstance());
     query.addAllFromString(_context, getMenuLabel());
     query.execute();
 
-    if (query.next())  {
+    if (query.next()) {
       setMenuLabel(query.replaceAllInString(_context, getMenuLabel()));
     }
 
     query.close();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the getter method for the instance variable {@link #menuLabel}.
-   *
+   * 
    * @return value of instance variable {@link #menuLabel}
    * @see #menuLabel
    * @see #setMenuLabel
    */
-  public String getMenuLabel()  {
+  public String getMenuLabel() {
     return this.menuLabel;
   }
 
   /**
    * This is the setter method for the instance variable {@link #menuLabel}.
-   *
-   * @param _menuLabel  new value for instance variable {@link #menuLabel}
+   * 
+   * @param _menuLabel
+   *          new value for instance variable {@link #menuLabel}
    * @see #menuLabel
    * @see #getMenuLabel
    */
-  public void setMenuLabel(String _menuLabel)  {
+  public void setMenuLabel(String _menuLabel) {
     this.menuLabel = _menuLabel;
   }
 

@@ -26,9 +26,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.xml.sax.SAXException;
 
 /**
@@ -41,10 +38,6 @@ public class MenuUpdate extends CommandUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static variables
 
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Log LOG = LogFactory.getLog(MenuUpdate.class);
 
   /** Link from menu to child command / menu */
   private final static Link LINK2CHILD

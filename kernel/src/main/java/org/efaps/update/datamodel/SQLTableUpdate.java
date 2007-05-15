@@ -32,18 +32,15 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.xml.sax.SAXException;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
-import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
+import org.xml.sax.SAXException;
 
 /**
  * @author tmo

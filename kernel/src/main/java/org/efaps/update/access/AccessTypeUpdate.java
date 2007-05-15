@@ -22,52 +22,44 @@ package org.efaps.update.access;
 
 import java.io.File;
 import java.io.IOException;
+
 import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.xml.sax.SAXException;
-
 import org.efaps.update.AbstractUpdate;
+import org.xml.sax.SAXException;
 
 /**
  * @author tmo
- * @version $Id$
+ * @version $Id: AccessTypeUpdate.java 723 2007-03-17 19:17:04 +0000 (Sat, 17
+ *          Mar 2007) tmo $
  * @todo description
  */
-public class AccessTypeUpdate extends AbstractUpdate  {
+public class AccessTypeUpdate extends AbstractUpdate {
 
-  /////////////////////////////////////////////////////////////////////////////
-  // static variables
-
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Log LOG = LogFactory.getLog(AccessTypeUpdate.class);
-
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
-   *
+   * 
    */
   public AccessTypeUpdate() {
     super("Admin_Access_AccessType");
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static AccessTypeUpdate readXMLFile(final String _fileName) throws IOException  {
-//    } catch (IOException e)  {
-//      LOG.error("could not open file '" + _fileName + "'", e);
+  public static AccessTypeUpdate readXMLFile(final String _fileName)
+                                                                    throws IOException {
+    // } catch (IOException e) {
+    // LOG.error("could not open file '" + _fileName + "'", e);
     return readXMLFile(new File(_fileName));
   }
 
-  public static AccessTypeUpdate readXMLFile(final File _file) throws IOException  {
+  public static AccessTypeUpdate readXMLFile(final File _file)
+                                                              throws IOException {
     AccessTypeUpdate ret = null;
 
-    try  {
+    try {
       Digester digester = new Digester();
       digester.setValidating(false);
       digester.addObjectCreate("access-type", AccessTypeUpdate.class);
@@ -83,23 +75,23 @@ public class AccessTypeUpdate extends AbstractUpdate  {
       digester.addCallParam("access-type/definition/version/global", 1);
       digester.addCallParam("access-type/definition/version/local", 2);
       digester.addCallParam("access-type/definition/version/mode", 3);
-      
+
       digester.addCallMethod("access-type/definition/name", "setName", 1);
       digester.addCallParam("access-type/definition/name", 0);
 
       ret = (AccessTypeUpdate) digester.parse(_file);
 
-      if (ret != null)  {
+      if (ret != null) {
         ret.setFile(_file);
       }
-    } catch (SAXException e)  {
-e.printStackTrace();
-      //      LOG.error("could not read file '" + _fileName + "'", e);
+    } catch (SAXException e) {
+      e.printStackTrace();
+      // LOG.error("could not read file '" + _fileName + "'", e);
     }
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
   public static class Definition extends DefinitionAbstract {

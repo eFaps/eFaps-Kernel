@@ -31,17 +31,13 @@ import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.xml.sax.SAXException;
-
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
+import org.xml.sax.SAXException;
 
 /**
  * @author tmo
@@ -50,13 +46,7 @@ import org.efaps.util.EFapsException;
  */
 abstract class AbstractCollectionUpdate extends AbstractUpdate  {
 
-  /////////////////////////////////////////////////////////////////////////////
-  // static variables
-
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Log LOG = LogFactory.getLog(AbstractCollectionUpdate.class);
+  
 
   /** Link from field to icon */
   private final static Link LINKFIELD2ICON

@@ -25,99 +25,105 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Context;
 
-public class ValueList  {
+public class ValueList {
 
-
-
-  public String getValueList()  {
+  public String getValueList() {
     StringBuffer buf = new StringBuffer();
 
-    for (Token token : this.tokens)  {
-      switch (token.type)  {
-        case EXPRESSION:
-          buf.append("$<").append(token.value).append(">");
-          break;
-        case TEXT:
-          buf.append(token.value);
-          break;
+    for (Token token : this.tokens) {
+      switch (token.type) {
+      case EXPRESSION:
+        buf.append("$<").append(token.value).append(">");
+        break;
+      case TEXT:
+        buf.append(token.value);
+        break;
       }
     }
 
     return buf.toString();
   }
 
-
-  public void addExpression(String _expression)  {
-this.tokens.add(new Token(TokenType.EXPRESSION, _expression));
-getExpressions().add(_expression);
+  public void addExpression(String _expression) {
+    this.tokens.add(new Token(TokenType.EXPRESSION, _expression));
+    getExpressions().add(_expression);
   }
 
-  public void addText(String _text)  {
-this.tokens.add(new Token(TokenType.TEXT, _text));
+  public void addText(String _text) {
+    this.tokens.add(new Token(TokenType.TEXT, _text));
   }
 
+  public void makeSelect(SearchQuery _query) throws Exception {
+    for (String expression : getExpressions()) {
+      _query.addSelect(expression);
+    }
+  }
 
-  public void makeSelect(Context _context, SearchQuery _query) throws Exception  {
-    for (String expression : getExpressions())  {
+  /**
+   * @deprecated
+   */
+  public void makeSelect(Context _context, SearchQuery _query) throws Exception {
+    for (String expression : getExpressions()) {
       _query.addSelect(_context, expression);
     }
   }
 
-
-  public String makeString(Context _context, SearchQuery _query) throws Exception  {
+  public String makeString(Context _context, SearchQuery _query)
+                                                                throws Exception {
     StringBuffer buf = new StringBuffer();
 
-    for (Token token : this.tokens)  {
-      switch (token.type)  {
-        case EXPRESSION:
-//          buf.append(_query.get(_context, token.value));
-Attribute attr = _query.getAttribute(_context, token.value);
-Object value = _query.get(_context, token.value);
-buf.append(attr.getAttributeType().getUI().getViewHtml(_context, value, null));
-          break;
-        case TEXT:
-          buf.append(token.value);
-          break;
+    for (Token token : this.tokens) {
+      switch (token.type) {
+      case EXPRESSION:
+        // buf.append(_query.get(_context, token.value));
+        Attribute attr = _query.getAttribute(_context, token.value);
+        Object value = _query.get(token.value);
+        buf.append(attr.getAttributeType().getUI().getViewHtml(_context, value,
+            null));
+        break;
+      case TEXT:
+        buf.append(token.value);
+        break;
       }
     }
 
     return buf.toString();
   }
 
+  // /////////////////////////////////////////////////////////////////////////
 
-  ///////////////////////////////////////////////////////////////////////////
+  private ArrayList<Token> tokens      = new ArrayList<Token>();
 
-  private ArrayList<Token> tokens = new ArrayList<Token>();
+  private Set<String>      expressions = new HashSet<String>();
 
-  private Set<String> expressions = new HashSet<String>();
-
-  ///////////////////////////////////////////////////////////////////////////
+  // /////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the getter method for the instance variable {@link #expressions}.
-   *
+   * 
    * @return value of instance variable {@link #expressions}
    * @see #expressions
    */
-  public Set<String> getExpressions()  {
+  public Set<String> getExpressions() {
     return this.expressions;
   }
 
+  // /////////////////////////////////////////////////////////////////////////
 
-  ///////////////////////////////////////////////////////////////////////////
+  public enum TokenType {
+    EXPRESSION, TEXT
+  };
 
-  public enum TokenType {EXPRESSION, TEXT};
+  private class Token {
 
-  private class Token  {
-
-    Token(TokenType _type, String _value)  {
+    Token(TokenType _type, String _value) {
       this.type = _type;
       this.value = _value;
     }
 
     private final TokenType type;
-    private final String value;
-  }
 
+    private final String    value;
+  }
 
 }

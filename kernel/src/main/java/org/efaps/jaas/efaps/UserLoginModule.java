@@ -76,8 +76,6 @@ public class UserLoginModule implements LoginModule  {
   // initial state
   private CallbackHandler   callbackHandler;
 
-  private Map < String,? >  options;
-
   private Principal principal = null;
 
   /**
