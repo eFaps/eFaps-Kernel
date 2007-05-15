@@ -80,7 +80,7 @@
     </attribute>
     
     <attribute>
-      <name>AccesssetLink</name>
+      <name>AccessSetLink</name>
       <type>Link</type>
       <typelink>Admin_Access_AccessSet</typelink>
       <sqltable>TeamWork_MemberSQLTable</sqltable>

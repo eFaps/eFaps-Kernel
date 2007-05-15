@@ -23,11 +23,11 @@
 
 -->
 
-<ui-command>
-  <uuid>647f10d1-0ca7-4f2f-bae0-fbdaa05648c4</uuid>
+<ui-menu>
+  <uuid>d3d4542a-b871-4439-b6a7-31b4d281b3fb</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the command 
+    version definition used to create the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_MemberMyDesk_Menu_Action_Delete</name>
+    <name>TeamWork_Member_Menu</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the command 
+    version definition used to define the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,12 +51,10 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>TeamWork_MemberMyDesk_Menu_Action_Delete</name>
-    <icon>TeamWork_MemberRemoveImage</icon>
-    <!-- property definitions -->
-    <property name="Action">delete</property>
-    <property name="AskUser">true</property>
-    <property name="Submit">true</property>
+    <name>TeamWork_Member_Menu</name>
+    <childs>
+      <child>TeamWork_Member_Menu_Action</child>
+    </childs>
   </definition>
 
-</ui-command>
+</ui-menu>

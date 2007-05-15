@@ -53,13 +53,17 @@
     </version>
     <name>TeamWork_MemberTable</name>
     <!-- fields -->
-    <field name="name">
+    <field name="User">
       <property name="Expression">UserLink.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">TeamWork_Member/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
     </field>
-    
+    <field name="AccessSet">
+      <property name="Expression">AccessSetLink.Name</property>
+      <property name="Label">TeamWork_Member/AccessSetLink.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
   </definition>
 
 </ui-table>

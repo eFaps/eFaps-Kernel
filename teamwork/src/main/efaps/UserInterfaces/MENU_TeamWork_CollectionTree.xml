@@ -60,6 +60,7 @@
       <child>TeamWork_CollectionTree_SubCollections</child>
       <child>TeamWork_CollectionTree_Sources</child>
       <child>Main_Util_History</child>
+      <child>TeamWork_Collection_Member</child>
     </childs>
     <!-- property definitions -->
     <property name="Target">content</property>

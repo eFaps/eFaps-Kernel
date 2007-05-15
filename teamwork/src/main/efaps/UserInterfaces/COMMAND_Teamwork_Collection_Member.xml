@@ -23,39 +23,47 @@
 
 -->
 
-<ui-menu>
-  <uuid>d9cd4c70-a6fe-42bd-8a87-3aef615e1fcc</uuid>
+<ui-command>
+  <uuid>4518a9c7-0460-40c5-b3d5-6c80ab0fabbd</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>teamwork</application>
+      <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_MemberMyDesk_Menu_Action</name>
+    <name>TeamWork_Collection_Member</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>teamwork</application>
+      <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version>=3)</mode>
+      <mode>(version==3)</mode>
     </version>
-    <name>TeamWork_MemberMyDesk_Menu_Action</name>
-    <childs>
-      <child>TeamWork_MemberMyDesk_Menu_Action_Create</child>
-      <child>TeamWork_MemberMyDesk_Menu_Action_Delete</child>
-    </childs>
+    <name>TeamWork_Collection_Member</name>
+    <!-- target definitions -->
+    <target>
+      <menu>TeamWork_Member_Menu</menu>
+      <table>TeamWork_MemberTable</table>
+    </target>
+    <!-- property definitions -->
+    <property name="DefaultSelected">false</property>
+    <property name="Target">content</property>
+    <property name="TargetMode">view</property>
+    <property name="TargetExpand">TeamWork_Member\ParentLink</property>
+    <property name="TargetMode">view</property>
+    <property name="TargetShowCheckBoxes">true</property>
   </definition>
 
-</ui-menu>
+</ui-command>

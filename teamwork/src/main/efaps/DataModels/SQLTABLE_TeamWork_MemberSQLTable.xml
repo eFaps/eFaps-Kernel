@@ -43,7 +43,7 @@
       
       <!-- columns -->
       <column name="PARENT"       type="INTEGER"        not-null="true"/>
-      <column name="ANCESTOR"     type="INTEGER"        not-null="true"/>
+      <column name="ANCESTOR"     type="INTEGER"/>
       <column name="ACCESSSET"    type="INTEGER"        not-null="true"/>
       <column name="USERID"       type="INTEGER"        not-null="true"/>
       <column name="CREATOR"      type="INTEGER"        not-null="true"/>

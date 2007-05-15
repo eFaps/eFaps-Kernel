@@ -221,7 +221,7 @@ protected void setMenuHolder(MenuAbstractBean.MenuHolder _menuHolder)  {
    * @see #getValues
    * @see #setValues
    */
-  private List values = null;
+  private List<Object> values = null;
 
   /**
    * The instance variable stores the mode of the form.
@@ -302,7 +302,7 @@ protected void setMenuHolder(MenuAbstractBean.MenuHolder _menuHolder)  {
    * @see #values
    * @see #setValues
    */
-  public List getValues()  {
+  public List <Object>getValues()  {
     return this.values;
   }
 

@@ -48,27 +48,28 @@ import org.efaps.beans.form.FormFieldUpdateInterface;
 import org.efaps.util.EFapsException;
 
 /**
- *
+ * 
  * @author tmo
- * @version $Id$
+ * @version $Id: FormBean.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb 2007)
+ *          jmo $
  * @todo description
  */
-public class FormBean extends AbstractCollectionBean  {
+public class FormBean extends AbstractCollectionBean {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * The instance variable stores the form which must be shown.
-   *
+   * 
    * @see #getForm
    * @see #setForm
    */
-  private Form form = null;
+  private Form     form       = null;
 
   /**
    * The instance variable stores the instance for the unique key.
-   *
+   * 
    * @see #getUkInstance
    * @see #setUkInstance
    * @see #ukTitle
@@ -79,113 +80,113 @@ public class FormBean extends AbstractCollectionBean  {
   /**
    * The instance variable stores the title if an object is found in create
    * mode.
-   *
+   * 
    * @see #getUkTitle
    * @see #setUkTitle
    * @see #ukInstance
    * @see #ukMode
    */
-  private String ukTitle = null;
+  private String   ukTitle    = null;
 
   /**
    * The instance variable stores if in create mode for a type a given unique
    * key is found.
-   *
+   * 
    * @see #isUkMode
    * @see #setUkMode
    * @see #ukInstance
    * @see #ukTitle
    */
-  private boolean ukMode = false;
+  private boolean  ukMode     = false;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors / descructors
 
   /**
    * The command name is extracted from the form values.
    */
-  public FormBean() throws EFapsException  {
+  public FormBean() throws EFapsException {
     super();
     addHiddenValue("oid", getInstance().getOid());
-System.out.println("FormBean.constructor");
+    System.out.println("FormBean.constructor");
     String cmdName = getParameter("command");
-    if (cmdName==null || cmdName.length()==0 || "undefined".equals(cmdName))  {
+    if (cmdName == null || cmdName.length() == 0 || "undefined".equals(cmdName)) {
       cmdName = getParameter("formCommand");
     }
     setCommandName(cmdName);
   }
 
-  public void finalize()  {
-System.out.println("FormBean.destructor");
+  public void finalize() {
+    System.out.println("FormBean.destructor");
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
-  public void execute() throws Exception  {
+  public void execute() throws Exception {
     Context context = Context.getThreadContext();
-    if (isCreateMode())  {
+    if (isCreateMode()) {
       setValues(new ArrayList());
       getValues().add(null);
 
-Type type = getCommand().getTargetCreateType();
+      Type type = getCommand().getTargetCreateType();
 
-      for (int i=0; i<getForm().getFields().size(); i++)  {
-        Field field = (Field)getForm().getFields().get(i);
+      for (int i = 0; i < getForm().getFields().size(); i++) {
+        Field field = (Field) getForm().getFields().get(i);
 
-
-if (field.getExpression()!=null)  {
-  Attribute attr = type.getAttribute(field.getExpression());
-  if (attr!=null)  {
-    addFieldValue(field, attr, null, null);
-  }
-} else if (field.getClassUI()!=null)  {
-  addFieldValue(field, null);
-} else if (field.getGroupCount()>0)  {
-  addFieldValue(field, null);
-  if (getMaxGroupCount()<field.getGroupCount())  {
-    setMaxGroupCount(field.getGroupCount());
-  }
-}
+        if (field.getExpression() != null) {
+          Attribute attr = type.getAttribute(field.getExpression());
+          if (attr != null) {
+            addFieldValue(field, attr, null, null);
+          }
+        } else if (field.getClassUI() != null) {
+          addFieldValue(field, null);
+        } else if (field.getGroupCount() > 0) {
+          addFieldValue(field, null);
+          if (getMaxGroupCount() < field.getGroupCount()) {
+            setMaxGroupCount(field.getGroupCount());
+          }
+        }
 
       }
-    } else  {
-Instance instance = getInstance();
-if (ukInstance!=null)  {
-  instance = ukInstance;
-}
+    } else {
+      Instance instance = getInstance();
+      if (ukInstance != null) {
+        instance = ukInstance;
+      }
       SearchQuery query = new SearchQuery();
-      query.setObject(context, instance);
+      query.setObject(instance);
       query.add(context, getForm());
-//        query.addAllFromString(context, getTitle());
+      // query.addAllFromString(context, getTitle());
 
-ValueParser parser = new ValueParser(new StringReader(getTitle()));
-ValueList list = parser.ExpressionString();
-list.makeSelect(context, query);
+      ValueParser parser = new ValueParser(new StringReader(getTitle()));
+      ValueList list = parser.ExpressionString();
+      list.makeSelect(context, query);
 
       query.addAllFromString(context, getUkTitle());
       query.execute();
 
-      if (query.next())  {
+      if (query.next()) {
         setValues(new ArrayList());
         getValues().add(query.getInstance(context, instance.getType()));
-        for (int i=0; i<getForm().getFields().size(); i++)  {
-          Field field = (Field)getForm().getFields().get(i);
+        for (int i = 0; i < getForm().getFields().size(); i++) {
+          Field field = (Field) getForm().getFields().get(i);
 
-if (field.getExpression()!=null)  {
-  Object value = query.get(context, field);
-  addFieldValue(field, query.getAttribute(context, field), value, query.getInstance(context, field));
-} else if (field.getClassUI()!=null)  {
-  addFieldValue(field, instance);
-} else if (field.getGroupCount()>0)  {
-  addFieldValue(field, instance);
-  if (getMaxGroupCount()<field.getGroupCount())  {
-    setMaxGroupCount(field.getGroupCount());
-  }
-}
+          if (field.getExpression() != null) {
+            Object value = query.get(field);
+            addFieldValue(field, query.getAttribute(context, field), value,
+                query.getInstance(context, field));
+          } else if (field.getClassUI() != null) {
+            addFieldValue(field, instance);
+          } else if (field.getGroupCount() > 0) {
+            addFieldValue(field, instance);
+            if (getMaxGroupCount() < field.getGroupCount()) {
+              setMaxGroupCount(field.getGroupCount());
+            }
+          }
         }
-//          setTitle(query.replaceAllInString(context, getTitle()));
-setTitle(list.makeString(context, query));
+        // setTitle(query.replaceAllInString(context, getTitle()));
+        setTitle(list.makeString(context, query));
         setUkTitle(query.replaceAllInString(context, getUkTitle()));
       }
 
@@ -193,164 +194,178 @@ setTitle(list.makeString(context, query));
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The instance method is called to process the modifcation of a form.
-   *
+   * 
    * @see #processCreate
    * @see #processUpdate
    */
-  public void process() throws Exception  {
-try {
-    if (isCreateMode())  {
-      processCreate(Context.getThreadContext());
-    } else  {
-      processUpdate(Context.getThreadContext());
+  public void process() throws Exception {
+    try {
+      if (isCreateMode()) {
+        processCreate(Context.getThreadContext());
+      } else {
+        processUpdate(Context.getThreadContext());
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw e;
     }
-} catch (Exception e)  {
-  e.printStackTrace();
-  throw e;
-}
   }
 
   /**
    * The instance method process the create of a new object.
-   *
-   * @param _context  context for this request
+   * 
+   * @param _context
+   *          context for this request
    * @todo maybe an axception must be thrown? see TODO comment
    */
-  protected void processCreate(Context _context) throws Exception  {
-    Insert insert = new Insert(_context, getCommand().getTargetCreateType());
-    for (Field field : getForm().getFields())  {
-      if (field.getExpression()!=null && (field.isCreatable() || field.isHidden()))  {
-        Attribute attr = getCommand().getTargetCreateType().getAttribute(field.getExpression());
-        if (attr!=null && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr()))  {
+  protected void processCreate(Context _context) throws Exception {
+    Insert insert = new Insert(getCommand().getTargetCreateType());
+    for (Field field : getForm().getFields()) {
+      if (field.getExpression() != null
+          && (field.isCreatable() || field.isHidden())) {
+        Attribute attr = getCommand().getTargetCreateType().getAttribute(
+            field.getExpression());
+        if (attr != null
+            && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
+                .getClassRepr())) {
           String value = getParameter(field.getName());
-          insert.add(_context, attr, value);
+          insert.add(attr, value);
         }
       }
     }
-    if (getCommand().getTargetConnectAttribute()!=null)  {
-      Instance instance = new Instance(_context, getParameter("oid"));
-      insert.add(_context, getCommand().getTargetConnectAttribute(), ""+instance.getId());
+    if (getCommand().getTargetConnectAttribute() != null) {
+      Instance instance = new Instance(getParameter("oid"));
+      insert.add(getCommand().getTargetConnectAttribute(), ""
+          + instance.getId());
     }
     insert.execute();
-    setInstance(new Instance(_context, getCommand().getTargetCreateType(), insert.getId()));
+    setInstance(new Instance(getCommand().getTargetCreateType(), insert.getId()));
 
-// "TargetConnectChildAttribute"
-// "TargetConnectParentAttribute"
-// "TargetConnectType"
-if (getCommand().getProperty("TargetConnectType")!=null)  {
-  Instance parent = new Instance(_context, getParameter("oid"));
+    // "TargetConnectChildAttribute"
+    // "TargetConnectParentAttribute"
+    // "TargetConnectType"
+    if (getCommand().getProperty("TargetConnectType") != null) {
+      Instance parent = new Instance(getParameter("oid"));
 
-  Insert connect = new Insert(_context, getCommand().getProperty("TargetConnectType"));
-  connect.add(_context, getCommand().getProperty("TargetConnectParentAttribute"), ""+parent.getId());
-  connect.add(_context, getCommand().getProperty("TargetConnectChildAttribute"), ""+insert.getId());
-  connect.execute();
-}
+      Insert connect = new Insert(getCommand().getProperty("TargetConnectType"));
+      connect.add(getCommand().getProperty("TargetConnectParentAttribute"), ""
+          + parent.getId());
+      connect.add(getCommand().getProperty("TargetConnectChildAttribute"), ""
+          + insert.getId());
+      connect.execute();
+    }
 
-    for (Field field : getForm().getFields())  {
-      if (field.getExpression()==null && field.isCreatable())  {
+    for (Field field : getForm().getFields()) {
+      if (field.getExpression() == null && field.isCreatable()) {
         FileItem fileItem = getFileParameter(field.getName());
         String updateClassName = field.getProperty("ClassNameUpdate");
 
-        if (updateClassName != null)  {
-          Class < FormFieldUpdateInterface > updateClass = (Class < FormFieldUpdateInterface >) Class.forName(updateClassName);
+        if (updateClassName != null) {
+          Class<FormFieldUpdateInterface> updateClass = (Class<FormFieldUpdateInterface>) Class
+              .forName(updateClassName);
           FormFieldUpdateInterface fieldUpdate = updateClass.newInstance();
           fieldUpdate.update(_context, this, field);
-        } else if (fileItem!=null)  {
-System.out.println("-----------checkin ------"+fileItem);
+        } else if (fileItem != null) {
+          System.out.println("-----------checkin ------" + fileItem);
           Checkin checkin = new Checkin(getInstance());
-          checkin.execute(fileItem.getName(), 
-                          fileItem.getInputStream(), 
-                          (int)fileItem.getSize());
+          checkin.execute(fileItem.getName(), fileItem.getInputStream(),
+              (int) fileItem.getSize());
         }
-// TODO: ev. exception?
+        // TODO: ev. exception?
       }
     }
   }
 
   /**
    * The instance method process the update of current selected object.
-   *
-   * @param _context  context for this request
+   * 
+   * @param _context
+   *          context for this request
    * @todo maybe an axception must be thrown? see TODO comment
    */
-  protected void processUpdate(Context _context) throws Exception  {
-    Update update = new Update(_context, getInstance());
-    for (Field field : getForm().getFields())  {
-      if (field.getExpression()!=null && field.isEditable())  {
-Attribute attr = getInstance().getType().getAttribute(field.getExpression());
-if (attr!=null && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType().getClassRepr()))  {
-System.out.println("field.getName()="+field.getName());
-  update.add(_context, attr, getParameter(field.getName()).replace(',','.'));
-}
+  protected void processUpdate(Context _context) throws Exception {
+    Update update = new Update(getInstance());
+    for (Field field : getForm().getFields()) {
+      if (field.getExpression() != null && field.isEditable()) {
+        Attribute attr = getInstance().getType().getAttribute(
+            field.getExpression());
+        if (attr != null
+            && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
+                .getClassRepr())) {
+          System.out.println("field.getName()=" + field.getName());
+          update.add(attr, getParameter(field.getName()).replace(',', '.'));
+        }
       }
     }
 
-    for (Field field : getForm().getFields())  {
-      if (field.getExpression()==null && field.isEditable())  {
+    for (Field field : getForm().getFields()) {
+      if (field.getExpression() == null && field.isEditable()) {
         FileItem fileItem = getFileParameter(field.getName());
         String updateClassName = field.getProperty("ClassNameUpdate");
 
-        if (updateClassName != null)  {
-          Class < FormFieldUpdateInterface > updateClass = (Class < FormFieldUpdateInterface >) Class.forName(updateClassName);
+        if (updateClassName != null) {
+          Class<FormFieldUpdateInterface> updateClass = (Class<FormFieldUpdateInterface>) Class
+              .forName(updateClassName);
           FormFieldUpdateInterface fieldUpdate = updateClass.newInstance();
           fieldUpdate.update(_context, this, field);
-        } else if (fileItem!=null)  {
+        } else if (fileItem != null) {
           Checkin checkin = new Checkin(getInstance());
-          checkin.execute(fileItem.getName(), 
-                          fileItem.getInputStream(), 
-                          (int) fileItem.getSize());
+          checkin.execute(fileItem.getName(), fileItem.getInputStream(),
+              (int) fileItem.getSize());
         }
-// TODO: ev. exception?
+        // TODO: ev. exception?
       }
     }
 
     update.execute();
   }
 
-
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * The instance method test for given user input parameter and unique keys
-   * of the create type one (!) instance exists. If one instance exists, this
+   * The instance method test for given user input parameter and unique keys of
+   * the create type one (!) instance exists. If one instance exists, this
    * instance is stored in {@link #ukInstance}.
-   *
+   * 
    * @see #ukInstance
    */
-  public void ukTest() throws Exception  {
+  public void ukTest() throws Exception {
     Context context = Context.getThreadContext();
     Map map = new HashMap();
-    for (int i=0; i< getForm().getFields().size(); i++)  {
-      Field field = (Field)getForm().getFields().get(i);
-/*        if (field.getAttribute()!=null && field.getAttribute().getUniqueKeys()!=null)  {
-          map.put(field.getAttribute(), getRequest().getParameter(field.getName()));
-        }
-*/
+    for (int i = 0; i < getForm().getFields().size(); i++) {
+
+      /*
+       * Field field = (Field) getForm().getFields().get(i); if
+       * (field.getAttribute()!=null &&
+       * field.getAttribute().getUniqueKeys()!=null) {
+       * map.put(field.getAttribute(),
+       * getRequest().getParameter(field.getName())); }
+       */
     }
 
-
     Type type = getCommand().getTargetCreateType();
-    for (Iterator ukIter = type.getUniqueKeys().iterator(); ukIter.hasNext(); )  {
-      UniqueKey uniqueKey = (UniqueKey)ukIter.next();
+    for (Iterator ukIter = type.getUniqueKeys().iterator(); ukIter.hasNext();) {
+      UniqueKey uniqueKey = (UniqueKey) ukIter.next();
       SearchQuery query = new SearchQuery();
-      for (Iterator attrIter = uniqueKey.getAttributes().iterator(); attrIter.hasNext(); )  {
-        Attribute attr = (Attribute)attrIter.next();
-        String value = (String)map.get(attr);
-        if (value==null)  {
+      for (Iterator attrIter = uniqueKey.getAttributes().iterator(); attrIter
+          .hasNext();) {
+        Attribute attr = (Attribute) attrIter.next();
+        String value = (String) map.get(attr);
+        if (value == null) {
           query = null;
           break;
         }
-        query.addWhereAttrEqValue(context, attr, value);
+        query.addWhereAttrEqValue(attr, value);
       }
-      if (query!=null)  {
+      if (query != null) {
         query.execute();
-        if (query.next())  {
+        if (query.next()) {
           Instance instance = query.getInstance(context, type);
-          if (!query.next())  {
+          if (!query.next()) {
             setUkInstance(instance);
             break;
           }
@@ -359,15 +374,16 @@ System.out.println("field.getName()="+field.getName());
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   *
-   * @param _name name of the command object
+   * 
+   * @param _name
+   *          name of the command object
    */
-  public void setCommandName(String _name) throws EFapsException  {
+  public void setCommandName(String _name) throws EFapsException {
     super.setCommandName(_name);
-    if (getCommand() != null)  {
+    if (getCommand() != null) {
       addHiddenValue("formCommand", _name);
       setForm(getCommand().getTargetForm());
     }
@@ -376,42 +392,43 @@ System.out.println("field.getName()="+field.getName());
   /**
    * Sets the parameters values for file and form. Also the command name is
    * extracted from the form values.
-   *
-   * @param _parameters     new value for Parameters variable
-   *                        {@link AbstractBean.parameters}
-   * @param _fileParameters new value for Parameters variable
-   *                        {@link AbstractBean.fileParameters}
+   * 
+   * @param _parameters
+   *          new value for Parameters variable {@link AbstractBean.parameters}
+   * @param _fileParameters
+   *          new value for Parameters variable
+   *          {@link AbstractBean.fileParameters}
    * @see AbstractBean.parameters
    * @see AbstractBean.fileParameters
    * @see AbstractBean.setParameters
    * @see #setCommandName
    */
-/*  public void setParameters(Map<String,String[]> _parameters, Map<String,FileItem> _fileParameters) throws Exception  {
-    super.setParameters(_parameters, _fileParameters);
-
-    String cmdName = getParameter("command");
-    if (cmdName==null || cmdName.length()==0 || "undefined".equals(cmdName))  {
-      cmdName = getParameter("formCommand");
-    }
-    setCommandName(cmdName);
-  }
-*/
+  /*
+   * public void setParameters(Map<String,String[]> _parameters, Map<String,FileItem>
+   * _fileParameters) throws Exception { super.setParameters(_parameters,
+   * _fileParameters);
+   * 
+   * String cmdName = getParameter("command"); if (cmdName==null ||
+   * cmdName.length()==0 || "undefined".equals(cmdName)) { cmdName =
+   * getParameter("formCommand"); } setCommandName(cmdName); }
+   */
   /**
    * Adds a field value to the list of values.
-   *
+   * 
    * @see #addFieldValue(String,Field,UIInterface,Object,Instance)
    */
-  public void addFieldValue(Field _field, Attribute _attr, Object _value, Instance _instance)  {
+  public void addFieldValue(Field _field, Attribute _attr, Object _value,
+                            Instance _instance) {
     String label = null;
-    if (_field.getLabel()!=null)  {
+    if (_field.getLabel() != null) {
       label = _field.getLabel();
-    } else  {
+    } else {
       label = _attr.getParent().getName() + "/" + _attr.getName() + ".Label";
     }
     UIInterface classUI = null;
-    if (_field.getClassUI()!=null)  {
+    if (_field.getClassUI() != null) {
       classUI = _field.getClassUI();
-    } else  {
+    } else {
       classUI = _attr.getAttributeType().getUI();
     }
     addFieldValue(label, _field, classUI, _value, _instance);
@@ -419,144 +436,148 @@ System.out.println("field.getName()="+field.getName());
 
   /**
    * Adds a field value to the list of values.
-   *
+   * 
    * @see #addFieldValue(String,Field,UIInterface,Object,Instance)
    */
-  public void addFieldValue(Field _field, Instance _instance)  {
-    addFieldValue(_field.getLabel(), _field, _field.getClassUI(), null, _instance);
+  public void addFieldValue(Field _field, Instance _instance) {
+    addFieldValue(_field.getLabel(), _field, _field.getClassUI(), null,
+        _instance);
   }
 
   /**
    * The instance method adds a new attribute value (from instance
    * {@link AttributeTypeInterface}) to the values.
-   *
+   * 
    * @see #values
    */
-  public void addFieldValue(String _label, Field _field, UIInterface _classUI, Object _value, Instance _instance)  {
+  public void addFieldValue(String _label, Field _field, UIInterface _classUI,
+                            Object _value, Instance _instance) {
     getValues().add(new Value(_label, _field, _classUI, _value, _instance));
   }
 
   /**
-   * The instance method sets the object id for this bean. To set the
-   * object id means to set the instance for this bean. The instande method
-   * also adds the parameters to the hidden parameters.
-   *
-   * @param _oid    object id
+   * The instance method sets the object id for this bean. To set the object id
+   * means to set the instance for this bean. The instande method also adds the
+   * parameters to the hidden parameters.
+   * 
+   * @param _oid
+   *          object id
    * @see #instance
    */
-/*  public void setOid(String _oid) throws EFapsException  {
-    super.setOid(_oid);
-    if (_oid!=null)  {
-      addHiddenValue("oid", _oid);
-    }
-  }
-*/
+  /*
+   * public void setOid(String _oid) throws EFapsException { super.setOid(_oid);
+   * if (_oid!=null) { addHiddenValue("oid", _oid); } }
+   */
   /**
    * The instance method sets the unique key instance object id. This happens,
    * if the user puts values in fields of unique key attributes for which an
    * instance already exists.
-   *
+   * 
    * @param _ukOid
    * @see #ukInstance
    * @see #ukTitle
    * @see #ukMode
    */
-  public void setUkOid(String _ukOid) throws Exception  {
-    if (_ukOid!=null && _ukOid.length()>0)  {
+  public void setUkOid(String _ukOid) throws Exception {
+    if (_ukOid != null && _ukOid.length() > 0) {
       setMode(CommandAbstract.TARGET_MODE_EDIT);
       setUkMode(true);
-      setUkInstance(new Instance(Context.getThreadContext(), _ukOid));
+      setUkInstance(new Instance(_ukOid));
       addHiddenValue("ukOid", _ukOid);
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the getter method for the instance variable {@link #form}.
-   *
+   * 
    * @return value of instance variable {@link #form}
    * @see #form
    * @see #setForm
    */
-  public Form getForm()  {
+  public Form getForm() {
     return this.form;
   }
 
   /**
    * This is the setter method for the instance variable {@link #form}.
-   *
-   * @param _form  new value for instance variable {@link #form}
+   * 
+   * @param _form
+   *          new value for instance variable {@link #form}
    * @see #form
    * @see #getForm
    */
-  public void setForm(Form _form)  {
+  public void setForm(Form _form) {
     this.form = _form;
   }
 
   /**
    * This is the getter method for the instance variable {@link #ukInstance}.
-   *
+   * 
    * @return value of instance variable {@link #ukInstance}
    * @see #ukInstance
    * @see #setUkInstance
    */
-  public Instance getUkInstance()  {
+  public Instance getUkInstance() {
     return this.ukInstance;
   }
 
   /**
    * This is the setter method for the instance variable {@link #ukInstance}.
-   *
-   * @param _ukInstance  new value for instance variable {@link #ukInstance}
+   * 
+   * @param _ukInstance
+   *          new value for instance variable {@link #ukInstance}
    * @see #ukInstance
    * @see #getUkInstance
    */
-  public void setUkInstance(Instance _ukInstance)  {
+  public void setUkInstance(Instance _ukInstance) {
     this.ukInstance = _ukInstance;
   }
 
   /**
    * This is the getter method for the instance variable {@link #ukTitle}.
-   *
+   * 
    * @return value of instance variable {@link #ukTitle}
    * @see #ukTitle
    * @see #setUkTitle
    */
-  public String getUkTitle()  {
+  public String getUkTitle() {
     return this.ukTitle;
   }
 
   /**
    * This is the setter method for the instance variable {@link #ukTitle}.
-   *
-   * @param _ukTitle  new value for instance variable {@link #ukTitle}
+   * 
+   * @param _ukTitle
+   *          new value for instance variable {@link #ukTitle}
    * @see #ukTitle
    * @see #getUkTitle
    */
-  public void setUkTitle(String _ukTitle)  {
+  public void setUkTitle(String _ukTitle) {
     this.ukTitle = _ukTitle;
   }
 
   /**
    * This is the getter method for the instance variable {@link #ukMode}.
-   *
+   * 
    * @return value of instance variable {@link #ukMode}
    * @see #ukMode
    * @see #setUkMode
    */
-  public boolean isUkMode()  {
+  public boolean isUkMode() {
     return this.ukMode;
   }
 
   /**
    * This is the setter method for the instance variable {@link #ukMode}.
-   *
-   * @param _ukMode  new value for instance variable {@link #ukMode}
+   * 
+   * @param _ukMode
+   *          new value for instance variable {@link #ukMode}
    * @see #ukMode
    * @see #getUkMode
    */
-  public void setUkMode(boolean _ukMode)  {
+  public void setUkMode(boolean _ukMode) {
     this.ukMode = _ukMode;
   }
 }

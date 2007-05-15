@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>d3d4542a-b871-4439-b6a7-31b4d281b3fb</uuid>
+<ui-command>
+  <uuid>ce06627a-1dd3-4463-b98b-965785756848</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_MemberMyDesk_Menu</name>
+    <name>TeamWork_Member_Menu_Action_Create</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,10 +51,17 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>TeamWork_MemberMyDesk_Menu</name>
-    <childs>
-      <child>TeamWork_MemberMyDesk_Menu_Action</child>
-    </childs>
+    <name>TeamWork_Member_Menu_Action_Create</name>
+    <icon>TeamWork_MemberAddImage</icon>
+    <!-- target definitions -->
+    <target>
+      <form>TeamWork_MemberForm</form>
+    </target>
+    <!-- property definitions -->
+    <property name="Target">popup</property>
+    <property name="TargetConnectAttribute">TeamWork_Member/ParentLink</property>
+    <property name="TargetCreateType">TeamWork_Member</property>
+    <property name="TargetMode">create</property>
   </definition>
 
-</ui-menu>
+</ui-command>
