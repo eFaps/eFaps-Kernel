@@ -63,6 +63,7 @@
             </tr>
             <tr>
               <td align="right" colspan="2"><input type="submit" value="<fmt:message key="Login.Button.Label"/>"/></td>
+          	</tr>
           </table>
         </center>
       </form>

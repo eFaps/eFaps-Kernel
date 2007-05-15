@@ -44,7 +44,7 @@
   <body onLoad="alert('Cache Reloaded')">
 
   </body>
-<html>
+</html>
 
 </fmt:bundle>
 <%@include file = "../common/StdBottom.inc"%>

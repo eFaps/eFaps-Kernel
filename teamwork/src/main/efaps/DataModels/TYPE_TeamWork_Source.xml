@@ -46,70 +46,16 @@
     </version>
 
     <name>TeamWork_Source</name>
-
-    <attribute>
-      <name>OID</name>
-      <type>OID</type>
-      <sqltable>TeamWork_SourceSQLTable</sqltable>
-      <sqlcolumn>ID</sqlcolumn>
-    </attribute>
-
-    <attribute>
-      <name>ID</name>
-      <type>Integer</type>
-      <sqltable>TeamWork_SourceSQLTable</sqltable>
-      <sqlcolumn>ID</sqlcolumn>
-    </attribute>
-
-    <attribute>
-      <name>Creator</name>
-      <type>CreatorLink</type>
-      <sqltable>TeamWork_SourceSQLTable</sqltable>
-      <sqlcolumn>CREATOR</sqlcolumn>
-    </attribute>
-
-    <attribute>
-      <name>Created</name>
-      <type>Created</type>
-      <sqltable>TeamWork_SourceSQLTable</sqltable>
-      <sqlcolumn>CREATED</sqlcolumn>
-    </attribute>
-
-    <attribute>
-      <name>Modifier</name>
-      <type>ModifierLink</type>
-      <sqltable>TeamWork_SourceSQLTable</sqltable>
-      <sqlcolumn>MODIFIER</sqlcolumn>
-    </attribute>
-
-    <attribute>
-      <name>Modified</name>
-      <type>Modified</type>
-      <sqltable>TeamWork_SourceSQLTable</sqltable>
-      <sqlcolumn>MODIFIED</sqlcolumn>
-    </attribute>
-
-    <attribute>
-      <name>Name</name>
-      <type>String</type>
-      <sqltable>TeamWork_SourceSQLTable</sqltable>
-      <sqlcolumn>NAME</sqlcolumn>
-    </attribute>
+    <parent>TeamWork_Collection</parent>
 
     <attribute>
       <name>ParentCollectionLink</name>
       <type>Link</type>
       <typelink>TeamWork_Collection</typelink>
-      <sqltable>TeamWork_SourceSQLTable</sqltable>
+      <sqltable>TeamWork_AbstractSQLTable</sqltable>
       <sqlcolumn>PARENT</sqlcolumn>
     </attribute>
     
-    <attribute>
-      <name>Locked</name>
-      <type>Boolean</type>
-      <sqltable>TeamWork_SourceSQLTable</sqltable>
-      <sqlcolumn>LOCKED</sqlcolumn>
-    </attribute>
 
     <!-- property definitions -->
     <property name="Icon">${ROOTURL}/servlet/image/TeamWork_SourceImage</property>

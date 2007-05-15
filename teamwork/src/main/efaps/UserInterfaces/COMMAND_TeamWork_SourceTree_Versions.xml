@@ -62,7 +62,6 @@
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
     <property name="TargetExpand">TeamWork_SourceVersion\ParentSourceLink</property>
-    <property name="TargetMode">view</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>
 

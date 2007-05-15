@@ -48,7 +48,7 @@
 
     <%-- /** form in mode print **/ --%>
     <c:when test="${param.mode ne null and param.mode eq 'print'}">
-      <html>
+     <html>
         <head>
         </head>
         <link rel="StyleSheet" type="text/css" href="../styles/eFapsDefaultPrint.css"/>
@@ -68,6 +68,7 @@
             <jsp:param name="mode" value="print"/>
           </jsp:include>
         </body>
+      </html>
     </c:when>
 
     <%-- /** normal form **/ --%>
@@ -76,7 +77,7 @@
         <head>
         </head>
         <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css"/>
-        <link rel="stylesheet" type="text/css" href="../styles/eFapsToolbar.css">
+        <link rel="stylesheet" type="text/css" href="../styles/eFapsToolbar.css"/>
         <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
 
         <script type="text/javascript">

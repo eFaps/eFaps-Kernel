@@ -16,18 +16,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-menu>
-  <uuid>121c7a82-21c7-4c90-9495-5742dc61990f</uuid>
+<ui-table>
+  <uuid></uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree</name>
+    <name>TeamWork_MemberTable</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,19 +51,15 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree</name>
-    <target>
-      <form>TeamWork_CollectionForm</form>
-      <menu>TeamWork_RootCollectionTree_Menu</menu>
-    </target>
-    <childs>
-      <child>TeamWork_CollectionTree_SubCollections</child>
-      <child>Main_Util_History</child>
-      <child>TeamWork_RootCollection_Member</child>
-    </childs>
-    <!-- property definitions -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
+    <name>TeamWork_MemberTable</name>
+    <!-- fields -->
+    <field name="name">
+      <property name="Expression">UserLink.Name</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">TeamWork_Member/Name.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    
   </definition>
 
-</ui-menu>
+</ui-table>

@@ -41,18 +41,18 @@ System.out.println("create new cacheKey = "+cacheKey);
     <c:set var="bodyClass" value="eFapsFrameView"/>
   </c:otherwise>
 </c:choose>
-
+<html>
 <%-- /** test for mode print **/ --%>
 <c:choose>
 
   <%-- /** table in mode print **/ --%>
   <c:when test="${param.mode ne null and param.mode eq 'print'}">
-    <html>
+    
       <head>
         <jsp:include page="StdHeaderMetaInfo.inc"/>
       </head>
       <link rel="StyleSheet" href="../styles/eFapsDefaultPrint.css" type="text/css"/>
-<link rel=stylesheet type="text/css" href="../menu/mapb_menu_b_style.css">
+<link rel=stylesheet type="text/css" href="../menu/mapb_menu_b_style.css"/>
       <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
 
 <script type="text/javascript">
@@ -93,12 +93,12 @@ System.out.println("create new cacheKey = "+cacheKey);
 
   <%-- /** normal table **/ --%>
   <c:otherwise>
-    <html>
+    
       <head>
         <jsp:include page="StdHeaderMetaInfo.inc"/>
       </head>
       <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css"/>
-      <link rel="stylesheet" type="text/css" href="../styles/eFapsToolbar.css">
+      <link rel="stylesheet" type="text/css" href="../styles/eFapsToolbar.css"/>
 
       <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
 
@@ -146,6 +146,7 @@ System.out.println("create new cacheKey = "+cacheKey);
         <div class="eFapsFrameFooter">
         </div>
       </body>
-    </html>
+    
   </c:otherwise>
 </c:choose>
+</html>

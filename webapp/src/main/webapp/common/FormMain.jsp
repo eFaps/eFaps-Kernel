@@ -313,6 +313,7 @@
           </c:if>
         </table>
       </form>
+
 <c:if test="${empty param.mode or param.mode ne 'print'}">
     </body>
   </html>

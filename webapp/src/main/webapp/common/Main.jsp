@@ -35,7 +35,7 @@
     <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
     <script type="text/javascript" src="../javascripts/eFapsMyFacesHackFix.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="../styles/eFapsMain.css">
+    <link rel="stylesheet" type="text/css" href="../styles/eFapsMain.css"/>
   </head>
   <body onLoad="eFapsPositionContent()" leftmargin="0" topmargin="0" rightmargin="0" marginwidth="0" scroll="no">
     <table class="eFapsMainTable">
@@ -43,6 +43,7 @@
       <tr>
         <td class="eFapsMainTableRowMenu">
           <f:view>
+            
             <tiles:insert page="/Main.jsp" flush="false"/>
             <t:jscookMenu layout="hbr" theme="ThemeOffice" styleLocation="../styles">
               <t:navigationMenuItems value="#{menuMainToolbar.JSFMenu}"/>

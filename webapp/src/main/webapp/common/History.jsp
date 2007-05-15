@@ -1,8 +1,8 @@
-<%@page errorPage="Exception.jsp"%>
+<%@ page errorPage="Exception.jsp"%>
 
-<%@taglib prefix="h"    uri="http://java.sun.com/jsf/html"%>
-<%@taglib prefix="f"    uri="http://java.sun.com/jsf/core"%>
-<%@taglib prefix="t"    uri="http://myfaces.apache.org/tomahawk"%>
+<%@ taglib prefix="h"    uri="http://java.sun.com/jsf/html"%>
+<%@ taglib prefix="f"    uri="http://java.sun.com/jsf/core"%>
+<%@ taglib prefix="t"    uri="http://myfaces.apache.org/tomahawk"%>
 
 <html>
 
@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css"/>
   </head>
 
-  <body>
+  <body><input type="submit" name="" value="" />
     <f:view>
       <t:dataTable styleClass="eFapsTable"
               headerClass="eFapsTableHeader"
@@ -51,13 +51,13 @@
         <t:columns value="#{history.columnHeaders}" var="column">
           <f:facet name="header">
             <t:commandSortHeader columnName="#{column.name}" arrow="true">
-              <h:outputText value="#{column.label}"/>
+              <<h:panelGroup></h:panelGroup> value="#{column.label}"/>
             </t:commandSortHeader>
           </f:facet>
 
 
           <h:outputText 
-              value="#{history.columnValue.value}" 
+              value="#{history.columnValue}" 
               converter="#{column.converter}"/>
 
         </t:columns>

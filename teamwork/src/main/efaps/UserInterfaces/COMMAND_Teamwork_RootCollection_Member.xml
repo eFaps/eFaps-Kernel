@@ -16,54 +16,54 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-menu>
-  <uuid>121c7a82-21c7-4c90-9495-5742dc61990f</uuid>
+<ui-command>
+  <uuid>7f04a340-3134-446b-be3f-a39726a7bd12</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>teamwork</application>
+      <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree</name>
+    <name>TeamWork_RootCollection_Member</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>teamwork</application>
+      <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version>=3)</mode>
+      <mode>(version==3)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree</name>
+    <name>TeamWork_RootCollection_Member</name>
+    <!-- target definitions -->
     <target>
-      <form>TeamWork_CollectionForm</form>
-      <menu>TeamWork_RootCollectionTree_Menu</menu>
+      <menu>TeamWork_MemberMyDesk_Menu</menu>
+      <table>TeamWork_MemberTable</table>
     </target>
-    <childs>
-      <child>TeamWork_CollectionTree_SubCollections</child>
-      <child>Main_Util_History</child>
-      <child>TeamWork_RootCollection_Member</child>
-    </childs>
     <!-- property definitions -->
+    <property name="DefaultSelected">true</property>
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
+    <property name="TargetExpand">TeamWork_Member\ParentLink</property>
+    <property name="TargetMode">view</property>
+    <property name="TargetShowCheckBoxes">true</property>
   </definition>
 
-</ui-menu>
+</ui-command>

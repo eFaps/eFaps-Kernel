@@ -4,7 +4,7 @@
 
 <html>
   <head>
-    <link rel=stylesheet type="text/css" href="../menu/mapb_menu_b_style.css">
+    <link rel=stylesheet type="text/css" href="../menu/mapb_menu_b_style.css"/>
     <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
   </head>
 

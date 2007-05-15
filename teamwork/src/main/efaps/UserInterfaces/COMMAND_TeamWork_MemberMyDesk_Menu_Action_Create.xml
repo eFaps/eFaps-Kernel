@@ -16,18 +16,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-menu>
-  <uuid>121c7a82-21c7-4c90-9495-5742dc61990f</uuid>
+<ui-command>
+  <uuid>ce06627a-1dd3-4463-b98b-965785756848</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree</name>
+    <name>TeamWork_MemberMyDesk_Menu_Action_Create</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,19 +51,16 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>TeamWork_RootCollectionTree</name>
+    <name>TeamWork_MemberMyDesk_Menu_Action_Create</name>
+    <icon>TeamWork_MemberAddImage</icon>
+    <!-- target definitions -->
     <target>
-      <form>TeamWork_CollectionForm</form>
-      <menu>TeamWork_RootCollectionTree_Menu</menu>
+      <form>TeamWork_MemberForm</form>
     </target>
-    <childs>
-      <child>TeamWork_CollectionTree_SubCollections</child>
-      <child>Main_Util_History</child>
-      <child>TeamWork_RootCollection_Member</child>
-    </childs>
     <!-- property definitions -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
+    <property name="Target">popup</property>
+    <property name="TargetCreateType">TeamWork_Member</property>
+    <property name="TargetMode">create</property>
   </definition>
 
-</ui-menu>
+</ui-command>

@@ -49,7 +49,7 @@
     <link rel="StyleSheet" href="../styles/eFapsDefault.css" type="text/css"/>
 
 --%>
-<link rel=stylesheet type="text/css" href="../menu/mapb_menu_b_style.css">
+    <link rel=stylesheet type="text/css" href="../menu/mapb_menu_b_style.css"/>
 
     <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
     <script type="text/javascript">
@@ -112,33 +112,12 @@ tree.createInMenu(document.getElementById("eFapsMainToolBar"));
 
 
     <body onLoad="eFapsProcessEnd()" class="eFapsTopHeader">
-<script type="text/javascript" language="Javascript">
-top.mainMenu.calcWindow = this;
-  top.mainMenu.doMenu(document, window.name);
-  document.onclick = top.hideMenus;
-</script>
-
-        <%-- /** menu bar **/ --%>
-<%--
-        <div id="eFapsMainToolBarHeader">
-          <div id="eFapsMainToolBarBorder">
-            <div id="eFapsMainToolBar">
-            </div>
-          </div>
-        </div>
---%>
-<%--
-      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr id="toolBar">
-          <td width="0%" class="eFapsMainToolBarUserName">
-            <fmt:message>Standard.Text.UserName</fmt:message>:
-            <%=context.getPerson().getFirstName()%> <%=context.getPerson().getLastName()%>
-          </td>
-          <td width="100%">&nbsp;</td>
-        </tr>
-      </table>
---%>
-    </body>
+	  <script type="text/javascript" language="Javascript">
+		top.mainMenu.calcWindow = this;
+  		top.mainMenu.doMenu(document, window.name);
+  		document.onclick = top.hideMenus;
+	  </script>
+   </body>
   </html>
 </fmt:bundle>
 <%@include file = "../common/StdBottom.inc"%>
