@@ -24,7 +24,7 @@
 -->
 
 <ui-table>
-  <uuid></uuid>
+  <uuid>54a93a19-b527-4a94-9e33-e60cb5d57918</uuid>
 
   <!-- ************************************************************************
     version definition used to create the table 
@@ -54,12 +54,12 @@
     <name>TeamWork_MemberTable</name>
     <!-- fields -->
     <field name="User">
-      <property name="Expression">UserLink.Name</property>
+      <property name="Expression">UserAbstractLink.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">TeamWork_Member/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
     </field>
-    <field name="AccessSet">
+    <field name="AccessSet">     
       <property name="Expression">AccessSetLink.Name</property>
       <property name="Label">TeamWork_Member/AccessSetLink.Label</property>
       <property name="ShowTypeIcon">true</property>

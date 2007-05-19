@@ -61,7 +61,7 @@
     <property name="DefaultSelected">false</property>
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
-    <property name="TargetExpand">TeamWork_Member\ParentLink</property>
+    <property name="TargetExpand">TeamWork_MemberRights\AbstractLink</property>
     <property name="TargetMode">view</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>

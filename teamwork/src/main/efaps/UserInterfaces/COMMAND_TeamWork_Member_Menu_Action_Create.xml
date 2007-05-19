@@ -59,7 +59,7 @@
     </target>
     <!-- property definitions -->
     <property name="Target">popup</property>
-    <property name="TargetConnectAttribute">TeamWork_Member/ParentLink</property>
+    <property name="TargetConnectAttribute">TeamWork_Member/AbstractLink</property>
     <property name="TargetCreateType">TeamWork_Member</property>
     <property name="TargetMode">create</property>
   </definition>

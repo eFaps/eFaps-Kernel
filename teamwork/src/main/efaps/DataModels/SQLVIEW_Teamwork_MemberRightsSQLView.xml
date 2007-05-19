@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:         	jmo
+ Revision:       	$Rev$
+ Last Changed:   	$Date$
+ Last Changed By:	$Author$
+
+-->
+
+<datamodel-sqltable>
+  <uuid>06032b97-d1c2-4bd9-9d17-075a0fcbe47f</uuid>
+
+  <definition>
+    <version>
+      <application>lucene</application>
+      <global>1</global>
+      <local>$Rev:528 $</local>
+      <mode>(version==2)</mode>
+    </version>
+
+    <name>TeamWork_MemberRightsSQLView</name>
+
+    <database>
+      <sql>
+     <!--    create view V_TWMEMBER as
+          select
+                T_TWMEMBER.ID, 
+                T_TWMEMBER.PARENT,
+                T_TWMEMBER.ANCESTOR,
+                T_TWMEMBER.ACCESSSET,
+                T_TWMEMBER.USERID,
+                T_TWMEMBER.CREATOR,
+                T_TWMEMBER.CREATED,
+                T_TWMEMBER.MODIFIER,
+                T_TWMEMBER.MODIFIED
+           from T_TWMEMBER
+           where T_TWMEMBER.parent = T_TWMEMBER.ancestor
+      
+      create view V_TWMEMBER as
+          select 
+          	t_twmember.id, 
+          	t_twmember.ABSTRACT, 
+          	T_TWABSTRACT2ABSTRACT.ancestor, 
+          	tt.accessset, 
+          	tt.userid, 
+          	tt.creator, 
+          	tt.created, 
+          	tt.modifier, 
+          	tt.modified
+   		FROM t_twmember 
+   		inner join  T_TWABSTRACT2ABSTRACT on t_twmember.ABSTRACT=T_TWABSTRACT2ABSTRACT.ABSTRACT
+		inner join t_twmember tt on T_TWABSTRACT2ABSTRACT.ancestor=tt.ABSTRACT
+
+  
+      create view V_TWMEMBER as
+        select 
+          step1.abstract as id, 
+          step1.abstract, 
+          t_twmember.accessset, 
+          step1.userid 
+        from 
+          (select 
+             t_twabstract2abstract.abstract,  
+             max(t_twabstract2abstract.ancestor)as memberabstract, 
+             userid
+           from t_twmember 
+             inner join t_twabstract2abstract on t_twmember.abstract= t_twabstract2abstract.ancestor
+            group by t_twabstract2abstract.abstract, userid
+           ) as step1 
+         inner join t_twmember on t_twmember.abstract = step1.memberabstract and  t_twmember.userid = step1.userid
+--> 
+   create view V_TWMEMBER as 
+     select 
+       STEP2.ABSTRACT + STEP2.USERABSTRACT as ID,
+       STEP2.ABSTRACT, 
+       STEP2.USERABSTRACT,
+       ACCESSSET
+     from
+       (select 
+          STEP1.ABSTRACT,
+          STEP1.USERABSTRACT,
+          STEP1.RANK,
+          ANCESTOR
+        from
+          (select 
+             T_TWABSTRACT2ABSTRACT.ABSTRACT,
+             T_TWMEMBER.USERABSTRACT,
+             max(T_TWABSTRACT2ABSTRACT.RANK) as RANK
+           from 
+             T_TWMEMBER 
+               inner join T_TWABSTRACT2ABSTRACT on T_TWMEMBER.ABSTRACT = T_TWABSTRACT2ABSTRACT.ANCESTOR
+           group by 
+             T_TWABSTRACT2ABSTRACT.ABSTRACT, 
+             T_TWMEMBER.USERABSTRACT
+          ) as STEP1
+           inner join T_TWABSTRACT2ABSTRACT on T_TWABSTRACT2ABSTRACT.ABSTRACT = STEP1.ABSTRACT 
+             and T_TWABSTRACT2ABSTRACT.RANK = STEP1.RANK
+        ) as STEP2 
+          inner join T_TWMEMBER on STEP2.ancestor= T_TWMEMBER.ABSTRACT 
+            and STEP2.USERABSTRACT = T_TWMEMBER.USERABSTRACT
+  
+  
+  
+      </sql>
+      <table-name>V_TWMEMBER</table-name>
+      <create>false</create>
+      <update>false</update>
+      
+      <!-- columns -->
+      <column name="ID"           type="INTEGER"        not-null="true"/>
+      <column name="ABSTRACT"     type="INTEGER"        not-null="true"/>
+      <column name="USERABSTRACT" type="INTEGER"        not-null="true"/>
+      <column name="ACCESSSET"    type="INTEGER"        not-null="true"/>
+    </database>
+  </definition>
+
+</datamodel-sqltable>

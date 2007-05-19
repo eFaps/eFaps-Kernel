@@ -27,7 +27,7 @@
   <uuid>a0a17f5b-7ae2-4197-8528-d6e14413124f</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the table 
+    version definition used to create the form 
   ************************************************************************* -->
   <definition>
     <version>
@@ -41,7 +41,7 @@
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the table 
+    version definition used to define the form 
   ************************************************************************* -->
   <definition>
     <version>
@@ -60,11 +60,22 @@
       <property name="Searchable">false</property>
       <property name="ShowTypeIcon">true</property>
     </field>
-    <field name="UserLink">
+    
+    <field name="abstract">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Abstract</property>
+      <property name="Searchable">false</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    
+    
+    
+    <field name="UserAbstractLink">
       <property name="Columns">20</property>
       <property name="Creatable">true</property>
       <property name="Editable">true</property>
-      <property name="Expression">UserLink</property>
+      <property name="Expression">UserAbstractLink</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
@@ -79,14 +90,7 @@
     </field>
     
     
-    <field name="ParentLink">
-      <property name="Columns">20</property>
-      <property name="Creatable">false</property>
-      <property name="Editable">true</property>
-      <property name="Expression">ParentLink</property>
-      <property name="Required">true</property>
-      <property name="Searchable">true</property>
-    </field>
+    
     
     <field name="createGroup">
       <property name="Creatable">false</property>

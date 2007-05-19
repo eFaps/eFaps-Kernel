@@ -24,7 +24,7 @@
 -->
 
 <datamodel-sqltable>
-  <uuid>ee691d6f-a893-4d9b-b95e-69fc381fc67d</uuid>
+  <uuid>a3c3d05f-8f6a-4801-af74-aa4ee0f03e52</uuid>
 
   <definition>
     <version>
@@ -34,21 +34,17 @@
       <mode>(version==1)</mode>
     </version>
 
-    <name>TeamWork_MemberSQLTable</name>
+    <name>TeamWork_Abstract2AbstractSQLTable</name>
 
     <database>
-      <table-name>T_TWMEMBER</table-name>
+      <table-name>T_TWABSTRACT2ABSTRACT</table-name>
       <create>true</create>
       <update>true</update>
       
       <!-- columns -->
       <column name="ABSTRACT"     type="INTEGER"        not-null="true"/>
-      <column name="ACCESSSET"    type="INTEGER"        not-null="true"/>
-      <column name="USERABSTRACT" type="INTEGER"        not-null="true"/>
-      <column name="CREATOR"      type="INTEGER"        not-null="true"/>
-      <column name="CREATED"      type="DATETIME"       not-null="true"/>
-      <column name="MODIFIER"     type="INTEGER"        not-null="true"/>
-      <column name="MODIFIED"     type="DATETIME"       not-null="true"/>
+      <column name="ANCESTOR"     type="INTEGER"        not-null="true"/>
+      <column name="RANK"         type="INTEGER"        not-null="true"/>
      </database>
   </definition>
 
@@ -60,18 +56,16 @@
       <mode>(version==2)</mode>
     </version>
 
-    <name>TeamWork_MemberSQLTable</name>
+    <name>TeamWork_Abstract2AbstractSQLTable</name>
 
     <database>
       
-      <table-name>T_TWMEMBER</table-name>
+      <table-name>T_TWABSTRACT2ABSTRACT</table-name>
       <update>true</update>
       <!-- contraints -->
-      <foreign name="T_TWMEMBER_FK_CRTR"         key="CREATOR"      reference="USERPERSON(ID)"/>
-      <foreign name="T_TWMEMBER_FK_MDFR"         key="MODIFIER"     reference="USERPERSON(ID)"/>
-      <foreign name="T_TWMEMBER_FK_ABSTRACT"     key="ABSTRACT"     reference="T_TWABSTRACT(ID)"/>
-      <foreign name="T_TWMEMBER_FK_USERABSTRACT" key="USERABSTRACT" reference="USERABSTRACT(ID)"/>
-      <foreign name="T_TWMEMBER_FK_ACCESSSET"    key="ACCESSSET"    reference="ACCESSSET(ID)"/>
+      
+      <foreign name="T_TWABST2ABST_FK_ABSTRACT"    key="ABSTRACT"  reference="T_TWABSTRACT(ID)"/>
+      <foreign name="T_TWABST2ABST_FK_ANCESTOR"    key="ANCESTOR"  reference="T_TWABSTRACT(ID)"/>
     </database>
     
   </definition>
