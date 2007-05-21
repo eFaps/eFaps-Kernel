@@ -91,61 +91,64 @@ System.out.println("create new cacheKey = "+cacheKey);
       </body>
   </c:when>
 
-  <%-- /** normal table **/ --%>
-  <c:otherwise>
+
+
+<%-- /** normal table **/ --%>
+<c:otherwise>
     
-      <head>
-        <jsp:include page="StdHeaderMetaInfo.inc"/>
-      </head>
-      <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css"/>
-      <link rel="stylesheet" type="text/css" href="../styles/eFapsToolbar.css"/>
+  <head>
+    <jsp:include page="StdHeaderMetaInfo.inc"/>
+    
+    <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css"/>
+    <link rel="stylesheet" type="text/css" href="../styles/eFapsToolbar.css"/>
+    
+    <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
+    <script type="text/javascript" src="../javascripts/eFapsTree.js"></script>
+    <script type="text/javascript">
+      var eFapsTreeImagePath = '../images/';
+    </script>
+  </head>  
+  
+  <body onLoad="eFapsPositionMain()" onUnLoad="eFapsCleanUpSession('<%=cacheKey%>')" class="<c:out value="${bodyClass}"/>">
 
-      <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
+    <script type="text/javascript">
+      document.onclick = function()  {
+        top.mainMenu.hideAll();
+      }
+    </script>
+    
+    <%-- /** frame header **/ --%>
+    <div class="eFapsFrameHeader">
+      <div id="eFapsFrameHeaderTitle" class="eFapsFrameHeaderTitle">
+        <span id="eFapsFrameHeaderText" class="eFapsFrameHeaderTitle">Loading...</span>
+        <img id="eFapsFrameHeaderProgressBar" src="../images/eFapsProcess.gif"/>
+      </div>
+    </div>
 
-<script type="text/javascript">
-  var eFapsTreeImagePath = '../images/';
-</script>
-<script type="text/javascript" src="../javascripts/eFapsTree.js"></script>
+    <%-- /** filter bar **/ --%>
+    <div class="eFapsFrameFilter">
+      <form>
+        <select name="eFapsFrameFilter" size="1" onChange="eFapsGetFrameFilter().execute(this.options[this.selectedIndex].value);" style="display:none">
+        </select>
+      </form>
+    </div>
 
-      <body onLoad="eFapsPositionMain()" onUnLoad="eFapsCleanUpSession('<%=cacheKey%>')" class="<c:out value="${bodyClass}"/>">
+    <%-- /** show table itself **/ --%>
+    <iframe frameborder="no"
+      id="eFapsFrameMain"
+      class="eFapsFrameMain"
+      name="genMain"
+      src="TableMain.jsp?<%=request.getQueryString()%>&cacheKey=<%=cacheKey%>">
+    </iframe>
 
-<script type="text/javascript">
-  document.onclick = function()  {
-    top.mainMenu.hideAll();
-  }
-</script>
-        <%-- /** frame header **/ --%>
-        <div class="eFapsFrameHeader">
-          <div id="eFapsFrameHeaderTitle" class="eFapsFrameHeaderTitle">
-            <span id="eFapsFrameHeaderText" class="eFapsFrameHeaderTitle">Loading...</span>
-            <img id="eFapsFrameHeaderProgressBar" src="../images/eFapsProcess.gif"/>
-          </div>
-        </div>
+    <%-- /** hidden frame **/ --%>
+    <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="about:blank">
+    </iframe>
 
-        <%-- /** filter bar **/ --%>
-        <div class="eFapsFrameFilter">
-          <form>
-            <select name="eFapsFrameFilter" size="1" onChange="eFapsGetFrameFilter().execute(this.options[this.selectedIndex].value);" style="display:none">
-            </select>
-          </form>
-        </div>
-
-        <%-- /** show table itself **/ --%>
-        <iframe frameborder="no"
-            id="eFapsFrameMain"
-            class="eFapsFrameMain"
-            name="genMain"
-            src="TableMain.jsp?<%=request.getQueryString()%>&cacheKey=<%=cacheKey%>">
-        </iframe>
-
-        <%-- /** hidden frame **/ --%>
-        <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="about:blank">
-        </iframe>
-
-        <%-- /** footer frame **/ --%>
-        <div class="eFapsFrameFooter">
-        </div>
-      </body>
+    <%-- /** footer frame **/ --%>
+    <div class="eFapsFrameFooter">
+    </div>
+  </body>
     
   </c:otherwise>
 </c:choose>

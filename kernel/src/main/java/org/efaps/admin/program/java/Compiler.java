@@ -20,7 +20,6 @@
 
 package org.efaps.admin.program.java;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,124 +34,120 @@ import org.apache.commons.jci.readers.ResourceReader;
 import org.apache.commons.jci.stores.ResourceStore;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.Checkin;
-import org.efaps.db.Insert;
-import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
 import org.efaps.db.Delete;
+import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
  * The class is used to compile all checked in Java programs. Because the
  * depencies of a class are not known, all Java programs stored in eFaps are
- * compiled.<br/>
- * The compiler uses <a href="http://java.sun.com">Sun's Javac</a>.
- *
+ * compiled.<br/> The compiler uses <a href="http://java.sun.com">Sun's Javac</a>.
+ * 
  * @author tmo
- * @version $Id$
+ * @version $Id: Compiler.java 764 2007-04-07 14:07:50 +0000 (Sat, 07 Apr 2007)
+ *          tmo $
  * @todo exception handling in the resource reader and resource store
  * @todo encoding for Java source code
  */
-public class Compiler  {
-  
-  /////////////////////////////////////////////////////////////////////////////
+public class Compiler {
+
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(Compiler.class);
+  private static final Log        LOG      = LogFactory.getLog(Compiler.class);
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * Type instance of Java program.
    */
-  private final Type javaType;
+  private final Type              javaType;
 
   /**
    * Type instance of compile Java program.
    */
-  private final Type classType;
-  
+  private final Type              classType;
+
   /**
    * Mapping between Java file name and id of internal eFaps Java program.
    */
-  private final Map < String, Long > file2id = new HashMap < String, Long > ();
-  
+  private final Map<String, Long> file2id  = new HashMap<String, Long>();
+
   /**
    * Mapping between Java file name and compiled Java program.
    */
-  private final Map < String, Long > class2id = new HashMap < String, Long > ();
+  private final Map<String, Long> class2id = new HashMap<String, Long>();
 
-  /////////////////////////////////////////////////////////////////////////////
+
+
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
 
   /**
    * The constructor initiliase the two type instances {@link #javaType} and
    * {@link #classType}.
-   *
+   * 
    * @see #javaType
    * @see #classType
    */
-  public Compiler()  {
-    this.javaType   = Type.get("Admin_Program_Java");
-    this.classType  = Type.get("Admin_Program_JavaClass");
-    
+  public Compiler() {
+    this.javaType = Type.get("Admin_Program_Java");
+    this.classType = Type.get("Admin_Program_JavaClass");
+
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
-   * All stored Java programs in eFaps are compiled. Sun's javac is used for
-   * the compilitation. All old not needed comiled Java classes are
-   * automatically removed. The compiler error and warning are logged (errors
-   * are using error-level, warnings are using info-level).
-   *
+   * All stored Java programs in eFaps are compiled. Sun's javac is used for the
+   * compilitation. All old not needed comiled Java classes are automatically
+   * removed. The compiler error and warning are logged (errors are using
+   * error-level, warnings are using info-level).
+   * 
    * @see #readJavaPrograms
    * @see #readJavaClasses
    */
-  public void compile() throws EFapsException  {
+  public void compile() throws EFapsException {
     readJavaPrograms();
     readJavaClasses();
 
     ResourceReader reader = new EFapsResourceReader();
     ResourceStore store = new EFapsResourceStore();
 
-    JavaCompiler compiler = new JavaCompilerFactory().createCompiler("javac");		
+    JavaCompiler compiler = new JavaCompilerFactory().createCompiler("javac");
 
     // all checked in files must be compiled!
-    final String[] resource = file2id.keySet()
-                                     .toArray(new String[file2id.size()]);
+    final String[] resource = file2id.keySet().toArray(
+        new String[file2id.size()]);
 
-    if (LOG.isInfoEnabled())  {
-      for (int i=0; i < resource.length; i++)  {
+    if (LOG.isInfoEnabled()) {
+      for (int i = 0; i < resource.length; i++) {
         LOG.info("compiling " + resource[i]);
       }
     }
-        
-    final CompilationResult result
-            = compiler.compile(resource,
-                               reader, store,
-                               Compiler.class.getClassLoader());
 
-    for (Long id : this.class2id.values())  {
+    final CompilationResult result = compiler.compile(resource, reader, store,
+        Compiler.class.getClassLoader());
+
+    for (Long id : this.class2id.values()) {
       (new Delete(this.classType, id)).executeWithoutAccessCheck();
     }
 
-    if (result.getErrors().length > 0)  {
+    if (result.getErrors().length > 0) {
       LOG.error(result.getErrors().length + " errors:");
       for (int i = 0; i < result.getErrors().length; i++) {
         LOG.error(result.getErrors()[i]);
       }
     }
-        
-    if (LOG.isInfoEnabled())  {
-      if (result.getWarnings().length > 0)  {
+
+    if (LOG.isInfoEnabled()) {
+      if (result.getWarnings().length > 0) {
         LOG.info(result.getWarnings().length + " warnings:");
         for (int i = 0; i < result.getWarnings().length; i++) {
           LOG.info(result.getWarnings()[i]);
@@ -160,25 +155,38 @@ public class Compiler  {
       }
     }
   }
+  
+  
+  
+  public Map<String, Long> getclass2id() {
+    return this.class2id;
+  }
+
+  public Map<String, Long> getfile2id() {
+    return this.file2id;
+  }
+
+  public Type getclassType() {
+    return this.classType;
+  }
 
   /**
-   * All Java programs in the eFaps database are read and stored in the
-   * mapping {@link #file2id} for further using.
-   *
+   * All Java programs in the eFaps database are read and stored in the mapping
+   * {@link #file2id} for further using.
+   * 
    * @see #file2id
    */
-  protected void readJavaPrograms() throws EFapsException  {
+  protected void readJavaPrograms() throws EFapsException {
     SearchQuery query = new SearchQuery();
     query.setQueryTypes(this.javaType.getName());
     query.addSelect("ID");
     query.addSelect("Name");
     query.executeWithoutAccessCheck();
-    while (query.next())  {
+    while (query.next()) {
       String name = (String) query.get("Name");
       Long id = (Long) query.get("ID");
-      File file = new File(File.separator 
-                           + name.replaceAll("\\.", File.separator) 
-                           + ".java");
+      File file = new File(File.separator
+          + name.replaceAll("\\.", File.separator) + ".java");
       String absName = file.getAbsolutePath();
       this.file2id.put(absName, id);
     }
@@ -189,156 +197,88 @@ public class Compiler  {
    * mapping {@link @class2id}. If a Java program is compiled and stored with
    * {@link EFapsResourceStore#write}, the class is removed. After the compile,
    * {@link #compile} removed all stored classes which are not needed anymore.
-   *
+   * 
    * @see #class2id
    * @see FapsResourceStore#write
    * @see #compile
    */
-  protected void readJavaClasses() throws EFapsException  {
+  protected void readJavaClasses() throws EFapsException {
     SearchQuery query = new SearchQuery();
     query.setQueryTypes(this.classType.getName());
     query.addSelect("ID");
     query.addSelect("Name");
     query.executeWithoutAccessCheck();
-    while (query.next())  {
+    while (query.next()) {
       String name = (String) query.get("Name");
       Long id = (Long) query.get("ID");
       this.class2id.put(name, id);
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
 
   /**
    * Reader class to read the source code within Java programs.
    */
-  public class EFapsResourceReader implements ResourceReader  {
+  public class EFapsResourceReader implements ResourceReader {
 
     /**
      * The method checks if given resource name is avaible by eFaps.
-     *
-     * @param _resourceName Java program name (as file name!)
-     * @return <i>true</i> if Java program exists in eFaps, otherwise
-     *         <i>false</i> is returned
+     * 
+     * @param _resourceName
+     *          Java program name (as file name!)
+     * @return <i>true</i> if Java program exists in eFaps, otherwise <i>false</i>
+     *         is returned
      * @see Compiler#fileId
      */
-    public boolean isAvailable(final String _resourceName)  {
+    public boolean isAvailable(final String _resourceName) {
       return file2id.containsKey(_resourceName);
     }
 
     /**
      * The source code for given Java program (parameter <i>_resourceName</i>)
-     * is returned.<br/>
-     * Because also compiled Java classes in the class path must be readable,
-     * the related file is opened from the file system (if the extension of the
-     * resource name ends with <code>.class</code>).
-     *
-     * @param _resourceName Java program name (as file name!)
+     * is returned.<br/> Because also compiled Java classes in the class path
+     * must be readable, the related file is opened from the file system (if the
+     * extension of the resource name ends with <code>.class</code>).
+     * 
+     * @param _resourceName
+     *          Java program name (as file name!)
      * @return source code of the Java program
      * @see Compiler#fileId
      * @todo exception handling
      */
-    public byte[] getBytes(final String _resourceName)  {
+    public byte[] getBytes(final String _resourceName) {
       byte[] ret = null;
       int index = _resourceName.lastIndexOf('.');
       String extension = _resourceName.substring(index);
-      
-      if (".class".equals(extension))  {
-        try  {
+
+      if (".class".equals(extension)) {
+        try {
           InputStream is = new FileInputStream(_resourceName);
           ret = new byte[is.available()];
           is.read(ret);
           is.close();
-        } catch (IOException e)  {
-LOG.error(e);
+        } catch (IOException e) {
+          LOG.error(e);
         }
-      } else  {
-        try  {
+      } else {
+        try {
           SearchQuery query = new SearchQuery();
           query.setObject(javaType, file2id.get(_resourceName));
           query.addSelect("Code");
           query.executeWithoutAccessCheck();
-          if (query.next())  {
+          if (query.next()) {
             String code = (String) query.get("Code");
             ret = code.getBytes();
           }
           query.close();
-        } catch (EFapsException e)  {
-LOG.error(e);
+        } catch (EFapsException e) {
+          LOG.error(e);
         }
       }
       return ret;
     }
   }
 
-  /**
-   * All classes which will be compiled are stored with this class.
-   */
-  public class EFapsResourceStore implements ResourceStore  {
-
-    /**
-     * The compiled class in <i>_resourceData</i> is stored with the name
-     * <i>_resourceName</i> in the eFaps database (checked in). If the class
-     * instance already exists in eFaps, the class data is updated. Otherwise,
-     * the compiled class is new inserted in eFaps (related to the original
-     * Java program).
-     *
-     * @param _resourceName name of the resource to stored (Java class name
-     *                      as file name)
-     * @param _resourceData binary data of the compiled Java class
-     * @todo exception handling
-     */
-    public void write(final String _resourceName,
-                      final byte[] _resourceData)  {
-      if (LOG.isDebugEnabled())  {
-        LOG.debug("write '" + _resourceName + "'");
-      }
-      try  {
-
-        Long id = class2id.get(_resourceName);
-        Instance instance;
-        if (id == null)  {
-          String parent = _resourceName.replaceAll(".class$", "")
-                               .replaceAll("\\$.*", "")
-                               + ".java";
-          Long parentId = file2id.get(parent);
-
-          Insert insert = new Insert(classType);
-          insert.add("Name", _resourceName);
-          insert.add("ProgramLink", ""+parentId);
-          insert.executeWithoutAccessCheck();
-          instance = insert.getInstance();
-          insert.close();
-        } else  {
-          instance = new Instance(classType, id);
-          class2id.remove(_resourceName);
-        }
-
-        Checkin checkin = new Checkin(instance);
-        checkin.execute(_resourceName,
-                        new ByteArrayInputStream(_resourceData),
-                        _resourceData.length);
-      } catch (Exception e)  {
-LOG.error(e);
-      }
-    }
-
-    /**
-     * The method is needed to implement the interface. Because the compile
-     * does not need to read classes, <code>null</code> is always returned.
-     *
-     * @return always <code>null</code>
-     */
-    public byte[] read(final String _resourceName)  {
-        return null;
-    }
-
-    /**
-     * The method is needed to implement the interface. Because the compile
-     * does not need to remove classes, the method itseld is not implemented.
-     */
-    public void remove(final String _resourceName)  {
-    }
-  }
 }

@@ -149,11 +149,11 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
 <html>
   <head>
     <jsp:include page="StdHeaderMetaInfo.inc"/>
-  </head>
-  <link rel="StyleSheet" href="../styles/eFapsDefault.css" type="text/css"/>
-  <script type="text/javascript" src="../javascripts/eFapsToolbar.js"></script>
-  <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
-
+  
+    <link rel="StyleSheet" href="../styles/eFapsDefault.css" type="text/css"/>
+    <script type="text/javascript" src="../javascripts/eFapsToolbar.js"></script>
+    <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
+  
 
   <%-- /* test, if a special bottom heigth is set. if yes set it to the new height */ --%>
   <c:if test="${uiObject.command.targetBottomHeight gt 0}">
@@ -255,43 +255,44 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
       eFapsPositionTable();
 
       <c:out value="${domContext}"/>eFapsProcessEnd();
-
+	
     }
 
 /**
  */
-function eFapsPositionTable() {
-  var newHeight;
-  var newWidth;
+	function eFapsPositionTable() {
+	  var newHeight;
+	  var newWidth;
+	
+	  var headerTable = document.getElementById("eFapsTableHeader");
+	  var bodyTable = document.getElementById("eFapsTableBody");
+	
+	  if (isIE)  {
+	    headerTable.style.top = document.body.scrollTop + "px";
+	    headerTable.style.left = bodyTable.offsetLeft + "px";
+	  } else  {
+	    headerTable.style.position = "fixed";
+	    headerTable.style.left = (bodyTable.offsetLeft - document.body.scrollLeft)  + "px";
+	  }
+	
+	  headerTable.style.width = bodyTable.offsetWidth + "px";
+	
+	  var header = headerTable.rows[0];
+	  var row = bodyTable.rows[1];
+	
+	  for (var i=0; i<row.cells.length; i++)  {
+	    if (row.cells[i].offsetWidth)  {
+	      header.cells[i].style.width = (row.cells[i].offsetWidth-2) + "px";
+	    }
+	  }
+	
+	  window.setTimeout("eFapsPositionTable()",1);
+	}
 
-  var headerTable = document.getElementById("eFapsTableHeader");
-  var bodyTable = document.getElementById("eFapsTableBody");
-
-  if (isIE)  {
-    headerTable.style.top = document.body.scrollTop + "px";
-    headerTable.style.left = bodyTable.offsetLeft + "px";
-  } else  {
-    headerTable.style.position = "fixed";
-    headerTable.style.left = (bodyTable.offsetLeft - document.body.scrollLeft)  + "px";
-  }
-
-  headerTable.style.width = bodyTable.offsetWidth + "px";
-
-  var header = headerTable.rows[0];
-  var row = bodyTable.rows[1];
-
-  for (var i=0; i<row.cells.length; i++)  {
-    if (row.cells[i].offsetWidth)  {
-      header.cells[i].style.width = (row.cells[i].offsetWidth-2) + "px";
-    }
-  }
-
-  window.setTimeout("eFapsPositionTable()",1);
-}
 
 
-
-  </script>
+    </script>
+  </head>
   <body onLoad="eFapsProcessEnd()">
 </c:if>
 
@@ -307,11 +308,11 @@ function eFapsPositionTable() {
       </c:forEach>
 
 
-<%-- /*******************************************************************/ --%>
-<%-- /** Table Header                                                  **/ --%>
-<%-- /*******************************************************************/ --%>
+    <%-- /*******************************************************************/ --%>
+    <%-- /** Table Header                                                  **/ --%>
+    <%-- /*******************************************************************/ --%>
 
-<c:if test="${empty param.mode or param.mode ne 'print'}">
+    <c:if test="${empty param.mode or param.mode ne 'print'}">
       <table class="eFapsTable" id="eFapsTableHeader" style="table-layout:fixed;position:absolute;">
         <tr>
           <%-- /** show select checkbox only if not mode print and show check boxes is defined **/ --%>
@@ -375,77 +376,80 @@ function eFapsPositionTable() {
           </c:forEach>
         </tr>
       </table>
-</c:if>
+    </c:if>
 
-      <table class="eFapsTable" id="eFapsTableBody">
+    <table class="eFapsTable" id="eFapsTableBody">
 
-<c:if test="${empty param.mode or param.mode ne 'print'}">
-        <tr style="visibility:hidden">
-</c:if>
-<c:if test="${param.mode ne null and param.mode eq 'print'}">
-        <tr>
-</c:if>
+    <c:if test="${empty param.mode or param.mode ne 'print'}">
+      <tr style="visibility:hidden">
+    </c:if>
+    <c:if test="${param.mode ne null and param.mode eq 'print'}">
+      <tr>
+    </c:if>
 
-          <%-- /** show select checkbox only if not mode print and show check boxes is defined **/ --%>
-          <c:if test="${(empty param.mode or param.mode ne 'print') and uiObject.showCheckBoxes}">
-            <th class="eFapsTableHeader" width="1%">
-              <input type="checkbox" onClick="eFapsTableSelectDeselectAll(document,'selectedRow',this.checked)"/>
-            </th>
-          </c:if>
+    <%-- /** show select checkbox only if not mode print and show check boxes is defined **/ --%>
+    <c:if test="${(empty param.mode or param.mode ne 'print') and uiObject.showCheckBoxes}">
+      <th class="eFapsTableHeader" width="1%">
+        <input type="checkbox" onClick="eFapsTableSelectDeselectAll(document,'selectedRow',this.checked)"/>
+      </th>
+    </c:if>
 
-          <%-- /** show table header labels **/ --%>
-          <c:forEach items="${uiObject.table.fields}" var="one">
-            <%-- /** show only fields if they are not hidden! **/ --%>
-            <c:if test="${one.hidden eq false}">
-              <th class="eFapsTableHeader">
-                <%-- /** make href for the sort **/ --%>
-                <c:choose>
-                  <%-- /** sort dir is down if key is equal current field and direction is up **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.name and uiObject.sortDirection ne '-'}">
-                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.name}"/>','-')">
-                  </c:when>
-                  <%-- /** otherwise sort dir is down **/ --%>
-                  <c:otherwise>
-                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.name}"/>','')">
-                  </c:otherwise>
-                </c:choose>
-                <%-- /** show label (if exists) **/--%>
-                <c:if test="${one.label ne null}">
-                  <fmt:message key="${one.label}" var="label"/>
-                  <c:set var="keyWithQuestionMark" value="???${one.label}???"/>
-                  <%-- /** test if label exists in the property file **/ --%>
-                  <c:choose>
-                    <%-- /** label does not exists in the property file, this means show the original label **/ --%>
-                    <c:when test="${label eq keyWithQuestionMark}">
-                      <c:out value="${one.label}"/>
-                    </c:when>
-                    <%-- /** label exists in the property file, this means show the internationalised label **/ --%>
-                    <c:otherwise>
-                      <c:out value="${label}"/>
-                    </c:otherwise>
-                  </c:choose>
-                  <c:remove var="label"/>
-                </c:if>
-                <%-- /** show the sort image **/ --%>
-                <c:choose>
-                  <%-- /** show sort up image **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.name and uiObject.sortDirection eq '-'}">
-                    <img src="../images/eFapsTableButtonSortDown.gif"/>
-                  </c:when>
-                  <%-- /** show sort down image **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.name and uiObject.sortDirection ne '-'}">
-                    <img src="../images/eFapsTableButtonSortUp.gif"/>
-                  </c:when>
-                  <%-- /** otherwise show a dummy image **/ --%>
-                  <c:otherwise>
-                    <img src="../images/eFapsTableButtonSortDummy.gif"/>
-                  </c:otherwise>
-                </c:choose>
+    <%-- /** show table header labels **/ --%>
+    <c:forEach items="${uiObject.table.fields}" var="one">
+      <%-- /** show only fields if they are not hidden! **/ --%>
+      <c:if test="${one.hidden eq false}">
+        <th class="eFapsTableHeader">
+           
+           <%-- /** make href for the sort **/ --%>
+           <c:choose>
+             <%-- /** sort dir is down if key is equal current field and direction is up **/ --%>
+             <c:when test="${uiObject.sortKey eq one.name and uiObject.sortDirection ne '-'}">
+               <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.name}"/>','-')">
+             </c:when>
+             <%-- /** otherwise sort dir is down **/ --%>
+             <c:otherwise>
+               <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.name}"/>','')">
+             </c:otherwise>
+           </c:choose>
+           
+           <%-- /** show label (if exists) **/--%>
+           <c:if test="${one.label ne null}">
+             <fmt:message key="${one.label}" var="label"/>
+               <c:set var="keyWithQuestionMark" value="???${one.label}???"/>
+                 <%-- /** test if label exists in the property file **/ --%>
+                 <c:choose>
+                   <%-- /** label does not exists in the property file, this means show the original label **/ --%>
+                   <c:when test="${label eq keyWithQuestionMark}">
+                     <c:out value="${one.label}"/>
+                   </c:when>
+                   <%-- /** label exists in the property file, this means show the internationalised label **/ --%>
+                   <c:otherwise>
+                     <c:out value="${label}"/>
+                   </c:otherwise>
+                 </c:choose>
+                 <c:remove var="label"/>
+           </c:if>
+                
+           <%-- /** show the sort image **/ --%>
+           <c:choose>
+             <%-- /** show sort up image **/ --%>
+             <c:when test="${uiObject.sortKey eq one.name and uiObject.sortDirection eq '-'}">
+               <img src="../images/eFapsTableButtonSortDown.gif"/>
+             </c:when>
+             <%-- /** show sort down image **/ --%>
+             <c:when test="${uiObject.sortKey eq one.name and uiObject.sortDirection ne '-'}">
+                <img src="../images/eFapsTableButtonSortUp.gif"/>
+             </c:when>
+             <%-- /** otherwise show a dummy image **/ --%>
+             <c:otherwise>
+               <img src="../images/eFapsTableButtonSortDummy.gif"/>
+             </c:otherwise>
+           </c:choose>
                 </a>
-              </th>
-            </c:if>
-          </c:forEach>
-        </tr>
+         </th>
+       </c:if>
+     </c:forEach>
+   </tr>
 
 <%-- /*******************************************************************/ --%>
 <%-- /** Table Values                                                  **/ --%>
