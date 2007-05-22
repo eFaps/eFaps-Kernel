@@ -36,6 +36,9 @@
     </version>
     <name>Admin_Event_Definition</name>
     <parent>Admin_Abstract</parent>
+   
+    
+    
     <attribute>
       <name>IndexPosition</name>
       <type>Integer</type>
@@ -49,6 +52,26 @@
       <sqlcolumn>ABSTRACT</sqlcolumn>
       <typelink>Admin_Abstract</typelink>
     </attribute>
+  
+  </definition>
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==7)</mode>
+    </version>
+    <name>Admin_Event_Definition</name>
+    <parent>Admin_Abstract</parent>
+    <attribute>
+      <name>JavaProg</name>
+      <type>Link</type>
+      <sqltable>Admin_Event_DefinitionSQLTable</sqltable>
+      <sqlcolumn>PROGRAM</sqlcolumn>
+      <typelink>Admin_Program_JavaClass</typelink>
+    </attribute>
+    
+    
   </definition>
 
 </datamodel-type>

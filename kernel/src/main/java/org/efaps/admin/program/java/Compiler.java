@@ -118,7 +118,7 @@ public class Compiler {
     readJavaClasses();
 
     ResourceReader reader = new EFapsResourceReader();
-    ResourceStore store = new EFapsResourceStore();
+    ResourceStore store = new EFapsResourceStore(this);
 
     JavaCompiler compiler = new JavaCompilerFactory().createCompiler("javac");
 

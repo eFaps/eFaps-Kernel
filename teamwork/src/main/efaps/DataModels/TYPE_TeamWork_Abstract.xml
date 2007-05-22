@@ -118,6 +118,7 @@
       <sqlcolumn>LOCKED</sqlcolumn>
     </attribute>
     
+    
 
   </definition>
 </datamodel-type>

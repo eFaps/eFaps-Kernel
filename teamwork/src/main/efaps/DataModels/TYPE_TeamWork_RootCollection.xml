@@ -51,5 +51,10 @@
     <property name="Icon">${ROOTURL}/servlet/image/TeamWork_RootCollectionImage</property>
     <property name="Tree">TeamWork_RootCollectionTree</property>
 
+   <trigger name="RootCollection_InsertPost" event="INSERT_POST" program="org.efaps.admin.program.java.Tester" index="1">
+		<property name="PropertyName">PropertyValue</property>
+    </trigger>
+
+
   </definition>
 </datamodel-type>

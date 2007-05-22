@@ -57,11 +57,11 @@ public class SQLTableUpdate extends AbstractUpdate  {
    */
   private final static Log LOG = LogFactory.getLog(SQLTableUpdate.class);
 
-  /** Link from JAAS systems to persons */
-  private final static Link LINK2PERSONS
-                    = new Link("Admin_User_JAASKey", 
-                               "JAASSystemLink", 
-                               "Admin_User_Person", "UserLink");
+  // /** Link from JAAS systems to persons */
+  // private final static Link LINK2PERSONS
+  // = new Link("Admin_User_JAASKey",
+  // "JAASSystemLink",
+  // "Admin_User_Person", "UserLink");
 
   private final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
 //    ALLLINKS.add(LINK2PERSONS);
