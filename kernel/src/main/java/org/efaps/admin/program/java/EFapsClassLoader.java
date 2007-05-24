@@ -20,19 +20,45 @@
 
 package org.efaps.admin.program.java;
 
+/**
+ * This Class extends the ClassLoader of java, to be able to load Classes on
+ * demand from the eFaps Database.
+ * 
+ * @author jmo
+ * 
+ */
 public class EFapsClassLoader extends ClassLoader {
 
-  public EFapsClassLoader(ClassLoader classLoader) {
-    super(classLoader);
+  /**
+   * Constructor setting the Parent of the EFapsClassLoader in ClassLoader
+   * 
+   * @param _parentClassLoader
+   *          the Parent of the this EFapsClassLoader
+   */
+  public EFapsClassLoader(ClassLoader _parentClassLoader) {
+    super(_parentClassLoader);
 
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.ClassLoader#findClass(java.lang.String)
+   */
   public Class<?> findClass(String name) {
     final byte[] b = loadClassData(name);
 
     return defineClass(name, b, 0, b.length);
   }
 
+  /**
+   * Loads the wanted Resource with the EFapsResourceStore into a byte-Array to
+   * pass it than on to findClass
+   * 
+   * @param _resourceName
+   *          name of the Resource to load
+   * @return byte[] containing the compiled javaclass
+   */
   public byte[] loadClassData(final String _resourceName) {
 
     byte[] x = new EFapsResourceStore(new Compiler()).read(_resourceName);

@@ -45,10 +45,11 @@ import org.efaps.util.EFapsException;
  * compiled.<br/> The compiler uses <a href="http://java.sun.com">Sun's Javac</a>.
  * 
  * @author tmo
+ * @author jmo
  * @version $Id: Compiler.java 764 2007-04-07 14:07:50 +0000 (Sat, 07 Apr 2007)
  *          tmo $
- * @todo exception handling in the resource reader and resource store
- * @todo encoding for Java source code
+ * @todo exception handling in the resource reader
+ * 
  */
 public class Compiler {
 
@@ -154,22 +155,6 @@ public class Compiler {
     }
   }
 
-  public Map<String, Long> getclass2id() {
-    return this.class2id;
-  }
-
-  public Map<String, Long> getfile2id() {
-    return this.file2id;
-  }
-
-  public Type getclassType() {
-    return this.classType;
-  }
-
-  public Type getJavaType() {
-    return this.javaType;
-  }
-
   /**
    * All Java programs in the eFaps database are read and stored in the mapping
    * {@link #file2id} for further using.
@@ -217,6 +202,43 @@ public class Compiler {
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
+  /**
+   * get the Map containing the Mapping between Java file name and compiled Java
+   * program.
+   * 
+   * @return Map
+   */
+  public Map<String, Long> getclass2id() {
+    return this.class2id;
+  }
+
+  /**
+   * get the Map containing the Mapping between Java file name and id of
+   * internal eFaps Java program.
+   * 
+   * @return Map
+   */
+  public Map<String, Long> getfile2id() {
+    return this.file2id;
+  }
+
+  /**
+   * get the Type instance of compile Java program.
+   * 
+   * @return Type
+   */
+  public Type getclassType() {
+    return this.classType;
+  }
+
+  /**
+   * get the Type instance of Java program.
+   * 
+   * @return Type
+   */
+  public Type getJavaType() {
+    return this.javaType;
+  }
 
   /**
    * Reader class to read the source code within Java programs.

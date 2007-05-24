@@ -34,6 +34,13 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+
+
+/**Test
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class EFapsResourceStore implements ResourceStore {
 
   // /////////////////////////////////////////////////////////////////////////
