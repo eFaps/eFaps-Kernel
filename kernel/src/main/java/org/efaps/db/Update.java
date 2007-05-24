@@ -175,8 +175,7 @@ public class Update {
    *           from trigger execution
    */
   protected void executeTrigger(final Context _context,
-                                final TriggerEvent _triggerEvent)
-                                                                 throws EFapsException {
+                                final TriggerEvent _triggerEvent) {
     List<EventDefinition> triggers = getInstance().getType().getTrigger(
         _triggerEvent);
     if (triggers != null) {

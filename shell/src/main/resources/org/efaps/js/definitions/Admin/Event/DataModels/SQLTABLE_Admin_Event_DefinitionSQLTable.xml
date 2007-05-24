@@ -62,7 +62,7 @@
     <parent>Admin_AbstractSQLTable</parent>
     <database>
       <table-name>T_EVENTDEF</table-name>
-      <foreign name="T_EVENTDEF_FK_PRG"      key="PROGRAM"       reference="T_PRGABSTRACT(ID)"/>
+      <foreign name="T_EVENTDEF_FK_PRG"      key="PROGRAM"       reference="ABSTRACT(ID)"/>
     </database>
   </definition>
 </datamodel-sqltable>

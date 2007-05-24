@@ -20,24 +20,32 @@
 
 package org.efaps.admin.event;
 
-import java.sql.PreparedStatement;
-import java.sql.Types;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
+import org.apache.commons.jci.stores.ResourceStoreClassLoader;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.AdminObject;
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.program.java.Compiler;
+import org.efaps.admin.program.java.EFapsClassLoader;
+import org.efaps.admin.program.java.EFapsResourceStore;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-import org.efaps.db.transaction.ConnectionResource;
 
 /**
  * @author tmo
  * @version $Id: EventDefinition.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
  *          2007) jmo $
  */
-public class EventDefinition extends AdminObject {
+public class EventDefinition extends AdminObject implements EventExecution {
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(EventDefinition.class);
 
   /**
    * The variable stores the position in a event pool (more than one event
@@ -45,21 +53,28 @@ public class EventDefinition extends AdminObject {
    * 
    * @see #getIndexPos
    */
-  private final long indexPos;
+  private final long       indexPos;
 
   /**
-   * The variable stores the event type id. The type itself could
+   * The variable stores the event type.
    */
-  private final Type eventType;
+  private final Type       eventType;
+
+  private final long       progId;
+
+  private final String     resourceName;
 
   /**
    * 
    */
   private EventDefinition(final long _id, final String _name,
-      final long _indexPos, final Type _eventType) {
+      final long _indexPos, final Type _eventType, final long _progID,
+      final String _resourceName) {
     super(_id, null, _name);
     this.indexPos = _indexPos;
     this.eventType = _eventType;
+    this.progId = _progID;
+    this.resourceName = _resourceName;
   }
 
   public String getViewableName(Context _context) {
@@ -75,85 +90,56 @@ public class EventDefinition extends AdminObject {
   public long getIndexPos() {
     return this.indexPos;
   }
-//muss ein Interfaxe sein
+
+  public String getResourceName() {
+    return this.resourceName;
+  }
+
+  public long getProgId() {
+    return this.progId;
+  }
+
+  public Type geteventType() {
+    return this.eventType;
+  }
+
   public void execute(final Context _context, final Instance _instance,
-                      final Map<TriggerKeys4Values, Map> _map)
-                                                              throws org.efaps.util.EFapsException {
+                      final Map<TriggerKeys4Values, Map> _map) {
 
-    ConnectionResource con = null;
     try {
-      con = _context.getConnectionResource();
 
-      StringBuilder cmd = new StringBuilder();
+      Class cls = Class.forName(this.resourceName, true, new EFapsClassLoader(
+          this.getClass().getClassLoader()));
 
-      cmd
-          .append(
-              "insert into HISTORY(EVENTTYPEID,FORTYPEID,FORID,MODIFIER,MODIFIED,ATTRID,ATTRVALUE) ")
-          .append("values (").append(this.eventType.getId()).append(",")
-          .append(_instance.getType().getId()).append(",").append(
-              _instance.getId()).append(",").append(
-              _context.getPerson().getId()).append(",").append(
-              _context.getDbType().getCurrentTimeStamp()).append(",").append(
-              "?,").append("?)");
+      Method m = cls.getMethod("execute", new Class[] { Context.class,
+          Instance.class, Map.class });
 
-      boolean executed = false;
-      Map<Attribute, String> map = (Map<Attribute, String>) _map
-          .get(TriggerKeys4Values.NEW_VALUES);
-      for (Map.Entry<Attribute, String> entry : map.entrySet()) {
-        PreparedStatement stmt = con.getConnection().prepareStatement(
-            cmd.toString());
-        stmt.setLong(1, entry.getKey().getId());
-        stmt.setString(2, entry.getValue());
-        stmt.executeUpdate();
-        stmt.close();
-        executed = true;
-      }
+      m.invoke(cls.newInstance(), _context, _instance, _map);
 
-      if (!executed) {
-        PreparedStatement stmt = con.getConnection().prepareStatement(
-            cmd.toString());
-        stmt.setNull(1, Types.NULL);
-        stmt.setNull(2, Types.NULL);
-        stmt.executeUpdate();
-        stmt.close();
-      }
-
-      /*
-       * String [] keyColumn = {"ID"};
-       * 
-       * stmt.execute(cmd.toString(), keyColumn);
-       * 
-       * java.sql.ResultSet rs = stmt.getGeneratedKeys(); if (rs.next()) { long
-       * newId = rs.getLong(1);
-       * 
-       * System.out.println("----------------->new id="+newId);
-       *  } else { System.out.println("There are no generated keys."); }
-       */
-
-      con.commit();
-    } catch (org.efaps.util.EFapsException e) {
+    } catch (ClassNotFoundException e) {
+      // TODO Auto-generated catch block
       e.printStackTrace();
-      if (con != null) {
-        con.abort();
-      }
-      throw e;
-    } catch (Throwable e) {
+    } catch (SecurityException e) {
+      // TODO Auto-generated catch block
       e.printStackTrace();
-      if (con != null) {
-        con.abort();
-      }
-      throw new org.efaps.util.EFapsException(getClass(), "execute.Throwable");
+    } catch (IllegalArgumentException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (NoSuchMethodException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (InvocationTargetException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (InstantiationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
   }
-
-  /*
-   * EVENT_TRIGGER_HISTORY_CHECKIN ("Admin_Event_Trigger_History_Checkin"),
-   * EVENT_TRIGGER_HISTORY_CHECKOUT ("Admin_Event_Trigger_History_Checkout"),
-   * EVENT_TRIGGER_HISTORY_DELETE ("Admin_Event_Trigger_History_Delete"),
-   * EVENT_TRIGGER_HISTORY_INSERT ("Admin_Event_Trigger_History_Insert"),
-   * EVENT_TRIGGER_HISTORY_UPDATE ("Admin_Event_Trigger_History_Update"),
-   */
 
   /**
    * Loads all events from the database and assigns them to the specific
@@ -172,39 +158,58 @@ public class EventDefinition extends AdminObject {
     query.addSelect("IndexPosition");
     query.addSelect("Abstract");
     query.addSelect("Abstract.Type");
+    query.addSelect("JavaProg");
+    query.addSelect("JavaProg.Name");
     query.executeWithoutAccessCheck();
-    System.out.println("--------------------------------------------");
+
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("initialise Triggers ---------------------------------------");
+    }
     while (query.next()) {
-      long eventId = (Long) query.get( "ID");
-      Type eventType = (Type) query.get( "Type");
-      String eventName = (String) query.get( "Name");
-      long eventPos = (Long) query.get( "IndexPosition");
-      long parentId = (Long) query.get( "Abstract");
-      Type parentType = (Type) query.get( "Abstract.Type");
-      System.out.println("eventId=" + eventId);
-      System.out.println("eventType=" + eventType);
-      System.out.println("eventName=" + eventName);
-      System.out.println("eventPos=" + eventPos);
-      System.out.println("parentId=" + parentId);
-      System.out.println("parentType=" + parentType);
+      long eventId = (Long) query.get("ID");
+      Type eventType = (Type) query.get("Type");
+      String eventName = (String) query.get("Name");
+      long eventPos = (Long) query.get("IndexPosition");
+      long parentId = (Long) query.get("Abstract");
+      Type parentType = (Type) query.get("Abstract.Type");
+      long programId = (Long) query.get("JavaProg");
+      String resName = (String) query.get("JavaProg.Name");
+
+      if (LOG.isDebugEnabled()) {
+        LOG.debug("   eventId=" + eventId);
+        LOG.debug("   eventType=" + eventType);
+        LOG.debug("   eventName=" + eventName);
+        LOG.debug("   eventPos=" + eventPos);
+        LOG.debug("   parentId=" + parentId);
+        LOG.debug("   parentType=" + parentType);
+        LOG.debug("   programId=" + programId);
+        LOG.debug("   JaveProgName=" + resName);
+      }
 
       EFapsClassName eFapsClass = EFapsClassName.getEnum(parentType.getName());
       if (eFapsClass == EFapsClassName.DATAMODEL_TYPE) {
         Type type = Type.get(parentId);
-        System.out.println("type=" + type);
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("    type=" + type);
+        }
         for (TriggerEvent triggerEvent : TriggerEvent.values()) {
           Type triggerClass = Type.get(triggerEvent.name);
           if (eventType.isKindOf(triggerClass)) {
-            System.out.println("found trigger " + triggerEvent + ":"
-                + triggerClass);
+            if (LOG.isDebugEnabled()) {
+              LOG.debug("     found trigger " + triggerEvent + ":"
+                  + triggerClass);
+            }
             type.addTrigger(triggerEvent, new EventDefinition(eventId,
-                eventName, eventPos, eventType));
+                eventName, eventPos, eventType, programId, resName));
           }
         }
       } else {
-        System.out.println("unknown event trigger connection");
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("initialise() - unknown event trigger connection");
+        }
       }
 
     }
   }
+
 }

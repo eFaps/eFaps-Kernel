@@ -51,7 +51,7 @@
     <property name="Icon">${ROOTURL}/servlet/image/TeamWork_RootCollectionImage</property>
     <property name="Tree">TeamWork_RootCollectionTree</property>
 
-   <trigger name="RootCollection_InsertPost" event="INSERT_POST" program="org.efaps.admin.program.java.Tester" index="1">
+   <trigger name="TeamWork_RootCollection_InsertPost" event="INSERT_POST" program="org.efaps.teamwork.Abstract2Abstract" index="1">
 		<property name="PropertyName">PropertyValue</property>
     </trigger>
 

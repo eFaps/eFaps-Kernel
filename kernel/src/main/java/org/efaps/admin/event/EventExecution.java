@@ -18,26 +18,15 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.program.java;
+package org.efaps.admin.event;
 
-public class EFapsClassLoader extends ClassLoader {
+import java.util.Map;
 
-  public EFapsClassLoader(ClassLoader classLoader) {
-    super(classLoader);
+import org.efaps.db.Context;
+import org.efaps.db.Instance;
 
-  }
-
-  public Class<?> findClass(String name) {
-    final byte[] b = loadClassData(name);
-
-    return defineClass(name, b, 0, b.length);
-  }
-
-  public byte[] loadClassData(final String _resourceName) {
-
-    byte[] x = new EFapsResourceStore(new Compiler()).read(_resourceName);
-
-    return x;
-
-  }
+public interface EventExecution {
+  
+  public void execute(final Context _context, final Instance _instance,
+                      final Map<TriggerKeys4Values, Map> _map);
 }

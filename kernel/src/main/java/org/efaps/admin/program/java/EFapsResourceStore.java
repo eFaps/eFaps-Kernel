@@ -106,26 +106,42 @@ public class EFapsResourceStore implements ResourceStore {
 
   public byte[] read(final String _resourceName) {
     byte[] ret = null;
+    InputStream is = null;
     if (LOG.isDebugEnabled()) {
       LOG.debug("read '" + _resourceName + "'");
     }
     SearchQuery query = new SearchQuery();
     try {
-      query.setQueryTypes(this.compiler.getclassType().getName());
+      query.setQueryTypes(this.compiler.getJavaType().getName());
       query.addSelect("ID");
       query.addWhereExprEqValue("Name", _resourceName);
       query.executeWithoutAccessCheck();
       if (query.next()) {
         Long id = (Long) query.get("ID");
-        Checkout checkout = new Checkout(new Instance(this.compiler
-            .getclassType(), id));
-        InputStream is = checkout.executeWithoutAccessCheck();
 
-        ret = new byte[is.available()];
-        is.read(ret);
+        query.close();
+        query = new SearchQuery();
+        query.setQueryTypes(this.compiler.getclassType().getName());
+        query.addWhereExprEqValue("ProgramLink", id.toString());
+        query.addSelect("ID");
+        query.executeWithoutAccessCheck();
+
+        while (query.next()) {
+
+          Long prog = (Long) query.get("ID");
+
+          Checkout checkout = new Checkout(new Instance(this.compiler
+              .getclassType(), prog));
+          is = checkout.executeWithoutAccessCheck();
+//TODO geht nicht wenn mehrere Programmteile
+          ret = new byte[is.available()];
+          is.read(ret);
+
+        }
         is.close();
 
       }
+
     } catch (EFapsException e) {
 
       LOG.error("read(String)", e);

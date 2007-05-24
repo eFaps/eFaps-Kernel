@@ -83,8 +83,6 @@ public class Compiler {
    */
   private final Map<String, Long> class2id = new HashMap<String, Long>();
 
-
-
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
 
@@ -155,9 +153,7 @@ public class Compiler {
       }
     }
   }
-  
-  
-  
+
   public Map<String, Long> getclass2id() {
     return this.class2id;
   }
@@ -168,6 +164,10 @@ public class Compiler {
 
   public Type getclassType() {
     return this.classType;
+  }
+
+  public Type getJavaType() {
+    return this.javaType;
   }
 
   /**

@@ -68,7 +68,7 @@
       <type>Link</type>
       <sqltable>Admin_Event_DefinitionSQLTable</sqltable>
       <sqlcolumn>PROGRAM</sqlcolumn>
-      <typelink>Admin_Program_JavaClass</typelink>
+      <typelink>Admin_Program_Java</typelink>
     </attribute>
     
     

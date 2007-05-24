@@ -418,12 +418,6 @@ public class TypeUpdate extends AbstractUpdate {
 
     private final String name;
 
-    private final String getProgramPath() {
-      String progpath = this.program.replaceAll("\\.", "/");
-      progpath = "/" + progpath + ".class";
-      return progpath;
-    }
-
     public Trigger(final String _name, final String _event,
         final String _program, final String _index) {
       this.name = _name;
@@ -435,7 +429,7 @@ public class TypeUpdate extends AbstractUpdate {
     protected void updateInDB(final Instance _instance, final String _typeName) {
 
       try {
-       
+
         long typeID = _instance.getId();
         long progID = getProgID(_typeName);
 
@@ -474,9 +468,9 @@ public class TypeUpdate extends AbstractUpdate {
       long id = 0;
 
       SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Admin_Program_JavaClass");
+      query.setQueryTypes("Admin_Program_Java");
       query.addSelect("ID");
-      query.addWhereExprEqValue("Name", getProgramPath());
+      query.addWhereExprEqValue("Name", this.program);
 
       query.executeWithoutAccessCheck();
       if (query.next()) {

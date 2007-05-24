@@ -60,6 +60,9 @@
     <!-- property definitions -->
     <property name="Icon">${ROOTURL}/servlet/image/TeamWork_SourceImage</property>
     <property name="Tree">TeamWork_SourceTree</property>
-
+	
+	<trigger name="TeamWork_Source_InsertPost" event="INSERT_POST" program="org.efaps.teamwork.Abstract2Abstract" index="1">
+		<property name="PropertyName">PropertyValue</property>
+    </trigger>
   </definition>
 </datamodel-type>
