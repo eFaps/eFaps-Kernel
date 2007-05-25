@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!DOCTYPE document PUBLIC "-//Apache Software Foundation//DTD XDOC 1.0//EN"
+"http://www.apache.org/dtds/xdoc_1_0.dtd">
 <!--
 
  Copyright 2006 The eFaps Team
@@ -22,50 +23,67 @@
  Last Changed By: $Author$
 
 -->
-
 <document>
   <properties>
     <title>Installation on Database PostgreSQL</title>
   </properties>
+
   <body>
-    <section name="Overview">
-      <p>Instead of the <a href="http://db.apache.org/derby/">Apache Derby
-         Database</a>, <a href="http://www.postgresql.org/">PostgreSQL
-         Database</a> could be used. All needed libraries and batch scripts
-         are included and could be used for first tests.</p>
-    </section>
+    <section name="Overview"><p>The <a
+    href="http://www.postgresql.org/">PostgreSQL Database</a> can be used as
+    the Databes for eFaps. All for a connection to <a
+    href="http://www.postgresql.org/">PostgreSQL Database</a> needed libraries
+    are included.</p></section>
 
-    <section name="Prerequisites">
-      <p><a href="http://www.postgresql.org/">PostgreSQL Database</a> must be
-      already installed. The database user 'efaps' is created and exists.</p>
-    </section>
+    <section name="Prerequisites"><p><a
+    href="http://www.postgresql.org/">PostgreSQL Database</a> must be already
+    installed.</p></section>
 
-    <section name="Defining Bootstrap File">
-      <p>Copy file bootstrap.xml.template-for-postgreSQL to bootstrap.xml.
-      Change the database user, password and JDBC-URL (see the
-      <a href="http://www.postgresql.org/docs/manuals/">PostgreSQL Manual</a>
-      and the <a href="http://jdbc.postgresql.org/documentation/docs.html">
-      PostgreSQL JDBC Documententation</a> for more detailed information).</p>
-      <p>The PostgreSQL URL must be defined in one of the following forms:</p>
-      <ul>
-        <li>jdbc:postgresql:database</li>
-        <li>jdbc:postgresql://host/database</li>
-        <li>jdbc:postgresql://host:port/database</li>
-      </ul>
-      <p>The parameters have the following meanings:</p>
-      <dl>
-        <dt>host</dt><dd>The host name of the server. Defaults to localhost. To specify an IPv6
-        address your must enclose the host parameter with square brackets, for
-        example: <code>jdbc:postgresql://[::1]:5740/accounting</code></dd>
-        <dt>port</dt><dd>The port number the server is listening on. Defaults
-        to the PostgreSQL standard port number (5432).</dd>
-        <dt>database</dt><dd>The database name.</dd>
-      </dl>
-    </section>
+    <section name="Defining Bootstrap File"><p>Copy the file
+    "bootstrap.xml.template-for-postgreSQL" into bootstrap.xml in the same
+    folder. <br />Change the database user, password and JDBC-URL (see the <a
+    href="http://www.postgresql.org/docs/manuals/">PostgreSQL Manual</a> and
+    the <a href="http://jdbc.postgresql.org/documentation/docs.html">
+    PostgreSQL JDBC Documententation</a> for more detailed information).</p>
+    <p>The <i>bootstrap.xml </i>contains a set of paramters. The parameters
+    are in the following style:</p>&lt;entry
+    key="parameter"&gt;value&lt;/entry&gt;<br /><br />Only the values of the
+    following parameters need to be changed:<dir>
+        <li>username: the Username as defined for the Database
+        <br />(&lt;entry key="username"&gt;user&lt;/entry&gt;)</li>
 
-    <section name="Installing eFaps Data Model">
-      <p>Run 'shell.bat -create'.</p>
-    </section>
+        <li>password: the Password as defined for the Database
+        <br />(&lt;entry key="password"&gt;password&lt;/entry&gt;)</li>
 
+        <li>url: The connection to the Database as a URL in one of the
+        following forms:<dir>
+            <li>jdbc:postgresql:database</li>
+
+            <li>jdbc:postgresql://host/database</li>
+
+            <li>dbc:postgresql://host:port/database</li>
+          </dir><br />The parameters have the following
+        meanings:<br /><br /><dl>
+            <dt>host</dt>
+
+            <dd>The host name of the server. Defaults to localhost. To specify
+            an IPv6 address your must enclose the host parameter with square
+            brackets, for example:
+            <code>jdbc:postgresql://[::1]:5740/accounting</code></dd>
+
+            <dt>port</dt>
+
+            <dd>The port number the server is listening on. Defaults to the
+            PostgreSQL standard port number (5432).</dd>
+
+            <dt>database</dt>
+
+            <dd>The database name.</dd>
+          </dl></li>
+      </dir> </section>
+
+    <section name="Installing eFaps Data Model"><p>Run the "<a
+    href="../../modules/shell.html">eFaps-shell</a>" with the parameter
+    "create".</p></section>
   </body>
 </document>

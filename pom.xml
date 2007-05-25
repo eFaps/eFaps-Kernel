@@ -119,6 +119,7 @@
       <organization>Moxter.Net Ltd. &amp; Co. KG</organization>
       <organizationUrl/>
       <roles>
+        <role>Architect</role>
       </roles>
       <timezone>+1</timezone>
       <properties/>
@@ -145,7 +146,9 @@
     <name>eFaps</name>
     <url>http://www.efaps.org/</url>
   </organization>
+  
 
+   
   <!-- ************************************************************************
   * All Modules
   ************************************************************************+ -->

@@ -1,3 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//Apache Software Foundation//DTD XDOC 1.0//EN"
+"http://www.apache.org/dtds/xdoc_1_0.dtd">
 <!--
 
  Copyright 2003 - 2007 The eFaps Team
@@ -14,9 +17,21 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          [AUTHORSHORTCUT]
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
+<document>
+  <properties>
+    <title>eFaps-Shell</title>
+  </properties>
+
+  <body>
+    <section name="eFaps-Shell">The eFaps-Shell is the possibilty to work with
+    eFaps without using a Webapplication or a Applicationserver.<subsection
+    name="Prerequisites">eFaps must be properly installed and the connection
+    to the database must be defined.</subsection></section>
+  </body>
+</document>

@@ -20,6 +20,9 @@
 
 package org.efaps.admin.program.java;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * This Class extends the ClassLoader of java, to be able to load Classes on
  * demand from the eFaps Database.
@@ -28,6 +31,10 @@ package org.efaps.admin.program.java;
  * 
  */
 public class EFapsClassLoader extends ClassLoader {
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(EFapsClassLoader.class);
 
   /**
    * Constructor setting the Parent of the EFapsClassLoader in ClassLoader
@@ -60,7 +67,9 @@ public class EFapsClassLoader extends ClassLoader {
    * @return byte[] containing the compiled javaclass
    */
   public byte[] loadClassData(final String _resourceName) {
-
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Loading Class '" + _resourceName + "' from Database");
+    }
     byte[] x = new EFapsResourceStore(new Compiler()).read(_resourceName);
 
     return x;

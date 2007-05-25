@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!DOCTYPE document PUBLIC "-//Apache Software Foundation//DTD XDOC 1.0//EN"
+"http://www.apache.org/dtds/xdoc_1_0.dtd">
 <!--
 
  Copyright 2006 The eFaps Team
@@ -22,37 +23,35 @@
  Last Changed By: $Author$
 
 -->
-
 <document>
   <properties>
     <title>Prerequisites</title>
   </properties>
+
   <body>
-    <section name="System Environment">
-      <p>To use eFaps, following software must be installed and be ready to
-         use:</p>
-      <ul>
+    <section name="System Environment"><p>To use eFaps, following software
+    must be installed and be ready to use:</p><dir>
         <li><a href="http://java.sun.com/j2se/1.5.0/">Java 1.5</a></li>
+
         <li><a href="http://tomcat.apache.org/">Tomcat 5.5</a> used as Web
-            Application Server</li>
+        Application Server</li>
+
         <li><a href="http://maven.apache.org/">Maven 2</a> used as Software
-            Project Management and Comprehension tool</li>
-      </ul>
-    </section>
-    <section name="Development Environment">
-      <p>If a development on eFaps is planned, also
-         <a href="http://subversion.tigris.org/">SubVersion</a> must be
-         installed (see also the project information about the
-         <a href="../source-repository.html">source repository</a>).</p>
-    </section>
-    <section name="Download of eFaps">
-      <p>eFaps must be downloaded. Two different possibilities exists:</p>
-      <ul>
+        Project Management and Comprehension tool</li>
+      </dir></section>
+
+    <section name="Development Environment"><p>If a development on eFaps is
+    planned, also <a href="http://subversion.tigris.org/">SubVersion</a> must
+    be installed (see also the project information about the <a
+    href="../source-repository.html">source repository</a>).</p></section>
+
+    <section name="Download of eFaps"><p>eFaps must be downloaded. Two
+    different possibilities exists:</p><dir>
         <li>Download from the <a href="../overview/download.html">eFaps Web
-            Site</a> and unpack</li>
+        Site</a> and unpack</li>
+
         <li>Check out from the <a href="../source-repository.html">SCM
-            repository with SubVersion</a></li>
-      </ul>
-    </section>
+        repository with SubVersion</a></li>
+      </dir></section>
   </body>
 </document>

@@ -24,14 +24,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-import org.apache.commons.jci.stores.ResourceStoreClassLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.program.java.Compiler;
 import org.efaps.admin.program.java.EFapsClassLoader;
-import org.efaps.admin.program.java.EFapsResourceStore;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;

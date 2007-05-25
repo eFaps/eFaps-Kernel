@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.Map;
 
+import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.TriggerKeys4Values;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
@@ -32,7 +33,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
-public class Abstract2Abstract {
+public class Abstract2Abstract implements EventExecution {
   /**
    * Logger for this class
    */

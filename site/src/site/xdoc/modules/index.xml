@@ -1,3 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//Apache Software Foundation//DTD XDOC 1.0//EN"
+"http://www.apache.org/dtds/xdoc_1_0.dtd">
 <!--
 
  Copyright 2003 - 2007 The eFaps Team
@@ -14,9 +17,24 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          [AUTHORSHORTCUT]
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
+<document>
+  <properties>
+    <title>Moduls</title>
+  </properties>
+
+  <body>
+    <section name="Overview">eFaps consist of three major modules:<ul>
+        <li>the eFaps-kernel</li>
+
+        <li>the eFaps-Shell</li>
+
+        <li>the eFaps-Webapplication</li>
+      </ul></section>
+  </body>
+</document>
