@@ -25,8 +25,26 @@ import java.util.Map;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 
+/**
+ * This interface is for the Programs loaded dynamically from the efapsdatabase
+ * with the efapsClassLoader. To be invoked the Classes loaded with the
+ * efapsclassloader must use this interfacs!
+ * 
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public interface EventExecution {
-  
+
+  /**
+   * This method is calles from efaps to invoke the class
+   * 
+   * @param _context
+   *          Context of the
+   * @param _instance
+   * @param _map
+   *          Map with values from the trigger
+   */
   public void execute(final Context _context, final Instance _instance,
                       final Map<TriggerKeys4Values, Map> _map);
 }

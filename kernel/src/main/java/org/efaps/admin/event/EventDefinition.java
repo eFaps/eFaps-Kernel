@@ -57,8 +57,14 @@ public class EventDefinition extends AdminObject implements EventExecution {
    */
   private final Type       eventType;
 
+  /**
+   * The variable stores the ID of the Program
+   */
   private final long       progId;
 
+  /**
+   * The variable stores the Name of the JavaClass
+   */
   private final String     resourceName;
 
   /**
@@ -88,14 +94,32 @@ public class EventDefinition extends AdminObject implements EventExecution {
     return this.indexPos;
   }
 
+  /**
+   * This is the getter method for instance variable {@link #resourceName}.
+   * 
+   * @return value of instance variable {@link #resourceName}
+   * @see #resourceName
+   */
   public String getResourceName() {
     return this.resourceName;
   }
 
+  /**
+   * This is the getter method for instance variable {@link #progId}.
+   * 
+   * @return value of instance variable {@link #progId}
+   * @see #progId
+   */
   public long getProgId() {
     return this.progId;
   }
 
+  /**
+   * This is the getter method for instance variable {@link #eventType}.
+   * 
+   * @return value of instance variable {@link #eventType}
+   * @see #eventType
+   */
   public Type geteventType() {
     return this.eventType;
   }
@@ -114,26 +138,19 @@ public class EventDefinition extends AdminObject implements EventExecution {
       m.invoke(cls.newInstance(), _context, _instance, _map);
 
     } catch (ClassNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("could not find class: '" + this.resourceName, e);
     } catch (SecurityException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("could not access class: '" + this.resourceName, e);
     } catch (IllegalArgumentException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("execute(Context, Instance, Map<TriggerKeys4Values,Map>)", e);
     } catch (NoSuchMethodException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("could not find method: 'execute' in class: '" + this.resourceName + "'", e);
     } catch (IllegalAccessException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("could not access class: '" + this.resourceName, e);
     } catch (InvocationTargetException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("could not invoke method: 'execute' in class: '" + this.resourceName , e);
     } catch (InstantiationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("could not instantiat class: '" + this.resourceName, e);
     }
 
   }

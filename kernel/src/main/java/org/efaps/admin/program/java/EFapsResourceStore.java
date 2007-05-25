@@ -87,7 +87,7 @@ public class EFapsResourceStore implements ResourceStore {
     }
     try {
 
-      String javaClassName = _resourceName.replaceAll(".class", "").replaceAll(
+      String javaClassName = _resourceName.replaceAll("\\.class", "").replaceAll(
           File.separator, ".").replaceFirst(".", "");
      
 

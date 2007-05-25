@@ -100,7 +100,7 @@ public class Abstract2Abstract implements EventExecution {
         }
 
       } catch (EFapsException e) {
-        // TODO Auto-generated catch block
+
         LOG.error("execute(Context, Instance, Map<TriggerKeys4Values,Map>)", e);
       }
 
@@ -119,9 +119,10 @@ public class Abstract2Abstract implements EventExecution {
       insert.executeWithoutAccessCheck();
 
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
+
       LOG.error("insertDB(String, String, String)", e);
     }
 
   }
+
 }

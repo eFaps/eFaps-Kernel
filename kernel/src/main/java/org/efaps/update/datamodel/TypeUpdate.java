@@ -43,7 +43,10 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
 
 /**
+ * This Class is responsible for the Update of Type in the Database
+ * 
  * @author tmo
+ * @author jmo
  * @version $Id: TypeUpdate.java 726 2007-03-17 22:14:14 +0000 (Sat, 17 Mar
  *          2007) tmo $
  * @todo description
@@ -82,11 +85,20 @@ public class TypeUpdate extends AbstractUpdate {
 
   public static TypeUpdate readXMLFile(final String _fileName)
                                                               throws IOException {
-    // } catch (IOException e) {
-    // LOG.error("could not open file '" + _fileName + "'", e);
     return readXMLFile(new File(_fileName));
   }
 
+  /**
+   * Method that reads the given XML-File and than uses the
+   * <code>org.apache.commons.digester</code> to create the diffrent Class and
+   * invokes the Methods to Update a Type
+   * 
+   * @param _file
+   *          XML-File to be read by the digester
+   * @return TypUdate Definition read by digester
+   * @throws IOException
+   *           if file is not readable
+   */
   public static TypeUpdate readXMLFile(final File _file) throws IOException {
     TypeUpdate ret = null;
 
@@ -141,8 +153,7 @@ public class TypeUpdate extends AbstractUpdate {
         ret.setFile(_file);
       }
     } catch (SAXException e) {
-      e.printStackTrace();
-      // LOG.error("could not read file '" + _fileName + "'", e);
+      LOG.error(_file.getName() + "' seems to be invalide XML", e);
     }
     return ret;
   }
@@ -153,6 +164,7 @@ public class TypeUpdate extends AbstractUpdate {
    * The class defines an attribute of a type.
    */
   private static class Attribute {
+
     /** Name of the attribute. */
     private final String name;
 
@@ -312,7 +324,6 @@ public class TypeUpdate extends AbstractUpdate {
   // class for the definitions
 
   public static class Definition extends DefinitionAbstract {
-
     // /////////////////////////////////////////////////////////////////////////
     // instance variables
 
@@ -396,6 +407,20 @@ public class TypeUpdate extends AbstractUpdate {
       this.parentType = _parentType;
     }
 
+    /**
+     * adds a Attribute to the Definition
+     * 
+     * @param _name
+     *          Name of the attribute
+     * @param _type
+     *          Name of the Attribute Type of the attribute.
+     * @param _sqlTable
+     *          Name of the SQL Table of the attribute.
+     * @param _sqlColumn
+     *          SQL Column of the attribute.
+     * @param _typeLink
+     *          Name of the Linked Type (used for links to another type).
+     */
     public void addAttribute(final String _name, final String _type,
                              final String _sqlTable, final String _sqlColumn,
                              final String _typeLink) {
@@ -403,19 +428,47 @@ public class TypeUpdate extends AbstractUpdate {
           _typeLink));
     }
 
+    /**
+     * adds a Trigger to the Definition
+     * 
+     * @param _name
+     *          name of the Trigger
+     * @param _event
+     *          event as defined in {@link org.efaps.admin.event. TriggerEvent}
+     * @param _program
+     *          name of the programm invoked in this trigger
+     * @param _index
+     *          index of the trigger
+     */
     public void addTrigger(final String _name, final String _event,
                            final String _program, final String _index) {
       this.triggers.add(new Trigger(_name, _event, _program, _index));
     }
   }
 
+  /**
+   * The class defines an Tigger of a type.
+   */
   private static class Trigger {
+
+    /**
+     * event as defined in {@link org.efaps.admin.event. TriggerEvent}
+     */
     private final String event;
 
+    /**
+     * name of the programm invoked in this trigger
+     */
     private final String program;
 
+    /**
+     * index of the trigger
+     */
     private final String index;
 
+    /**
+     * name of the Trigger
+     */
     private final String name;
 
     public Trigger(final String _name, final String _event,
@@ -426,6 +479,18 @@ public class TypeUpdate extends AbstractUpdate {
       this.index = _index;
     }
 
+    /**
+     * For given type defined with the instance parameter, this trigger is
+     * searched by typeID and indexposition. If the trigger exists, the trigger
+     * is updated. Otherwise the trigger is created.
+     * 
+     * @param _instance
+     *          type instance to update with this attribute
+     * @param _typeName
+     *          name of the type to update
+     * 
+     * 
+     */
     protected void updateInDB(final Instance _instance, final String _typeName) {
 
       try {
@@ -455,15 +520,21 @@ public class TypeUpdate extends AbstractUpdate {
         update.executeWithoutAccessCheck();
 
       } catch (EFapsException e) {
-
-        e.printStackTrace();
+        LOG.error("updateInDB(Instance, String)", e);
       } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOG.error("updateInDB(Instance, String)", e);
       }
 
     }
 
+    /**
+     * get the ID of the Program
+     * 
+     * @param _typeName
+     *          Name of teh Type
+     * @return id of the Program, 0 if not found
+     * @throws EFapsException
+     */
     private long getProgID(String _typeName) throws EFapsException {
       long id = 0;
 
