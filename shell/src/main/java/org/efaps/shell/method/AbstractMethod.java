@@ -42,6 +42,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.js.Shell;
@@ -271,7 +272,8 @@ public abstract class AbstractMethod  {
    */
   protected void reloadCache() throws EFapsException,Exception  {
     startTransaction();
-    Cache.reloadCache();
+    RunLevel.init("shell");
+    RunLevel.execute();
     abortTransaction();
   }
   

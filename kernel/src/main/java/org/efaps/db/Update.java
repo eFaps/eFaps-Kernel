@@ -165,17 +165,18 @@ public class Update {
 
   /**
    * The method gets all triggers for the given trigger event and executes them
-   * in the given order. If no triggers are defined, nothing is done.
+   * in the given order. If no triggers are defined, nothing is done. The method
+   * return TRUE if a trigger was found, otherwise FALSE.
    * 
    * @param _context
    *          eFaps context for this request
    * @param _triggerEvent
    *          trigger events to execute
-   * @throws EFapsException
-   *           from trigger execution
+   * 
+   * @return true if a trigger was found and executed, otherwise false
    */
-  protected void executeTrigger(final Context _context,
-                                final TriggerEvent _triggerEvent) {
+  protected boolean executeTrigger(final Context _context,
+                                   final TriggerEvent _triggerEvent) {
     List<EventDefinition> triggers = getInstance().getType().getTrigger(
         _triggerEvent);
     if (triggers != null) {
@@ -184,7 +185,9 @@ public class Update {
       for (EventDefinition evenDef : triggers) {
         evenDef.execute(_context, getInstance(), map);
       }
+      return true;
     }
+    return false;
   }
 
   /**

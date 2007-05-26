@@ -33,6 +33,7 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.logging.Log;
 import org.apache.slide.transaction.SlideTransactionManager;
+import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.util.EFapsException;
@@ -80,24 +81,20 @@ public class AbstractTransaction {
     initDatabase();
     try {
       startTransaction();
-    }
-    catch (EFapsException e) {
+    } catch (EFapsException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
     reloadCache();
     try {
       abortTransaction();
-    }
-    catch (EFapsException e) {
+    } catch (EFapsException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
@@ -105,19 +102,17 @@ public class AbstractTransaction {
 
   protected boolean initDatabase() {
     boolean initialised = false;
-    
+
     Properties props = new Properties();
     try {
       // read bootstrap properties
       FileInputStream fstr = new FileInputStream(getBootstrap());
       props.loadFromXML(fstr);
       fstr.close();
-      
-    }
-    catch (FileNotFoundException e) {
+
+    } catch (FileNotFoundException e) {
       LOG.error("could not open file '" + getBootstrap() + "'", e);
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       LOG.error("could not read file '" + getBootstrap() + "'", e);
     }
 
@@ -125,32 +120,29 @@ public class AbstractTransaction {
     String dbClass = null;
     try {
       Object dbTypeObj = props.get("dbType");
-        
+
       if ((dbTypeObj == null) || (dbTypeObj.toString().length() == 0)) {
         LOG.error("could not initaliase database type");
       } else {
         dbClass = dbTypeObj.toString();
-        
+
         AbstractDatabase dbType = (AbstractDatabase) Class.forName(dbClass)
             .newInstance();
-        
+
         if (dbType == null) {
           LOG.error("could not initaliase database type");
         }
-        
+
         Context.setDbType(dbType);
         initialised = true;
       }
-    }
-    catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException e) {
       LOG.error("could not found database description class " + "'" + dbClass
           + "'", e);
-    }
-    catch (InstantiationException e) {
+    } catch (InstantiationException e) {
       LOG.error("could not initialise database description class " + "'"
           + dbClass + "'", e);
-    }
-    catch (IllegalAccessException e) {
+    } catch (IllegalAccessException e) {
       LOG.error("could not access database description class " + "'" + dbClass
           + "'", e);
     }
@@ -167,16 +159,13 @@ public class AbstractTransaction {
     try {
       Class factClass = Class.forName(ref.getFactoryClassName());
       of = (ObjectFactory) factClass.newInstance();
-    }
-    catch (ClassNotFoundException e) {
+    } catch (ClassNotFoundException e) {
       LOG.error("could not found data source class " + "'"
           + ref.getFactoryClassName() + "'", e);
-    }
-    catch (InstantiationException e) {
+    } catch (InstantiationException e) {
       LOG.error("could not initialise data source class " + "'"
           + ref.getFactoryClassName() + "'", e);
-    }
-    catch (IllegalAccessException e) {
+    } catch (IllegalAccessException e) {
       LOG.error("could not access data source class " + "'"
           + ref.getFactoryClassName() + "'", e);
     }
@@ -184,8 +173,7 @@ public class AbstractTransaction {
       DataSource ds = null;
       try {
         ds = (DataSource) of.getObjectInstance(ref, null, null, null);
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         LOG.error("coud not get object instance of factory " + "'"
             + ref.getFactoryClassName() + "'", e);
       }
@@ -194,7 +182,7 @@ public class AbstractTransaction {
         initialised = initialised && true;
       }
     }
-    
+
     return initialised;
   }
 
@@ -220,7 +208,7 @@ public class AbstractTransaction {
    * @todo real login with check of password
    */
   protected void login(final String _userName, final String _password)
-      throws EFapsException {
+                                                                      throws EFapsException {
     this.userName = _userName;
 
   }
@@ -233,9 +221,10 @@ public class AbstractTransaction {
   protected void reloadCache() {
 
     try {
-      Cache.reloadCache();
-    }
-    catch (Exception e) {
+      RunLevel.init("shell");
+      RunLevel.execute();
+
+    } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
@@ -309,7 +298,7 @@ public class AbstractTransaction {
     BOOTSTRAP = _Bootstrap;
   }
 
-  public String getBootstrap(){
-    return  BOOTSTRAP;
+  public String getBootstrap() {
+    return BOOTSTRAP;
   }
 }

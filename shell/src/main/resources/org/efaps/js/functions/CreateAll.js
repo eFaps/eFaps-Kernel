@@ -843,5 +843,37 @@ var _stmt = _con.createStatement();
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
           "" + id + ",7, 'org.efaps.admin.datamodel.Attribute', 'initialise'");
   
+  //only a bad fats trick to get one more runlevel for the webapp must be replaced with a real import
+  
+   var id2 = _insert(_stmt, "Insert webapp Runlevel", null,
+          "T_RUNLEVEL",
+          "RUNLEVEL,UUID,PARENT", 
+          "'webapp','590ba27b-26eb-4bdf-ac30-1e1704c5f557'," + id + "");
+   
+   _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id2 + ",8, 'org.efaps.admin.access.AccessType', 'initialise'");
+  
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id2 + ",9, 'org.efaps.admin.access.AccessSet', 'initialise'");
+  
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id2 + ",10, 'org.efaps.admin.ui.UserInterfaceObject', 'initialise'");
+  
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id2 + ",11, 'org.efaps.admin.event.EventDefinition', 'initialise'");    
+      
+      
+      
+    
+  
+  
 con.commit();
 }

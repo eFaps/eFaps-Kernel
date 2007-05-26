@@ -20,6 +20,9 @@
 
 package org.efaps.admin.program.java;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -34,7 +37,18 @@ public class EFapsClassLoader extends ClassLoader {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(EFapsClassLoader.class);
+  private static final Log                 LOG                = LogFactory
+                                                                  .getLog(EFapsClassLoader.class);
+
+  /**
+   * should the Class be kept in a local Cache
+   */
+  private static boolean                   HOLDCLASSESINCACHE = false;
+
+  /**
+   * holds all allready loaded Classes
+   */
+  private static final Map<String, byte[]> LOADEDCLASSES      = new HashMap<String, byte[]>();
 
   /**
    * Constructor setting the Parent of the EFapsClassLoader in ClassLoader
@@ -53,14 +67,17 @@ public class EFapsClassLoader extends ClassLoader {
    * @see java.lang.ClassLoader#findClass(java.lang.String)
    */
   public Class<?> findClass(String name) {
-    final byte[] b = loadClassData(name);
 
+    byte[] b = getLoadedClasse(name);
+    if (b == null) {
+      b = loadClassData(name);
+    }
     return defineClass(name, b, 0, b.length);
   }
 
   /**
    * Loads the wanted Resource with the EFapsResourceStore into a byte-Array to
-   * pass it than on to findClass
+   * pass it on to findClass
    * 
    * @param _resourceName
    *          name of the Resource to load
@@ -72,7 +89,22 @@ public class EFapsClassLoader extends ClassLoader {
     }
     byte[] x = new EFapsResourceStore(new Compiler()).read(_resourceName);
 
+    if (x != null && HOLDCLASSESINCACHE) {
+      LOADEDCLASSES.put(_resourceName, x);
+    }
     return x;
 
+  }
+
+  /**
+   * get the Binary Class sored inthe lokal Cache
+   * 
+   * @param _resourceName
+   *          Name of the Class
+   * @return binary Class, null if not in Cache
+   */
+  public byte[] getLoadedClasse(String _resourceName) {
+
+    return LOADEDCLASSES.get(_resourceName);
   }
 }

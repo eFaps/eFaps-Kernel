@@ -54,6 +54,7 @@
     <name>TeamWork_Member_Menu_Action</name>
     <childs>
       <child>TeamWork_Member_Menu_Action_Create</child>
+      <child>TeamWork_Member_Menu_Action_Edit</child>
       <child>TeamWork_Member_Menu_Action_Delete</child>
     </childs>
   </definition>

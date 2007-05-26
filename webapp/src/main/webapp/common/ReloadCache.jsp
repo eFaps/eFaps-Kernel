@@ -25,7 +25,7 @@
 <%@taglib prefix="c"    uri="http://java.sun.com/jstl/core"%>
 <%@taglib prefix="fmt"  uri="http://java.sun.com/jstl/fmt" %>
 
-<%@page import="org.efaps.util.cache.Cache"%>
+<%@page import="org.efaps.admin.runlevel.RunLevel"%>
 
 <%-- /** set to request locale **/ --%>
 <c:set var="locale"><%=request.getLocale()%></c:set>
@@ -36,7 +36,8 @@
 <fmt:bundle basename="StringResource">
 
 <%
-  Cache.reloadCache();
+  RunLevel.init("webapp");
+  RunLevel.execute();
 %>
 
 <html>

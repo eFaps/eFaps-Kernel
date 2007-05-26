@@ -501,7 +501,7 @@ public class TypeUpdate extends AbstractUpdate {
         SearchQuery query = new SearchQuery();
         query.setQueryTypes(TriggerEvent.valueOf(this.event).name);
         query.addWhereExprEqValue("Abstract", typeID);
-        query.addWhereExprEqValue("IndexPosition", this.index);
+        query.addWhereExprEqValue("Name", this.name);
         query.addSelect("OID");
         query.executeWithoutAccessCheck();
 

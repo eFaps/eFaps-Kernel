@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
 
 /**
  * This Class is the Runlevel for eFaps. It provides the possibilty to load only
@@ -97,7 +98,12 @@ public class RunLevel {
     RUNLEVEL = new RunLevel(_runLevel);
   }
 
+  private void clearCache() {
+    Cache.clearCaches();
+  }
+
   public static void execute() throws EFapsException {
+    RUNLEVEL.clearCache();
     RUNLEVEL.executeMethods();
   }
 

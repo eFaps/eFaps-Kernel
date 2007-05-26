@@ -20,7 +20,7 @@
  */
 
 importClass(Packages.org.efaps.db.Context);
-importClass(Packages.org.efaps.util.cache.Cache);
+importClass(Packages.org.efaps.admin.runlevel.RunLevel);
 
 /**
  * Reloades the complete eFaps cache.
@@ -30,7 +30,8 @@ function reloadCache(_runLevel)  {
     Shell.transactionManager.begin();
     var context = new Context.newThreadContext(
                                     Shell.transactionManager.getTransaction());
-    Cache.reloadCache(_runLevel);
+    RunLevel.init(_runLevel);
+    RunLevel.execute();
     Shell.transactionManager.rollback();
     context.close();
 

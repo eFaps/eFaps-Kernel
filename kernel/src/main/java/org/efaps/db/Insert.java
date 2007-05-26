@@ -152,29 +152,31 @@ public class Insert extends Update {
     try {
       executeTrigger(context, TriggerEvent.INSERT_PRE);
 
-      con = context.getConnectionResource();
+      if (!executeTrigger(context, TriggerEvent.INSERT_OVERRIDE)) {
+        con = context.getConnectionResource();
 
-      if (test4Unique(context)) {
-        throw new EFapsException(getClass(),
-            "executeWithoutAccessCheck.UniqueKeyError");
-      }
-
-      SQLTable mainTable = getType().getMainTable();
-
-      long id = executeOneStatement(context, con, mainTable, getExpr4Tables()
-          .get(mainTable), 0);
-
-      setInstance(new Instance(getInstance().getType(), id));
-
-      for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
-          .entrySet()) {
-        SQLTable table = entry.getKey();
-        if ((table != mainTable) && !table.isReadOnly()) {
-          executeOneStatement(context, con, table, entry.getValue(), id);
+        if (test4Unique(context)) {
+          throw new EFapsException(getClass(),
+              "executeWithoutAccessCheck.UniqueKeyError");
         }
-      }
 
-      con.commit();
+        SQLTable mainTable = getType().getMainTable();
+
+        long id = executeOneStatement(context, con, mainTable, getExpr4Tables()
+            .get(mainTable), 0);
+
+        setInstance(new Instance(getInstance().getType(), id));
+
+        for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
+            .entrySet()) {
+          SQLTable table = entry.getKey();
+          if ((table != mainTable) && !table.isReadOnly()) {
+            executeOneStatement(context, con, table, entry.getValue(), id);
+          }
+        }
+
+        con.commit();
+      }
 
       executeTrigger(context, TriggerEvent.INSERT_POST);
     } catch (EFapsException e) {
@@ -219,8 +221,8 @@ public class Insert extends Update {
     long ret = _id;
     PreparedStatement stmt = null;
     try {
-      if ((ret == 0) && !_context.getDbType().supportsGetGeneratedKeys()) {
-        ret = _context.getDbType().getNewId(_con.getConnection(),
+      if ((ret == 0) && !Context.getDbType().supportsGetGeneratedKeys()) {
+        ret = Context.getDbType().getNewId(_con.getConnection(),
             _table.getSqlTable(), "ID");
       }
 

@@ -88,7 +88,8 @@
 
    
 
-    <!-- property definitions -->
+    <!-- Trigger definitions -->
+    <trigger name="TeamWork_MemberRights_InsertOverride" event="INSERT_OVERRIDE" program="org.efaps.teamwork.Member" index="1"/>
 
 
   </definition>
