@@ -28,9 +28,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -41,292 +38,297 @@ import org.efaps.util.cache.CacheReloadException;
 /**
  * This is the class for the table description. The table description holds
  * information in which table attributes are stored.
- *
+ * 
  * @author tmo
- * @version $Id$
+ * @version $Id: SQLTable.java 734 2007-03-20 22:29:04 +0000 (Tue, 20 Mar 2007)
+ *          tmo $
  */
-public class SQLTable extends DataModelObject  {
-
-  /**
-   * Logging instance used in this class.
-   */
-  private final static Log log = LogFactory.getLog(SQLTable.class);
+public class SQLTable extends DataModelObject {
 
   /**
    * This is the sql select statement to select all SQL tables from the
    * database.
    */
-  private final static String SQL_SELECT  = "select "+
-                                                "ID,"+
-                                                "NAME,"+
-                                                "SQLTABLE,"+
-                                                "SQLCOLUMNID,"+
-                                                "SQLCOLUMNTYPE,"+
-                                                "DMTABLEMAIN "+
-                                              "from V_ADMINSQLTABLE";
+  private final static String          SQL_SELECT = "select " + "ID," + "NAME,"
+                                                      + "SQLTABLE,"
+                                                      + "SQLCOLUMNID,"
+                                                      + "SQLCOLUMNTYPE,"
+                                                      + "DMTABLEMAIN "
+                                                      + "from V_ADMINSQLTABLE";
 
   /**
    * Stores all instances of SQLTable.
-   *
+   * 
    * @see #getCache
    */
-  private final static Cache < SQLTable > tableCache = new Cache < SQLTable > (
-    new CacheReloadInterface()  {
-      public int priority()  {
-        return CacheReloadInterface.Priority.SQLTable.number;
-      };
-      public void reloadCache() throws CacheReloadException  {
-        SQLTable.initialise();
-      };
-    }
-  );
+  private final static Cache<SQLTable> tableCache = new Cache<SQLTable>(
+                                                      new CacheReloadInterface() {
+                                                        public int priority() {
+                                                          return CacheReloadInterface.Priority.SQLTable.number;
+                                                        };
+
+                                                        public void reloadCache()
+                                                                                 throws CacheReloadException {
+                                                          SQLTable.initialise();
+                                                        };
+                                                      });
 
   /**
    * This is the constructor for class {@link Attribute}. Every instance of
-   * class {@link Attribute} must have a name (parameter <i>_name</i>) and
-   * an identifier (parameter <i>_id</i>).
-   *
-   * @param _id         id of the attribute
-   * @param _name       name of the instance
+   * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
+   * identifier (parameter <i>_id</i>).
+   * 
+   * @param _id
+   *          id of the attribute
+   * @param _name
+   *          name of the instance
    */
-  private SQLTable(long _id, String _name)  {
+  private SQLTable(long _id, String _name) {
     super(_id, null, _name);
   }
 
   /**
    * Returns the name of the table.
-   *
+   * 
    * @param _context
    * @see #getName
    */
-  public String getViewableName(Context _context)  {
+  public String getViewableName(Context _context) {
     return getName();
   }
 
   /**
    * The instance method adds a new type to the type list.
-   *
+   * 
    * @see #types
    */
-  protected void add(Type _type)  {
+  protected void add(Type _type) {
     getTypes().add(_type);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The instance method sets a new property value.
-   *
-   * @param _name   name of the property
-   * @param _value  value of the property
+   * 
+   * @param _name
+   *          name of the property
+   * @param _value
+   *          value of the property
    */
-  protected void setProperty(final String _name, 
-                             final String _value) throws CacheReloadException  {
-    if (_name.equals("ReadOnly"))  {
-      if (_value.equals("true"))  {
+  protected void setProperty(final String _name, final String _value)
+                                                                     throws CacheReloadException {
+    if (_name.equals("ReadOnly")) {
+      if (_value.equals("true")) {
         setReadOnly(true);
       }
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Instance variable for the name of the sql table.
-   *
+   * 
    * @see #getSqlTable
    * @see #setSqlTable
    */
-  private String sqlTable = null;
+  private String    sqlTable   = null;
 
   /**
    * This instance variable stores the sql column name of the id of a table.
-   *
+   * 
    * @see #getSqlColId
    * @see #setSqlColId
    */
-  private String sqlColId = null;
+  private String    sqlColId   = null;
 
   /**
    * The instance variable stores the sql column name of the type.
-   *
+   * 
    * @see #getSqlColType
    * @see #setSqlColType
    */
-  private String sqlColType = null;
+  private String    sqlColType = null;
 
   /**
    * The instance variable stores the main table for this table instance. The
-   * main table is the table, which holds the information about the sql
-   * select statement to get a new id. Also the main table must be inserted
-   * as first insert (e.g. the id in the table with a main table has a foreign
-   * key to the id of the main table).
-   *
+   * main table is the table, which holds the information about the sql select
+   * statement to get a new id. Also the main table must be inserted as first
+   * insert (e.g. the id in the table with a main table has a foreign key to the
+   * id of the main table).
+   * 
    * @see #getMainTable
    * @see #setMainTable
    */
-  private SQLTable mainTable = null;
+  private SQLTable  mainTable  = null;
 
   /**
    * The instance variable stores all types which stores information in this
    * table.
    */
-  private Set < Type > types = new HashSet < Type > ();
+  private Set<Type> types      = new HashSet<Type>();
 
   /**
-   * The instance variables is set to <i>true</i> if this table is only a
-   * read only sql table. This means, that no insert and no update on this
-   * table is allowed and made.
-   *
+   * The instance variables is set to <i>true</i> if this table is only a read
+   * only sql table. This means, that no insert and no update on this table is
+   * allowed and made.
+   * 
    * @see #isReadOnly
    * @see #setReadOnly
    */
-  private boolean readOnly = false;
+  private boolean   readOnly   = false;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the setter method for instance variable {@link #sqlTable}.
-   *
-   * @param _sqlTable new instance of class {@link Type} to set for sqlTable
+   * 
+   * @param _sqlTable
+   *          new instance of class {@link Type} to set for sqlTable
    * @see #sqlTable
    * @see #getSqlTable
    */
-  void setSqlTable(String _sqlTable)  {
+  void setSqlTable(String _sqlTable) {
     this.sqlTable = _sqlTable;
   }
 
   /**
    * This is the getter method for instance variable {@link #sqlTable}.
-   *
+   * 
    * @return value of instance variable {@link #sqlTable}
    * @see #sqlTable
    * @see #setSqlTable
    */
-  public String getSqlTable()  {
+  public String getSqlTable() {
     return this.sqlTable;
   }
 
   /**
    * This is the setter method for instance variable {@link #sqlColId}.
-   *
-   * @param _sqlColId new value for instance variable {@link #sqlColId}
+   * 
+   * @param _sqlColId
+   *          new value for instance variable {@link #sqlColId}
    * @see #sqlColId
    * @see #getSqlColId
    */
-  private void setSqlColId(String _sqlColId)  {
+  private void setSqlColId(String _sqlColId) {
     this.sqlColId = _sqlColId;
   }
 
   /**
    * This is the getter method for instance variable {@link #sqlColId}.
-   *
+   * 
    * @return value of instance variable {@link #sqlColId}
    * @see #sqlColId
    * @see #setSqlColId
    */
-  public String getSqlColId()  {
+  public String getSqlColId() {
     return this.sqlColId;
   }
 
   /**
    * This is the setter method for instance variable {@link #sqlColType}.
-   *
-   * @param _sqlColType new value for instance variable {@link #sqlColType}
+   * 
+   * @param _sqlColType
+   *          new value for instance variable {@link #sqlColType}
    * @see #sqlColType
    * @see #getSqlColType
    */
-  private void setSqlColType(String _sqlColType)  {
+  private void setSqlColType(String _sqlColType) {
     this.sqlColType = (_sqlColType != null ? _sqlColType.trim() : null);
   }
 
   /**
    * This is the getter method for instance variable {@link #sqlColType}.
-   *
+   * 
    * @return value of instance variable {@link #sqlColType}
    * @see #sqlColType
    * @see #setSqlColType
    */
-  public String getSqlColType()  {
+  public String getSqlColType() {
     return this.sqlColType;
   }
 
   /**
    * This is the setter method for instance variable {@link #mainTable}.
-   *
-   * @param _mainTable new value for instance variable {@link #mainTable}
+   * 
+   * @param _mainTable
+   *          new value for instance variable {@link #mainTable}
    * @see #mainTable
    * @see #getMainTable
    */
-  private void setMainTable(SQLTable _mainTable)  {
+  private void setMainTable(SQLTable _mainTable) {
     this.mainTable = _mainTable;
   }
 
   /**
    * This is the getter method for instance variable {@link #mainTable}.
-   *
+   * 
    * @return value of instance variable {@link #mainTable}
    * @see #mainTable
    * @see #setMainTable
    */
-  public SQLTable getMainTable()  {
+  public SQLTable getMainTable() {
     return this.mainTable;
   }
 
   /**
    * This is the getter method for instance variable {@link #types}.
-   *
+   * 
    * @return value of instance variable {@link #types}
    * @see #types
    * @see #setTypes
    */
-  public Set<Type> getTypes()  {
+  public Set<Type> getTypes() {
     return this.types;
   }
 
   /**
    * This is the setter method for instance variable {@link #readOnly}.
-   *
-   * @param _readOnly new value for instance variable {@link #readOnly}
+   * 
+   * @param _readOnly
+   *          new value for instance variable {@link #readOnly}
    * @see #readOnly
    * @see #isReadOnly
    */
-  private void setReadOnly(boolean _readOnly)  {
+  private void setReadOnly(boolean _readOnly) {
     this.readOnly = _readOnly;
   }
 
   /**
    * This is the getter method for instance variable {@link #readOnly}.
-   *
+   * 
    * @return value of instance variable {@link #readOnly}
    * @see #readOnly
    * @see #setReadOnly
    */
-  public boolean isReadOnly()  {
+  public boolean isReadOnly() {
     return this.readOnly;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Initialise the cache of types.
-   *
-   * @param _context  eFaps context for this request
+   * 
+   * @param _context
+   *          eFaps context for this request
    */
-  public static void initialise() throws CacheReloadException  {
+  public static void initialise() throws CacheReloadException {
     ConnectionResource con = null;
-    try  {
+    try {
       con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
-      try  {
-        Map<Long,Long> mainTables = new HashMap<Long,Long>();
+      try {
+        Map<Long, Long> mainTables = new HashMap<Long, Long>();
 
         stmt = con.getConnection().createStatement();
 
         ResultSet rs = stmt.executeQuery(SQL_SELECT);
-        while (rs.next())  {
-          long id =     rs.getLong(1);
+        while (rs.next()) {
+          long id = rs.getLong(1);
           String name = rs.getString(2).trim();
 
           SQLTable table = new SQLTable(id, name);
@@ -335,7 +337,7 @@ public class SQLTable extends DataModelObject  {
           table.setSqlColType(rs.getString(5));
           getCache().add(table);
           long tableMainId = rs.getLong(6);
-          if (tableMainId>0)  {
+          if (tableMainId > 0) {
             mainTables.put(id, tableMainId);
           }
           table.readFromDB4Properties();
@@ -343,27 +345,29 @@ public class SQLTable extends DataModelObject  {
         rs.close();
 
         // initialise main tables
-        for (Map.Entry<Long,Long> entry: mainTables.entrySet())  {
-          SQLTable table      = SQLTable.get(entry.getKey());
-          SQLTable mainTable  = SQLTable.get(entry.getValue());
+        for (Map.Entry<Long, Long> entry : mainTables.entrySet()) {
+          SQLTable table = SQLTable.get(entry.getKey());
+          SQLTable mainTable = SQLTable.get(entry.getValue());
           table.setMainTable(mainTable);
         }
 
-      } finally  {
-        if (stmt != null)  {
+      }
+      finally {
+        if (stmt != null) {
           stmt.close();
         }
       }
       con.commit();
-    } catch (SQLException e)  {
+    } catch (SQLException e) {
       throw new CacheReloadException("could not read sql tables", e);
-    } catch (EFapsException e)  {
+    } catch (EFapsException e) {
       throw new CacheReloadException("could not read sql tables", e);
-    } finally  {
-      if ((con != null) && con.isOpened())  {
-        try  {
+    }
+    finally {
+      if ((con != null) && con.isOpened()) {
+        try {
           con.abort();
-        } catch (EFapsException e)  {
+        } catch (EFapsException e) {
           throw new CacheReloadException("could not read sql tables", e);
         }
       }
@@ -371,35 +375,36 @@ public class SQLTable extends DataModelObject  {
   }
 
   /**
-   * Returns for given parameter <i>_id</i> the instance of class
-   * {@link Table}.
-   *
-   * @param _id id to search in the cache
+   * Returns for given parameter <i>_id</i> the instance of class {@link Table}.
+   * 
+   * @param _id
+   *          id to search in the cache
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  static public SQLTable get(final long _id)  {
+  static public SQLTable get(final long _id) {
     return getCache().get(_id);
   }
 
   /**
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Table}.
-   *
-   * @param _name name to search in the cache
+   * 
+   * @param _name
+   *          name to search in the cache
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  static public SQLTable get(final String _name)  {
+  static public SQLTable get(final String _name) {
     return getCache().get(_name);
   }
 
   /**
    * Static getter method for the attribute {@link #cache}.
-   *
+   * 
    * @return value of static variable {@link #cache}
    */
-  static Cache<SQLTable> getCache()  {
+  static Cache<SQLTable> getCache() {
     return tableCache;
   }
 }

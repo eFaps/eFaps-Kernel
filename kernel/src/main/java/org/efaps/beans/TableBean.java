@@ -27,6 +27,7 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Table;
 import org.efaps.beans.valueparser.ValueParser;
@@ -177,7 +178,7 @@ public class TableBean extends AbstractCollectionBean implements
 
       if (getCommand().getTargetTableSortKey() != null) {
         setSortKey(getCommand().getTargetTableSortKey());
-        if (getCommand().getTargetTableSortDirection() == getCommand().TABLE_SORT_DIRECTION_DOWN) {
+        if (getCommand().getTargetTableSortDirection() == CommandAbstract.TABLE_SORT_DIRECTION_DOWN) {
           setSortDirection("-");
         }
       }

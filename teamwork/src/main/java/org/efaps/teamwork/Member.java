@@ -31,6 +31,7 @@ import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 public class Member implements EventExecution {
@@ -38,7 +39,7 @@ public class Member implements EventExecution {
   public void execute(Context _context, Instance _instance,
                       Map<TriggerKeys4Values, Map> _map) {
 
-    // nur wenn ein neuer Root, Folder, Dokument angelgt wurde
+    // nur wenn ein neuer Root, Folder, Dokument angelegt wurde
     if (_instance.getId() != 0) {
       String abstractlink = ((Long) _instance.getId()).toString();
       try {
@@ -67,8 +68,9 @@ public class Member implements EventExecution {
       }
 
       SearchQuery query = new SearchQuery();
+      Update update;
       try {
-        query.setQueryTypes("TeamWork_MemberRights");
+        query.setQueryTypes("TeamWork_Member");
         query.addWhereExprEqValue("AccessSetLink", newValues
             .get("AccessSetLink"));
         query.addWhereExprEqValue("UserAbstractLink", newValues
@@ -79,10 +81,19 @@ public class Member implements EventExecution {
         query.executeWithoutAccessCheck();
 
         if (query.next()) {
+          update = new Update(query.get("OID").toString());
+        } else {
+          update = new Insert("TeamWork_Member");
 
         }
-
+        update.add("AccessSetLink", newValues.get("AccessSetLink"));
+        update.add("AbstractLink", newValues.get("AbstractLink"));
+        update.add("UserAbstractLink", newValues.get("UserAbstractLink"));
+        update.executeWithoutAccessCheck();
       } catch (EFapsException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
       }

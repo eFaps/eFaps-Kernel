@@ -21,56 +21,56 @@
 package org.efaps.beans;
 
 import java.util.Locale;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
-
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /*
  * @author tmo
- * @version $Id$
- * @todo description
+ * 
+ * @version $Id: AbstractBean.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
+ *          2007) jmo $ @todo description
  */
-public abstract class AbstractBean implements AbstractBeanInterface  {
+public abstract class AbstractBean implements AbstractBeanInterface {
 
-  public AbstractBean() throws EFapsException  {
-System.out.println("AbstractBean.constructor");
+  public AbstractBean() throws EFapsException {
+    System.out.println("AbstractBean.constructor");
     String oid = getParameter("oid");
-    if (oid != null)  {
+    if (oid != null) {
       this.instance = new Instance(getParameter("oid"));
     }
   }
 
-  public void finalize()  {
-System.out.println("AbstractBean.destructor");
+  public void finalize() {
+    System.out.println("AbstractBean.destructor");
   }
 
   /**
-   * The instance method sets the object id for this bean. To set the
-   * object id means to set the instance for this bean.
-   *
-   * @param _oid    object id
+   * The instance method sets the object id for this bean. To set the object id
+   * means to set the instance for this bean.
+   * 
+   * @param _oid
+   *          object id
    * @see #instance
    */
-  public void setOid(String _oid) throws EFapsException  {
-    if (_oid!=null && _oid.length()>0)  {
+  public void setOid(String _oid) throws EFapsException {
+    if (_oid != null && _oid.length() > 0) {
       setInstance(new Instance(_oid));
     }
   }
 
   /**
    * The instance method returns the locale object from the response object.
-   *
+   * 
    * @return locale object
    * @see #response
    */
-  protected Locale getLocale()  {
+  protected Locale getLocale() {
     return getResponse().getLocale();
   }
 
@@ -78,11 +78,11 @@ System.out.println("AbstractBean.destructor");
    * @return value for given parameter
    * @todo description
    */
-  public String getParameter(String _name) throws EFapsException  {
+  public String getParameter(String _name) throws EFapsException {
     String ret = null;
 
     String[] values = Context.getThreadContext().getParameters().get(_name);
-    if (values!=null)  {
+    if (values != null) {
       ret = values[0];
     }
     return ret;
@@ -91,146 +91,142 @@ System.out.println("AbstractBean.destructor");
   /**
    * @todo description
    */
-  public FileItem getFileParameter(String _name) throws EFapsException  {
+  public FileItem getFileParameter(String _name) throws EFapsException {
     FileItem fileItem = null;
     Context context = Context.getThreadContext();
-    if (context.getFileParameters() != null)  {
+    if (context.getFileParameters() != null) {
       fileItem = context.getFileParameters().get(_name);
     }
     return fileItem;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The instance variable stores the instance object for which this bean is
    * created.
-   *
+   * 
    * @see #getInstance
    * @see #setInstance
    */
-  private Instance instance = null;
+  private Instance            instance    = null;
 
   /**
    * The instance variable stores the http servlet response.
-   *
+   * 
    * @see #getResponse
    * @see #setResponse
    */
-  private HttpServletResponse response = null;
+  private HttpServletResponse response    = null;
 
   /**
    * The instance variable stores the http servlet request.
-   *
+   * 
    * @see #getRequest
    * @see #setRequest
    */
-  private HttpServletRequest request = null;
-
-  /**
-   * The instance variable stores the http servlet file request parameters.
-   *
-   * @see #getFileParameters
-   * @see #setFileParameters
-   */
-  private Map<String,FileItem> fileParameters = null;
+  private HttpServletRequest  request     = null;
 
   /**
    * The instance variable is the flag if this class instance is already
    * initialised.
-   *
+   * 
    * @see #isInitialised
    * @see #setInitialised
    */
-  private boolean initialised = false;
+  private boolean             initialised = false;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the getter method for the instance variable {@link #instance}.
-   *
+   * 
    * @return value of instance variable {@link #instance}
    * @see #instance
    * @see #setInstance
    */
-  public Instance getInstance()  {
+  public Instance getInstance() {
     return this.instance;
   }
 
   /**
    * This is the setter method for the instance variable {@link #instance}.
-   *
-   * @param _instance  new value for instance variable {@link #instance}
+   * 
+   * @param _instance
+   *          new value for instance variable {@link #instance}
    * @see #instance
    * @see #getInstance
    */
-  protected void setInstance(Instance _instance)  {
+  protected void setInstance(Instance _instance) {
     this.instance = _instance;
   }
 
   /**
    * This is the getter method for the response variable {@link #response}.
-   *
+   * 
    * @return value of response variable {@link #response}
    * @see #response
    * @see #setResponse
    */
-  public HttpServletResponse getResponse()  {
+  public HttpServletResponse getResponse() {
     return this.response;
   }
 
   /**
    * This is the setter method for the response variable {@link #response}.
-   *
-   * @param _response  new value for response variable {@link #response}
+   * 
+   * @param _response
+   *          new value for response variable {@link #response}
    * @see #response
    * @see #getResponse
    */
-  public void setResponse(HttpServletResponse _response)  {
+  public void setResponse(HttpServletResponse _response) {
     this.response = _response;
   }
 
   /**
    * This is the getter method for the Request variable {@link #request}.
-   *
+   * 
    * @return value of Request variable {@link #request}
    * @see #request
    * @see #setRequest
    */
-  public HttpServletRequest getRequest()  {
+  public HttpServletRequest getRequest() {
     return this.request;
   }
 
   /**
    * This is the setter method for the Request variable {@link #request}.
-   *
-   * @param _Request  new value for Request variable {@link #request}
+   * 
+   * @param _Request
+   *          new value for Request variable {@link #request}
    * @see #request
    * @see #getRequest
    */
-  public void setRequest(HttpServletRequest _request)  {
+  public void setRequest(HttpServletRequest _request) {
     this.request = _request;
   }
 
   /**
    * This is the getter method for the initialised variable {@link #initialised}.
-   *
+   * 
    * @return value of initialised variable {@link #initialised}
    * @see #initialised
    * @see #setInitialised
    */
-  public boolean isInitialised()  {
+  public boolean isInitialised() {
     return this.initialised;
   }
 
   /**
    * This is the setter method for the initialised variable {@link #initialised}.
-   *
-   * @param _initialised  new value for initialised variable {@link #initialised}
+   * 
+   * @param _initialised
+   *          new value for initialised variable {@link #initialised}
    * @see #initialised
    * @see #isInitialised
    */
-  public void setInitialised(boolean _initialised)  {
+  public void setInitialised(boolean _initialised) {
     this.initialised = _initialised;
   }
 }

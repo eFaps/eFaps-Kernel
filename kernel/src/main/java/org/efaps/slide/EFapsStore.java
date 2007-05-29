@@ -1643,7 +1643,7 @@ public class EFapsStore extends AbstractXAServiceBase implements NodeStore,
           } else {
             System.out.println("retrieveRevisionContent.found instance="
                 + instance);
-            org.efaps.db.Checkout checkout = new org.efaps.db.Checkout(instance);
+//            org.efaps.db.Checkout checkout = new org.efaps.db.Checkout(instance);
             // 20051126 geht nicht mehr!!!!
             // nrc.setContent(checkout.getInputStream(context));
           }

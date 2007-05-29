@@ -59,13 +59,6 @@ public class Checkout extends AbstractAction {
   private final Instance   instance;
 
   /**
-   * Buffer used to copy from the input stream to the output stream.
-   * 
-   * @see #execute
-   */
-  private byte[]           buffer   = new byte[1024];
-
-  /**
    * Stores the file name after pre processing.
    * 
    * @see #preprocess

@@ -61,10 +61,12 @@
       <property name="ShowTypeIcon">true</property>
     </field>
     
-    <field name="abstract">
+    <field name="AbstractLink">
+      <property name="AlternateOID">UserAbstractLink.OID</property>
+      <property name="Columns">20</property>
       <property name="Creatable">false</property>
       <property name="Editable">false</property>
-      <property name="Expression">Abstract</property>
+      <property name="Expression">AbstractLink</property>
       <property name="Searchable">false</property>
       <property name="ShowTypeIcon">true</property>
     </field>
@@ -72,6 +74,7 @@
     
     
     <field name="UserAbstractLink">
+      <property name="AlternateOID">UserAbstractLink.OID</property>
       <property name="Columns">20</property>
       <property name="Creatable">true</property>
       <property name="Editable">true</property>
@@ -81,6 +84,7 @@
     </field>
     
     <field name="AccessSetLink">
+      <property name="AlternateOID">AccessSetLink.OID</property>
       <property name="Columns">20</property>
       <property name="Creatable">true</property>
       <property name="Editable">true</property>

@@ -267,9 +267,9 @@ public class SearchBean extends AbstractCollectionBean implements
    * @see #values
    * @see #execute4SearchForm
    */
-  private void add4Form(AttributeTypeInterface _attrValue, Field _field) {
-    // getValues().add(new Value(_attrValue, null, _field));
-  }
+//  private void add4Form(AttributeTypeInterface _attrValue, Field _field) {
+//    // getValues().add(new Value(_attrValue, null, _field));
+//  }
 
   // ///////////////////////////////////////////////////////////////////////////
 

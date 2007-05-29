@@ -357,35 +357,36 @@ public class Update {
     ConnectionResource con = null;
     try {
       executeTrigger(context, TriggerEvent.UPDATE_PRE);
+      
+      if (!executeTrigger(context, TriggerEvent.UPDATE_OVERRIDE)) {
+        con = context.getConnectionResource();
 
-      con = context.getConnectionResource();
+        if (test4Unique(context)) {
+          throw new EFapsException(getClass(),
+              "executeWithoutAccessCheck.UniqueKeyError");
+        }
 
-      if (test4Unique(context)) {
-        throw new EFapsException(getClass(),
-            "executeWithoutAccessCheck.UniqueKeyError");
-      }
+        for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
+            .entrySet()) {
+          SQLTable table = entry.getKey();
+          Map expressions = (Map) entry.getValue();
 
-      for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
-          .entrySet()) {
-        SQLTable table = entry.getKey();
-        Map expressions = (Map) entry.getValue();
-
-        PreparedStatement stmt = null;
-        try {
-          stmt = createOneStatement(context, con, table, expressions);
-          int rows = stmt.executeUpdate();
-          if (rows == 0) {
-            throw new Exception("Can not update! It exists not!");
+          PreparedStatement stmt = null;
+          try {
+            stmt = createOneStatement(context, con, table, expressions);
+            int rows = stmt.executeUpdate();
+            if (rows == 0) {
+              throw new Exception("Can not update! It exists not!");
+            }
+          } catch (Exception e) {
+            throw e;
           }
-        } catch (Exception e) {
-          throw e;
+          finally {
+            stmt.close();
+          }
         }
-        finally {
-          stmt.close();
-        }
+        con.commit();
       }
-      con.commit();
-
       executeTrigger(context, TriggerEvent.UPDATE_POST);
     } catch (Exception e) {
       e.printStackTrace();

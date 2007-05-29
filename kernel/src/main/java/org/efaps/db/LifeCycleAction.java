@@ -44,11 +44,18 @@ public class LifeCycleAction extends Update {
   /**
    * The constructor creates a new instance of Promote.
    * 
+   */
+  public LifeCycleAction(Instance _instance) throws EFapsException {
+    super(_instance);
+  }
+
+  /**
    * 
+   * @deprecated
    */
   public LifeCycleAction(Context _context, Instance _instance)
       throws EFapsException {
-    super(_context, _instance);
+    super(_instance);
   }
 
   public void execute(final int _action) throws Exception {

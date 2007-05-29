@@ -410,7 +410,7 @@ public abstract class AbstractQuery {
       }
       // System.out.println("------------oid="+oid);
       if ((oid != null) && !oid.equals("0.0")) {
-        instance = new Instance(_context, oid);
+        instance = new Instance(oid);
       } else {
         instance = getInstance(_context, this.type);
       }
