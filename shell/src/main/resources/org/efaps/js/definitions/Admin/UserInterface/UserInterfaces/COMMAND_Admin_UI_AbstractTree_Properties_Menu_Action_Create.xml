@@ -59,7 +59,7 @@
     <!-- properties -->
     <property name="Target">popup</property>
     <property name="TargetConnectAttribute">Admin_Property/Abstract</property>
-    <property name="TargetCreateType">TeamWork_RootCollection</property>
+    <property name="TargetCreateType">Admin_Property</property>
     <property name="TargetMode">create</property>
   </definition>
 
