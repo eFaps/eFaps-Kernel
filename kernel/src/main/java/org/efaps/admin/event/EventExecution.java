@@ -48,3 +48,4 @@ public interface EventExecution {
   public void execute(final Context _context, final Instance _instance,
                       final Map<TriggerKeys4Values, Map> _map);
 }
+//nur noch die Map uebergeben aber mit Object als zweites

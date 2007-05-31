@@ -141,11 +141,12 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addCallParam("datamodel-type/definition/property", 1);
 
       digester.addCallMethod("datamodel-type/definition/trigger", "addTrigger",
-          4);
+          5);
       digester.addCallParam("datamodel-type/definition/trigger", 0, "name");
       digester.addCallParam("datamodel-type/definition/trigger", 1, "event");
       digester.addCallParam("datamodel-type/definition/trigger", 2, "program");
-      digester.addCallParam("datamodel-type/definition/trigger", 3, "index");
+      digester.addCallParam("datamodel-type/definition/trigger", 3, "method");
+      digester.addCallParam("datamodel-type/definition/trigger", 4, "index");
 
       ret = (TypeUpdate) digester.parse(_file);
 
@@ -441,8 +442,9 @@ public class TypeUpdate extends AbstractUpdate {
      *          index of the trigger
      */
     public void addTrigger(final String _name, final String _event,
-                           final String _program, final String _index) {
-      this.triggers.add(new Trigger(_name, _event, _program, _index));
+                           final String _program, final String _method,
+                           final String _index) {
+      this.triggers.add(new Trigger(_name, _event, _program, _method, _index));
     }
   }
 
@@ -462,6 +464,11 @@ public class TypeUpdate extends AbstractUpdate {
     private final String program;
 
     /**
+     * name of the method to be invoked by tihs trigger
+     */
+    private final String method;
+
+    /**
      * index of the trigger
      */
     private final String index;
@@ -472,10 +479,11 @@ public class TypeUpdate extends AbstractUpdate {
     private final String name;
 
     public Trigger(final String _name, final String _event,
-        final String _program, final String _index) {
+        final String _program, final String _method, final String _index) {
       this.name = _name;
       this.event = _event;
       this.program = _program;
+      this.method = _method;
       this.index = _index;
     }
 
@@ -517,6 +525,7 @@ public class TypeUpdate extends AbstractUpdate {
         }
         query.close();
         update.add("JavaProg", "" + progID);
+        update.add("Method", this.method);
         update.executeWithoutAccessCheck();
 
       } catch (EFapsException e) {

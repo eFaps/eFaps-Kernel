@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,16 @@
 
 package org.efaps.admin.event;
 
+
 /**
- *
+ * This enum provides the key-value Relation for the TriggerEvent.<br>Therfore
+ * using a trigger can be made by using the key. An example for the use of this 
+ * enum is the definition of a Trigger inside the XML-Defenition.
+ * 
+ * @author tmo
+ * @author jmo
+ * @version $Id$
+ * 
  */
 public enum TriggerEvent  {
 
@@ -31,6 +39,7 @@ public enum TriggerEvent  {
   CHECKOUT_OVERRIDE  ("Admin_Event_Trigger_CheckoutOverride"),
   CHECKOUT_POST      ("Admin_Event_Trigger_CheckoutPost"),
   CHECKOUT_PRE       ("Admin_Event_Trigger_CheckoutPre"),
+  COMMAND            ("Admin_Event_Trigger_Command"),
   DELETE_OVERRIDE    ("Admin_Event_Trigger_DeleteOverride"),
   DELETE_POST        ("Admin_Event_Trigger_DeletePost"),
   DELETE_PRE         ("Admin_Event_Trigger_DeletePre"),
@@ -40,11 +49,10 @@ public enum TriggerEvent  {
   UPDATE_OVERRIDE    ("Admin_Event_Trigger_UpdateOverride"),
   UPDATE_POST        ("Admin_Event_Trigger_UpdatePost"),
   UPDATE_PRE         ("Admin_Event_Trigger_UpdatePre");
-
+  
   public final String name;
 
   private TriggerEvent(final String _name)  {
     this.name = _name;
   }
 }
-

@@ -54,14 +54,21 @@
     <name>TeamWork_Member_Menu_Action_Edit</name>
     <icon>TeamWork_MemberEditImage</icon>
     <!-- target definitions -->
-    <target>
-      <form>TeamWork_MemberForm</form>
+    
+     <target>
+      
+      <table>TeamWork_MemberTable</table>
     </target>
-   
     <!-- property definitions -->
-    <property name="Target">popup</property>
+    <property name="DefaultSelected">false</property>
+    <property name="Target">content</property>
     <property name="TargetMode">edit</property>
-    <property name="Submit">true</property>
+    <property name="TargetExpand">TeamWork_MemberRights\AbstractLink</property>
+     <property name="TargetShowCheckBoxes">true</property>
   </definition>
+  
+   <trigger name="TeamWork_Member_Menu_Action_Edit_COMMAND" event="COMMAND" program="org.efaps.teamwork.Member" index="1"/>
+  
+  
 
 </ui-command>

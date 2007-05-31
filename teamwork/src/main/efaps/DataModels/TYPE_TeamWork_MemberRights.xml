@@ -89,8 +89,9 @@
    
 
     <!-- Trigger definitions -->
-    <trigger name="TeamWork_MemberRights_InsertOverride" event="INSERT_OVERRIDE" program="org.efaps.teamwork.Member" index="1"/>
-
+    <trigger name="TeamWork_MemberRights_InsertOverride" event="INSERT_OVERRIDE" program="org.efaps.teamwork.Member" method="execute" index="1"/>
+    
+    <trigger name="TeamWork_MemberRights_DeleteOverride" event="DELETE_OVERRIDE" program="org.efaps.teamwork.Member" method="execute" index="1"/>
 
   </definition>
 </datamodel-type>

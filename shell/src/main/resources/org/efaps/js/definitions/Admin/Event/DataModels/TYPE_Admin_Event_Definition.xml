@@ -52,8 +52,14 @@
       <sqlcolumn>ABSTRACT</sqlcolumn>
       <typelink>Admin_Abstract</typelink>
     </attribute>
-  
+    <attribute>
+      <name>Method</name>
+      <type>String</type>
+      <sqltable>Admin_Event_DefinitionSQLTable</sqltable>
+      <sqlcolumn>METHOD</sqlcolumn>
+    </attribute>
   </definition>
+  
   <definition>
     <version>
       <application>eFaps</application>

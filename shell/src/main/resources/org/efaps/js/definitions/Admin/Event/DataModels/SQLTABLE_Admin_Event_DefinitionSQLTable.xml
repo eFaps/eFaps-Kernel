@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
 
  Copyright 2003-2007 The eFaps Team
@@ -22,7 +21,6 @@
  Last Changed By: $Author$
 
 -->
-
 <datamodel-sqltable>
   <uuid>1238f647-9cf5-4d9f-883e-c6d24db538f5</uuid>
 
@@ -41,13 +39,11 @@
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="ABSTRACT"           type="INTEGER"                      not-null="true"/>
-      <column name="INDEXPOS"           type="INTEGER"                      not-null="true"/>
-      <column name="PROGRAM"            type="INTEGER"                      not-null="true"/>
-      
-      <!-- unique constraints -->
-      <unique name="T_EVENTDEF_UK_ID_INDEXPOS" columns="ABSTRACT,INDEXPOS"/>
-     </database>
+      <column name="ABSTRACT" type="INTEGER"      not-null="true"/>
+      <column name="INDEXPOS" type="INTEGER"      not-null="true"/>
+      <column name="PROGRAM"  type="INTEGER"      not-null="true"/>
+      <column name="METHOD"   type="STRING_SHORT" not-null="true"   length="128"/>
+    </database>
   </definition>
 
   <definition>
@@ -62,7 +58,7 @@
     <parent>Admin_AbstractSQLTable</parent>
     <database>
       <table-name>T_EVENTDEF</table-name>
-      <foreign name="T_EVENTDEF_FK_PRG"      key="PROGRAM"       reference="ABSTRACT(ID)"/>
+      <foreign name="T_EVENTDEF_FK_PRG" key="PROGRAM" reference="ABSTRACT(ID)"/>
     </database>
   </definition>
 </datamodel-sqltable>

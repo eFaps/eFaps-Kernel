@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.java.EFapsClassLoader;
+import org.efaps.admin.ui.Command;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -58,11 +59,6 @@ public class EventDefinition extends AdminObject implements EventExecution {
   private final Type       eventType;
 
   /**
-   * The variable stores the ID of the Program
-   */
-  private final long       progId;
-
-  /**
    * The variable stores the Name of the JavaClass
    */
   private final String     resourceName;
@@ -71,12 +67,10 @@ public class EventDefinition extends AdminObject implements EventExecution {
    * 
    */
   private EventDefinition(final long _id, final String _name,
-      final long _indexPos, final Type _eventType, final long _progID,
-      final String _resourceName) {
+      final long _indexPos, final Type _eventType, final String _resourceName) {
     super(_id, null, _name);
     this.indexPos = _indexPos;
     this.eventType = _eventType;
-    this.progId = _progID;
     this.resourceName = _resourceName;
   }
 
@@ -102,16 +96,6 @@ public class EventDefinition extends AdminObject implements EventExecution {
    */
   public String getResourceName() {
     return this.resourceName;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #progId}.
-   * 
-   * @return value of instance variable {@link #progId}
-   * @see #progId
-   */
-  public long getProgId() {
-    return this.progId;
   }
 
   /**
@@ -144,11 +128,13 @@ public class EventDefinition extends AdminObject implements EventExecution {
     } catch (IllegalArgumentException e) {
       LOG.error("execute(Context, Instance, Map<TriggerKeys4Values,Map>)", e);
     } catch (NoSuchMethodException e) {
-      LOG.error("could not find method: 'execute' in class: '" + this.resourceName + "'", e);
+      LOG.error("could not find method: 'execute' in class: '"
+          + this.resourceName + "'", e);
     } catch (IllegalAccessException e) {
       LOG.error("could not access class: '" + this.resourceName, e);
     } catch (InvocationTargetException e) {
-      LOG.error("could not invoke method: 'execute' in class: '" + this.resourceName , e);
+      LOG.error("could not invoke method: 'execute' in class: '"
+          + this.resourceName, e);
     } catch (InstantiationException e) {
       LOG.error("could not instantiat class: '" + this.resourceName, e);
     }
@@ -214,16 +200,21 @@ public class EventDefinition extends AdminObject implements EventExecution {
                   + triggerClass);
             }
             type.addTrigger(triggerEvent, new EventDefinition(eventId,
-                eventName, eventPos, eventType, programId, resName));
+                eventName, eventPos, eventType, resName));
           }
         }
       } else {
-        if (LOG.isDebugEnabled()) {
-          LOG.debug("initialise() - unknown event trigger connection");
+        if (eFapsClass == EFapsClassName.COMMAND) {
+          Command command = Command.get(parentType.getName());
+          command.getId();
+        } else {
+
+          if (LOG.isDebugEnabled()) {
+            LOG.debug("initialise() - unknown event trigger connection");
+          }
         }
       }
 
     }
   }
-
 }

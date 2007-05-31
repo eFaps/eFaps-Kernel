@@ -34,8 +34,8 @@
       if (col.getField().isEditable())  {
         String[] values = (String[])request.getParameterValues(col.getField().getName());
         Update update = new Update(context, col.getInstance());
-        update.add(context, col.getField(), values[i]);
-        update.execute(context);
+        update.add( col.getField().getExpression(), values[i]);
+        update.execute();
       }
     }
   }
