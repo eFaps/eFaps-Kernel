@@ -215,8 +215,23 @@ public class EventDefinition extends AdminObject implements EventExecution {
         }
       } else {
         if (eFapsClass == EFapsClassName.COMMAND) {
-          Command command = Command.get(parentType.getName());
-          command.getId();
+          Command command = Command.get(parentId);
+
+          if (LOG.isDebugEnabled()) {
+            LOG.debug("    Command=" + command.getName());
+          }
+          for (TriggerEvent triggerEvent : TriggerEvent.values()) {
+            Type triggerClass = Type.get(triggerEvent.name);
+            if (eventType.isKindOf(triggerClass)) {
+              if (LOG.isDebugEnabled()) {
+                LOG.debug("     found trigger " + triggerEvent + ":"    
+                    + triggerClass);
+              }
+              command.addTrigger(triggerEvent, new EventDefinition(eventId,
+                  eventName, eventPos, resName, method));
+            }
+          }
+
         } else {
 
           if (LOG.isDebugEnabled()) {

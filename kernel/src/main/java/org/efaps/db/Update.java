@@ -175,8 +175,7 @@ public class Update {
    * 
    * @return true if a trigger was found and executed, otherwise false
    */
-  protected boolean executeTrigger(final Context _context,
-                                   final TriggerEvent _triggerEvent) {
+  protected boolean executeTrigger(final TriggerEvent _triggerEvent) {
     List<EventDefinition> triggers = getInstance().getType().getTrigger(
         _triggerEvent);
     if (triggers != null) {
@@ -357,9 +356,9 @@ public class Update {
     Context context = Context.getThreadContext();
     ConnectionResource con = null;
     try {
-      executeTrigger(context, TriggerEvent.UPDATE_PRE);
+      executeTrigger(TriggerEvent.UPDATE_PRE);
 
-      if (!executeTrigger(context, TriggerEvent.UPDATE_OVERRIDE)) {
+      if (!executeTrigger(TriggerEvent.UPDATE_OVERRIDE)) {
         con = context.getConnectionResource();
 
         if (test4Unique(context)) {
@@ -388,7 +387,7 @@ public class Update {
         }
         con.commit();
       }
-      executeTrigger(context, TriggerEvent.UPDATE_POST);
+      executeTrigger(TriggerEvent.UPDATE_POST);
     } catch (Exception e) {
       e.printStackTrace();
       throw e;

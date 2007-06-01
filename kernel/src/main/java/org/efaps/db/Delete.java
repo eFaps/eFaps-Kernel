@@ -142,8 +142,8 @@ public class Delete {
   public void executeWithoutAccessCheck() throws EFapsException {
     Context context = Context.getThreadContext();
     ConnectionResource con = null;
-    executeTrigger(context, TriggerEvent.DELETE_PRE);
-    if (!executeTrigger(context, TriggerEvent.DELETE_OVERRIDE)) {
+    executeTrigger(TriggerEvent.DELETE_PRE);
+    if (!executeTrigger(TriggerEvent.DELETE_OVERRIDE)) {
       try {
 
         con = context.getConnectionResource();
@@ -212,7 +212,7 @@ public class Delete {
         }
       }
     }
-    executeTrigger(context, TriggerEvent.DELETE_POST);
+    executeTrigger(TriggerEvent.DELETE_POST);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -241,8 +241,7 @@ public class Delete {
    * 
    * @return true if a trigger was found and executed, otherwise false
    */
-  private boolean executeTrigger(final Context _context,
-                                 final TriggerEvent _triggerEvent) {
+  private boolean executeTrigger(final TriggerEvent _triggerEvent) {
     List<EventDefinition> triggers = getInstance().getType().getTrigger(
         _triggerEvent);
     if (triggers != null) {

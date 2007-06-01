@@ -20,9 +20,12 @@
 
 package org.efaps.admin.ui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -30,6 +33,9 @@ import java.util.Vector;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.TriggerKeys4Values;
 import org.efaps.admin.user.Role;
 import org.efaps.admin.user.UserObject;
 import org.efaps.db.Context;
@@ -37,21 +43,23 @@ import org.efaps.servlet.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- *
+ * 
  * @author tmo
  * @version $Id$
  */
-public abstract class CommandAbstract extends UserInterfaceObject  {
+public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
-   * Constructor to set the id and name of the command object.
-   * The constructor also sets the label of the command.
-   *
-   * @param _id   id  of the command to set
-   * @param _name name of the command to set
+   * Constructor to set the id and name of the command object. The constructor
+   * also sets the label of the command.
+   * 
+   * @param _id
+   *          id of the command to set
+   * @param _name
+   *          name of the command to set
    * @see #label
    */
-  protected CommandAbstract(long _id, String _name)  {
+  protected CommandAbstract(long _id, String _name) {
     super(_id, _name);
     setLabel(_name + ".Label");
     setTargetTitle(_name + ".Title");
@@ -60,67 +68,70 @@ public abstract class CommandAbstract extends UserInterfaceObject  {
   /**
    * The target of the href is not known. This is maybe, if a javascript
    * function is directly called.
-   *
+   * 
    * @see #target
    */
-  static public final int TARGET_UNKNOWN  = 0;
+  static public final int TARGET_UNKNOWN            = 0;
 
   /**
    * The target of the href is the content frame.
-   *
+   * 
    * @see #target
    */
-  static public final int TARGET_CONTENT  = 1;
+  static public final int TARGET_CONTENT            = 1;
 
   /**
    * The target of the href is a new window popped up.
-   *
+   * 
    * @see #target
    */
-  static public final int TARGET_POPUP    = 2;
-
+  static public final int TARGET_POPUP              = 2;
 
   /**
    * The target of the href is the hidden frame.
-   *
+   * 
    * @see #target
    */
-  static public final int TARGET_HIDDEN    = 3;
+  static public final int TARGET_HIDDEN             = 3;
 
-  static public final int TARGET_MODE_UNKNOWN = 0;
-  static public final int TARGET_MODE_VIEW = 1;
-  static public final int TARGET_MODE_EDIT = 2;
-  static public final int TARGET_MODE_CREATE = 3;
-  static public final int TARGET_MODE_CONNECT = 4;
+  static public final int TARGET_MODE_UNKNOWN       = 0;
 
-  static public final int TABLE_SORT_DIRECTION_UP = 0;
+  static public final int TARGET_MODE_VIEW          = 1;
+
+  static public final int TARGET_MODE_EDIT          = 2;
+
+  static public final int TARGET_MODE_CREATE        = 3;
+
+  static public final int TARGET_MODE_CONNECT       = 4;
+
+  static public final int TABLE_SORT_DIRECTION_UP   = 0;
+
   static public final int TABLE_SORT_DIRECTION_DOWN = 1;
 
+  static public final int ACTION_UNKNOWN            = 0;
 
-  static public final int ACTION_UNKNOWN = 0;
-  static public final int ACTION_DELETE = 1;
-
+  static public final int ACTION_DELETE             = 1;
 
   /**
-   * Check, if the user of the context has access to this command.
-   * If no access user is assigned to this command, all user have access.
-   * Otherwise check if the context person contains one of the assigned role
-   * of this command.
-   *
-   * @param _context  context for this request (including the person)
-   * @return  <i>true</i>if context user has access, otherwise <i>false</i> is
-   *          returned
+   * Check, if the user of the context has access to this command. If no access
+   * user is assigned to this command, all user have access. Otherwise check if
+   * the context person contains one of the assigned role of this command.
+   * 
+   * @param _context
+   *          context for this request (including the person)
+   * @return <i>true</i>if context user has access, otherwise <i>false</i> is
+   *         returned
    */
-  public boolean checkAccess(Context _context)  {
+  public boolean checkAccess(Context _context) {
     boolean ret = false;
 
-    if (getAccess().isEmpty())  {
+    if (getAccess().isEmpty()) {
       ret = true;
-    } else  {
+    } else {
       Iterator iter = getAccess().iterator();
-      while (iter.hasNext())  {
-        Role role = (Role)iter.next();
-        if (_context.getPerson().isAssigned(role))  {
+      while (iter.hasNext()) {
+        Role role = (Role) iter.next();
+        if (_context.getPerson().isAssigned(role)) {
           ret = true;
           break;
         }
@@ -133,1112 +144,1190 @@ public abstract class CommandAbstract extends UserInterfaceObject  {
   /**
    * Test, if the value of instance variable {@link #target} is equal to
    * {@link #TARGET_CONTENT}.
-   *
+   * 
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
    */
-  public boolean isTargetContent()  {
+  public boolean isTargetContent() {
     return getTarget() == TARGET_CONTENT;
   }
 
   /**
    * Test, if the value of instance variable {@link #target} is equal to
    * {@link #TARGET_POPUP}.
-   *
+   * 
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
    */
-  public boolean isTargetPopup()  {
+  public boolean isTargetPopup() {
     return getTarget() == TARGET_POPUP;
   }
 
   /**
    * Test, if the value of instance variable {@link #target} is equal to
    * {@link #TARGET_HIDDEN}.
-   *
+   * 
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
    */
-  public boolean isTargetHidden()  {
+  public boolean isTargetHidden() {
     return getTarget() == TARGET_HIDDEN;
   }
 
   /**
    * The instance method returns the label of a command (or also menu). The
    * instance method looks in the properties, if a property entry with prefix
-   * <i>Command.</i> and name is found. This value is returned. If no entry
-   * is found, the name of the command is returned.
-   *
-   * @param _context  context for this request
+   * <i>Command.</i> and name is found. This value is returned. If no entry is
+   * found, the name of the command is returned.
+   * 
+   * @param _context
+   *          context for this request
    * @return label of the command (or menu)
    */
-  public String getViewableName(Context _context)  {
+  public String getViewableName(Context _context) {
     String name = getName();
-    ResourceBundle msgs = ResourceBundle.getBundle("org.efaps.properties.AttributeRessource", _context.getLocale());
-    try  {
-      name = msgs.getString("Command."+name);
-    } catch (MissingResourceException e)  {
+    ResourceBundle msgs = ResourceBundle.getBundle(
+        "org.efaps.properties.AttributeRessource", _context.getLocale());
+    try {
+      name = msgs.getString("Command." + name);
+    } catch (MissingResourceException e) {
     }
     return name;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param _context  eFaps context for this request
-   * @param _linkType type of the link property
-   * @param _toId     to id
-   * @param _toType   to type
-   * @param _toName   to name
+   * @param _context
+   *          eFaps context for this request
+   * @param _linkType
+   *          type of the link property
+   * @param _toId
+   *          to id
+   * @param _toType
+   *          to type
+   * @param _toName
+   *          to name
    */
-  protected void setLinkProperty(final EFapsClassName _linkType, 
-                                 final long _toId, 
-                                 final EFapsClassName _toType, 
-                                 final String _toName) throws Exception  {
-    switch (_linkType)  {
-      case LINK_ICON:           setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/" + _toName));break;
-      case LINK_TARGET_FORM:    setTargetForm(Form.get(_toId));break;
-      case LINK_TARGET_MENU:    setTargetMenu(Menu.get(_toId));break;
-      case LINK_TARGET_SEARCH:  setTargetSearch(Search.get(_toName));break;
-      case LINK_TARGET_TABLE:   setTargetTable(Table.get(_toId));break;
-      default:                  super.setLinkProperty(_linkType, _toId, _toType, _toName);
+  protected void setLinkProperty(final EFapsClassName _linkType,
+                                 final long _toId,
+                                 final EFapsClassName _toType,
+                                 final String _toName) throws Exception {
+    switch (_linkType) {
+      case LINK_ICON:
+        setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/"
+            + _toName));
+      break;
+      case LINK_TARGET_FORM:
+        setTargetForm(Form.get(_toId));
+      break;
+      case LINK_TARGET_MENU:
+        setTargetMenu(Menu.get(_toId));
+      break;
+      case LINK_TARGET_SEARCH:
+        setTargetSearch(Search.get(_toName));
+      break;
+      case LINK_TARGET_TABLE:
+        setTargetTable(Table.get(_toId));
+      break;
+      default:
+        super.setLinkProperty(_linkType, _toId, _toType, _toName);
     }
   }
 
   /**
    * The instance method sets a new property value.
-   *
-   * @param _context  eFaps context for this request
-   * @param _name     name of the property
-   * @param _value    value of the property
+   * 
+   * @param _context
+   *          eFaps context for this request
+   * @param _name
+   *          name of the property
+   * @param _value
+   *          value of the property
    */
-  protected void setProperty(String _name, String _value) throws CacheReloadException  {
-    if (_name.equals("Action"))  {
-      if (_value.equals("delete"))  {
+  protected void setProperty(String _name, String _value)
+                                                         throws CacheReloadException {
+    if (_name.equals("Action")) {
+      if (_value.equals("delete")) {
         setAction(ACTION_DELETE);
       }
-    } else if (_name.equals("AskUser"))  {
-      if ("true".equalsIgnoreCase(_value))  {
+    } else if (_name.equals("AskUser")) {
+      if ("true".equalsIgnoreCase(_value)) {
         setAskUser(true);
-      } else  {
+      } else {
         setAskUser(false);
       }
-    } else if (_name.equals("DefaultSelected"))  {
-      if ("true".equalsIgnoreCase(_value))  {
+    } else if (_name.equals("DefaultSelected")) {
+      if ("true".equalsIgnoreCase(_value)) {
         setDefaultSelected(true);
-      } else  {
+      } else {
         setDefaultSelected(false);
       }
-    } else if (_name.equals("DeleteIndex"))  {
+    } else if (_name.equals("DeleteIndex")) {
       setDeleteIndex(Integer.parseInt(_value));
-    } else if (_name.equals("HRef"))  {
+    } else if (_name.equals("HRef")) {
       setReference(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.equals("Icon"))  {
+    } else if (_name.equals("Icon")) {
       setIcon(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.equals("Label"))  {
+    } else if (_name.equals("Label")) {
       setLabel(_value);
-    } else if (_name.equals("Submit"))  {
-      if (_value.equals("true"))  {
+    } else if (_name.equals("Submit")) {
+      if (_value.equals("true")) {
         setSubmit(true);
       }
-    } else if (_name.equals("Target"))  {
-      if (_value.equals("content"))  {
+    } else if (_name.equals("Target")) {
+      if (_value.equals("content")) {
         setTarget(TARGET_CONTENT);
-      } else if (_value.equals("hidden"))  {
+      } else if (_value.equals("hidden")) {
         setTarget(TARGET_HIDDEN);
-      } else if (_value.equals("popup"))  {
+      } else if (_value.equals("popup")) {
         setTarget(TARGET_POPUP);
       }
-    } else if (_name.equals("TargetBottomHeight"))  {
+    } else if (_name.equals("TargetBottomHeight")) {
       setTargetBottomHeight(Integer.parseInt(_value));
-    } else if (_name.equals("TargetConnectAttribute"))  {
+    } else if (_name.equals("TargetConnectAttribute")) {
       setTargetConnectAttribute(Attribute.get(_value));
-// "TargetConnectChildAttribute"
-// "TargetConnectParentAttribute"
-// "TargetConnectType"
-    } else if (_name.equals("TargetCreateType"))  {
+      // "TargetConnectChildAttribute"
+      // "TargetConnectParentAttribute"
+      // "TargetConnectType"
+    } else if (_name.equals("TargetCreateType")) {
       setTargetCreateType(Type.get(_value));
-    } else if (_name.equals("TargetFormBean"))  {
-      try  {
+    } else if (_name.equals("TargetFormBean")) {
+      try {
         setTargetFormBean(Class.forName(_value));
-      } catch (ClassNotFoundException e)  {
+      } catch (ClassNotFoundException e) {
         throw new CacheReloadException("could not found class '" + _value + "'"
-                                       + " used as target form bean for "
-                                       + "'" + getName() + "'", e);
+            + " used as target form bean for " + "'" + getName() + "'", e);
       }
-    } else if (_name.equals("TargetMode"))  {
-      if (_value.equals("create"))  {
+    } else if (_name.equals("TargetMode")) {
+      if (_value.equals("create")) {
         setTargetMode(TARGET_MODE_CREATE);
-      } else if (_value.equals("edit"))  {
+      } else if (_value.equals("edit")) {
         setTargetMode(TARGET_MODE_EDIT);
-      } else if (_value.equals("connect"))  {
+      } else if (_value.equals("connect")) {
         setTargetMode(TARGET_MODE_CONNECT);
-      } else if (_value.equals("view"))  {
+      } else if (_value.equals("view")) {
         setTargetMode(TARGET_MODE_VIEW);
       }
-    } else if (_name.equals("TargetShowCheckBoxes"))  {
-      if ("true".equalsIgnoreCase(_value))  {
+    } else if (_name.equals("TargetShowCheckBoxes")) {
+      if ("true".equalsIgnoreCase(_value)) {
         setTargetShowCheckBoxes(true);
-      } else  {
+      } else {
         setTargetShowCheckBoxes(false);
       }
-    } else if (_name.equals("TargetTableBean"))  {
-      try  {
+    } else if (_name.equals("TargetTableBean")) {
+      try {
         setTargetTableBean(Class.forName(_value));
-      } catch (ClassNotFoundException e)  {
+      } catch (ClassNotFoundException e) {
         throw new CacheReloadException("could not found class '" + _value + "'"
-                                       + " used as target table bean for "
-                                       + "'" + getName() + "'", e);
+            + " used as target table bean for " + "'" + getName() + "'", e);
       }
-    } else if (_name.startsWith("TargetTableFilter"))  {
-      int index = Integer.parseInt(_name.substring(17));
-      if (getTargetTableFilters()==null)  {
+    } else if (_name.startsWith("TargetTableFilter")) {
+      if (getTargetTableFilters() == null) {
         setTargetTableFilters(new Vector<TargetTableFilter>());
       }
       getTargetTableFilters().add(new TargetTableFilter(_value));
-    } else if (_name.equals("TargetTableSortKey"))  {
+    } else if (_name.equals("TargetTableSortKey")) {
       setTargetTableSortKey(_value);
-    } else if (_name.equals("TargetTableSortDirection"))  {
-      if (_value.equals("up"))  {
+    } else if (_name.equals("TargetTableSortDirection")) {
+      if (_value.equals("up")) {
         setTargetTableSortDirection(TABLE_SORT_DIRECTION_UP);
-      } else if (_value.equals("down"))  {
+      } else if (_value.equals("down")) {
         setTargetTableSortDirection(TABLE_SORT_DIRECTION_DOWN);
       }
-    } else if (_name.equals("TargetTitle"))  {
+    } else if (_name.equals("TargetTitle")) {
       setTargetTitle(_value);
-    } else if (_name.equals("WindowHeight"))  {
+    } else if (_name.equals("WindowHeight")) {
       setWindowHeight(Integer.parseInt(_value));
-    } else if (_name.equals("WindowWidth"))  {
+    } else if (_name.equals("WindowWidth")) {
       setWindowWidth(Integer.parseInt(_value));
     } else {
       super.setProperty(_name, _value);
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Instance variable to hold the reference to call.
-   *
+   * 
    * @see #setReference
    * @see #getReference
    */
-  private String reference=null;
+  private String                  reference                = null;
 
   /**
    * Instance variable to hold the reference to the icon file.
-   *
+   * 
    * @see #setIcon
    * @see #getIcon
    */
-  private String icon=null;
+  private String                  icon                     = null;
 
   /**
    * Access HashSet to store all users who have access to this menu.
-   *
+   * 
    * @see #getAccess
    * @see #add(Role)
    */
-  private HashSet<UserObject> access = new HashSet<UserObject>();
+  private HashSet<UserObject>     access                   = new HashSet<UserObject>();
 
   /**
-   * If the value is set to <i>true</i>. the commands submits the current
-   * form to the given href url and the given target. The default value is
-   * <i>false</i>.
-   *
+   * If the value is set to <i>true</i>. the commands submits the current form
+   * to the given href url and the given target. The default value is <i>false</i>.
+   * 
    * @see #isSubmit
    * @see #setSubmit
    */
-  private boolean submit = false;
+  private boolean                 submit                   = false;
 
   /**
    * The target of the command is the content frame.
-   *
+   * 
    * @see #isTargetContent
    * @see #isTargetPopup
    * @set #getTarget
    * @see #setTarget
    */
-  private int target = TARGET_UNKNOWN;
+  private int                     target                   = TARGET_UNKNOWN;
 
   /**
-   * The instance variable stores the target user interface form object which
-   * is shown by the this abstract commmand.
-   *
+   * The instance variable stores the target user interface form object which is
+   * shown by the this abstract commmand.
+   * 
    * @see #getTargetForm
    * @see #setTargetForm
    */
-  private Form targetForm = null;
+  private Form                    targetForm               = null;
 
   /**
    * The instance variable stores the table bean for commands calling a form.
    * The form bean overwrites the original form bean class.
-   *
+   * 
    * @see #getTargetFormBean
    * @see #setTargetFormBean
    */
-  private Class targetFormBean = null;
+  private Class                   targetFormBean           = null;
 
   /**
    * The instance method stores the complete menu. Default value is a null and
    * no menu is shown.
-   *
+   * 
    * @see #setTargetMenu
    * @see #getTargetMenu
    */
-  private Menu targetMenu = null;
+  private Menu                    targetMenu               = null;
 
   /**
-   * The instance variable stores the mode of the target user interface
-   * object.
-   *
+   * The instance variable stores the mode of the target user interface object.
+   * 
    * @see #getTargetMode
    * @see #setTargetMode
    */
-  private int targetMode = TARGET_MODE_UNKNOWN;
+  private int                     targetMode               = TARGET_MODE_UNKNOWN;
 
   /**
    * The instance variable stores the search of target user interface object.
-   *
+   * 
    * @see #getTargetSearch
    * @see #setTargetSearch
    */
-  private Search targetSearch = null;
+  private Search                  targetSearch             = null;
 
   /**
    * The instance variable stores the target user interface table object which
    * is shown by the this abstract commmand.
-   *
+   * 
    * @see #getTargetTable
    * @see #setTargetTable
    */
-  private Table targetTable = null;
+  private Table                   targetTable              = null;
 
   /**
    * The instance variable stores the table bean for commands calling a table.
    * The table bean overwrites the original table bean class.
-   *
+   * 
    * @see #getTargetTableBean
    * @see #setTargetTableBean
    */
-  private Class targetTableBean = null;
+  private Class                   targetTableBean          = null;
 
   /**
    * The instance variable stores for target user interface table object the
    * default sort key.
-   *
+   * 
    * @see #getTargetTableSortKey
    * @see #setTargetTableSortKey
    */
-  private String targetTableSortKey = null;
+  private String                  targetTableSortKey       = null;
 
   /**
    * The instance variable stores for target user interface table object the
    * default sort direction. The default value is
    * {@link #TABLE_SORT_DIRECTION_UP}.
-   *
+   * 
    * @see #getTargetTableSortDirection
    * @see #setTargetTableSortDirection
    */
-  private int targetTableSortDirection = TABLE_SORT_DIRECTION_UP;
+  private int                     targetTableSortDirection = TABLE_SORT_DIRECTION_UP;
 
   /**
    * The instance variable store the filters for the targer table.
-   *
+   * 
    * @see #getTargetTableFilters
    * @see #setTargetTableFilters
    */
-  private List<TargetTableFilter> targetTableFilters = null;
+  private List<TargetTableFilter> targetTableFilters       = null;
 
   /**
    * The instance variable stores the target connect attribute used for the
    * connect in a form.
-   *
+   * 
    * @see #getTargetConnectAttribute
    * @see #setTargetConnectAttribute
    */
-  private Attribute targetConnectAttribute = null;
+  private Attribute               targetConnectAttribute   = null;
 
   /**
-   * The instance variable stores the create type for the target user
-   * interface object.
-   *
+   * The instance variable stores the create type for the target user interface
+   * object.
+   * 
    * @see #getTargetCreateType
    * @see #setTargetCreateType
    */
-  private Type targetCreateType = null;
+  private Type                    targetCreateType         = null;
 
   /**
-   * The instance variable stores the height for the target bottom. Only a
-   * is set, the value is used from the JSP pages.
-   *
+   * The instance variable stores the height for the target bottom. Only a is
+   * set, the value is used from the JSP pages.
+   * 
    * @see #getTargetBottomHeight
    * @see #setTargetBottomHeight
    */
-  private int targetBottomHeight = 0;
+  private int                     targetBottomHeight       = 0;
 
   /**
-   * Standard checkboxes for a table must be shown. The checkboxes are used
-   * e.g. to delete selected.
-   *
+   * Standard checkboxes for a table must be shown. The checkboxes are used e.g.
+   * to delete selected.
+   * 
    * @see #isTargetShowCheckBoxes
    * @see #setTargetShowCheckBoxes
    */
-  private boolean targetShowCheckBoxes = false;
+  private boolean                 targetShowCheckBoxes     = false;
 
   /**
    * Sets the title of the target window.
-   *
+   * 
    * @see #getTargetTitle
    * @see #setTargetTitle
    */
-  private String targetTitle = null;
+  private String                  targetTitle              = null;
 
   /**
    * The instance variable stores if the execution of the command needs a
    * confirmation of the user. The default value is <i>false</i>.
-   *
+   * 
    * @see #isAskUser
    * @see #setAskUser
    */
-  private boolean askUser = false;
+  private boolean                 askUser                  = false;
 
   /**
-   * The instance variable stores the window height of the popup window
-   * ({@link #target} is set to {@link #TARGET_POPUP}). The default value is
-   * <i>400</i>.
-   *
+   * The instance variable stores the window height of the popup window ({@link #target}
+   * is set to {@link #TARGET_POPUP}). The default value is <i>400</i>.
+   * 
    * @see #getWindowHeight
    * @see #setWindowHeight
    */
-  private int windowHeight = 400;
+  private int                     windowHeight             = 400;
 
   /**
-   * The instance variable stores the window width of the popup window
-   * ({@link #target} is set to {@link #TARGET_POPUP}). The default value is
-   * <i>600</i>.
-   *
+   * The instance variable stores the window width of the popup window ({@link #target}
+   * is set to {@link #TARGET_POPUP}). The default value is <i>600</i>.
+   * 
    * @see #getWindowWidth
    * @see #setWindowWidth
    */
-  private int windowWidth = 600;
+  private int                     windowWidth              = 600;
 
   /**
    * The instance variable stores the predefined actions which can be executed
    * e.g. from the footer menu of a web table.
-   *
+   * 
    * @see #getAction
    * @see #setAction
    */
-  private int action = ACTION_UNKNOWN;
+  private int                     action                   = ACTION_UNKNOWN;
 
   /**
-   * If the instance variable is set to <i>tree</i>, the command is selected
-   * as default command in the navigation tree.
-   *
+   * If the instance variable is set to <i>tree</i>, the command is selected as
+   * default command in the navigation tree.
+   * 
    * @see #isDefaultSelected
    * @see #setDefaultSelected
    */
-  private boolean defaultSelected = false;
+  private boolean                 defaultSelected          = false;
 
   /**
    * The instance variable stores the index of the delete object id in the
    * string of all oids of the checkbox.
-   *
+   * 
    * @see #getDeleteIndex
    * @see #setDeleteIndex
    */
-  private int deleteIndex = 0;
+  private int                     deleteIndex              = 0;
 
   /**
    * The instance variable stores the label of this command instance. The
    * default value is set from the constructor to the name plus extension
    * '.Label'.
-   *
+   * 
    * @see #getLabel
    * @see #setLabel
    */
-  private String label = null;
+  private String                  label                    = null;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Set the new reference value.
-   *
-   * @param _reference new reference to set
+   * 
+   * @param _reference
+   *          new reference to set
    * @see #reference
    * @see #getReference
    */
-  public void setReference(String _reference)  {
-    this.reference  =_reference;
+  public void setReference(String _reference) {
+    this.reference = _reference;
   }
 
   /**
    * Get the current reference value.
-   *
+   * 
    * @return the value of the instance variable {@link #reference}.
    * @see #reference
    * @see #setReference
    */
-  public String getReference()  {
+  public String getReference() {
     return this.reference;
   }
 
   /**
    * Set the new icon reference value.
-   *
-   * @param _icon new icon reference to set
+   * 
+   * @param _icon
+   *          new icon reference to set
    * @see #icon
    * @see #getIcon
    */
-  public void setIcon(String _icon)  {
+  public void setIcon(String _icon) {
     this.icon = _icon;
   }
 
   /**
    * Get the current icon reference value.
-   *
+   * 
    * @return the value of the instance variable {@link #icon}.
    * @see #icon
    * @see #setIcon
    */
-  public String getIcon()  {
+  public String getIcon() {
     return this.icon;
   }
 
   /**
    * Getter method for the HashSet instance variable {@link #access}.
-   *
+   * 
    * @return value of the HashSet instance variable {@link #access}
    * @see #access
    * @see #add(Role)
    */
-  public Set<UserObject> getAccess()  {
+  public Set<UserObject> getAccess() {
     return this.access;
   }
 
   /**
    * Add a new role for access to this command.
-   *
+   * 
    * @param _role
    * @see #access
    * @see #getAccess
    */
-  protected void add(Role _role)  {
+  protected void add(Role _role) {
     getAccess().add(_role);
   }
 
   /**
    * This is the setter method for the instance variable {@link #submit}.
-   *
+   * 
    * @return value of instance variable {@link #submit}
    * @see #submit
    * @see #setSubmit
    */
-  public boolean isSubmit()  {
+  public boolean isSubmit() {
     return this.submit;
   }
 
   /**
    * This is the setter method for the instance variable {@link #submit}.
-   *
-   * @param _submit  new value for instance variable {@link #submit}
+   * 
+   * @param _submit
+   *          new value for instance variable {@link #submit}
    * @see #submit
    * @see #isSubmit
    */
-  public void setSubmit(boolean _submit)  {
+  public void setSubmit(boolean _submit) {
     this.submit = _submit;
   }
 
   /**
    * This is the setter method for the instance variable {@link #target}.
-   *
+   * 
    * @return value of instance variable {@link #target}
    * @see #target
    * @see #setTarget
    */
-  public int getTarget()  {
+  public int getTarget() {
     return this.target;
   }
 
   /**
    * This is the setter method for the instance variable {@link #target}.
-   *
-   * @param _target  new value for instance variable {@link #target}
+   * 
+   * @param _target
+   *          new value for instance variable {@link #target}
    * @see #target
    * @see #getTarget
    */
-  public void setTarget(int _target)  {
+  public void setTarget(int _target) {
     this.target = _target;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetForm}.
-   *
+   * 
    * @return value of instance variable {@link #targetForm}
    * @see #targetForm
    * @see #setTargetForm
    */
-  public Form getTargetForm()  {
+  public Form getTargetForm() {
     return this.targetForm;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetForm}.
-   *
-   * @param _targetForm  new value for instance variable {@link #targetForm}
+   * 
+   * @param _targetForm
+   *          new value for instance variable {@link #targetForm}
    * @see #targetForm
    * @see #getTargetForm
    */
-  public void setTargetForm(Form _targetForm)  {
+  public void setTargetForm(Form _targetForm) {
     this.targetForm = _targetForm;
   }
 
   /**
-   * This is the setter method for the instance variable
-   * {@link #targetFormBean}.
-   *
+   * This is the setter method for the instance variable {@link #targetFormBean}.
+   * 
    * @return value of instance variable {@link #targetFormBean}
    * @see #targetFormBean
    * @see #setTargetFormBean
    */
-  public Class getTargetFormBean()  {
+  public Class getTargetFormBean() {
     return this.targetFormBean;
   }
 
   /**
-   * This is the setter method for the instance variable
-   * {@link #targetFormBean}.
-   *
-   * @param _targetFormBean  new value for instance variable
-   *                          {@link #targetFormBean}
+   * This is the setter method for the instance variable {@link #targetFormBean}.
+   * 
+   * @param _targetFormBean
+   *          new value for instance variable {@link #targetFormBean}
    * @see #targetFormBean
    * @see #getTargetFormBean
    */
-  public void setTargetFormBean(Class _targetFormBean)  {
+  public void setTargetFormBean(Class _targetFormBean) {
     this.targetFormBean = _targetFormBean;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetMenu}.
-   *
+   * 
    * @return value of instance variable {@link #targetMenu}
    * @see #targetMenu
    * @see #setTargetMenu
    */
-  public Menu getTargetMenu()  {
+  public Menu getTargetMenu() {
     return this.targetMenu;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetMenu}.
-   *
-   * @param _targetMenu  new value for instance variable {@link #targetMenu}
+   * 
+   * @param _targetMenu
+   *          new value for instance variable {@link #targetMenu}
    * @see #targetMenu
    * @see #getTargetMenu
    */
-  public void setTargetMenu(Menu _targetMenu)  {
+  public void setTargetMenu(Menu _targetMenu) {
     this.targetMenu = _targetMenu;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetMode}.
-   *
+   * 
    * @return value of instance variable {@link #targetMode}
    * @see #targetMode
    * @see #setTargetMode
    */
-  public int getTargetMode()  {
+  public int getTargetMode() {
     return this.targetMode;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetMode}.
-   *
-   * @param _targetMode  new value for instance variable {@link #targetMode}
+   * 
+   * @param _targetMode
+   *          new value for instance variable {@link #targetMode}
    * @see #targetMode
    * @see #getTargetMode
    */
-  public void setTargetMode(int _targetMode)  {
+  public void setTargetMode(int _targetMode) {
     this.targetMode = _targetMode;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetSearch}.
-   *
+   * 
    * @return value of instance variable {@link #targetSearch}
    * @see #targetSearch
    * @see #setTargetSearch
    */
-  public Search getTargetSearch()  {
+  public Search getTargetSearch() {
     return this.targetSearch;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetSearch}.
-   *
-   * @param _targetSearch  new value for instance variable {@link #targetSearch}
+   * 
+   * @param _targetSearch
+   *          new value for instance variable {@link #targetSearch}
    * @see #targetSearch
    * @see #getTargetSearch
    */
-  public void setTargetSearch(Search _targetSearch)  {
+  public void setTargetSearch(Search _targetSearch) {
     this.targetSearch = _targetSearch;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetTable}.
-   *
+   * 
    * @return value of instance variable {@link #targetTable}
    * @see #targetTable
    * @see #setTargetTable
    */
-  public Table getTargetTable()  {
+  public Table getTargetTable() {
     return this.targetTable;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetTable}.
-   *
-   * @param _targetTable  new value for instance variable {@link #targetTable}
+   * 
+   * @param _targetTable
+   *          new value for instance variable {@link #targetTable}
    * @see #targetTable
    * @see #getTargetTable
    */
-  public void setTargetTable(Table _targetTable)  {
+  public void setTargetTable(Table _targetTable) {
     this.targetTable = _targetTable;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableBean}.
-   *
+   * 
    * @return value of instance variable {@link #targetTableBean}
    * @see #targetTableBean
    * @see #setTargetTableBean
    */
-  public Class getTargetTableBean()  {
+  public Class getTargetTableBean() {
     return this.targetTableBean;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableBean}.
-   *
-   * @param _targetTableBean  new value for instance variable
-   *                          {@link #targetTableBean}
+   * 
+   * @param _targetTableBean
+   *          new value for instance variable {@link #targetTableBean}
    * @see #targetTableBean
    * @see #getTargetTableBean
    */
-  public void setTargetTableBean(Class _targetTableBean)  {
+  public void setTargetTableBean(Class _targetTableBean) {
     this.targetTableBean = _targetTableBean;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableSortKey}.
-   *
+   * 
    * @return value of instance variable {@link #targetTableSortKey}
    * @see #targetTableSortKey
    * @see #setTargetTableSortKey
    */
-  public String getTargetTableSortKey()  {
+  public String getTargetTableSortKey() {
     return this.targetTableSortKey;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableSortKey}.
-   *
-   * @param _targetTableSortKey   new value for instance variable
-   *                              {@link #targetTableSortKey}
+   * 
+   * @param _targetTableSortKey
+   *          new value for instance variable {@link #targetTableSortKey}
    * @see #targetTableSortKey
    * @see #getTargetTableSortKey
    */
-  public void setTargetTableSortKey(String _targetTableSortKey)  {
+  public void setTargetTableSortKey(String _targetTableSortKey) {
     this.targetTableSortKey = _targetTableSortKey;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableSortDirection}.
-   *
+   * 
    * @return value of instance variable {@link #targetTableSortDirection}
    * @see #targetTableSortDirection
    * @see #setTargetTableSortDirection
    */
-  public int getTargetTableSortDirection()  {
+  public int getTargetTableSortDirection() {
     return this.targetTableSortDirection;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableSortDirection}.
-   *
-   * @param _targetTableSortDirection new value for instance variable
-   *                                  {@link #targetTableSortDirection}
+   * 
+   * @param _targetTableSortDirection
+   *          new value for instance variable {@link #targetTableSortDirection}
    * @see #targetTableSortDirection
    * @see #getTargetTableSortDirection
    */
-  public void setTargetTableSortDirection(int _targetTableSortDirection)  {
+  public void setTargetTableSortDirection(int _targetTableSortDirection) {
     this.targetTableSortDirection = _targetTableSortDirection;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableFilters}.
-   *
+   * 
    * @return value of instance variable {@link #targetTableFilters}
    * @see #targetTableFilters
    * @see #setTargetTableFilters
    */
-  public List<TargetTableFilter> getTargetTableFilters()  {
+  public List<TargetTableFilter> getTargetTableFilters() {
     return this.targetTableFilters;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableFilters}.
-   *
-   * @param _targetTableFilters new value for instance variable
-   *                                  {@link #targetTableFilters}
+   * 
+   * @param _targetTableFilters
+   *          new value for instance variable {@link #targetTableFilters}
    * @see #targetTableFilters
    * @see #getTargetTableFilters
    */
-  private void setTargetTableFilters(List<TargetTableFilter> _targetTableFilters)  {
+  private void setTargetTableFilters(List<TargetTableFilter> _targetTableFilters) {
     this.targetTableFilters = _targetTableFilters;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetConnectAttribute}.
-   *
+   * 
    * @return value of instance variable {@link #targetConnectAttribute}
    * @see #targetConnectAttribute
    * @see #setTargetConnectAttribute
    */
-  public Attribute getTargetConnectAttribute()  {
+  public Attribute getTargetConnectAttribute() {
     return this.targetConnectAttribute;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetConnectAttribute}.
-   *
-   * @param _targetConnectAttribute  new value for instance variable
-   *                                {@link #targetConnectAttribute}
+   * 
+   * @param _targetConnectAttribute
+   *          new value for instance variable {@link #targetConnectAttribute}
    * @see #targetConnectAttribute
    * @see #getTargetConnectAttribute
    */
-  public void setTargetConnectAttribute(Attribute _targetConnectAttribute)  {
+  public void setTargetConnectAttribute(Attribute _targetConnectAttribute) {
     this.targetConnectAttribute = _targetConnectAttribute;
   }
 
   /**
-   * This is the setter method for the instance variable {@link #targetCreateType}.
-   *
+   * This is the setter method for the instance variable
+   * {@link #targetCreateType}.
+   * 
    * @return value of instance variable {@link #targetCreateType}
    * @see #targetCreateType
    * @see #setTargetCreateType
    */
-  public Type getTargetCreateType()  {
+  public Type getTargetCreateType() {
     return this.targetCreateType;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetCreateType}.
-   *
-   * @param _targetCreateType   new value for instance variable
-   *                            {@link #targetCreateType}
+   * 
+   * @param _targetCreateType
+   *          new value for instance variable {@link #targetCreateType}
    * @see #targetCreateType
    * @see #getTargetCreateType
    */
-  public void setTargetCreateType(Type _targetCreateType)  {
+  public void setTargetCreateType(Type _targetCreateType) {
     this.targetCreateType = _targetCreateType;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetBottomHeight}.
-   *
+   * 
    * @return value of instance variable {@link #targetBottomHeight}
    * @see #targetBottomHeight
    * @see #setTargetBottomHeight
    */
-  public int getTargetBottomHeight()  {
+  public int getTargetBottomHeight() {
     return this.targetBottomHeight;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetBottomHeight}.
-   *
-   * @param _targetBottomHeight   new value for instance variable
-   *                                {@link #targetBottomHeight}
+   * 
+   * @param _targetBottomHeight
+   *          new value for instance variable {@link #targetBottomHeight}
    * @see #targetBottomHeight
    * @see #getTargetBottomHeight
    */
-  public void setTargetBottomHeight(int _targetBottomHeight)  {
+  public void setTargetBottomHeight(int _targetBottomHeight) {
     this.targetBottomHeight = _targetBottomHeight;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetShowCheckBoxes}.
-   *
+   * 
    * @return value of instance variable {@link #targetShowCheckBoxes}
    * @see #targetShowCheckBoxes
    * @see #setTargetShowCheckBoxes
    */
-  public boolean isTargetShowCheckBoxes()  {
+  public boolean isTargetShowCheckBoxes() {
     return this.targetShowCheckBoxes;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetShowCheckBoxes}.
-   *
-   * @param _targetShowCheckBoxes   new value for instance variable
-   *                                {@link #targetShowCheckBoxes}
+   * 
+   * @param _targetShowCheckBoxes
+   *          new value for instance variable {@link #targetShowCheckBoxes}
    * @see #targetShowCheckBoxes
    * @see #isTargetShowCheckBoxes
    */
-  public void setTargetShowCheckBoxes(boolean _targetShowCheckBoxes)  {
+  public void setTargetShowCheckBoxes(boolean _targetShowCheckBoxes) {
     this.targetShowCheckBoxes = _targetShowCheckBoxes;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetTitle}.
-   *
+   * 
    * @return value of instance variable {@link #targetTitle}
    * @see #targetTitle
    * @see #setTargetTitle
    */
-  public String getTargetTitle()  {
+  public String getTargetTitle() {
     return this.targetTitle;
   }
 
   /**
    * This is the setter method for the instance variable {@link #targetTitle}.
-   *
-   * @param _targetTitle  new value for instance variable {@link #targetTitle}
+   * 
+   * @param _targetTitle
+   *          new value for instance variable {@link #targetTitle}
    * @see #targetTitle
    * @see #isTargetTitle
    */
-  public void setTargetTitle(String _targetTitle)  {
+  public void setTargetTitle(String _targetTitle) {
     this.targetTitle = _targetTitle;
   }
 
   /**
    * This is the getter method for the instance variable {@link #askUser}.
-   *
+   * 
    * @return value of instance variable {@link #askUser}
    * @see #askUser
    * @see #setAskUser
    */
-  public boolean isAskUser()  {
+  public boolean isAskUser() {
     return this.askUser;
   }
 
   /**
    * This is the setter method for the instance variable {@link #askUser}.
-   *
-   * @param _askUser  new value for instance variable {@link #askUser}
+   * 
+   * @param _askUser
+   *          new value for instance variable {@link #askUser}
    * @see #askUser
    * @see #getAskUser
    */
-  private void setAskUser(boolean _askUser)  {
+  private void setAskUser(boolean _askUser) {
     this.askUser = _askUser;
   }
 
   /**
    * This is the getter method for the instance variable {@link #windowHeight}.
-   *
+   * 
    * @return value of instance variable {@link #windowHeight}
    * @see #windowHeight
    * @see #setWindowHeight
    */
-  public int getWindowHeight()  {
+  public int getWindowHeight() {
     return this.windowHeight;
   }
 
   /**
    * This is the setter method for the instance variable {@link #windowHeight}.
-   *
-   * @param _windowHeight new value for instance variable {@link #windowHeight}
+   * 
+   * @param _windowHeight
+   *          new value for instance variable {@link #windowHeight}
    * @see #windowHeight
    * @see #getWindowHeight
    */
-  private void setWindowHeight(int _windowHeight)  {
+  private void setWindowHeight(int _windowHeight) {
     this.windowHeight = _windowHeight;
   }
 
   /**
    * This is the getter method for the instance variable {@link #windowWidth}.
-   *
+   * 
    * @return value of instance variable {@link #windowWidth}
    * @see #windowWidth
    * @see #setWindowWidth
    */
-  public int getWindowWidth()  {
+  public int getWindowWidth() {
     return this.windowWidth;
   }
 
   /**
    * This is the setter method for the instance variable {@link #windowWidth}.
-   *
-   * @param _windowWidth  new value for instance variable {@link #windowWidth}
+   * 
+   * @param _windowWidth
+   *          new value for instance variable {@link #windowWidth}
    * @see #windowWidth
    * @see #getWindowWidth
    */
-  private void setWindowWidth(int _windowWidth)  {
+  private void setWindowWidth(int _windowWidth) {
     this.windowWidth = _windowWidth;
   }
 
   /**
    * This is the setter method for the instance variable {@link #action}.
-   *
+   * 
    * @return value of instance variable {@link #action}
    * @see #action
    * @see #setAction
    */
-  public int getAction()  {
+  public int getAction() {
     return this.action;
   }
 
   /**
    * This is the setter method for the instance variable {@link #action}.
-   *
-   * @param _action  new value for instance variable {@link #action}
+   * 
+   * @param _action
+   *          new value for instance variable {@link #action}
    * @see #action
    * @see #getAction
    */
-  public void setAction(int _action)  {
+  public void setAction(int _action) {
     this.action = _action;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #defaultSelected}.
-   *
+   * 
    * @return value of instance variable {@link #defaultSelected}
    * @see #defaultSelected
    * @see #setDefaultSelected
    */
-  public boolean isDefaultSelected()  {
+  public boolean isDefaultSelected() {
     return this.defaultSelected;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #defaultSelected}.
-   *
-   * @param _defaultSelected  new value for instance variable
-   *                          {@link #defaultSelected}
+   * 
+   * @param _defaultSelected
+   *          new value for instance variable {@link #defaultSelected}
    * @see #defaultSelected
    * @see #isDefaultSelected
    */
-  public void setDefaultSelected(boolean _defaultSelected)  {
+  public void setDefaultSelected(boolean _defaultSelected) {
     this.defaultSelected = _defaultSelected;
   }
 
   /**
    * This is the setter method for the instance variable {@link #deleteIndex}.
-   *
+   * 
    * @return value of instance variable {@link #deleteIndex}
    * @see #deleteIndex
    * @see #setDeleteIndex
    */
-  public int getDeleteIndex()  {
+  public int getDeleteIndex() {
     return this.deleteIndex;
   }
 
   /**
    * This is the setter method for the instance variable {@link #deleteIndex}.
-   *
-   * @param _deleteIndex  new value for instance variable
-   *                          {@link #deleteIndex}
+   * 
+   * @param _deleteIndex
+   *          new value for instance variable {@link #deleteIndex}
    * @see #deleteIndex
    * @see #getDeleteIndex
    */
-  public void setDeleteIndex(int _deleteIndex)  {
+  public void setDeleteIndex(int _deleteIndex) {
     this.deleteIndex = _deleteIndex;
   }
 
   /**
    * This is the setter method for the instance variable {@link #label}.
-   *
+   * 
    * @return value of instance variable {@link #label}
    * @see #label
    * @see #setLabel
    */
-  public String getLabel()  {
+  public String getLabel() {
     return this.label;
   }
 
   /**
    * This is the setter method for the instance variable {@link #label}.
-   *
-   * @param _label  new value for instance variable
-   *                          {@link #label}
+   * 
+   * @param _label
+   *          new value for instance variable {@link #label}
    * @see #label
    * @see #getLabel
    */
-  public void setLabel(String _label)  {
+  public void setLabel(String _label) {
     this.label = _label;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  /**
+   * All triggers for this Command are stored in this map.
+   */
+  private final Map<TriggerEvent, List<EventDefinition>> trigger = new HashMap<TriggerEvent, List<EventDefinition>>();
+
+  /**
+   * Adds a new trigger event to this Command.
+   * 
+   * @param _triggerEvent
+   *          trigger class name to add
+   * @param _eventDef
+   *          EventDefinition to add
+   */
+  public void addTrigger(final TriggerEvent _triggerEvent,
+                         final EventDefinition _eventDef) {
+    List<EventDefinition> events = this.trigger.get(_triggerEvent);
+    if (events == null) {
+      events = new ArrayList<EventDefinition>();
+      this.trigger.put(_triggerEvent, events);
+    }
+    int pos = 0;
+    for (EventDefinition cur : events) {
+      if (_eventDef.getIndexPos() > cur.getIndexPos()) {
+        break;
+      }
+      pos++;
+    }
+    events.add(pos, _eventDef);
+
+  }
+
+  public boolean hasTrigger() {
+    return !this.trigger.isEmpty();
+
+  }
+
+  public void executeTrigger() {
+
+    List<EventDefinition> triggers = this.trigger.get(TriggerEvent.COMMAND);
+
+    Map<TriggerKeys4Values, Object> map = new HashMap<TriggerKeys4Values, Object>();
+
+    for (EventDefinition evenDef : triggers) {
+      evenDef.execute(map);
+    }
+  }
+
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The class stores the filter of the target table.
    */
-  public class TargetTableFilter  {
+  public class TargetTableFilter {
 
     /**
      * Constructor to create a new target table filter instance.
-     *
-     * @param _clause  sql where clause for this filter
+     * 
+     * @param _clause
+     *          sql where clause for this filter
      */
-    private TargetTableFilter(String _clause)  {
+    private TargetTableFilter(String _clause) {
       setClause(_clause);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
 
     /**
      * The instance variable stores the sql clause.
-     *
+     * 
      * @see #getClause
      * @see #setClause
      */
     private String clause = null;
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
 
     /**
      * This is the setter method for the instance variable {@link #clause}.
-     *
+     * 
      * @return value of instance variable {@link #clause}
      * @see #clause
      * @see #setClause
      */
-    public String getClause()  {
+    public String getClause() {
       return this.clause;
     }
 
     /**
      * This is the setter method for the instance variable {@link #clause}.
-     *
-     * @param _clause  new value for instance variable {@link #clause}
+     * 
+     * @param _clause
+     *          new value for instance variable {@link #clause}
      * @see #clause
      * @see #getClause
      */
-    public void setClause(String _clause)  {
+    public void setClause(String _clause) {
       this.clause = _clause;
     }
   }

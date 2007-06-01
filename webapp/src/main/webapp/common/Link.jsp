@@ -56,4 +56,8 @@
     </jsp:include>
 <%
   }
+  if (command.hasTrigger()){
+    command.executeTrigger();
+  
+  }
 %>

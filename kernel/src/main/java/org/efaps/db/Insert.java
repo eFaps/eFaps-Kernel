@@ -150,9 +150,9 @@ public class Insert extends Update {
     Context context = Context.getThreadContext();
     ConnectionResource con = null;
     try {
-      executeTrigger(context, TriggerEvent.INSERT_PRE);
+      executeTrigger(TriggerEvent.INSERT_PRE);
 
-      if (!executeTrigger(context, TriggerEvent.INSERT_OVERRIDE)) {
+      if (!executeTrigger(TriggerEvent.INSERT_OVERRIDE)) {
         con = context.getConnectionResource();
 
         if (test4Unique(context)) {
@@ -178,7 +178,7 @@ public class Insert extends Update {
         con.commit();
       }
 
-      executeTrigger(context, TriggerEvent.INSERT_POST);
+      executeTrigger( TriggerEvent.INSERT_POST);
     } catch (EFapsException e) {
       if (con != null) {
         con.abort();
