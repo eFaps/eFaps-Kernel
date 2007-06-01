@@ -36,18 +36,17 @@ import org.efaps.util.EFapsException;
 
 public class Member implements EventExecution {
 
-  public void execute(Context _context, Instance _instance,
-                      Map<TriggerKeys4Values, Map> _map) {
-
+  public void execute(Map<TriggerKeys4Values, Object> _map) {
+    Instance instance = (Instance) _map.get(TriggerKeys4Values.INSTANCE);
     // nur wenn ein neuer Root, Folder, Dokument angelegt wurde
-    if (_instance.getId() != 0) {
-      String abstractlink = ((Long) _instance.getId()).toString();
+    if (instance.getId() != 0) {
+      String abstractlink = ((Long) instance.getId()).toString();
       try {
         Insert insert = new Insert("TeamWork_Member");
         insert.add("AbstractLink", abstractlink);
         insert.add("AccessSetLink", "1");
-        insert.add("UserAbstractLink", ((Long) _context.getPerson().getId())
-            .toString());
+        insert.add("UserAbstractLink", ((Long) Context.getThreadContext()
+            .getPerson().getId()).toString());
         insert.executeWithoutAccessCheck();
 
       } catch (EFapsException e) {
@@ -55,7 +54,7 @@ public class Member implements EventExecution {
         e.printStackTrace();
       }
     } else {
-      Iterator iter = _map.get(TriggerKeys4Values.NEW_VALUES).entrySet()
+      Iterator iter = ((Map<TriggerKeys4Values, Object>) _map.get(TriggerKeys4Values.NEW_VALUES)).entrySet()
           .iterator();
       Map<String, String> newValues = new HashMap<String, String>();
 

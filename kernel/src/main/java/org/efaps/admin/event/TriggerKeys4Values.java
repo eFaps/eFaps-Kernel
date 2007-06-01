@@ -23,7 +23,8 @@ package org.efaps.admin.event;
 /**
  * The enum stores all keys used in the map when calling triggers.
  */
-public enum TriggerKeys4Values  {
+public enum TriggerKeys4Values {
+  INSTANCE,
   NEW_VALUES
-}
 
+}

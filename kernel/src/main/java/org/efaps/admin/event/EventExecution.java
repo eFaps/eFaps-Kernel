@@ -22,9 +22,6 @@ package org.efaps.admin.event;
 
 import java.util.Map;
 
-import org.efaps.db.Context;
-import org.efaps.db.Instance;
-
 /**
  * This interface is for the Programs loaded dynamically from the efapsdatabase
  * with the efapsClassLoader. To be invoked the Classes loaded with the
@@ -45,7 +42,5 @@ public interface EventExecution {
    * @param _map
    *          Map with values from the trigger
    */
-  public void execute(final Context _context, final Instance _instance,
-                      final Map<TriggerKeys4Values, Map> _map);
+  public void execute(final Map<TriggerKeys4Values, Object> _map);
 }
-//nur noch die Map uebergeben aber mit Object als zweites

@@ -20,14 +20,12 @@
 
 package org.efaps.teamwork;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.TriggerKeys4Values;
-import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -45,12 +43,12 @@ public class Abstract2Abstract implements EventExecution {
     }
   }
 
-  public void execute(final Context _context, final Instance _instance,
-                      final Map<TriggerKeys4Values, Map> _map) {
+  public void execute(final Map<TriggerKeys4Values, Object> _map) {
 
-    String abstractlink = ((Long) _instance.getId()).toString();
+    Instance instance = (Instance) _map.get(TriggerKeys4Values.INSTANCE);
+    String abstractlink = ((Long) instance.getId()).toString();
 
-    String type = _instance.getType().getName();
+    String type = instance.getType().getName();
 
     if (type.equals("TeamWork_RootCollection")) {
 
@@ -62,7 +60,7 @@ public class Abstract2Abstract implements EventExecution {
       String parent = null;
 
       try {
-        query.setObject(_instance.getOid());
+        query.setObject(instance.getOid());
         query.addSelect("ParentCollectionLink");
         query.executeWithoutAccessCheck();
         if (query.next()) {

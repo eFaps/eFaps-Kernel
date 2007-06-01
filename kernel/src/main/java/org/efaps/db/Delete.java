@@ -28,9 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.efaps.admin.access.AccessTypeEnums;
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
@@ -244,14 +242,15 @@ public class Delete {
    * @return true if a trigger was found and executed, otherwise false
    */
   private boolean executeTrigger(final Context _context,
-                                   final TriggerEvent _triggerEvent) {
+                                 final TriggerEvent _triggerEvent) {
     List<EventDefinition> triggers = getInstance().getType().getTrigger(
         _triggerEvent);
     if (triggers != null) {
-      Map<TriggerKeys4Values, Map> map = new HashMap<TriggerKeys4Values, Map>();
-      map.put(TriggerKeys4Values.NEW_VALUES, new HashMap<Attribute, Object>());
+      Map<TriggerKeys4Values, Object> map = new HashMap<TriggerKeys4Values, Object>();
+
+      map.put(TriggerKeys4Values.INSTANCE, getInstance());
       for (EventDefinition evenDef : triggers) {
-        evenDef.execute(_context, getInstance(), map);
+        evenDef.execute(map);
       }
       return true;
     }

@@ -180,10 +180,11 @@ public class Update {
     List<EventDefinition> triggers = getInstance().getType().getTrigger(
         _triggerEvent);
     if (triggers != null) {
-      Map<TriggerKeys4Values, Map> map = new HashMap<TriggerKeys4Values, Map>();
+      Map<TriggerKeys4Values, Object> map = new HashMap<TriggerKeys4Values, Object>();
       map.put(TriggerKeys4Values.NEW_VALUES, this.values);
+      map.put(TriggerKeys4Values.INSTANCE, getInstance());
       for (EventDefinition evenDef : triggers) {
-        evenDef.execute(_context, getInstance(), map);
+        evenDef.execute(map);
       }
       return true;
     }
@@ -357,7 +358,7 @@ public class Update {
     ConnectionResource con = null;
     try {
       executeTrigger(context, TriggerEvent.UPDATE_PRE);
-      
+
       if (!executeTrigger(context, TriggerEvent.UPDATE_OVERRIDE)) {
         con = context.getConnectionResource();
 

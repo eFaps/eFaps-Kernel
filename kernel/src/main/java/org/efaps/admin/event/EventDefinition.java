@@ -31,7 +31,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.java.EFapsClassLoader;
 import org.efaps.admin.ui.Command;
 import org.efaps.db.Context;
-import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 
 /**
@@ -43,7 +42,8 @@ public class EventDefinition extends AdminObject implements EventExecution {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(EventDefinition.class);
+  private static final Log LOG          = LogFactory
+                                            .getLog(EventDefinition.class);
 
   /**
    * The variable stores the position in a event pool (more than one event
@@ -54,24 +54,28 @@ public class EventDefinition extends AdminObject implements EventExecution {
   private final long       indexPos;
 
   /**
-   * The variable stores the event type.
-   */
-  private final Type       eventType;
-
-  /**
    * The variable stores the Name of the JavaClass
    */
   private final String     resourceName;
 
   /**
    * 
+   * The variable stores the Name of the method to be invoked
+   */
+  private final String     methodName;
+
+  private EventExecution   progInstance = null;
+
+  /**
+   * 
    */
   private EventDefinition(final long _id, final String _name,
-      final long _indexPos, final Type _eventType, final String _resourceName) {
+      final long _indexPos, final String _resourceName, final String _method) {
     super(_id, null, _name);
     this.indexPos = _indexPos;
-    this.eventType = _eventType;
     this.resourceName = _resourceName;
+    this.methodName = _method;
+    setInstance();
   }
 
   public String getViewableName(Context _context) {
@@ -98,45 +102,49 @@ public class EventDefinition extends AdminObject implements EventExecution {
     return this.resourceName;
   }
 
-  /**
-   * This is the getter method for instance variable {@link #eventType}.
-   * 
-   * @return value of instance variable {@link #eventType}
-   * @see #eventType
-   */
-  public Type geteventType() {
-    return this.eventType;
+  private void setInstance() {
+    try {
+      Class cls = Class.forName(this.resourceName, true, new EFapsClassLoader(
+          this.getClass().getClassLoader()));
+      this.method = cls.getMethod(this.methodName, new Class[] { Map.class });
+      this.progInstance = ((EventExecution) cls.newInstance());
+    } catch (ClassNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (InstantiationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (IllegalAccessException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (SecurityException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (NoSuchMethodException e) {
+      LOG.error("could not find method: '" + this.methodName + "' in class: '"
+          + this.resourceName + "'", e);
+      e.printStackTrace();
+    }
+
   }
 
-  public void execute(final Context _context, final Instance _instance,
-                      final Map<TriggerKeys4Values, Map> _map) {
+  private Method method = null;
+
+  public void execute(final Map<TriggerKeys4Values, Object> _map) {
 
     try {
 
-      Class cls = Class.forName(this.resourceName, true, new EFapsClassLoader(
-          this.getClass().getClassLoader()));
+      this.method.invoke(this.progInstance, _map);
 
-      Method m = cls.getMethod("execute", new Class[] { Context.class,
-          Instance.class, Map.class });
-
-      m.invoke(cls.newInstance(), _context, _instance, _map);
-
-    } catch (ClassNotFoundException e) {
-      LOG.error("could not find class: '" + this.resourceName, e);
     } catch (SecurityException e) {
       LOG.error("could not access class: '" + this.resourceName, e);
     } catch (IllegalArgumentException e) {
       LOG.error("execute(Context, Instance, Map<TriggerKeys4Values,Map>)", e);
-    } catch (NoSuchMethodException e) {
-      LOG.error("could not find method: 'execute' in class: '"
-          + this.resourceName + "'", e);
     } catch (IllegalAccessException e) {
       LOG.error("could not access class: '" + this.resourceName, e);
     } catch (InvocationTargetException e) {
-      LOG.error("could not invoke method: 'execute' in class: '"
-          + this.resourceName, e);
-    } catch (InstantiationException e) {
-      LOG.error("could not instantiat class: '" + this.resourceName, e);
+      LOG.error("could not invoke method: '" + this.methodName
+          + "' in class: '" + this.resourceName, e);
     }
 
   }
@@ -160,6 +168,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
     query.addSelect("Abstract.Type");
     query.addSelect("JavaProg");
     query.addSelect("JavaProg.Name");
+    query.addSelect("Method");
     query.executeWithoutAccessCheck();
 
     if (LOG.isDebugEnabled()) {
@@ -174,7 +183,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
       Type parentType = (Type) query.get("Abstract.Type");
       long programId = (Long) query.get("JavaProg");
       String resName = (String) query.get("JavaProg.Name");
-
+      String method = (String) query.get("Method");
       if (LOG.isDebugEnabled()) {
         LOG.debug("   eventId=" + eventId);
         LOG.debug("   eventType=" + eventType);
@@ -184,6 +193,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
         LOG.debug("   parentType=" + parentType);
         LOG.debug("   programId=" + programId);
         LOG.debug("   JaveProgName=" + resName);
+        LOG.debug("   Method=" + method);
       }
 
       EFapsClassName eFapsClass = EFapsClassName.getEnum(parentType.getName());
@@ -200,7 +210,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
                   + triggerClass);
             }
             type.addTrigger(triggerEvent, new EventDefinition(eventId,
-                eventName, eventPos, eventType, resName));
+                eventName, eventPos, resName, method));
           }
         }
       } else {
