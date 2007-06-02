@@ -57,9 +57,11 @@
     <access>
       <role>Administration</role>
     </access>
-    <!-- properties -->
-    <property name="HRef">${COMMONURL}/ReloadCache.jsp</property>
-    <property name="Target">true</property>
+    <property name="HRef">${COMMONURL}/Link.jsp</property>
+    <property name="Target">hidden</property>
+    
+    <trigger name="Main_ReloadCacheToolBar_COMMAND" event="COMMAND" program="org.efaps.webapp.programs.ReloadCache" method="execute" index="1"/>
+  
   </definition>
 
 </ui-command>

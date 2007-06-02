@@ -38,6 +38,8 @@ importClass(Packages.org.efaps.update.ui.SearchUpdate);
 importClass(Packages.org.efaps.update.ui.TableUpdate);
 importClass(Packages.org.efaps.update.user.JAASSystemUpdate);
 importClass(Packages.org.efaps.update.user.RoleUpdate);
+importClass(Packages.org.efaps.update.program.JavaUpdate);
+importClass(Packages.org.efaps.admin.program.java.Compiler);
 
 var CURRENT_TIMESTAMP = Context.getDbType().getCurrentTimeStamp();
 
@@ -111,6 +113,8 @@ function _eFapsCreateAllImportXMLFiles(_context, _version)  {
   var jexlContext = JexlHelper.createContext();
   jexlContext.getVars().put("version", 
                             Packages.java.lang.Integer.parseInt(_version));
+
+ 
 
   // image
   for (i in fileList)  {
@@ -255,6 +259,19 @@ function _eFapsCreateAllImportXMLFiles(_context, _version)  {
       }
     }
   }
+    
+   // program
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var update = JavaUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+  }
+  
 }
 
 /**
@@ -371,7 +388,13 @@ function eFapsCreateAll()  {
 
   print("############ Reload Cache");
   reloadCache("shell");
-
+  
+  Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
+  (new Compiler()).compile();
+  Shell.transactionManager.commit();
+  context.close();
+  
   _eFapsCreateAllUpdatePassword();
 }
 
