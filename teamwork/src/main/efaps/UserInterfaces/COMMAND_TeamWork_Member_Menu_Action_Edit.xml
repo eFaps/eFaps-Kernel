@@ -64,11 +64,10 @@
     <property name="Target">content</property>
     <property name="TargetMode">edit</property>
     <property name="TargetExpand">TeamWork_MemberRights\AbstractLink</property>
-     <property name="TargetShowCheckBoxes">true</property>
+    <property name="TargetShowCheckBoxes">true</property>
+  
+   	<trigger name="TeamWork_Member_Menu_Action_Edit_COMMAND" event="COMMAND" program="org.efaps.teamwork.Member" method="execute" index="1"/>
+  
   </definition>
-  
-   <trigger name="TeamWork_Member_Menu_Action_Edit_COMMAND" event="COMMAND" program="org.efaps.teamwork.Member" index="1"/>
-  
-  
 
 </ui-command>

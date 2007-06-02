@@ -31,25 +31,24 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.xml.sax.SAXException;
-
-import org.efaps.admin.event.TriggerEvent;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
+import org.xml.sax.SAXException;
 
 /**
- * This Class is responsible for the Update of Type in the Database
+ * This Class is responsible for the Update of Type in the Database.<br/>It
+ * reads with <code>org.apache.commons.digester</code> a XML-File to create
+ * the different Classes and invokes the Methods to Update a Type
  * 
  * @author tmo
  * @author jmo
  * @version $Id: TypeUpdate.java 726 2007-03-17 22:14:14 +0000 (Sat, 17 Mar
  *          2007) tmo $
- * @todo description
+ * 
  */
 public class TypeUpdate extends AbstractUpdate {
 
@@ -83,6 +82,17 @@ public class TypeUpdate extends AbstractUpdate {
   // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
+  /**
+   * Method that converts the given FileName into a <code>File</code> and then
+   * parses the File to <code>TypeUpdate readXMLFile(final File _file)</code>.
+   * {@link readXMLFile}
+   * 
+   * @param _fileName
+   *          Name of the XML-File to be read by the digester
+   * @return TypeUpdate Definition read by digester
+   * @throws IOException
+   *           if file is not readable
+   */
   public static TypeUpdate readXMLFile(final String _fileName)
                                                               throws IOException {
     return readXMLFile(new File(_fileName));
@@ -347,8 +357,6 @@ public class TypeUpdate extends AbstractUpdate {
      */
     private final List<Attribute> attributes = new ArrayList<Attribute>();
 
-    private final List<Trigger>   triggers   = new ArrayList<Trigger>();
-
     // /////////////////////////////////////////////////////////////////////////
     // instance methods
 
@@ -390,10 +398,6 @@ public class TypeUpdate extends AbstractUpdate {
         attr.updateInDB(instance, getValue("Name"));
       }
 
-      for (Trigger trig : this.triggers) {
-        trig.updateInDB(instance, getValue("Name"));
-      }
-
       return instance;
     }
 
@@ -429,138 +433,6 @@ public class TypeUpdate extends AbstractUpdate {
           _typeLink));
     }
 
-    /**
-     * adds a Trigger to the Definition
-     * 
-     * @param _name
-     *          name of the Trigger
-     * @param _event
-     *          event as defined in {@link org.efaps.admin.event. TriggerEvent}
-     * @param _program
-     *          name of the programm invoked in this trigger
-     * @param _index
-     *          index of the trigger
-     */
-    public void addTrigger(final String _name, final String _event,
-                           final String _program, final String _method,
-                           final String _index) {
-      this.triggers.add(new Trigger(_name, _event, _program, _method, _index));
-    }
   }
 
-  /**
-   * The class defines an Tigger of a type.
-   */
-  private static class Trigger {
-
-    /**
-     * event as defined in {@link org.efaps.admin.event. TriggerEvent}
-     */
-    private final String event;
-
-    /**
-     * name of the programm invoked in this trigger
-     */
-    private final String program;
-
-    /**
-     * name of the method to be invoked by tihs trigger
-     */
-    private final String method;
-
-    /**
-     * index of the trigger
-     */
-    private final String index;
-
-    /**
-     * name of the Trigger
-     */
-    private final String name;
-
-    public Trigger(final String _name, final String _event,
-        final String _program, final String _method, final String _index) {
-      this.name = _name;
-      this.event = _event;
-      this.program = _program;
-      this.method = _method;
-      this.index = _index;
-    }
-
-    /**
-     * For given type defined with the instance parameter, this trigger is
-     * searched by typeID and indexposition. If the trigger exists, the trigger
-     * is updated. Otherwise the trigger is created.
-     * 
-     * @param _instance
-     *          type instance to update with this attribute
-     * @param _typeName
-     *          name of the type to update
-     * 
-     * 
-     */
-    protected void updateInDB(final Instance _instance, final String _typeName) {
-
-      try {
-
-        long typeID = _instance.getId();
-        long progID = getProgID(_typeName);
-
-        SearchQuery query = new SearchQuery();
-        query.setQueryTypes(TriggerEvent.valueOf(this.event).name);
-        query.addWhereExprEqValue("Abstract", typeID);
-        query.addWhereExprEqValue("Name", this.name);
-        query.addSelect("OID");
-        query.executeWithoutAccessCheck();
-
-        Update update;
-
-        if (query.next()) {
-          update = new Update((String) query.get("OID"));
-        } else {
-          update = new Insert(TriggerEvent.valueOf(this.event).name);
-          update.add("Abstract", "" + typeID);
-          update.add("IndexPosition", this.index);
-          update.add("Name", this.name);
-        }
-        query.close();
-        update.add("JavaProg", "" + progID);
-        update.add("Method", this.method);
-        update.executeWithoutAccessCheck();
-
-      } catch (EFapsException e) {
-        LOG.error("updateInDB(Instance, String)", e);
-      } catch (Exception e) {
-        LOG.error("updateInDB(Instance, String)", e);
-      }
-
-    }
-
-    /**
-     * get the ID of the Program
-     * 
-     * @param _typeName
-     *          Name of teh Type
-     * @return id of the Program, 0 if not found
-     * @throws EFapsException
-     */
-    private long getProgID(String _typeName) throws EFapsException {
-      long id = 0;
-
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Admin_Program_Java");
-      query.addSelect("ID");
-      query.addWhereExprEqValue("Name", this.program);
-
-      query.executeWithoutAccessCheck();
-      if (query.next()) {
-        id = (Long) query.get("ID");
-      } else {
-        LOG.error("type[" + _typeName + "]." + "Program [" + this.program
-            + "]: " + "' not found");
-      }
-      return id;
-    }
-
-  }
 }
