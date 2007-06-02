@@ -37,73 +37,61 @@ public class Abstract2Abstract implements EventExecution {
    */
   private static final Log LOG = LogFactory.getLog(Abstract2Abstract.class);
 
-  public Abstract2Abstract() {
-    if (LOG.isDebugEnabled()) {
-      LOG.debug("loading Program....");
-    }
-  }
-
-  public void execute(final Map<TriggerKeys4Values, Object> _map) {
-
+  public void execute(Map<TriggerKeys4Values, Object> _map) {
     Instance instance = (Instance) _map.get(TriggerKeys4Values.INSTANCE);
     String abstractlink = ((Long) instance.getId()).toString();
 
-    String type = instance.getType().getName();
+    SearchQuery query = new SearchQuery();
+    String parent = null;
 
-    if (type.equals("TeamWork_RootCollection")) {
+    try {
+      query.setObject(instance.getOid());
+      query.addSelect("ParentCollectionLink");
+      query.executeWithoutAccessCheck();
+      if (query.next()) {
 
-      insertDB(abstractlink, abstractlink, "1");
-
-    } else if (type.equals("TeamWork_Collection")
-        || type.equals("TeamWork_Source")) {
-      SearchQuery query = new SearchQuery();
-      String parent = null;
-
-      try {
-        query.setObject(instance.getOid());
-        query.addSelect("ParentCollectionLink");
-        query.executeWithoutAccessCheck();
-        if (query.next()) {
-
-          parent = query.get("ParentCollectionLink").toString();
-        }
-        query.close();
-
-        query = new SearchQuery();
-        query.setQueryTypes("TeamWork_Abstract2Abstract");
-        query.addWhereExprEqValue("AbstractLink", parent);
-        query.addSelect("AncestorLink");
-        query.addSelect("Rank");
-        query.executeWithoutAccessCheck();
-
-        while (query.next()) {
-
-          insertDB(abstractlink, query.get("AncestorLink").toString(), query
-              .get("Rank").toString());
-
-        }
-        query.close();
-
-        query = new SearchQuery();
-        query.setQueryTypes("TeamWork_Abstract2Abstract");
-        query.addWhereExprEqValue("AbstractLink", parent);
-        query.addWhereExprEqValue("AncestorLink", parent);
-        query.addSelect("Rank");
-        query.executeWithoutAccessCheck();
-        if (query.next()) {
-          Long rank = ((Long) query.get("Rank")) + 1;
-
-          insertDB(abstractlink, abstractlink, rank.toString());
-
-        }
-
-      } catch (EFapsException e) {
-
-        LOG.error("execute(Context, Instance, Map<TriggerKeys4Values,Map>)", e);
+        parent = query.get("ParentCollectionLink").toString();
       }
+      query.close();
 
+      query = new SearchQuery();
+      query.setQueryTypes("TeamWork_Abstract2Abstract");
+      query.addWhereExprEqValue("AbstractLink", parent);
+      query.addSelect("AncestorLink");
+      query.addSelect("Rank");
+      query.executeWithoutAccessCheck();
+
+      while (query.next()) {
+
+        insertDB(abstractlink, query.get("AncestorLink").toString(), query.get(
+            "Rank").toString());
+
+      }
+      query.close();
+
+      query = new SearchQuery();
+      query.setQueryTypes("TeamWork_Abstract2Abstract");
+      query.addWhereExprEqValue("AbstractLink", parent);
+      query.addWhereExprEqValue("AncestorLink", parent);
+      query.addSelect("Rank");
+      query.executeWithoutAccessCheck();
+      if (query.next()) {
+        Long rank = ((Long) query.get("Rank")) + 1;
+
+        insertDB(abstractlink, abstractlink, rank.toString());
+
+      }
+    } catch (EFapsException e) {
+
+      LOG.error("execute(Context, Instance, Map<TriggerKeys4Values,Map>)", e);
     }
+  }
 
+  public void insertNewRoot(Map<TriggerKeys4Values, Object> _map) {
+    Instance instance = (Instance) _map.get(TriggerKeys4Values.INSTANCE);
+    String abstractlink = ((Long) instance.getId()).toString();
+
+    insertDB(abstractlink, abstractlink, "1");
   }
 
   private void insertDB(final String _abstractlink, final String _ancestorlink,
@@ -122,5 +110,4 @@ public class Abstract2Abstract implements EventExecution {
     }
 
   }
-
 }

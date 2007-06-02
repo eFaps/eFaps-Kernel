@@ -25,20 +25,18 @@
 
 <program>
   
-
   <!-- ************************************************************************
     version definition used to create / update the Program 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>eFaps</application>
+      <application>teamwork</application>
       <global>1</global>
       <local>$Rev:851 $</local>
       <mode>true</mode>
-      <mode>(version==8)</mode>
+      <mode>(version==1)</mode>
     </version>
-    
-    <file>ReloadCache.java</file>
+    <file>Member.java</file>
   </definition>
 
 </program>

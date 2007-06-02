@@ -94,9 +94,6 @@ public class JavaUpdate extends AbstractUpdate {
         digester.setValidating(false);
         digester.addObjectCreate("program", JavaUpdate.class);
 
-        digester.addCallMethod("program/uuid", "setUUID", 1);
-        digester.addCallParam("program/uuid", 0);
-
         digester.addObjectCreate("program/definition", JavaDefinition.class);
         digester.addSetNext("program/definition", "addDefinition");
 
@@ -146,12 +143,18 @@ public class JavaUpdate extends AbstractUpdate {
     /**
      * Name of the Java file (incl. the path) to import.
      */
-    private String file     = null;
+    private String  file           = null;
 
     /**
      * Name of the root path used to initialise the path for the Java File.
      */
-    private String rootPath = null;
+    private String  rootPath       = null;
+
+    /**
+     * Boolean that stores, if the ClassName was allready set by
+     * {@link setClassName}
+     */
+    private boolean classNameIsSet = false;
 
     /**
      * default constructor
@@ -218,6 +221,7 @@ public class JavaUpdate extends AbstractUpdate {
       }
 
       setName(name);
+      this.classNameIsSet = true;
     }
 
     /**
@@ -236,9 +240,9 @@ public class JavaUpdate extends AbstractUpdate {
                            final Set<Link> _allLinkTypes)
                                                          throws EFapsException,
                                                          Exception {
-
-      setClassName(new File(this.rootPath + "/" + this.file));
-
+      if (!this.classNameIsSet) {
+        setClassName(new File(this.rootPath + "/" + this.file));
+      }
       Instance instance = null;
       Insert insert = null;
 

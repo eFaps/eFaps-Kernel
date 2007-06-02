@@ -33,6 +33,7 @@ import org.efaps.update.access.AccessTypeUpdate;
 import org.efaps.update.datamodel.SQLTableUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
+import org.efaps.update.program.JavaUpdate;
 import org.efaps.update.ui.CommandUpdate;
 import org.efaps.update.ui.FormUpdate;
 import org.efaps.update.ui.ImageUpdate;
@@ -160,6 +161,14 @@ public class ApplicationVersion implements Comparable /*< ApplicationVersion >*/
         update.updateInDB(jexlContext);
       }
     }
+    for (File file : files)  {
+      JavaUpdate update = JavaUpdate.readXMLFile(file);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+    
+    
   }
 
   private Set < File > getFiles()  {
