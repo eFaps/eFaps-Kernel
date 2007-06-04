@@ -25,6 +25,6 @@ package org.efaps.admin.event;
  */
 public enum TriggerKeys4Values {
   INSTANCE,
-  NEW_VALUES
-
+  NEW_VALUES,
+  PROPERTIES
 }

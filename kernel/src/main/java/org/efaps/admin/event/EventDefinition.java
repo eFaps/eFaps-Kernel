@@ -22,6 +22,7 @@ package org.efaps.admin.event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -32,9 +33,18 @@ import org.efaps.admin.program.java.EFapsClassLoader;
 import org.efaps.admin.ui.Command;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
+import org.efaps.util.cache.CacheReloadException;
 
 /**
+ * In this Class a Event can be defined. <br/> On loading the Cache all
+ * EventDefenitions are initialised and assigned to the specific
+ * administrational type or command. On initialisation of a EventDefinition, for
+ * faster access during runtime, the Class of the Program is instanciated and
+ * the Method stored.
+ * 
  * @author tmo
+ * @author jmo
  * @version $Id: EventDefinition.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
  *          2007) jmo $
  */
@@ -64,18 +74,54 @@ public class EventDefinition extends AdminObject implements EventExecution {
    */
   private final String     methodName;
 
+  /**
+   * The variable stores the Method to be invoked
+   */
+  private Method           method       = null;
+
+  /**
+   * holds the instance of this
+   */
   private EventExecution   progInstance = null;
 
   /**
-   * 
+   * constructor
    */
   private EventDefinition(final long _id, final String _name,
-      final long _indexPos, final String _resourceName, final String _method) {
+      final long _indexPos, final String _resourceName, final String _method,
+      final String _oid) {
     super(_id, null, _name);
     this.indexPos = _indexPos;
     this.resourceName = _resourceName;
     this.methodName = _method;
     setInstance();
+    setProperties(_oid);
+  }
+
+  /**
+   * set the properties in the superclass
+   * 
+   * @param _oid
+   *          OID of thie EventDefenitoin
+   */
+  private void setProperties(final String _oid) {
+    SearchQuery query = new SearchQuery();
+    try {
+      query.setExpand(_oid, "Admin_Property\\Abstract");
+      query.addSelect("Name");
+      query.addSelect("Value");
+      query.executeWithoutAccessCheck();
+
+      while (query.next()) {
+        super.setProperty((String) query.get("Name"), (String) query
+            .get("Value"));
+      }
+    } catch (EFapsException e) {
+      LOG.error("setProperties(String)", e);
+    } catch (CacheReloadException e) {
+      LOG.error("setProperties(String)", e);
+    }
+
   }
 
   public String getViewableName(Context _context) {
@@ -109,32 +155,28 @@ public class EventDefinition extends AdminObject implements EventExecution {
       this.method = cls.getMethod(this.methodName, new Class[] { Map.class });
       this.progInstance = ((EventExecution) cls.newInstance());
     } catch (ClassNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("could not find Class: '" + this.resourceName + "'", e);
     } catch (InstantiationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("could not instantiat Class: '" + this.resourceName + "'", e);
     } catch (IllegalAccessException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("could not access Class: '" + this.resourceName + "'", e);
     } catch (SecurityException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("could not access Class: '" + this.resourceName + "'", e);
     } catch (NoSuchMethodException e) {
       LOG.error("could not find method: '" + this.methodName + "' in class: '"
           + this.resourceName + "'", e);
-      e.printStackTrace();
+
     }
 
   }
 
-  private Method method = null;
-
   public void execute(final Map<TriggerKeys4Values, Object> _map) {
-
+    Map<TriggerKeys4Values, Object> map = new HashMap<TriggerKeys4Values, Object>();
+    map.putAll(_map);
+    map.put(TriggerKeys4Values.PROPERTIES, super.getProperties());
     try {
 
-      this.method.invoke(this.progInstance, _map);
+      this.method.invoke(this.progInstance, map);
 
     } catch (SecurityException e) {
       LOG.error("could not access class: '" + this.resourceName, e);
@@ -151,7 +193,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
 
   /**
    * Loads all events from the database and assigns them to the specific
-   * administrational type.
+   * administrational type or command
    * 
    * @param _context
    *          eFaps context for this request
@@ -160,6 +202,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
     SearchQuery query = new SearchQuery();
     query.setQueryTypes(EFapsClassName.EVENT_DEFINITION.name);
     query.setExpandChildTypes(true);
+    query.addSelect("OID");
     query.addSelect("ID");
     query.addSelect("Type");
     query.addSelect("Name");
@@ -175,6 +218,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
       LOG.debug("initialise Triggers ---------------------------------------");
     }
     while (query.next()) {
+      String eventOID = (String) query.get("OID");
       long eventId = (Long) query.get("ID");
       Type eventType = (Type) query.get("Type");
       String eventName = (String) query.get("Name");
@@ -185,6 +229,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
       String resName = (String) query.get("JavaProg.Name");
       String method = (String) query.get("Method");
       if (LOG.isDebugEnabled()) {
+        LOG.debug("   OID=" + eventOID);
         LOG.debug("   eventId=" + eventId);
         LOG.debug("   eventType=" + eventType);
         LOG.debug("   eventName=" + eventName);
@@ -210,7 +255,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
                   + triggerClass);
             }
             type.addTrigger(triggerEvent, new EventDefinition(eventId,
-                eventName, eventPos, resName, method));
+                eventName, eventPos, resName, method, eventOID));
           }
         }
       } else {
@@ -224,11 +269,11 @@ public class EventDefinition extends AdminObject implements EventExecution {
             Type triggerClass = Type.get(triggerEvent.name);
             if (eventType.isKindOf(triggerClass)) {
               if (LOG.isDebugEnabled()) {
-                LOG.debug("     found trigger " + triggerEvent + ":"    
+                LOG.debug("     found trigger " + triggerEvent + ":"
                     + triggerClass);
               }
               command.addTrigger(triggerEvent, new EventDefinition(eventId,
-                  eventName, eventPos, resName, method));
+                  eventName, eventPos, resName, method, eventOID));
             }
           }
 
@@ -242,4 +287,5 @@ public class EventDefinition extends AdminObject implements EventExecution {
 
     }
   }
+
 }
