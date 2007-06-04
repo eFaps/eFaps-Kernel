@@ -34,7 +34,6 @@ import org.apache.commons.digester.Digester;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.slide.transaction.SlideTransactionManager;
-
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
@@ -42,7 +41,6 @@ import org.efaps.maven.install.Application;
 import org.efaps.maven.install.ApplicationVersion;
 import org.efaps.maven.install.FileSet;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
 
 /**
  * 
@@ -168,8 +166,8 @@ abstract class AbstractMojo implements Mojo {
     // configure database type
     String dbClass = null;
     try {
-      AbstractDatabase dbType = ((Class<AbstractDatabase>) Class
-          .forName(this.type)).newInstance();
+      AbstractDatabase dbType = (AbstractDatabase) (Class.forName(this.type))
+          .newInstance();
       if (dbType == null) {
         getLog().error("could not initaliase database type");
       }

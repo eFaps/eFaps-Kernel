@@ -32,35 +32,39 @@ import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- *
+ * This Class reads all Files from a given Directory, including the
+ * Subdirectories and their Files.<br/>
+ * 
+ * 
  * @author tmo
- * @version $Id$
+ * @version $Id: FileSet.java 609 2007-01-07 18:34:38 +0000 (Sun, 07 Jan 2007)
+ *          tmo $
  */
-public class FileSet implements FileFilter  {
-    
+public class FileSet implements FileFilter {
+
   /**
    * Stores the starting directory for which this file set is defined. Default
    * value is current directory.
-   *
+   * 
    * @see #setDirectory
    */
-  private String directory = ".";
-  
+  private String      directory    = ".";
+
   /**
    * Store regular expression of directory names which are included.
-   *
+   * 
    * @see #addIncludeDir
    * @see #accept
    */
-  private Set < String > includeDirs = new HashSet < String > ();
-  
+  private Set<String> includeDirs  = new HashSet<String>();
+
   /**
    * Store regular expression of file names which are included.
-   *
+   * 
    * @see #addIncludeFile
    * @see #accept
    */
-  private Set < String > includeFiles = new HashSet < String > ();
+  private Set<String> includeFiles = new HashSet<String>();
 
   /**
    * This sets instance variable {@link #directory} depending on the value of
@@ -68,17 +72,19 @@ public class FileSet implements FileFilter  {
    * <ul>
    * <li>if value is not null, the starting directory is set to this value</li>
    * <li>if value is null, the expression is not null and not a string with
-   *     with zero length, the expression is evaluted and used as starting
-   *     directory</li>
+   * with zero length, the expression is evaluted and used as starting directory</li>
    * </ul>
-   *
-   * @param _expr   expression used to evalute the starting directory 
-   *                (expression is evaluted if not null or zero string)
-   * @param _value  hard coded value (is used if not null)
+   * 
+   * @param _expr
+   *          expression used to evalute the starting directory (expression is
+   *          evaluted if not null or zero string)
+   * @param _value
+   *          hard coded value (is used if not null)
    * @see #directory
    */
-  public void setDirectory(final String _expr, final String _value) throws Exception {
-    if (_value != null)  {
+  public void setDirectory(final String _expr, final String _value)
+                                                                   throws Exception {
+    if (_value != null) {
       this.directory = _value;
     } else if ((_expr != null) && (_expr.length() > 0)) {
       JexlContext jexlContext = JexlHelper.createContext();
@@ -90,54 +96,57 @@ public class FileSet implements FileFilter  {
 
   /**
    * Adds an regular expression for the directory names.
-   *
-   * @param _directory  regular expression for directories
+   * 
+   * @param _directory
+   *          regular expression for directories
    * @see #includeDirs
    */
-  public void addIncludeDir(final String _directory)  {
+  public void addIncludeDir(final String _directory) {
     this.includeDirs.add(_directory);
   }
 
   /**
    * Adds an regular expression for the file names.
-   *
-   * @param _file  regular expression for files
+   * 
+   * @param _file
+   *          regular expression for files
    * @see #includeFiles
    */
-  public void addIncludeFile(final String _file)  {
+  public void addIncludeFile(final String _file) {
     this.includeFiles.add(_file);
   }
 
   /**
    * Returns the set of files represented by this file set.
-   *
+   * 
    * @return set of found files
    * @see #getFiles(File)
    */
-  public Set < File > getFiles()  {
-    Set < File > files = new HashSet < File > ();
+  public Set<File> getFiles() {
+    Set<File> files = new HashSet<File>();
     File file = new File(this.directory);
 
-    if (file.isDirectory())  {
+    if (file.isDirectory()) {
       files.addAll(getFiles(file));
-    } else if (file.isFile())  {
+    } else if (file.isFile()) {
       files.add(file);
     }
-    
+
     return files;
   }
 
   /**
-   * @param _directory directory for which the files should be returned
+   * @param _directory
+   *          directory for which the files should be returned
    * @return set of found files for this directory
    */
-  private Set < File > getFiles(final File _directory)  {
-    Set < File > files = new HashSet < File > ();
+  private Set<File> getFiles(final File _directory) {
+    Set<File> files = new HashSet<File>();
 
-    for (File file : _directory.listFiles(this))  {
-      if (file.isDirectory())  {
+    for (File file : _directory.listFiles(this)) {
+      if (file.isDirectory()) {
         files.addAll(getFiles(file));
-      } else if (file.isFile())  {
+      } else if (file.isFile()) {
         files.add(file);
       }
     }
@@ -147,22 +156,23 @@ public class FileSet implements FileFilter  {
   /**
    * Test, if the given file /directiry implements the defined rules for this
    * fileset.
-   *
-   * @param _file file to set
+   * 
+   * @param _file
+   *          file to set
    * @return <i>true</i> if the file / directory
    */
-  public boolean accept(final File _file)  {
+  public boolean accept(final File _file) {
     boolean ret = false;
-    if (_file.isDirectory())  {
-      for (String includeDir : this.includeDirs)  {
-        if (_file.getName().matches(includeDir))  {
+    if (_file.isDirectory()) {
+      for (String includeDir : this.includeDirs) {
+        if (_file.getName().matches(includeDir)) {
           ret = true;
           break;
         }
       }
-    } else if (_file.isFile())  {
-      for (String includeFile : this.includeFiles)  {
-        if (_file.getName().matches(includeFile))  {
+    } else if (_file.isFile()) {
+      for (String includeFile : this.includeFiles) {
+        if (_file.getName().matches(includeFile)) {
           ret = true;
           break;
         }
@@ -173,15 +183,12 @@ public class FileSet implements FileFilter  {
 
   /**
    * Returns a string representation with values of all instance variables.
-   *
+   * 
    * @return string representation of this Application
    */
-  public String toString()  {
-    return new ToStringBuilder(this)
-      .append("directory",      this.directory)
-      .append("includeDirs",    this.includeDirs)
-      .append("includeFiles",   this.includeFiles)
-      .append("files",          this.getFiles())
-      .toString();
+  public String toString() {
+    return new ToStringBuilder(this).append("directory", this.directory)
+        .append("includeDirs", this.includeDirs).append("includeFiles",
+            this.includeFiles).append("files", this.getFiles()).toString();
   }
 }
