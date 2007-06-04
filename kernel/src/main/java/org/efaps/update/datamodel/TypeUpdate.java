@@ -36,6 +36,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.event.TriggerFactory;
 import org.efaps.util.EFapsException;
 import org.xml.sax.SAXException;
 
@@ -150,13 +151,16 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addCallParam("datamodel-type/definition/property", 0, "name");
       digester.addCallParam("datamodel-type/definition/property", 1);
 
-      digester.addCallMethod("datamodel-type/definition/trigger", "addTrigger",
-          5);
-      digester.addCallParam("datamodel-type/definition/trigger", 0, "name");
-      digester.addCallParam("datamodel-type/definition/trigger", 1, "event");
-      digester.addCallParam("datamodel-type/definition/trigger", 2, "program");
-      digester.addCallParam("datamodel-type/definition/trigger", 3, "method");
-      digester.addCallParam("datamodel-type/definition/trigger", 4, "index");
+      // Trigger
+      digester.addFactoryCreate("datamodel-type/definition/trigger",
+          new TriggerFactory(), false);
+      digester.addCallMethod("datamodel-type/definition/trigger/property",
+          "addProperty", 2);
+      digester.addCallParam("datamodel-type/definition/trigger/property", 0,
+          "name");
+      digester.addCallParam("datamodel-type/definition/trigger/property", 1);
+      digester.addSetNext("datamodel-type/definition/trigger", "addTrigger",
+          "org.efaps.update.event.Trigger");
 
       ret = (TypeUpdate) digester.parse(_file);
 

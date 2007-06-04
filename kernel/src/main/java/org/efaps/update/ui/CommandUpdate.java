@@ -27,6 +27,7 @@ import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.event.TriggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -191,12 +192,16 @@ public class CommandUpdate extends AbstractUpdate {
       digester.addCallParam("ui-command/definition/property", 0, "name");
       digester.addCallParam("ui-command/definition/property", 1);
 
-      digester.addCallMethod("ui-command/definition/trigger", "addTrigger", 5);
-      digester.addCallParam("ui-command/definition/trigger", 0, "name");
-      digester.addCallParam("ui-command/definition/trigger", 1, "event");
-      digester.addCallParam("ui-command/definition/trigger", 2, "program");
-      digester.addCallParam("ui-command/definition/trigger", 3, "method");
-      digester.addCallParam("ui-command/definition/trigger", 4, "index");
+      // Trigger
+      digester.addFactoryCreate("ui-command/definition/trigger",
+          new TriggerFactory(), false);
+      digester.addCallMethod("ui-command/definition/trigger/property",
+          "addProperty", 2);
+      digester
+          .addCallParam("ui-command/definition/trigger/property", 0, "name");
+      digester.addCallParam("ui-command/definition/trigger/property", 1);
+      digester.addSetNext("ui-command/definition/trigger", "addTrigger",
+          "org.efaps.update.event.Trigger");
 
       ret = (CommandUpdate) digester.parse(_file);
 

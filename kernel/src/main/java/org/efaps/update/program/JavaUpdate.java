@@ -31,6 +31,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -47,6 +49,10 @@ import org.xml.sax.SAXException;
  * @version $Id$
  */
 public class JavaUpdate extends AbstractUpdate {
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(JavaUpdate.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
@@ -114,10 +120,8 @@ public class JavaUpdate extends AbstractUpdate {
         }
 
       } catch (SAXException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        LOG.error(_file.getName() + "' seems to be invalide XML", e);
       }
-
     }
     return update;
   }
