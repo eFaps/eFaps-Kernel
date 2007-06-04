@@ -26,31 +26,31 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * An instance of this class represents one column in a web table or web form.
- *
+ * 
  * @author tmo
  * @version $Rev$
  */
-public class ColumnValue < H > implements Serializable  {
+public class ColumnValue<H> implements Serializable {
 
-  private final H value;
+  private static final long serialVersionUID = 5973166541730932018L;
 
-  public ColumnValue(final H _value)  {
+  private final H           value;
+
+  public ColumnValue(final H _value) {
     this.value = _value;
   }
 
-  public H getValue()  {
+  public H getValue() {
     return this.value;
   }
 
   /**
    * The method overrides the original method 'toString' and returns the value
    * of this instance.
-   *
+   * 
    * @return name of the user interface object
    */
-  public String toString()  {
-    return new ToStringBuilder(this).
-      append("value", getValue()).
-      toString();
+  public String toString() {
+    return new ToStringBuilder(this).append("value", getValue()).toString();
   }
 }

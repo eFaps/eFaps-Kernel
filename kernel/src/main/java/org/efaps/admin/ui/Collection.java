@@ -205,7 +205,7 @@ this.selIndexLen++;
    * @see #fields
    */
   public List < Field > getFields()  {
-    return new ArrayList(this.fields.values());
+    return new ArrayList<Field>(this.fields.values());
   }
 
   /////////////////////////////////////////////////////////////////////////////

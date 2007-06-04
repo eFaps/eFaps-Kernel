@@ -29,48 +29,48 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 /**
  * An instance of this class represents one header / definition in a web table
  * or web form.
- *
+ * 
  * @author tmo
- * @version $Rev$
+ * @version $Id$
  */
-public class ColumnHeader implements Serializable  {
+public class ColumnHeader implements Serializable {
 
-  private final String name;
+  
+  private static final long serialVersionUID = -4898270057484853908L;
 
-  private final String label;
+  private final String    name;
+
+  private final String    label;
 
   private final Converter converter;
 
-  public ColumnHeader(final String _name, final String _label, final Converter _converter)  {
-    this.name       = _name;
-    this.label      = _label;
-    this.converter  = _converter;
+  public ColumnHeader(final String _name, final String _label,
+      final Converter _converter) {
+    this.name = _name;
+    this.label = _label;
+    this.converter = _converter;
   }
 
-  public String getName()  {
+  public String getName() {
     return this.name;
   }
 
-  public String getLabel()  {
+  public String getLabel() {
     return this.label;
   }
 
-  public Converter getConverter()  {
+  public Converter getConverter() {
     return this.converter;
   }
 
   /**
    * The method overrides the original method 'toString' and returns the name,
    * label and converter of this instance.
-   *
+   * 
    * @return name of the user interface object
    */
-  public String toString()  {
-    return new ToStringBuilder(this).
-      append("name", getName()).
-      append("label", getLabel()).
-      append("converter", getConverter()).
-      toString();
+  public String toString() {
+    return new ToStringBuilder(this).append("name", getName()).append("label",
+        getLabel()).append("converter", getConverter()).toString();
   }
 }
-

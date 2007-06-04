@@ -32,46 +32,55 @@ import org.efaps.db.Context;
 
 /**
  * The servlet checks out files from objects.
- *
+ * 
  * @author tmo
- * @version $Id$
+ * @version $Id: CheckoutServlet.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
+ *          2007) jmo $
  */
-public class CheckoutServlet extends HttpServlet  {
+public class CheckoutServlet extends HttpServlet {
+
+  private static final long   serialVersionUID = 7810426422513524710L;
 
   /**
    * name of the object id parameter
    */
-  final private static String PARAM_OID = "oid";
+  final private static String PARAM_OID        = "oid";
 
   /**
-   * The method checks the file from the object out and returns them in a
-   * output stream to the web client. The object id must be given with
-   * paramter {@link #PARAM_OID}.<br/>
-   *
-   * @param _req request variable
-   * @param _res response variable
+   * The method checks the file from the object out and returns them in a output
+   * stream to the web client. The object id must be given with paramter
+   * {@link #PARAM_OID}.<br/>
+   * 
+   * @param _req
+   *          request variable
+   * @param _res
+   *          response variable
    * @see #PARAM_ATTRNAME
    * @see #PARAM_OID
    */
-  protected void doGet(HttpServletRequest _req, HttpServletResponse _res) throws ServletException, IOException  {
-    String oid      = _req.getParameter(PARAM_OID);
+  protected void doGet(HttpServletRequest _req, HttpServletResponse _res)
+                                                                         throws ServletException,
+                                                                         IOException {
+    String oid = _req.getParameter(PARAM_OID);
 
-    try  {
+    try {
       Context context = Context.getThreadContext();
 
       Checkout checkout = new Checkout(oid);
       checkout.preprocess();
 
-      _res.setContentType(getServletContext().getMimeType(checkout.getFileName()));
-      _res.addHeader("Content-Disposition", "inline; filename=\""+checkout.getFileName()+"\"");
+      _res.setContentType(getServletContext().getMimeType(
+          checkout.getFileName()));
+      _res.addHeader("Content-Disposition", "inline; filename=\""
+          + checkout.getFileName() + "\"");
 
       checkout.execute(_res.getOutputStream());
 
-    } catch (IOException e)  {
+    } catch (IOException e) {
       throw e;
-    } catch (ServletException e)  {
+    } catch (ServletException e) {
       throw e;
-    } catch (Throwable e)  {
+    } catch (Throwable e) {
       throw new ServletException(e);
     }
   }

@@ -47,7 +47,6 @@ import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.js.Shell;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.Cache;
 
 /**
  * @author tmo

@@ -101,7 +101,7 @@ public class FormBasedAuthenticationFilter extends AbstractAuthenticationFilter 
    *
    * @see #init
    */
-  private final Set exludeUris = new HashSet();
+  private final Set<String> exludeUris = new HashSet<String>();
 
   /**
    * The string is URI to which a forward must be made if the user is not

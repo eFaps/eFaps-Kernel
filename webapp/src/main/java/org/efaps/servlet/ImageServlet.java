@@ -54,6 +54,9 @@ public class ImageServlet extends HttpServlet  {
   /////////////////////////////////////////////////////////////////////////////
   // static variables
   
+  
+  private static final long serialVersionUID = -2469349574113406199L;
+
   /**
    * Logging instance used in this class.
    */
