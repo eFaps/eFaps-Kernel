@@ -64,7 +64,7 @@
       <type>Link</type>
       <typelink>Admin_RunLevel_RunLevel</typelink>
       <sqltable>Admin_RunLevel_DefinitionSQLTable</sqltable>
-      <sqlcolumn>RUNLEVEL</sqlcolumn>
+      <sqlcolumn>RUNLEVELID</sqlcolumn>
     </attribute>
     <attribute>
       <name>Priority</name>
