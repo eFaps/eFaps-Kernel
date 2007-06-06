@@ -36,7 +36,8 @@ import org.efaps.util.EFapsException;
 /**
  * This Class represents a simplified an specialized version of an InsertObject.
  * In this case the Object represents the Root and therefore can't be a child.
- * The Root means in this case the &lt;import&gt;&lt;/import&gt; of the XML-File.
+ * The Root means in this case the &lt;import&gt;&lt;/import&gt; of the
+ * XML-File.
  * 
  * @author jmo
  * 
@@ -91,6 +92,10 @@ public class RootObject extends AbstractObject {
   public void dbAddChilds() {
     for (AbstractObject object : this.CHILDS) {
       try {
+        if (LOG.isInfoEnabled()) {
+          LOG.info("Inserting the Base-Objects '" + object.getType()
+              + "' to the Database");
+        }
         Insert insert = new Insert(object.getType());
 
         for (Entry element : object.getAttributes().entrySet()) {

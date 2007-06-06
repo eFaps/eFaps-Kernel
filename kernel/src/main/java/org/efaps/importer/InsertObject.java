@@ -117,6 +117,7 @@ public class InsertObject extends AbstractObject {
    *          Type of the InsertObject
    */
   public InsertObject(final String _type) {
+    LOG.info("Creating new " + _type);
     setType(_type);
   }
 
@@ -247,7 +248,15 @@ public class InsertObject extends AbstractObject {
 
     for (List<AbstractObject> list : this.childs.values()) {
       for (AbstractObject object : list) {
-
+        noInsert = false;
+        
+        if (LOG.isInfoEnabled()) {
+          LOG.info("adding Child:" + object.getType());
+        }
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("this: " + this.toString());
+          LOG.debug("Cild: " + object.toString());
+        }
         try {
           if (object.getUniqueAttributes().size() > 0) {
 
@@ -323,8 +332,21 @@ public class InsertObject extends AbstractObject {
     }
   }
 
+  /**
+   * Method to Create the Update or Insert of the Datebase
+   * 
+   * @param _parent
+   *          Parent-Object of this Object
+   * @param _ID
+   *          Id of the Object to be updated, if "" is given a Insert will be
+   *          made
+   * @return String with the ID of the new or updated Object, null if the
+   *         creation of the new object was skipped, because of a foreign Object
+   *         was not found
+   */
   public String dbUpdateOrInsert(final AbstractObject _parent, final String _ID) {
-
+    Boolean noInsert = false;
+    String ID = null;
     try {
       Update UpIn;
       if (_ID != "") {
@@ -350,12 +372,22 @@ public class InsertObject extends AbstractObject {
         UpIn.add(this.getParrentAttribute(), _parent.getID());
       }
       for (ForeignObject link : this.getLinks()) {
-        UpIn.add(link.getLinkAttribute(), link.dbGetID());
-      }
-      UpIn.executeWithoutAccessCheck();
-      String ID = UpIn.getId();
-      UpIn.close();
 
+        String foreignID = link.dbGetID();
+        if (foreignID != null) {
+          UpIn.add(link.getLinkAttribute(), foreignID);
+        } else {
+          noInsert = true;
+          LOG.error("skipt: " + this.toString());
+        }
+
+      }
+      if (!noInsert) {
+        UpIn.executeWithoutAccessCheck();
+
+        ID = UpIn.getId();
+        UpIn.close();
+      }
       return ID;
     } catch (EFapsException e) {
       LOG.error("dbUpdateOrInsert() " + this.toString(), e);
@@ -383,9 +415,12 @@ public class InsertObject extends AbstractObject {
 
       Attribute attribute = Type.get(this.type).getAttribute(
           element.getKey().toString());
-
+      // TODO das ist nur ein
+      // hack damit CreatedType als DateTimeType behandelt werden kann
       if (attribute.getAttributeType().getClassRepr().getName().equals(
-          "org.efaps.admin.datamodel.attributetype.DateTimeType")) {
+          "org.efaps.admin.datamodel.attributetype.DateTimeType")
+          || attribute.getAttributeType().getClassRepr().getName().equals(
+              "org.efaps.admin.datamodel.attributetype.CreatedType")) {
 
         Date date = new SimpleDateFormat(RootObject.DATEFORMAT).parse(element
             .getValue().toString(), new ParsePosition(0));

@@ -122,6 +122,10 @@ CP=$CP:$shellPathLib/commons-collections-3.1.jar
 CP=$CP:$shellPathLib/derbyclient-10.1.2.1.jar
 CP=$CP:$shellPathLib/postgresql-8.1-407.jdbc3.jar
 
+# VFSStore
+CP=$CP:$shellPathLib/commons-vfs-1.0.jar
+
+
 # used for stores
 # set CP=%CP%;%derbyLibPath%/commons-vfs-20050307052300.jar
 # database driver
