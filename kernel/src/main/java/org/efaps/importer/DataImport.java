@@ -52,12 +52,30 @@ public class DataImport {
    */
   private RootObject       root     = null;
 
+  /**
+   * contains the Path of the Base for the Context
+   */
   private String           baseName = null;
 
+  /**
+   * DefaultConstructor used by Shell -create
+   */
+  public DataImport() {
+
+  }
+
+  /**
+   * Constructor setting the BaseName
+   * 
+   * @param _basename
+   */
   public DataImport(final String _basename) {
     this.baseName = _basename;
   }
 
+  /**
+   * initialises the Context for the VFS
+   */
   public void initialise() {
     System.setProperty(javax.naming.Context.INITIAL_CONTEXT_FACTORY,
         "org.efaps.importer.InitialContextFactory");
@@ -197,6 +215,11 @@ public class DataImport {
     this.root.dbAddChilds();
   }
 
+  /**
+   * has the root recieved Data from the digester that must be inserted
+   * 
+   * @return true, if there is Data
+   */
   public boolean hasData() {
     return this.root != null;
   }
