@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>9aad99ec-5421-47a1-b556-bd63d70004c2</uuid>
+<ui-command>
+  <uuid>bebb5b15-1f06-4b8c-8b2b-09e8b7fbe5e9</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Program_JavaTree</name>
+    <name>Admin_Program_JavaTree_UsedBy</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,19 +51,15 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Program_JavaTree</name>
+    <name>Admin_Program_JavaTree_UsedBy</name>
+    <!-- target definitions -->
     <target>
-      <form>Admin_Program_JavaForm</form>
-      <!--menu>TeamWork_CollectionTree_Menu</menu-->
+      <table>Admin_Event_DefinitionTable</table>
     </target>
-    <!-- childs -->
-    <childs>
-      <child>Admin_Program_JavaTree_Classes</child>
-      <child>Admin_Program_JavaTree_UsedBy</child>
-    </childs>
     <!-- properties -->
     <property name="Target">content</property>
+    <property name="TargetExpand">Admin_Event_Definition\JavaProg</property>
     <property name="TargetMode">view</property>
   </definition>
 
-</ui-menu>
+</ui-command>

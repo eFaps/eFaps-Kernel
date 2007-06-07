@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ package org.efaps.admin.event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -45,8 +44,7 @@ import org.efaps.util.cache.CacheReloadException;
  * 
  * @author tmo
  * @author jmo
- * @version $Id: EventDefinition.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
- *          2007) jmo $
+ * @version $Id$
  */
 public class EventDefinition extends AdminObject implements EventExecution {
   /**
@@ -171,12 +169,11 @@ public class EventDefinition extends AdminObject implements EventExecution {
   }
 
   public void execute(final Map<TriggerKeys4Values, Object> _map) {
-    Map<TriggerKeys4Values, Object> map = new HashMap<TriggerKeys4Values, Object>();
-    map.putAll(_map);
-    map.put(TriggerKeys4Values.PROPERTIES, super.getProperties());
+
+    _map.put(TriggerKeys4Values.PROPERTIES, super.getProperties());
     try {
 
-      this.method.invoke(this.progInstance, map);
+      this.method.invoke(this.progInstance, _map);
 
     } catch (SecurityException e) {
       LOG.error("could not access class: '" + this.resourceName, e);
