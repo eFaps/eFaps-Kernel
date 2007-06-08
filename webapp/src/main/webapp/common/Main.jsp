@@ -1,6 +1,6 @@
 <%--
  
-  Copyright 2006 The eFaps Team
+  Copyright 2003-2007 The eFaps Team
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -22,19 +22,17 @@
 --%>
 
 <%@page errorPage="Exception.jsp"%>
-<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
-<%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
-<%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="t" %>
+
+<%@taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
+<%@taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
+<%@taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
 
 <html>
   <head>
     <title></title>
-    <script type="text/javascript" src="../javascripts/eFapsToolbar.js"></script>
     <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
-    <script type="text/javascript" src="../javascripts/eFapsMyFacesHackFix.js"></script>
-
     <link rel="stylesheet" type="text/css" href="../styles/eFapsMain.css"/>
   </head>
   <body onLoad="eFapsPositionContent()" leftmargin="0" topmargin="0" rightmargin="0" marginwidth="0" scroll="no">
@@ -43,11 +41,12 @@
       <tr>
         <td class="eFapsMainTableRowMenu">
           <f:view>
-            
             <tiles:insert page="/Main.jsp" flush="false"/>
-            <t:jscookMenu layout="hbr" theme="ThemeOffice" styleLocation="../styles">
-              <t:navigationMenuItems value="#{menuMainToolbar.JSFMenu}"/>
-            </t:jscookMenu>
+            <h:form>
+              <t:jscookMenu layout="hbr" theme="ThemeOffice" styleLocation="../styles">
+                <t:navigationMenuItems value="#{menuMainToolbar.JSFMenu}"/>
+              </t:jscookMenu>
+            </h:form>
           </f:view>
         </td>
       </tr>

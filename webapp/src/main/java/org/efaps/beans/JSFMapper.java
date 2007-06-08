@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,8 +30,6 @@ import org.efaps.beans.MenuAbstractBean.CommandHolder;
 
 public class JSFMapper {
 
-    private final static String[] TARGETS = {"","Content","popup","eFapsFrameHidden"};
-
     public static List getJSFNavigationMenuItems(final ResourceBundleBean _i18nBean,
                                                  final MenuHolder         _menuHolder) {
       List<NavigationMenuItem> jsfNavigationMenuItems = new Vector<NavigationMenuItem>();
@@ -56,76 +54,76 @@ public class JSFMapper {
                                      String.valueOf(command.getAction()));
       // map the icon path
       if (_commandHolder.getIcon() != null)  {
-        navigationMenuItem.setIcon("/.."+_commandHolder.getIcon());
+        navigationMenuItem.setIcon("/.." + _commandHolder.getIcon());
       }
 
       // map the target url
-      String sURL = getTargetURL(_commandHolder);
-      if (sURL != null && sURL.length() > 0)  {
-        if (!sURL.matches("^\\w{1,5}://.*"))  {
-          sURL = (new StringBuilder("relative:")).append(sURL).toString();
-        }
-        navigationMenuItem.setAction(sURL);
-      }
-
-      String sTarget = getTargetTarget(_commandHolder);
-      if (sTarget != null)  {
-        navigationMenuItem.setTarget(sTarget);
-      }
+      navigationMenuItem.setAction(getTargetURL(_commandHolder));
 
       if (_commandHolder.isMenu()) {
         // map the sub items
         navigationMenuItem.setNavigationMenuItems(
                 getJSFNavigationMenuItems(_i18nBean, (MenuHolder) _commandHolder));
-      } else  {
-// TODO: what happens if it is not a menu?
       }
 
       return navigationMenuItem;
     }
 
     public static String getTargetURL(final CommandHolder _commandHolder)  {
-        StringBuilder sbURL = new StringBuilder();
-        String        sURI  = _commandHolder.getSub().getReference();
+      StringBuilder url = new StringBuilder();
 
-      if (sURI == null &&
-              (_commandHolder.getSub().getTargetTable()  != null ||
-               _commandHolder.getSub().getTargetForm()   != null ||
-               _commandHolder.getSub().getTargetSearch() != null))  {
+// TODO set submitUrl _commandHolder.getSub().isSubmit()
+      // always javascript (needed for faces..)
+      url.append("javascript:eFapsCommonOpenUrl(\"");
 
-        sURI = "Link.jsp?";
-      }
-      if (sURI == null && _commandHolder.getSub().isSubmit())  {
-        // TODO set submitUrl
-//            sbURL = new StringBuilder();
-      }
-      if (sURI != null)  {
-          // TODO append oid and/or nodeId
-
-          // add command name string to url
-          sbURL.append("&command=").append(_commandHolder.getSub().getName());
-
-          sbURL.deleteCharAt(0)
-               .insert(0, sURI);
+      // add link
+      if ((_commandHolder.getSub().getReference() != null) &&
+          (_commandHolder.getSub().getReference().length() > 0))  {
+        url.append(_commandHolder.getSub().getReference());
+      } else if ((_commandHolder.getSub().getTargetTable() != null) ||
+                 (_commandHolder.getSub().getTargetForm() != null) ||
+                 (_commandHolder.getSub().getTargetSearch() != null) ||
+                 (_commandHolder.getSub().hasTrigger()))  {
+        url.append("Link.jsp?");
+// hack (no url found!)
+} else  {
+return null;
       }
 
-      return sbURL.toString();
-    }
+      // append always the command name
+      url.append("command=")
+         .append(_commandHolder.getSub().getName());
 
-    public static String getTargetTarget(final CommandHolder _commandHolder)  {
-      int iTargetId = _commandHolder.getSub().getTarget();
+// TODO append oid and/or nodeId
 
-      String sTarget = TARGETS[iTargetId];
-      if ("popup".equals(sTarget))  {
-        int iHeight = _commandHolder.getSub().getWindowHeight();
-        int iWidth  = _commandHolder.getSub().getWindowWidth();
-
-        StringBuilder sbTarget = new StringBuilder(sTarget);
-        sbTarget.append(iHeight).append("x").append(iWidth);
-
-        sTarget = sbTarget.toString();
+      // append target
+      url.append("\",\""); 
+      switch (_commandHolder.getSub().getTarget())  {
+        case CommandAbstract.TARGET_CONTENT:
+          url.append("Content");
+          break;
+        case CommandAbstract.TARGET_HIDDEN:
+          url.append("eFapsFrameHidden");
+          break;
+        case CommandAbstract.TARGET_POPUP:
+          url.append("popup");
+          if ((_commandHolder.getSub().getWindowWidth() > 0) &&
+             (_commandHolder.getSub().getWindowHeight() > 0))  {
+            url.append("\",\"")
+               .append(_commandHolder.getSub().getWindowWidth())
+               .append("\",\"")
+               .append(_commandHolder.getSub().getWindowHeight());
+          }
+          break;
+        default:
+          if (_commandHolder.getSub().hasTrigger())  {
+            url.append("eFapsFrameHidden");
+          } else  {
+            url.append("Content");
+          }
       }
+      url.append("\")"); 
 
-      return sTarget;
+      return url.toString();
     }
 }
