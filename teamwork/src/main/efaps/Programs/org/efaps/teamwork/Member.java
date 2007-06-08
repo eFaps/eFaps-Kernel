@@ -20,6 +20,9 @@
 
 package org.efaps.teamwork;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -35,6 +38,10 @@ import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 public class Member implements EventExecution {
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(Member.class);
 
   public void insertNewMember(Map<TriggerKeys4Values, Object> _map) {
     Iterator iter = ((Map) _map.get(TriggerKeys4Values.NEW_VALUES)).entrySet()
@@ -70,10 +77,10 @@ public class Member implements EventExecution {
 
     } catch (EFapsException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("insertNewMember(Map<TriggerKeys4Values,Object>)", e);
     } catch (Exception e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("insertNewMember(Map<TriggerKeys4Values,Object>)", e);
     }
 
   }
@@ -111,10 +118,10 @@ public class Member implements EventExecution {
       update.executeWithoutAccessCheck();
     } catch (EFapsException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("execute(Map<TriggerKeys4Values,Object>)", e);
     } catch (Exception e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("execute(Map<TriggerKeys4Values,Object>)", e);
     }
 
   }
@@ -122,18 +129,36 @@ public class Member implements EventExecution {
   public void insertCollectionCreator(Map<TriggerKeys4Values, Object> _map) {
     Instance instance = (Instance) _map.get(TriggerKeys4Values.INSTANCE);
     String abstractlink = ((Long) instance.getId()).toString();
-    Insert insert;
+
+    String accessSet = (String) ((Map) _map.get(TriggerKeys4Values.PROPERTIES))
+        .get("AccessSet");
+
     try {
-      insert = new Insert("TeamWork_Member");
-      insert.add("AbstractLink", abstractlink);
-      insert.add("AccessSetLink", "1");
-      insert.add("UserAbstractLink", ((Long) Context.getThreadContext()
-          .getPerson().getId()).toString());
-      insert.executeWithoutAccessCheck();
+
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes("Admin_Access_AccessSet");
+      query.addWhereExprEqValue("Name", accessSet);
+      query.addSelect("ID");
+      query.executeWithoutAccessCheck();
+
+      if (query.next()) {
+        String accessID = query.get("ID").toString();
+        Insert insert;
+        insert = new Insert("TeamWork_Member");
+        insert.add("AbstractLink", abstractlink);
+        insert.add("AccessSetLink", accessID);
+        insert.add("UserAbstractLink", ((Long) Context.getThreadContext()
+            .getPerson().getId()).toString());
+        insert.executeWithoutAccessCheck();
+      } else {
+        
+
+        LOG.error("error in Definition of Propertie 'AccessSet'");
+      }
 
     } catch (EFapsException e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("insertCollectionCreator(Map<TriggerKeys4Values,Object>)", e);
     }
 
   }
