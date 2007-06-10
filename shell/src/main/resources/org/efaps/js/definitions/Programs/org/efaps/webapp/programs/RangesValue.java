@@ -13,7 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:851 $
+ * Last Changed:    $Date:2007-06-02 12:36:03 -0500 (Sat, 02 Jun 2007) $
+ * Last Changed By: $Author:jmo $
  */
+
+package org.efaps.webapp.programs;
+
+import java.util.Map;
+
+import org.efaps.admin.event.EventExecution;
+import org.efaps.admin.event.TriggerKeys4Values;
+import org.efaps.admin.runlevel.RunLevel;
+
+public class RangesValue implements EventExecution {
+
+  public void execute(Map<TriggerKeys4Values, Object> _map) {
+
+  }
+
+}

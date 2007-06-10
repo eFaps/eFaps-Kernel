@@ -36,6 +36,8 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.event.Event;
+import org.efaps.update.event.EventFactory;
 import org.efaps.util.EFapsException;
 import org.xml.sax.SAXException;
 
@@ -44,37 +46,36 @@ import org.xml.sax.SAXException;
  * @version $Id$
  * @todo description
  */
-abstract class AbstractCollectionUpdate extends AbstractUpdate  {
-
-  
+abstract class AbstractCollectionUpdate extends AbstractUpdate {
 
   /** Link from field to icon */
-  private final static Link LINKFIELD2ICON
-                    = new Link("Admin_UI_LinkIcon", 
-                               "From", 
-                               "Admin_UI_Image", "To");
+  private final static Link      LINKFIELD2ICON = new Link("Admin_UI_LinkIcon",
+                                                    "From", "Admin_UI_Image",
+                                                    "To");
 
-  private final static Set <Link> ALLLINKS = new HashSet < Link > ();
+  private final static Set<Link> ALLLINKS       = new HashSet<Link>();
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
-   * @param _typeName     name of the type
+   * @param _typeName
+   *          name of the type
    */
   protected AbstractCollectionUpdate(final String _typeName) {
     super(_typeName, ALLLINKS);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
-  protected static AbstractUpdate readXMLFile(final File _file, 
-                                              final String _xmlTagName, 
-                                              final Class _createClass) throws IOException  {
+  protected static AbstractUpdate readXMLFile(final File _file,
+                                              final String _xmlTagName,
+                                              final Class _createClass)
+                                                                       throws IOException {
     AbstractCollectionUpdate ret = null;
 
-    try  {
+    try {
       Digester digester = new Digester();
       digester.setValidating(false);
       digester.addObjectCreate(_xmlTagName, _createClass);
@@ -85,16 +86,18 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate  {
       digester.addObjectCreate(_xmlTagName + "/definition", Definition.class);
       digester.addSetNext(_xmlTagName + "/definition", "addDefinition");
 
-      digester.addCallMethod(_xmlTagName + "/definition/version", "setVersion", 4);
+      digester.addCallMethod(_xmlTagName + "/definition/version", "setVersion",
+          4);
       digester.addCallParam(_xmlTagName + "/definition/version/application", 0);
       digester.addCallParam(_xmlTagName + "/definition/version/global", 1);
       digester.addCallParam(_xmlTagName + "/definition/version/local", 2);
       digester.addCallParam(_xmlTagName + "/definition/version/mode", 3);
-      
+
       digester.addCallMethod(_xmlTagName + "/definition/name", "setName", 1);
       digester.addCallParam(_xmlTagName + "/definition/name", 0);
 
-      digester.addCallMethod(_xmlTagName + "/definition/property", "addProperty", 2);
+      digester.addCallMethod(_xmlTagName + "/definition/property",
+          "addProperty", 2);
       digester.addCallParam(_xmlTagName + "/definition/property", 0, "name");
       digester.addCallParam(_xmlTagName + "/definition/property", 1);
 
@@ -104,139 +107,162 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate  {
       digester.addCallMethod(_xmlTagName + "/definition/field", "setName", 1);
       digester.addCallParam(_xmlTagName + "/definition/field", 0, "name");
 
-      digester.addCallMethod(_xmlTagName + "/definition/field/icon", "setIcon", 1);
+      digester.addCallMethod(_xmlTagName + "/definition/field/icon", "setIcon",
+          1);
       digester.addCallParam(_xmlTagName + "/definition/field/icon", 0);
 
-      digester.addCallMethod(_xmlTagName + "/definition/field/property", "addProperty", 2);
-      digester.addCallParam(_xmlTagName + "/definition/field/property", 0, "name");
+      digester.addCallMethod(_xmlTagName + "/definition/field/property",
+          "addProperty", 2);
+      digester.addCallParam(_xmlTagName + "/definition/field/property", 0,
+          "name");
       digester.addCallParam(_xmlTagName + "/definition/field/property", 1);
 
+      digester.addFactoryCreate(_xmlTagName + "/definition/field/rangevalue",
+          new EventFactory("Admin_Event_RangeValue"));
+
+      digester.addCallMethod(_xmlTagName + "/definition/field/rangevalue/property",
+          "addProperty", 2);
+      digester.addCallParam(_xmlTagName + "/definition/field/rangevalue/property", 0,
+          "name");
+      digester.addCallParam(_xmlTagName + "/definition/field/rangevalue/property", 1);
+      digester.addSetNext(_xmlTagName + "/definition/field/rangevalue", "addEvent",
+          "org.efaps.update.event.Event");
       ret = (AbstractCollectionUpdate) digester.parse(_file);
 
-      if (ret != null)  {
+      if (ret != null) {
         ret.setFile(_file);
       }
-    } catch (SAXException e)  {
-e.printStackTrace();
-      //      LOG.error("could not read file '" + _fileName + "'", e);
+    } catch (SAXException e) {
+      e.printStackTrace();
+      // LOG.error("could not read file '" + _fileName + "'", e);
     }
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // class for a field
 
-  public static class Field  {
-    
+  public static class Field {
+
     /** Name of the field. */
-    private String name = null;
-    
+    private String                    name       = null;
+
     /** Icon of the field. */
-    private String icon = null;
-    
+    private String                    icon       = null;
+
     /**
-     * Property value depending on the property name for this field of a 
+     * Property value depending on the property name for this field of a
      * definition.
-     *
+     * 
      * @see #addProperty.
      */
-    private final Map < String, String > properties 
-                                          = new HashMap < String, String > ();
+    private final Map<String, String> properties = new HashMap<String, String>();
 
     /**
      * Add a new property with given name and value to this definition.
-     *
-     * @param _name   name of the property to add
-     * @param _value  value of the property to add
+     * 
+     * @param _name
+     *          name of the property to add
+     * @param _value
+     *          value of the property to add
      * @see #properties
      */
-    public void addProperty(final String _name, final String _value)  {
+    public void addProperty(final String _name, final String _value) {
       this.properties.put(_name, _value);
     }
 
     /**
      * This is the setter method for instance variable {@link #name}.
-     *
-     * @param _name   new value for instance variable {@link #name}
+     * 
+     * @param _name
+     *          new value for instance variable {@link #name}
      * @see #name
      */
-    public void setName(final String _name)  {
+    public void setName(final String _name) {
       this.name = _name;
     }
 
     /**
      * This is the setter method for instance variable {@link #icon}.
-     *
-     * @param _name   new value for instance variable {@link #icon}
+     * 
+     * @param _name
+     *          new value for instance variable {@link #icon}
      * @see #icon
      */
-    public void setIcon(final String _icon)  {
+    public void setIcon(final String _icon) {
       this.icon = _icon;
     }
 
+    private final List<Event> events = new ArrayList<Event>();
+
+    public void addEvent(final Event _event) {
+      events.add(_event);
+    }
+
     /**
-     * Returns a string representation with values of all instance variables
-     * of a field.
-     *
+     * Returns a string representation with values of all instance variables of
+     * a field.
+     * 
      * @return string representation of this definition of a column
      */
-    public String toString()  {
-      return new ToStringBuilder(this)
-        .append("name",       this.name)
-        .append("properties", this.properties)
-        .toString();
+    public String toString() {
+      return new ToStringBuilder(this).append("name", this.name).append(
+          "properties", this.properties).toString();
     }
   }
-  
-  
-  /////////////////////////////////////////////////////////////////////////////
+
+  // ///////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
   public static class Definition extends DefinitionAbstract {
 
     /** All fields for the collection are stored in this variable */
-    private List < Field > fields = new ArrayList < Field > ();
-    
-    ///////////////////////////////////////////////////////////////////////////
+    private List<Field> fields = new ArrayList<Field>();
+
+    // /////////////////////////////////////////////////////////////////////////
     // instance methods
 
     /**
      * Updates / creates the instance in the database. Uses
      * {@link AbstractUpdate.updateInDB} for the update. Only the fields are
      * also updated for collection defined through this definiton.
-     *
-     * @param _instance     instance to update (or null if instance is to
-     *                      create)
+     * 
+     * @param _instance
+     *          instance to update (or null if instance is to create)
      * @param _allLinkTypes
-     * @param _insert       insert instance (if new instance is to create)
+     * @param _insert
+     *          insert instance (if new instance is to create)
      * @see #setFieldsInDB
      */
     public Instance updateInDB(final Instance _instance,
-                           final Set < Link > _allLinkTypes,
-                           final Insert _insert) throws EFapsException, Exception  {
+                               final Set<Link> _allLinkTypes,
+                               final Insert _insert) throws EFapsException,
+                                                    Exception {
 
       Instance instance = super.updateInDB(_instance, _allLinkTypes, _insert);
       setFieldsInDB(instance);
+
       return instance;
     }
 
     /**
      * The fields for this collection are created and / or updated in the
      * database.
-     *
-     * @param _instance   instance for which the fields must be updated / 
-     *                    created
+     * 
+     * @param _instance
+     *          instance for which the fields must be updated / created
      * @todo rework that a complete cleanup and create is not needed
      * @todo remove throwing Exception
      */
-    protected void setFieldsInDB(final Instance _instance) 
-                                            throws EFapsException, Exception  {
+    protected void setFieldsInDB(final Instance _instance)
+                                                          throws EFapsException,
+                                                          Exception {
       // cleanup fields (remove all fields from table)
       SearchQuery query = new SearchQuery();
       query.setExpand(_instance, "Admin_UI_Field\\Collection");
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
-      while (query.next())  {
+      while (query.next()) {
         Instance field = new Instance((String) query.get("OID"));
         setPropertiesInDb(field, null);
         setLinksInDB(field, LINKFIELD2ICON, null);
@@ -245,43 +271,47 @@ e.printStackTrace();
       query.close();
 
       // append new fields
-      for (Field field : this.fields)  {
+      for (Field field : this.fields) {
         Insert insert = new Insert("Admin_UI_Field");
         insert.add("Collection", "" + _instance.getId());
-        insert.add("Name",       field.name);
+        insert.add("Name", field.name);
         insert.executeWithoutAccessCheck();
         setPropertiesInDb(insert.getInstance(), field.properties);
-        Map < String, Map < String, String > > iconsMap
-                          = new HashMap < String, Map < String, String > > ();
-        if (field.icon != null)  {
+        Map<String, Map<String, String>> iconsMap = new HashMap<String, Map<String, String>>();
+        if (field.icon != null) {
           iconsMap.put(field.icon, null);
         }
         setLinksInDB(insert.getInstance(), LINKFIELD2ICON, iconsMap);
+
+        for (Event event : field.events) {
+          Instance newInstance = event.updateInDB(insert.getInstance(), field.name);
+          setPropertiesInDb(newInstance, event.getProperties());
+        }
+
       }
     }
-    
+
     /**
      * Adds a new field to this definition of the table.
-     *
-     * @param _field new field to add to this table
+     * 
+     * @param _field
+     *          new field to add to this table
      * @see #fields
      * @see #Field
      */
-    public void addField(final Field _field)  {
+    public void addField(final Field _field) {
       this.fields.add(_field);
     }
 
     /**
-     * Returns a string representation with values of all instance variables
-     * of a field.
-     *
+     * Returns a string representation with values of all instance variables of
+     * a field.
+     * 
      * @return string representation of this definition of a column
      */
-    public String toString()  {
-      return new ToStringBuilder(this)
-        .appendSuper(super.toString())
-        .append("fields",       this.fields)
-        .toString();
+    public String toString() {
+      return new ToStringBuilder(this).appendSuper(super.toString()).append(
+          "fields", this.fields).toString();
     }
   }
 }

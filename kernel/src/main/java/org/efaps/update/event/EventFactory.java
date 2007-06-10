@@ -31,12 +31,26 @@ import org.xml.sax.Attributes;
  * @version $Id$
  * 
  */
-public class TriggerFactory implements ObjectCreationFactory {
+public class EventFactory implements ObjectCreationFactory {
+  private String event = null;
+
+  public EventFactory() {
+
+  }
+
+  public EventFactory(final String _event) {
+    this.event = _event;
+  }
 
   public Object createObject(final Attributes _attributes) {
-    Trigger ret = new Trigger(_attributes.getValue("name"), _attributes
-        .getValue("event"), _attributes.getValue("program"), _attributes
-        .getValue("method"), _attributes.getValue("index"));
+    if (this.event == null) {
+      this.event = _attributes.getValue("event");
+    }
+
+    Event ret = new Event(_attributes.getValue("name"), this.event, _attributes
+        .getValue("program"), _attributes.getValue("method"), _attributes
+        .getValue("index"));
+    ret.setTrigger(_attributes.getValue("event") != null);
     return ret;
   }
 

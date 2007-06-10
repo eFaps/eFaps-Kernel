@@ -40,7 +40,7 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
-import org.efaps.update.event.Trigger;
+import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
 
 /**
@@ -375,7 +375,7 @@ public abstract class AbstractUpdate {
      */
     private final Map<Link, Map<String, Map<String, String>>> links         = new HashMap<Link, Map<String, Map<String, String>>>();
 
-    protected final List<Trigger>                             triggers      = new ArrayList<Trigger>();
+    protected final List<Event>                               events      = new ArrayList<Event>();
 
     public void updateInDB(final Type _dataModelType, final String _uuid,
                            final Set<Link> _allLinkTypes)
@@ -453,9 +453,9 @@ public abstract class AbstractUpdate {
       }
       setPropertiesInDb(instance, this.properties);
 
-      for (Trigger trig : this.triggers) {
-        Instance newInstance = trig.updateInDB(instance, getValue("Name"));
-        setPropertiesInDb(newInstance, trig.getProperties());
+      for (Event event : this.events) {
+        Instance newInstance = event.updateInDB(instance, getValue("Name"));
+        setPropertiesInDb(newInstance, event.getProperties());
       }
 
       return instance;
@@ -721,10 +721,10 @@ public abstract class AbstractUpdate {
     /**
      * add a <code>Trigger</code> to this definition
      * 
-     * @param _trigger
+     * @param _event
      */
-    public void addTrigger(Trigger _trigger) {
-      this.triggers.add(_trigger);
+    public void addEvent(Event _event) {
+      this.events.add(_event);
     }
   }
 

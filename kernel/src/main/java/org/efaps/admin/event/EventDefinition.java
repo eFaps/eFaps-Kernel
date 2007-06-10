@@ -30,6 +30,7 @@ import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.java.EFapsClassLoader;
 import org.efaps.admin.ui.Command;
+import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -239,6 +240,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
       }
 
       EFapsClassName eFapsClass = EFapsClassName.getEnum(parentType.getName());
+
       if (eFapsClass == EFapsClassName.DATAMODEL_TYPE) {
         Type type = Type.get(parentId);
         if (LOG.isDebugEnabled()) {
@@ -275,14 +277,34 @@ public class EventDefinition extends AdminObject implements EventExecution {
           }
 
         } else {
+          if (eFapsClass == EFapsClassName.FIELD) {
+     
+            
+//            Field field = Field.initialise();
 
-          if (LOG.isDebugEnabled()) {
-            LOG.debug("initialise() - unknown event trigger connection");
+//            if (LOG.isDebugEnabled()) {
+//              LOG.debug("    Command=" + command.getName());
+//            }
+//            for (TriggerEvent triggerEvent : TriggerEvent.values()) {
+//              Type triggerClass = Type.get(triggerEvent.name);
+//              if (eventType.isKindOf(triggerClass)) {
+//                if (LOG.isDebugEnabled()) {
+//                  LOG.debug("     found trigger " + triggerEvent + ":"
+//                      + triggerClass);
+//                }
+//                command.addTrigger(triggerEvent, new EventDefinition(eventId,
+//                    eventName, eventPos, resName, method, eventOID));
+//              }
+//            }
+          } else {
+
+            if (LOG.isDebugEnabled()) {
+              LOG.debug("initialise() - unknown event trigger connection");
+            }
           }
         }
       }
 
     }
   }
-
 }

@@ -20,9 +20,16 @@
 
 package org.efaps.admin.ui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.TriggerKeys4Values;
 import org.efaps.db.Context;
 import org.efaps.servlet.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
@@ -32,19 +39,52 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  * @todo description
  */
-public class Field extends UserInterfaceObject  {
+public class Field extends UserInterfaceObject {
+  /**
+   * All Events for this Field are stored in this List.
+   */
+  private final List<EventDefinition> events = new ArrayList<EventDefinition>();
 
-public Field()  {
-  super(0,null);
-}
+  public boolean hasEvent() {
+    return !this.events.isEmpty();
+
+  }
+
+  public void executeEvent() {
+
+    Map<TriggerKeys4Values, Object> map = new HashMap<TriggerKeys4Values, Object>();
+
+    for (EventDefinition evenDef : this.events) {
+      evenDef.execute(map);
+    }
+  }
+
+  public void addEvent(final EventDefinition _eventDef) {
+
+    int pos = 0;
+    for (EventDefinition cur : this.events) {
+      if (_eventDef.getIndexPos() > cur.getIndexPos()) {
+        break;
+      }
+      pos++;
+    }
+    this.events.add(pos, _eventDef);
+
+  }
+
+  public Field() {
+    super(0, null);
+  }
 
   /**
    * This is the constructor of the field class.
-   *
-   * @param _id   id of the field instance
-   * @param _name name of the field instance
+   * 
+   * @param _id
+   *          id of the field instance
+   * @param _name
+   *          name of the field instance
    */
-  public Field(long _id, String _name)  {
+  public Field(long _id, String _name) {
     super(_id, _name);
   }
 
@@ -52,304 +92,315 @@ public Field()  {
    * The instance method returns the label for this field. If no special label
    * is defined, the viewable name of the attribute is returned (method
    * {@link Attribute.getViewableName} is used).
-   *
-   * @param _context  context for this request
+   * 
+   * @param _context
+   *          context for this request
    * @return label of the field
    */
-  public String getViewableName(Context _context)  {
+  public String getViewableName(Context _context) {
     String ret = getLabel();
-//    if (ret==null)  {
-//      if (getAttribute()!=null)  {
-//        ret = getAttribute().getViewableName(_context);
-//      } else  {
-//        ret = "";
-//      }
-//    }
+    // if (ret==null) {
+    // if (getAttribute()!=null) {
+    // ret = getAttribute().getViewableName(_context);
+    // } else {
+    // ret = "";
+    // }
+    // }
     return ret;
   }
 
   /**
-   * Test, if the value of instance variable {@link CommandAbstract.target}
-   * is equal to {@link CommandAbstract.TARGET_CONTENT}.
-   *
+   * Test, if the value of instance variable {@link CommandAbstract.target} is
+   * equal to {@link CommandAbstract.TARGET_CONTENT}.
+   * 
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
    */
-  public boolean isTargetContent()  {
+  public boolean isTargetContent() {
     return getTarget() == CommandAbstract.TARGET_CONTENT;
   }
 
   /**
-   * Test, if the value of instance variable {@link CommandAbstract.target}
-   * is equal to {@link CommandAbstract.TARGET_POPUP}.
-   *
+   * Test, if the value of instance variable {@link CommandAbstract.target} is
+   * equal to {@link CommandAbstract.TARGET_POPUP}.
+   * 
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
    */
-  public boolean isTargetPopup()  {
+  public boolean isTargetPopup() {
     return getTarget() == CommandAbstract.TARGET_POPUP;
   }
 
   /**
-   * Test, if the value of instance variable {@link CommandAbstract.target}
-   * is equal to {@link CommandAbstract.TARGET_HIDDEN}.
-   *
+   * Test, if the value of instance variable {@link CommandAbstract.target} is
+   * equal to {@link CommandAbstract.TARGET_HIDDEN}.
+   * 
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
    */
-  public boolean isTargetHidden()  {
+  public boolean isTargetHidden() {
     return getTarget() == CommandAbstract.TARGET_HIDDEN;
   }
 
   /**
    * The method overrides the original method 'toString' and returns the
    * information of the field user interface object.
-   *
+   * 
    * @return name of the user interface object
    */
-  public String toString()  {
-    return new ToStringBuilder(this).
-      appendSuper(super.toString()).
-      append("expression", getExpression()).
-      append("alternateOID", getAlternateOID()).
-      toString();
+  public String toString() {
+    return new ToStringBuilder(this).appendSuper(super.toString()).append(
+        "expression", getExpression())
+        .append("alternateOID", getAlternateOID()).toString();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param _context  eFaps context for this request
-   * @param _linkType type of the link property
-   * @param _toId     to id
-   * @param _toType   to type
-   * @param _toName   to name
+   * @param _context
+   *          eFaps context for this request
+   * @param _linkType
+   *          type of the link property
+   * @param _toId
+   *          to id
+   * @param _toType
+   *          to type
+   * @param _toName
+   *          to name
    */
-  protected void setLinkProperty(EFapsClassName _linkType, long _toId, EFapsClassName _toType, String _toName) throws Exception  {
-    switch (_linkType)  {
-      case LINK_ICON:           setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/" + _toName));break;
-      default:                  super.setLinkProperty(_linkType, _toId, _toType, _toName);break;
+  protected void setLinkProperty(EFapsClassName _linkType, long _toId,
+                                 EFapsClassName _toType, String _toName)
+                                                                        throws Exception {
+    switch (_linkType) {
+      case LINK_ICON:
+        setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/"
+            + _toName));
+      break;
+      default:
+        super.setLinkProperty(_linkType, _toId, _toType, _toName);
+      break;
     }
   }
 
   /**
    * The instance method sets a new property value.
-   *
-   * @param _context  eFaps context for this request
-   * @param _name     name of the property
-   * @param _value    value of the property
+   * 
+   * @param _context
+   *          eFaps context for this request
+   * @param _name
+   *          name of the property
+   * @param _value
+   *          value of the property
    */
-  protected void setProperty(final String _name, 
-                             final String _value) throws CacheReloadException  {
-    if (_name.equals("AlternateOID"))  {
+  protected void setProperty(final String _name, final String _value)
+                                                                     throws CacheReloadException {
+    if (_name.equals("AlternateOID")) {
       setAlternateOID(_value);
-    } else if (_name.equals("ClassNameUI"))  {
-      try  {
-        setClassUI((UIInterface)Class.forName(_value).newInstance());
-      } catch (ClassNotFoundException e)  {
-        throw new CacheReloadException("could not found class "
-                                       + "'" + _value + "' for "
-                                       + "'" + getName() + "'", e);
-      } catch (InstantiationException e)  {
-        throw new CacheReloadException("could not instantiate class "
-                                       + "'" + _value + "' for "
-                                       + "'" + getName() + "'", e);
-      } catch (IllegalAccessException e)  {
-        throw new CacheReloadException("could not access class "
-                                       + "'" + _value + "' for "
-                                       + "'" + getName() + "'", e);
+    } else if (_name.equals("ClassNameUI")) {
+      try {
+        setClassUI((UIInterface) Class.forName(_value).newInstance());
+      } catch (ClassNotFoundException e) {
+        throw new CacheReloadException("could not found class " + "'" + _value
+            + "' for " + "'" + getName() + "'", e);
+      } catch (InstantiationException e) {
+        throw new CacheReloadException("could not instantiate class " + "'"
+            + _value + "' for " + "'" + getName() + "'", e);
+      } catch (IllegalAccessException e) {
+        throw new CacheReloadException("could not access class " + "'" + _value
+            + "' for " + "'" + getName() + "'", e);
       }
-    } else if (_name.equals("Columns"))  {
+    } else if (_name.equals("Columns")) {
       setCols(Integer.parseInt(_value));
-    } else if (_name.equals("Creatable"))  {
+    } else if (_name.equals("Creatable")) {
       setCreatable(_value.equals("true"));
-    } else if (_name.equals("CreateValue"))  {
+    } else if (_name.equals("CreateValue")) {
       setCreateValue(_value);
-    } else if (_name.equals("Editable"))  {
+    } else if (_name.equals("Editable")) {
       setEditable(_value.equals("true"));
-    } else if (_name.equals("Expression"))  {
+    } else if (_name.equals("Expression")) {
       setExpression(_value);
-    } else if (_name.equals("GroupCount"))  {
+    } else if (_name.equals("GroupCount")) {
       setGroupCount(Integer.parseInt(_value));
-    } else if (_name.equals("Hidden"))  {
+    } else if (_name.equals("Hidden")) {
       setHidden(_value.equals("true"));
-    } else if (_name.equals("HRef"))  {
+    } else if (_name.equals("HRef")) {
       setReference(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.equals("Icon"))  {
+    } else if (_name.equals("Icon")) {
       setIcon(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.equals("Label"))  {
+    } else if (_name.equals("Label")) {
       setLabel(_value);
-    } else if (_name.equals("ProgramValue"))  {
-      try  {
+    } else if (_name.equals("ProgramValue")) {
+      try {
         Class programValueClass = Class.forName(_value);
-        setProgramValue((FieldProgramValueInterface)programValueClass.newInstance());
-      } catch (ClassNotFoundException e)  {
-        throw new CacheReloadException("could not found class "
-                                       + "'" + _value + "' for "
-                                       + "'" + getName() + "'", e);
-      } catch (InstantiationException e)  {
-        throw new CacheReloadException("could not instantiate class "
-                                       + "'" + _value + "' for "
-                                       + "'" + getName() + "'", e);
-      } catch (IllegalAccessException e)  {
-        throw new CacheReloadException("could not access class "
-                                       + "'" + _value + "' for "
-                                       + "'" + getName() + "'", e);
+        setProgramValue((FieldProgramValueInterface) programValueClass
+            .newInstance());
+      } catch (ClassNotFoundException e) {
+        throw new CacheReloadException("could not found class " + "'" + _value
+            + "' for " + "'" + getName() + "'", e);
+      } catch (InstantiationException e) {
+        throw new CacheReloadException("could not instantiate class " + "'"
+            + _value + "' for " + "'" + getName() + "'", e);
+      } catch (IllegalAccessException e) {
+        throw new CacheReloadException("could not access class " + "'" + _value
+            + "' for " + "'" + getName() + "'", e);
       }
-//      try  {
-//      } catch (ClassNotFoundException e)  {
-//      } catch (InstantiationException e)  {
-//        throw new RequestException(getClass(), "newInstance.InstantiationException", e);
-//      } catch (IllegalAccessException e)  {
-//        throw new RequestException(getClass(), "newInstance.IllegalAccessException", e);
-//      }
-    } else if (_name.equals("Required"))  {
-      if (_value.equals("true"))  {
+      // try {
+      // } catch (ClassNotFoundException e) {
+      // } catch (InstantiationException e) {
+      // throw new RequestException(getClass(),
+      // "newInstance.InstantiationException", e);
+      // } catch (IllegalAccessException e) {
+      // throw new RequestException(getClass(),
+      // "newInstance.IllegalAccessException", e);
+      // }
+    } else if (_name.equals("Required")) {
+      if (_value.equals("true")) {
         setRequired(true);
       }
-    } else if (_name.equals("Rows"))  {
+    } else if (_name.equals("Rows")) {
       setRows(Integer.parseInt(_value));
-    } else if (_name.equals("Searchable"))  {
+    } else if (_name.equals("Searchable")) {
       setSearchable(_value.equals("true"));
-    } else if (_name.equals("ShowTypeIcon"))  {
+    } else if (_name.equals("ShowTypeIcon")) {
       setShowTypeIcon(_value.equals("true"));
-    } else if (_name.equals("Target"))  {
-      if (_value.equals("content"))  {
+    } else if (_name.equals("Target")) {
+      if (_value.equals("content")) {
         setTarget(CommandAbstract.TARGET_CONTENT);
-      } else if (_value.equals("hidden"))  {
+      } else if (_value.equals("hidden")) {
         setTarget(CommandAbstract.TARGET_HIDDEN);
-      } else if (_value.equals("popup"))  {
+      } else if (_value.equals("popup")) {
         setTarget(CommandAbstract.TARGET_POPUP);
       }
-    } else  {
+    } else {
       super.setProperty(_name, _value);
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the expression to get a field from the database.
-   *
+   * 
    * @see #setExpression
    * @see #getExpression
    */
-  private String expression;
+  private String                     expression;
 
   /**
    * This is the expression to get the alternate id of a field from the
    * database.
-   *
+   * 
    * @see #setAlternateOID
    * @see #getAlternateOID
    */
-  private String alternateOID = null;
+  private String                     alternateOID = null;
 
   /**
    * This is the value in the create process. Default value is <i>null</i>.
-   *
+   * 
    * @see #setCreateValue
    * @see #getCreateValue
    */
-  private String createValue = null;
+  private String                     createValue  = null;
 
   /**
    * Instance variable to hold the label.
-   *
+   * 
    * @see #setLabel
    * @see #getLabel
    */
-  private String label=null;
+  private String                     label        = null;
 
   /**
    * Is a field multiline? If yes, the value must be higher than the default
    * value <i>1</i>. The value is only used for a create or a modify form.
-   *
+   * 
    * @see #setRows
    * @see #getRows
    */
-  private int rows = 1;
+  private int                        rows         = 1;
 
   /**
    * Number of columns for a field. It is used only for a create or a modify
    * form. Default value is <i>20</i>. The column size is not the size of a
    * field in the database!
-   *
+   * 
    * @see #setCols
    * @see #getCols
    */
-  private int cols = 20;
+  private int                        cols         = 20;
 
   /**
    * Is a field creatable? Default value is <i>true</i>.
-   *
+   * 
    * @see #setCreatable
    * @see #isCreatable
    */
-  private boolean creatable = true;
+  private boolean                    creatable    = true;
 
   /**
    * Is a field editable? Default value is <i>true</i>.
-   *
+   * 
    * @see #setEditable
    * @see #isEditable
    */
-  private boolean editable = true;
+  private boolean                    editable     = true;
 
   /**
    * Is a field editable? Default value is <i>true</i>.
-   *
+   * 
    * @see #setSearchable
    * @see #isSearchable
    */
-  private boolean searchable = true;
+  private boolean                    searchable   = true;
 
   /**
    * Is a field required? Default value is <i>false</i>.
-   *
+   * 
    * @see #setRequired
    * @see #isRequired
    */
-  private boolean required = false;
+  private boolean                    required     = false;
 
   /**
    * Is a field hidden? Default value is <i>false</i>. It used to store some
    * values in the form in the modifcation and creating forms.
-   *
+   * 
    * @see #setHidden
    * @see #isHidden
    */
-  private boolean hidden = false;
+  private boolean                    hidden       = false;
 
   /**
    * Instance variable to hold the reference to call.
-   *
+   * 
    * @see #setReference
    * @see #getReference
    */
-  private String reference=null;
+  private String                     reference    = null;
 
   /**
    * Instance variable to hold the selected index.
-   *
+   * 
    * @see #setSelIndex
    * @see #getSelIndex
    */
-  private int selIndex;
+  private int                        selIndex;
 
   /**
    * The field is represented by a radio button, if the field is editable.
-   *
+   * 
    * @see #setRadioButton
    * @see #isRadioButton
    */
-  private boolean radioButton = false;
+  private boolean                    radioButton  = false;
 
   /**
    * The field is represented by an program value.
-   *
+   * 
    * @see #setProgramValue
    * @see #getProgramValue
    */
@@ -357,484 +408,504 @@ public Field()  {
 
   /**
    * The field has an icon..
-   *
+   * 
    * @see #setIcon
    * @see #getIcon
    */
-  private String icon = null;
+  private String                     icon         = null;
 
   /**
    * The target of the field href is the content frame.
-   *
+   * 
    * @set #getTarget
    * @see #setTarget
    */
-  private int target = CommandAbstract.TARGET_UNKNOWN;
+  private int                        target       = CommandAbstract.TARGET_UNKNOWN;
 
   /**
    * The type icon for this field is shown if value is set to true.
-   *
+   * 
    * @see #setShowTypeIcon
    * @see #isShowTypeIcon
    */
-  private boolean showTypeIcon = false;
+  private boolean                    showTypeIcon = false;
 
   /**
    * Group Count if in a row / columnd must be shown more than one value. The
    * default value is <code>-1</code> meaning no group count is set.
-   *
+   * 
    * @see #setGroupCount
    * @see #getGroupCount
    */
-  private int groupCount = -1;
+  private int                        groupCount   = -1;
 
   /**
    * The class is used to generate for a field user specific field values.
-   *
+   * 
    * @see #setClassUI
    * @see #getClassUI
    */
-  private UIInterface classUI = null;
+  private UIInterface                classUI      = null;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the setter method for instance variable {@link #expression}.
-   *
-   * @param _expression new value for instance variable {@link #expression}
+   * 
+   * @param _expression
+   *          new value for instance variable {@link #expression}
    * @see #expression
    * @see #getExpression
    */
-  public void setExpression(String _expression)  {
-    this.expression =_expression;
+  public void setExpression(String _expression) {
+    this.expression = _expression;
   }
 
   /**
    * This is the getter method for instance variable {@link #expression}.
-   *
+   * 
    * @return the value of the instance variable {@link #expression}.
    * @see #expression
    * @see #setExpression
    */
-  public String getExpression()  {
+  public String getExpression() {
     return this.expression;
   }
 
   /**
    * This is the setter method for instance variable {@link #alternateOID}.
-   *
-   * @param _alternateOID new value for instance variable {@link #alternateOID}
+   * 
+   * @param _alternateOID
+   *          new value for instance variable {@link #alternateOID}
    * @see #alternateOID
    * @see #getAlternateOID
    */
-  public void setAlternateOID(String _alternateOID)  {
-    this.alternateOID =_alternateOID;
+  public void setAlternateOID(String _alternateOID) {
+    this.alternateOID = _alternateOID;
   }
 
   /**
    * This is the getter method for instance variable {@link #alternateOID}.
-   *
+   * 
    * @return the value of the instance variable {@link #alternateOID}.
    * @see #alternateOID
    * @see #setAlternateOID
    */
-  public String getAlternateOID()  {
+  public String getAlternateOID() {
     return this.alternateOID;
   }
 
   /**
    * This is the setter method for instance variable {@link #createValue}.
-   *
-   * @param _createValue new value for instance variable {@link #createValue}
+   * 
+   * @param _createValue
+   *          new value for instance variable {@link #createValue}
    * @see #createValue
    * @see #getCreateValue
    */
-  public void setCreateValue(String _createValue)  {
-    this.createValue =_createValue;
+  public void setCreateValue(String _createValue) {
+    this.createValue = _createValue;
   }
 
   /**
    * This is the getter method for instance variable {@link #createValue}.
-   *
+   * 
    * @return the value of the instance variable {@link #createValue}.
    * @see #createValue
    * @see #setCreateValue
    */
-  public String getCreateValue()  {
+  public String getCreateValue() {
     return this.createValue;
   }
 
   /**
    * This is the setter method for instance variable {@link #label}.
-   *
-   * @param _label new value for instance variable {@link #label}
+   * 
+   * @param _label
+   *          new value for instance variable {@link #label}
    * @see #label
    * @see #getLabel
    */
-  public void setLabel(String _label)  {
-    this.label  =_label;
+  public void setLabel(String _label) {
+    this.label = _label;
   }
 
   /**
    * This is the getter method for instance variable {@link #label}.
-   *
+   * 
    * @return the value of the instance variable {@link #label}.
    * @see #label
    * @see #setLabel
    */
-  public String getLabel()  {
+  public String getLabel() {
     return this.label;
   }
 
   /**
    * This is the setter method for instance variable {@link #rows}.
-   *
-   * @param _rows new value for instance variable {@link #rows}
+   * 
+   * @param _rows
+   *          new value for instance variable {@link #rows}
    * @see #rows
    * @see #getRows
    */
-  public void setRows(int _rows)  {
+  public void setRows(int _rows) {
     this.rows = _rows;
   }
 
   /**
    * This is the getter method for instance variable {@link #rows}.
-   *
+   * 
    * @return the value of the instance variable {@link #rows}.
    * @see #rows
    * @see #setRows
    */
-  public int getRows()  {
+  public int getRows() {
     return this.rows;
   }
 
   /**
    * This is the setter method for instance variable {@link #cols}.
-   *
-   * @param _cols new value for instance variable {@link #cols}
+   * 
+   * @param _cols
+   *          new value for instance variable {@link #cols}
    * @see #cols
    * @see #getCols
    */
-  public void setCols(int _cols)  {
+  public void setCols(int _cols) {
     this.cols = _cols;
   }
 
   /**
    * This is the getter method for instance variable {@link #cols}.
-   *
+   * 
    * @return the value of the instance variable {@link #cols}.
    * @see #cols
    * @see #setCols
    */
-  public int getCols()  {
+  public int getCols() {
     return this.cols;
   }
 
   /**
    * This is the setter method for instance variable {@link #creatable}.
-   *
-   * @param _creatable new value for instance variable {@link #creatable}
+   * 
+   * @param _creatable
+   *          new value for instance variable {@link #creatable}
    * @see #creatable
    * @see #isCreatable
    */
-  public void setCreatable(boolean _creatable)  {
+  public void setCreatable(boolean _creatable) {
     this.creatable = _creatable;
   }
 
   /**
    * This is the getter method for instance variable {@link #creatable}.
-   *
+   * 
    * @return the value of the instance variable {@link #creatable}.
    * @see #creatable
    * @see #setCreatable
    */
-  public boolean isCreatable()  {
+  public boolean isCreatable() {
     return this.creatable;
   }
 
   /**
    * This is the setter method for instance variable {@link #editable}.
-   *
-   * @param _editable new value for instance variable {@link #editable}
+   * 
+   * @param _editable
+   *          new value for instance variable {@link #editable}
    * @see #editable
    * @see #isEditable
    */
-  public void setEditable(boolean _editable)  {
+  public void setEditable(boolean _editable) {
     this.editable = _editable;
   }
 
   /**
    * This is the getter method for instance variable {@link #editable}.
-   *
+   * 
    * @return the value of the instance variable {@link #editable}.
    * @see #editable
    * @see #setEditable
    */
-  public boolean isEditable()  {
+  public boolean isEditable() {
     return this.editable;
   }
 
   /**
    * This is the setter method for instance variable {@link #searchable}.
-   *
-   * @param _searchable new value for instance variable {@link #searchable}
+   * 
+   * @param _searchable
+   *          new value for instance variable {@link #searchable}
    * @see #searchable
    * @see #isSearchable
    */
-  public void setSearchable(boolean _searchable)  {
+  public void setSearchable(boolean _searchable) {
     this.searchable = _searchable;
   }
 
   /**
    * This is the getter method for instance variable {@link #searchable}.
-   *
+   * 
    * @return the value of the instance variable {@link #searchable}.
    * @see #searchable
    * @see #setSearchable
    */
-  public boolean isSearchable()  {
+  public boolean isSearchable() {
     return this.searchable;
   }
 
   /**
    * This is the setter method for instance variable {@link #required}.
-   *
-   * @param _required new value for instance variable {@link #required}
+   * 
+   * @param _required
+   *          new value for instance variable {@link #required}
    * @see #required
    * @see #isRequired
    */
-  public void setRequired(boolean _required)  {
+  public void setRequired(boolean _required) {
     this.required = _required;
   }
 
   /**
    * This is the getter method for instance variable {@link #required}.
-   *
+   * 
    * @return the value of the instance variable {@link #required}.
    * @see #required
    * @see #setRequired
    */
-  public boolean isRequired()  {
+  public boolean isRequired() {
     return this.required;
   }
 
   /**
    * This is the setter method for instance variable {@link #hidden}.
-   *
-   * @param _hidden new value for instance variable {@link #hidden}
+   * 
+   * @param _hidden
+   *          new value for instance variable {@link #hidden}
    * @see #hidden
    * @see #isHidden
    */
-  public void setHidden(boolean _hidden)  {
+  public void setHidden(boolean _hidden) {
     this.hidden = _hidden;
   }
 
   /**
    * This is the getter method for instance variable {@link #hidden}.
-   *
+   * 
    * @return the value of the instance variable {@link #hidden}.
    * @see #hidden
    * @see #setHidden
    */
-  public boolean isHidden()  {
+  public boolean isHidden() {
     return this.hidden;
   }
 
   /**
    * This is the setter method for instance variable {@link #reference}.
-   *
-   * @param _reference new value for instance variable {@link #reference}
+   * 
+   * @param _reference
+   *          new value for instance variable {@link #reference}
    * @see #reference
    * @see #getReference
    */
-  public void setReference(String _reference)  {
-    this.reference  =_reference;
+  public void setReference(String _reference) {
+    this.reference = _reference;
   }
 
   /**
    * This is the getter method for instance variable {@link #reference}.
-   *
+   * 
    * @return the value of the instance variable {@link #reference}.
    * @see #reference
    * @see #setReference
    */
-  public String getReference()  {
+  public String getReference() {
     return this.reference;
   }
 
   /**
    * This is the setter method for instance variable {@link #selIndex}.
-   *
-   * @param _selIndex new value for instance variable {@link #selIndex}
+   * 
+   * @param _selIndex
+   *          new value for instance variable {@link #selIndex}
    * @see #selIndex
    * @see #getSelIndex
    */
-  protected void setSelIndex(int _selIndex)  {
+  protected void setSelIndex(int _selIndex) {
     this.selIndex = _selIndex;
   }
 
   /**
    * This is the getter method for instance variable {@link #selIndex}.
-   *
+   * 
    * @return the value of the instance variable {@link #selIndex}.
    * @see #selIndex
    * @see #setSelIndex
    */
-  public int getSelIndex()  {
+  public int getSelIndex() {
     return this.selIndex;
   }
 
   /**
    * This is the setter method for instance variable {@link #radioButton}.
-   *
-   * @param _radioButton new value for instance variable {@link #radioButton}
+   * 
+   * @param _radioButton
+   *          new value for instance variable {@link #radioButton}
    * @see #radioButton
    * @see #isRadioButton
    */
-  public void setRadioButton(boolean _radioButton)  {
+  public void setRadioButton(boolean _radioButton) {
     this.radioButton = _radioButton;
   }
 
   /**
    * This is the getter method for instance variable {@link #radioButton}.
-   *
+   * 
    * @return the value of the instance variable {@link #radioButton}.
    * @see #radioButton
    * @see #setRadioButton
    */
-  public boolean isRadioButton()  {
+  public boolean isRadioButton() {
     return this.radioButton;
   }
 
   /**
    * This is the setter method for instance variable {@link #programValue}.
-   *
-   * @param _programValue new value for instance variable {@link #programValue}
+   * 
+   * @param _programValue
+   *          new value for instance variable {@link #programValue}
    * @see #programValue
    * @see #getProgramValue
    */
-  public void setProgramValue(FieldProgramValueInterface _programValue)  {
+  public void setProgramValue(FieldProgramValueInterface _programValue) {
     this.programValue = _programValue;
   }
 
   /**
    * This is the getter method for instance variable {@link #programValue}.
-   *
+   * 
    * @return the value of the instance variable {@link #programValue}.
    * @see #programValue
    * @see #setProgramValue
    */
-  public FieldProgramValueInterface getProgramValue()  {
+  public FieldProgramValueInterface getProgramValue() {
     return this.programValue;
   }
 
   /**
    * This is the setter method for instance variable {@link #icon}.
-   *
-   * @param _icon new value for instance variable {@link #icon}
+   * 
+   * @param _icon
+   *          new value for instance variable {@link #icon}
    * @see #icon
    * @see #getIcon
    */
-  public void setIcon(String _icon)  {
+  public void setIcon(String _icon) {
     this.icon = _icon;
   }
 
   /**
    * This is the getter method for instance variable {@link #icon}.
-   *
+   * 
    * @return the value of the instance variable {@link #icon}.
    * @see #icon
    * @see #setIcon
    */
-  public String getIcon()  {
+  public String getIcon() {
     return this.icon;
   }
 
   /**
    * This is the setter method for the instance variable {@link #target}.
-   *
+   * 
    * @return value of instance variable {@link #target}
    * @see #target
    * @see #setTarget
    */
-  public int getTarget()  {
+  public int getTarget() {
     return this.target;
   }
 
   /**
    * This is the setter method for the instance variable {@link #target}.
-   *
-   * @param _target  new value for instance variable {@link #target}
+   * 
+   * @param _target
+   *          new value for instance variable {@link #target}
    * @see #target
    * @see #getTarget
    */
-  public void setTarget(int _target)  {
+  public void setTarget(int _target) {
     this.target = _target;
   }
 
   /**
    * This is the setter method for the instance variable {@link #showTypeIcon}.
-   *
+   * 
    * @return value of instance variable {@link #showTypeIcon}
    * @see #showTypeIcon
    * @see #setShowTypeIcon
    */
-  public boolean isShowTypeIcon()  {
+  public boolean isShowTypeIcon() {
     return this.showTypeIcon;
   }
 
   /**
    * This is the setter method for the instance variable {@link #showTypeIcon}.
-   *
-   * @param _showTypeIcon  new value for instance variable {@link #showTypeIcon}
+   * 
+   * @param _showTypeIcon
+   *          new value for instance variable {@link #showTypeIcon}
    * @see #showTypeIcon
    * @see #getShowTypeIcon
    */
-  public void setShowTypeIcon(boolean _showTypeIcon)  {
+  public void setShowTypeIcon(boolean _showTypeIcon) {
     this.showTypeIcon = _showTypeIcon;
   }
 
   /**
    * This is the setter method for the instance variable {@link #groupCount}.
-   *
+   * 
    * @return value of instance variable {@link #groupCount}
    * @see #groupCount
    * @see #setGroupCount
    */
-  public int getGroupCount()  {
+  public int getGroupCount() {
     return this.groupCount;
   }
 
   /**
    * This is the setter method for the instance variable {@link #groupCount}.
-   *
-   * @param _groupCount  new value for instance variable {@link #groupCount}
+   * 
+   * @param _groupCount
+   *          new value for instance variable {@link #groupCount}
    * @see #groupCount
    * @see #getGroupCount
    */
-  public void setGroupCount(int _groupCount)  {
+  public void setGroupCount(int _groupCount) {
     this.groupCount = _groupCount;
   }
 
   /**
    * This is the setter method for the instance variable {@link #classUI}.
-   *
+   * 
    * @return value of instance variable {@link #classUI}
    * @see #classUI
    * @see #setClassUI
    */
-  public UIInterface getClassUI()  {
+  public UIInterface getClassUI() {
     return this.classUI;
   }
 
   /**
    * This is the setter method for the instance variable {@link #classUI}.
-   *
-   * @param _classUI  new value for instance variable {@link #classUI}
+   * 
+   * @param _classUI
+   *          new value for instance variable {@link #classUI}
    * @see #classUI
    * @see #getClassUI
    */
-  private void setClassUI(UIInterface _classUI)  {
+  private void setClassUI(UIInterface _classUI) {
     this.classUI = _classUI;
   }
 }

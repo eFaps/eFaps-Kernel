@@ -54,14 +54,17 @@
     <name>TeamWork_MemberTable</name>
     <!-- fields -->
     <field name="User">
-      <property name="Expression">UserAbstractLink.Name</property>
+      <property name="Expression">UserAbstractLink</property>
       <property name="Label">TeamWork_Member/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="AccessSet">     
-      <property name="Expression">AccessSetLink.Name</property>
+      <property name="Expression">AccessSetLink</property>
       <property name="Label">TeamWork_Member/AccessSetLink.Label</property>
-      <property name="ShowTypeIcon">true</property>
+      
+      <rangevalue name="TeamWork_MemberTable_AccessSet_RangeValue" program="org.efaps.webapp.programs.RangesValue" method="execute" index="1">
+      	<property name="show">Name</property>
+      </rangevalue>
     </field>
   </definition>
 

@@ -33,19 +33,18 @@ import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 /**
- * This class defines a Tigger to be connected with a Update
+ * This class defines a Event to be connected with a Update
  * 
  * @author jmo
  * @version $Id$
  * 
  */
-public class Trigger {
+public class Event {
 
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log          LOG        = LogFactory
-                                                   .getLog(Trigger.class);
+  private final static Log          LOG        = LogFactory.getLog(Event.class);
 
   /**
    * Property value depending on the property name for this Trigger
@@ -79,11 +78,17 @@ public class Trigger {
    */
   private final String              name;
 
+  private boolean                   isTrigger  = false;
+
+  public void setTrigger(final boolean _isTrigger) {
+    isTrigger = _isTrigger;
+  }
+
   /**
-   * Constructor of Trigger setting all instancevariables
+   * Constructor of Event for a Trigger setting all instancevariables
    * 
    * @param _name
-   *          name of the Trigger
+   *          name of the Event
    * @param _event
    *          event as defined in {@link org.efaps.admin.event.TriggerEvent}
    * @param _program
@@ -93,8 +98,8 @@ public class Trigger {
    * @param _index
    *          index of the trigger
    */
-  public Trigger(final String _name, final String _event,
-      final String _program, final String _method, final String _index) {
+  public Event(final String _name, final String _event, final String _program,
+      final String _method, final String _index) {
     this.name = _name;
     this.event = _event;
     this.program = _program;
@@ -119,11 +124,18 @@ public class Trigger {
 
     try {
 
+      String eventtype;
+      if (isTrigger) {
+        eventtype = TriggerEvent.valueOf(this.event).name;
+      } else {
+        eventtype = this.event;
+      }
+
       long typeID = _instance.getId();
       long progID = getProgID(_typeName);
 
       SearchQuery query = new SearchQuery();
-      query.setQueryTypes(TriggerEvent.valueOf(this.event).name);
+      query.setQueryTypes(eventtype);
       query.addWhereExprEqValue("Abstract", typeID);
       query.addWhereExprEqValue("Name", this.name);
       query.addSelect("OID");
@@ -134,7 +146,8 @@ public class Trigger {
       if (query.next()) {
         update = new Update((String) query.get("OID"));
       } else {
-        update = new Insert(TriggerEvent.valueOf(this.event).name);
+
+        update = new Insert(eventtype);
         update.add("Abstract", "" + typeID);
         update.add("IndexPosition", this.index);
         update.add("Name", this.name);

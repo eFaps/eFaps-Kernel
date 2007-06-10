@@ -70,7 +70,7 @@
     
     <attribute>
       <name>AccessSetLink</name>
-      <type>Link</type>
+      <type>LinkWithRanges</type>
       <typelink>Admin_Access_AccessSet</typelink>
       <sqltable>TeamWork_MemberRightsSQLView</sqltable>
       <sqlcolumn>ACCESSSET</sqlcolumn>
@@ -78,7 +78,7 @@
     
     <attribute>
       <name>UserAbstractLink</name>
-      <type>Link</type>
+      <type>PersonLink</type>
       <typelink>Admin_User_Abstract</typelink>
       <sqltable>TeamWork_MemberRightsSQLView</sqltable>
       <sqlcolumn>USERABSTRACT</sqlcolumn>
