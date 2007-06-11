@@ -27,6 +27,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.ParameterInterface.ParameterValues;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.servlet.RequestHandler;
@@ -81,11 +83,17 @@ public class Field extends UserInterfaceObject {
 
   }
 
-  public void executeEvent() {
+  public Return executeEvent() {
 
+    Return ret = null;
+    // TODO was passiert bei mehreren Events mit den Rueckgabewerten?
+
+    Parameter para = new Parameter();
+    para.put(ParameterValues.INSTANCE, this);
     for (EventDefinition evenDef : this.events) {
-      evenDef.execute(new Parameter());
+      ret = (Return) evenDef.execute(para);
     }
+    return ret;
   }
 
   public void addEvent(final EventDefinition _eventDef) {

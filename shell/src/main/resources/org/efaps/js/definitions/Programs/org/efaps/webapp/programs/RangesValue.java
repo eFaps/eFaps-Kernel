@@ -20,15 +20,49 @@
 
 package org.efaps.webapp.programs;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.ParameterInterface;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.ReturnInterface;
+import org.efaps.admin.event.ParameterInterface.ParameterValues;
+import org.efaps.admin.event.ReturnInterface.ReturnValues;
+import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
 
 public class RangesValue implements EventExecution {
 
   public ReturnInterface execute(ParameterInterface _parameter) {
-    System.out.print("gehtdoch");
-    return null;
-  }
+    Return ret = new Return();
+    try {
 
+      String type = (String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
+          .get("Type");
+
+      String value = (String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
+          .get("Value");
+      SearchQuery query = new SearchQuery();
+      
+      Map<String, String> map = new HashMap<String, String>();
+
+      query.setQueryTypes(type);
+      query.addSelect("ID");
+      query.addSelect(value);
+      query.execute();
+
+      while (query.next()) {
+        map.put(query.get("ID").toString(), query.get(value).toString());
+      }
+
+      ret.put(ReturnValues.VALUES, map);
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    System.out.print("gehtdoch");
+    return ret;
+  }
 }

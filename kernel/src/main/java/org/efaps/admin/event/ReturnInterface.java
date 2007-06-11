@@ -20,6 +20,9 @@
 
 package org.efaps.admin.event;
 
+import java.util.Map;
+import java.util.Set;
+
 public interface ReturnInterface<test, V> {
 
   public enum ReturnValues {
@@ -29,4 +32,6 @@ public interface ReturnInterface<test, V> {
   public void put(ReturnValues _key, Object _value);
 
   public Object get(ReturnValues _key);
+
+  public Set<Map.Entry<ReturnValues, Object>> entrySet();
 }

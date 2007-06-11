@@ -20,6 +20,11 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.ReturnInterface.ReturnValues;
 import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -33,20 +38,17 @@ public class LinkWithRangesUI implements UIInterface {
 
   public String getViewHtml(Context _context, Object _value, Field _field)
                                                                           throws EFapsException {
-    String ret = null;
-
+    String ret = "";
+    Return values = null;
     if (_value != null) {
       if (_field.hasEvent()) {
-        _field.executeEvent();
+        values = _field.executeEvent();
+
+        ret = (String) ((Map) values.get(ReturnValues.VALUES)).get(_value
+            .toString());
+
       }
 
-      String value = _value.toString();
-      ret = "<select name=\"top5\" size=\"1\">" + "<option>Heino</option>"
-          + "<option>Michael Jackson</option>" + "<option>Tom Waits</option>"
-          + "<option>Nina Hagen</option>"
-          + "<option>Marianne Rosenberg</option>" + "</select>";
-
-      // ret = (value != null ? value.replaceAll("\\n", "<br/>") : "");
     } else {
       // throw new EFapsException();
     }
@@ -55,51 +57,66 @@ public class LinkWithRangesUI implements UIInterface {
 
   public String getEditHtml(Context _context, Object _value, Field _field)
                                                                           throws EFapsException {
-    String ret;
-    if (_field.getRows() > 1) {
-      ret = "<textarea " + "type=\"text\" " + "cols=\"" + _field.getCols()
-          + "\" " + "rows=\"" + _field.getRows() + "\" " + "name=\""
-          + _field.getName() + "\"" + ">";
-      if (_value != null) {
-        ret += _value;
+    StringBuilder ret = new StringBuilder();
+    Return values = null;
+    if (_value != null) {
+      if (_field.hasEvent()) {
+        values = _field.executeEvent();
+
+        ret.append("<form><select name=\"" + _field.getName()
+            + "\" size=\"1\">");
+
+        Iterator iter = ((Map) values.get(ReturnValues.VALUES)).entrySet()
+            .iterator();
+
+        while (iter.hasNext()) {
+          Map.Entry entry = (Map.Entry) iter.next();
+          ret.append("<option value=\"");
+          ret.append(entry.getKey());
+          if (_value.toString().equals(entry.getKey())) {
+            ret.append("\" selected=\"selected");
+          }
+          ret.append("\">");
+          ret.append(entry.getValue());
+          ret.append("</option>");
+        }
+
+        ret.append("</select></form>");
       }
-      ret += "</textarea>";
+
     } else {
-      ret = "<input type=\"text\" " + "size=\"" + _field.getCols() + "\" "
-          + "name=\"" + _field.getName() + "\" " + "value=\""
-          + (_value != null ? _value : "") + "\"" + "/>";
+      // throw new EFapsException();
     }
-    return ret;
+    return ret.toString();
   }
 
   public String getCreateHtml(Context _context, Object _value, Field _field)
                                                                             throws EFapsException {
-    StringBuffer ret = new StringBuffer();
-    if (_field.getRows() > 1) {
-      ret.append("<textarea " + "type=\"text\" " + "cols=\"").append(
-          _field.getCols()).append("\" " + "rows=\"").append(_field.getRows())
-          .append("\" " + "name=\"").append(_field.getName()).append("\" ");
-      /*
-       * if (_field.getAttribute()!=null &&
-       * _field.getAttribute().getUniqueKeys()!=null) {
-       * ret.append("onChange=\"eFapsUniqueKeyValueChange(this);\" "); }
-       */
-      ret.append(">");
-      if (_value != null) {
-        ret.append(_value);
+    StringBuilder ret = new StringBuilder();
+    Return values = null;
+
+    if (_field.hasEvent()) {
+      values = _field.executeEvent();
+
+      ret.append("<form><select name=\"" + _field.getName() + "\" size=\"1\">");
+
+      Iterator iter = ((Map) values.get(ReturnValues.VALUES)).entrySet()
+          .iterator();
+
+      while (iter.hasNext()) {
+        Map.Entry entry = (Map.Entry) iter.next();
+        ret.append("<option value=\"");
+        ret.append(entry.getKey());
+
+        ret.append("\">");
+        ret.append(entry.getValue());
+        ret.append("</option>");
       }
-      ret.append("</textarea>");
+
+      ret.append("</select></form>");
+
     } else {
-      ret.append("<input type=\"text\" " + "size=\"").append(_field.getCols())
-          .append("\" " + "name=\"").append(_field.getName()).append(
-              "\" " + "value=\"").append((_value != null ? _value : ""))
-          .append("\" ");
-      /*
-       * if (_field.getAttribute()!=null &&
-       * _field.getAttribute().getUniqueKeys()!=null) {
-       * ret.append("onChange=\"eFapsUniqueKeyValueChange(this);\" "); }
-       */
-      ret.append(">");
+      // throw new EFapsException();
     }
     return ret.toString();
   }

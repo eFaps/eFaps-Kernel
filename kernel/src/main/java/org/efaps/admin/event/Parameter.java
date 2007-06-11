@@ -22,14 +22,14 @@ package org.efaps.admin.event;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Parameter implements ParameterInterface {
 
   private Map<ParameterValues, Object> map = new HashMap<ParameterValues, Object>();
 
-  
-  public void put(ParameterValues K, Object V) {
-    map.put(K, V);
+  public void put(ParameterValues _key, Object _value) {
+    map.put(_key, _value);
 
   }
 
@@ -37,4 +37,7 @@ public class Parameter implements ParameterInterface {
     return map.get(_key);
   }
 
+  public Set entrySet() {
+    return this.map.entrySet();
+  }
 }

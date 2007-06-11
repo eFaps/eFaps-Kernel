@@ -22,6 +22,7 @@ package org.efaps.admin.event;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Return implements ReturnInterface {
   private Map<ReturnValues, Object> map = new HashMap<ReturnValues, Object>();
@@ -32,6 +33,11 @@ public class Return implements ReturnInterface {
 
   public void put(ReturnValues _key, Object _value) {
     this.map.put(_key, _value);
+
+  }
+
+  public Set<Map.Entry<ReturnValues, Object>> entrySet() {
+    return this.map.entrySet();
 
   }
 

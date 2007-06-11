@@ -20,6 +20,8 @@
 
 package org.efaps.admin.event;
 
+import java.util.Set;
+
 public interface ParameterInterface<K, V> {
 
   public enum ParameterValues {
@@ -28,7 +30,9 @@ public interface ParameterInterface<K, V> {
     PROPERTIES
   }
 
- public void put(ParameterValues _key, Object _value);
+  public void put(ParameterValues _key, Object _value);
 
   public Object get(ParameterValues _key);
+
+  public Set entrySet();
 }

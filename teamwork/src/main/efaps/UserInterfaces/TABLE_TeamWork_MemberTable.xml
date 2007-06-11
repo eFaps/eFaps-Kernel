@@ -58,12 +58,14 @@
       <property name="Label">TeamWork_Member/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
     </field>
-    <field name="AccessSet">     
+    <field name="accesset">     
       <property name="Expression">AccessSetLink</property>
       <property name="Label">TeamWork_Member/AccessSetLink.Label</property>
-      
+      <property name="Editable">true</property>
+      <property name="Creatable">true</property>
       <rangevalue name="TeamWork_MemberTable_AccessSet_RangeValue" program="org.efaps.webapp.programs.RangesValue" method="execute" index="1">
-      	<property name="show">Name</property>
+      	<property name="Value">Name</property>
+      	<property name="Type">Admin_Access_AccessSet</property>
       </rangevalue>
     </field>
   </definition>
