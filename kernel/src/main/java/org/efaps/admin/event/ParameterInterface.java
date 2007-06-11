@@ -20,25 +20,15 @@
 
 package org.efaps.admin.event;
 
-/**
- * This interface is for the Programs loaded dynamically from the efapsdatabase
- * with the efapsClassLoader. To be invoked the Classes loaded with the
- * efapsclassloader must use this interfacs!
- * 
- * @author jmo
- * @version $Id$
- * 
- */
-public interface EventExecution {
+public interface ParameterInterface<K, V> {
 
-  /**
-   * This method is calles from efaps to invoke the class
-   * 
-   * @param _context
-   *          Context of the
-   * @param _instance
-   * @param _map
-   *          Map with values from the trigger
-   */
-  public ReturnInterface execute(final ParameterInterface _parameter);
+  public enum ParameterValues {
+    INSTANCE,
+    NEW_VALUES,
+    PROPERTIES
+  }
+
+ public void put(ParameterValues _key, Object _value);
+
+  public Object get(ParameterValues _key);
 }

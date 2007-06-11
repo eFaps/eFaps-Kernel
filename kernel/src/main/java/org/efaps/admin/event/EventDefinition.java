@@ -22,12 +22,11 @@ package org.efaps.admin.event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.ParameterInterface.ParameterValues;
 import org.efaps.admin.program.java.EFapsClassLoader;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Field;
@@ -151,7 +150,8 @@ public class EventDefinition extends AdminObject implements EventExecution {
     try {
       Class cls = Class.forName(this.resourceName, true, new EFapsClassLoader(
           this.getClass().getClassLoader()));
-      this.method = cls.getMethod(this.methodName, new Class[] { Map.class });
+      this.method = cls.getMethod(this.methodName,
+          new Class[] { ParameterInterface.class });
       this.progInstance = ((EventExecution) cls.newInstance());
     } catch (ClassNotFoundException e) {
       LOG.error("could not find Class: '" + this.resourceName + "'", e);
@@ -169,12 +169,12 @@ public class EventDefinition extends AdminObject implements EventExecution {
 
   }
 
-  public void execute(final Map<TriggerKeys4Values, Object> _map) {
-
-    _map.put(TriggerKeys4Values.PROPERTIES, super.getProperties());
+  public ReturnInterface execute(final ParameterInterface _parameter) {
+    ReturnInterface ret = null;
+    _parameter.put(ParameterValues.PROPERTIES, super.getProperties());
     try {
 
-      this.method.invoke(this.progInstance, _map);
+      ret = (ReturnInterface) this.method.invoke(this.progInstance, _parameter);
 
     } catch (SecurityException e) {
       LOG.error("could not access class: '" + this.resourceName, e);
@@ -186,6 +186,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
       LOG.error("could not invoke method: '" + this.methodName
           + "' in class: '" + this.resourceName, e);
     }
+    return ret;
 
   }
 
@@ -278,24 +279,16 @@ public class EventDefinition extends AdminObject implements EventExecution {
 
         } else {
           if (eFapsClass == EFapsClassName.FIELD) {
-     
-            
-//            Field field = Field.initialise();
 
-//            if (LOG.isDebugEnabled()) {
-//              LOG.debug("    Command=" + command.getName());
-//            }
-//            for (TriggerEvent triggerEvent : TriggerEvent.values()) {
-//              Type triggerClass = Type.get(triggerEvent.name);
-//              if (eventType.isKindOf(triggerClass)) {
-//                if (LOG.isDebugEnabled()) {
-//                  LOG.debug("     found trigger " + triggerEvent + ":"
-//                      + triggerClass);
-//                }
-//                command.addTrigger(triggerEvent, new EventDefinition(eventId,
-//                    eventName, eventPos, resName, method, eventOID));
-//              }
-//            }
+            Field field = Field.get(parentId);
+
+            if (LOG.isDebugEnabled()) {
+              LOG.debug(" Field=" + field.getName());
+            }
+
+            field.addEvent(new EventDefinition(eventId, eventName, eventPos,
+                resName, method, eventOID));
+
           } else {
 
             if (LOG.isDebugEnabled()) {
@@ -307,4 +300,5 @@ public class EventDefinition extends AdminObject implements EventExecution {
 
     }
   }
+
 }

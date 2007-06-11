@@ -20,25 +20,19 @@
 
 package org.efaps.admin.event;
 
-/**
- * This interface is for the Programs loaded dynamically from the efapsdatabase
- * with the efapsClassLoader. To be invoked the Classes loaded with the
- * efapsclassloader must use this interfacs!
- * 
- * @author jmo
- * @version $Id$
- * 
- */
-public interface EventExecution {
+import java.util.HashMap;
+import java.util.Map;
 
-  /**
-   * This method is calles from efaps to invoke the class
-   * 
-   * @param _context
-   *          Context of the
-   * @param _instance
-   * @param _map
-   *          Map with values from the trigger
-   */
-  public ReturnInterface execute(final ParameterInterface _parameter);
+public class Return implements ReturnInterface {
+  private Map<ReturnValues, Object> map = new HashMap<ReturnValues, Object>();
+
+  public Object get(ReturnValues _key) {
+    return this.map.get(_key);
+  }
+
+  public void put(ReturnValues _key, Object _value) {
+    this.map.put(_key, _value);
+
+  }
+
 }

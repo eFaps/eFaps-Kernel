@@ -22,9 +22,7 @@ package org.efaps.db;
 
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,8 +30,9 @@ import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.event.TriggerKeys4Values;
+import org.efaps.admin.event.ParameterInterface.ParameterValues;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.transaction.StoreResource;
 import org.efaps.util.EFapsException;
@@ -245,11 +244,11 @@ public class Delete {
     List<EventDefinition> triggers = getInstance().getType().getTrigger(
         _triggerEvent);
     if (triggers != null) {
-      Map<TriggerKeys4Values, Object> map = new HashMap<TriggerKeys4Values, Object>();
+      Parameter parameter = new Parameter();
 
-      map.put(TriggerKeys4Values.INSTANCE, getInstance());
+      parameter.put(ParameterValues.INSTANCE, getInstance());
       for (EventDefinition evenDef : triggers) {
-        evenDef.execute(map);
+        evenDef.execute(parameter);
       }
       return true;
     }

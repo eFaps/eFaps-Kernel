@@ -34,8 +34,8 @@ import java.util.Vector;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.event.TriggerKeys4Values;
 import org.efaps.admin.user.Role;
 import org.efaps.admin.user.UserObject;
 import org.efaps.db.Context;
@@ -425,10 +425,8 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
     List<EventDefinition> triggers = this.trigger.get(TriggerEvent.COMMAND);
 
-    Map<TriggerKeys4Values, Object> map = new HashMap<TriggerKeys4Values, Object>();
-
     for (EventDefinition evenDef : triggers) {
-      evenDef.execute(map);
+      evenDef.execute(new Parameter());
     }
   }
 

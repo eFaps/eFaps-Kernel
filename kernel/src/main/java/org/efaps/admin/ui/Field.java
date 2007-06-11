@@ -21,17 +21,16 @@
 package org.efaps.admin.ui;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.EventDefinition;
-import org.efaps.admin.event.TriggerKeys4Values;
+import org.efaps.admin.event.Parameter;
 import org.efaps.db.Context;
+import org.efaps.db.SearchQuery;
 import org.efaps.servlet.RequestHandler;
+import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -45,6 +44,38 @@ public class Field extends UserInterfaceObject {
    */
   private final List<EventDefinition> events = new ArrayList<EventDefinition>();
 
+  /**
+   * Returns for given parameter <i>_id</i> the instance of class {@link Field}.
+   * 
+   * @param _id
+   *          id to search in the cache
+   * @return instance of class {@link Field}
+   * 
+   */
+  static public Field get(long _id) {
+    Collection col = null;
+
+    try {
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes(EFapsClassName.FIELD.name);
+      query.addSelect("Collection");
+      query.addWhereExprEqValue("ID", _id);
+      query.executeWithoutAccessCheck();
+
+      if (query.next()) {
+        col = Form.get((Long) query.get("Collection"));
+        if (col == null) {
+          col = Table.get((Long) query.get("Collection"));
+        }
+
+      }
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return col.getFieldsMap().get(_id);
+  }
+
   public boolean hasEvent() {
     return !this.events.isEmpty();
 
@@ -52,10 +83,8 @@ public class Field extends UserInterfaceObject {
 
   public void executeEvent() {
 
-    Map<TriggerKeys4Values, Object> map = new HashMap<TriggerKeys4Values, Object>();
-
     for (EventDefinition evenDef : this.events) {
-      evenDef.execute(map);
+      evenDef.execute(new Parameter());
     }
   }
 

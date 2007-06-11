@@ -40,8 +40,10 @@ import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.event.TriggerKeys4Values;
+import org.efaps.admin.event.ParameterInterface.ParameterValues;
+
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -179,11 +181,11 @@ public class Update {
     List<EventDefinition> triggers = getInstance().getType().getTrigger(
         _triggerEvent);
     if (triggers != null) {
-      Map<TriggerKeys4Values, Object> map = new HashMap<TriggerKeys4Values, Object>();
-      map.put(TriggerKeys4Values.NEW_VALUES, this.values);
-      map.put(TriggerKeys4Values.INSTANCE, getInstance());
+      Parameter parameter = new Parameter();
+      parameter.put(ParameterValues.NEW_VALUES, this.values);
+      parameter.put(ParameterValues.INSTANCE, getInstance());
       for (EventDefinition evenDef : triggers) {
-        evenDef.execute(map);
+        evenDef.execute(parameter);
       }
       return true;
     }

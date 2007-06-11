@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,21 @@
 
 package org.efaps.admin.event;
 
-/**
- * The enum stores all keys used in the map when calling triggers.
- */
-public enum TriggerKeys4Values {
-  INSTANCE,
-  NEW_VALUES,
-  PROPERTIES
+import java.util.HashMap;
+import java.util.Map;
+
+public class Parameter implements ParameterInterface {
+
+  private Map<ParameterValues, Object> map = new HashMap<ParameterValues, Object>();
+
+  
+  public void put(ParameterValues K, Object V) {
+    map.put(K, V);
+
+  }
+
+  public Object get(ParameterValues _key) {
+    return map.get(_key);
+  }
+
 }

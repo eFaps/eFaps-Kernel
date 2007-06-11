@@ -20,16 +20,15 @@
 
 package org.efaps.webapp.programs;
 
-import java.util.Map;
-
 import org.efaps.admin.event.EventExecution;
-import org.efaps.admin.event.TriggerKeys4Values;
-import org.efaps.admin.runlevel.RunLevel;
+import org.efaps.admin.event.ParameterInterface;
+import org.efaps.admin.event.ReturnInterface;
 
 public class RangesValue implements EventExecution {
 
-  public void execute(Map<TriggerKeys4Values, Object> _map) {
-
+  public ReturnInterface execute(ParameterInterface _parameter) {
+    System.out.print("gehtdoch");
+    return null;
   }
 
 }

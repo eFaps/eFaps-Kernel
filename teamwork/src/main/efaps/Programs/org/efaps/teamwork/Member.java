@@ -20,16 +20,17 @@
 
 package org.efaps.teamwork;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventExecution;
-import org.efaps.admin.event.TriggerKeys4Values;
+import org.efaps.admin.event.ParameterInterface;
+import org.efaps.admin.event.ReturnInterface;
+import org.efaps.admin.event.ParameterInterface.ParameterValues;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -43,9 +44,9 @@ public class Member implements EventExecution {
    */
   private static final Log LOG = LogFactory.getLog(Member.class);
 
-  public void insertNewMember(Map<TriggerKeys4Values, Object> _map) {
-    Iterator iter = ((Map) _map.get(TriggerKeys4Values.NEW_VALUES)).entrySet()
-        .iterator();
+  public ReturnInterface insertNewMember(ParameterInterface _parameter) {
+    Iterator iter = ((Map) _parameter.get(ParameterValues.NEW_VALUES))
+        .entrySet().iterator();
     Map<String, String> newValues = new HashMap<String, String>();
     while (iter.hasNext()) {
       Map.Entry entry = (Map.Entry) iter.next();
@@ -76,18 +77,20 @@ public class Member implements EventExecution {
       }
 
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
+
       LOG.error("insertNewMember(Map<TriggerKeys4Values,Object>)", e);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
+
       LOG.error("insertNewMember(Map<TriggerKeys4Values,Object>)", e);
     }
+    return null;
 
   }
 
-  public void execute(Map<TriggerKeys4Values, Object> _map) {
-    Iterator iter = ((Map) _map.get(TriggerKeys4Values.NEW_VALUES)).entrySet()
-        .iterator();
+  public ReturnInterface execute(ParameterInterface _parameter) {
+
+    Iterator iter = ((Map) _parameter.get(ParameterValues.NEW_VALUES))
+        .entrySet().iterator();
     Map<String, String> newValues = new HashMap<String, String>();
     while (iter.hasNext()) {
       Map.Entry entry = (Map.Entry) iter.next();
@@ -117,21 +120,23 @@ public class Member implements EventExecution {
       update.add("UserAbstractLink", newValues.get("UserAbstractLink"));
       update.executeWithoutAccessCheck();
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
+
       LOG.error("execute(Map<TriggerKeys4Values,Object>)", e);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
+
       LOG.error("execute(Map<TriggerKeys4Values,Object>)", e);
     }
+    return null;
 
   }
 
-  public void insertCollectionCreator(Map<TriggerKeys4Values, Object> _map) {
-    Instance instance = (Instance) _map.get(TriggerKeys4Values.INSTANCE);
+  public ReturnInterface insertCollectionCreator(ParameterInterface _parameter) {
+
+    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     String abstractlink = ((Long) instance.getId()).toString();
 
-    String accessSet = (String) ((Map) _map.get(TriggerKeys4Values.PROPERTIES))
-        .get("AccessSet");
+    String accessSet = (String) ((Map) _parameter
+        .get(ParameterValues.PROPERTIES)).get("AccessSet");
 
     try {
 
@@ -151,15 +156,15 @@ public class Member implements EventExecution {
             .getPerson().getId()).toString());
         insert.executeWithoutAccessCheck();
       } else {
-        
 
         LOG.error("error in Definition of Propertie 'AccessSet'");
       }
 
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
+
       LOG.error("insertCollectionCreator(Map<TriggerKeys4Values,Object>)", e);
     }
+    return null;
 
   }
 }

@@ -13,30 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:851 $
+ * Last Changed:    $Date:2007-06-02 12:36:03 -0500 (Sat, 02 Jun 2007) $
+ * Last Changed By: $Author:jmo $
  */
 
 package org.efaps.webapp.programs;
 
-import java.util.Map;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.event.EventExecution;
-import org.efaps.admin.event.TriggerKeys4Values;
+import org.efaps.admin.event.ParameterInterface;
+import org.efaps.admin.event.ReturnInterface;
 import org.efaps.admin.runlevel.RunLevel;
 
 public class ReloadCache implements EventExecution {
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(ReloadCache.class);
 
-  public void execute(Map<TriggerKeys4Values, Object> _map) {
+  public ReturnInterface execute(ParameterInterface _parameter) {
     try {
       RunLevel.init("webapp");
       RunLevel.execute();
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("execute(ParameterInterface)", e);
     }
-
+    return null;
   }
 
 }

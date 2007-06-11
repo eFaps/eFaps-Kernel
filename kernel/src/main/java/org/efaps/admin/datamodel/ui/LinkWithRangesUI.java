@@ -36,13 +36,17 @@ public class LinkWithRangesUI implements UIInterface {
     String ret = null;
 
     if (_value != null) {
+      if (_field.hasEvent()) {
+        _field.executeEvent();
+      }
+
       String value = _value.toString();
       ret = "<select name=\"top5\" size=\"1\">" + "<option>Heino</option>"
           + "<option>Michael Jackson</option>" + "<option>Tom Waits</option>"
           + "<option>Nina Hagen</option>"
           + "<option>Marianne Rosenberg</option>" + "</select>";
 
-//      ret = (value != null ? value.replaceAll("\\n", "<br/>") : "");
+      // ret = (value != null ? value.replaceAll("\\n", "<br/>") : "");
     } else {
       // throw new EFapsException();
     }
