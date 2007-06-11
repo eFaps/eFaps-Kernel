@@ -24,6 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Class witch can be used for parsing Parameters to the Events.
+ * 
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class Parameter implements ParameterInterface {
 
   private Map<ParameterValues, Object> map = new HashMap<ParameterValues, Object>();

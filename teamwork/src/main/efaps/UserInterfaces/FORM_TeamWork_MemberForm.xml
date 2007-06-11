@@ -64,8 +64,9 @@
     <field name="user">
       <property name="Columns">20</property>
       <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="Editable">false</property>
       <property name="Expression">UserAbstractLink</property>
+      <property name="Label">TeamWork_Member/UserAbstractLink.Label</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
@@ -75,6 +76,7 @@
       <property name="Label">TeamWork_Member/AccessSetLink.Label</property>
       <property name="Editable">true</property>
       <property name="Creatable">true</property>
+      <property name="Required">true</property>
       <rangevalue name="TeamWork_MemberTable_AccessSet_RangeValue" program="org.efaps.webapp.programs.RangesValue" method="execute" index="1">
       	<property name="Value">Name</property>
       	<property name="Type">Admin_Access_AccessSet</property>

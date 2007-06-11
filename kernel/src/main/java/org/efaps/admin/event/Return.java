@@ -24,6 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Class witch can be used for getting the Return of the Events.
+ * 
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class Return implements ReturnInterface {
   private Map<ReturnValues, Object> map = new HashMap<ReturnValues, Object>();
 

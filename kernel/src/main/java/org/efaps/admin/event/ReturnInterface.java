@@ -23,7 +23,19 @@ package org.efaps.admin.event;
 import java.util.Map;
 import java.util.Set;
 
-public interface ReturnInterface<test, V> {
+/**
+ * This Interface is the Interface for the Returned Values to be used with the
+ * <code>EventExecution</code> on executing. It is bassically just a Map
+ * Inertface, but it provides the possibility to define how the Map is
+ * constructed.
+ * 
+ * @author jmo
+ * @version $Id$
+ * 
+ * @param <K>
+ * @param <V>
+ */
+public interface ReturnInterface<K, V> {
 
   public enum ReturnValues {
     VALUES

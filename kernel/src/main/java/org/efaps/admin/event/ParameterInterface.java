@@ -22,6 +22,18 @@ package org.efaps.admin.event;
 
 import java.util.Set;
 
+/**
+ * This Interface is the Interface for the Paramters to be used with the
+ * <code>EventExecution</code> on executing. It is bassically just a Map
+ * Inertface, but it provides the possibility to define how the Map is
+ * constructed.
+ * 
+ * @author jmo
+ * @version $Id$
+ * 
+ * @param <K>
+ * @param <V>
+ */
 public interface ParameterInterface<K, V> {
 
   public enum ParameterValues {
