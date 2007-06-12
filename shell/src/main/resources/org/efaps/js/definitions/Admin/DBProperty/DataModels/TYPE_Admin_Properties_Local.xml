@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmo
+ Revision:        $Rev:  $
+ Last Changed:    $Date:  $
+ Last Changed By: $Author:  $
+
+-->
+
+<datamodel-type>
+  <uuid>da18fd98-8e42-44ba-be74-443aecc87b4d</uuid>
+
+ <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==5)</mode>
+    </version>
+
+    <name>Admin_Properties_Local</name>
+    
+
+   <attribute>
+      <name>OID</name>
+      <type>OID</type>
+      <sqltable>Admin_Properties_LocalSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+   </attribute>
+
+    <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>Admin_Properties_LocalSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+
+    <attribute>
+      <name>Value</name>
+      <type>String</type>
+      <sqltable>Admin_Properties_LocalSQLTable</sqltable>
+      <sqlcolumn>VALUE</sqlcolumn>
+    </attribute>
+    
+  </definition>
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==6)</mode>
+    </version>
+
+    <name>Admin_Properties_Local</name>
+    
+
+   <attribute>
+      <name>PropertyID</name>
+      <type>Link</type>
+      <typelink>Admin_Properties</typelink>
+      <sqltable>Admin_Properties_LocalSQLTable</sqltable>
+      <sqlcolumn>PROPID</sqlcolumn>
+   </attribute>
+
+   <attribute>
+      <name>LanguageID</name>
+      <type>Link</type>
+      <typelink>Admin_Language</typelink>
+      <sqltable>Admin_Properties_LocalSQLTable</sqltable>
+      <sqlcolumn>LANGID</sqlcolumn>
+   </attribute>
+
+ </definition>
+  
+</datamodel-type>

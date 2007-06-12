@@ -26,18 +26,18 @@ import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
  * <p>
- *   The class could be used to load the resource bundles automatically. The
- *   class owns methods to translate texts.
+ * The class could be used to load the resource bundles automatically. The class
+ * owns methods to translate texts.
  * </p>
  * Example of an Usage:
  * <ul>
- * <li>add the resource bundle bean to the faces configuration:<br/>
- *   <b><code>
+ * <li>add the resource bundle bean to the faces configuration:<br/> <b><code>
  *     &lt;!-- resource bundle bean used for translation --&gt;<br/>
  *     &lt;managed-bean&gt;<br/>
  *     &nbsp;&nbsp;&lt;managed-bean-name&gt;i18n&lt;/managed-bean-name&gt;<br/>
@@ -51,58 +51,50 @@ import org.efaps.util.EFapsException;
  *     &lt;/managed-bean&gt;<br/>
  *   </code></b>
  * </li>
- * <li>
- *   add to your bean the instance variable <b><code>i18nBean</code></b> from
- *   class <b><code>ResourceBundleBean</code></b>
- * </li>
- * <li>add method <b><code>setI18nBean(ResourceBundleBean _i18nBean)</code></b> to your bean</li>
- * <li>define the managed property for your bean:<br/>
- *   <b><code>
+ * <li> add to your bean the instance variable <b><code>i18nBean</code></b>
+ * from class <b><code>ResourceBundleBean</code></b> </li>
+ * <li>add method <b><code>setI18nBean(ResourceBundleBean _i18nBean)</code></b>
+ * to your bean</li>
+ * <li>define the managed property for your bean:<br/> <b><code>
  *     &lt;managed-property&gt;<br/>
  *     &nbsp;&nbsp;&lt;property-name&gt;i18nBean&lt;/property-name&gt;<br/>
  *     &nbsp;&nbsp;&lt;value&gt;#{i18n}&lt;/value&gt;<br/>
  *     &lt;/managed-property&gt;<br/>
  *   </code></b>
  * </li>
- * <li>use with<br/>
- *    <b><code>String translated = this.i18nBean.translate("Admin_UI_Command.Label");</code></b><br/>
- *    the resource bundle bean in your bean
+ * <li>use with<br/> <b><code>String translated = this.i18nBean.translate("Admin_UI_Command.Label");</code></b><br/>
+ * the resource bundle bean in your bean
  * </ul>
- *
+ * 
  * @author tmo
  * @version $Rev$
  */
-public class ResourceBundleBean  {
+public class ResourceBundleBean {
 
   /**
    * The map stores a resource bundle depending on the language / country as
    * key.
    */
-  private final Map < String, ResourceBundle > bundles = new HashMap < String, ResourceBundle > ();
+  private final Map<String, ResourceBundle> bundles    = new HashMap<String, ResourceBundle>();
 
   /**
    * The string stores the bundle name in which the strings are stored.
    */
-  private String bundleName = null;
+  private String                            bundleName = null;
 
   /**
-   *
+   * 
    */
-  public void setBundleName(final String _bundleName)  {
+  public void setBundleName(final String _bundleName) {
     this.bundleName = _bundleName;
   }
 
+  public String translate(final String _key) {
 
-  public String translate(final String _id)  {
-    Context context = null;
-    try  {
-      context = Context.getThreadContext();
-    } catch (EFapsException e)  {
-    }
-    return translate(context, _id);
+    return DBProperties.getProperty(_key);
   }
 
-  public String translate(final Context _context, final String _id)  {
+  public String translate(final Context _context, final String _id) {
     return translate(_context != null ? _context.getLocale() : null, _id);
   }
 
@@ -110,41 +102,44 @@ public class ResourceBundleBean  {
    * Gets a string for the given identifier from this resource bundle. If no
    * string for the given identifier can be found, the return value is the key
    * with prefix and suffix of three question marks (???).
-   *
-   * @param _locale   locale object used to translate
-   * @param _id       identifier for which the the translation is searched
+   * 
+   * @param _locale
+   *          locale object used to translate
+   * @param _id
+   *          identifier for which the the translation is searched
    */
-  public String translate(final Locale _locale, final String _id)  {
-    String key = _locale != null ? _locale.getLanguage() + _locale.getCountry() : "";
+  public String translate(final Locale _locale, final String _id) {
+    String key = _locale != null ? _locale.getLanguage() + _locale.getCountry()
+        : "";
 
     ResourceBundle bundle = bundles.get(key);
-    if (bundle == null)  {
+    if (bundle == null) {
       bundle = ResourceBundle.getBundle(this.bundleName, _locale);
       bundles.put(key, bundle);
     }
     String ret;
-    try  {
-       ret =  bundle.getString(_id);
-    } catch (MissingResourceException e)  {
+    try {
+      ret = bundle.getString(_id);
+    } catch (MissingResourceException e) {
       ret = "???" + _id + "???";
     }
     return ret;
   }
 
-
-  public ResourceBundle getResourceBundle() throws EFapsException  {
+  public ResourceBundle getResourceBundle() throws EFapsException {
     return getResourceBundle(Context.getThreadContext());
   }
 
-  public ResourceBundle getResourceBundle(final Context _context)  {
+  public ResourceBundle getResourceBundle(final Context _context) {
     return getResourceBundle(_context != null ? _context.getLocale() : null);
   }
 
-  public ResourceBundle getResourceBundle(final Locale _locale)  {
-    String key = _locale != null ? _locale.getLanguage() + _locale.getCountry() : "";
+  public ResourceBundle getResourceBundle(final Locale _locale) {
+    String key = _locale != null ? _locale.getLanguage() + _locale.getCountry()
+        : "";
 
     ResourceBundle bundle = bundles.get(key);
-    if (bundle == null)  {
+    if (bundle == null) {
       bundle = ResourceBundle.getBundle(this.bundleName, _locale);
       bundles.put(key, bundle);
     }
@@ -152,4 +147,3 @@ public class ResourceBundleBean  {
   }
 
 }
-

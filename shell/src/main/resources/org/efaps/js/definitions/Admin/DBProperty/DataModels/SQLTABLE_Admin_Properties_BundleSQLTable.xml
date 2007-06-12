@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-sqltable>
+  <uuid>5e717f5c-970b-4c5f-a23f-fe7db8ac2ed9</uuid>
+
+  <!-- SQL Table to hold the Bundle-Defenition for the Properties -->
+
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev: $</local>
+      <mode>(version==2)</mode>
+    </version>
+
+    <database>
+      <table-name>T_ADPROPBUN</table-name>
+      <create>true</create>
+      <update>true</update>
+      <!-- columns -->
+      <column name="NAME"      type="STRING_SHORT" not-null="true" length="255"/>
+      <column name="UUID"      type="STRING_SHORT" not-null="true" length="255"/>
+      <column name="SEQUENCE"  type="INTEGER"      not-null="true" />
+    </database>
+  </definition>
+  
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev: $</local>
+      <mode>(version==4)</mode>
+    </version>
+    
+    <name>Admin_Properties_BundleSQLTable</name>
+    <database>
+      <table-name>T_ADPROPBUN</table-name>
+      <update>true</update>
+    </database>
+  </definition>
+ </datamodel-sqltable>

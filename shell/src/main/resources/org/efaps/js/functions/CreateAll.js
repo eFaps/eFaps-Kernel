@@ -41,7 +41,7 @@ importClass(Packages.org.efaps.update.user.RoleUpdate);
 importClass(Packages.org.efaps.update.program.JavaUpdate);
 importClass(Packages.org.efaps.admin.program.java.Compiler);
 importClass(Packages.org.efaps.importer.DataImport);
-
+importClass(Packages.org.efaps.update.dbproperty.DBPropertiesUpdate);
 
 var CURRENT_TIMESTAMP = Context.getDbType().getCurrentTimeStamp();
 
@@ -410,7 +410,6 @@ function eFapsCreateAll()  {
   _eFapsCreateAllUpdatePassword();
 }
 
-
 function _eFapsCreateAllImportData(){
   var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
 
@@ -424,6 +423,13 @@ function _eFapsCreateAllImportData(){
       if (dimport.hasData()) {
         dimport.insertDB();
       }
+      
+     
+      var prop = DBPropertiesUpdate.readXMLFile(file);
+      if (prop != null)  {
+        prop.updateInDB();
+      }
+      
     }
   }
 }
@@ -867,35 +873,40 @@ var _stmt = _con.createStatement();
           "T_RUNLEVEL",
           "RUNLEVEL,UUID", 
           "'shell','edfb9537-9d91-4fa0-acb1-cf3f2678a245'");
-  _insert(_stmt, null, null,
-          "T_RUNLEVELDEF",
-          "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",1, 'org.efaps.admin.user.JAASSystem', 'initialise'");
-  _insert(_stmt, null, null,
-          "T_RUNLEVELDEF",
-          "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",2, 'org.efaps.admin.user.Role', 'initialise'");
-  _insert(_stmt, null, null,
-          "T_RUNLEVELDEF",
-          "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",3, 'org.efaps.admin.user.Group', 'initialise'");
-  _insert(_stmt, null, null,
-          "T_RUNLEVELDEF",
-          "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",4, 'org.efaps.admin.datamodel.AttributeType', 'initialise'");
-  _insert(_stmt, null, null,
-          "T_RUNLEVELDEF",
-          "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",5, 'org.efaps.admin.datamodel.SQLTable', 'initialise'");
-  _insert(_stmt, null, null,
-          "T_RUNLEVELDEF",
-          "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",6, 'org.efaps.admin.datamodel.Type', 'initialise'");
-  _insert(_stmt, null, null,
-          "T_RUNLEVELDEF",
-          "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",7, 'org.efaps.admin.datamodel.Attribute', 'initialise'");
- 
   
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",1, 'org.efaps.admin.dbproperty.DBProperties', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",2, 'org.efaps.admin.user.JAASSystem', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",3, 'org.efaps.admin.user.Role', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",4, 'org.efaps.admin.user.Group', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",5, 'org.efaps.admin.datamodel.AttributeType', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",6, 'org.efaps.admin.datamodel.SQLTable', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",7, 'org.efaps.admin.datamodel.Type', 'initialise'");
+  _insert(_stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",8, 'org.efaps.admin.datamodel.Attribute', 'initialise'");
+ 
+ 
 con.commit();
 }
