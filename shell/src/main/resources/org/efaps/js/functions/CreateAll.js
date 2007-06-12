@@ -381,7 +381,10 @@ function eFapsCreateAll()  {
   _eFapsCreateAllImportXMLFiles(context, "10");
   Shell.transactionManager.commit();
   context.close();
-
+  
+  print("############ Reload Cache");
+  reloadCache("shell");
+  
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   _eFapsCreateAllImportXMLFiles(context, "11");
