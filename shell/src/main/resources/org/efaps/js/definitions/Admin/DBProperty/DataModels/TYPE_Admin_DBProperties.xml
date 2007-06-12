@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>03c51ba4-00a6-47ac-b987-270308fe68d8</uuid>
+  <uuid>8c839380-ea1c-44a7-97aa-67934b94aca9</uuid>
 
  <definition>
     <version>
@@ -34,45 +34,59 @@
       <mode>(version==5)</mode>
     </version>
 
-    <name>Admin_Properties_Bundle</name>
+    <name>Admin_DBProperties</name>
     
 
    <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_Properties_BundleSQLTable</sqltable>
+      <sqltable>Admin_DBPropertiesSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
    </attribute>
 
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_Properties_BundleSQLTable</sqltable>
+      <sqltable>Admin_DBPropertiesSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
 
 
     <attribute>
-      <name>Name</name>
+      <name>Key</name>
       <type>String</type>
-      <sqltable>Admin_Properties_BundleSQLTable</sqltable>
-      <sqlcolumn>NAME</sqlcolumn>
+      <sqltable>Admin_DBPropertiesSQLTable</sqltable>
+      <sqlcolumn>KEY</sqlcolumn>
     </attribute>
     
     <attribute>
-      <name>UUID</name>
+      <name>Default</name>
       <type>String</type>
-      <sqltable>Admin_Properties_BundleSQLTable</sqltable>
-      <sqlcolumn>UUID</sqlcolumn>
-    </attribute>
-    
-    <attribute>
-      <name>Sequence</name>
-      <type>Integer</type>
-      <sqltable>Admin_Properties_BundleSQLTable</sqltable>
-      <sqlcolumn>SEQUENCE</sqlcolumn>
+      <sqltable>Admin_DBPropertiesSQLTable</sqltable>
+      <sqlcolumn>DEFAULTV</sqlcolumn>
     </attribute>
  
   </definition>
-  
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==6)</mode>
+    </version>
+
+    <name>Admin_DBProperties</name>
+    
+
+   <attribute>
+      <name>BundleID</name>
+      <type>Link</type>
+      <typelink>Admin_DBProperties_Bundle</typelink>
+      <sqltable>Admin_DBPropertiesSQLTable</sqltable>
+      <sqlcolumn>BUNDLEID</sqlcolumn>
+   </attribute>
+
+   
+
+ </definition>
 </datamodel-type>

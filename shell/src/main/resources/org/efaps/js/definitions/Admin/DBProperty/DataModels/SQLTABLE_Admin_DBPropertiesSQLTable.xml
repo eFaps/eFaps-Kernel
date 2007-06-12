@@ -56,7 +56,7 @@
       <mode>(version==4)</mode>
     </version>
 
-    <name>Admin_PropertiesSQLTable</name>
+    <name>Admin_DBPropertiesSQLTable</name>
 
     <database>
       <table-name>T_ADPROP</table-name>

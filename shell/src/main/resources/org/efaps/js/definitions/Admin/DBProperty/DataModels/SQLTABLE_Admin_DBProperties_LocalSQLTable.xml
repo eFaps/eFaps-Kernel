@@ -24,41 +24,48 @@
 -->
 
 <datamodel-sqltable>
-  <uuid>5e717f5c-970b-4c5f-a23f-fe7db8ac2ed9</uuid>
+  <uuid>7bf13230-062d-4c9d-b196-ce4721fcd1df</uuid>
 
-  <!-- SQL Table to hold the Bundle-Defenition for the Properties -->
+  <!-- SQL Table to hold the Values for the ResourceBundle -->
 
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev: $</local>
+      <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
 
+    
+
     <database>
-      <table-name>T_ADPROPBUN</table-name>
+      <table-name>T_ADPROPLOC</table-name>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="NAME"      type="STRING_SHORT" not-null="true" length="255"/>
-      <column name="UUID"      type="STRING_SHORT" not-null="true" length="255"/>
-      <column name="SEQUENCE"  type="INTEGER"      not-null="true" />
+      <column name="PROPID"  type="INTEGER"      not-null="true" />
+      <column name="LANGID"  type="INTEGER"      not-null="true" />
+      <column name="VALUE"   type="STRING_SHORT" not-null="true" length="255"/>
+    
     </database>
   </definition>
-  
   <definition>
-    <version>
+	<version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev: $</local>
+      <local>$Rev$</local>
       <mode>(version==4)</mode>
     </version>
-    
-    <name>Admin_Properties_BundleSQLTable</name>
+
+    <name>Admin_DBProperties_LocalSQLTable</name>
+
     <database>
-      <table-name>T_ADPROPBUN</table-name>
+      <table-name>T_ADPROPLOC</table-name>
       <update>true</update>
-    </database>
+       <foreign name="T_ADPROPLOC_FK_PROPID"	key="PROPID"  	reference="T_ADPROP(ID)"/>
+	   <foreign name="T_ADPROPLOC_FK_LANGID"	key="LANGID"  	reference="T_ADLANG(ID)"/>
+	
+	</database>
   </definition>
- </datamodel-sqltable>
+
+</datamodel-sqltable>

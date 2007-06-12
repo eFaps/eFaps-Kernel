@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>8c839380-ea1c-44a7-97aa-67934b94aca9</uuid>
+  <uuid>da18fd98-8e42-44ba-be74-443aecc87b4d</uuid>
 
  <definition>
     <version>
@@ -34,38 +34,30 @@
       <mode>(version==5)</mode>
     </version>
 
-    <name>Admin_Properties</name>
+    <name>Admin_DBProperties_Local</name>
     
 
    <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_PropertiesSQLTable</sqltable>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
    </attribute>
 
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_PropertiesSQLTable</sqltable>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
 
-
     <attribute>
-      <name>Key</name>
+      <name>Value</name>
       <type>String</type>
-      <sqltable>Admin_PropertiesSQLTable</sqltable>
-      <sqlcolumn>KEY</sqlcolumn>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
+      <sqlcolumn>VALUE</sqlcolumn>
     </attribute>
     
-    <attribute>
-      <name>Default</name>
-      <type>String</type>
-      <sqltable>Admin_PropertiesSQLTable</sqltable>
-      <sqlcolumn>DEFAULTV</sqlcolumn>
-    </attribute>
- 
   </definition>
   <definition>
     <version>
@@ -75,18 +67,25 @@
       <mode>(version==6)</mode>
     </version>
 
-    <name>Admin_Properties</name>
+    <name>Admin_DBProperties_Local</name>
     
 
    <attribute>
-      <name>BundleID</name>
+      <name>PropertyID</name>
       <type>Link</type>
-      <typelink>Admin_Properties_Bundle</typelink>
-      <sqltable>Admin_PropertiesSQLTable</sqltable>
-      <sqlcolumn>BUNDLEID</sqlcolumn>
+      <typelink>Admin_DBProperties</typelink>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
+      <sqlcolumn>PROPID</sqlcolumn>
    </attribute>
 
-   
+   <attribute>
+      <name>LanguageID</name>
+      <type>Link</type>
+      <typelink>Admin_Language</typelink>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
+      <sqlcolumn>LANGID</sqlcolumn>
+   </attribute>
 
  </definition>
+  
 </datamodel-type>

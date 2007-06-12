@@ -188,7 +188,7 @@ public class DBPropertiesUpdate {
   private String insertNewBundle() {
 
     try {
-      Insert insert = new Insert("Admin_Properties_Bundle");
+      Insert insert = new Insert("Admin_DBProperties_Bundle");
       insert.add("Name", getBundleName());
       insert.add("UUID", getBundleUUID());
       insert.add("Sequence", getSequence());
@@ -340,7 +340,7 @@ public class DBPropertiesUpdate {
     SearchQuery query = new SearchQuery();
     String OID = null;
     try {
-      query.setQueryTypes("Admin_Properties_Local");
+      query.setQueryTypes("Admin_DBProperties_Local");
       query.addSelect("OID");
       query.addWhereExprEqValue("PropertyID", _propertyid);
       query.addWhereExprEqValue("LanguageID", getLanguageId(_language));
@@ -370,7 +370,7 @@ public class DBPropertiesUpdate {
   private void insertNewLocal(final String _propertyid, final String _value,
                               final String _language) {
     try {
-      Insert insert = new Insert("Admin_Properties_Local");
+      Insert insert = new Insert("Admin_DBProperties_Local");
       insert.add("Value", _value);
       insert.add("PropertyID", _propertyid);
       insert.add("LanguageID", getLanguageId(_language));
@@ -423,7 +423,7 @@ public class DBPropertiesUpdate {
     String OID = null;
     SearchQuery query = new SearchQuery();
     try {
-      query.setQueryTypes("Admin_Properties");
+      query.setQueryTypes("Admin_DBProperties");
       query.addSelect("OID");
       query.addWhereExprEqValue("Key", _key);
       query.addWhereExprEqValue("BundleID", getBundleID());
@@ -476,7 +476,7 @@ public class DBPropertiesUpdate {
    */
   private String insertNewProp(String _key, String _value) {
     try {
-      Insert insert = new Insert("Admin_Properties");
+      Insert insert = new Insert("Admin_DBProperties");
       insert.add("BundleID", getBundleID());
       insert.add("Key", _key);
       insert.add("Default", _value);
@@ -630,7 +630,7 @@ public class DBPropertiesUpdate {
 
     String BundleID = null;
     try {
-      query.setQueryTypes("Admin_Properties_Bundle");
+      query.setQueryTypes("Admin_DBProperties_Bundle");
       query.addSelect("ID");
       query.addWhereExprEqValue("UUID", _UUID);
       query.execute();

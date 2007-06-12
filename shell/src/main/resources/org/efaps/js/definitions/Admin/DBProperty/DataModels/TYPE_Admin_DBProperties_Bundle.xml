@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>da18fd98-8e42-44ba-be74-443aecc87b4d</uuid>
+  <uuid>03c51ba4-00a6-47ac-b987-270308fe68d8</uuid>
 
  <definition>
     <version>
@@ -34,58 +34,45 @@
       <mode>(version==5)</mode>
     </version>
 
-    <name>Admin_Properties_Local</name>
+    <name>Admin_DBProperties_Bundle</name>
     
 
    <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_Properties_LocalSQLTable</sqltable>
+      <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
    </attribute>
 
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_Properties_LocalSQLTable</sqltable>
+      <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
 
+
     <attribute>
-      <name>Value</name>
+      <name>Name</name>
       <type>String</type>
-      <sqltable>Admin_Properties_LocalSQLTable</sqltable>
-      <sqlcolumn>VALUE</sqlcolumn>
+      <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
+      <sqlcolumn>NAME</sqlcolumn>
     </attribute>
     
-  </definition>
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==6)</mode>
-    </version>
-
-    <name>Admin_Properties_Local</name>
+    <attribute>
+      <name>UUID</name>
+      <type>String</type>
+      <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
+      <sqlcolumn>UUID</sqlcolumn>
+    </attribute>
     
-
-   <attribute>
-      <name>PropertyID</name>
-      <type>Link</type>
-      <typelink>Admin_Properties</typelink>
-      <sqltable>Admin_Properties_LocalSQLTable</sqltable>
-      <sqlcolumn>PROPID</sqlcolumn>
-   </attribute>
-
-   <attribute>
-      <name>LanguageID</name>
-      <type>Link</type>
-      <typelink>Admin_Language</typelink>
-      <sqltable>Admin_Properties_LocalSQLTable</sqltable>
-      <sqlcolumn>LANGID</sqlcolumn>
-   </attribute>
-
- </definition>
+    <attribute>
+      <name>Sequence</name>
+      <type>Integer</type>
+      <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
+      <sqlcolumn>SEQUENCE</sqlcolumn>
+    </attribute>
+ 
+  </definition>
   
 </datamodel-type>
