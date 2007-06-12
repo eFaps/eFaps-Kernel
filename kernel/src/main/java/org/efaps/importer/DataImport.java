@@ -103,8 +103,8 @@ public class DataImport {
    * @param _xml
    *          String representing the Path to the XML-File
    */
-  public void importFromXML(final String _xml) {
-    importFromXML(new File(_xml));
+  public void readXMLFile(final String _xml) {
+    readXMLFile(new File(_xml));
   }
 
   /**
@@ -115,7 +115,7 @@ public class DataImport {
    * @param _xml
    *          XML-File
    */
-  public void importFromXML(final File _xml) {
+  public void readXMLFile(final File _xml) {
     Digester digester = new Digester();
 
     digester.setValidating(false);
@@ -211,7 +211,7 @@ public class DataImport {
   /**
    * Method that starts the Insertion of the Objects into the Database
    */
-  public void insertDB() {
+  public void updateInDB() {
     this.root.dbAddChilds();
   }
 

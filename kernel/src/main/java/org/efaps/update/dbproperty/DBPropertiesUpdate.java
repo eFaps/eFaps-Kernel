@@ -41,31 +41,56 @@ import org.efaps.util.EFapsException;
 import org.xml.sax.SAXException;
 
 /**
- * Class for importing Properties from a properties-file into the Database for
- * use as eFaps-Admin_Properties. The import of a XML-formated Properties is
- * going to be suported later.
+ * Class for importing or updating of Properties from a properties-file into the
+ * Database for use as eFaps-Admin_Properties.<br>
+ * The import depends on the UUID of the Bundle. That means all Keys of the
+ * Properties must be unique within a Bundle. Therefore the import will update a
+ * key, if it is allready existing inside this bundle. The Bundle will allways
+ * be idendified by the UUID and not by the name.
  * 
  * @author jmo
+ * @version $Id$
  */
 public class DBPropertiesUpdate {
 
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(DBPropertiesUpdate.class);
-
-  private String           bundlename;
-
-  private String           bundeluuid;
-
-  private String           bundleid;
-
-  private String           bundlesequence;
-
-  private String           root;
+  private static final Log     LOG       = LogFactory
+                                             .getLog(DBPropertiesUpdate.class);
 
   /**
-   * find out the Id of the language used for this import
+   * the name of the Bundle
+   */
+  private String               bundlename;
+
+  /**
+   * the UUID of the Bundle
+   */
+  private String               bundeluuid;
+
+  /**
+   * the ID of the Bundle
+   */
+  private String               bundleid;
+
+  /**
+   * Sequence of the Bundle
+   */
+  private String               bundlesequence;
+
+  /**
+   * root of the XML-Filt to be imported
+   */
+  private String               root;
+
+  /**
+   * List of all Resources in this Properties
+   */
+  private final List<Resource> resources = new ArrayList<Resource>();
+
+  /**
+   * find out the Id of the language used for this properties
    * 
    * @return ID of the Language
    */
@@ -92,6 +117,13 @@ public class DBPropertiesUpdate {
 
   }
 
+  /**
+   * inserts a new language into the Database
+   * 
+   * @param _language
+   *          language to be inserted
+   * @return ID of the new language
+   */
   private String insertNewLanguage(final String _language) {
     String ID = null;
     try {
@@ -182,7 +214,6 @@ public class DBPropertiesUpdate {
    * @return
    */
   private String getSequence() {
-
     return this.bundlesequence;
   }
 
@@ -193,12 +224,11 @@ public class DBPropertiesUpdate {
    */
   private void setSequence(String _Sequence) {
     this.bundlesequence = _Sequence;
-
   }
 
   /**
    * Import Properties from a Properties-File as default, if the key is already
-   * existing the default will be replaced with the new default
+   * existing, the default will be replaced with the new default
    * 
    * @param _filename
    *          Complete Path/Name of the File to import
@@ -251,7 +281,8 @@ public class DBPropertiesUpdate {
 
   /**
    * Import Properties from a Properties-File as language-specific value, if the
-   * key is not existing, a new default(=value) will also be created
+   * key is not existing, a new default(=value) will also be created. If the
+   * language is not existing it will be created also.
    * 
    * @param _filename
    *          Complete Path/Name of the File to import
@@ -399,7 +430,6 @@ public class DBPropertiesUpdate {
       query.execute();
       if (query.next()) {
         OID = (String) query.get("OID");
-
       }
 
       query.close();
@@ -478,21 +508,23 @@ public class DBPropertiesUpdate {
 
   }
 
-  public static DBPropertiesUpdate readXMLFile(String _XMLName) {
-    return readXMLFile(new File(_XMLName));
-  }
-
-  public void addResource(Resource _resource) {
-    this.resources.add(_resource);
-  }
-
-  private final List<Resource> resources = new ArrayList<Resource>();
-
   /**
    * Import the Properties defined in a "eFaps-Properties" XML-File
    * 
    * @param _XMLName
    *          Path to the XML-File
+   * @return DBPropertiesUpdate
+   */
+  public static DBPropertiesUpdate readXMLFile(String _XMLName) {
+    return readXMLFile(new File(_XMLName));
+  }
+
+  /**
+   * Import the Properties defined in a "eFaps-Properties" XML-File
+   * 
+   * @param _XMLName
+   *          XML-Files
+   * @return DBPropertiesUpdate
    */
   public static DBPropertiesUpdate readXMLFile(File _xmlfile) {
     DBPropertiesUpdate propimport = null;
@@ -510,8 +542,7 @@ public class DBPropertiesUpdate {
 
     digester.addObjectCreate("eFaps-DBProperties/resource", Resource.class);
 
-    digester
-        .addCallMethod("eFaps-DBProperties/resource", "setResource", 3);
+    digester.addCallMethod("eFaps-DBProperties/resource", "setResource", 3);
     digester.addCallParam("eFaps-DBProperties/resource/type", 0);
     digester.addCallParam("eFaps-DBProperties/resource/language", 1);
     digester.addCallParam("eFaps-DBProperties/resource/file", 2);
@@ -535,9 +566,27 @@ public class DBPropertiesUpdate {
     return propimport;
   }
 
+  /**
+   * set the Bundle
+   * 
+   * @param _Name
+   *          Name of the Bundle
+   * @param _Sequence
+   *          Sequence of the Bundle
+   */
   public void setBundle(String _Name, String _Sequence) {
     setBundleName(_Name);
     setSequence(_Sequence);
+  }
+
+  /**
+   * add a Resource to the Properties
+   * 
+   * @param _resource
+   *          Resource to be added
+   */
+  public void addResource(Resource _resource) {
+    this.resources.add(_resource);
   }
 
   /**
@@ -545,6 +594,10 @@ public class DBPropertiesUpdate {
    * 
    */
   public void updateInDB() {
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Importing Properties '" + this.getBundleName() + "'");
+    }
+
     String BundleID = getExistingBundle(getBundleUUID());
 
     if (BundleID != null) {
@@ -594,20 +647,43 @@ public class DBPropertiesUpdate {
 
   }
 
+  /**
+   * Class to store the diffrent Resources witch can come with one bundle
+   * 
+   * @author jmo
+   * @version $Id$
+   * 
+   */
   public static class Resource {
+    /**
+     * type of the Properties
+     */
     private String type;
 
+    /**
+     * language of the Properties
+     */
     private String language;
 
+    /**
+     * Filename of the Properties
+     */
     private String filename;
 
-    
+    /**
+     * set the Resource
+     * 
+     * @param _type
+     *          type of the Properties
+     * @param _language
+     *          language of the Properties
+     * @param _filename
+     *          Filename of the Properties
+     */
     public void setResource(final String _type, final String _language,
                             final String _filename) {
       this.type = _type;
-
       this.language = _language;
-
       this.filename = _filename;
     }
   }

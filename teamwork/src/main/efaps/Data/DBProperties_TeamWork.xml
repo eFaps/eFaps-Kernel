@@ -24,16 +24,11 @@
 -->
 
 <eFaps-DBProperties>
-  <uuid>f10521f6-4343-4d2c-b525-7fc56df9d0e2</uuid>
-  <bundle name="efaps" sequence="1"/>
+  <uuid>39b64664-2b25-45b6-9d3b-a236a4f4480b</uuid>
+  <bundle name="TeamWork" sequence="1"/>
   <resource>
     <type>Properties</type>
     <language></language> 
-    <file>WebApp.properties</file>
-  </resource>
-  <resource>
-    <type>Properties</type>
-    <language>de</language> 
-    <file>WebApp_de.properties</file>
+    <file>TeamWork.properties</file>
   </resource>
 </eFaps-DBProperties>

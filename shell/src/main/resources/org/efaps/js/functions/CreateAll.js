@@ -419,19 +419,24 @@ function _eFapsCreateAllImportData(){
     if (fileName.endsWith(".xml"))  {
       var dimport = new Packages.org.efaps.importer.DataImport();
       dimport.initialise();
-      dimport.importFromXML(file);
+      dimport.readXMLFile(file);
       if (dimport.hasData()) {
-        dimport.insertDB();
-      }
-      
-     
-      var prop = DBPropertiesUpdate.readXMLFile(file);
-      if (prop != null)  {
-        prop.updateInDB();
+        dimport.updateInDB();
       }
       
     }
   }
+  
+  for (i in fileList)  {
+    var file = new Packages.java.io.File(fileList[i]);
+    var fileName = new Packages.java.lang.String(file.getName());
+    if (fileName.endsWith(".xml"))  {
+      var prop = DBPropertiesUpdate.readXMLFile(file);
+      if (prop != null)  {
+        prop.updateInDB();
+      }
+    }
+  }  
 }
 
 function _eFapsCreateInsertSQLTable(_stmt, _text, _uuid, _name, _sqlTable, _sqlColId, _sqlColType, _tableMain)  {

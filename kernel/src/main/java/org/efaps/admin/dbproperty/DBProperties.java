@@ -34,14 +34,16 @@ import org.efaps.util.EFapsException;
 
 /**
  * This class reads the Properties for eFaps from the connected Database and
- * holds them in a cache. It is possible to use a localized Version for the
- * Properties, by setting the Language of the Properties. If no Language is
- * explicitly set the default from the System is used.<br>
- * The value returned is the value from the localised version, if one is
- * existing, otherwise it returns the default value.
+ * holds them in a cache to be accesed fast during normal runtime. <br>
+ * The Keys will be read from the database in the order of the Sequence of a
+ * Bundle. That gives the possibilty to override the key of a Bundle with the
+ * same key of another Bundle by using a higher Sequence.<br>
+ * The value returned for a key is searched first in the localised version, if
+ * no Value can be found or no localised version for this language is existing
+ * than the default value will be returned.
  * 
  * @author jmo
- * 
+ * @version $Id$
  */
 public class DBProperties {
   /**
@@ -50,6 +52,9 @@ public class DBProperties {
   private static final Log                                LOG             = LogFactory
                                                                               .getLog(DBProperties.class);
 
+  /**
+   * value used to identifie the Default inside the Cache
+   */
   private static String                                   DEFAULT         = "default";
 
   /**
@@ -63,7 +68,10 @@ public class DBProperties {
   private static boolean                                  INITIALISED;
 
   /**
-   * Method that returns the value, depending on the language, for the given key
+   * Method that returns the value, depending on the language of the Context,
+   * for the given key. The Search for the key, first searches for a localized
+   * Version and if not found for a Default. If no value can be found, the key
+   * will be returned.
    * 
    * @param _key
    *          Key to Search for
@@ -80,7 +88,7 @@ public class DBProperties {
       language = Context.getThreadContext().getLocale().getLanguage();
     } catch (EFapsException e) {
 
-      LOG.error("getProperty(String)", e);
+      LOG.error("not able to read the language from the context", e);
     }
     HashMap map = PROPERTIESCACHE.get(language);
     if (map != null) {
@@ -105,21 +113,22 @@ public class DBProperties {
   }
 
   /**
-   * Method to initialise the Propeties
+   * Method to initialise the Properties
    */
   public static void initialise() {
-    String SQLStmt = " select distinct KEY, DEFAULTV,'"
-        + DEFAULT
-        + "' as LANG, SEQUENCE from T_ADPROP "
-        + " inner join t_adpropbun on t_adpropbun.id = T_ADPROP.bundleid  order by SEQUENCE";
+    String SQLStmt = " select distinct KEY, DEFAULTV,'" + DEFAULT
+        + "' as LANG, SEQUENCE " + " from T_ADPROP "
+        + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
+        + " order by SEQUENCE";
 
     initialiseCache(SQLStmt);
 
-    SQLStmt = "select distinct key,value,lang,sequence from T_ADPROP "
-        + " inner join  t_adpropbun on t_adpropbun.id=T_ADPROP.bundleid "
-        + " inner join t_adproploc on t_adproploc.propid= T_ADPROP.id "
-        + " inner join T_adlang on T_adlang.id=t_adproploc.langid "
-        + " order by lang,SEQUENCE";
+    SQLStmt = "select distinct KEY, VALUE, LANG, SEQUENCE from T_ADPROP "
+        + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID "
+        + " inner join T_ADPROPLOC on T_ADPROPLOC.PROPID = T_ADPROP.ID "
+        + " inner join T_ADLANG on T_ADLANG.ID = T_ADPROPLOC.LANGID "
+        + " order by LANG, SEQUENCE";
+
     initialiseCache(SQLStmt);
 
   }
@@ -140,13 +149,14 @@ public class DBProperties {
    *          SQl-Statment to access the database
    */
   private static void initialiseCache(final String _sqlstmt) {
-    ConnectionResource con;
+
     String value;
     String language = "";
 
     HashMap<String, String> map = null;
     try {
-      con = Context.getThreadContext().getConnectionResource();
+      ConnectionResource con = Context.getThreadContext()
+          .getConnectionResource();
       Statement stmt = con.getConnection().createStatement();
 
       ResultSet rs = stmt.executeQuery(_sqlstmt);
