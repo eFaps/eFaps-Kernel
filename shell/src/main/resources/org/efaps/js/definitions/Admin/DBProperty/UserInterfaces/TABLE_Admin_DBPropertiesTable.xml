@@ -17,51 +17,57 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev:586 $
+ Last Changed:    $Date:2007-01-04 14:59:51 +0100 (Do, 04 Jan 2007) $
+ Last Changed By: $Author:tmo $
 
 -->
 
-<ui-menu>
-  <uuid>8d9aae87-fa36-4b62-aba0-dbd9c0ca273a</uuid>
+<ui-table>
+  <uuid>5325f1ef-507e-454c-a3cc-afb10c758a39</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:586 $</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Common_MyDesk</name>
+    <name>Admin_DBPropertiesTable</name>
   </definition>
-
+    
   <!-- ************************************************************************
-    version definition used to update the menu 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:586 $</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Common_MyDesk</name>
-    <childs>
-      <child>Admin_Common_SearchMyDesk</child>
-      <child>Admin_User_AbstractMyDesk</child>
-      <child>Admin_DataModel_AbstractMyDesk</child>
-      <child>Admin_Program_AbstractMyDesk</child>
-      <child>Admin_Access_AbstractMyDesk</child>
-      <child>Admin_UI_AbstractMyDesk</child>
-      <child>Admin_DBProperties_AbstractMyDesk</child>
-      <child>Admin_Integration_AbstractMyDesk</child>
-      <child>Admin_Common_VersionMyDesk</child>
-    </childs>
+    <name>Admin_DBPropertiesTable</name>
+    <!-- fields -->
+    
+    <field name="name">
+      <property name="Expression">Key</property>
+      
+      <property name="Label">Admin_DBProperties/Key.Label</property>
+    </field>
+    <field name="revision">
+      <property name="Expression">Default</property>
+      <property name="Label">Admin_DBProperties/Default.Label</property>
+    </field>
+    <field name="buttonOpenInNewWindow">
+      <icon>eFapsActionNewWindow</icon>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Target">popup</property>
+    </field>
   </definition>
-</ui-menu>
+
+</ui-table>
