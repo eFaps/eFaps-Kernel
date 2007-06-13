@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -297,6 +297,15 @@ public abstract class AbstractUpdate {
     }
 
     /**
+     * Link Type extracted from the link name.
+     * 
+     * @return link type extracted from the link name
+     */
+    public Type getLinkType() {
+      return Type.get(this.linkName);
+    }
+
+    /**
      * Returns a string representation with values of all instance variables of
      * a link.
      * 
@@ -332,28 +341,28 @@ public abstract class AbstractUpdate {
      * 
      * @see #setVersion
      */
-    private String                                            application   = null;
+    private String application   = null;
 
     /**
      * Number of the global version of the application.
      * 
      * @see #setVersion
      */
-    private long                                              globalVersion = 0;
+    private long globalVersion = 0;
 
     /**
      * Text of the local version of this definition.
      * 
      * @see #setVersion
      */
-    private String                                            localVersion  = null;
+    private String localVersion  = null;
 
     /**
      * 
      * 
      * @see #setVersion
      */
-    private String                                            mode          = null;
+    private String mode = null;
 
     /**
      * The value depending on the attribute name for this definition.
@@ -361,26 +370,28 @@ public abstract class AbstractUpdate {
      * @see #addValue
      * @see #getValue
      */
-    private final Map<String, String>                         values        = new HashMap<String, String>();
+    private final Map < String, String > values = new HashMap<String, String>();
 
     /**
      * Property value depending on the property name for this definition
      * 
      * @see #addProperty.
      */
-    private final Map<String, String>                         properties    = new HashMap<String, String>();
+    private final Map < String, String > properties
+                                            = new HashMap<String, String>();
 
     /**
      * 
      */
-    private final Map<Link, Map<String, Map<String, String>>> links         = new HashMap<Link, Map<String, Map<String, String>>>();
+    private final Map < Link, Map < String, Map < String, String >>> links 
+                = new HashMap < Link, Map <String, Map < String, String >>>();
 
-    protected final List<Event>                               events      = new ArrayList<Event>();
+    protected final List<Event>  events = new ArrayList < Event >();
 
-    public void updateInDB(final Type _dataModelType, final String _uuid,
+    public void updateInDB(final Type _dataModelType,
+                           final String _uuid,
                            final Set<Link> _allLinkTypes)
-                                                         throws EFapsException,
-                                                         Exception {
+                                     throws EFapsException, Exception  {
       Instance instance = null;
       Insert insert = null;
 
@@ -409,9 +420,8 @@ public abstract class AbstractUpdate {
      */
     public Instance updateInDB(final Instance _instance,
                                final Set<Link> _allLinkTypes,
-                               final Insert _insert) throws EFapsException,
-                                                    Exception {
-
+                               final Insert _insert)
+                                            throws EFapsException, Exception {
       Instance instance = _instance;
 
       if (_insert != null) {
@@ -465,39 +475,39 @@ public abstract class AbstractUpdate {
      * Sets the links from this object to the given list of objects (with the
      * object name) in the eFaps database.
      * 
-     * @param _instance
-     *          instance for which the access types must be set
-     * @param _linkType
-     *          link to update
-     * @param _objNames
-     *          string list of all object names to set for this object
+     * @param _instance instance for which the access types must be set
+     * @param _link     link to update
+     * @param _objNames string list of all object names to set for this object
      * @todo it could be that more than one current from same target is defined!
      *       E.g. menu to child!
      * @todo ordered link is only a hack, the current connection are always
      *       disconnected
      */
-    protected void setLinksInDB(final Instance _instance, final Link _linkType,
+    protected void setLinksInDB(final Instance _instance, 
+                                final Link _link,
                                 final Map<String, Map<String, String>> _links)
-                                                                              throws EFapsException,
-                                                                              Exception {
+                                            throws EFapsException, Exception  {
 
       // get ids from current object
       Map<Long, String> currents = new HashMap<Long, String>();
       SearchQuery query = new SearchQuery();
-      query.setExpand(_instance, _linkType.linkName + "\\"
-          + _linkType.parentAttrName);
-      query.addSelect(_linkType.childAttrName + ".ID");
+      query.setExpand(_instance, _link.linkName + "\\"
+          + _link.parentAttrName);
+      query.addSelect(_link.childAttrName + ".ID");
       query.addSelect("OID");
-      query.addSelect(_linkType.childAttrName + ".Type");
+      query.addSelect("Type");
+      query.addSelect(_link.childAttrName + ".Type");
       query.executeWithoutAccessCheck();
       while (query.next()) {
-        Type type = (Type) query.get(_linkType.childAttrName + ".Type");
-        if (type.isKindOf(_linkType.getChildType())) {
-          if (_linkType instanceof OrderedLink) {
+        Type typeLink = (Type) query.get("Type");
+        Type typeChild = (Type) query.get(_link.childAttrName + ".Type");
+        if (typeLink.isKindOf(_link.getLinkType()) &&
+            typeChild.isKindOf(_link.getChildType())) {
+          if (_link instanceof OrderedLink) {
             Delete del = new Delete((String) query.get("OID"));
             del.executeWithoutAccessCheck();
           } else {
-            currents.put((Long) query.get(_linkType.childAttrName + ".ID"),
+            currents.put((Long) query.get(_link.childAttrName + ".ID"),
                 (String) query.get("OID"));
           }
         }
@@ -505,7 +515,7 @@ public abstract class AbstractUpdate {
       query.close();
       // get ids for target
       Map<Long, Map<String, String>> targets;
-      if (_linkType instanceof OrderedLink) {
+      if (_link instanceof OrderedLink) {
         targets = new LinkedHashMap<Long, Map<String, String>>();
       } else {
         targets = new HashMap<Long, Map<String, String>>();
@@ -514,7 +524,7 @@ public abstract class AbstractUpdate {
         for (Map.Entry<String, Map<String, String>> linkEntry : _links
             .entrySet()) {
           query = new SearchQuery();
-          query.setQueryTypes(_linkType.childTypeName);
+          query.setQueryTypes(_link.childTypeName);
           query.setExpandChildTypes(true);
           query.addWhereExprEqValue("Name", linkEntry.getKey());
           query.addSelect("ID");
@@ -522,7 +532,7 @@ public abstract class AbstractUpdate {
           if (query.next()) {
             targets.put((Long) query.get("ID"), linkEntry.getValue());
           } else {
-            System.out.println(_linkType.childTypeName + " '"
+            System.out.println(_link.childTypeName + " '"
                 + linkEntry.getKey() + "' not found!");
           }
           query.close();
@@ -532,9 +542,9 @@ public abstract class AbstractUpdate {
       // insert needed new links and update already existing
       for (Map.Entry<Long, Map<String, String>> target : targets.entrySet()) {
         if (currents.get(target.getKey()) == null) {
-          Insert insert = new Insert(_linkType.linkName);
-          insert.add(_linkType.parentAttrName, "" + _instance.getId());
-          insert.add(_linkType.childAttrName, "" + target.getKey());
+          Insert insert = new Insert(_link.linkName);
+          insert.add(_link.parentAttrName, "" + _instance.getId());
+          insert.add(_link.childAttrName, "" + target.getKey());
           if (target.getValue() != null) {
             for (Map.Entry<String, String> value : target.getValue().entrySet()) {
               insert.add(value.getKey(), value.getValue());
@@ -564,18 +574,15 @@ public abstract class AbstractUpdate {
      * The properties are only set if the object to update could own properties
      * (meaning derived from 'Admin_Abstract').
      * 
-     * @param _instance
-     *          instance for which the propertie must be set
-     * @param _properties
-     *          new properties to set
+     * @param _instance   instance for which the propertie must be set
+     * @param _properties new properties to set
      * @todo rework of the update algorithmus (not always a complete delete and
      *       and new create is needed)
      * @todo description
      */
     protected void setPropertiesInDb(final Instance _instance,
                                      final Map<String, String> _properties)
-                                                                           throws EFapsException,
-                                                                           Exception {
+                                             throws EFapsException, Exception {
 
       if (_instance.getType().isKindOf(Type.get("Admin_Abstract"))) {
         // remove old properties
@@ -613,7 +620,8 @@ public abstract class AbstractUpdate {
      */
     public void setVersion(final String _application,
                            final String _globalVersion,
-                           final String _localVersion, final String _mode) {
+                           final String _localVersion, 
+                           final String _mode) {
       this.application = _application;
       this.globalVersion = Long.valueOf(_globalVersion);
       this.localVersion = _localVersion;
@@ -628,7 +636,8 @@ public abstract class AbstractUpdate {
      * @param _values
      *          values in the link itself (or null)
      */
-    protected void addLink(final Link _link, final String _name,
+    protected void addLink(final Link _link,
+                           final String _name,
                            final Map<String, String> _values) {
       Map<String, Map<String, String>> oneLink = this.links.get(_link);
       if (oneLink == null) {
@@ -643,14 +652,12 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     * @param _link
-     *          link type
-     * @param _name
-     *          name of the object which is linked to
-     * @param _values
-     *          values in the link itself (or null)
+     * @param _link   link type
+     * @param _name   name of the object which is linked to
+     * @param _values values in the link itself (or null)
      */
-    protected void addLink(final Link _link, final String _name,
+    protected void addLink(final Link _link,
+                           final String _name,
                            final String... _values) {
       Map<String, String> valuesMap = null;
       if (_values.length > 0) {
@@ -663,10 +670,8 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     * @param _name
-     *          name of the attribute
-     * @param _value
-     *          value of the attribute
+     * @param _name   name of the attribute
+     * @param _value  value of the attribute
      * @see #values
      */
     protected void addValue(final String _name, final String _value) {
@@ -674,8 +679,7 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     * @param _name
-     *          name of the attribtue
+     * @param _name   name of the attribtue
      * @return value of the set attribute value in this definition
      * @see #values
      */
@@ -686,10 +690,8 @@ public abstract class AbstractUpdate {
     /**
      * Add a new property with given name and value to this definition.
      * 
-     * @param _name
-     *          name of the property to add
-     * @param _value
-     *          value of the property to add
+     * @param _name   name of the property to add
+     * @param _value  value of the property to add
      * @see #properties
      */
     public void addProperty(final String _name, final String _value) {
