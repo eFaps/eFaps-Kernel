@@ -59,9 +59,13 @@
       
       <property name="Label">Admin_DBProperties_Bundle/Name.Label</property>
     </field>
-    <field name="revision">
+    <field name="uuid">
       <property name="Expression">UUID</property>
       <property name="Label">Admin_DBProperties_Bundle/UUID.Label</property>
+    </field>
+    <field name="sequence">
+      <property name="Expression">Sequence</property>
+      <property name="Label">Admin_DBProperties_Bundle/Sequence.Label</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>

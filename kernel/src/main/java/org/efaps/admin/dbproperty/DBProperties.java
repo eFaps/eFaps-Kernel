@@ -28,6 +28,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -49,23 +50,22 @@ public class DBProperties {
   /**
    * Logger for this class
    */
-  private static final Log                                LOG             = LogFactory
-                                                                              .getLog(DBProperties.class);
+  private static final Log LOG = LogFactory.getLog(DBProperties.class);
 
   /**
    * value used to identifie the Default inside the Cache
    */
-  private static String                                   DEFAULT         = "default";
+  private static final String DEFAULT = "default";
 
   /**
    * Cache for the Properties
    */
-  private static HashMap<String, HashMap<String, String>> PROPERTIESCACHE = new HashMap<String, HashMap<String, String>>();
+  private static final Map<String, HashMap<String, String>> PROPERTIESCACHE = new HashMap<String, HashMap<String, String>>();
 
   /**
    * are the Properties initialised?
    */
-  private static boolean                                  INITIALISED;
+  private static boolean INITIALISED = false;
 
   /**
    * Method that returns the value, depending on the language of the Context,
@@ -77,7 +77,7 @@ public class DBProperties {
    *          Key to Search for
    * @return if key exists, the value for the key, otherwise the key
    */
-  public static String getProperty(String _key) {
+  public static String getProperty(final String _key) {
     if (!isInitialised()) {
       initialise();
     }
@@ -90,7 +90,7 @@ public class DBProperties {
 
       LOG.error("not able to read the language from the context", e);
     }
-    HashMap map = PROPERTIESCACHE.get(language);
+    Map map = PROPERTIESCACHE.get(language);
     if (map != null) {
       value = (String) map.get(_key);
     }
@@ -116,20 +116,25 @@ public class DBProperties {
    * Method to initialise the Properties
    */
   public static void initialise() {
-    String SQLStmt = " select distinct KEY, DEFAULTV,'" + DEFAULT
+
+    synchronized (PROPERTIESCACHE) {
+      PROPERTIESCACHE.clear();
+    }
+
+    final String sqlStmt = " select distinct KEY, DEFAULTV,'" + DEFAULT
         + "' as LANG, SEQUENCE " + " from T_ADPROP "
         + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
         + " order by SEQUENCE";
 
-    initialiseCache(SQLStmt);
+    initialiseCache(sqlStmt);
 
-    SQLStmt = "select distinct KEY, VALUE, LANG, SEQUENCE from T_ADPROP "
+    final String sqlStmt2 = "select distinct KEY, VALUE, LANG, SEQUENCE from T_ADPROP "
         + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID "
         + " inner join T_ADPROPLOC on T_ADPROPLOC.PROPID = T_ADPROP.ID "
         + " inner join T_ADLANG on T_ADLANG.ID = T_ADPROPLOC.LANGID "
         + " order by LANG, SEQUENCE";
 
-    initialiseCache(SQLStmt);
+    initialiseCache(sqlStmt2);
 
   }
 
@@ -153,7 +158,7 @@ public class DBProperties {
     String value;
     String language = "";
 
-    HashMap<String, String> map = null;
+    Map<String, String> map = null;
     try {
       ConnectionResource con = Context.getThreadContext()
           .getConnectionResource();
@@ -167,7 +172,7 @@ public class DBProperties {
           map = PROPERTIESCACHE.get(language);
           if (map == null) {
             map = new HashMap<String, String>();
-            PROPERTIESCACHE.put(language, map);
+            PROPERTIESCACHE.put(language, (HashMap<String, String>) map);
           }
         }
 

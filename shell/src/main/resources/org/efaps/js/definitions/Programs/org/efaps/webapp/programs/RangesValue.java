@@ -20,8 +20,16 @@
 
 package org.efaps.webapp.programs;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Vector;
+
+import org.apache.commons.collections.map.AbstractLinkedMap;
+import org.apache.commons.collections.map.LinkedMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.ParameterInterface;
@@ -32,7 +40,22 @@ import org.efaps.admin.event.ReturnInterface.ReturnValues;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+/**
+ * This Class gets a Range from the Database.<br>
+ * The Class makes a query against the Database, with the Type from the
+ * Properties of the Parameters and returns a map sorted by the values. The key
+ * returned is the ID, the Value returned can be specified by the Propertie
+ * "Value".
+ * 
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class RangesValue implements EventExecution {
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(RangesValue.class);
 
   public ReturnInterface execute(ParameterInterface _parameter) {
     Return ret = new Return();
@@ -44,7 +67,7 @@ public class RangesValue implements EventExecution {
       String value = (String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
           .get("Value");
       SearchQuery query = new SearchQuery();
-      
+
       Map<String, String> map = new HashMap<String, String>();
 
       query.setQueryTypes(type);
@@ -55,14 +78,33 @@ public class RangesValue implements EventExecution {
       while (query.next()) {
         map.put(query.get("ID").toString(), query.get(value).toString());
       }
+      // sort by Value
+      List<Map.Entry<String, String>> list = new Vector<Map.Entry<String, String>>(
+          map.entrySet());
 
-      ret.put(ReturnValues.VALUES, map);
+      java.util.Collections.sort(list,
+          new Comparator<Map.Entry<String, String>>() {
+            public int compare(Map.Entry<String, String> entry,
+                               Map.Entry<String, String> entry1) {
+              String r = entry.getValue().toString();
+              String r1 = entry1.getValue().toString();
+
+              return r.compareTo(r1);
+            }
+
+          });
+
+      AbstractLinkedMap map2 = new LinkedMap();
+
+      for (Map.Entry<String, String> entry : list) {
+        map2.put(entry.getKey(), entry.getValue());
+      }
+
+      ret.put(ReturnValues.VALUES, map2);
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("execute(ParameterInterface)", e);
     }
 
-    System.out.print("gehtdoch");
     return ret;
   }
 }

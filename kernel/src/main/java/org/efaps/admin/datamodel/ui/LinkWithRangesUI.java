@@ -30,14 +30,20 @@ import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
+ * This Class is the representation of
+ * {@link org.efaps.admin.datamodel.attributetype.LinkWithRanges} for the
+ * Userinterface.<br>
+ * Depending on the accessmode (e.g. edit) the Value of a Field is presented in
+ * an editable or noneditable mode.
+ * 
  * @author jmo
  * @version $Id$
  * 
  */
 public class LinkWithRangesUI implements UIInterface {
 
-  public String getViewHtml(Context _context, Object _value, Field _field)
-                                                                          throws EFapsException {
+  public String getViewHtml(final Context _context, final Object _value,
+                            final Field _field) throws EFapsException {
     String ret = "";
     Return values = null;
     if (_value != null) {
@@ -55,30 +61,27 @@ public class LinkWithRangesUI implements UIInterface {
     return ret;
   }
 
-  public String getEditHtml(Context _context, Object _value, Field _field)
-                                                                          throws EFapsException {
+  public String getEditHtml(final Context _context, final Object _value,
+                            final Field _field) throws EFapsException {
     StringBuilder ret = new StringBuilder();
     Return values = null;
     if (_value != null) {
       if (_field.hasEvent()) {
         values = _field.executeEvent();
 
-        ret.append("<form><select name=\"" + _field.getName()
-            + "\" size=\"1\">");
+        ret.append("<form><select name=\"").append(_field.getName()).append(
+            "\" size=\"1\">");
 
         Iterator iter = ((Map) values.get(ReturnValues.VALUES)).entrySet()
             .iterator();
 
         while (iter.hasNext()) {
           Map.Entry entry = (Map.Entry) iter.next();
-          ret.append("<option value=\"");
-          ret.append(entry.getKey());
+          ret.append("<option value=\"").append(entry.getKey());
           if (_value.toString().equals(entry.getKey())) {
             ret.append("\" selected=\"selected");
           }
-          ret.append("\">");
-          ret.append(entry.getValue());
-          ret.append("</option>");
+          ret.append("\">").append(entry.getValue()).append("</option>");
         }
 
         ret.append("</select></form>");
@@ -90,27 +93,24 @@ public class LinkWithRangesUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getCreateHtml(Context _context, Object _value, Field _field)
-                                                                            throws EFapsException {
+  public String getCreateHtml(final Context _context, final Object _value,
+                              final Field _field) throws EFapsException {
     StringBuilder ret = new StringBuilder();
     Return values = null;
 
     if (_field.hasEvent()) {
       values = _field.executeEvent();
 
-      ret.append("<form><select name=\"" + _field.getName() + "\" size=\"1\">");
+      ret.append("<form><select name=\"").append(_field.getName()).append(
+          "\" size=\"1\">");
 
       Iterator iter = ((Map) values.get(ReturnValues.VALUES)).entrySet()
           .iterator();
 
       while (iter.hasNext()) {
         Map.Entry entry = (Map.Entry) iter.next();
-        ret.append("<option value=\"");
-        ret.append(entry.getKey());
-
-        ret.append("\">");
-        ret.append(entry.getValue());
-        ret.append("</option>");
+        ret.append("<option value=\"").append(entry.getKey()).append("\">")
+            .append(entry.getValue()).append("</option>");
       }
 
       ret.append("</select></form>");
