@@ -31,7 +31,9 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.ParameterInterface;
 import org.efaps.admin.event.ReturnInterface;
 import org.efaps.admin.event.ParameterInterface.ParameterValues;
+import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
+import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -45,9 +47,15 @@ public class Member implements EventExecution {
   private static final Log LOG = LogFactory.getLog(Member.class);
 
   public ReturnInterface insertNewMember(ParameterInterface _parameter) {
+
     Iterator iter = ((Map) _parameter.get(ParameterValues.NEW_VALUES))
         .entrySet().iterator();
+
+    String defaultaccessSet = (String) ((Map) _parameter
+        .get(ParameterValues.PROPERTIES)).get("DefaultAccessSet");
+
     Map<String, String> newValues = new HashMap<String, String>();
+
     while (iter.hasNext()) {
       Map.Entry entry = (Map.Entry) iter.next();
       Attribute attr = (Attribute) entry.getKey();
@@ -157,13 +165,69 @@ public class Member implements EventExecution {
         insert.executeWithoutAccessCheck();
       } else {
 
-        LOG.error("error in Definition of Propertie 'AccessSet'");
+        LOG.error("error in Definition of Property for 'AccessSet'");
       }
 
     } catch (EFapsException e) {
 
       LOG.error("insertCollectionCreator(Map<TriggerKeys4Values,Object>)", e);
     }
+    return null;
+
+  }
+
+  public ReturnInterface removeMember(ParameterInterface _parameter) {
+    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    String tempID = ((Long) instance.getId()).toString();
+
+    Context context = null;
+    try {
+      context = Context.getThreadContext();
+      String oid = context.getParameter("oid");
+
+      String abstractid = oid.substring(oid.indexOf(".") + 1);
+
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes("TeamWork_MemberRights");
+      query.addWhereExprEqValue("ID", tempID);
+      query.addWhereExprEqValue("AbstractLink", abstractid);
+      query.addSelect("UserAbstractLink");
+      query.addSelect("AccessSetLink");
+      query.executeWithoutAccessCheck();
+
+      if (query.next()) {
+
+        Long Userid = ((Person) query.get("UserAbstractLink")).getId();
+        Long AccessSetID = (Long) query.get("AccessSetLink");
+
+        query.close();
+
+        query = new SearchQuery();
+        query.setQueryTypes("TeamWork_Member");
+        query.addWhereExprEqValue("UserAbstractLink", Userid);
+        query.addWhereExprEqValue("AbstractLink", abstractid);
+        query.addWhereExprEqValue("AccessSetLink", AccessSetID);
+        query.addSelect("OID");
+        query.executeWithoutAccessCheck();
+        if (query.next()) {
+          String delOID = (String) query.get("OID");
+          query.close();
+
+          Delete delete = new Delete(delOID);
+          delete.execute();
+        } else {
+          LOG.error("no");
+        }
+
+      } else {
+        LOG.error("no");
+      }
+
+    } catch (EFapsException e) {
+
+      LOG.error("removeMember(ParameterInterface)", e);
+    }
+
     return null;
 
   }

@@ -54,7 +54,7 @@
     <name>TeamWork_RootCollection_Member</name>
     <!-- target definitions -->
     <target>
-      <menu>TeamWork_Member_Menu</menu>
+      <menu>TeamWork_Member_RootMenu</menu>
       <table>TeamWork_MemberTable</table>
     </target>
     <!-- property definitions -->

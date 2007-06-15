@@ -43,7 +43,7 @@ public class EventFactory implements ObjectCreationFactory {
   }
 
   public Object createObject(final Attributes _attributes) {
-    if (this.event == null) {
+    if (_attributes.getValue("event") != null) {
       this.event = _attributes.getValue("event");
     }
 
