@@ -16,55 +16,54 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-menu>
-  <uuid>3c886ff6-8602-4385-b1a1-58856e9f39c2</uuid>
+<ui-command>
+  <uuid>debf76ec-33ca-41c5-90e8-5ef9caa06088</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>teamwork</application>
+      <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_SourceTree</name>
+    <name>TeamWork_Source_Member</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>teamwork</application>
+      <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version>=3)</mode>
+      <mode>(version==3)</mode>
     </version>
-    <name>TeamWork_SourceTree</name>
+    <name>TeamWork_Source_Member</name>
+    <!-- target definitions -->
     <target>
-      <form>TeamWork_SourceForm</form>
-      <menu>TeamWork_SourceTree_Menu</menu>
+      <menu>TeamWork_Member_Menu</menu>
+      <table>TeamWork_MemberTable</table>
     </target>
-    <childs>
-      <child>TeamWork_SourceTree_Versions</child>
-      <child>Main_Util_History</child>
-      <child>TeamWork_Source_Member</child>
-    </childs>
     <!-- property definitions -->
+    <property name="DefaultSelected">false</property>
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
+    <property name="TargetExpand">TeamWork_MemberRights\AbstractLink</property>
+    <property name="TargetMode">view</property>
+    <property name="TargetShowCheckBoxes">true</property>
   </definition>
 
-</ui-menu>
-
+</ui-command>

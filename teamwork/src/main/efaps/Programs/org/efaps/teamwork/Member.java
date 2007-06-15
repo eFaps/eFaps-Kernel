@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.ParameterInterface;
@@ -40,12 +41,26 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
+/**
+ * This Class is a JavaProgram for eFaps, wich takes care of the Members in
+ * TeamWork.
+ * 
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class Member implements EventExecution {
   /**
    * Logger for this class
    */
   private static final Log LOG = LogFactory.getLog(Member.class);
 
+  /**
+   * Insert a new Member for a Collection.
+   * 
+   * @param _parameter
+   * @return null
+   */
   public ReturnInterface insertNewMember(ParameterInterface _parameter) {
 
     Iterator iter = ((Map) _parameter.get(ParameterValues.NEW_VALUES))
@@ -67,6 +82,7 @@ public class Member implements EventExecution {
     SearchQuery query = new SearchQuery();
 
     try {
+      // is this member allready existing?
       query.setQueryTypes("TeamWork_MemberRights");
       query.addWhereExprEqValue("UserAbstractLink", newValues
           .get("UserAbstractLink"));
@@ -74,14 +90,27 @@ public class Member implements EventExecution {
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
 
-      if (query.next()) {
+      if (!query.next()) {
 
-      } else {
+        if (!isRoot(newValues.get("AbstractLink").toString())) {
+          Insert insert = new Insert("TeamWork_Member");
+          insert.add("AccessSetLink", getAccessSetID(defaultaccessSet));
+          insert.add("AbstractLink", getRootID(newValues.get("AbstractLink")));
+          insert.add("UserAbstractLink", newValues.get("UserAbstractLink"));
+          insert.executeWithoutAccessCheck();
+          insert.close();
+
+        }
         Insert insert = new Insert("TeamWork_Member");
         insert.add("AccessSetLink", newValues.get("AccessSetLink"));
         insert.add("AbstractLink", newValues.get("AbstractLink"));
         insert.add("UserAbstractLink", newValues.get("UserAbstractLink"));
         insert.executeWithoutAccessCheck();
+        insert.close();
+      } else {
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("Member gibt es schon!");
+        }
       }
 
     } catch (EFapsException e) {
@@ -93,6 +122,63 @@ public class Member implements EventExecution {
     }
     return null;
 
+  }
+
+  /**
+   * check if this TeamWork_Abstract is a Root
+   * 
+   * @param _abstractlink
+   *          Abstract to search for
+   * @return true, if a Root, otherwise false
+   */
+  private boolean isRoot(final String _abstractlink) {
+    boolean ret = false;
+    SearchQuery query = new SearchQuery();
+    try {
+      query.setQueryTypes("TeamWork_Abstract2Abstract");
+      query.addWhereExprEqValue("AbstractLink", _abstractlink);
+      query.addWhereExprEqValue("AncestorLink", _abstractlink);
+      query.addWhereExprEqValue("Rank", "1");
+      query.executeWithoutAccessCheck();
+      if (query.next()) {
+        ret = true;
+      }
+      query.close();
+    } catch (EFapsException e) {
+      LOG.error("Can't check if TeamWork_Abstract: " + _abstractlink
+          + " is a Root", e);
+    }
+
+    return ret;
+  }
+
+  /**
+   * get the ID of the Root, for a TeamWork_Abstract
+   * 
+   * @param _abstractlink
+   *          TeamWork_Abstract the Root is searched for
+   * @return the ID of the Root of the TeamWork_Abstract
+   */
+  private String getRootID(final String _abstractlink) {
+    String ID = null;
+    SearchQuery query = new SearchQuery();
+    try {
+      query.setQueryTypes("TeamWork_Abstract2Abstract");
+      query.addWhereExprEqValue("AbstractLink", _abstractlink);
+      query.addWhereExprEqValue("Rank", "1");
+      query.addSelect("AncestorLink");
+      query.executeWithoutAccessCheck();
+      if (query.next()) {
+        ID = (String) query.get("AncestorLink").toString();
+        System.out.print(ID);
+      } else {
+        LOG.error("Cant't find the ID of the Root for: " + _abstractlink);
+      }
+      query.close();
+    } catch (EFapsException e) {
+      LOG.error("getRootID(String)", e);
+    }
+    return ID;
   }
 
   public ReturnInterface execute(ParameterInterface _parameter) {
@@ -138,6 +224,13 @@ public class Member implements EventExecution {
 
   }
 
+  /**
+   * This Method is used by a Trigger, when a new Root Collection is created, to
+   * set the default Right for the Creator of the RootCollection.
+   * 
+   * @param _parameter
+   * @return null
+   */
   public ReturnInterface insertCollectionCreator(ParameterInterface _parameter) {
 
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
@@ -148,25 +241,13 @@ public class Member implements EventExecution {
 
     try {
 
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Admin_Access_AccessSet");
-      query.addWhereExprEqValue("Name", accessSet);
-      query.addSelect("ID");
-      query.executeWithoutAccessCheck();
-
-      if (query.next()) {
-        String accessID = query.get("ID").toString();
-        Insert insert;
-        insert = new Insert("TeamWork_Member");
-        insert.add("AbstractLink", abstractlink);
-        insert.add("AccessSetLink", accessID);
-        insert.add("UserAbstractLink", ((Long) Context.getThreadContext()
-            .getPerson().getId()).toString());
-        insert.executeWithoutAccessCheck();
-      } else {
-
-        LOG.error("error in Definition of Property for 'AccessSet'");
-      }
+      Insert insert;
+      insert = new Insert("TeamWork_Member");
+      insert.add("AbstractLink", abstractlink);
+      insert.add("AccessSetLink", getAccessSetID(accessSet));
+      insert.add("UserAbstractLink", ((Long) Context.getThreadContext()
+          .getPerson().getId()).toString());
+      insert.executeWithoutAccessCheck();
 
     } catch (EFapsException e) {
 
@@ -176,6 +257,40 @@ public class Member implements EventExecution {
 
   }
 
+  /**
+   * Get the ID of a AccessSet
+   * 
+   * @param _accessset
+   *          AccessSet to Search for
+   * @return ID of the AccessSet, Null if not found
+   */
+  private String getAccessSetID(final String _accessset) {
+    String ID = null;
+    SearchQuery query = new SearchQuery();
+    try {
+      query.setQueryTypes("Admin_Access_AccessSet");
+      query.addWhereExprEqValue("Name", _accessset);
+      query.addSelect("ID");
+      query.executeWithoutAccessCheck();
+      if (query.next()) {
+        ID = query.get("ID").toString();
+      } else {
+        LOG.error("Cant't find the ID of the AccessSet for: " + _accessset);
+      }
+    } catch (EFapsException e) {
+      LOG.error("getAccessSetID(String)", e);
+    }
+    return ID;
+
+  }
+
+  /**
+   * This Method is used to remove a Member from a RootCollection and all of its
+   * Childs. It can only be inisiated in a RootCollection.
+   * 
+   * @param _parameter
+   * @return
+   */
   public ReturnInterface removeMember(ParameterInterface _parameter) {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     String tempID = ((Long) instance.getId()).toString();
@@ -183,49 +298,49 @@ public class Member implements EventExecution {
     Context context = null;
     try {
       context = Context.getThreadContext();
-      String oid = context.getParameter("oid");
 
-      String abstractid = oid.substring(oid.indexOf(".") + 1);
+      String abstractid = context.getParameter("oid").substring(
+          context.getParameter("oid").indexOf(".") + 1);
 
       SearchQuery query = new SearchQuery();
       query.setQueryTypes("TeamWork_MemberRights");
       query.addWhereExprEqValue("ID", tempID);
       query.addWhereExprEqValue("AbstractLink", abstractid);
       query.addSelect("UserAbstractLink");
-      query.addSelect("AccessSetLink");
       query.executeWithoutAccessCheck();
 
       if (query.next()) {
-
         Long Userid = ((Person) query.get("UserAbstractLink")).getId();
-        Long AccessSetID = (Long) query.get("AccessSetLink");
-
         query.close();
 
         query = new SearchQuery();
-        query.setQueryTypes("TeamWork_Member");
-        query.addWhereExprEqValue("UserAbstractLink", Userid);
-        query.addWhereExprEqValue("AbstractLink", abstractid);
-        query.addWhereExprEqValue("AccessSetLink", AccessSetID);
-        query.addSelect("OID");
+        query.setQueryTypes("TeamWork_Abstract2Abstract");
+        query.addWhereExprEqValue("AncestorLink", abstractid);
+        query.addSelect("AbstractLink");
         query.executeWithoutAccessCheck();
-        if (query.next()) {
-          String delOID = (String) query.get("OID");
-          query.close();
 
-          Delete delete = new Delete(delOID);
-          delete.execute();
-        } else {
-          LOG.error("no");
+        while (query.next()) {
+          SearchQuery query2 = new SearchQuery();
+          query2.setQueryTypes("TeamWork_Member");
+          query2.addWhereExprEqValue("AbstractLink", query.get("AbstractLink")
+              .toString());
+          query2.addWhereExprEqValue("UserAbstractLink", Userid);
+          query2.addSelect("OID");
+          query2.executeWithoutAccessCheck();
+          if (query2.next()) {
+            String delOID = (String) query2.get("OID");
+            Delete delete = new Delete(delOID);
+            delete.execute();
+          }
+          query2.close();
         }
-
+        query.close();
       } else {
         LOG.error("no");
       }
 
     } catch (EFapsException e) {
-
-      LOG.error("removeMember(ParameterInterface)", e);
+    LOG.error("removeMember(ParameterInterface)", e);
     }
 
     return null;
