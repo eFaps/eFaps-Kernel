@@ -25,7 +25,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -34,6 +37,12 @@ import java.util.UUID;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.ParameterInterface.ParameterValues;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -44,11 +53,11 @@ import org.efaps.util.cache.CacheReloadInterface;
 /**
  * This is the class for the type description. The type description holds
  * information about creation of a new instance of a type with default values.
- *
+ * 
  * @author tmo
- * @version $Id$
+ * @version $Id: $
  */
-public class Attribute extends DataModelObject  {
+public class Attribute extends DataModelObject {
 
   /**
    * Logging instance used in this class.
@@ -56,61 +65,202 @@ public class Attribute extends DataModelObject  {
   private final static Log log = LogFactory.getLog(Attribute.class);
 
   /**
+   * Stores all instances of attribute.
+   * 
+   * @see #get
+   */
+  private static AttributeCache attributeCache = new AttributeCache();
+
+  /**
    * This is the sql select statement to select all types from the database.
    */
-  private final static String SQL_SELECT  = "select "+
-                                                "ID,"+
-                                                "NAME,"+
-                                                "DMTABLE,"+
-                                                "DMTYPE,"+
-                                                "DMATTRIBUTETYPE,"+
-                                                "DMTYPELINK,"+
-                                                "SQLCOLUMN "+
-                                              "from V_ADMINATTRIBUTE";
+  private final static String SQL_SELECT =
+      "select " + "ID," + "NAME," + "DMTABLE," + "DMTYPE," + "DMATTRIBUTETYPE,"
+          + "DMTYPELINK," + "SQLCOLUMN " + "from V_ADMINATTRIBUTE";
+
+  /**
+   * All triggers for this Attribute are stored in this map.
+   */
+  private final Map<TriggerEvent, List<EventDefinition>> triggers =
+      new HashMap<TriggerEvent, List<EventDefinition>>();
+
+  /**
+   * This is the instance variable for the table, where attribute is stored.
+   * 
+   * @see #getTable
+   * @see #setTable
+   */
+  private SQLTable table = null;
+
+  /**
+   * Instance variable for the link to onther type.
+   * 
+   * @see #getLink
+   * @see #setLink
+   */
+  private Type link = null;
+
+  /**
+   * Instance variable for the parent type.
+   * 
+   * @see #getParent
+   * @see #setParent
+   */
+  private Type parent = null;
+
+  /**
+   * This instance variable stores the sql column name.
+   * 
+   * @see #getSqlColName
+   * @see #setSqlColName
+   */
+  private ArrayList<String> sqlColNames = new ArrayList<String>();
+
+  /**
+   * The instance variable stores the attribute type for this attribute.
+   * 
+   * @see #getAttributeType
+   * @see #setAttributeType
+   */
+  private AttributeType attributeType = null;
+
+  /**
+   * The collection intance variables holds all unique keys, for which this
+   * attribute belongs to.
+   * 
+   * @see #getUniqueKeys
+   * @see #setUniqueKeys
+   */
+  private Collection<UniqueKey> uniqueKeys = null;
 
   /**
    * This is the constructor for class {@link Attribute}. Every instance of
-   * class {@link Attribute} must have a name (parameter <i>_name</i>) and
-   * an identifier (parameter <i>_id</i>).
-   *
-   * @param _id           id of the attribute
-   * @param _name         name of the instance
-   * @param _sqlColNames  name of the sql columns
+   * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
+   * identifier (parameter <i>_id</i>).
+   * 
+   * @param _id
+   *          id of the attribute
+   * @param _name
+   *          name of the instance
+   * @param _sqlColNames
+   *          name of the sql columns
    */
-  protected Attribute(long _id, String _name, String _sqlColNames)  {
+  protected Attribute(long _id, String _name, String _sqlColNames) {
     super(_id, null, _name);
     StringTokenizer tokens = new StringTokenizer(_sqlColNames, ",");
-    while (tokens.hasMoreTokens())  {
+    while (tokens.hasMoreTokens()) {
       getSqlColNames().add(tokens.nextToken());
     }
   }
 
   /**
    * This is the constructor for class {@link Attribute}. Every instance of
-   * class {@link Attribute} must have a name (parameter <i>_name</i>) and
-   * an identifier (parameter <i>_id</i>).<br/>
-   * This constructor is used for the copy method (clone of an attribute
-   * instance).
-   *
-   * @param _id           id of the attribute
-   * @param _name         name of the instance
+   * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
+   * identifier (parameter <i>_id</i>).<br/> This constructor is used for the
+   * copy method (clone of an attribute instance).
+   * 
+   * @param _id
+   *          id of the attribute
+   * @param _name
+   *          name of the instance
    * @see #copy
    */
-  protected Attribute(long _id, String _name)  {
+  protected Attribute(long _id, String _name) {
     super(_id, null, _name);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * Adds a new trigger event to this Attribute.
+   * 
+   * @param _triggerEvent
+   *          trigger class name to add
+   * @param _eventDef
+   *          event defition to add
+   */
+  public void addTrigger(final TriggerEvent _triggerEvent,
+      final EventDefinition _eventDef) {
+    List<EventDefinition> events = this.triggers.get(_triggerEvent);
+    if (events == null) {
+      events = new ArrayList<EventDefinition>();
+      this.triggers.put(_triggerEvent, events);
+    }
+    int pos = 0;
+    for (EventDefinition cur : events) {
+      if (_eventDef.getIndexPos() > cur.getIndexPos()) {
+        break;
+      }
+      pos++;
+    }
+    events.add(pos, _eventDef);
+  }
 
   /**
-   * This method returns <i>true</i>  if a link exists. This is made with a
-   * test of the return value of method {@link #getLink} on null.
-   *
+   * Returns the ordered list of triggers assigned to this Attribue instance.
+   * 
+   * @param _triggerEvent
+   *          trigger class name for which the triggers should returned
+   */
+  public List<EventDefinition> getTrigger(final TriggerEvent _triggerEvent) {
+    return this.triggers.get(_triggerEvent);
+  }
+
+  /**
+   * does this Attribute have Trigger
+   * 
+   * @return
+   */
+  public boolean hasTrigger() {
+    return !this.triggers.isEmpty();
+
+  }
+
+  /**
+   * Executes all Triggers difined for this Attribute in the given Order and
+   * returns a List with all Returns
+   * 
+   * @return List with Returns
+   */
+  public List<Return> executeTriggers() {
+
+    List<Return> ret = new ArrayList<Return>();
+
+    for (TriggerEvent triggerEvent : TriggerEvent.values()) {
+      ret.addAll(executeTriggers(triggerEvent));
+    }
+
+    return ret;
+  }
+
+  /**
+   * The method gets all triggers for the given trigger event and executes them
+   * in the given order. If no triggers are defined, nothing is done.
+   * 
+   * @param _triggerEvent
+   *          trigger events to execute
+   * @return List with Returns
+   */
+  public List<Return> executeTriggers(final TriggerEvent _triggerEvent) {
+    List<EventDefinition> trig = this.triggers.get(_triggerEvent);
+    List<Return> ret = new ArrayList<Return>();
+
+    Parameter para = new Parameter();
+    para.put(ParameterValues.INSTANCE, this);
+    for (EventDefinition evenDef : trig) {
+      ret.add((Return) evenDef.execute(para));
+    }
+    return ret;
+  }
+
+  /**
+   * This method returns <i>true</i> if a link exists. This is made with a test
+   * of the return value of method {@link #getLink} on null.
+   * 
    * @return <i>true</i> if this attribute has a link, otherwise <i>false</i>
    */
-  public boolean hasLink()  {
+  public boolean hasLink() {
     boolean ret = false;
-    if (getLink() != null)  {
+    if (getLink() != null) {
       ret = true;
     }
     return ret;
@@ -118,44 +268,32 @@ public class Attribute extends DataModelObject  {
 
   /**
    * Returns the name of the attribute.
-   *
+   * 
    * @param _context
    * @see #getName
    */
-  public String getViewableName(Context _context)  {
+  public String getViewableName(Context _context) {
     String name = getName();
-    ResourceBundle msgs = ResourceBundle.getBundle("org.efaps.properties.AttributeRessource", _context.getLocale());
-    try  {
-      name = msgs.getString("Attribute."+getParent().getName()+"/"+name);
-    } catch (MissingResourceException e)  {
+    ResourceBundle msgs =
+        ResourceBundle.getBundle("org.efaps.properties.AttributeRessource",
+            _context.getLocale());
+    try {
+      name = msgs.getString("Attribute." + getParent().getName() + "/" + name);
+    } catch (MissingResourceException e) {
     }
     return name;
   }
 
   /**
-   * The instance method returns the string representation of this attribute.
-   * The string representation of this attribute is the name of the type plus
-   * slash plus name of this attribute.
-   *
-   * @see #name
-   */
-  public String toString()  {
-    return new ToStringBuilder(this).
-        append("attribute name", getParent().getName()+"/"+getName()).
-        appendSuper(super.toString()).
-        append("attributetype", getAttributeType().toString()).
-        toString();
-  }
-
-  /**
    * A unique key can added to this attribute instance. If no unique key is
    * added before, the instance variable {@link #uniqueKeys} is initialised.
-   *
-   * @param _uniqueKey  unique key to add to this attribute
+   * 
+   * @param _uniqueKey
+   *          unique key to add to this attribute
    * @see #uniqueKeys
    */
-  public void addUniqueKey(UniqueKey _uniqueKey)  {
-    if (getUniqueKeys()==null)  {
+  public void addUniqueKey(UniqueKey _uniqueKey) {
+    if (getUniqueKeys() == null) {
       setUniqueKeys(new HashSet<UniqueKey>());
     }
     getUniqueKeys().add(_uniqueKey);
@@ -163,10 +301,10 @@ public class Attribute extends DataModelObject  {
 
   /**
    * Creates a new instance of this attribute from type {@link #attributeType}.
-   *
+   * 
    * @return new created instance of this attribute
    */
-  public AttributeTypeInterface newInstance() throws EFapsException  {
+  public AttributeTypeInterface newInstance() throws EFapsException {
     AttributeTypeInterface ret = getAttributeType().newInstance();
     ret.setAttribute(this);
     return ret;
@@ -174,10 +312,10 @@ public class Attribute extends DataModelObject  {
 
   /**
    * The method makes a clone of the current attribute instance.
-   *
+   * 
    * @return clone of current attribute instance
    */
-  public Attribute copy()   {
+  public Attribute copy() {
     Attribute ret = new Attribute(getId(), getName());
     ret.getSqlColNames().addAll(getSqlColNames());
     ret.setTable(getTable());
@@ -188,269 +326,216 @@ public class Attribute extends DataModelObject  {
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the instance variable for the table, where attribute is stored.
-   *
-   * @see #getTable
-   * @see #setTable
-   */
-  private SQLTable table = null;
-
-  /**
-   * Instance variable for the link to onther type.
-   *
-   * @see #getLink
-   * @see #setLink
-   */
-  private Type link = null;
-
-  /**
-   * Instance variable for the parent type.
-   *
-   * @see #getParent
-   * @see #setParent
-   */
-  private Type parent = null;
-
-  /**
-   * This instance variable stores the sql column name.
-   *
-   * @see #getSqlColName
-   * @see #setSqlColName
-   */
-  private ArrayList<String> sqlColNames = new ArrayList<String>();
-
-  /**
-   * The instance variable stores the attribute type for this attribute.
-   *
-   * @see #getAttributeType
-   * @see #setAttributeType
-   */
-  private AttributeType attributeType = null;
-
-  /**
-   * The collection intance variables holds all unique keys, for which this
-   * attribute belongs to.
-   *
-   * @see #getUniqueKeys
-   * @see #setUniqueKeys
-   */
-  private Collection<UniqueKey> uniqueKeys = null;
-
-  /////////////////////////////////////////////////////////////////////////////
-
   /**
    * This is the setter method for instance variable {@table #table}.
-   *
-   * @param _table new instance of class {@table Table} to set for table
+   * 
+   * @param _table
+   *          new instance of class {@table Table} to set for table
    * @see #table
    * @see #getTable
    */
-  private void setTable(SQLTable _table)  {
+  private void setTable(SQLTable _table) {
     this.table = _table;
   }
 
   /**
    * This is the getter method for instance variable {@table #table}.
-   *
+   * 
    * @return value of instance variable {@table #table}
    * @see #table
    * @see #setTable
    */
-  public SQLTable getTable()  {
+  public SQLTable getTable() {
     return this.table;
   }
 
   /**
    * This is the setter method for instance variable {@link #link}.
-   *
-   * @param _link new instance of class {@link Type} to set for link
+   * 
+   * @param _link
+   *          new instance of class {@link Type} to set for link
    * @see #link
    * @see #getLink
    */
-  private void setLink(Type _link)  {
+  private void setLink(Type _link) {
     this.link = _link;
   }
 
   /**
    * This is the getter method for instance variable {@link #link}.
-   *
+   * 
    * @return value of instance variable {@link #link}
    * @see #link
    * @see #setLink
    */
-  public Type getLink()  {
+  public Type getLink() {
     return this.link;
   }
 
   /**
    * This is the setter method for instance variable {@link #parent}.
-   *
-   * @param _parent new instance of class {@link Type} to set for parent
+   * 
+   * @param _parent
+   *          new instance of class {@link Type} to set for parent
    * @see #parent
    * @see #getParent
    */
-  void setParent(Type _parent)  {
+  void setParent(Type _parent) {
     this.parent = _parent;
   }
 
   /**
    * This is the getter method for instance variable {@link #parent}.
-   *
+   * 
    * @return value of instance variable {@link #parent}
    * @see #parent
    * @see #setParent
    */
-  public Type getParent()  {
+  public Type getParent() {
     return this.parent;
   }
 
   /**
    * This is the getter method for instance variable {@link #sqlColNames}.
-   *
+   * 
    * @return value of instance variable {@link #sqlColNames}
    * @see #sqlColNames
    */
-  public ArrayList<String> getSqlColNames()  {
+  public ArrayList<String> getSqlColNames() {
     return this.sqlColNames;
   }
 
   /**
    * This is the setter method for instance variable {@link #attributeType}.
-   *
-   * @param _attributeType new value for instance variable {@link #attributeType}
+   * 
+   * @param _attributeType
+   *          new value for instance variable {@link #attributeType}
    * @see #attributeType
    * @see #getAttributeType
    */
-  protected void setAttributeType(AttributeType _attributeType)  {
+  protected void setAttributeType(AttributeType _attributeType) {
     this.attributeType = _attributeType;
   }
 
   /**
    * This is the getter method for instance variable {@link #attributeType}.
-   *
+   * 
    * @return value of instance variable {@link #attributeType}
    * @see #attributeType
    * @see #setAttributeType
    */
-  public AttributeType getAttributeType()  {
+  public AttributeType getAttributeType() {
     return this.attributeType;
   }
 
   /**
    * This is the getter method for instance variable {@link #uniqueKeys}.
-   *
+   * 
    * @return value of instance variable {@link #uniqueKeys}
    * @see #uniqueKeys
    */
-  public Collection<UniqueKey> getUniqueKeys()  {
+  public Collection<UniqueKey> getUniqueKeys() {
     return this.uniqueKeys;
   }
 
   /**
    * This is the setter method for instance variable {@link #uniqueKeys}.
-   *
-   * @param _uniqueKeys new value for instance variable {@link #uniqueKeys}
+   * 
+   * @param _uniqueKeys
+   *          new value for instance variable {@link #uniqueKeys}
    * @see #uniqueKeys
    * @see #getUniqueKeys
    */
-  private void setUniqueKeys(Collection<UniqueKey> _uniqueKeys)  {
+  private void setUniqueKeys(Collection<UniqueKey> _uniqueKeys) {
     this.uniqueKeys = _uniqueKeys;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Initialise the cache of types.
-   *
-   * @param _context  eFaps context for this request
+   * 
+   * @param _context
+   *          eFaps context for this request
    */
-  public static void initialise() throws CacheReloadException  {
+  public static void initialise() throws CacheReloadException {
     ConnectionResource con = null;
-    try  {
+    try {
       con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
-      try  {
+      try {
         stmt = con.getConnection().createStatement();
 
         ResultSet rs = stmt.executeQuery(SQL_SELECT);
-        while (rs.next())  {
-          long id =         rs.getLong(1);
-          String name =     rs.getString(2).trim();
-          long tableId =     rs.getLong(3);
-          long typeId =     rs.getLong(4);
-          long attrType =   rs.getLong(5);
+        while (rs.next()) {
+          long id = rs.getLong(1);
+          String name = rs.getString(2).trim();
+          long tableId = rs.getLong(3);
+          long typeId = rs.getLong(4);
+          long attrType = rs.getLong(5);
           long typeLinkId = rs.getLong(6);
-          String sqlCol =   rs.getString(7).trim();
+          String sqlCol = rs.getString(7).trim();
           Type type = Type.get(typeId);
 
           log.debug("read attribute '" + type.getName() + "/" + name + "' "
-                                                        + "(id = " + id + ")");
+              + "(id = " + id + ")");
 
           Attribute attr = new Attribute(id, name, sqlCol);
           attr.setTable(SQLTable.get(tableId));
           attr.setAttributeType(AttributeType.get(attrType));
-attr.setParent(type);
+          attr.setParent(type);
 
-UUID uuid = attr.getAttributeType().getUUID();
+          UUID uuid = attr.getAttributeType().getUUID();
           if (uuid.equals(EFapsClassName.ATTRTYPE_LINK.uuid)
-              || uuid.equals(EFapsClassName.ATTRTYPE_LINK_WITH_RANGES.uuid))  {
+              || uuid.equals(EFapsClassName.ATTRTYPE_LINK_WITH_RANGES.uuid)) {
             Type linkType = Type.get(typeLinkId);
             attr.setLink(linkType);
             linkType.addLink(attr);
-          } else if (uuid.equals(EFapsClassName.ATTRTYPE_CREATOR_LINK.uuid))  {
+          } else if (uuid.equals(EFapsClassName.ATTRTYPE_CREATOR_LINK.uuid)) {
             Type linkType = Type.get("Admin_User_Person");
             attr.setLink(linkType);
             linkType.addLink(attr);
-          } else if (uuid.equals(EFapsClassName.ATTRTYPE_MODIFIER_LINK.uuid))  {
+          } else if (uuid.equals(EFapsClassName.ATTRTYPE_MODIFIER_LINK.uuid)) {
             Type linkType = Type.get("Admin_User_Person");
             attr.setLink(linkType);
             linkType.addLink(attr);
           }
-/*          if ((attrType == 400) || (attrType == 401))  {
-            Type linkType = Type.get(typeLinkId);
-            attr.setLink(linkType);
-            linkType.addLink(attr);
-          } else if (attrType == 411)  {
-            Type linkType = Type.get("Admin_User_Person");
-            attr.setLink(linkType);
-            linkType.addLink(attr);
-          } else if (attrType == 412)  {
-            Type linkType = Type.get("Admin_User_Person");
-            attr.setLink(linkType);
-            linkType.addLink(attr);
-          } else  if (attrType == 421)  {
-            Type linkType = Type.get("Admin_LifeCycle_Status");
-            attr.setLink(linkType);
-            linkType.addLink(attr);
-          }
-*/
-type.addAttribute(attr);
+          /*
+           * if ((attrType == 400) || (attrType == 401)) { Type linkType =
+           * Type.get(typeLinkId); attr.setLink(linkType);
+           * linkType.addLink(attr); } else if (attrType == 411) { Type linkType =
+           * Type.get("Admin_User_Person"); attr.setLink(linkType);
+           * linkType.addLink(attr); } else if (attrType == 412) { Type linkType =
+           * Type.get("Admin_User_Person"); attr.setLink(linkType);
+           * linkType.addLink(attr); } else if (attrType == 421) { Type linkType =
+           * Type.get("Admin_LifeCycle_Status"); attr.setLink(linkType);
+           * linkType.addLink(attr); }
+           */
+          type.addAttribute(attr);
 
           getCache().add(attr);
 
           attr.readFromDB4Properties();
         }
         rs.close();
-      } finally  {
-        if (stmt != null)  {
+      }
+      finally {
+        if (stmt != null) {
           stmt.close();
         }
       }
       con.commit();
-    } catch (SQLException e)  {
+    } catch (SQLException e) {
       throw new CacheReloadException("could not read roles", e);
-    } catch (EFapsException e)  {
+    } catch (EFapsException e) {
       throw new CacheReloadException("could not read roles", e);
-    } finally  {
-      if ((con != null) && con.isOpened())  {
-        try  {
+    }
+    finally {
+      if ((con != null) && con.isOpened()) {
+        try {
           con.abort();
-        } catch (EFapsException e)  {
+        } catch (EFapsException e) {
           throw new CacheReloadException("could not read roles", e);
         }
       }
@@ -460,159 +545,121 @@ type.addAttribute(attr);
   /**
    * Returns for given parameter <i>_id</i> the instance of class
    * {@link Attribute}.
-   *
-   * @param _id id to search in the cache
+   * 
+   * @param _id
+   *          id to search in the cache
    * @return instance of class {@link Attribute}
    * @see #getCache
    */
-  static public Attribute get(long _id)  {
+  static public Attribute get(long _id) {
     return getCache().get(_id);
   }
 
   /**
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Attribute}.
-   *
-   * @param _name name to search in the cache
+   * 
+   * @param _name
+   *          name to search in the cache
    * @return instance of class {@link Attribute}
    * @see #getCache
    */
-  static public Attribute get(String _name)  {
+  static public Attribute get(String _name) {
     return getCache().get(_name);
   }
 
   /**
    * Static getter method for the attribute hashtable {@link #cache}.
-   *
+   * 
    * @return value of static variable {@link #cache}
    */
-  static AttributeCache getCache()  {
+  static AttributeCache getCache() {
     return attributeCache;
   }
 
   /**
-   * Stores all instances of attribute.
-   *
-   * @see #get
+   * The instance method returns the string representation of this attribute.
+   * The string representation of this attribute is the name of the type plus
+   * slash plus name of this attribute.
+   * 
+   * @see #name
    */
-  private static AttributeCache attributeCache = new AttributeCache();
+  public String toString() {
+    return new ToStringBuilder(this).append("attribute name",
+        getParent().getName() + "/" + getName()).appendSuper(super.toString())
+        .append("attributetype", getAttributeType().toString()).toString();
+  }
 
-  /////////////////////////////////////////////////////////////////////////////
+  static protected class AttributeCache extends Cache<Attribute> {
 
-  static protected class AttributeCache extends Cache<Attribute>  {
+    private AttributeCache() {
+      super(new CacheReloadInterface() {
+        public int priority() {
+          return CacheReloadInterface.Priority.Attribute.number;
+        };
 
-    private AttributeCache()  {
-      super(new CacheReloadInterface()  {
-          public int priority()  {
-            return CacheReloadInterface.Priority.Attribute.number;
-          };
-          public void reloadCache() throws CacheReloadException  {
-            Attribute.initialise();
-          };
+        public void reloadCache() throws CacheReloadException {
+          Attribute.initialise();
+        };
       });
     }
 
-/*    private Attribute readAttribute(Context _context, String _name) throws Exception  {
-int index = _name.indexOf("/");
-String typeName = _name.substring(0, index);
-String name = _name.substring(index+1);
-System.out.println("typeName="+typeName+":name="+name);
-Type type = Type.get(typeName);
-if (type==null)  {
-  throw new Exception("can not found attribute '"+_name+"'");
-}
-
-      return readAttribute4Statement(_context,
-        "select "+
-          "ABSTRACT.ID,"+
-          "ABSTRACT.NAME,"+
-          "DMATTRIBUTE.DMTABLE,"+
-          "DMATTRIBUTE.DMTYPE,"+
-          "DMATTRIBUTE.DMATTRIBUTETYPE,"+
-          "DMATTRIBUTE.DMTYPELINK,"+
-          "DMATTRIBUTE.SQLCOLUMN "+
-        "from ABSTRACT,DMATTRIBUTE "+
-        "where ABSTRACT.NAME='"+name+"' and ABSTRACT.ID=DMATTRIBUTE.ID and DMATTRIBUTE.DMTYPE="+type.getId()
-      );
-    }
-
-    private Attribute readAttribute(Context _context, long _id) throws Exception  {
-      return readAttribute4Statement(_context,
-        "select "+
-          "ABSTRACT.ID,"+
-          "ABSTRACT.NAME,"+
-          "DMATTRIBUTE.DMTABLE,"+
-          "DMATTRIBUTE.DMTYPE,"+
-          "DMATTRIBUTE.DMATTRIBUTETYPE,"+
-          "DMATTRIBUTE.DMTYPELINK,"+
-          "DMATTRIBUTE.SQLCOLUMN "+
-        "from ABSTRACT,DMATTRIBUTE "+
-        "where ABSTRACT.ID="+_id+" and ABSTRACT.ID=DMATTRIBUTE.ID"
-      );
-    }
-
-    private Attribute readAttribute4Statement(Context _context, String _statement) throws Exception  {
-      Attribute attr = null;
-      Statement stmt = _context.getConnection().createStatement();
-      try  {
-        ResultSet rs = stmt.executeQuery(_statement);
-        while (rs.next())  {
-          long id =         rs.getLong(1);
-          String name =     rs.getString(2);
-          long tableId =     rs.getLong(3);
-          long typeId =     rs.getLong(4);
-          long attrType =   rs.getLong(5);
-          long typeLinkId = rs.getLong(6);
-          String sqlCol =   rs.getString(7);
-          Type type = Type.get(typeId);
-attr = new Attribute(id, name, sqlCol);
-attr.setTable(Table.get(_context, tableId));
-attr.setAttributeType(AttributeType.get(attrType));
-type.addAttribute(attr);
-this.add(attr);
-
-if (attrType==400 || attrType==401)  {
-  Type linkType = Type.get(typeLinkId);
-  attr.setLink(linkType);
-  linkType.addLink(attr);
-} else if (attrType==411)  {
-  Type linkType = Type.get("Admin_User_Person");
-  attr.setLink(linkType);
-  linkType.addLink(attr);
-} else if (attrType==412)  {
-  Type linkType = Type.get("Admin_User_Person");
-  attr.setLink(linkType);
-  linkType.addLink(attr);
-} else  if (attrType==421)  {
-  Type linkType = Type.get("Admin_LifeCycle_Status");
-  attr.setLink(linkType);
-  linkType.addLink(attr);
-}
-
-          attr.readFromDB4Properties(_context);
-        }
-        rs.close();
-      } catch (Exception e)  {
-e.printStackTrace();
-      } finally  {
-        stmt.close();
-      }
-      return attr;
-    }
-*/
+    /*
+     * private Attribute readAttribute(Context _context, String _name) throws
+     * Exception { int index = _name.indexOf("/"); String typeName =
+     * _name.substring(0, index); String name = _name.substring(index+1);
+     * System.out.println("typeName="+typeName+":name="+name); Type type =
+     * Type.get(typeName); if (type==null) { throw new Exception("can not found
+     * attribute '"+_name+"'"); } return readAttribute4Statement(_context,
+     * "select "+ "ABSTRACT.ID,"+ "ABSTRACT.NAME,"+ "DMATTRIBUTE.DMTABLE,"+
+     * "DMATTRIBUTE.DMTYPE,"+ "DMATTRIBUTE.DMATTRIBUTETYPE,"+
+     * "DMATTRIBUTE.DMTYPELINK,"+ "DMATTRIBUTE.SQLCOLUMN "+ "from
+     * ABSTRACT,DMATTRIBUTE "+ "where ABSTRACT.NAME='"+name+"' and
+     * ABSTRACT.ID=DMATTRIBUTE.ID and DMATTRIBUTE.DMTYPE="+type.getId() ); }
+     * private Attribute readAttribute(Context _context, long _id) throws
+     * Exception { return readAttribute4Statement(_context, "select "+
+     * "ABSTRACT.ID,"+ "ABSTRACT.NAME,"+ "DMATTRIBUTE.DMTABLE,"+
+     * "DMATTRIBUTE.DMTYPE,"+ "DMATTRIBUTE.DMATTRIBUTETYPE,"+
+     * "DMATTRIBUTE.DMTYPELINK,"+ "DMATTRIBUTE.SQLCOLUMN "+ "from
+     * ABSTRACT,DMATTRIBUTE "+ "where ABSTRACT.ID="+_id+" and
+     * ABSTRACT.ID=DMATTRIBUTE.ID" ); } private Attribute
+     * readAttribute4Statement(Context _context, String _statement) throws
+     * Exception { Attribute attr = null; Statement stmt =
+     * _context.getConnection().createStatement(); try { ResultSet rs =
+     * stmt.executeQuery(_statement); while (rs.next()) { long id =
+     * rs.getLong(1); String name = rs.getString(2); long tableId =
+     * rs.getLong(3); long typeId = rs.getLong(4); long attrType =
+     * rs.getLong(5); long typeLinkId = rs.getLong(6); String sqlCol =
+     * rs.getString(7); Type type = Type.get(typeId); attr = new Attribute(id,
+     * name, sqlCol); attr.setTable(Table.get(_context, tableId));
+     * attr.setAttributeType(AttributeType.get(attrType));
+     * type.addAttribute(attr); this.add(attr); if (attrType==400 ||
+     * attrType==401) { Type linkType = Type.get(typeLinkId);
+     * attr.setLink(linkType); linkType.addLink(attr); } else if (attrType==411) {
+     * Type linkType = Type.get("Admin_User_Person"); attr.setLink(linkType);
+     * linkType.addLink(attr); } else if (attrType==412) { Type linkType =
+     * Type.get("Admin_User_Person"); attr.setLink(linkType);
+     * linkType.addLink(attr); } else if (attrType==421) { Type linkType =
+     * Type.get("Admin_LifeCycle_Status"); attr.setLink(linkType);
+     * linkType.addLink(attr); } attr.readFromDB4Properties(_context); }
+     * rs.close(); } catch (Exception e) { e.printStackTrace(); } finally {
+     * stmt.close(); } return attr; }
+     */
 
     /**
      * Add a new object implements the {@link CacheInterface} to the hashtable.
      * This is used from method {@link #get(long)} and {@link #get(String) to
      * return the cache object for an id or a string out of the cache.
-     *
-     * @param _cacheObj cache object to add
+     * 
+     * @param _cacheObj
+     *          cache object to add
      * @see #get
      */
-//  protected void add(CacheInterface _cacheObj)  {
-public void add(Attribute _attr)  {
+    // protected void add(CacheInterface _cacheObj) {
+    public void add(Attribute _attr) {
       getCache4Id().put(new Long(_attr.getId()), _attr);
-      getCache4Name().put(_attr.getParent().getName()+"/"+_attr.getName(), _attr);
+      getCache4Name().put(_attr.getParent().getName() + "/" + _attr.getName(),
+          _attr);
     }
   }
 

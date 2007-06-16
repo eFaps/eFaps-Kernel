@@ -36,6 +36,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.event.Event;
 import org.efaps.update.event.EventFactory;
 import org.efaps.util.EFapsException;
 import org.xml.sax.SAXException;
@@ -59,7 +60,7 @@ public class TypeUpdate extends AbstractUpdate {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log       LOG      = LogFactory.getLog(TypeUpdate.class);
+  private final static Log LOG = LogFactory.getLog(TypeUpdate.class);
 
   private final static Set<Link> ALLLINKS = new HashSet<Link>();
   {
@@ -138,20 +139,41 @@ public class TypeUpdate extends AbstractUpdate {
           .addCallMethod("datamodel-type/definition/parent", "setParent", 1);
       digester.addCallParam("datamodel-type/definition/parent", 0);
 
+      // Attributes
+      digester.addObjectCreate("datamodel-type/definition/attribute",
+          Attribute.class);
+
       digester.addCallMethod("datamodel-type/definition/attribute",
-          "addAttribute", 5);
+          "setDefinitions", 5);
       digester.addCallParam("datamodel-type/definition/attribute/name", 0);
       digester.addCallParam("datamodel-type/definition/attribute/type", 1);
       digester.addCallParam("datamodel-type/definition/attribute/sqltable", 2);
       digester.addCallParam("datamodel-type/definition/attribute/sqlcolumn", 3);
       digester.addCallParam("datamodel-type/definition/attribute/typelink", 4);
 
+      // Trigger for the Attribute
+      digester.addFactoryCreate("datamodel-type/definition/attribute/trigger",
+          new EventFactory(), false);
+      digester.addCallMethod(
+          "datamodel-type/definition/attribute/trigger/property",
+          "addProperty", 2);
+      digester.addCallParam(
+          "datamodel-type/definition/attribute/trigger/property", 0, "name");
+      digester.addCallParam(
+          "datamodel-type/definition/attribute/trigger/property", 1);
+      digester.addSetNext("datamodel-type/definition/attribute/trigger",
+          "addEvent", "org.efaps.update.event.Event");
+
+      digester
+          .addSetNext("datamodel-type/definition/attribute", "addAttribute");
+
+      // Properties
       digester.addCallMethod("datamodel-type/definition/property",
           "addProperty", 2);
       digester.addCallParam("datamodel-type/definition/property", 0, "name");
       digester.addCallParam("datamodel-type/definition/property", 1);
 
-      // Trigger
+      // Trigger for the Type
       digester.addFactoryCreate("datamodel-type/definition/trigger",
           new EventFactory(), false);
       digester.addCallMethod("datamodel-type/definition/trigger/property",
@@ -178,30 +200,37 @@ public class TypeUpdate extends AbstractUpdate {
   /**
    * The class defines an attribute of a type.
    */
-  private static class Attribute {
+  public static class Attribute extends DefinitionAbstract{
 
     /** Name of the attribute. */
-    private final String name;
+    private String name;
 
     /** Name of the Attribute Type of the attribute. */
-    private final String type;
+    private String type;
 
     /** Name of the SQL Table of the attribute. */
-    private final String sqlTable;
+    private String sqlTable;
 
     /** SQL Column of the attribute. */
-    private final String sqlColumn;
+    private String sqlColumn;
 
     /** Name of the Linked Type (used for links to another type). */
-    private final String typeLink;
+    private String typeLink;
 
-    private Attribute(final String _name, final String _type,
-        final String _sqlTable, final String _sqlColumn, final String _typeLink) {
+    private final List<Event> events = new ArrayList<Event>();
+
+    public void setDefinitions(final String _name, final String _type,
+                               final String _sqltable, final String _sqlcolumn,
+                               final String _typelink) {
       this.name = _name;
       this.type = _type;
-      this.sqlTable = _sqlTable;
-      this.sqlColumn = _sqlColumn;
-      this.typeLink = _typeLink;
+      this.sqlTable = _sqltable;
+      this.sqlColumn = _sqlcolumn;
+      this.typeLink = _typelink;
+    }
+
+    public void addEvent(Event _event) {
+      this.events.add(_event);
     }
 
     /**
@@ -250,6 +279,12 @@ public class TypeUpdate extends AbstractUpdate {
         update.add("TypeLink", "" + typeLinkId);
       }
       update.executeWithoutAccessCheck();
+
+      for (Event event : this.events) {
+        Instance newInstance = event
+            .updateInDB(update.getInstance(), this.name);
+        setPropertiesInDb(newInstance, event.getProperties());
+      }
     }
 
     /**
@@ -351,7 +386,7 @@ public class TypeUpdate extends AbstractUpdate {
      * @see #setParent
      * @see #updateInDB
      */
-    private String                parentType = null;
+    private String parentType = null;
 
     /**
      * All attributes of the type are stored in this list.
@@ -419,22 +454,11 @@ public class TypeUpdate extends AbstractUpdate {
     /**
      * adds a Attribute to the Definition
      * 
-     * @param _name
-     *          Name of the attribute
-     * @param _type
-     *          Name of the Attribute Type of the attribute.
-     * @param _sqlTable
-     *          Name of the SQL Table of the attribute.
-     * @param _sqlColumn
-     *          SQL Column of the attribute.
-     * @param _typeLink
-     *          Name of the Linked Type (used for links to another type).
+     * @param _attribute
+     *          Attribute to add
      */
-    public void addAttribute(final String _name, final String _type,
-                             final String _sqlTable, final String _sqlColumn,
-                             final String _typeLink) {
-      this.attributes.add(new Attribute(_name, _type, _sqlTable, _sqlColumn,
-          _typeLink));
+    public void addAttribute(final Attribute _attribute) {
+      this.attributes.add(_attribute);
     }
 
   }

@@ -21,7 +21,9 @@
 package org.efaps.admin.ui;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
@@ -32,6 +34,7 @@ import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
+import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.event.ParameterInterface.ParameterValues;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
@@ -51,9 +54,10 @@ public class Field extends UserInterfaceObject {
   private static final Log LOG = LogFactory.getLog(Field.class);
 
   /**
-   * All Events for this Field are stored in this List.
+   * All triggers for this Attribute are stored in this map.
    */
-  private final List<EventDefinition> events = new ArrayList<EventDefinition>();
+  private final Map<TriggerEvent, List<EventDefinition>> triggers =
+      new HashMap<TriggerEvent, List<EventDefinition>>();
 
   public Field() {
     super(0, null);
@@ -77,7 +81,6 @@ public class Field extends UserInterfaceObject {
    * @param _id
    *          id to search in the cache
    * @return instance of class {@link Field}
-   * 
    */
   static public Field get(long _id) {
     Collection col = null;
@@ -103,27 +106,47 @@ public class Field extends UserInterfaceObject {
   }
 
   /**
-   * does this Field have Events
+   * does this Field have Trigger
    * 
    * @return
    */
-  public boolean hasEvent() {
-    return !this.events.isEmpty();
+  public boolean hasTrigger() {
+    return !this.triggers.isEmpty();
 
   }
 
   /**
-   * Executes the events, defined for this Field in the given Order and returns
+   * Executes all Triggers difined for this Field in the given Order and returns
    * a List with all Returns
    * 
    * @return List with Returns
    */
-  public List<Return> executeEvent() {
+  public List<Return> executeTriggers() {
 
     List<Return> ret = new ArrayList<Return>();
+
+    for (TriggerEvent triggerEvent : TriggerEvent.values()) {
+      ret.addAll(executeTriggers(triggerEvent));
+    }
+
+    return ret;
+  }
+
+  /**
+   * The method gets all triggers for the given trigger event and executes them
+   * in the given order. If no triggers are defined, nothing is done.
+   * 
+   * @param _triggerEvent
+   *          trigger events to execute
+   * @return List with Returns
+   */
+  public List<Return> executeTriggers(final TriggerEvent _triggerEvent) {
+    List<EventDefinition> trig = this.triggers.get(_triggerEvent);
+    List<Return> ret = new ArrayList<Return>();
+
     Parameter para = new Parameter();
     para.put(ParameterValues.INSTANCE, this);
-    for (EventDefinition evenDef : this.events) {
+    for (EventDefinition evenDef : trig) {
       ret.add((Return) evenDef.execute(para));
     }
     return ret;
@@ -135,17 +158,21 @@ public class Field extends UserInterfaceObject {
    * @param _eventDef
    *          EventDefinition to be added
    */
-  public void addEvent(final EventDefinition _eventDef) {
-
+  public void addTrigger(final TriggerEvent _triggerEvent,
+      final EventDefinition _eventDef) {
+    List<EventDefinition> events = this.triggers.get(_triggerEvent);
+    if (events == null) {
+      events = new ArrayList<EventDefinition>();
+      this.triggers.put(_triggerEvent, events);
+    }
     int pos = 0;
-    for (EventDefinition cur : this.events) {
+    for (EventDefinition cur : events) {
       if (_eventDef.getIndexPos() > cur.getIndexPos()) {
         break;
       }
       pos++;
     }
-    this.events.add(pos, _eventDef);
-
+    events.add(pos, _eventDef);
   }
 
   /**
@@ -232,8 +259,7 @@ public class Field extends UserInterfaceObject {
    *          to name
    */
   protected void setLinkProperty(EFapsClassName _linkType, long _toId,
-                                 EFapsClassName _toType, String _toName)
-                                                                        throws Exception {
+      EFapsClassName _toType, String _toName) throws Exception {
     switch (_linkType) {
       case LINK_ICON:
         setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/"
@@ -256,7 +282,7 @@ public class Field extends UserInterfaceObject {
    *          value of the property
    */
   protected void setProperty(final String _name, final String _value)
-                                                                     throws CacheReloadException {
+      throws CacheReloadException {
     if (_name.equals("AlternateOID")) {
       setAlternateOID(_value);
     } else if (_name.equals("ClassNameUI")) {

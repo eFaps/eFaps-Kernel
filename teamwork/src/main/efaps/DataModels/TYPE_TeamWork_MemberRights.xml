@@ -74,6 +74,10 @@
       <typelink>Admin_Access_AccessSet</typelink>
       <sqltable>TeamWork_MemberRightsSQLView</sqltable>
       <sqlcolumn>ACCESSSET</sqlcolumn>
+      <trigger name="TeamWork_MemberRights_AccessSetLink_RangeValue" event="RANGE_VALUE" program="org.efaps.webapp.programs.RangesValue" method="execute" index="1">
+      	<property name="Value">Name</property>
+      	<property name="Type">Admin_Access_AccessSet</property>
+      </trigger>
     </attribute>
     
     <attribute>

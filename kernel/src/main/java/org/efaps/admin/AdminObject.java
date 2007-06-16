@@ -47,8 +47,10 @@ public abstract class AdminObject implements CacheObjectInterface  {
     ATTRTYPE_CREATOR_LINK("CreatorLink", "76122fe9-8fde-4dd4-a229-e48af0fb4083"),
     ATTRTYPE_MODIFIER_LINK("ModifierLink", "447a7c87-8395-48c4-b2ed-d4e96d46332c"),
 
+    
     DATAMODEL_TYPE("Admin_DataModel_Type", null),
-
+    DATAMODEL_ATTRIBUTE("Admin_DataModel_Attribute", null),
+    
     USER_ABSTRACT("Admin_User_Abstract", null),
     USER_PERSON("Admin_User_Person", null),
     USER_ROLE("Admin_User_Role", null),

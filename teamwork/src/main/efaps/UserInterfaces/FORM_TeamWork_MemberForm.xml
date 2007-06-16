@@ -77,10 +77,10 @@
       <property name="Editable">true</property>
       <property name="Creatable">true</property>
       <property name="Required">true</property>
-      <rangevalue name="TeamWork_MemberTable_AccessSet_RangeValue" program="org.efaps.webapp.programs.RangesValue" method="execute" index="1">
+      <trigger name="TeamWork_MemberTable_AccessSet_RangeValue" event="RANGE_VALUE" program="org.efaps.webapp.programs.RangesValue" method="execute" index="1">
       	<property name="Value">Name</property>
       	<property name="Type">Admin_Access_AccessSet</property>
-      </rangevalue>
+      </trigger>
     </field>
    
     

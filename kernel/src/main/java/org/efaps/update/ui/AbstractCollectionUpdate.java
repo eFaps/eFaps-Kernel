@@ -117,15 +117,15 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
           "name");
       digester.addCallParam(_xmlTagName + "/definition/field/property", 1);
 
-      digester.addFactoryCreate(_xmlTagName + "/definition/field/rangevalue",
-          new EventFactory("Admin_Event_RangeValue"));
+      digester.addFactoryCreate(_xmlTagName + "/definition/field/trigger",
+          new EventFactory());
 
-      digester.addCallMethod(_xmlTagName + "/definition/field/rangevalue/property",
+      digester.addCallMethod(_xmlTagName + "/definition/field/trigger/property",
           "addProperty", 2);
-      digester.addCallParam(_xmlTagName + "/definition/field/rangevalue/property", 0,
+      digester.addCallParam(_xmlTagName + "/definition/field/trigger/property", 0,
           "name");
-      digester.addCallParam(_xmlTagName + "/definition/field/rangevalue/property", 1);
-      digester.addSetNext(_xmlTagName + "/definition/field/rangevalue", "addEvent",
+      digester.addCallParam(_xmlTagName + "/definition/field/trigger/property", 1);
+      digester.addSetNext(_xmlTagName + "/definition/field/trigger", "addTrigger",
           "org.efaps.update.event.Event");
       ret = (AbstractCollectionUpdate) digester.parse(_file);
 
@@ -193,10 +193,10 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
       this.icon = _icon;
     }
 
-    private final List<Event> events = new ArrayList<Event>();
+    private final List<Event> triggers = new ArrayList<Event>();
 
-    public void addEvent(final Event _event) {
-      events.add(_event);
+    public void addTrigger(final Event _event) {
+      triggers.add(_event);
     }
 
     /**
@@ -283,7 +283,7 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
         }
         setLinksInDB(insert.getInstance(), LINKFIELD2ICON, iconsMap);
 
-        for (Event event : field.events) {
+        for (Event event : field.triggers) {
           Instance newInstance = event.updateInDB(insert.getInstance(), field.name);
           setPropertiesInDb(newInstance, event.getProperties());
         }

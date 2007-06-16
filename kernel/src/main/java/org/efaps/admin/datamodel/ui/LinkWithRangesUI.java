@@ -23,6 +23,7 @@ package org.efaps.admin.datamodel.ui;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.ReturnInterface.ReturnValues;
 import org.efaps.admin.ui.Field;
@@ -38,17 +39,17 @@ import org.efaps.util.EFapsException;
  * 
  * @author jmo
  * @version $Id$
- * 
  */
 public class LinkWithRangesUI implements UIInterface {
 
   public String getViewHtml(final Context _context, final Object _value,
-                            final Field _field) throws EFapsException {
+      final Field _field) throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
     if (_value != null) {
-      if (_field.hasEvent()) {
-        for (Return values : _field.executeEvent()) {
+      if (_field.hasTrigger()) {
+
+        for (Return values : _field.executeTriggers(TriggerEvent.RANGE_VALUE)) {
           ret.append((String) ((Map) values.get(ReturnValues.VALUES))
               .get(_value.toString()));
         }
@@ -61,18 +62,18 @@ public class LinkWithRangesUI implements UIInterface {
   }
 
   public String getEditHtml(final Context _context, final Object _value,
-                            final Field _field) throws EFapsException {
+      final Field _field) throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
     if (_value != null) {
-      if (_field.hasEvent()) {
-        for (Return values : _field.executeEvent()) {
+      if (_field.hasTrigger()) {
+        for (Return values : _field.executeTriggers(TriggerEvent.RANGE_VALUE)) {
 
           ret.append("<form><select name=\"").append(_field.getName()).append(
               "\" size=\"1\">");
 
-          Iterator iter = ((Map) values.get(ReturnValues.VALUES)).entrySet()
-              .iterator();
+          Iterator iter =
+              ((Map) values.get(ReturnValues.VALUES)).entrySet().iterator();
 
           while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
@@ -94,17 +95,17 @@ public class LinkWithRangesUI implements UIInterface {
   }
 
   public String getCreateHtml(final Context _context, final Object _value,
-                              final Field _field) throws EFapsException {
+      final Field _field) throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
-    if (_field.hasEvent()) {
-      for (Return values : _field.executeEvent()) {
+    if (_field.hasTrigger()) {
+      for (Return values : _field.executeTriggers(TriggerEvent.RANGE_VALUE)) {
 
         ret.append("<form><select name=\"").append(_field.getName()).append(
             "\" size=\"1\">");
 
-        Iterator iter = ((Map) values.get(ReturnValues.VALUES)).entrySet()
-            .iterator();
+        Iterator iter =
+            ((Map) values.get(ReturnValues.VALUES)).entrySet().iterator();
 
         while (iter.hasNext()) {
           Map.Entry entry = (Map.Entry) iter.next();
@@ -121,7 +122,7 @@ public class LinkWithRangesUI implements UIInterface {
   }
 
   public String getSearchHtml(Context _context, Object _value, Field _field)
-                                                                            throws EFapsException {
+      throws EFapsException {
     return "<input type=\"text\" " + "size=\"" + _field.getCols() + "\" "
         + "name=\"" + _field.getName() + "\" " + "value=\"*\"" + "/>";
   }

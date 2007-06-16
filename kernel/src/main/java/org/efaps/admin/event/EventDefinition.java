@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.AdminObject;
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.ParameterInterface.ParameterValues;
 import org.efaps.admin.program.java.EFapsClassLoader;
@@ -50,8 +51,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
   /**
    * Logger for this class
    */
-  private static final Log LOG          = LogFactory
-                                            .getLog(EventDefinition.class);
+  private static final Log LOG = LogFactory.getLog(EventDefinition.class);
 
   /**
    * The variable stores the position in a event pool (more than one event
@@ -59,35 +59,34 @@ public class EventDefinition extends AdminObject implements EventExecution {
    * 
    * @see #getIndexPos
    */
-  private final long       indexPos;
+  private final long indexPos;
 
   /**
    * The variable stores the Name of the JavaClass
    */
-  private final String     resourceName;
+  private final String resourceName;
 
   /**
-   * 
    * The variable stores the Name of the method to be invoked
    */
-  private final String     methodName;
+  private final String methodName;
 
   /**
    * The variable stores the Method to be invoked
    */
-  private Method           method       = null;
+  private Method method = null;
 
   /**
    * holds the instance of this
    */
-  private EventExecution   progInstance = null;
+  private EventExecution progInstance = null;
 
   /**
    * constructor
    */
   private EventDefinition(final long _id, final String _name,
-      final long _indexPos, final String _resourceName, final String _method,
-      final String _oid) {
+                          final long _indexPos, final String _resourceName,
+                          final String _method, final String _oid) {
     super(_id, null, _name);
     this.indexPos = _indexPos;
     this.resourceName = _resourceName;
@@ -148,10 +147,12 @@ public class EventDefinition extends AdminObject implements EventExecution {
 
   private void setInstance() {
     try {
-      Class cls = Class.forName(this.resourceName, true, new EFapsClassLoader(
-          this.getClass().getClassLoader()));
-      this.method = cls.getMethod(this.methodName,
-          new Class[] { ParameterInterface.class });
+      Class cls =
+          Class.forName(this.resourceName, true, new EFapsClassLoader(this
+              .getClass().getClassLoader()));
+      this.method =
+          cls.getMethod(this.methodName,
+              new Class[] { ParameterInterface.class });
       this.progInstance = ((EventExecution) cls.newInstance());
     } catch (ClassNotFoundException e) {
       LOG.error("could not find Class: '" + this.resourceName + "'", e);
@@ -242,63 +243,60 @@ public class EventDefinition extends AdminObject implements EventExecution {
 
       EFapsClassName eFapsClass = EFapsClassName.getEnum(parentType.getName());
 
+      TriggerEvent triggerEvent = null;
+      for (TriggerEvent trigger : TriggerEvent.values()) {
+        Type triggerClass = Type.get(trigger.name);
+        if (eventType.isKindOf(triggerClass)) {
+          if (LOG.isDebugEnabled()) {
+            LOG.debug("     found trigger " + trigger + ":" + triggerClass);
+          }
+          triggerEvent = trigger;
+          break;
+        }
+      }
+
       if (eFapsClass == EFapsClassName.DATAMODEL_TYPE) {
         Type type = Type.get(parentId);
         if (LOG.isDebugEnabled()) {
           LOG.debug("    type=" + type);
         }
-        for (TriggerEvent triggerEvent : TriggerEvent.values()) {
-          Type triggerClass = Type.get(triggerEvent.name);
-          if (eventType.isKindOf(triggerClass)) {
-            if (LOG.isDebugEnabled()) {
-              LOG.debug("     found trigger " + triggerEvent + ":"
-                  + triggerClass);
-            }
-            type.addTrigger(triggerEvent, new EventDefinition(eventId,
-                eventName, eventPos, resName, method, eventOID));
-          }
+
+        type.addTrigger(triggerEvent, new EventDefinition(eventId, eventName,
+            eventPos, resName, method, eventOID));
+
+      } else if (eFapsClass == EFapsClassName.COMMAND) {
+        Command command = Command.get(parentId);
+
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("    Command=" + command.getName());
         }
-      } else {
-        if (eFapsClass == EFapsClassName.COMMAND) {
-          Command command = Command.get(parentId);
+        command.addTrigger(triggerEvent, new EventDefinition(eventId,
+            eventName, eventPos, resName, method, eventOID));
 
-          if (LOG.isDebugEnabled()) {
-            LOG.debug("    Command=" + command.getName());
-          }
-          for (TriggerEvent triggerEvent : TriggerEvent.values()) {
-            Type triggerClass = Type.get(triggerEvent.name);
-            if (eventType.isKindOf(triggerClass)) {
-              if (LOG.isDebugEnabled()) {
-                LOG.debug("     found trigger " + triggerEvent + ":"
-                    + triggerClass);
-              }
-              command.addTrigger(triggerEvent, new EventDefinition(eventId,
-                  eventName, eventPos, resName, method, eventOID));
-            }
-          }
+      } else if (eFapsClass == EFapsClassName.FIELD) {
 
-        } else {
-          if (eFapsClass == EFapsClassName.FIELD) {
+        Field field = Field.get(parentId);
 
-            Field field = Field.get(parentId);
-
-            if (LOG.isDebugEnabled()) {
-              LOG.debug(" Field=" + field.getName());
-            }
-
-            field.addEvent(new EventDefinition(eventId, eventName, eventPos,
-                resName, method, eventOID));
-
-          } else {
-
-            if (LOG.isDebugEnabled()) {
-              LOG.debug("initialise() - unknown event trigger connection");
-            }
-          }
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("       Field=" + field.getName());
         }
+
+        field.addTrigger(triggerEvent, new EventDefinition(eventId, eventName,
+            eventPos, resName, method, eventOID));
+
+      } else if (eFapsClass == EFapsClassName.DATAMODEL_ATTRIBUTE) {
+        Attribute attribute = Attribute.get(parentId);
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("      Attribute=" + attribute.getName());
+        }
+
+        attribute.addTrigger(triggerEvent, new EventDefinition(eventId,
+            eventName, eventPos, resName, method, eventOID));
+
+      } else if (LOG.isDebugEnabled()) {
+        LOG.debug("initialise() - unknown event trigger connection");
       }
-
     }
-  }
 
+  }
 }

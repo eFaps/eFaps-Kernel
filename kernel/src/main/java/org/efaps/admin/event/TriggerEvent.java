@@ -22,9 +22,9 @@ package org.efaps.admin.event;
 
 
 /**
- * This enum provides the key-value Relation for the TriggerEvent.<br>Therfore
- * using a trigger can be made by using the key. An example for the use of this 
- * enum is the definition of a Trigger inside the XML-Defenition.
+ * This enum provides the key-value Relation for the TriggerEvent.<br>
+ * Therfore using a trigger can be made by using the key. An example for the use
+ * of this enum is the definition of a Trigger inside the XML-Defenition.
  * 
  * @author tmo
  * @author jmo
@@ -48,7 +48,8 @@ public enum TriggerEvent  {
   INSERT_PRE         ("Admin_Event_Trigger_InsertPre"),
   UPDATE_OVERRIDE    ("Admin_Event_Trigger_UpdateOverride"),
   UPDATE_POST        ("Admin_Event_Trigger_UpdatePost"),
-  UPDATE_PRE         ("Admin_Event_Trigger_UpdatePre");
+  UPDATE_PRE         ("Admin_Event_Trigger_UpdatePre"),
+  RANGE_VALUE        ("Admin_Event_RangeValue");
   
   public final String name;
 
