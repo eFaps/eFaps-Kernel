@@ -31,7 +31,7 @@ import org.efaps.util.EFapsException;
  * The bean is used for the title of JSP pages.
  *
  * @author tmo
- * @version $Id: MenuMainToolBarBean.java 433 2006-09-18 23:53:05Z tmo $
+ * @version $Id$
  */
 public class TitleBean  {
 
