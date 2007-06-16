@@ -22,8 +22,12 @@ package org.efaps.admin.ui;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang.builder.ToStringBuilder;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
@@ -42,9 +46,30 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public class Field extends UserInterfaceObject {
   /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(Field.class);
+
+  /**
    * All Events for this Field are stored in this List.
    */
   private final List<EventDefinition> events = new ArrayList<EventDefinition>();
+
+  public Field() {
+    super(0, null);
+  }
+
+  /**
+   * This is the constructor of the field class.
+   * 
+   * @param _id
+   *          id of the field instance
+   * @param _name
+   *          name of the field instance
+   */
+  public Field(long _id, String _name) {
+    super(_id, _name);
+  }
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Field}.
@@ -69,33 +94,47 @@ public class Field extends UserInterfaceObject {
         if (col == null) {
           col = Table.get((Long) query.get("Collection"));
         }
-
+        query.close();
       }
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("get(long)", e);
     }
     return col.getFieldsMap().get(_id);
   }
 
+  /**
+   * does this Field have Events
+   * 
+   * @return
+   */
   public boolean hasEvent() {
     return !this.events.isEmpty();
 
   }
 
-  public Return executeEvent() {
+  /**
+   * Executes the events, defined for this Field in the given Order and returns
+   * a List with all Returns
+   * 
+   * @return List with Returns
+   */
+  public List<Return> executeEvent() {
 
-    Return ret = null;
-    // TODO was passiert bei mehreren Events mit den Rueckgabewerten?
-
+    List<Return> ret = new ArrayList<Return>();
     Parameter para = new Parameter();
     para.put(ParameterValues.INSTANCE, this);
     for (EventDefinition evenDef : this.events) {
-      ret = (Return) evenDef.execute(para);
+      ret.add((Return) evenDef.execute(para));
     }
     return ret;
   }
 
+  /**
+   * add an EventDefinition to this field
+   * 
+   * @param _eventDef
+   *          EventDefinition to be added
+   */
   public void addEvent(final EventDefinition _eventDef) {
 
     int pos = 0;
@@ -107,22 +146,6 @@ public class Field extends UserInterfaceObject {
     }
     this.events.add(pos, _eventDef);
 
-  }
-
-  public Field() {
-    super(0, null);
-  }
-
-  /**
-   * This is the constructor of the field class.
-   * 
-   * @param _id
-   *          id of the field instance
-   * @param _name
-   *          name of the field instance
-   */
-  public Field(long _id, String _name) {
-    super(_id, _name);
   }
 
   /**
@@ -324,7 +347,7 @@ public class Field extends UserInterfaceObject {
    * @see #setExpression
    * @see #getExpression
    */
-  private String                     expression;
+  private String expression;
 
   /**
    * This is the expression to get the alternate id of a field from the
@@ -333,7 +356,7 @@ public class Field extends UserInterfaceObject {
    * @see #setAlternateOID
    * @see #getAlternateOID
    */
-  private String                     alternateOID = null;
+  private String alternateOID = null;
 
   /**
    * This is the value in the create process. Default value is <i>null</i>.
@@ -341,7 +364,7 @@ public class Field extends UserInterfaceObject {
    * @see #setCreateValue
    * @see #getCreateValue
    */
-  private String                     createValue  = null;
+  private String createValue = null;
 
   /**
    * Instance variable to hold the label.
@@ -349,7 +372,7 @@ public class Field extends UserInterfaceObject {
    * @see #setLabel
    * @see #getLabel
    */
-  private String                     label        = null;
+  private String label = null;
 
   /**
    * Is a field multiline? If yes, the value must be higher than the default
@@ -358,7 +381,7 @@ public class Field extends UserInterfaceObject {
    * @see #setRows
    * @see #getRows
    */
-  private int                        rows         = 1;
+  private int rows = 1;
 
   /**
    * Number of columns for a field. It is used only for a create or a modify
@@ -368,7 +391,7 @@ public class Field extends UserInterfaceObject {
    * @see #setCols
    * @see #getCols
    */
-  private int                        cols         = 20;
+  private int cols = 20;
 
   /**
    * Is a field creatable? Default value is <i>true</i>.
@@ -376,7 +399,7 @@ public class Field extends UserInterfaceObject {
    * @see #setCreatable
    * @see #isCreatable
    */
-  private boolean                    creatable    = true;
+  private boolean creatable = true;
 
   /**
    * Is a field editable? Default value is <i>true</i>.
@@ -384,7 +407,7 @@ public class Field extends UserInterfaceObject {
    * @see #setEditable
    * @see #isEditable
    */
-  private boolean                    editable     = true;
+  private boolean editable = true;
 
   /**
    * Is a field editable? Default value is <i>true</i>.
@@ -392,7 +415,7 @@ public class Field extends UserInterfaceObject {
    * @see #setSearchable
    * @see #isSearchable
    */
-  private boolean                    searchable   = true;
+  private boolean searchable = true;
 
   /**
    * Is a field required? Default value is <i>false</i>.
@@ -400,7 +423,7 @@ public class Field extends UserInterfaceObject {
    * @see #setRequired
    * @see #isRequired
    */
-  private boolean                    required     = false;
+  private boolean required = false;
 
   /**
    * Is a field hidden? Default value is <i>false</i>. It used to store some
@@ -409,7 +432,7 @@ public class Field extends UserInterfaceObject {
    * @see #setHidden
    * @see #isHidden
    */
-  private boolean                    hidden       = false;
+  private boolean hidden = false;
 
   /**
    * Instance variable to hold the reference to call.
@@ -417,7 +440,7 @@ public class Field extends UserInterfaceObject {
    * @see #setReference
    * @see #getReference
    */
-  private String                     reference    = null;
+  private String reference = null;
 
   /**
    * Instance variable to hold the selected index.
@@ -425,7 +448,7 @@ public class Field extends UserInterfaceObject {
    * @see #setSelIndex
    * @see #getSelIndex
    */
-  private int                        selIndex;
+  private int selIndex;
 
   /**
    * The field is represented by a radio button, if the field is editable.
@@ -433,7 +456,7 @@ public class Field extends UserInterfaceObject {
    * @see #setRadioButton
    * @see #isRadioButton
    */
-  private boolean                    radioButton  = false;
+  private boolean radioButton = false;
 
   /**
    * The field is represented by an program value.
@@ -449,7 +472,7 @@ public class Field extends UserInterfaceObject {
    * @see #setIcon
    * @see #getIcon
    */
-  private String                     icon         = null;
+  private String icon = null;
 
   /**
    * The target of the field href is the content frame.
@@ -457,7 +480,7 @@ public class Field extends UserInterfaceObject {
    * @set #getTarget
    * @see #setTarget
    */
-  private int                        target       = CommandAbstract.TARGET_UNKNOWN;
+  private int target = CommandAbstract.TARGET_UNKNOWN;
 
   /**
    * The type icon for this field is shown if value is set to true.
@@ -465,7 +488,7 @@ public class Field extends UserInterfaceObject {
    * @see #setShowTypeIcon
    * @see #isShowTypeIcon
    */
-  private boolean                    showTypeIcon = false;
+  private boolean showTypeIcon = false;
 
   /**
    * Group Count if in a row / columnd must be shown more than one value. The
@@ -474,7 +497,7 @@ public class Field extends UserInterfaceObject {
    * @see #setGroupCount
    * @see #getGroupCount
    */
-  private int                        groupCount   = -1;
+  private int groupCount = -1;
 
   /**
    * The class is used to generate for a field user specific field values.
@@ -482,7 +505,7 @@ public class Field extends UserInterfaceObject {
    * @see #setClassUI
    * @see #getClassUI
    */
-  private UIInterface                classUI      = null;
+  private UIInterface classUI = null;
 
   // ///////////////////////////////////////////////////////////////////////////
 

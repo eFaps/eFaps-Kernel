@@ -35,6 +35,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.ReturnInterface;
 import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.user.Role;
 import org.efaps.admin.user.UserObject;
@@ -52,44 +53,44 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   // ///////////////////////////////////////////////////////////////////////////
   // static Variables
 
-  static public final int                                ACTION_DELETE             = 1;
+  static public final int ACTION_DELETE = 1;
 
-  static public final int                                ACTION_UNKNOWN            = 0;
+  static public final int ACTION_UNKNOWN = 0;
 
-  static public final int                                TABLE_SORT_DIRECTION_DOWN = 1;
+  static public final int TABLE_SORT_DIRECTION_DOWN = 1;
 
-  static public final int                                TABLE_SORT_DIRECTION_UP   = 0;
+  static public final int TABLE_SORT_DIRECTION_UP = 0;
 
   /**
    * The target of the href is the content frame.
    * 
    * @see #target
    */
-  static public final int                                TARGET_CONTENT            = 1;
+  static public final int TARGET_CONTENT = 1;
 
   /**
    * The target of the href is the hidden frame.
    * 
    * @see #target
    */
-  static public final int                                TARGET_HIDDEN             = 3;
+  static public final int TARGET_HIDDEN = 3;
 
-  static public final int                                TARGET_MODE_CONNECT       = 4;
+  static public final int TARGET_MODE_CONNECT = 4;
 
-  static public final int                                TARGET_MODE_CREATE        = 3;
+  static public final int TARGET_MODE_CREATE = 3;
 
-  static public final int                                TARGET_MODE_EDIT          = 2;
+  static public final int TARGET_MODE_EDIT = 2;
 
-  static public final int                                TARGET_MODE_UNKNOWN       = 0;
+  static public final int TARGET_MODE_UNKNOWN = 0;
 
-  static public final int                                TARGET_MODE_VIEW          = 1;
+  static public final int TARGET_MODE_VIEW = 1;
 
   /**
    * The target of the href is a new window popped up.
    * 
    * @see #target
    */
-  static public final int                                TARGET_POPUP              = 2;
+  static public final int TARGET_POPUP = 2;
 
   /**
    * The target of the href is not known. This is maybe, if a javascript
@@ -97,7 +98,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * 
    * @see #target
    */
-  static public final int                                TARGET_UNKNOWN            = 0;
+  static public final int TARGET_UNKNOWN = 0;
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance Variables
@@ -108,7 +109,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getAccess
    * @see #add(Role)
    */
-  private HashSet<UserObject>                            access                    = new HashSet<UserObject>();
+  private HashSet<UserObject> access = new HashSet<UserObject>();
 
   /**
    * The instance variable stores the predefined actions which can be executed
@@ -117,7 +118,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getAction
    * @see #setAction
    */
-  private int                                            action                    = ACTION_UNKNOWN;
+  private int action = ACTION_UNKNOWN;
 
   /**
    * The instance variable stores if the execution of the command needs a
@@ -126,7 +127,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #isAskUser
    * @see #setAskUser
    */
-  private boolean                                        askUser                   = false;
+  private boolean askUser = false;
 
   /**
    * If the instance variable is set to <i>tree</i>, the command is selected as
@@ -135,7 +136,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #isDefaultSelected
    * @see #setDefaultSelected
    */
-  private boolean                                        defaultSelected           = false;
+  private boolean defaultSelected = false;
 
   /**
    * The instance variable stores the index of the delete object id in the
@@ -144,7 +145,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getDeleteIndex
    * @see #setDeleteIndex
    */
-  private int                                            deleteIndex               = 0;
+  private int deleteIndex = 0;
 
   // ///////////////////////////////////////////////////////////////////////////
 
@@ -154,7 +155,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #setIcon
    * @see #getIcon
    */
-  private String                                         icon                      = null;
+  private String icon = null;
 
   /**
    * The instance variable stores the label of this command instance. The
@@ -164,7 +165,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getLabel
    * @see #setLabel
    */
-  private String                                         label                     = null;
+  private String label = null;
 
   /**
    * Instance variable to hold the reference to call.
@@ -172,7 +173,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #setReference
    * @see #getReference
    */
-  private String                                         reference                 = null;
+  private String reference = null;
 
   /**
    * If the value is set to <i>true</i>. the commands submits the current form
@@ -181,7 +182,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #isSubmit
    * @see #setSubmit
    */
-  private boolean                                        submit                    = false;
+  private boolean submit = false;
 
   /**
    * The target of the command is the content frame.
@@ -191,7 +192,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @set #getTarget
    * @see #setTarget
    */
-  private int                                            target                    = TARGET_UNKNOWN;
+  private int target = TARGET_UNKNOWN;
 
   /**
    * The instance variable stores the height for the target bottom. Only a is
@@ -200,7 +201,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetBottomHeight
    * @see #setTargetBottomHeight
    */
-  private int                                            targetBottomHeight        = 0;
+  private int targetBottomHeight = 0;
 
   /**
    * The instance variable stores the target connect attribute used for the
@@ -209,7 +210,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetConnectAttribute
    * @see #setTargetConnectAttribute
    */
-  private Attribute                                      targetConnectAttribute    = null;
+  private Attribute targetConnectAttribute = null;
 
   /**
    * The instance variable stores the create type for the target user interface
@@ -218,7 +219,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetCreateType
    * @see #setTargetCreateType
    */
-  private Type                                           targetCreateType          = null;
+  private Type targetCreateType = null;
 
   /**
    * The instance variable stores the target user interface form object which is
@@ -227,7 +228,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetForm
    * @see #setTargetForm
    */
-  private Form                                           targetForm                = null;
+  private Form targetForm = null;
 
   /**
    * The instance variable stores the table bean for commands calling a form.
@@ -236,7 +237,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetFormBean
    * @see #setTargetFormBean
    */
-  private Class                                          targetFormBean            = null;
+  private Class targetFormBean = null;
 
   /**
    * The instance method stores the complete menu. Default value is a null and
@@ -245,7 +246,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #setTargetMenu
    * @see #getTargetMenu
    */
-  private Menu                                           targetMenu                = null;
+  private Menu targetMenu = null;
 
   /**
    * The instance variable stores the mode of the target user interface object.
@@ -253,7 +254,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetMode
    * @see #setTargetMode
    */
-  private int                                            targetMode                = TARGET_MODE_UNKNOWN;
+  private int targetMode = TARGET_MODE_UNKNOWN;
 
   /**
    * The instance variable stores the search of target user interface object.
@@ -261,7 +262,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetSearch
    * @see #setTargetSearch
    */
-  private Search                                         targetSearch              = null;
+  private Search targetSearch = null;
 
   /**
    * Standard checkboxes for a table must be shown. The checkboxes are used e.g.
@@ -270,7 +271,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #isTargetShowCheckBoxes
    * @see #setTargetShowCheckBoxes
    */
-  private boolean                                        targetShowCheckBoxes      = false;
+  private boolean targetShowCheckBoxes = false;
 
   /**
    * The instance variable stores the target user interface table object which
@@ -279,7 +280,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetTable
    * @see #setTargetTable
    */
-  private Table                                          targetTable               = null;
+  private Table targetTable = null;
 
   /**
    * The instance variable stores the table bean for commands calling a table.
@@ -288,7 +289,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetTableBean
    * @see #setTargetTableBean
    */
-  private Class                                          targetTableBean           = null;
+  private Class targetTableBean = null;
 
   /**
    * The instance variable store the filters for the targer table.
@@ -296,7 +297,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetTableFilters
    * @see #setTargetTableFilters
    */
-  private List<TargetTableFilter>                        targetTableFilters        = null;
+  private List<TargetTableFilter> targetTableFilters = null;
 
   /**
    * The instance variable stores for target user interface table object the
@@ -306,7 +307,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetTableSortDirection
    * @see #setTargetTableSortDirection
    */
-  private int                                            targetTableSortDirection  = TABLE_SORT_DIRECTION_UP;
+  private int targetTableSortDirection = TABLE_SORT_DIRECTION_UP;
 
   /**
    * The instance variable stores for target user interface table object the
@@ -315,7 +316,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetTableSortKey
    * @see #setTargetTableSortKey
    */
-  private String                                         targetTableSortKey        = null;
+  private String targetTableSortKey = null;
 
   /**
    * Sets the title of the target window.
@@ -323,12 +324,12 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getTargetTitle
    * @see #setTargetTitle
    */
-  private String                                         targetTitle               = null;
+  private String targetTitle = null;
 
   /**
    * All triggers for this Command are stored in this map.
    */
-  private final Map<TriggerEvent, List<EventDefinition>> trigger                   = new HashMap<TriggerEvent, List<EventDefinition>>();
+  private final Map<TriggerEvent, List<EventDefinition>> trigger = new HashMap<TriggerEvent, List<EventDefinition>>();
 
   /**
    * The instance variable stores the window height of the popup window ({@link #target}
@@ -337,7 +338,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getWindowHeight
    * @see #setWindowHeight
    */
-  private int                                            windowHeight              = 400;
+  private int windowHeight = 400;
 
   /**
    * The instance variable stores the window width of the popup window ({@link #target}
@@ -346,7 +347,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #getWindowWidth
    * @see #setWindowWidth
    */
-  private int                                            windowWidth               = 600;
+  private int windowWidth = 600;
 
   // ///////////////////////////////////////////////////////////////////////////
   // Constructors
@@ -417,17 +418,18 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   }
 
   /**
-   * executes the Trigger which are definded for this instance in the speciefied
-   * order
+   * executes the Triggers which are definded for this instance in the speciefied
+   * order, and retruns List with the Returns of the Events
    * 
    */
-  public void executeTrigger() {
-
+  public List<ReturnInterface> executeTrigger() {
+    List<ReturnInterface> ret = new ArrayList<ReturnInterface>();
     List<EventDefinition> triggers = this.trigger.get(TriggerEvent.COMMAND);
 
     for (EventDefinition evenDef : triggers) {
-      evenDef.execute(new Parameter());
+      ret.add(evenDef.execute(new Parameter()));
     }
+    return ret;
   }
 
   /**
