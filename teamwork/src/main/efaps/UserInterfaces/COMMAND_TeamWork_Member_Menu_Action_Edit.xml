@@ -61,7 +61,7 @@
     </target>
     <!-- property definitions -->
     <property name="DefaultSelected">false</property>
-    <property name="Target">content</property>
+    <property name="Target">popup</property>
     <property name="TargetMode">edit</property>
     <property name="TargetExpand">TeamWork_MemberRights\AbstractLink</property>
     <property name="TargetShowCheckBoxes">true</property>

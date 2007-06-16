@@ -57,6 +57,8 @@
       <property name="Expression">UserAbstractLink</property>
       <property name="Label">TeamWork_Member/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
+      <property name="Editable">false</property>
+      <property name="Creatable">true</property>
     </field>
     <field name="accesset">     
       <property name="Expression">AccessSetLink</property>

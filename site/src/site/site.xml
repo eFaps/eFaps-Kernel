@@ -63,6 +63,7 @@
     </menu>
     <menu name="Installation">
       <item name="Prerequisites"        href="/installation/prerequisite.html"/>
+      <item name="HowTo"                href="/installation/howto.html"/>
       <item name="Database"             href="/installation/database/index.html" collapse="true">
         <item name="Derby"              href="/installation/database/derby.html"/>
         <item name="Oracle"             href="/installation/database/oracle.html"/>

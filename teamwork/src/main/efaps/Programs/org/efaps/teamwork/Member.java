@@ -30,8 +30,10 @@ import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.ParameterInterface;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.ReturnInterface;
 import org.efaps.admin.event.ParameterInterface.ParameterValues;
+import org.efaps.admin.event.ReturnInterface.ReturnValues;
 import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.db.Delete;
@@ -179,6 +181,16 @@ public class Member implements EventExecution {
       LOG.error("getRootID(String)", e);
     }
     return ID;
+  }
+
+  public ReturnInterface editMember(ParameterInterface _parameter) {
+    System.out.print("geht doch");
+    
+    Return ret = new Return();
+    ret.put(ReturnValues.VALUES, "test");
+    
+    
+    return ret;
   }
 
   public ReturnInterface execute(ParameterInterface _parameter) {
@@ -340,7 +352,7 @@ public class Member implements EventExecution {
       }
 
     } catch (EFapsException e) {
-    LOG.error("removeMember(ParameterInterface)", e);
+      LOG.error("removeMember(ParameterInterface)", e);
     }
 
     return null;

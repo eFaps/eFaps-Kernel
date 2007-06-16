@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC "-//Apache Software Foundation//DTD XDOC 1.0//EN"
+"http://www.apache.org/dtds/xdoc_1_0.dtd">
+<!--
+
+ Copyright 2006 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+<document>
+  <properties>
+    <title>Prerequisites</title>
+  </properties>
+
+  <body>
+    <section name="How To"><p>This is just a little guide on how to install
+    eFaps for development reasons. </p><subsection
+    name="Step 1: Download">Check the latest SourceCode out from the
+    repository into a folder "efapsfolder" on your harddisk. (see also the
+    project information about the <a href="../source-repository.html">source
+    repository</a>). </subsection><subsection
+    name="Step 2: Install using Maven 2">Go into the folder "efapsfolder" and
+    run Maven using "mvn -install". Be sure to have a Connection to the
+    Internet, because during the installation Maven will download all
+    dependencys of eFaps.</subsection><subsection
+    name="Step 3: Configure the Bootstrap">For the conection of the kernel to
+    the Database the Bootstrap must be defined as explained in the <a
+    href="./database/index.html">Database</a> Section.</subsection><subsection
+    name="Step 4: Create eFaps">Create the Tables, View and so on in the
+    Database by running the shell with create. (e.g. on Unix based Systems
+    like: "./shell.sh - create" </subsection><subsection
+    name="???"></subsection></section>
+  </body>
+</document>

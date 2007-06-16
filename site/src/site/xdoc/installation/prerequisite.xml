@@ -34,7 +34,9 @@
         <li><a href="http://java.sun.com/j2se/1.5.0/">Java 1.5</a></li>
 
         <li><a href="http://tomcat.apache.org/">Tomcat 5.5</a> used as Web
-        Application Server</li>
+        Application Server, as an alternative during the Developmentphase the
+        <a href="http://www.mortbay.org/">Jetty Web Server</a> can be used
+        witch cames allready with Maven 2 as the Maven Jetty Plugin.</li>
 
         <li><a href="http://maven.apache.org/">Maven 2</a> used as Software
         Project Management and Comprehension tool</li>
