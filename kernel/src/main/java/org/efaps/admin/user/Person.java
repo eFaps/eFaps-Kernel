@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,8 +46,7 @@ import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
- * @version $Id: Person.java 740 2007-03-23 09:08:31 +0000 (Fri, 23 Mar 2007)
- *          tmo $
+ * @version $Id: $
  * @todo description
  */
 public class Person extends UserObject {
@@ -100,7 +99,7 @@ public class Person extends UserObject {
    * 
    * @see #getCache
    */
-  private final static Cache          cache       = new PersonCache();
+  private final static Cache <Person>         cache       = new PersonCache();
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables

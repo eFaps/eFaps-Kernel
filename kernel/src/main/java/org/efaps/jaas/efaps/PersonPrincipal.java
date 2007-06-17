@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ package org.efaps.jaas.efaps;
  * @version $Id$
  */
 public final class PersonPrincipal extends AbstractPrincipal  {
+
+ 
+  private static final long serialVersionUID = 7400352673716053119L;
 
   /**
    * Constructor used to create a new user principal instance.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ public class Type extends DataModelObject  {
    * @see #getParentTypeId
    * @see #setParentTypeId
    */
-  private String parentTypeIds = "";
+//  private String parentTypeIds = "";
 
   /**
    * Instance variable for all child types derived from this type.
@@ -285,34 +285,33 @@ public class Type extends DataModelObject  {
    *
    * @param _attribute  attribute to add
    */
-  protected void addAttribute(final Attribute _attribute)  {
+  protected void addAttribute(final Attribute _attribute) {
     _attribute.setParent(this);
     getAttributes().put(_attribute.getName(), _attribute);
-    if (_attribute.getTable() != null)  {
+    if (_attribute.getTable() != null) {
       getTables().add(_attribute.getTable());
       _attribute.getTable().add(this);
-      if (getMainTable() == null)  {
-        if (_attribute.getTable().getMainTable() != null)  {
+      if (getMainTable() == null) {
+        if (_attribute.getTable().getMainTable() != null) {
           setMainTable(_attribute.getTable().getMainTable());
-        } else if (_attribute.getTable().getMainTable() == null)  {
+        } else if (_attribute.getTable().getMainTable() == null) {
           setMainTable(_attribute.getTable());
         }
       }
     }
-    for (Type child : getChildTypes())  {
-      if (child.getParentType().getId() == this.getId())  {
+    for (Type child : getChildTypes()) {
+      if (child.getParentType().getId() == this.getId()) {
         child.addAttribute(_attribute.copy());
       }
     }
   }
 
   /**
-   * Adds link from an attribute to this type.
-
-   The link is also registered
-   * under the name of all child types of the attribute.
-   *
-   * @param _attr attribute with the link to this type
+   * Adds link from an attribute to this type. The link is also registered under
+   * the name of all child types of the attribute.
+   * 
+   * @param _attr
+   *          attribute with the link to this type
    * @todo description of algorithm
    */
   protected void addLink(final Attribute _attr)  {
@@ -470,31 +469,32 @@ public class Type extends DataModelObject  {
    * @param _name name of the access check class to add
    * @see #accessChecks
    */
-  private void addAccessCheck(final String _name)  {
-    try  {
-      Class < AccessCheckInterface > acClass 
-                      = (Class < AccessCheckInterface >) Class.forName(_name);
-      this.accessChecks.add(acClass.newInstance());
-    } catch (ClassNotFoundException e)  {
-      LOG.error("could not found class '" + _name + "' for "
-                + "type " + toString(), e);
-    } catch (InstantiationException e)  {
+  private void addAccessCheck(final String _name) {
+    try {
+      Class<?> acClass = Class.forName(_name);
+      this.accessChecks.add((AccessCheckInterface) acClass.newInstance());
+    } catch (ClassNotFoundException e) {
+      LOG.error("could not found class '" + _name + "' for " + "type "
+          + toString(), e);
+    } catch (InstantiationException e) {
       LOG.error("could not create new instance of class '" + _name + "' for "
-                + "type " + toString(), e);
-    } catch (IllegalAccessException e)  {
-      LOG.error("could not access class '" + _name + "' for "
-                + "type " + toString(), e);
+          + "type " + toString(), e);
+    } catch (IllegalAccessException e) {
+      LOG.error("could not access class '" + _name + "' for " + "type "
+          + toString(), e);
     }
   }
 
   /**
    * Checks, if the current context user has all access defined in the list of
-   * access types for the given instance. 
-   *
-   * @param _instance     instance for which the access must be checked
-   * @param _accessTypes  list of access types which must be checked
-   * @param <i>true</i> if the current context user has access, otherwise 
-   *        <i>false</i>.
+   * access types for the given instance.
+   * 
+   * @param _instance
+   *          instance for which the access must be checked
+   * @param _accessTypes
+   *          list of access types which must be checked
+   * @param <i>true
+   *          </i> if the current context user has access, otherwise <i>false</i>.
    * @see #accessChecks
    */
   public boolean hasAccess(final Instance _instance, 
@@ -575,27 +575,6 @@ public class Type extends DataModelObject  {
     getUniqueKeys().add(new UniqueKey(this, _attrList));
   }
 
-  /**
-   * The view attribute represents this type is set. First, the attribute name
-   * is test, if it exists directly at this type (with {@link #getAttribute}).
-   * If not, the attribute name is test with
-   * {@link Attribute.get(Context,String)}.<br/>
-   * So the view attribute can include the type name or can be without the
-   * type name.
-   *
-   * @param _context  context for this request
-   * @param _name     name of the attribute
-   * @see #viewAttribute
-   * @see #setProperty
-   */
-  private void setViewAttribute(final Context _context, final String _name) throws Exception  {
-/*    Attribute attr = getAttribute(_name);
-    if (attr == null)  {
-      attr = Attribute.get(_context, _name);
-    }
-    setViewAttribute(attr);
-*/
-  }
 
   /**
    * Add a new child type for this type. All sub child types of the child type
@@ -668,38 +647,7 @@ public class Type extends DataModelObject  {
     return getProperty("StoreResource") != null ? true : false;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance method reads all related policies for this type are for a
-   * parent type (because policies could be derived!).
-   *
-   * @param _context  eFaps context for this request
-   */
-/*  private void readDBPolicies(Context _context) throws Exception  {
-    Statement stmt = _context.getConnection().createStatement();
-    try  {
-      ResultSet rs = stmt.executeQuery(
-          "select LCPOLICY "+
-              "from DMTYPE2POLICY "+
-              "where DMTYPE in ("+getParentTypeIds()+")"
-      );
-      while (rs.next())  {
-        addPolicy(Policy.get(_context, rs.getLong(1)));
-      }
-      rs.close();
-    } catch (Exception e)  {
-e.printStackTrace();
-throw e;
-    } finally  {
-      stmt.close();
-    }
-  }
-*/
-
-
-  /////////////////////////////////////////////////////////////////////////////
-
+ 
   /**
    * This is the setter method for instance variable {@link #parentType}. Only
    * the DB reader is allowed to set this!
@@ -721,31 +669,6 @@ throw e;
    */
   public Type getParentType()  {
     return this.parentType;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #parentTypeIds}. Only
-   * the DB reader is allowed to set this!
-   *
-   * @param _tableName new value for instance variable {@link #parentTypeIds}
-   * @see #parentTypeIds
-   * @see #getParentTypeIds
-   */
-  private void setParentTypeIds(final String _parentTypeIds)  {
-    this.parentTypeIds = _parentTypeIds;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #parentTypeIds}.
-   * The method is only used from this class, because the parent types are not
-   * read when this information is needed.
-   *
-   * @return value of instance variable {@link #parentTypeIds}
-   * @see #parentTypeIds
-   * @see #setParentTypeIds
-   */
-  private String getParentTypeIds()  {
-    return this.parentTypeIds;
   }
 
   /**
@@ -845,17 +768,7 @@ throw e;
     return this.formView;
   }
 
-  /**
-   * This is the setter method for instance variable {@link #formView}.
-   *
-   * @param _formView new value for instance variable {@link #formView}
-   * @see #getFormView
-   * @see #formView
-   */
-  private void setFormView(final Form _formView)  {
-    this.formView = _formView;
-  }
-
+ 
   /**
    * This is the getter method for instance variable {@link #formEdit}.
    *
@@ -867,17 +780,7 @@ throw e;
     return this.formEdit;
   }
 
-  /**
-   * This is the setter method for instance variable {@link #formEdit}.
-   *
-   * @param _formEdit new value for instance variable {@link #formEdit}
-   * @see #getFormEdit
-   * @see #formEdit
-   */
-  private void setFormEdit(final Form _formEdit)  {
-    this.formEdit = _formEdit;
-  }
-
+ 
   /**
    * This is the getter method for instance variable {@link #formCreate}.
    *
@@ -889,31 +792,23 @@ throw e;
     return this.formCreate;
   }
 
-  /**
-   * This is the setter method for instance variable {@link #formCreate}.
-   *
-   * @param _formCreate new value for instance variable {@link #formCreate}
-   * @see #getFormCreate
-   * @see #formCreate
-   */
-  private void setFormCreate(final Form _formCreate)  {
-    this.formCreate = _formCreate;
-  }
-
+ 
 String treeMenuName = null;
-private void setTreeMenuName(final String _treeMenuName)  {
-  this.treeMenuName = _treeMenuName;
-}
-public String getTreeMenuName()  {
-  return this.treeMenuName;
-}
 
-public Menu getTreeMenu() throws Exception  {
-  if ((this.treeMenu == null) && (getTreeMenuName() != null))  {
-    this.treeMenu = Menu.get(getTreeMenuName());
+  private void setTreeMenuName(final String _treeMenuName) {
+    this.treeMenuName = _treeMenuName;
   }
-  return this.treeMenu;
-}
+
+  public String getTreeMenuName() {
+    return this.treeMenuName;
+  }
+
+  public Menu getTreeMenu() throws Exception {
+    if ((this.treeMenu == null) && (getTreeMenuName() != null)) {
+      this.treeMenu = Menu.get(getTreeMenuName());
+    }
+    return this.treeMenu;
+  }
 
 
   /**
@@ -927,17 +822,7 @@ public Menu getTreeMenu() throws Exception  {
     return this.viewAttribute;
   }
 
-  /**
-   * This is the setter method for instance variable {@link #viewAttribute}.
-   *
-   * @param _viewAttribute new value for instance variable {@link #viewAttribute}
-   * @see #getViewAttribute
-   * @see #viewAttribute
-   */
-  private void setViewAttribute(final Attribute _viewAttribute)  {
-    this.viewAttribute = _viewAttribute;
-  }
-
+  
   /**
    * This is the getter method for instance variable {@link #uniqueKeys}.
    *
@@ -999,64 +884,68 @@ public Menu getTreeMenu() throws Exception  {
    *
    * @param _context  eFaps context for this request
    */
-  public static void initialise() throws CacheReloadException  {
+  public static void initialise() throws CacheReloadException {
     ConnectionResource con = null;
-    try  {
-      Map < Long, Long > parents = new HashMap < Long, Long > ();
+    try {
+      Map<Long, Long> parents = new HashMap<Long, Long>();
 
       con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
-      try  {
+      try {
 
         stmt = con.getConnection().createStatement();
 
         ResultSet rs = stmt.executeQuery(SQL_SELECT);
-        while (rs.next())  {
-          long id =             rs.getLong(1);
-          String name =         rs.getString(2).trim();
-          long parentTypeId =   rs.getLong(3);
+        while (rs.next()) {
+          long id = rs.getLong(1);
+          String name = rs.getString(2).trim();
+          long parentTypeId = rs.getLong(3);
           String sqlCacheExpr = rs.getString(4);
           sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
-
-          LOG.debug("read type '" + name + "' (id = " + id + ")");
-
+          if (LOG.isDebugEnabled()) {
+            LOG.debug("read type '" + name + "' (id = " + id + ")");
+          }
           Type type = new Type(id, name);
-          if (type.getName().equals(EFapsClassName.USER_PERSON.name))  {
+          if (type.getName().equals(EFapsClassName.USER_PERSON.name)) {
             type.setCache(Person.getCache());
-          } else if (type.getName().equals(EFapsClassName.USER_ROLE.name))  {
+          } else if (type.getName().equals(EFapsClassName.USER_ROLE.name)) {
             type.setCache(Role.getCache());
-          } else if (type.getName().equals(EFapsClassName.LIFECYCLE_POLICY.name))  {
+          } else if (type.getName()
+              .equals(EFapsClassName.LIFECYCLE_POLICY.name)) {
             type.setCache(Policy.getCache());
-          } else if (type.getName().equals(EFapsClassName.LIFECYCLE_STATUS.name))  {
+          } else if (type.getName()
+              .equals(EFapsClassName.LIFECYCLE_STATUS.name)) {
             type.setCache(Status.getCache());
           }
 
           getTypeCache().add(type);
 
-//type.readDBPolicies(_context);
-type.readFromDB4Properties();
+          // type.readDBPolicies(_context);
+          type.readFromDB4Properties();
 
-          if (parentTypeId != 0)  {
-            parents.put(id , parentTypeId);
+          if (parentTypeId != 0) {
+            parents.put(id, parentTypeId);
           }
         }
         rs.close();
 
-      } finally  {
-        if (stmt != null)  {
+      }
+      finally {
+        if (stmt != null) {
           stmt.close();
         }
       }
 
       // initialise parents
-      for (Map.Entry < Long, Long > entry : parents.entrySet())  {
-        Type child  = Type.get(entry.getKey());
+      for (Map.Entry<Long, Long> entry : parents.entrySet()) {
+        Type child = Type.get(entry.getKey());
         Type parent = Type.get(entry.getValue());
-// TODO: test if loop
-if (child.getId() == parent.getId())  {
-  throw new CacheReloadException("child and parent type is equal!child is " + child);
-}
+        // TODO: test if loop
+        if (child.getId() == parent.getId()) {
+          throw new CacheReloadException(
+              "child and parent type is equal!child is " + child);
+        }
 
         child.setParentType(parent);
         parent.addChildType(child);
@@ -1064,15 +953,16 @@ if (child.getId() == parent.getId())  {
 
       con.commit();
 
-    } catch (SQLException e)  {
+    } catch (SQLException e) {
       throw new CacheReloadException("could not read roles", e);
-    } catch (EFapsException e)  {
+    } catch (EFapsException e) {
       throw new CacheReloadException("could not read roles", e);
-    } finally  {
-      if ((con != null) && con.isOpened())  {
-        try  {
+    }
+    finally {
+      if ((con != null) && con.isOpened()) {
+        try {
           con.abort();
-        } catch (EFapsException e)  {
+        } catch (EFapsException e) {
           throw new CacheReloadException("could not read roles", e);
         }
       }

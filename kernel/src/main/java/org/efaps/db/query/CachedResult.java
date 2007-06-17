@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,13 @@ import java.sql.Timestamp;
  * database selects could be added to one instance. The class simulates the
  * class {@link javax.sql.rowset.JoinRowSet}, because the original classes do
  * not work with Oracle JDBC drivers.
+ * 
+ * @author tmo
+ * @version $Id: $
  */
 public class CachedResult {
 
-  private Map<Object, List> cache      = new HashMap<Object, List>();
+  private Map<Object, List> cache = new HashMap<Object, List>();
 
   /**
    * The variable stores the same values than in {@link #cache}, but without
@@ -124,7 +127,7 @@ public class CachedResult {
       }
     } else {
       while (_rs.next()) {
-        List list = this.cache.get(_rs.getObject(_keyIndex));
+        List<Object> list = this.cache.get(_rs.getObject(_keyIndex));
         if (list != null) {
           for (int i = 1; i <= columnCount; i++) {
             if (i != _keyIndex) {
