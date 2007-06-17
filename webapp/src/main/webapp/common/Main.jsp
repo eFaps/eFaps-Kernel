@@ -23,9 +23,9 @@
 
 <%@page errorPage="Exception.jsp"%>
 
-<%@taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
-<%@taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
-<%@taglib uri="http://myfaces.apache.org/tomahawk" prefix="t"%>
+<%@taglib prefix="h"    uri="http://java.sun.com/jsf/html"%>
+<%@taglib prefix="f"    uri="http://java.sun.com/jsf/core"%>
+<%@taglib prefix="t"    uri="http://myfaces.apache.org/tomahawk"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
 
@@ -33,13 +33,13 @@
   <head>
     <title></title>
     <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
-    <link rel="stylesheet" type="text/css" href="../styles/eFapsMain.css"/>
+    <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css"/>
   </head>
-  <body onLoad="eFapsPositionContent()" leftmargin="0" topmargin="0" rightmargin="0" marginwidth="0" scroll="no">
+  <body leftmargin="0" topmargin="0" rightmargin="0" marginwidth="0" scroll="no">
     <table class="eFapsMainTable">
       <%@include file="LogoRowInclude.jsp"%>
       <tr>
-        <td class="eFapsMainTableRowMenu">
+        <td class="eFapsMainTableRowMenu" id="eFapsMainTableRowMenu">
           <f:view>
             <tiles:insert page="/Main.jsp" flush="false"/>
             <h:form>
@@ -51,11 +51,32 @@
         </td>
       </tr>
       <tr>
-        <td class="eFapsMainTableRowContent">
-          <iframe src="Content.jsp" name="Content" class="eFapsFrameContent" id="eFapsFrameContent" scrolling="no" frameborder="0"></iframe>
-        </td>
-      </tr>
+        <td>
+          <iframe
+              width="100%"
+              style="eFapsFrameContent"
+              src="Content.jsp"
+              name="Content"
+              id="eFapsFrameContent"
+              scrolling="no"
+              frameborder="0">
+          </iframe>
+        <td>
+      <tr>
     </table>
-    <iframe src="Content.jsp" name="eFapsFrameHidden" class="eFapsFrameHidden" scrolling="no" frameborder="0" id="eFapsFrameHidden"></iframe>
+
+    <iframe
+        src="Content.jsp"
+        name="eFapsFrameHidden"
+        class="eFapsFrameHidden"
+        scrolling="no"
+        frameborder="0"
+        id="eFapsFrameHidden">
+    </iframe>
+
+    <script language="JavaScript">
+      eFapsPositionContent();
+      window.onresize = function() { eFapsPositionContent(); }
+    </script>
   </body>
 </html>

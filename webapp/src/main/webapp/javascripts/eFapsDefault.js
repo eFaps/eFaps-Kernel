@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,9 +28,9 @@ eFapsMenu.prototype.imageBullet = "/eFaps/images/eFapsButtonSmallDefault.gif";
 ///////////////////////////////////////////////////////////////////////////////
 
 var tmp = navigator.userAgent.toLowerCase();
-var isOp = tmp.indexOf("opera")>=0;
-var isIE = tmp.indexOf("msie") > -1 && !isOp;
-var isMoz = (tmp.indexOf("gecko")>=0 || tmp.indexOf("netscape6")>=0) && !isOp;
+var isOp = tmp.indexOf("opera") >= 0;
+var isIE = (tmp.indexOf("msie") > -1) && !isOp;
+var isMoz = ((tmp.indexOf("gecko") >= 0) || (tmp.indexOf("netscape6") >= 0)) && !isOp;
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -38,11 +38,73 @@ var isMoz = (tmp.indexOf("gecko")>=0 || tmp.indexOf("netscape6")>=0) && !isOp;
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-function openUrl(_url, _name) {
-  window.open(
-      _url,
-      _name,
-      "location=no,menubar=no,titlebar=no,width=700,height=400,resizable=yes,scrollbars=yes");
+/**
+ * Returns the current window height.
+ */
+function eFapsCommonGetWindowHeight() {
+  var height = 0;
+  if (window.innerHeight)  {
+    // the - 18 must be done if a scrollbar is defined!
+    height = window.innerHeight/* - 18*/;
+  } else if (document.documentElement && document.documentElement.clientHeight)  { 
+    height = document.documentElement.clientHeight;
+  } else if (document.body && document.body.clientHeight)  { 
+    height = document.body.clientHeight;
+  }
+  return height;
+}
+
+/**
+ * Returns the current window width.
+ */
+function eFapsCommonGetWindowWidth() {
+  var width = 0;
+  if (window.innerWidth)  {
+    // the - 18 must be done if a scrollbar is defined!
+    width = window.innerWidth/*- 18*/;
+  } else if (document.documentElement && document.documentElement.clientWidth)  {
+    width = document.documentElement.clientWidth;
+  } else if (document.body && document.body.clientWidth)  {
+    width = document.body.clientWidth;
+  }
+}
+
+/**
+ * Return the scroll x position.
+ */
+function eFapsCommonGetScrollX() {
+  var scrollX = 0;
+
+  if (typeof window.pageXOffset == "number")  {
+    scrollX = window.pageXOffset;
+  } else if (document.documentElement && document.documentElement.scrollLeft)  {
+    scrollX = document.documentElement.scrollLeft;
+  } else if (document.body && document.body.scrollLeft)  { 
+    scrollX = document.body.scrollLeft; 
+  } else if (window.scrollX)  {
+    scrollX = window.scrollX;
+  }
+
+  return scrollX;
+}
+
+/**
+ * Return the scroll y position.
+ */
+function eFapsCommonGetScrollY() {
+  var scrollY = 0;
+
+  if (typeof window.pageYOffset == "number")  {
+    scrollY = window.pageYOffset;
+  } else if (document.documentElement && document.documentElement.scrollTop)  {
+    scrollY = document.documentElement.scrollTop;
+  } else if (document.body && document.body.scrollTop)  { 
+    scrollY = document.body.scrollTop; 
+  } else if (window.scrollY)  {
+    scrollY = window.scrollY;
+  }
+
+  return scrollY;
 }
 
 /**
@@ -318,36 +380,10 @@ function eFapsSearchSelectOld(_searchCommand)  {
  */
 function eFapsSearchSelect(_searchCommand)  {
   eFapsProcessStart();
-  window.genMain.content.location.href = window.location.href.replace('Link.jsp?', 'SearchForm.jsp?').replace('command=', 'search=') +
+  window.genMain.content.location.href = window.location.href.replace('Link.jsf?', 'SearchForm.jsp?').replace('command=', 'search=') +
       "&command=" + _searchCommand;
 
 }
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-// Functions for the tab menu
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-/**
- * This is a JavaScript function to hide the tab navigator and to resize the
- * frame of the tab navigator to a small size.
- */
-//function eFapsTreeTabHide()  {
-//  document.getElementById('tree').className='eFapsTreeTabHide';
-//  document.getElementById('buttonShow').className='eFapsTreeTabShow';
-//  parent.document.getElementById('Bottom').cols='35,*';
-//}
-
-/**
- * This is a JavaScript function to show the tab navigator and to resize the
- * frame of the tab navigator to normal size.
- */
-//function eFapsTreeTabShow()  {
-//  document.getElementById('tree').className='eFapsTreeTabShow';
-//  document.getElementById('buttonShow').className='eFapsTreeTabHide';
-//  parent.document.getElementById('Bottom').cols='200,*';
-//}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -355,38 +391,27 @@ function eFapsSearchSelect(_searchCommand)  {
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
+
+
+
+
 /**
- * The javascript function positions the main frame to maximum width and height.
+ * The javascript function positions the main frame to maximum height. The
+ * maximum height is defined by the window height minus position and heigth of
+ * the toolbar menu.
  */
 function eFapsPositionContent() {
-  var newHeight;
-  var newWidth;
-
   var iFrame = document.getElementById("eFapsFrameContent");
+  var menu = document.getElementById("eFapsMainTableRowMenu");
+  var newHeight = eFapsCommonGetWindowHeight()
+                        - menu.offsetTop
+                        - menu.offsetHeight;
 
-  if (isIE)  {
-    newHeight = iFrame.offsetParent.clientHeight - iFrame.offsetTop;
-    newWidth  = iFrame.offsetParent.clientWidth-3;
+  if (newHeight > 0)  {
+    iFrame.style.height = newHeight + 'px';
   } else  {
-    newHeight = window.innerHeight - iFrame.offsetTop;
-    newWidth = window.innerWidth-3;
+    iFrame.style.height = newHeight + '0px';
   }
-
-  if (newHeight>50 && newWidth>30)  {
-    if (iFrame.style.height!=newHeight+'px' || iFrame.style.width!=newWidth+'px')  {
-      iFrame.style.height = newHeight+'px';
-      iFrame.style.display='';
-    }
-  } else  {
-    iFrame.style.display='none';
-  }
-
-  // if browser has scrollbar flag, scrollbar is not visible (for mozilla)
-  if (window.scrollbars)  {
-    window.scrollbars.visible = false;
-  }
-
-  window.setTimeout("eFapsPositionContent()",1);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -560,53 +585,6 @@ function eFapsUniqueKeyValueChange(_self)  {
 // action menu)
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
-
-/**
- * The variable store the menu object for this frame object.
- */
-var eFapsFrameMenu;
-
-/**
- * The function returns the menu object. If it not exists, a new one is 
- * created.
- */
-function eFapsGetFrameMenu()  {
-  if (!eFapsFrameMenu)  {
-    eFapsFrameMenu = new eFapsTree("", "", false, "", "", "");
-  }
-  return eFapsFrameMenu;
-}
-
-/**
- * The variable stores the header menu object
- */
-//var eFapsFrameHeaderMenu;
-
-/**
- * The function returns the header menu object.
- */
-/*function eFapsGetFrameHeaderMenu()  {
-  if (!eFapsFrameHeaderMenu)  {
-    eFapsFrameHeaderMenu = new eFapsMenu(document, document.getElementsByTagName("body")[0], "eFapsFrameHeaderMenu");
-  }
-  return eFapsFrameHeaderMenu;
-}
-*/
-/**
- * The variable stores the footer menu object
- */
-//var eFapsFrameFooterMenu;
-
-/**
- * The function returns the footer menu object.
- */
-/*function eFapsGetFrameFooterMenu()  {
-  if (!eFapsFrameFooterMenu)  {
-    eFapsFrameFooterMenu = new eFapsMenu(document, document.getElementsByTagName("body")[0], "eFapsFrameFooterMenu");
-  }
-  return eFapsFrameFooterMenu;
-}
-*/
 
 /**
  * The variable stores the footer action menu object
@@ -915,7 +893,6 @@ function checkFormForRequirements(_form)
         }
       }
     }
-
-	return errorMsg;
+    return errorMsg;
   }
 }

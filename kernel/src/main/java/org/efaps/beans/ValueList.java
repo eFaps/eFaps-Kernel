@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,37 +49,26 @@ public class ValueList {
     getExpressions().add(_expression);
   }
 
-  public void addText(String _text) {
+  public void addText(final String _text) {
     this.tokens.add(new Token(TokenType.TEXT, _text));
   }
 
-  public void makeSelect(SearchQuery _query) throws Exception {
+  public void makeSelect(final SearchQuery _query) throws Exception {
     for (String expression : getExpressions()) {
       _query.addSelect(expression);
     }
   }
 
-  /**
-   * @deprecated
-   */
-  public void makeSelect(Context _context, SearchQuery _query) throws Exception {
-    for (String expression : getExpressions()) {
-      _query.addSelect(_context, expression);
-    }
-  }
-
-  public String makeString(Context _context, SearchQuery _query)
-                                                                throws Exception {
+  public String makeString(final SearchQuery _query) throws Exception  {
     StringBuffer buf = new StringBuffer();
 
     for (Token token : this.tokens) {
       switch (token.type) {
       case EXPRESSION:
         // buf.append(_query.get(_context, token.value));
-        Attribute attr = _query.getAttribute(_context, token.value);
+        Attribute attr = _query.getAttribute(token.value);
         Object value = _query.get(token.value);
-        buf.append(attr.getAttributeType().getUI().getViewHtml(_context, value,
-            null));
+        buf.append(attr.getAttributeType().getUI().getViewHtml(Context.getThreadContext(), value, null));
         break;
       case TEXT:
         buf.append(token.value);

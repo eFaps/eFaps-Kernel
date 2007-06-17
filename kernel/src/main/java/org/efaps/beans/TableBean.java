@@ -57,7 +57,7 @@ public class TableBean extends AbstractCollectionBean implements
   public void execute() throws Exception {
     Context context = Context.getThreadContext();
     System.out.println("--->selectedFilter=" + getSelectedFilter());
-    executeTitle(context);
+//    executeTitle(context);
 
     SearchQuery query = new SearchQuery();
 
@@ -91,7 +91,7 @@ public class TableBean extends AbstractCollectionBean implements
 
     setInitialised(true);
   }
-
+/*
   protected void executeTitle(Context _context) throws Exception {
     if (getTitle() != null && getInstance() != null) {
       SearchQuery query = new SearchQuery();
@@ -110,7 +110,7 @@ public class TableBean extends AbstractCollectionBean implements
       }
     }
   }
-
+*/
   void executeRowResult(Context _context, SearchQuery _query) throws Exception {
     while (_query.next()) {
       Row row = new Row(_query.getRowOIDs(_context));
@@ -124,7 +124,7 @@ public class TableBean extends AbstractCollectionBean implements
         // } else
         if (field.getExpression() != null) {
           value = _query.get(field);
-          attr = _query.getAttribute(_context, field);
+          attr = _query.getAttribute(field);
         }
         Instance instance = _query.getInstance(_context, field);
         // if (attrValue!=null) {

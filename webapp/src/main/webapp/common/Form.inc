@@ -1,6 +1,6 @@
 <%--
  
-  Copyright 2006 The eFaps Team
+  Copyright 2003-2007 The eFaps Team
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -21,116 +21,75 @@
  
 --%>
 
-<%@page errorPage="Exception.jsp"%>
 <%@taglib prefix="c"    uri="http://java.sun.com/jstl/core"%>
-<%@taglib prefix="fmt"  uri="http://java.sun.com/jstl/fmt" %>
-<%@taglib prefix="str"  uri="http://jakarta.apache.org/taglibs/string"%>
+<%@taglib prefix="h"    uri="http://java.sun.com/jsf/html"%>
+<%@taglib prefix="f"    uri="http://java.sun.com/jsf/core"%>
+<%@taglib prefix="t"    uri="http://myfaces.apache.org/tomahawk"%>
 
-<%@include file = "../common/StdTop.inc"%>
+<%-- /** constructor for the form bean with some initialise code **/ --%>
+<%
+  org.efaps.beans.FormBean uiObject = (org.efaps.beans.FormBean)request.getAttribute("uiObject");
+  if (uiObject==null)  {
+    uiObject = cache.getFormBean(request.getParameter("command"));
+    request.setAttribute("uiObject", uiObject);
 
-<%-- /** set to request locale **/ --%>
-<c:set var="locale"><%=request.getLocale()%></c:set>
-<fmt:setLocale value="${locale}"/>
-<c:remove var="locale"/>
+    uiObject.setResponse(response);
+    uiObject.setRequest(request);
 
-<jsp:useBean id="cache" class="org.efaps.beans.CacheSessionBean" scope="session"/>
+    %><%-- /** execute method **/ --%><%
+    
 
-<fmt:bundle basename="StringResource">
+uiObject.setTitle("");
+uiObject.setUkTitle("");
 
-<%-- /** constructor for the form bean **/ --%>
-<c:set var="method" value="execute"/>
-<%@include file = "../common/FormBeanConstructor.inc"%>
-<c:remove var="method"/>
+    uiObject.execute();
+  }
+%>
+<jsp:setProperty name="uiObject" property="nodeId" param="nodeId"/>
+
+  <%
+    String timeStamp  = request.getParameter("timeStamp");
+
+    if (timeStamp==null)  {
+      timeStamp = Long.toString(System.currentTimeMillis());
+  System.out.println("create new timestamp = "+timeStamp);
+    }
+
+//    String urlMain = "FormMain.jsp?"+request.getQueryString()+"&timeStamp="+timeStamp;
+  %>
+
+  <c:choose>
+    <c:when test="${uiObject.viewMode}">
+      <c:set var="bodyClass" value="eFapsFrameView"/>
+    </c:when>
+    <c:otherwise>
+      <c:set var="bodyClass" value="eFapsFrameEdit"/>
+    </c:otherwise>
+  </c:choose>
 
 
-<%-- /** sets the target of the form process **/ --%>
-<c:choose>
-  <c:when test="${param.targetProcess ne null}">
-    <c:set var="targetProcess" value="${param.targetProcess}"/>
-  </c:when>
-  <c:otherwise>
-    <c:set var="targetProcess" value="eFapsFrameHidden"/>
-  </c:otherwise>
-</c:choose>
+    <%-- /** normal form **/ --%>
+      <html>
+        <head>
 
-<%-- /** sets the dom context where the title, the header and footer menu must be set **/ --%>
-<c:choose>
-  <c:when test="${param.domContext ne null}">
-    <c:set var="domContext" value="${param.domContext}"/>
-  </c:when>
-  <c:otherwise>
-    <c:set var="domContext" value="parent."/>
-  </c:otherwise>
-</c:choose>
+<script type="text/javascript">
 
-<c:if test="${param.mode ne null or param.mode eq 'print'}">
-  <script language="Javascript">
-    eFapsSetTitle('<c:out value="${uiObject.title}" escapeXml="false"/>');
-  </script>
-</c:if>
-
-<c:if test="${empty param.mode or param.mode ne 'print'}">
-  <html>
-    <head>
-    </head>
-    <link rel="StyleSheet" href="../styles/eFapsCalendar.css" type="text/css"/>
-    <link rel="StyleSheet" href="../styles/eFapsDefault.css" type="text/css"/>
-    <script type="text/javascript">var eFapsCalenderPathImages = "../images/";</script>
-    <script type="text/javascript" src="../javascripts/eFapsCalendar.js"></script>
-    <script type="text/javascript" src="../javascripts/eFapsToolbar.js"></script>
-    <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
-
-    <script language="Javascript">
-      function eFapsProcessEnd() {
-        <%-- /** title **/ --%>
-<%--
-        <c:choose>
-          <c:when test="${uiObject.editMode}">
-            <c:out value="${domContext}"/>eFapsSetTitle('<c:out value="${uiObject.ukTitle}" escapeXml="false"/>');
-          </c:when>
-          <c:otherwise>
---%>
-            <c:out value="${domContext}"/>eFapsSetTitle('<c:out value="${uiObject.title}" escapeXml="false"/>');
-<%--
-          </c:otherwise>
-        </c:choose>
---%>
-
-        <%-- /** menu **/ --%>
-        <%@include file="StdMenu.inc"%>
-        with (topMenu)  {
-          addSeparator();
-
-          <%-- /* export button */ --%>
-          with (addCommand('', ''))  {
-            setJavaScript("eFapsCommonPrint('../common/Form.jsp?command=<%=request.getParameter("command")%>&oid=<%=request.getParameter("oid")%>&mode=print')");
-            setIcon("../images/eFapsMiniToolbarExport.gif");
-          }
-
-          <%-- /* print button */ --%>
-          with (addCommand('', ''))  {
-            setJavaScript("eFapsCommonPrint('../common/Form.jsp?command=<%=request.getParameter("command")%>&oid=<%=request.getParameter("oid")%>&mode=print')");
-            setIcon("../images/eFapsMiniToolbarPrint.gif");
-          }
-
-          addSeparator();
-        }
-        top.frameMenu.doMenu(<c:out value="${domContext}"/>document);
-
+      function eFapsFormProcessEnd() {
         <%-- /** footer action menu:
           - in mode create show button "create"
           - in mode edit show button "update"
           - in mode search show button "show"
           - show button cancel only if target is popup **/ --%>
-        var footerAction = <c:out value="${domContext}"/>eFapsGetFrameFooterAction();
-        footerAction.clean();
-        footerAction.setForm(document.forms[0]);
+<%--
         <c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
+          var footerAction = eFapsGetFrameFooterAction();
+          footerAction.clean();
+          footerAction.setForm(document.forms[1]);
           footerAction.add(
                 <c:choose>
-                  <c:when test="${uiObject.createMode}">"<fmt:message key="Standard.Button.Create"/>",</c:when>
-                  <c:when test="${uiObject.editMode}">"<fmt:message key="Standard.Button.Edit"/>",</c:when>
-                  <c:when test="${uiObject.searchMode}">"<fmt:message key="Standard.Button.Search"/>",</c:when>
+                  <c:when test="${uiObject.createMode}">"Standard.Button.Create",</c:when>
+                  <c:when test="${uiObject.editMode}">"Standard.Button.Edit",</c:when>
+                  <c:when test="${uiObject.searchMode}">"Standard.Button.Search",</c:when>
                 </c:choose>
                 <c:choose>
                   <c:when test="${param.urlProcess ne null}">
@@ -155,7 +114,7 @@
         </c:if>
         <c:if test="${uiObject.popup}">
           footerAction.add(
-                "<fmt:message key="Standard.Button.Cancel"/>",
+                "Standard.Button.Cancel",
                 "javascript:eFapsCommonCloseWindow()",
                 false,
                 false,
@@ -166,15 +125,113 @@
                 '',
                 '../images/eFapsButtonCancel.gif');
         </c:if>
+--%>
+        eFapsPositionForm();
+        window.onresize = function() { eFapsPositionForm(); }
 
-        <c:out value="${domContext}"/>eFapsProcessEnd();
+
+        eFapsProcessEnd();
       }
-    </script>
-    <body onLoad="eFapsProcessEnd()">
-</c:if>
 
 
-      <form method="post" enctype="multipart/form-data" target="<c:out value="${targetProcess}"/>">
+  function eFapsPositionForm() {
+    var div = document.getElementById("eFapsForm");
+    var menu = document.getElementById("eFapsFrameToolbarMenu");
+    var newHeight = eFapsCommonGetWindowHeight()
+                          - menu.offsetTop
+                          - menu.offsetHeight;
+
+    <%-- /** if create / edit / search mode, a button line is shown */ --%>
+    <c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
+      newHeight = newHeight - 40;
+    </c:if>
+
+    if (newHeight > 0)  {
+      div.style.maxHeight = newHeight + 'px';
+      div.style.minHeight = newHeight + 'px';
+    } else  {
+      div.style.maxHeight = newHeight + '0px';
+      div.style.minHeight = newHeight + 'px';
+    }
+	}
+
+/**
+ * The current form is submitted to the given href.
+ *
+ * @see #execute
+ */
+function eFapsSubmit()  {
+  var div = document.getElementById("eFapsForm");
+  var form = div.getElementsByTagName("form")[0];
+  
+//  eFapsProcessStart();
+  form.submit();
+
+
+//  if (!this.submitLock)
+//  {
+/*    var errorMsg = checkFormForRequirements(this.getForm());
+    if (errorMsg == null || errorMsg.length == 0)
+    {
+      this.submitLock = true;
+      eFapsProcessStart();
+      this.getForm().action=this.href;
+      if (this.getForm().command)  {
+        this.getForm().command.value=this.name;
+      }
+      this.getForm().submit();
+    }
+    else
+    {
+      alert(errorMsg);
+    }
+*/
+
+//  }
+//  else
+//  {
+//	  alert("Please click only once on '"+this.textHtmlElement.nodeValue+"'");
+//  }
+}
+
+</script>
+
+
+        </head>
+        <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css"/>
+        <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
+
+        <script type="text/javascript">
+          var eFapsTreeImagePath = '../images/';
+        </script>
+        <script type="text/javascript" src="../javascripts/eFapsTree.js"></script>
+
+        <body onLoad="eFapsFormProcessEnd()" onUnLoad="eFapsCleanUpSession('<%=timeStamp%>')" class="<c:out value="${bodyClass}"/>">
+
+
+
+          <%-- /** menu bar **/ --%>
+
+<f:view>
+
+  <h:panelGrid id="eFapsFrameTitle">
+    <h:outputText value="#{titleBean.title}"/>
+  </h:panelGrid>
+
+  <h:form id="eFapsFrameToolbarMenu">
+    <h:panelGrid>
+      <t:jscookMenu layout="hbr" theme="ThemeOffice" styleLocation="../styles">
+        <t:navigationMenuItems value="#{menuTableToolbar.JSFMenu}"/>
+      </t:jscookMenu>
+    </h:panelGrid>
+  </h:form>
+
+
+
+
+<div id="eFapsForm" style="overflow:auto;max-width:100%;">
+
+      <form method="post" enctype="multipart/form-data" target="<c:out value="${targetProcess}"/>" action="../common/FormProcess.jsp">
         <input type="hidden" name="command" value=""/>
 
         <%-- /** show the hidden values for this user interface **/ --%>
@@ -194,6 +251,7 @@
             <c:set var="rowGroupCount" value="1"/>
 
 <%
+
 ((org.efaps.beans.AbstractCollectionBean)uiObject).startProcessView();
 %>
 
@@ -313,12 +371,32 @@
           </c:if>
         </table>
       </form>
+</div>
 
-<c:if test="${empty param.mode or param.mode ne 'print'}">
-    </body>
-  </html>
+
+          <div class="eFapsFrameFooter">
+
+<c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
+  <h:form>
+    <h:commandLink onclick="eFapsSubmit();return false;" title="Create">
+      <h:graphicImage value="../images/eFapsButtonDone.gif"/>
+      <h:outputText value="Edit"/>
+    </h:commandLink>
+    <h:commandLink onclick="eFapsCommonCloseWindow();return false;" title="Create">
+      <h:graphicImage value="../images/eFapsButtonCancel.gif"/>
+      <h:outputText value="Close"/>
+    </h:commandLink>
+  </h:form>
 </c:if>
 
-</fmt:bundle>
+          </div>
+
+</f:view>
+          <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="about:blank">
+          </iframe>
+          
+        </body>
+      </html>
+
 
 <%@include file = "../common/StdBottom.inc"%>

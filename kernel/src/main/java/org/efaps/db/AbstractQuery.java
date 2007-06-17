@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -426,14 +426,10 @@ public abstract class AbstractQuery {
   /**
    * The instance method returns for the given key the atribute.
    * 
-   * @param _context
-   *          eFaps context for this request
-   * @param _key
-   *          key for which the attribute value must returned
+   * @param _key  key for which the attribute value must returned
    * @return attribute for given key
    */
-  public Attribute getAttribute(final Context _context, final Object _key)
-                                                                          throws Exception {
+  public Attribute getAttribute(final Object _key)  throws Exception {
     Attribute ret = null;
     SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
     if (selExpr != null) {

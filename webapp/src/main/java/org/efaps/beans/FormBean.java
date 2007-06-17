@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -157,12 +157,11 @@ public class FormBean extends AbstractCollectionBean {
       SearchQuery query = new SearchQuery();
       query.setObject(instance);
       query.add(context, getForm());
-      // query.addAllFromString(context, getTitle());
 
-      ValueParser parser = new ValueParser(new StringReader(getTitle()));
+/*      ValueParser parser = new ValueParser(new StringReader(getTitle()));
       ValueList list = parser.ExpressionString();
       list.makeSelect(context, query);
-
+*/
       query.addAllFromString(context, getUkTitle());
       query.execute();
 
@@ -174,7 +173,7 @@ public class FormBean extends AbstractCollectionBean {
 
           if (field.getExpression() != null) {
             Object value = query.get(field);
-            addFieldValue(field, query.getAttribute(context, field), value,
+            addFieldValue(field, query.getAttribute(field), value,
                 query.getInstance(context, field));
           } else if (field.getClassUI() != null) {
             addFieldValue(field, instance);
@@ -186,7 +185,9 @@ public class FormBean extends AbstractCollectionBean {
           }
         }
         // setTitle(query.replaceAllInString(context, getTitle()));
+/*
         setTitle(list.makeString(context, query));
+*/
         setUkTitle(query.replaceAllInString(context, getUkTitle()));
       }
 
