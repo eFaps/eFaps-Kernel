@@ -86,7 +86,7 @@
       <sqlcolumn>BUNDLEID</sqlcolumn>
    </attribute>
 
-   
+    <property name="Tree">Admin_DBPropertiesTree</property>
 
  </definition>
 </datamodel-type>

@@ -16,18 +16,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev:586 $
  Last Changed:    $Date:2007-01-04 14:59:51 +0100 (Do, 04 Jan 2007) $
  Last Changed By: $Author:tmo $
 
 -->
 
-<ui-table>
-  <uuid>5325f1ef-507e-454c-a3cc-afb10c758a39</uuid>
+<ui-command>
+  <uuid>3362a9b7-6943-4720-b725-f84360d5dd94</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the table 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_DBPropertiesTable</name>
+    <name>Admin_DBPropertiesTree_Local</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the table 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,29 +51,16 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DBPropertiesTable</name>
-    <!-- fields -->
-    
-    <field name="key">
-      <property name="Expression">Key</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Label">Admin_DBProperties/Key.Label</property>
-    </field>
-    <field name="defaultvalue">
-      <property name="Expression">Default</property>
-      <property name="Label">Admin_DBProperties/Default.Label</property>
-    </field>
-    <field name="bunlde">
-      <property name="Expression">BundleID.Name</property>
-      <property name="Label">Admin_DBProperties/BundleID.Label</property>
-    </field>
-    
-    
-    <field name="buttonOpenInNewWindow">
-      <icon>eFapsActionNewWindow</icon>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Target">popup</property>
-    </field>
+    <name>Admin_DBPropertiesTree_Local</name>
+    <!-- target definitions -->
+    <target>
+      <table>Admin_DBProperties_LocalTable</table>
+      <menu>Admin_DBProperties_Local_Menu</menu>
+    </target>
+    <!-- properties -->
+    <property name="Target">content</property>
+    <property name="TargetExpand">Admin_DBProperties_Local\PropertyID</property>
+    <property name="TargetMode">view</property>
   </definition>
 
-</ui-table>
+</ui-command>

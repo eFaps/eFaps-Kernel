@@ -24,7 +24,7 @@
 -->
 
 <ui-table>
-  <uuid>5325f1ef-507e-454c-a3cc-afb10c758a39</uuid>
+  <uuid>81f7281a-8474-42fd-a60c-f7ae122978a8</uuid>
 
   <!-- ************************************************************************
     version definition used to create the table 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_DBPropertiesTable</name>
+    <name>Admin_DBProperties_LocalTable</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,29 +51,24 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DBPropertiesTable</name>
+    <name>Admin_DBProperties_LocalTable</name>
     <!-- fields -->
     
-    <field name="key">
-      <property name="Expression">Key</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Label">Admin_DBProperties/Key.Label</property>
+   
+    <field name="value">
+      <property name="Expression">Value</property>
+      <property name="Label">Admin_DBProperties_Local/Value.Label</property>
     </field>
-    <field name="defaultvalue">
-      <property name="Expression">Default</property>
-      <property name="Label">Admin_DBProperties/Default.Label</property>
+    <field name="property">
+      <property name="Expression">PropertyID.Key</property>
+      <property name="Label">Admin_DBProperties_Local/PropertyID.Key.Label</property>
     </field>
-    <field name="bunlde">
-      <property name="Expression">BundleID.Name</property>
-      <property name="Label">Admin_DBProperties/BundleID.Label</property>
+    <field name="language">
+      <property name="Expression">LanguageID.Language</property>
+      <property name="Label">Admin_DBProperties_Local/LanguageID.Language.Label</property>
     </field>
     
     
-    <field name="buttonOpenInNewWindow">
-      <icon>eFapsActionNewWindow</icon>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Target">popup</property>
-    </field>
   </definition>
 
 </ui-table>

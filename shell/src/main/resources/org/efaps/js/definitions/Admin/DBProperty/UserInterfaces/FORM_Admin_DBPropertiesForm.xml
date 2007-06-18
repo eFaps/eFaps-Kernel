@@ -16,15 +16,15 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
- Revision:        $Rev:586 $
- Last Changed:    $Date:2007-01-04 14:59:51 +0100 (Do, 04 Jan 2007) $
- Last Changed By: $Author:tmo $
+ Author:          jmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
-<ui-table>
-  <uuid>5325f1ef-507e-454c-a3cc-afb10c758a39</uuid>
+<ui-form>
+  <uuid>7d7fe7a3-094b-4152-8e10-2855d0ecd963</uuid>
 
   <!-- ************************************************************************
     version definition used to create the table 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_DBPropertiesTable</name>
+    <name>Admin_DBPropertiesForm</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,29 +51,40 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DBPropertiesTable</name>
+    <name>Admin_DBPropertiesForm</name>
     <!-- fields -->
-    
+    <field name="type">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Type</property>
+      <property name="Searchable">false</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
     <field name="key">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
       <property name="Expression">Key</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Label">Admin_DBProperties/Key.Label</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
     </field>
-    <field name="defaultvalue">
+    <field name="default">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
       <property name="Expression">Default</property>
-      <property name="Label">Admin_DBProperties/Default.Label</property>
+      <property name="Required">false</property>
+      <property name="Searchable">true</property>
     </field>
-    <field name="bunlde">
+    <field name="bundleid">
+      <property name="Columns">20</property>
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
       <property name="Expression">BundleID.Name</property>
-      <property name="Label">Admin_DBProperties/BundleID.Label</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
     </field>
     
-    
-    <field name="buttonOpenInNewWindow">
-      <icon>eFapsActionNewWindow</icon>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Target">popup</property>
-    </field>
   </definition>
 
-</ui-table>
+</ui-form>
