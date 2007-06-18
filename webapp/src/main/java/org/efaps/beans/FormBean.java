@@ -107,7 +107,9 @@ public class FormBean extends AbstractCollectionBean {
    */
   public FormBean() throws EFapsException {
     super();
-    addHiddenValue("oid", getInstance().getOid());
+    if (getInstance() != null)  {
+      addHiddenValue("oid", getInstance().getOid());
+    }
     System.out.println("FormBean.constructor");
     String cmdName = getParameter("command");
     if (cmdName == null || cmdName.length() == 0 || "undefined".equals(cmdName)) {
