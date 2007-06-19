@@ -112,7 +112,7 @@ public class EFapsResourceStore implements ResourceStore {
       }
 
       Checkin checkin = new Checkin(instance);
-      checkin.execute(_resourceName, new ByteArrayInputStream(_resourceData),
+      checkin.executeWithoutAccessCheck(_resourceName, new ByteArrayInputStream(_resourceData),
           _resourceData.length);
     } catch (Exception e) {
       LOG.error("unable to write to Database '" + _resourceName + "'", e);

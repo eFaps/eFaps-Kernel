@@ -101,7 +101,7 @@ public class DBPropertiesUpdate {
       query.setQueryTypes("Admin_Language");
       query.addSelect("ID");
       query.addWhereExprEqValue("Language", _language);
-      query.execute();
+      query.executeWithoutAccessCheck();
       if (query.next()) {
         ID = query.get("ID").toString();
       } else {
@@ -192,7 +192,7 @@ public class DBPropertiesUpdate {
       insert.add("Name", getBundleName());
       insert.add("UUID", getBundleUUID());
       insert.add("Sequence", getSequence());
-      insert.execute();
+      insert.executeWithoutAccessCheck();
 
       String Id = insert.getId();
       insert.close();
@@ -344,7 +344,7 @@ public class DBPropertiesUpdate {
       query.addSelect("OID");
       query.addWhereExprEqValue("PropertyID", _propertyid);
       query.addWhereExprEqValue("LanguageID", getLanguageId(_language));
-      query.execute();
+      query.executeWithoutAccessCheck();
       if (query.next()) {
         OID = (String) query.get("OID");
       }
@@ -374,7 +374,7 @@ public class DBPropertiesUpdate {
       insert.add("Value", _value);
       insert.add("PropertyID", _propertyid);
       insert.add("LanguageID", getLanguageId(_language));
-      insert.execute();
+      insert.executeWithoutAccessCheck();
       insert.close();
 
     } catch (EFapsException e) {
@@ -427,7 +427,7 @@ public class DBPropertiesUpdate {
       query.addSelect("OID");
       query.addWhereExprEqValue("Key", _key);
       query.addWhereExprEqValue("BundleID", getBundleID());
-      query.execute();
+      query.executeWithoutAccessCheck();
       if (query.next()) {
         OID = (String) query.get("OID");
       }
@@ -480,7 +480,7 @@ public class DBPropertiesUpdate {
       insert.add("BundleID", getBundleID());
       insert.add("Key", _key);
       insert.add("Default", _value);
-      insert.execute();
+      insert.executeWithoutAccessCheck();
       String Id = insert.getId();
       insert.close();
       return Id;
@@ -633,7 +633,7 @@ public class DBPropertiesUpdate {
       query.setQueryTypes("Admin_DBProperties_Bundle");
       query.addSelect("ID");
       query.addWhereExprEqValue("UUID", _UUID);
-      query.execute();
+      query.executeWithoutAccessCheck();
       if (query.next()) {
         BundleID = (String) query.get("ID").toString();
       }
