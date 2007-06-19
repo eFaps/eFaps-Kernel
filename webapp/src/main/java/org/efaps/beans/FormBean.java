@@ -29,14 +29,16 @@ import java.util.Map;
 import org.apache.commons.fileupload.FileItem;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.attributetype.AbstractFileType;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.datamodel.UniqueKey;
+import org.efaps.admin.datamodel.attributetype.AbstractFileType;
+import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
+import org.efaps.beans.form.FormFieldUpdateInterface;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Checkin;
 import org.efaps.db.Context;
@@ -44,7 +46,6 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
-import org.efaps.beans.form.FormFieldUpdateInterface;
 import org.efaps.util.EFapsException;
 
 /**
@@ -428,6 +429,7 @@ public class FormBean extends AbstractCollectionBean {
     } else {
       label = _attr.getParent().getName() + "/" + _attr.getName() + ".Label";
     }
+    label = DBProperties.getProperty(label);
     UIInterface classUI = null;
     if (_field.getClassUI() != null) {
       classUI = _field.getClassUI();

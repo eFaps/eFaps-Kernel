@@ -287,7 +287,7 @@ function eFapsSubmit()  {
                   </c:choose>
 
                   <%-- /** show the label of the field **/ --%>
-                  <fmt:message><c:out value="${value.label}"/></fmt:message></td>
+                  <c:out value="${value.label}"/></td>
 
                   <%-- /** make column with correct span **/ --%>
                   <td class="eFapsFormInputField" colspan="<c:out value="${2 * (uiObject.maxGroupCount - rowGroupCount) + 1}"/>">
