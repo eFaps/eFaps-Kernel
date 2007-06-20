@@ -120,7 +120,7 @@ CP=$CP:$shellPathLib/commons-collections-3.1.jar
 
 # Database Driver
 CP=$CP:$shellPathLib/derbyclient-10.1.2.1.jar
-CP=$CP:$shellPathLib/postgresql-8.1-407.jdbc3.jar
+CP=$CP:$shellPathLib/postgresql-8.2-504.jdbc3.jar
 
 # VFSStore
 CP=$CP:$shellPathLib/commons-vfs-1.0.jar
