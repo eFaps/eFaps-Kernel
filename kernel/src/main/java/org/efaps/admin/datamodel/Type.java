@@ -35,11 +35,15 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.efaps.admin.access.AccessCheckInterface;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.ParameterInterface;
+import org.efaps.admin.event.ReturnInterface;
 import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.ParameterInterface.ParameterValues;
+import org.efaps.admin.event.ReturnInterface.ReturnValues;
 import org.efaps.admin.lifecycle.Policy;
 import org.efaps.admin.lifecycle.Status;
 import org.efaps.admin.ui.Form;
@@ -59,13 +63,13 @@ import org.efaps.util.cache.CacheReloadException;
 /**
  * This is the class for the type description. The type description holds
  * information about creation of a new instance of a type with default values.
- *
+ * 
  * @author tmo
  * @version $Id$
  */
-public class Type extends DataModelObject  {
+public class Type extends DataModelObject {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -76,35 +80,32 @@ public class Type extends DataModelObject  {
   /**
    * This is the sql select statement to select all types from the database.
    */
-  private static final String SQL_SELECT  = "select "
-                                                + "ID,"
-                                                + "NAME,"
-                                                + "PARENTDMTYPE,"
-                                                + "SQLCACHEEXPR "
-                                              + "from V_ADMINTYPE";
+  private static final String SQL_SELECT =
+      "select " + "ID," + "NAME," + "PARENTDMTYPE," + "SQLCACHEEXPR "
+          + "from V_ADMINTYPE";
 
   /**
    * Stores all instances of type.
-   *
+   * 
    * @see #get
    */
-  private static Cache < Type > typeCache = new Cache < Type > (
-    new CacheReloadInterface()  {
-        public int priority()  {
+  private static Cache<Type> typeCache =
+      new Cache<Type>(new CacheReloadInterface() {
+        public int priority() {
           return CacheReloadInterface.Priority.Type.number;
         };
-        public void reloadCache() throws CacheReloadException  {
+
+        public void reloadCache() throws CacheReloadException {
           Type.initialise();
         };
-    }
-  );
+      });
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * Instance variable for the parent type from which this type is derived.
-   *
+   * 
    * @see #getParentType
    * @see #setParentType
    */
@@ -113,33 +114,31 @@ public class Type extends DataModelObject  {
   /**
    * Instance variable for the id of parent type from which this type is
    * derived. Also the parent ids from the parent is stored.
-   *
+   * 
    * @see #getParentTypeId
    * @see #setParentTypeId
    */
-//  private String parentTypeIds = "";
-
+  // private String parentTypeIds = "";
   /**
    * Instance variable for all child types derived from this type.
-   *
+   * 
    * @see #getChildTypes
    */
-  private Set < Type > childTypes = new HashSet < Type > ();
+  private Set<Type> childTypes = new HashSet<Type>();
 
   /**
    * The instance variables stores all attributes for this type object.
-   *
+   * 
    * @see #getAttributes()
    * @see #add(Attribute)
    * @see #getAttribute
    * @see #getAttributes(Class)
    */
-  private Map < String,Attribute > attributes 
-                                        = new HashMap < String, Attribute > ();
+  private Map<String, Attribute> attributes = new HashMap<String, Attribute>();
 
   /**
    * Cache of the business objects of this type.
-   *
+   * 
    * @see #getCache
    * @see #setCache
    */
@@ -147,26 +146,26 @@ public class Type extends DataModelObject  {
 
   /**
    * Instance of a HashSet to store all possible policies for this type.
-   *
+   * 
    * @see #addPolicy
    * @see #getPolicies
    */
-  private Set < Policy > policies = new HashSet < Policy > ();
+  private Set<Policy> policies = new HashSet<Policy>();
 
   /**
-   * Instance of a HashSet to store all needed tables for this type. The
-   * tables are automatically added via the method {@link #add(Attribute)}.
-   *
+   * Instance of a HashSet to store all needed tables for this type. The tables
+   * are automatically added via the method {@link #add(Attribute)}.
+   * 
    * @see #add(Attribute)
    * @see #getTables
    */
-  private Set < SQLTable > tables = new HashSet < SQLTable > ();
+  private Set<SQLTable> tables = new HashSet<SQLTable>();
 
   /**
-   * The instance variable stores the main table, which must be inserted
-   * first. In the main table stands also the select statement to get a new
-   * id. The value is automatically set with method {@link #add(Attribute)}.
-   *
+   * The instance variable stores the main table, which must be inserted first.
+   * In the main table stands also the select statement to get a new id. The
+   * value is automatically set with method {@link #add(Attribute)}.
+   * 
    * @see Table.mainTable
    * @see #add(Attribute)
    * @see #getMainTable
@@ -176,7 +175,7 @@ public class Type extends DataModelObject  {
 
   /**
    * This instance variable stores the form for the viewing mode.
-   *
+   * 
    * @see #getFormView
    * @see #setFormView
    */
@@ -184,7 +183,7 @@ public class Type extends DataModelObject  {
 
   /**
    * This instance variable stores the form for the editing mode.
-   *
+   * 
    * @see #getFormEdit
    * @see #setFormEdit
    */
@@ -192,7 +191,7 @@ public class Type extends DataModelObject  {
 
   /**
    * This instance variable stores the form for the creating mode.
-   *
+   * 
    * @see #getFormCreate
    * @see #setFormCreate
    */
@@ -200,7 +199,7 @@ public class Type extends DataModelObject  {
 
   /**
    * This instance variable stores the standard type menu.
-   *
+   * 
    * @see #getTreeMenu
    * @see #setTreeMenu
    */
@@ -208,7 +207,7 @@ public class Type extends DataModelObject  {
 
   /**
    * Th instance variable stores the attribute used to represent this type.
-   *
+   * 
    * @see #getViewAttribute
    * @see #setViewAttribute
    */
@@ -216,11 +215,11 @@ public class Type extends DataModelObject  {
 
   /**
    * The instance variable stores all unique keys of this type instance.
-   *
+   * 
    * @see #getUniqueKeys
    * @see #setUniqueKeys
    */
-  private Collection < UniqueKey > uniqueKeys = null;
+  private Collection<UniqueKey> uniqueKeys = null;
 
   /**
    * The type icon is stored in this instance variable.
@@ -229,61 +228,51 @@ public class Type extends DataModelObject  {
 
   /**
    * All attributes which are used as links are stored in this map.
-   *
+   * 
    * @see #getLinks
    */
-  private Map < String, Attribute > links 
-                  = new HashMap < String, Attribute > ();
+  private Map<String, Attribute> links = new HashMap<String, Attribute>();
 
   /**
    * All triggers for this type are stored in this map.
    */
-  private final Map < TriggerEvent, List < EventDefinition > > trigger 
-                  = new HashMap <  TriggerEvent, List < EventDefinition > > ();
+  private final Map<TriggerEvent, List<EventDefinition>> trigger =
+      new HashMap<TriggerEvent, List<EventDefinition>>();
 
   /**
-   * All class instances which are used to check access are in this list. The
-   * order comes directly from the database and the access checks should be 
-   * tested in this order.
-   *
-   * @see #addAccessCheck
-   * @see #hasAccess
-   */
-  private final List < AccessCheckInterface > accessChecks = 
-                  new ArrayList < AccessCheckInterface > ();
-
-  /**
-   * All access sets which are assigned to this type are store in this instance 
+   * All access sets which are assigned to this type are store in this instance
    * variable.
-   *
+   * 
    * @see #addAccessSet
    * @see #getAccessSets
    */
-  private final Set < AccessSet > accessSets = new HashSet < AccessSet > ();
+  private final Set<AccessSet> accessSets = new HashSet<AccessSet>();
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
-   * This is the constructor for class Type. Every instance of class Type
-   * must have a name (parameter <i>_name</i>).
-   *
-   * @param _name   name of the instance
+   * This is the constructor for class Type. Every instance of class Type must
+   * have a name (parameter <i>_name</i>).
+   * 
+   * @param _name
+   *          name of the instance
    */
-  private Type(final long _id, final String _name)  {
+  private Type(final long _id, final String _name) {
     super(_id, null, _name);
     Attribute typeAttr = new Attribute(0, "Type", "");
     typeAttr.setAttributeType(AttributeType.get("Type"));
     addAttribute(typeAttr);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
    * Add an attribute to this type and all child types of this type.
-   *
-   * @param _attribute  attribute to add
+   * 
+   * @param _attribute
+   *          attribute to add
    */
   protected void addAttribute(final Attribute _attribute) {
     _attribute.setParent(this);
@@ -314,13 +303,13 @@ public class Type extends DataModelObject  {
    *          attribute with the link to this type
    * @todo description of algorithm
    */
-  protected void addLink(final Attribute _attr)  {
+  protected void addLink(final Attribute _attr) {
     getLinks().put(_attr.getParent().getName() + "\\" + _attr.getName(), _attr);
-    for (Type type : _attr.getParent().getChildTypes())  {
+    for (Type type : _attr.getParent().getChildTypes()) {
       getLinks().put(type.getName() + "\\" + _attr.getName(), _attr);
     }
-    for (Type child : getChildTypes())  {
-      if (child.getParentType().getId() == this.getId())  {
+    for (Type child : getChildTypes()) {
+      if (child.getParentType().getId() == this.getId()) {
         child.addLink(_attr);
       }
     }
@@ -328,25 +317,27 @@ public class Type extends DataModelObject  {
 
   /**
    * Returns for the given parameter <b>_name</b> the attribute.
-   *
-   * @param _name name of the attribute for this type to return
+   * 
+   * @param _name
+   *          name of the attribute for this type to return
    * @return instance of class {@link Attribute}
    */
-  public final Attribute getAttribute(final String _name)  {
+  public final Attribute getAttribute(final String _name) {
     return getAttributes().get(_name);
   }
 
   /**
    * The instance method returns all attributes which are from the same
    * attribute type as the described with the parameter <i>_class</i>.
-   *
-   * @param _class  searched attribute type
+   * 
+   * @param _class
+   *          searched attribute type
    * @return all attributes assigned from parameter <i>_class</i>
    */
-  public final Set < Attribute > getAttributes(final Class _class)  {
-    Set < Attribute > ret = new HashSet < Attribute > ();
-    for (Attribute attr : getAttributes().values())  {
-      if (attr.getAttributeType().getClassRepr().isAssignableFrom(_class))  {
+  public final Set<Attribute> getAttributes(final Class _class) {
+    Set<Attribute> ret = new HashSet<Attribute>();
+    for (Attribute attr : getAttributes().values()) {
+      if (attr.getAttributeType().getClassRepr().isAssignableFrom(_class)) {
         ret.add(attr);
       }
     }
@@ -356,13 +347,13 @@ public class Type extends DataModelObject  {
   /**
    * If a hashtable instance for the cache is given, a <i>true</i> is returned,
    * that this type is cacheable, otherwise a <i>false</i> is returned.
-   *
+   * 
    * @return <i>true</i> if type is cacheable, otherwise <i>false</i>
    */
-  public final boolean isCacheable()  {
+  public final boolean isCacheable() {
     boolean ret = false;
 
-    if (getCache() != null)  {
+    if (getCache() != null) {
       ret = true;
     }
     return ret;
@@ -371,22 +362,22 @@ public class Type extends DataModelObject  {
   /**
    * Search in the cache for the object with the given <i>_id</i> and returns
    * this Object.
-   *
+   * 
    * @return cache object for given parameter <i>_id</i>
    * @param _id
    */
-  public CacheObjectInterface getCacheObject(final long _id)  {
+  public CacheObjectInterface getCacheObject(final long _id) {
     return getCache().get(_id);
   }
 
   /**
    * Add a policy to this type.
-   *
+   * 
    * @see #policies
    * @see #getPolicies
    */
-  public void addPolicy(final Policy _policy)  {
-    synchronized (getPolicies())  {
+  public void addPolicy(final Policy _policy) {
+    synchronized (getPolicies()) {
       getPolicies().add(_policy);
     }
   }
@@ -394,35 +385,38 @@ public class Type extends DataModelObject  {
   /**
    *
    */
-  public void readCache(final Context _context, final String _cacheExpr) throws SQLException  {
-//    Cache cache = new Cache(_context.getConnection(), getTableName(), _cacheExpr);
-//    setCache(cache);
+  public void readCache(final Context _context, final String _cacheExpr)
+      throws SQLException {
+    // Cache cache = new Cache(_context.getConnection(), getTableName(),
+    // _cacheExpr);
+    // setCache(cache);
   }
 
   /**
    * Returns the name of the type.
-   *
+   * 
    * @param _context
    * @see #getName
    */
-  public String getViewableName(final Context _context)  {
+  public String getViewableName(final Context _context) {
     return getName();
   }
 
   /**
    * Tests, if this type is kind of the type in the parameter (question is, is
    * this type a child of the parameter type).
-   *
-   * @param _type type to test for parent
+   * 
+   * @param _type
+   *          type to test for parent
    * @return true if this type is a child, otherwise false
    */
-  public boolean isKindOf(final Type _type)  {
+  public boolean isKindOf(final Type _type) {
     boolean ret = false;
     Type type = this;
-    while ((type != null) && (type.getId() != _type.getId()))  {
+    while ((type != null) && (type.getId() != _type.getId())) {
       type = type.getParentType();
     }
-    if ((type != null) && (type.getId() == _type.getId()))  {
+    if ((type != null) && (type.getId() == _type.getId())) {
       ret = true;
     }
     return ret;
@@ -432,58 +426,34 @@ public class Type extends DataModelObject  {
    * Checks if the current type holds the property with the given name. If not,
    * the value of the property of the parent type (see {@link #getParentType})
    * is returned (if a parent type exists).
-   *
+   * 
    * @see org.efaps.admin.AdminObject#getProperty
-   * @param _name     name of the property (key)
+   * @param _name
+   *          name of the property (key)
    * @return value of the property with the given name / key.
    */
-  public String getProperty(final String _name)  {
+  public String getProperty(final String _name) {
     String value = super.getProperty(_name);
-    if ((value == null) && (getParentType() != null))  {
+    if ((value == null) && (getParentType() != null)) {
       value = getParentType().getProperty(_name);
     }
     return value;
   }
 
   /**
-   * The method overrides the original method 'toString' and returns
-   * information about this type instance.
-   *
+   * The method overrides the original method 'toString' and returns information
+   * about this type instance.
+   * 
    * @return name of the user interface object
    */
-  public String toString()  {
-    return new ToStringBuilder(this).
-      appendSuper(super.toString()).
-      append("parentType", getParentType() != null ? getParentType().getName() : "").
-      append("uniqueKey", getUniqueKeys()).
-      toString();
+  public String toString() {
+    return new ToStringBuilder(this).appendSuper(super.toString()).append(
+        "parentType", getParentType() != null ? getParentType().getName() : "")
+        .append("uniqueKey", getUniqueKeys()).toString();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods used for access management
-
-  /**
-   * A new instance of the given access check class is added to the list of 
-   * access checks.
-   *
-   * @param _name name of the access check class to add
-   * @see #accessChecks
-   */
-  private void addAccessCheck(final String _name) {
-    try {
-      Class<?> acClass = Class.forName(_name);
-      this.accessChecks.add((AccessCheckInterface) acClass.newInstance());
-    } catch (ClassNotFoundException e) {
-      LOG.error("could not found class '" + _name + "' for " + "type "
-          + toString(), e);
-    } catch (InstantiationException e) {
-      LOG.error("could not create new instance of class '" + _name + "' for "
-          + "type " + toString(), e);
-    } catch (IllegalAccessException e) {
-      LOG.error("could not access class '" + _name + "' for " + "type "
-          + toString(), e);
-    }
-  }
 
   /**
    * Checks, if the current context user has all access defined in the list of
@@ -497,15 +467,18 @@ public class Type extends DataModelObject  {
    *          </i> if the current context user has access, otherwise <i>false</i>.
    * @see #accessChecks
    */
-  public boolean hasAccess(final Instance _instance, 
-                           final AccessType _accessType)
-                                                      throws EFapsException  {
+  public boolean hasAccess(final Instance _instance,
+      final AccessType _accessType) throws EFapsException {
     boolean hasAccess = true;
+    List<EventDefinition> triggers = this.getTrigger(TriggerEvent.ACCESSCHECK);
+    if (triggers != null) {
+      ParameterInterface parameter = new Parameter();
+      parameter.put(ParameterValues.INSTANCE, _instance);
+      parameter.put(ParameterValues.ACCESSTYPE, _accessType);
 
-    for (AccessCheckInterface ac : this.accessChecks)  {
-      hasAccess = ac.checkAccess(_instance, _accessType);
-      if (!hasAccess)  {
-        break;
+      for (EventDefinition event : triggers) {
+        ReturnInterface ret = event.execute(parameter);
+        hasAccess = ret.get(ReturnValues.TRUE) != null;
       }
     }
     return hasAccess;
@@ -513,112 +486,117 @@ public class Type extends DataModelObject  {
 
   /**
    * A new access set is assigned to this type instance.
-   *
-   * @param _accessSet  new access to assign to this type instance
+   * 
+   * @param _accessSet
+   *          new access to assign to this type instance
    * @see #accessSets
    */
-  public void addAccessSet(final AccessSet _accessSet)  {
+  public void addAccessSet(final AccessSet _accessSet) {
     this.accessSets.add(_accessSet);
   }
 
   /**
    * This is the getter method for instance variable {@link #accessSets}.
-   *
+   * 
    * @return value of instance variable {@link #accessSets}
    * @see #accessSets
    */
-  public Set < AccessSet > getAccessSets()  {
+  public Set<AccessSet> getAccessSets() {
     return this.accessSets;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods used to initialise this type instance
 
   /**
    * The instance method sets a new property value.
-   *
-   * @param _context  context for this request
-   * @param _name     name of the property
-   * @param _value    value of the property
+   * 
+   * @param _context
+   *          context for this request
+   * @param _name
+   *          name of the property
+   * @param _value
+   *          value of the property
    * @see #addUniqueKey
    * @see #setViewAttribute
    */
-  protected void setProperty(final String _name, 
-                             final String _value) throws CacheReloadException  {
-    if (_name.startsWith("AccessCheckClass"))  {
-      addAccessCheck(_value);
-    } else if ("Icon".equals(_name))  {
+  protected void setProperty(final String _name, final String _value)
+      throws CacheReloadException {
+    if ("Icon".equals(_name)) {
       setIcon(RequestHandler.replaceMacrosInUrl(_value));
-    } else if ("Tree".equals(_name))  {
+    } else if ("Tree".equals(_name)) {
       setTreeMenuName(_value);
-    } else if (_name.startsWith("UniqueKey"))  {
+    } else if (_name.startsWith("UniqueKey")) {
       addUniqueKey(_value);
-    } else if (_name.equals("ViewAttribute"))  {
-//      setViewAttribute(_context, _value);
-    } else  {
+    } else if (_name.equals("ViewAttribute")) {
+      // setViewAttribute(_context, _value);
+    } else {
       super.setProperty(_name, _value);
     }
   }
 
   /**
-   * First, the instance method initiliase the set of unique keys
-   * ({@link #uniqueKeys}) if needed. The a new unique key is created and
-   * added to the list of unique keys in {@link #uniqueKeys}.
-   *
-   * @param _attrList string with comma separated list of attribute names
+   * First, the instance method initiliase the set of unique keys ({@link #uniqueKeys})
+   * if needed. The a new unique key is created and added to the list of unique
+   * keys in {@link #uniqueKeys}.
+   * 
+   * @param _attrList
+   *          string with comma separated list of attribute names
    * @see #setProperty
    */
-  private void addUniqueKey(final String _attrList)  {
-    if (getUniqueKeys() == null)  {
-      setUniqueKeys(new HashSet < UniqueKey > ());
+  private void addUniqueKey(final String _attrList) {
+    if (getUniqueKeys() == null) {
+      setUniqueKeys(new HashSet<UniqueKey>());
     }
     getUniqueKeys().add(new UniqueKey(this, _attrList));
   }
 
-
   /**
    * Add a new child type for this type. All sub child types of the child type
-   * are also defined as child type of this type.<br/>
-   * Also for all parent types (of this type), the child type (with sub child
-   * types) are added.
-   *
-   * @param _childType  child type to add
+   * are also defined as child type of this type.<br/> Also for all parent
+   * types (of this type), the child type (with sub child types) are added.
+   * 
+   * @param _childType
+   *          child type to add
    * @see #childTypes
    */
-  private void addChildType(final Type _childType)  {
-//    for (Attribute linkAttr: getLinks().values())  {
-//      _childType.addLink(linkAttr);
-//    }
-//    for (Type subChildType : _childType.getChildTypes())  {
-//      getChildTypes().add(subChildType);
-//      for (Attribute linkAttr: getLinks().values())  {
-//        subChildType.addLink(linkAttr);
-//      }
-//    }
+  private void addChildType(final Type _childType) {
+    // for (Attribute linkAttr: getLinks().values()) {
+    // _childType.addLink(linkAttr);
+    // }
+    // for (Type subChildType : _childType.getChildTypes()) {
+    // getChildTypes().add(subChildType);
+    // for (Attribute linkAttr: getLinks().values()) {
+    // subChildType.addLink(linkAttr);
+    // }
+    // }
     Type parent = this;
-    while (parent != null)  {
+    while (parent != null) {
       parent.getChildTypes().add(_childType);
       parent.getChildTypes().addAll(_childType.getChildTypes());
-//System.out.println("childTypes("+parent.getName()+")="+parent.getChildTypes());
+      // System.out.println("childTypes("+parent.getName()+")="+parent.getChildTypes());
       parent = parent.getParentType();
     }
   }
 
   /**
    * Adds a new trigger event to this type.
-   *
-   * @param _triggerEvent   trigger class name to add
-   * @param _eventDef       event defition to add
+   * 
+   * @param _triggerEvent
+   *          trigger class name to add
+   * @param _eventDef
+   *          event defition to add
    */
-  public void addTrigger(final TriggerEvent _triggerEvent, final EventDefinition _eventDef)  {
-    List < EventDefinition > events = this.trigger.get(_triggerEvent);
-    if (events == null)  {
-      events = new ArrayList < EventDefinition > ();
+  public void addTrigger(final TriggerEvent _triggerEvent,
+      final EventDefinition _eventDef) {
+    List<EventDefinition> events = this.trigger.get(_triggerEvent);
+    if (events == null) {
+      events = new ArrayList<EventDefinition>();
       this.trigger.put(_triggerEvent, events);
     }
     int pos = 0;
-    for (EventDefinition cur : events)  {
-      if (_eventDef.getIndexPos() > cur.getIndexPos())  {
+    for (EventDefinition cur : events) {
+      if (_eventDef.getIndexPos() > cur.getIndexPos()) {
         break;
       }
       pos++;
@@ -628,172 +606,172 @@ public class Type extends DataModelObject  {
 
   /**
    * Returns the ordered list of triggers assigned to this type instance.
-   *
-   * @param _triggerEvent   trigger class name for which the triggers
-   *                        should returned
+   * 
+   * @param _triggerEvent
+   *          trigger class name for which the triggers should returned
    */
-  public List < EventDefinition > getTrigger(final TriggerEvent _triggerEvent)  {
+  public List<EventDefinition> getTrigger(final TriggerEvent _triggerEvent) {
     return this.trigger.get(_triggerEvent);
   }
 
   /**
    * For the given type it is tested if a store is defined for the type.
-   *
-   * @param _type type to test
+   * 
+   * @param _type
+   *          type to test
    * @return <i>true</i> if a store resource is defined for the type, otherwise
    *         <i>false</i> is returned
    */
-  public boolean hasStoreResource()  {
+  public boolean hasStoreResource() {
     return getProperty("StoreResource") != null ? true : false;
   }
 
- 
   /**
    * This is the setter method for instance variable {@link #parentType}. Only
    * the DB reader is allowed to set this!
-   *
-   * @param _tableName new value for instance variable {@link #parentType}
+   * 
+   * @param _tableName
+   *          new value for instance variable {@link #parentType}
    * @see #parentType
    * @see #getParentType
    */
-  private void setParentType(final Type _parentType)  {
+  private void setParentType(final Type _parentType) {
     this.parentType = _parentType;
   }
 
   /**
    * This is the getter method for instance variable {@link #parentType}.
-   *
+   * 
    * @return value of instance variable {@link #parentType}
    * @see #parentType
    * @see #setParentType
    */
-  public Type getParentType()  {
+  public Type getParentType() {
     return this.parentType;
   }
 
   /**
    * This is the getter method for instance variable {@link #childTypes}.
-   *
+   * 
    * @return value of instance variable {@link #childTypes}
    * @see #childTypes
    */
-  public Set < Type > getChildTypes()  {
+  public Set<Type> getChildTypes() {
     return this.childTypes;
   }
 
   /**
    * This is the getter method for instance variable {@link #attributes}.
-   *
+   * 
    * @return value of instance variable {@link #attributes}
    * @see #attributes
    */
-  public Map < String, Attribute > getAttributes()  {
+  public Map<String, Attribute> getAttributes() {
     return this.attributes;
   }
 
   /**
    * This is the getter method for instance variable {@link #cache}.
-   *
+   * 
    * @return value of instance variable {@link #cache}
    * @see #setCache
    * @see #cache
    */
-  public Cache getCache()  {
+  public Cache getCache() {
     return this.cache;
   }
 
   /**
    * This is the setter method for instance variable {@link #cache}.
-   *
-   * @param _cache new value for instance variable {@link #cache}
+   * 
+   * @param _cache
+   *          new value for instance variable {@link #cache}
    * @see #getCache
    * @see #cache
    */
-  private void setCache(final Cache _cache)  {
+  private void setCache(final Cache _cache) {
     this.cache = _cache;
   }
 
   /**
    * This is the getter method for instance variable {@link #policies}.
-   *
+   * 
    * @return value of instance variable {@link #policies}
    * @see #addPolicy
    * @see #policies
    */
-  public Set < Policy > getPolicies()  {
+  public Set<Policy> getPolicies() {
     return this.policies;
   }
 
   /**
    * This is the getter method for instance variable {@link #tables}.
-   *
+   * 
    * @return value of instance variable {@link #tables}
    * @see #addPolicy
    * @see #tables
    */
-  public Set < SQLTable > getTables()  {
+  public Set<SQLTable> getTables() {
     return this.tables;
   }
 
   /**
    * This is the getter method for instance variable {@link #mainTable}.
-   *
+   * 
    * @return value of instance variable {@link #mainTable}
    * @see #setMainTable
    * @see #mainTable
    */
-  public SQLTable getMainTable()  {
+  public SQLTable getMainTable() {
     return this.mainTable;
   }
 
   /**
    * This is the setter method for instance variable {@link #mainTable}.
-   *
-   * @param _mainTable new value for instance variable {@link #mainTable}
+   * 
+   * @param _mainTable
+   *          new value for instance variable {@link #mainTable}
    * @see #getMainTable
    * @see #mainTable
    */
-  private void setMainTable(final SQLTable _mainTable)  {
+  private void setMainTable(final SQLTable _mainTable) {
     this.mainTable = _mainTable;
   }
 
   /**
    * This is the getter method for instance variable {@link #formView}.
-   *
+   * 
    * @return value of instance variable {@link #formView}
    * @see #setFormView
    * @see #formView
    */
-  public Form getFormView()  {
+  public Form getFormView() {
     return this.formView;
   }
 
- 
   /**
    * This is the getter method for instance variable {@link #formEdit}.
-   *
+   * 
    * @return value of instance variable {@link #formEdit}
    * @see #setFormEdit
    * @see #formEdit
    */
-  public Form getFormEdit()  {
+  public Form getFormEdit() {
     return this.formEdit;
   }
 
- 
   /**
    * This is the getter method for instance variable {@link #formCreate}.
-   *
+   * 
    * @return value of instance variable {@link #formCreate}
    * @see #setFormCreate
    * @see #formCreate
    */
-  public Form getFormCreate()  {
+  public Form getFormCreate() {
     return this.formCreate;
   }
 
- 
-String treeMenuName = null;
+  String treeMenuName = null;
 
   private void setTreeMenuName(final String _treeMenuName) {
     this.treeMenuName = _treeMenuName;
@@ -810,79 +788,80 @@ String treeMenuName = null;
     return this.treeMenu;
   }
 
-
   /**
    * This is the getter method for instance variable {@link #viewAttribute}.
-   *
+   * 
    * @return value of instance variable {@link #viewAttribute}
    * @see #setViewAttribute
    * @see #viewAttribute
    */
-  public Attribute getViewAttribute()  {
+  public Attribute getViewAttribute() {
     return this.viewAttribute;
   }
 
-  
   /**
    * This is the getter method for instance variable {@link #uniqueKeys}.
-   *
+   * 
    * @return value of instance variable {@link #uniqueKeys}
    * @see #setUniqueKeys
    * @see #uniqueKeys
    */
-  public Collection < UniqueKey > getUniqueKeys()  {
+  public Collection<UniqueKey> getUniqueKeys() {
     return this.uniqueKeys;
   }
 
   /**
    * This is the setter method for instance variable {@link #uniqueKeys}.
-   *
-   * @param _uniqueKeys new value for instance variable {@link #uniqueKeys}
+   * 
+   * @param _uniqueKeys
+   *          new value for instance variable {@link #uniqueKeys}
    * @see #getUniqueKeys
    * @see #uniqueKeys
    */
-  private void setUniqueKeys(final Collection < UniqueKey > _uniqueKeys)  {
+  private void setUniqueKeys(final Collection<UniqueKey> _uniqueKeys) {
     this.uniqueKeys = _uniqueKeys;
   }
 
   /**
    * This is the getter method for instance variable {@link #icon}.
-   *
+   * 
    * @return value of instance variable {@link #icon}
    * @see #setIcon
    * @see #icon
    */
-  public String getIcon()  {
+  public String getIcon() {
     return this.icon;
   }
 
   /**
    * This is the setter method for instance variable {@link #icon}.
-   *
-   * @param _icon new value for instance variable {@link #icon}
+   * 
+   * @param _icon
+   *          new value for instance variable {@link #icon}
    * @see #getIcon
    * @see #icon
    */
-  private void setIcon(final String _icon)  {
+  private void setIcon(final String _icon) {
     this.icon = _icon;
   }
 
   /**
    * This is the getter method for instance variable {@link #links}.
-   *
+   * 
    * @return value of instance variable {@link #links}
    * @see #links
    */
-  public Map < String, Attribute > getLinks()  {
+  public Map<String, Attribute> getLinks() {
     return this.links;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Initialise the cache of types.
-   *
-   * @param _context  eFaps context for this request
+   * 
+   * @param _context
+   *          eFaps context for this request
    */
   public static void initialise() throws CacheReloadException {
     ConnectionResource con = null;
@@ -971,28 +950,29 @@ String treeMenuName = null;
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Type}.
-   *
+   * 
    * @return instance of class {@link Type}
    */
-  public static Type get(final long _id)  {
+  public static Type get(final long _id) {
     return getTypeCache().get(_id);
   }
 
   /**
-   * Returns for given parameter <i>_name</i> the instance of class {@link Type}.
-   *
+   * Returns for given parameter <i>_name</i> the instance of class
+   * {@link Type}.
+   * 
    * @return instance of class {@link Type}
    */
-  public static Type get(final String _name)  {
+  public static Type get(final String _name) {
     return getTypeCache().get(_name);
   }
 
   /**
    * Static getter method for the type hashtable {@link #typeCache}.
-   *
+   * 
    * @return value of static variable {@link #typeCache}
    */
-  static Cache < Type > getTypeCache()  {
+  static Cache<Type> getTypeCache() {
     return typeCache;
   }
 }

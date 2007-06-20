@@ -24,23 +24,29 @@
 -->
 
 <datamodel-type>
-  <uuid>f5e1e2ff-bfa9-40d9-8340-a259f48d5ad9</uuid>
+  <uuid>03f0ab61-aaf6-4566-a6a9-d86b343acd66</uuid>
 
-  <!-- define type (is already defined) -->
+  <!-- create type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==11)</mode>
+      <mode>(version==5)</mode>
     </version>
-    <name>Admin_User_Group</name>
-    <parent>Admin_User_Abstract</parent>
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_User_GroupImage</property>
-    <property name="Tree">Admin_User_GroupTree</property>
-    <!-- triggers -->
-    <trigger name="Admin_User_Group_AccessCheck" event="ACCESSCHECK" program="org.efaps.programs.SimpleAccessCheckOnType" method="execute" index="1"/>
+    <name>Admin_Event_AccessCheck</name>
+  </definition>
+
+  <!-- define type -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==6)</mode>
+    </version>
+    <name>Admin_Event_AccessCheck</name>
+    <parent>Admin_Event_Definition</parent>
   </definition>
 
 </datamodel-type>

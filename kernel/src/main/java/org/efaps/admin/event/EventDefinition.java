@@ -206,11 +206,9 @@ public class EventDefinition extends AdminObject implements EventExecution {
     query.addSelect("ID");
     query.addSelect("Type");
     query.addSelect("Name");
-    query.addSelect("IndexPosition");
     query.addSelect("Abstract");
-    query.addSelect("Abstract.Type");
+    query.addSelect("IndexPosition");
     query.addSelect("JavaProg");
-    query.addSelect("JavaProg.Name");
     query.addSelect("Method");
     query.executeWithoutAccessCheck();
 
@@ -223,25 +221,26 @@ public class EventDefinition extends AdminObject implements EventExecution {
       Type eventType = (Type) query.get("Type");
       String eventName = (String) query.get("Name");
       long eventPos = (Long) query.get("IndexPosition");
-      long parentId = (Long) query.get("Abstract");
-      Type parentType = (Type) query.get("Abstract.Type");
-      long programId = (Long) query.get("JavaProg");
-      String resName = (String) query.get("JavaProg.Name");
+      long abstractID = (Long) query.get("Abstract");
+      Long programId = (Long) query.get("JavaProg");
       String method = (String) query.get("Method");
+
+      String resName = getClassName(programId.toString());
+
       if (LOG.isDebugEnabled()) {
         LOG.debug("   OID=" + eventOID);
         LOG.debug("   eventId=" + eventId);
         LOG.debug("   eventType=" + eventType);
         LOG.debug("   eventName=" + eventName);
         LOG.debug("   eventPos=" + eventPos);
-        LOG.debug("   parentId=" + parentId);
-        LOG.debug("   parentType=" + parentType);
+        LOG.debug("   parentId=" + abstractID);
         LOG.debug("   programId=" + programId);
-        LOG.debug("   JaveProgName=" + resName);
         LOG.debug("   Method=" + method);
+        LOG.debug("   resName=" + resName);
       }
 
-      EFapsClassName eFapsClass = EFapsClassName.getEnum(parentType.getName());
+      EFapsClassName eFapsClass =
+          EFapsClassName.getEnum(getTypeName(abstractID));
 
       TriggerEvent triggerEvent = null;
       for (TriggerEvent trigger : TriggerEvent.values()) {
@@ -256,7 +255,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
       }
 
       if (eFapsClass == EFapsClassName.DATAMODEL_TYPE) {
-        Type type = Type.get(parentId);
+        Type type = Type.get(abstractID);
         if (LOG.isDebugEnabled()) {
           LOG.debug("    type=" + type);
         }
@@ -265,7 +264,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
             eventPos, resName, method, eventOID));
 
       } else if (eFapsClass == EFapsClassName.COMMAND) {
-        Command command = Command.get(parentId);
+        Command command = Command.get(abstractID);
 
         if (LOG.isDebugEnabled()) {
           LOG.debug("    Command=" + command.getName());
@@ -275,7 +274,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
 
       } else if (eFapsClass == EFapsClassName.FIELD) {
 
-        Field field = Field.get(parentId);
+        Field field = Field.get(abstractID);
 
         if (LOG.isDebugEnabled()) {
           LOG.debug("       Field=" + field.getName());
@@ -285,7 +284,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
             eventPos, resName, method, eventOID));
 
       } else if (eFapsClass == EFapsClassName.DATAMODEL_ATTRIBUTE) {
-        Attribute attribute = Attribute.get(parentId);
+        Attribute attribute = Attribute.get(abstractID);
         if (LOG.isDebugEnabled()) {
           LOG.debug("      Attribute=" + attribute.getName());
         }
@@ -299,4 +298,64 @@ public class EventDefinition extends AdminObject implements EventExecution {
     }
 
   }
+
+  /**
+   * get the ClassName from the Database
+   * 
+   * @param _id
+   *          ID of the Program the ClassName is searched for
+   * @return ClassName
+   */
+  private static String getClassName(final String _id) {
+    SearchQuery query = new SearchQuery();
+    String Name = null;
+    try {
+      query.setQueryTypes("Admin_Program_Java");
+      query.addSelect("Name");
+      query.addWhereExprEqValue("ID", _id);
+      query.executeWithoutAccessCheck();
+      if (query.next()) {
+        Name = (String) query.get("Name");
+      } else {
+        LOG.error("Can't find the Name for the Program with ID: " + _id);
+      }
+    } catch (EFapsException e) {
+      LOG.error("getClassName(String)", e);
+    }
+    return Name;
+  }
+
+  /**
+   * get the Name of the Type from the Database
+   * 
+   * @param abstractID
+   *          ID the Typename must be resolved
+   * @return NAem of the Type
+   */
+  private static String getTypeName(final long abstractID) {
+    SearchQuery query = new SearchQuery();
+    Type type = null;
+    try {
+      query.setQueryTypes("Admin_Abstract");
+      query.addSelect("Type");
+      query.addWhereExprEqValue("ID", abstractID);
+      query.setExpandChildTypes(true);
+      query.executeWithoutAccessCheck();
+      if (query.next()) {
+        type = (Type) query.get("Type");
+      } else {
+        //wird gebraucht, da fuer Admin_Abstract die Query nicht funktioniert
+        type = Type.get(abstractID);
+      }
+    } catch (EFapsException e) {
+      LOG.error("getClassName(String)", e);
+    }
+    if (type == null) {
+      LOG.error("Can't find the Type  with ID: " + abstractID);
+    } else {
+      return type.getName();
+    }
+    return null;
+  }
+
 }

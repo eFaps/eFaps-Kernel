@@ -33,6 +33,7 @@ package org.efaps.admin.event;
  */
 public enum TriggerEvent  {
 
+  ACCESSCHECK        ("Admin_Event_AccessCheck"),
   CHECKIN_OVERRIDE   ("Admin_Event_Trigger_CheckinOverride"),
   CHECKIN_POST       ("Admin_Event_Trigger_CheckinPost"),
   CHECKIN_PRE        ("Admin_Event_Trigger_CheckinPre"),
@@ -46,10 +47,11 @@ public enum TriggerEvent  {
   INSERT_OVERRIDE    ("Admin_Event_Trigger_InsertOverride"),
   INSERT_POST        ("Admin_Event_Trigger_InsertPost"),
   INSERT_PRE         ("Admin_Event_Trigger_InsertPre"),
+  RANGE_VALUE        ("Admin_Event_RangeValue"),
   UPDATE_OVERRIDE    ("Admin_Event_Trigger_UpdateOverride"),
   UPDATE_POST        ("Admin_Event_Trigger_UpdatePost"),
-  UPDATE_PRE         ("Admin_Event_Trigger_UpdatePre"),
-  RANGE_VALUE        ("Admin_Event_RangeValue");
+  UPDATE_PRE         ("Admin_Event_Trigger_UpdatePre");
+  
   
   public final String name;
 

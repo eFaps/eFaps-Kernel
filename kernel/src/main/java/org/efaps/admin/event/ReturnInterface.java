@@ -31,14 +31,16 @@ import java.util.Set;
  * 
  * @author jmo
  * @version $Id$
- * 
  * @param <K>
  * @param <V>
  */
 public interface ReturnInterface<K, V> {
 
   public enum ReturnValues {
-    VALUES
+    /** used to return a Map of Values */
+    VALUES,
+    /** used to return true */
+    TRUE;
   }
 
   public void put(ReturnValues _key, Object _value);

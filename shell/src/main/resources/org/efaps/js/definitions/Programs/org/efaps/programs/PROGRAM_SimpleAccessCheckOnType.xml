@@ -16,31 +16,29 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Author:          jmo
+ Revision:        $Rev:851 $
+ Last Changed:    $Date:2007-06-02 12:36:03 -0500 (Sat, 02 Jun 2007) $
+ Last Changed By: $Author:jmo $
 
 -->
 
-<datamodel-type>
-  <uuid>f5e1e2ff-bfa9-40d9-8340-a259f48d5ad9</uuid>
+<program>
+  
 
-  <!-- define type (is already defined) -->
+  <!-- ************************************************************************
+    version definition used to create / update the Program 
+  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==11)</mode>
+      <local>$Rev:851 $</local>
+      <mode>true</mode>
+      <mode>(version==8)</mode>
     </version>
-    <name>Admin_User_Group</name>
-    <parent>Admin_User_Abstract</parent>
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_User_GroupImage</property>
-    <property name="Tree">Admin_User_GroupTree</property>
-    <!-- triggers -->
-    <trigger name="Admin_User_Group_AccessCheck" event="ACCESSCHECK" program="org.efaps.programs.SimpleAccessCheckOnType" method="execute" index="1"/>
+    
+    <file>SimpleAccessCheckOnType.java</file>
   </definition>
 
-</datamodel-type>
+</program>

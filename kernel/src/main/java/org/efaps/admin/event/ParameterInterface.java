@@ -25,21 +25,31 @@ import java.util.Set;
 /**
  * This Interface is the Interface for the Paramters to be used with the
  * <code>EventExecution</code> on executing. It is bassically just a Map
- * Inertface, but it provides the possibility to define how the Map is
+ * Interface, but it provides the possibility to define how the Map is
  * constructed.
  * 
  * @author jmo
  * @version $Id$
- * 
  * @param <K>
  * @param <V>
  */
 public interface ParameterInterface<K, V> {
 
+  /**
+   * This enum holds the Defenitions of Parameters, to be accessed
+   */
   public enum ParameterValues {
+    /** Holds an AccessType, used for AccessCheck-Programs */
+    ACCESSTYPE,
+    /** Holds an Instance */
     INSTANCE,
+    /**
+     * Holds the new Values for an Instance, used e.g. by Creation of a new
+     * Object
+     */
     NEW_VALUES,
-    PROPERTIES
+    /** Holds the Properties of the trigger */
+    PROPERTIES;
   }
 
   public void put(ParameterValues _key, Object _value);

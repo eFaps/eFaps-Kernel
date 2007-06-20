@@ -50,10 +50,25 @@
       <sqlcolumn>PARENTDMTYPE</sqlcolumn>
       <typelink>Admin_DataModel_Type</typelink>
     </attribute>
+   
+  </definition>
+  
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==11)</mode>
+    </version>
+    <name>Admin_DataModel_Type</name>
+    <parent>Admin_DataModel_Abstract</parent>
+    
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_DataModel_TypeImage</property>
     <property name="Tree">Admin_DataModel_TypeTree</property>
-    <property name="AccessCheckClass">org.efaps.admin.access.SimpleAccessCheckOnType</property>
-   </definition>
+    
+     <!-- triggers -->
+    <trigger name="Admin_DataModel_Type_AccessCheck" event="ACCESSCHECK" program="org.efaps.programs.SimpleAccessCheckOnType" method="execute" index="1"/>
+  </definition>
 
 </datamodel-type>
