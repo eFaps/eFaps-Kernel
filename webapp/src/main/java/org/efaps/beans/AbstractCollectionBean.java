@@ -72,70 +72,12 @@ public abstract class AbstractCollectionBean extends AbstractBean implements Col
         setCommand(Menu.get(_name));
       }
       if (getCommand()!=null)  {
-
-        if (getCommand().getTargetMenu()!=null)  {
-          if (getCommand().getTargetMenu().hasAccess(context))  {
-            setMenuHolder(new MenuAbstractBean.MenuHolder(context, getCommand().getTargetMenu()));
-          }
-        }
-
         setMode(getCommand().getTargetMode());
         setTargetFrame(getCommand().getTarget());
       }
   }
 
   /////////////////////////////////////////////////////////////////////////////
-
-// @TODO: obsolete
-  public void startProcessView() throws Exception  {
-//System.out.println("######## start view process");
-//this.viewContext = createNewContext();
-//this.viewContext = Context.getThreadContext();
-  }
-
-
-// @TODO: obsolete
-  public void endProcessView() throws Exception  {
-//System.out.println("######## end view process");
-//this.viewContext.close();
-//this.viewContext = null;
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-/**
- * The instance variable stores the menu holder instance object.
- *
- * @see #getMenuHolder
- * @see #setMenuHolder
- * @see #MenuHolder
- */
-private MenuAbstractBean.MenuHolder menuHolder = null;
-
-/////////////////////////////////////////////////////////////////////////////
-
-/**
- * This is the getter method for the instance variable {@link #menuHolder}.
- *
- * @return value of instance variable {@link #menuHolder}
- * @see #menuHolder
- * @see #setMenuHolder
- */
-public MenuAbstractBean.MenuHolder getMenuHolder()  {
-  return this.menuHolder;
-}
-
-/**
- * This is the setter method for the instance variable {@link #menuHolder}.
- *
- * @param _menuHolder  new value for instance variable {@link #menuHolder}
- * @see #menuHolder
- * @see #getMenuHolder
- */
-protected void setMenuHolder(MenuAbstractBean.MenuHolder _menuHolder)  {
-  this.menuHolder = _menuHolder;
-}
-
 
   /**
    * The instance method adds one hidden value to the list of hidden values in

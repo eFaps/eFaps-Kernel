@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.List;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Table;
@@ -45,6 +46,53 @@ import org.efaps.util.EFapsException;
 public class TableBean extends AbstractCollectionBean implements
     TableBeanInterface {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * All field definitions for the table are defined in this list.
+   *
+   * @see #evalFieldDefs
+   * @see #getFieldDefs
+   */
+  final private List < FieldDef > fieldDefs = new ArrayList < FieldDef > ();
+
+  /**
+   * The instance variable stores the table which must be shown.
+   * 
+   * @see #getTable
+   * @see #setTable
+   */
+  private Table table = null;
+
+  /**
+   * The instance variable stores the string of the sort key.
+   * 
+   * @see #getSortKey
+   * @see #setSortKey
+   */
+  private String sortKey        = null;
+
+  /**
+   * The instance variable stores the string of the sort direction.
+   * 
+   * @see #getSortDirection
+   * @see #setSortDirection
+   */
+  private String sortDirection  = null;
+
+  /**
+   * The instance variable stores the current selected filter of this web table
+   * representation.
+   * 
+   * @see #getSelectedFilter
+   * @see #setSelectedFilter(int)
+   * @see #setSelectedFilter(String)
+   */
+  int selectedFilter = 0;
+
+  /////////////////////////////////////////////////////////////////////////////
+
   public TableBean() throws EFapsException {
     super();
     System.out.println("TableBean.constructor");
@@ -55,16 +103,18 @@ public class TableBean extends AbstractCollectionBean implements
   }
 
   public void execute() throws Exception {
+
+    evalFieldDefs();
+
     Context context = Context.getThreadContext();
     System.out.println("--->selectedFilter=" + getSelectedFilter());
-//    executeTitle(context);
 
     SearchQuery query = new SearchQuery();
 
     if (getCommand().getProperty("TargetQueryTypes") != null) {
       query.setQueryTypes(getCommand().getProperty("TargetQueryTypes"));
     } else if (getCommand().getProperty("TargetExpand") != null) {
-      query.setExpand(context, getInstance(), getCommand().getProperty(
+      query.setExpand(getInstance(), getCommand().getProperty(
           "TargetExpand"));
     }
 
@@ -91,26 +141,26 @@ public class TableBean extends AbstractCollectionBean implements
 
     setInitialised(true);
   }
-/*
-  protected void executeTitle(Context _context) throws Exception {
-    if (getTitle() != null && getInstance() != null) {
-      SearchQuery query = new SearchQuery();
-      query.setObject(getInstance());
-      // query.addAllFromString(_context, getTitle());
-      ValueParser parser = new ValueParser(new StringReader(getTitle()));
-      ValueList list = parser.ExpressionString();
-      list.makeSelect(query);
-      if (query.selectSize() > 0) {
-        query.execute();
-        if (query.next()) {
-          setTitle(list.makeString(_context, query));
-          // setTitle(query.replaceAllInString(_context, getTitle()));
-        }
-        query.close();
+
+  /**
+   * The field definitions for the current table in {@link #table} are set.
+   * Each existing label of a field column are translated.
+   *
+   * @see #fieldDefs
+   * @todo depending on the access on a field the field definition is set
+   */
+  protected void evalFieldDefs()  {
+    this.fieldDefs.clear();
+    for (Field field : this.table.getFields())  {
+      String label = field.getLabel();
+      if (label != null)  {
+        label = DBProperties.getProperty(label);
       }
+      this.fieldDefs.add(new FieldDef(label, field));
     }
   }
-*/
+
+
   void executeRowResult(Context _context, SearchQuery _query) throws Exception {
     while (_query.next()) {
       Row row = new Row(_query.getRowOIDs(_context));
@@ -197,43 +247,9 @@ public class TableBean extends AbstractCollectionBean implements
     return getCommand().isTargetShowCheckBoxes();
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
-  /**
-   * The instance variable stores the table which must be shown.
-   * 
-   * @see #getTable
-   * @see #setTable
-   */
-  private Table  table          = null;
-
-  /**
-   * The instance variable stores the string of the sort key.
-   * 
-   * @see #getSortKey
-   * @see #setSortKey
-   */
-  private String sortKey        = null;
-
-  /**
-   * The instance variable stores the string of the sort direction.
-   * 
-   * @see #getSortDirection
-   * @see #setSortDirection
-   */
-  private String sortDirection  = null;
-
-  /**
-   * The instance variable stores the current selected filter of this web table
-   * representation.
-   * 
-   * @see #getSelectedFilter
-   * @see #setSelectedFilter(int)
-   * @see #setSelectedFilter(String)
-   */
-  int            selectedFilter = 0;
-
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the getter method for the instance variable {@link #table}.
@@ -327,9 +343,20 @@ public class TableBean extends AbstractCollectionBean implements
     this.selectedFilter = _selectedFilter;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * This is the getter method for the instance variable {@link #fieldDefs}.
+   * 
+   * @return value of instance variable {@link #fieldDefs}
+   * @see #fieldDefs
+   * @see #evalFieldDefs
+   */
+  public List < FieldDef > getFieldDefs()  {
+    return this.fieldDefs;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * The inner class stores one row of the table.
@@ -354,8 +381,9 @@ public class TableBean extends AbstractCollectionBean implements
      */
     public void add(Field _field, UIInterface _classUI, Object _value,
                     Instance _instance) {
+
       getValues().add(
-          new Value(_field.getLabel(), _field, _classUI, _value, _instance));
+          new Value(null, _field, _classUI, _value, _instance));
     }
 
     /**
@@ -417,6 +445,44 @@ public class TableBean extends AbstractCollectionBean implements
      */
     public void setOids(String _oids) {
       this.oids = _oids;
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  
+  public class FieldDef {
+
+    /** Stores the label of the field definition. */
+    final String label;
+
+    /** Stores the field of the field definition. */
+    final Field field;
+
+    private FieldDef(final String _label,
+                     final Field _field)
+    {
+      this.label = _label;
+      this.field = _field;
+    }
+
+    /**
+     * Getter method for instance variable {@link #label}.
+     *
+     * @see #label
+     */
+    public String getLabel()  {
+      return this.label;
+    }
+
+    /**
+     * Getter method for instance variable {@link #field}.
+     *
+     * @see #field
+     */
+    public Field getField()  {
+      return this.field;
     }
   }
 }

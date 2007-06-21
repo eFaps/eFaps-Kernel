@@ -229,46 +229,31 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
           </c:if>
 
           <%-- /** show table header labels **/ --%>
-          <c:forEach items="${uiObject.table.fields}" var="one">
+          <c:forEach items="${uiObject.fieldDefs}" var="one">
             <%-- /** show only fields if they are not hidden! **/ --%>
-            <c:if test="${one.hidden eq false}">
+            <c:if test="${one.field.hidden eq false}">
               <th class="eFapsTableHeader">
                 <%-- /** make href for the sort **/ --%>
                 <c:choose>
                   <%-- /** sort dir is down if key is equal current field and direction is up **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.name and uiObject.sortDirection ne '-'}">
-                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.name}"/>','-')">
+                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
+                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','-')">
                   </c:when>
                   <%-- /** otherwise sort dir is down **/ --%>
                   <c:otherwise>
-                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.name}"/>','')">
+                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','')">
                   </c:otherwise>
                 </c:choose>
-                <%-- /** show label (if exists) **/--%>
-                <c:if test="${one.label ne null}">
-                  <fmt:message key="${one.label}" var="label"/>
-                  <c:set var="keyWithQuestionMark" value="???${one.label}???"/>
-                  <%-- /** test if label exists in the property file **/ --%>
-                  <c:choose>
-                    <%-- /** label does not exists in the property file, this means show the original label **/ --%>
-                    <c:when test="${label eq keyWithQuestionMark}">
-                      <c:out value="${one.label}"/>
-                    </c:when>
-                    <%-- /** label exists in the property file, this means show the internationalised label **/ --%>
-                    <c:otherwise>
-                      <c:out value="${label}"/>
-                    </c:otherwise>
-                  </c:choose>
-                  <c:remove var="label"/>
-                </c:if>
+                <%-- /** show label **/ --%>
+                <c:out value="${one.label}"/>
                 <%-- /** show the sort image **/ --%>
                 <c:choose>
                   <%-- /** show sort up image **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.name and uiObject.sortDirection eq '-'}">
+                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection eq '-'}">
                     <img src="../images/eFapsTableButtonSortDown.gif"/>
                   </c:when>
                   <%-- /** show sort down image **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.name and uiObject.sortDirection ne '-'}">
+                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
                     <img src="../images/eFapsTableButtonSortUp.gif"/>
                   </c:when>
                   <%-- /** otherwise show a dummy image **/ --%>
@@ -302,8 +287,6 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
 String mode = request.getParameter("mode");
 boolean printMode = (mode!=null && mode.equals("print") ? true : false);
 
-
-((org.efaps.beans.AbstractCollectionBean)uiObject).startProcessView();
 
 // because of performance reason, the following is a pure java implementation
 boolean odd = true;
@@ -389,16 +372,54 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
   out.print("</tr>");
 }
 
-((org.efaps.beans.AbstractCollectionBean)uiObject).endProcessView();
-
-
 
 %>
-<%
-System.out.println("...............................END:"+new java.util.Date());
-%>
+        <%-- Show header again to get correct width --%>
+        <tr>
+          <%-- /** show select checkbox only if not mode print and show check boxes is defined **/ --%>
+          <c:if test="${(empty param.mode or param.mode ne 'print') and uiObject.showCheckBoxes}">
+            <th class="eFapsTableHeader" width="1%">
+            </th>
+          </c:if>
 
-
+          <%-- /** show table header labels **/ --%>
+          <c:forEach items="${uiObject.fieldDefs}" var="one">
+            <%-- /** show only fields if they are not hidden! **/ --%>
+            <c:if test="${one.field.hidden eq false}">
+              <th class="eFapsTableHeader">
+                <%-- /** make href for the sort **/ --%>
+                <c:choose>
+                  <%-- /** sort dir is down if key is equal current field and direction is up **/ --%>
+                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
+                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','-')">
+                  </c:when>
+                  <%-- /** otherwise sort dir is down **/ --%>
+                  <c:otherwise>
+                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','')">
+                  </c:otherwise>
+                </c:choose>
+                <%-- /** show label **/ --%>
+                <c:out value="${one.label}"/>
+                <%-- /** show the sort image **/ --%>
+                <c:choose>
+                  <%-- /** show sort up image **/ --%>
+                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection eq '-'}">
+                    <img src="../images/eFapsTableButtonSortDown.gif"/>
+                  </c:when>
+                  <%-- /** show sort down image **/ --%>
+                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
+                    <img src="../images/eFapsTableButtonSortUp.gif"/>
+                  </c:when>
+                  <%-- /** otherwise show a dummy image **/ --%>
+                  <c:otherwise>
+                    <img src="../images/eFapsTableButtonSortDummy.gif"/>
+                  </c:otherwise>
+                </c:choose>
+                </a>
+              </th>
+            </c:if>
+          </c:forEach>
+        </tr>
 
       </table>
 
@@ -406,6 +427,9 @@ System.out.println("...............................END:"+new java.util.Date());
 </div>
   
 </f:view>
+<%
+System.out.println("...............................END:"+new java.util.Date());
+%>
 
     <%-- /** hidden frame **/ --%>
     <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="about:blank">

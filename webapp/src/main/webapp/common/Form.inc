@@ -250,11 +250,6 @@ function eFapsSubmit()  {
             <c:set var="groupCount" value="1"/>
             <c:set var="rowGroupCount" value="1"/>
 
-<%
-
-((org.efaps.beans.AbstractCollectionBean)uiObject).startProcessView();
-%>
-
             <c:forEach items="${uiObject.values}" var="value" begin="1">
 
               <c:choose>
@@ -363,10 +358,6 @@ function eFapsSubmit()  {
                 </c:when>
               </c:choose>
             </c:forEach>
-
-<%
-((org.efaps.beans.AbstractCollectionBean)uiObject).endProcessView();
-%>
 
           </c:if>
         </table>
