@@ -48,6 +48,12 @@
     <name>Admin_User_Abstract2Abstract</name>
     <!-- attributes -->
     <attribute>
+      <name>Type</name>
+      <type>Type</type>
+      <sqltable>Admin_User_Abstract2AbstractSQLTable</sqltable>
+      <sqlcolumn>TYPEID</sqlcolumn>
+    </attribute>
+    <attribute>
       <name>OID</name>
       <type>OID</type>
       <sqltable>Admin_User_Abstract2AbstractSQLTable</sqltable>
@@ -58,6 +64,14 @@
       <type>Integer</type>
       <sqltable>Admin_User_Abstract2AbstractSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>UserJAASSystem</name>
+      <type>Link</type>
+      <type>Link</type>
+      <sqltable>Admin_User_Abstract2AbstractSQLTable</sqltable>
+      <sqlcolumn>USERJAASSYSTEM</sqlcolumn>
+      <typelink>Admin_User_JAASSystem</typelink>
     </attribute>
     <attribute>
       <name>Creator</name>

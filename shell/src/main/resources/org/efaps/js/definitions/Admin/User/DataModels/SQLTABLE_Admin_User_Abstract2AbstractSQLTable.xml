@@ -82,6 +82,7 @@
     </version>
 
     <name>Admin_User_Abstract2AbstractSQLTable</name>
+    <typeid-column>TYPEID</typeid-column>
     <database>
       <table-name>USERABSTRACT2ABSTRACT</table-name>
     </database>
