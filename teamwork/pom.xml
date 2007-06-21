@@ -58,7 +58,7 @@
 
       <plugin>
         <groupId>org.efaps</groupId>
-        <artifactId>efaps-maven-plugin</artifactId>
+        <artifactId>maven-efaps-plugin</artifactId>
         <version>1.0-SNAPSHOT</version>
         <configuration>
           <connection>
