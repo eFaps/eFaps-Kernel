@@ -246,12 +246,12 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-core</artifactId>
-      <version>1.0-RC1</version>
+      <version>1.0</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-javac</artifactId>
-      <version>1.0-RC1</version>
+      <version>1.0</version>
     </dependency>
 
     <!-- file system used for checkin / checkout on external resources -->
