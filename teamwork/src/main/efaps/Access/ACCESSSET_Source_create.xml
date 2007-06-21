@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<access-set>
+  <uuid>3ebeedbf-f423-4ac5-b865-db76f6447e47</uuid>
+
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==3)</mode>
+    </version>
+
+    <name>Source create</name>
+
+    <access-type>show</access-type>
+    <access-type>read</access-type>
+    <access-type>checkout</access-type>
+    <access-type>checkin</access-type>
+    <access-type>create</access-type>
+    
+    <type>TeamWork_Source</type>
+   
+    <role>TeamWorkAdmin</role>
+    <role>TeamWorkPowerUser</role>
+    
+  </definition>
+
+</access-set>
