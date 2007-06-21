@@ -104,9 +104,9 @@ CP=$CP:$shellPathLib/geronimo-spec-jta-1.0-M1.jar
 CP=$CP:$shellPathLib/slide-kernel-2.1.jar
 
 # Java compiler
-CP=$CP:$shellPathLib/commons-jci-core-1.0-RC1.jar
-CP=$CP:$shellPathLib/commons-jci-fam-1.0-RC1.jar
-CP=$CP:$shellPathLib/commons-jci-javac-1.0-RC1.jar
+CP=$CP:$shellPathLib/commons-jci-core-1.0.jar
+CP=$CP:$shellPathLib/commons-jci-fam-1.0.jar
+CP=$CP:$shellPathLib/commons-jci-javac-1.0.jar
 CP=$CP:$shellPathLib/asm-2.2.jar
 CP=$CP:$shellPathLib/asm-util-2.2.1.jar
 CP=$CP:$shellPathLib/asm-tree-2.2.1.jar
