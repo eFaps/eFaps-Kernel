@@ -52,10 +52,15 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonSearch</name>
+    <icon>Admin_User_PersonImage</icon>
+    <!-- target definitions -->
+    <target>
+      <form>Admin_User_PersonForm</form>
+      <table>Admin_User_PersonTable</table>
+    </target>
     <!-- properties -->
-    <property name="ResultTable">Admin_User_PersonTable</property>
-    <property name="SearchForm">Admin_User_PersonForm</property>
     <property name="SearchType">Admin_User_Person</property>
+    <property name="TargetMode">search</property>
   </definition>
 
 </ui-command>

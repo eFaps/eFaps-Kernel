@@ -108,23 +108,26 @@ function eFapsCommonGetScrollY() {
 }
 
 /**
- * The function opens the url in a window. If parameter <i>_target</i> is
- * "popup", the url is opened in a new window
+ * The function opens the url in a window.
  *
  * @param _href   (string)  url to open
- * @param _target (string)  name of the targer where to open the url
+ * @param _target (string)  name of the target where to open the url:
+ *                          "Popup" means new window
+ *                          "Replace" means same window
  * @param _width  (int)     width of the popup window
  * @param _height (int)     height of the popup window
  */
 function eFapsCommonOpenUrl(_href, _target, _width, _height)  {
-  if (_target=='Popup')  {
+  if (_target == "Popup")  {
     eFapsCommonOpenWindowNonModal(_href, _width, _height);
+  } else if (_target == "Replace")  {
+    window.location.href = _href;
   } else  {
     var target;
     if (window.location.href.indexOf("MenuRequest")>=0)  {
       target = eFapsCommonFindFrame(parent, _target);
-    } else if (_href.indexOf("&nodeId=")>0 || _href.indexOf("?nodeId=")>0)  {
-      target = eFapsCommonFindFrame(parent, _target);
+    } else if ((_href.indexOf("&nodeId=") > 0) || (_href.indexOf("?nodeId=") > 0))  {
+      target = eFaapsCommonFindFrame(parent, _target);
       if (!target)  {
         target = eFapsCommonFindFrame(parent.parent, _target);
       }

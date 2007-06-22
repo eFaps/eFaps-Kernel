@@ -81,6 +81,8 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   static public final int TARGET_MODE_EDIT = 2;
 
+  static public final int TARGET_MODE_SEARCH = 5;
+
   static public final int TARGET_MODE_UNKNOWN = 0;
 
   static public final int TARGET_MODE_VIEW = 1;
@@ -1256,6 +1258,8 @@ public abstract class CommandAbstract extends UserInterfaceObject {
         setTargetMode(TARGET_MODE_EDIT);
       } else if (_value.equals("connect")) {
         setTargetMode(TARGET_MODE_CONNECT);
+      } else if (_value.equals("search"))  {
+        setTargetMode(TARGET_MODE_SEARCH);
       } else if (_value.equals("view")) {
         setTargetMode(TARGET_MODE_VIEW);
       }

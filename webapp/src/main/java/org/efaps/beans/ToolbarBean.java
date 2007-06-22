@@ -47,7 +47,7 @@ public class ToolbarBean  {
   /**
    *
    */
-  private Menu menu = null;
+  private MenuAbstract menu = null;
 
   /**
    * Object id of the instance which is used to evalute the expressions.
@@ -56,6 +56,16 @@ public class ToolbarBean  {
    * @see #setOid
    */
   private String oid = null;
+
+  /**
+   * Is the current toolbar sed from a search?
+   */
+  private boolean search = false;
+
+  /**
+   * Original command defining this toolbar menu.
+   */
+  private CommandAbstract originalCommand = null;
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -144,33 +154,40 @@ return null;
 // TODO append nodeId
 
     // append target
-    url.append("\",\""); 
-    switch (_command.getTarget())  {
-      case CommandAbstract.TARGET_CONTENT:
-        url.append("Content");
-        break;
-      case CommandAbstract.TARGET_HIDDEN:
-        url.append("eFapsFrameHidden");
-        break;
-      case CommandAbstract.TARGET_POPUP:
-        url.append("popup");
-        if ((_command.getWindowWidth() > 0) &&
-           (_command.getWindowHeight() > 0))  {
-          url.append("\",\"")
-             .append(_command.getWindowWidth())
-             .append("\",\"")
-             .append(_command.getWindowHeight());
-        }
-        break;
-      default:
-        if (_command.hasTrigger())  {
-          url.append("eFapsFrameHidden");
-        } else  {
+    if (this.search)  {
+      url.append("&search=")
+         .append(this.originalCommand.getName())
+         .append("\",\"Replace\"");
+    } else  {
+      url.append("\",\"");
+      switch (_command.getTarget())  {
+        case CommandAbstract.TARGET_CONTENT:
           url.append("Content");
-        }
+          break;
+        case CommandAbstract.TARGET_HIDDEN:
+          url.append("eFapsFrameHidden");
+          break;
+        case CommandAbstract.TARGET_POPUP:
+          url.append("popup");
+          if ((_command.getWindowWidth() > 0) &&
+             (_command.getWindowHeight() > 0))  {
+            url.append("\",\"")
+               .append(_command.getWindowWidth())
+               .append("\",\"")
+               .append(_command.getWindowHeight());
+          }
+          break;
+        default:
+          if (_command.hasTrigger())  {
+            url.append("eFapsFrameHidden");
+          } else  {
+            url.append("Content");
+          }
+      }
+      url.append("\""); 
     }
-    url.append("\")"); 
 
+      url.append(")"); 
     return url.toString();
   }
 
@@ -190,21 +207,38 @@ return null;
    * @see #targetFrame
    */
   public void setCommandName(final String _name) throws EFapsException  {
-    CommandAbstract command = Command.get(_name);
+    this.originalCommand = getCommand(_name);
 
+    if (this.originalCommand != null)  {
+
+if (this.originalCommand.getTargetMode() == CommandAbstract.TARGET_MODE_SEARCH)  {
+  Context context = Context.getThreadContext();
+  this.originalCommand = getCommand(context.getParameter("search"));
+}
+
+if (this.originalCommand != null)  {
+      if (this.originalCommand.getTargetMenu() != null)  {
+Context context = Context.getThreadContext();
+        if (this.originalCommand.getTargetMenu().hasAccess(context))  {
+          this.menu = this.originalCommand.getTargetMenu();
+        }
+      } else if (this.originalCommand.getTargetSearch() != null)  {
+Context context = Context.getThreadContext();
+        if (this.originalCommand.getTargetSearch().hasAccess(context))  {
+          this.menu = this.originalCommand.getTargetSearch();
+          this.search = true;
+        }
+      }
+}
+    }
+  }
+
+  protected CommandAbstract getCommand(final String _name) throws EFapsException  {
+    CommandAbstract command = Command.get(_name);
     if (command == null)  {
       command = Menu.get(_name);
     }
-
-    if (command != null)  {
-
-      if (command.getTargetMenu()!=null)  {
-Context context = Context.getThreadContext();
-        if (command.getTargetMenu().hasAccess(context))  {
-          this.menu = command.getTargetMenu();
-        }
-      }
-    }
+    return command;
   }
 
   /////////////////////////////////////////////////////////////////////////////

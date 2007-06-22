@@ -118,7 +118,7 @@ public abstract class AbstractCollectionBean extends AbstractBean implements Col
    * @see #mode
    */
   public boolean isSearchMode()  {
-    return false;
+    return getMode() == CommandAbstract.TARGET_MODE_SEARCH;
   }
 
   /**

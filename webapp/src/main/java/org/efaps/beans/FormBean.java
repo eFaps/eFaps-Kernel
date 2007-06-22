@@ -128,11 +128,16 @@ public class FormBean extends AbstractCollectionBean {
 
   public void execute() throws Exception {
     Context context = Context.getThreadContext();
-    if (isCreateMode()) {
+    if (isCreateMode() || isSearchMode()) {
       setValues(new ArrayList());
       getValues().add(null);
 
-      Type type = getCommand().getTargetCreateType();
+      Type type = null;
+      if (isCreateMode())  {
+        type = getCommand().getTargetCreateType();
+      } else if (isSearchMode())  {
+        type = Type.get(getCommand().getProperty("SearchType"));
+      }
 
       for (int i = 0; i < getForm().getFields().size(); i++) {
         Field field = (Field) getForm().getFields().get(i);

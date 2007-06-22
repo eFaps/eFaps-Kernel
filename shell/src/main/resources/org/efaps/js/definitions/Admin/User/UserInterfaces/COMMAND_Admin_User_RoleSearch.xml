@@ -52,10 +52,15 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_RoleSearch</name>
+    <icon>Admin_User_RoleImage</icon>
+    <!-- target definitions -->
+    <target>
+      <form>Admin_User_AbstractForm</form>
+      <table>Admin_User_AbstractTable</table>
+    </target>
     <!-- properties -->
-    <property name="ResultTable">Admin_User_AbstractTable</property>
-    <property name="SearchForm">Admin_User_AbstractForm</property>
     <property name="SearchType">Admin_User_Role</property>
+    <property name="TargetMode">search</property>
   </definition>
 
 </ui-command>

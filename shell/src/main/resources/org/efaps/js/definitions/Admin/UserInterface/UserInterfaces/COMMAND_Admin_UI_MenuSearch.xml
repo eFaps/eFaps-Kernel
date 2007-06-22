@@ -52,14 +52,19 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_UI_MenuSearch</name>
+    <icon>Admin_UI_MenuImage</icon>
+    <!-- target definitions -->
+    <target>
+      <form>Admin_UI_AbstractForm</form>
+      <table>Admin_UI_AbstractList</table>
+    </target>
     <!-- access definitions -->
     <access>
       <role>Administration</role>
     </access>
     <!-- properties -->
-    <property name="ResultTable">Admin_UI_AbstractList</property>
-    <property name="SearchForm">Admin_UI_AbstractForm</property>
     <property name="SearchType">Admin_UI_Menu</property>
+    <property name="TargetMode">search</property>
   </definition>
 
 </ui-command>

@@ -35,33 +35,11 @@
   }
   if (command==null)  {
   } else if (command.getTargetForm()!=null)  {
-    %>
-      <%@include file="Form.inc"%>
-<%--
-      <jsp:forward page = "../common/Form.jsp">
-        <jsp:param name="command" value="<%=request.getParameter("command")%>"/>
-        <jsp:param name="oid" value="<%=request.getParameter("oid")%>"/>
-        <jsp:param name="nodeId" value="<%=request.getParameter("nodeId")%>"/>
-      </jsp:forward>
---%>
-    <%
+    %><%@include file="Form.inc"%><%
   } else if (command.getTargetTable()!=null)  {
-    %>
-      <%@include file="Table.inc"%>
-<%--
-      <jsp:forward page = "../common/Table.jsp">
-        <jsp:param name="command" value="<%=request.getParameter("command")%>"/>
-        <jsp:param name="oid" value="<%=request.getParameter("oid")%>"/>
-        <jsp:param name="nodeId" value="<%=request.getParameter("nodeId")%>"/>
-      </jsp:forward>
---%>
-    <%
+    %><%@include file="Table.inc"%><%
   } else if (command.getTargetSearch()!=null)  {
-    %>
-      <jsp:include page = "../common/Search.jsp">
-        <jsp:param name="search" value="<%=command.getTargetSearch().getName()%>"/>
-      </jsp:include>
-    <%
+    %><%@include file="Search.inc"%><%
   } else if (command.hasTrigger()){
     command.executeTrigger();
   }
