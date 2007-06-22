@@ -57,6 +57,11 @@
       <table>TeamWork_CollectionTable</table>
       <menu>TeamWork_RootCollectionMyDesk_Menu</menu>
     </target>
+    <access>
+      <role>TeamWorkAdmin</role>
+      <role>TeamWorkPowerUser</role>
+    </access>
+    
     <!-- property definitions -->
     <property name="Target">content</property>
     <property name="TargetQueryTypes">TeamWork_RootCollection</property>

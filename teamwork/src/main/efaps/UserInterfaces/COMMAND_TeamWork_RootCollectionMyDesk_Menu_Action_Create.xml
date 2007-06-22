@@ -53,6 +53,10 @@
     </version>
     <name>TeamWork_RootCollectionMyDesk_Menu_Action_Create</name>
     <icon>TeamWork_RootCollectionAddImage</icon>
+    <!-- access -->
+    <access>
+      <role>TeamWorkAdmin</role>
+    </access>
     <!-- target definitions -->
     <target>
       <form>TeamWork_CollectionForm</form>

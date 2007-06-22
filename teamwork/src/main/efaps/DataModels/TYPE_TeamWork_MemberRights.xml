@@ -94,7 +94,7 @@
 
     <!-- Trigger definitions -->
     <trigger name="TeamWork_MemberRights_InsertOverride" event="INSERT_OVERRIDE" program="org.efaps.teamwork.Member" method="insertNewMember" index="1">
-      <property name="DefaultAccessSet">ModifyTypes</property>
+      <property name="DefaultAccessSet">CollectionHolder</property>
     </trigger>
     
     <trigger name="TeamWork_MemberRights_DeleteOverride" event="DELETE_OVERRIDE" program="org.efaps.teamwork.Member" method="removeMember" index="1"/>

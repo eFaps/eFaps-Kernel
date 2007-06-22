@@ -53,6 +53,10 @@
     </version>
     <name>TeamWork_RootCollectionMyDesk_Menu_Action_Delete</name>
     <icon>TeamWork_RootCollectionRemoveImage</icon>
+     <!-- access -->
+    <access>
+      <role>TeamWorkAdmin</role>
+    </access>
     <!-- property definitions -->
     <property name="Action">delete</property>
     <property name="AskUser">true</property>
