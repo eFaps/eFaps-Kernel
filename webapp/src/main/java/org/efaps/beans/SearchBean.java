@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:895 $
+ * Last Changed:    $Date:2007-06-21 20:19:25 +0200 (Do, 21 Jun 2007) $
+ * Last Changed By: $Author:tmo $
  */
 
 package org.efaps.beans;
@@ -74,10 +74,10 @@ public class SearchBean extends AbstractCollectionBean implements
    */
   public void setCommandName(final String _name) throws EFapsException {
     addHiddenValue("searchCommand", _name);
-    setCommand(getSearch().getSearchCommand(_name));
-    setForm(((Search.SearchCommand) getCommand()).getSearchForm());
-    setTable(((Search.SearchCommand) getCommand()).getResultTable());
-    setMode(getCommand().getTargetMode());
+//    setCommand(getSearch().getSearchCommand(_name));
+//    setForm(((Search.SearchCommand) getCommand()).getSearchForm());
+//    setTable(((Search.SearchCommand) getCommand()).getResultTable());
+//    setMode(getCommand().getTargetMode());
     /*
      * Context context = createNewContext(); try {
      * System.out.println("hallo!.1"); if (getSearch()!=null &&
@@ -143,7 +143,8 @@ public class SearchBean extends AbstractCollectionBean implements
     SearchQuery query = new SearchQuery();
     // boolean selectId = mode.equalsIgnoreCase(MODE_CONNECT);
 
-    Type type = ((Search.SearchCommand) getCommand()).getSearchType();
+//    Type type = ((Search.SearchCommand) getCommand()).getSearchType();
+Type type = Type.get(getCommand().getProperty("SearchType"));
 
     query.setQueryTypes(type.getName());
 
@@ -186,7 +187,8 @@ public class SearchBean extends AbstractCollectionBean implements
     setValues(new ArrayList());
     getValues().add(null);
 
-    Type type = ((Search.SearchCommand) getCommand()).getSearchType();
+//    Type type = ((Search.SearchCommand) getCommand()).getSearchType();
+Type type = Type.get(getCommand().getProperty("SearchType"));
 
     for (int i = 0; i < getForm().getFields().size(); i++) {
       Field field = (Field) getForm().getFields().get(i);
@@ -277,7 +279,7 @@ public class SearchBean extends AbstractCollectionBean implements
    * 
    */
   public void execute4Connect(final String[] _oids) throws Exception {
-    if (_oids != null) {
+/*    if (_oids != null) {
       Search.SearchCommand command = (Search.SearchCommand) getCommand();
       Type type = command.getConnectType();
       Attribute childAttr = type.getAttribute(command
@@ -305,6 +307,7 @@ public class SearchBean extends AbstractCollectionBean implements
         insert.execute();
       }
     }
+*/
   }
 
   // ///////////////////////////////////////////////////////////////////////////
