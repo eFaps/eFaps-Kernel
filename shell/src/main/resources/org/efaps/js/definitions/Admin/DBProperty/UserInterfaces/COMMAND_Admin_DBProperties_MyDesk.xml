@@ -52,7 +52,10 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_DBProperties_MyDesk</name>
-    
+    <!-- access -->
+    <access>
+      <role>Administration</role>
+    </access>
     <!-- target definitions -->
     <target>
       <table>Admin_DBPropertiesTable</table>

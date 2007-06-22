@@ -52,6 +52,12 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Common_SearchMyDesk</name>
+    
+    <!-- access -->
+    <access>
+      <role>Administration</role>
+    </access>
+    
     <!-- target definitions -->
     <target>
       <search>Admin_Common_Search</search>

@@ -52,6 +52,11 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Common_VersionMyDesk</name>
+    <!-- access -->
+    <access>
+      <role>Administration</role>
+    </access>
+    
     <!-- target definitions -->
     <target>
       <table>Admin_Common_VersionTable</table>

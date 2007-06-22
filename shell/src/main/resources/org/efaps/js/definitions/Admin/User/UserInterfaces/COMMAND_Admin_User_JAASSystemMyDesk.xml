@@ -53,8 +53,10 @@
     </version>
     <name>Admin_User_JAASSystemMyDesk</name>
     <icon>Admin_User_JAASSystemImage</icon>
-<!--   addRole("Administration");
- -->
+    <!-- access -->
+    <access>
+      <role>Administration</role>
+    </access>
     <!-- target definitions -->
     <target>
       <menu>Admin_User_JAASSystemMyDesk_Menu</menu>

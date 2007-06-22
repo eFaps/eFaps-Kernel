@@ -53,6 +53,10 @@
     </version>
     <name>Admin_User_PersonMyDesk</name>
     <icon>Admin_User_PersonImage</icon>
+    <!-- access -->
+    <access>
+      <role>Administration</role>
+    </access>
     <!-- target definitions -->
     <target>
       <menu>Admin_User_PersonMyDesk_Menu</menu>

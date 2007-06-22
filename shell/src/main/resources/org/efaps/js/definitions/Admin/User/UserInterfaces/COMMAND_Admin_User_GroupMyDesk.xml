@@ -53,6 +53,10 @@
     </version>
     <name>Admin_User_GroupMyDesk</name>
     <icon>Admin_User_GroupImage</icon>
+    <!-- access -->
+    <access>
+      <role>Administration</role>
+    </access>
     <!-- target definitions -->
     <target>
       <menu>Admin_User_GroupMyDesk_Menu</menu>
