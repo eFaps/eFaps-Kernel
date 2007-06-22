@@ -127,7 +127,7 @@ function eFapsCommonOpenUrl(_href, _target, _width, _height)  {
     if (window.location.href.indexOf("MenuRequest")>=0)  {
       target = eFapsCommonFindFrame(parent, _target);
     } else if ((_href.indexOf("&nodeId=") > 0) || (_href.indexOf("?nodeId=") > 0))  {
-      target = eFaapsCommonFindFrame(parent, _target);
+      target = eFapsCommonFindFrame(parent, _target);
       if (!target)  {
         target = eFapsCommonFindFrame(parent.parent, _target);
       }
