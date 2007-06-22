@@ -72,6 +72,7 @@ shellPathLib=$shellPath/eFaps-Shell-1.0-SNAPSHOT/WEB-INF/lib
 CP=.
 CP=$CP:$EFAPS_HOME/ojdbc14_g.jar
 
+
 # eFaps itself
 CP=$CP:$shellPath/classes
 CP=$CP:$shellPathLib/eFaps-Kernel-1.0-SNAPSHOT.jar
@@ -124,6 +125,9 @@ CP=$CP:$shellPathLib/postgresql-8.2-504.jdbc3.jar
 
 # VFSStore
 CP=$CP:$shellPathLib/commons-vfs-1.0.jar
+
+#needed for Programs
+CP=$CP:$shellPathLib/commons-collections-3.1.jar
 
 
 # used for stores

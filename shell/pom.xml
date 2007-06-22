@@ -139,6 +139,15 @@
       <scope>package</scope>
     </dependency>
 
+    <!-- needed to compile Programs (Dependencies inside the Programs)-->
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.1</version>
+      <scope>compile</scope>
+    </dependency>
+
+
   </dependencies>
 
 </project>
