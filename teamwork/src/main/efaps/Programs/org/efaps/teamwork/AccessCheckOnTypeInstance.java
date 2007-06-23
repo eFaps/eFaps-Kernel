@@ -20,29 +20,22 @@
 
 package org.efaps.teamwork;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.ParameterInterface;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.ReturnInterface;
 import org.efaps.admin.event.ParameterInterface.ParameterValues;
 import org.efaps.admin.event.ReturnInterface.ReturnValues;
-import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-
 
 public class AccessCheckOnTypeInstance implements EventExecution {
 
@@ -64,78 +57,49 @@ public class AccessCheckOnTypeInstance implements EventExecution {
    */
   private boolean checkAccess(final Instance _instance,
       final AccessType _accessType) {
-
-    Context context;
-    try {
-      context = Context.getThreadContext();
-
-      Type type = _instance.getType();
-      StringBuilder toTests = new StringBuilder();
-      toTests.append(0);
-      for (AccessSet accessSet : type.getAccessSets()) {
-        if (accessSet.getAccessTypes().contains(_accessType)) {
-          toTests.append(",").append(accessSet.getId());
-        }
-      }
-
-      StringBuilder users = new StringBuilder();
-      users.append(context.getPersonId());
-      for (Role role : context.getPerson().getRoles()) {
-        users.append(",").append(role.getId());
-      }
-      for (Group group : context.getPerson().getGroups()) {
-        users.append(",").append(group.getId());
-      }
-
-      return executeStatement(context, toTests, users);
-    } catch (EFapsException e) {
-      LOG.error("checkAccess(Instance, AccessType)", e);
-    }
-    return false;
-  }
-
-  private boolean executeStatement(final Context _context,
-      final StringBuilder _accessSets, final StringBuilder _users)
-      throws EFapsException {
     boolean hasAccess = false;
 
-    StringBuilder cmd = new StringBuilder();
-    cmd.append("select count(*) from ACCESSSET2USER ").append(
-        "where ACCESSSET in (").append(_accessSets).append(") ").append(
-        "and USERABSTRACT in (").append(_users).append(")");
-
-    ConnectionResource con = null;
-    try {
-      con = _context.getConnectionResource();
-
-      Statement stmt = null;
+    // this only checks the rights for RootCollections, Collection
+    if ("TeamWork_RootCollection".equals(_instance.getType().getName())
+        || "TeamWork_Collection".equals(_instance.getType().getName())) {
       try {
-
-        stmt = con.getConnection().createStatement();
-
-        ResultSet rs = stmt.executeQuery(cmd.toString());
-        if (rs.next()) {
-          hasAccess = (rs.getLong(1) > 0) ? true : false;
+        Context context = Context.getThreadContext();
+        for (Role role : context.getPerson().getRoles()) {
+          // the TeamWorkAdmin has all rights on a TeamWork_RootCollection, so
+          // no further controlling is needed
+          if (role.getName().equals("TeamWorkAdmin")) {
+            return true;
+          }
         }
-        rs.close();
-
-      }
-      finally {
-        if (stmt != null) {
-          stmt.close();
+        //search for the User specific rights
+        SearchQuery query = new SearchQuery();
+        //if create, get the parent
+        if (_accessType == AccessType.getAccessType("create")) {
+          query.setExpand(context.getParameter("oid"),
+              "TeamWork_MemberRights\\AbstractLink");
+        } else {
+          query.setExpand(_instance, "TeamWork_MemberRights\\AbstractLink");
         }
-      }
+        query.addSelect("AccessSetLink");
+        query.addWhereExprEqValue("UserAbstractLink", context.getPerson()
+            .getId());
 
-      con.commit();
+        query.execute();
 
-    } catch (SQLException e) {
-      LOG.error("sql statement '" + cmd.toString() + "' not executable!", e);
-    }
-    finally {
-      if ((con != null) && con.isOpened()) {
-        con.abort();
+        if (query.next()) {
+          AccessSet accessSet =
+              AccessSet.getAccessSet((Long) query.get("AccessSetLink"));
+          if (accessSet.getAccessTypes().contains(_accessType)) {
+            hasAccess = true;
+          }
+
+        }
+
+      } catch (EFapsException e) {
+        LOG.error("checkAccess(Instance, AccessType)", e);
       }
     }
+
     return hasAccess;
   }
 

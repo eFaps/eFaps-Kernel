@@ -38,6 +38,7 @@
 
     <access-type>show</access-type>
     <access-type>read</access-type>
+    <access-type>modify</access-type>
     <access-type>checkout</access-type>
     <access-type>checkin</access-type>
     <access-type>create</access-type>

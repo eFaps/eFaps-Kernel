@@ -52,6 +52,11 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_RootCollectionTree_Menu_Action_Edit</name>
+    <!-- access -->
+    <access>
+      <role>TeamWorkAdmin</role>
+      <role>TeamWorkPowerUser</role>
+    </access>
     <!-- target definitions -->
     <target>
       <form>TeamWork_CollectionForm</form>
