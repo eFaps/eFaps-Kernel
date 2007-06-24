@@ -27,19 +27,24 @@ import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.ParameterInterface;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.ReturnInterface;
 import org.efaps.admin.event.ParameterInterface.ParameterValues;
 import org.efaps.admin.event.ReturnInterface.ReturnValues;
-import org.efaps.admin.ui.Command;
-import org.efaps.admin.ui.UserInterfaceObject;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+/**
+ * Class to check the AccessRights for the UserInterfaces in TeamWork.<br>
+ * 
+ * @author jmo
+ * @version $Id$
+ */
 public class AccessCheckOnUserInterface implements EventExecution {
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -55,11 +60,10 @@ public class AccessCheckOnUserInterface implements EventExecution {
   // instance methods
 
   /**
-   * Check for the instance object if the current context user has the access
-   * defined in the list of access types.
+   * Check for the debending on the Current oid if the current context user has
+   * the access defined in the list of access types.
    */
-  private boolean checkAccess(final UserInterfaceObject _uiobject,
-      final AccessType _accessType) {
+  private boolean checkAccess(final Type _type, final AccessType _accessType) {
     boolean hasAccess = false;
 
     // this only checks the rights for RootCollections, Collection
@@ -75,7 +79,6 @@ public class AccessCheckOnUserInterface implements EventExecution {
       }
       // search for the User specific rights
       SearchQuery query = new SearchQuery();
-      // if create, get the parent
       query.setExpand(context.getParameter("oid"),
           "TeamWork_MemberRights\\AbstractLink");
       query.addSelect("AccessSetLink");
@@ -87,22 +90,9 @@ public class AccessCheckOnUserInterface implements EventExecution {
       if (query.next()) {
         AccessSet accessSet =
             AccessSet.getAccessSet((Long) query.get("AccessSetLink"));
-        if (accessSet.getAccessTypes().contains(_accessType)) {
-          if (_uiobject instanceof Command) {
-
-            if (_accessType == AccessType.getAccessType("create")) {
-              
-              if (accessSet.getDataModelTypes().contains(
-                  ((Command) _uiobject).getTargetCreateType())) {
-                hasAccess = true;
-              }
-            } else {
-              hasAccess = true;
-              //TODO was mach man bei delete?
-            }
-
-          }
-
+        if (accessSet.getAccessTypes().contains(_accessType)
+            && accessSet.getDataModelTypes().contains(_type)) {
+          hasAccess = true;
         }
 
       }
@@ -116,16 +106,17 @@ public class AccessCheckOnUserInterface implements EventExecution {
 
   public ReturnInterface execute(ParameterInterface _parameter) {
 
-    UserInterfaceObject uiObject =
-        (UserInterfaceObject) _parameter.get(ParameterValues.UIOBJECT);
-
     AccessType accesstype =
         AccessType.getAccessType((String) ((Map) _parameter
             .get(ParameterValues.PROPERTIES)).get("AccessType"));
 
+    Type type =
+        Type.get((String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
+            .get("Type"));
+
     ReturnInterface ret = new Return();
 
-    if (checkAccess(uiObject, accesstype)) {
+    if (checkAccess(type, accesstype)) {
       ret.put(ReturnValues.TRUE, true);
     }
     return ret;

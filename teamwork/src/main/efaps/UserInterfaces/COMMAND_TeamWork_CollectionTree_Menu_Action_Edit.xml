@@ -63,6 +63,7 @@
     <!-- trigger -->
     <trigger name="TeamWork_CollectionTree_Menu_Action_Edit_ACCESSCHECK" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
       <property name="AccessType">modify</property>
+      <property name="Type">TeamWork_Collection</property>
     </trigger>
     
   </definition>

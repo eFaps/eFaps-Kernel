@@ -65,6 +65,7 @@
     <!-- trigger -->
     <trigger name="TeamWork_CollectionTree_Create_ACCESSCHECK" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
       <property name="AccessType">create</property>
+      <property name="Type">TeamWork_Collection</property>
     </trigger>
   </definition>
 
