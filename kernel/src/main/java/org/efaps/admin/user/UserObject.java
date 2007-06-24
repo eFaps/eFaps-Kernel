@@ -88,6 +88,22 @@ public abstract class UserObject extends AdminObject {
    *          context for this request
    * @see #hasChildPerson
    */
+  public boolean isAssigned() {
+    try {
+      return hasChildPerson(Context.getThreadContext().getPerson());
+    } catch (EFapsException e) {
+      LOG.error("could not read Person ", e);
+    }
+    return false;
+  }
+  
+  
+  
+  /**
+   * @param _context
+   * @return
+   * @deprecated
+   */
   public boolean isAssigned(final Context _context) {
     return hasChildPerson(_context.getPerson());
   }

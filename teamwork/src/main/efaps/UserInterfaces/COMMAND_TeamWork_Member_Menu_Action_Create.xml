@@ -62,6 +62,10 @@
     <property name="TargetConnectAttribute">TeamWork_MemberRights/AbstractLink</property>
     <property name="TargetCreateType">TeamWork_MemberRights</property>
     <property name="TargetMode">create</property>
-  </definition>
+  
+    <trigger name="TeamWork_Member_Menu_Action_Edit_ACCESSCHECK" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
+      <property name="AccessType">create</property>
+    </trigger>
+    </definition>
 
 </ui-command>

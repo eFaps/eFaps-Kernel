@@ -49,7 +49,10 @@ public interface ParameterInterface<K, V> {
      */
     NEW_VALUES,
     /** Holds the Properties of the trigger */
-    PROPERTIES;
+    PROPERTIES,
+    /** Holds an UserInterfaceObject */
+    UIOBJECT;
+
   }
 
   public void put(ParameterValues _key, Object _value);
