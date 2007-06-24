@@ -62,6 +62,10 @@
     <property name="TargetConnectAttribute">TeamWork_Collection/ParentCollectionLink</property>
     <property name="TargetCreateType">TeamWork_Collection</property>
     <property name="TargetMode">create</property>
+    <!-- trigger -->
+    <trigger name="TeamWork_CollectionTree_Create_ACCESSCHECK" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
+      <property name="AccessType">create</property>
+    </trigger>
   </definition>
 
 </ui-command>

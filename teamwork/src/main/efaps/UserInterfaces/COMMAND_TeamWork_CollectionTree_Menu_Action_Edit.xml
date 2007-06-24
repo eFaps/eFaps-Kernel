@@ -59,6 +59,12 @@
     <!-- property definitions -->
     <property name="Target">popup</property>
     <property name="TargetMode">edit</property>
+    
+    <!-- trigger -->
+    <trigger name="TeamWork_CollectionTree_Menu_Action_Edit_ACCESSCHECK" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
+      <property name="AccessType">modify</property>
+    </trigger>
+    
   </definition>
 
 </ui-command>
