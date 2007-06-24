@@ -24,10 +24,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
@@ -80,12 +79,8 @@ public class TypeType extends AbstractType {
     String name = getValue().getName();
 
     if (_locale != null) {
-      ResourceBundle msgs = ResourceBundle.getBundle("StringResource", _locale);
-      try {
-        name = msgs.getString(name + ".Label");
-      } catch (MissingResourceException e) {
-        name = "???" + name + ".Label???";
-      }
+      name=DBProperties.getProperty(name + ".Label");
+      
     }
     return name;
   }

@@ -77,7 +77,7 @@
       <typelink>Admin_Program_Java</typelink>
     </attribute>
     
-    
+    <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 
 </datamodel-type>

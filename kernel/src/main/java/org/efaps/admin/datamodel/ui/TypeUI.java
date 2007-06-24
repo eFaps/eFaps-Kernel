@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,56 +17,58 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
-public class TypeUI implements UIInterface  {
+public class TypeUI implements UIInterface {
   /**
-   * @param _locale   locale object
+   * @param _locale
+   *          locale object
    */
-  public String getViewHtml(Context _context, Object _value, Field _field) throws EFapsException  {
+  public String getViewHtml(Context _context, Object _value, Field _field)
+      throws EFapsException {
     String ret = null;
 
-    if (_value instanceof Type)  {
-      Type value = ((Type)_value);
+    if (_value instanceof Type) {
+      Type value = ((Type) _value);
 
       String name = value.getName();
+      
+      ret = DBProperties.getProperty(name + ".Label");
 
-      ResourceBundle msgs = ResourceBundle.getBundle("StringResource", _context.getLocale());
-      try  {
-        ret = msgs.getString(name+".Label");
-      } catch (MissingResourceException e)  {
-        ret = "???" + name + ".Label???";
-      }
-    } else  {
-// throw new EFapsException();
+    } else {
+      // throw new EFapsException();
     }
     return ret;
   }
 
   /**
-   * @param _locale   locale object
+   * @param _locale
+   *          locale object
    */
-  public String getEditHtml(Context _context, Object _value, Field _field) throws EFapsException  {
-return "edit";
+  public String getEditHtml(Context _context, Object _value, Field _field)
+      throws EFapsException {
+    return "edit";
   }
 
   /**
-   * @param _locale   locale object
+   * @param _locale
+   *          locale object
    */
-  public String getCreateHtml(Context _context, Object _value, Field _field) throws EFapsException  {
-return "create";
+  public String getCreateHtml(Context _context, Object _value, Field _field)
+      throws EFapsException {
+    return "create";
   }
 
   /**
-   * @param _locale   locale object
+   * @param _locale
+   *          locale object
    */
-  public String getSearchHtml(Context _context, Object _value, Field _field) throws EFapsException  {
-return "search";
+  public String getSearchHtml(Context _context, Object _value, Field _field)
+      throws EFapsException {
+    return "search";
   }
 }

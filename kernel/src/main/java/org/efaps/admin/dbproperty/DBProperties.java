@@ -99,7 +99,7 @@ public class DBProperties {
       value = PROPERTIESCACHE.get(DEFAULT).get(_key);
     }
 
-    return (value == null) ? _key : value;
+    return (value == null) ? "?? - " + _key + " - ??" : value;
 
   }
 
