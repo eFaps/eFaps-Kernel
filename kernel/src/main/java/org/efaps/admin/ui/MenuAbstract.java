@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,18 +105,17 @@ abstract public class MenuAbstract extends CommandAbstract {
    * menu. If yes, the user is allowed to access this menu instance, other the
    * user is not allowed to access this menu.
    * 
-   * @param _context
-   *          context for this request (including the person)
+   * 
    * @return <i>true</i>if context user has access, otherwise <i>false</i> is
    *         returned
    */
-  public boolean hasAccess(final Context _context) {
-    boolean ret = super.hasAccess(_context);
+  public boolean hasAccess() {
+    boolean ret = super.hasAccess();
 
     if (ret && getCommands().size() > 0) {
       ret = false;
       for (CommandAbstract cmd : getCommands()) {
-        if (cmd.hasAccess(_context)) {
+        if (cmd.hasAccess()) {
           ret = true;
           break;
         }
@@ -124,7 +123,24 @@ abstract public class MenuAbstract extends CommandAbstract {
     }
     return ret;
   }
+  
+  /** 
+   * @deprecated
+   */
+  public boolean hasAccess(final Context _context) {
+    boolean ret = super.hasAccess();
 
+    if (ret && getCommands().size() > 0) {
+      ret = false;
+      for (CommandAbstract cmd : getCommands()) {
+        if (cmd.hasAccess()) {
+          ret = true;
+          break;
+        }
+      }
+    }
+    return ret;
+  }
   /**
    * Returns all information from the menu as string.
    */
