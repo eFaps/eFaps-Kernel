@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,9 @@
 package org.efaps.admin.ui;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.Vector;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -38,12 +33,13 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.ReturnInterface;
 import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.user.Role;
-import org.efaps.admin.user.UserObject;
 import org.efaps.db.Context;
 import org.efaps.servlet.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
+ * This clas represents the Commands wich enable the interaction with a User.<br>
+ * Buttons in the UserInterface a represented by this Class.
  * 
  * @author tmo
  * @version $Id$
@@ -106,14 +102,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   // instance Variables
 
   /**
-   * Access HashSet to store all users who have access to this menu.
-   * 
-   * @see #getAccess
-   * @see #add(Role)
-   */
-  private HashSet<UserObject> access = new HashSet<UserObject>();
-
-  /**
    * The instance variable stores the predefined actions which can be executed
    * e.g. from the footer menu of a web table.
    * 
@@ -148,8 +136,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #setDeleteIndex
    */
   private int deleteIndex = 0;
-
-  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Instance variable to hold the reference to the icon file.
@@ -329,11 +315,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   private String targetTitle = null;
 
   /**
-   * All triggers for this Command are stored in this map.
-   */
-  private final Map<TriggerEvent, List<EventDefinition>> trigger = new HashMap<TriggerEvent, List<EventDefinition>>();
-
-  /**
    * The instance variable stores the window height of the popup window ({@link #target}
    * is set to {@link #TARGET_POPUP}). The default value is <i>400</i>.
    * 
@@ -379,99 +360,24 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #access
    * @see #getAccess
    */
-  protected void add(Role _role) {
+  protected void add(final Role _role) {
     getAccess().add(_role);
   }
 
   /**
-   * Adds a new trigger event to this Command.
-   * 
-   * @param _triggerEvent
-   *          trigger class name to add
-   * @param _eventDef
-   *          EventDefinition to add
-   */
-  public void addTrigger(final TriggerEvent _triggerEvent,
-                         final EventDefinition _eventDef) {
-    List<EventDefinition> events = this.trigger.get(_triggerEvent);
-    if (events == null) {
-      events = new ArrayList<EventDefinition>();
-      this.trigger.put(_triggerEvent, events);
-    }
-    int pos = 0;
-    for (EventDefinition cur : events) {
-      if (_eventDef.getIndexPos() > cur.getIndexPos()) {
-        break;
-      }
-      pos++;
-    }
-    events.add(pos, _eventDef);
-
-  }
-
-  /**
-   * does this instance have Triggers?
-   * 
-   * @return true, if this instance has a trigger, otherwise false
-   */
-  public boolean hasTrigger() {
-    return !this.trigger.isEmpty();
-
-  }
-
-  /**
-   * executes the Triggers which are definded for this instance in the speciefied
-   * order, and retruns List with the Returns of the Events
-   * 
+   * executes the Triggers of the <code>TriggerEvent.COMMAND</code> which are
+   * definded for this instance in the speciefied order, and returns a List with
+   * the Returns of the Events
    */
   public List<ReturnInterface> executeTrigger() {
     List<ReturnInterface> ret = new ArrayList<ReturnInterface>();
-    List<EventDefinition> triggers = this.trigger.get(TriggerEvent.COMMAND);
+    List<EventDefinition> trigger =
+        super.getTriggers().get(TriggerEvent.COMMAND);
 
-    for (EventDefinition evenDef : triggers) {
+    for (EventDefinition evenDef : trigger) {
       ret.add(evenDef.execute(new Parameter()));
     }
     return ret;
-  }
-
-  /**
-   * Check, if the user of the context has access to this command. If no access
-   * user is assigned to this command, all user have access. Otherwise check if
-   * the context person contains one of the assigned role of this command.
-   * 
-   * @param _context
-   *          context for this request (including the person)
-   * @return <i>true</i>if context user has access, otherwise <i>false</i> is
-   *         returned
-   */
-  public boolean checkAccess(Context _context) {
-    boolean ret = false;
-
-    if (getAccess().isEmpty()) {
-      ret = true;
-    } else {
-      Iterator iter = getAccess().iterator();
-      while (iter.hasNext()) {
-        Role role = (Role) iter.next();
-        if (_context.getPerson().isAssigned(role)) {
-          ret = true;
-          break;
-        }
-      }
-    }
-
-    return ret;
-  }
-
-  /**
-   * Getter method for the HashSet instance variable {@link #access}.
-   * 
-   * @return value of the HashSet instance variable {@link #access}
-   * @see #access
-   * @see #add(Role)
-   */
-  public Set<UserObject> getAccess() {
-    return this.access;
   }
 
   /**
@@ -495,7 +401,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #action
    * @see #getAction
    */
-  public void setAction(int _action) {
+  public void setAction(final int _action) {
     this.action = _action;
   }
 
@@ -518,7 +424,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #deleteIndex
    * @see #getDeleteIndex
    */
-  public void setDeleteIndex(int _deleteIndex) {
+  public void setDeleteIndex(final int _deleteIndex) {
     this.deleteIndex = _deleteIndex;
   }
 
@@ -541,7 +447,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #icon
    * @see #getIcon
    */
-  public void setIcon(String _icon) {
+  public void setIcon(final String _icon) {
     this.icon = _icon;
   }
 
@@ -564,7 +470,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #label
    * @see #getLabel
    */
-  public void setLabel(String _label) {
+  public void setLabel(final String _label) {
     this.label = _label;
   }
 
@@ -587,7 +493,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #reference
    * @see #getReference
    */
-  public void setReference(String _reference) {
+  public void setReference(final String _reference) {
     this.reference = _reference;
   }
 
@@ -610,7 +516,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #target
    * @see #getTarget
    */
-  public void setTarget(int _target) {
+  public void setTarget(final int _target) {
     this.target = _target;
   }
 
@@ -635,7 +541,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetBottomHeight
    * @see #getTargetBottomHeight
    */
-  public void setTargetBottomHeight(int _targetBottomHeight) {
+  public void setTargetBottomHeight(final int _targetBottomHeight) {
     this.targetBottomHeight = _targetBottomHeight;
   }
 
@@ -660,7 +566,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetConnectAttribute
    * @see #getTargetConnectAttribute
    */
-  public void setTargetConnectAttribute(Attribute _targetConnectAttribute) {
+  public void setTargetConnectAttribute(final Attribute _targetConnectAttribute) {
     this.targetConnectAttribute = _targetConnectAttribute;
   }
 
@@ -685,7 +591,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetCreateType
    * @see #getTargetCreateType
    */
-  public void setTargetCreateType(Type _targetCreateType) {
+  public void setTargetCreateType(final Type _targetCreateType) {
     this.targetCreateType = _targetCreateType;
   }
 
@@ -708,7 +614,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetForm
    * @see #getTargetForm
    */
-  public void setTargetForm(Form _targetForm) {
+  public void setTargetForm(final Form _targetForm) {
     this.targetForm = _targetForm;
   }
 
@@ -731,7 +637,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetFormBean
    * @see #getTargetFormBean
    */
-  public void setTargetFormBean(Class _targetFormBean) {
+  public void setTargetFormBean(final Class _targetFormBean) {
     this.targetFormBean = _targetFormBean;
   }
 
@@ -754,7 +660,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetMenu
    * @see #getTargetMenu
    */
-  public void setTargetMenu(Menu _targetMenu) {
+  public void setTargetMenu(final Menu _targetMenu) {
     this.targetMenu = _targetMenu;
   }
 
@@ -777,7 +683,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetMode
    * @see #getTargetMode
    */
-  public void setTargetMode(int _targetMode) {
+  public void setTargetMode(final int _targetMode) {
     this.targetMode = _targetMode;
   }
 
@@ -800,7 +706,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetSearch
    * @see #getTargetSearch
    */
-  public void setTargetSearch(Search _targetSearch) {
+  public void setTargetSearch(final Search _targetSearch) {
     this.targetSearch = _targetSearch;
   }
 
@@ -848,7 +754,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetTableBean
    * @see #getTargetTableBean
    */
-  public void setTargetTableBean(Class _targetTableBean) {
+  public void setTargetTableBean(final Class _targetTableBean) {
     this.targetTableBean = _targetTableBean;
   }
 
@@ -873,7 +779,8 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetTableFilters
    * @see #getTargetTableFilters
    */
-  private void setTargetTableFilters(List<TargetTableFilter> _targetTableFilters) {
+  private void setTargetTableFilters(
+      final List<TargetTableFilter> _targetTableFilters) {
     this.targetTableFilters = _targetTableFilters;
   }
 
@@ -898,7 +805,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetTableSortDirection
    * @see #getTargetTableSortDirection
    */
-  public void setTargetTableSortDirection(int _targetTableSortDirection) {
+  public void setTargetTableSortDirection(final int _targetTableSortDirection) {
     this.targetTableSortDirection = _targetTableSortDirection;
   }
 
@@ -923,7 +830,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetTableSortKey
    * @see #getTargetTableSortKey
    */
-  public void setTargetTableSortKey(String _targetTableSortKey) {
+  public void setTargetTableSortKey(final String _targetTableSortKey) {
     this.targetTableSortKey = _targetTableSortKey;
   }
 
@@ -946,7 +853,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetTitle
    * @see #isTargetTitle
    */
-  public void setTargetTitle(String _targetTitle) {
+  public void setTargetTitle(final String _targetTitle) {
     this.targetTitle = _targetTitle;
   }
 
@@ -960,10 +867,11 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    *          context for this request
    * @return label of the command (or menu)
    */
-  public String getViewableName(Context _context) {
+  public String getViewableName(final Context _context) {
     String name = getName();
-    ResourceBundle msgs = ResourceBundle.getBundle(
-        "org.efaps.properties.AttributeRessource", _context.getLocale());
+    ResourceBundle msgs =
+        ResourceBundle.getBundle("org.efaps.properties.AttributeRessource",
+            _context.getLocale());
     try {
       name = msgs.getString("Command." + name);
     } catch (MissingResourceException e) {
@@ -990,7 +898,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #windowHeight
    * @see #getWindowHeight
    */
-  private void setWindowHeight(int _windowHeight) {
+  private void setWindowHeight(final int _windowHeight) {
     this.windowHeight = _windowHeight;
   }
 
@@ -1013,7 +921,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #windowWidth
    * @see #getWindowWidth
    */
-  private void setWindowWidth(int _windowWidth) {
+  private void setWindowWidth(final int _windowWidth) {
     this.windowWidth = _windowWidth;
   }
 
@@ -1036,7 +944,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #askUser
    * @see #getAskUser
    */
-  private void setAskUser(boolean _askUser) {
+  private void setAskUser(final boolean _askUser) {
     this.askUser = _askUser;
   }
 
@@ -1061,7 +969,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #defaultSelected
    * @see #isDefaultSelected
    */
-  public void setDefaultSelected(boolean _defaultSelected) {
+  public void setDefaultSelected(final boolean _defaultSelected) {
     this.defaultSelected = _defaultSelected;
   }
 
@@ -1084,7 +992,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #submit
    * @see #isSubmit
    */
-  public void setSubmit(boolean _submit) {
+  public void setSubmit(final boolean _submit) {
     this.submit = _submit;
   }
 
@@ -1145,7 +1053,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #targetShowCheckBoxes
    * @see #isTargetShowCheckBoxes
    */
-  public void setTargetShowCheckBoxes(boolean _targetShowCheckBoxes) {
+  public void setTargetShowCheckBoxes(final boolean _targetShowCheckBoxes) {
     this.targetShowCheckBoxes = _targetShowCheckBoxes;
   }
 
@@ -1162,9 +1070,8 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    *          to name
    */
   protected void setLinkProperty(final EFapsClassName _linkType,
-                                 final long _toId,
-                                 final EFapsClassName _toType,
-                                 final String _toName) throws Exception {
+      final long _toId, final EFapsClassName _toType, final String _toName)
+      throws Exception {
     switch (_linkType) {
       case LINK_ICON:
         setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/"
@@ -1197,8 +1104,8 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @param _value
    *          value of the property
    */
-  protected void setProperty(String _name, String _value)
-                                                         throws CacheReloadException {
+  protected void setProperty(final String _name, final String _value)
+      throws CacheReloadException {
     if (_name.equals("Action")) {
       if (_value.equals("delete")) {
         setAction(ACTION_DELETE);
@@ -1258,7 +1165,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
         setTargetMode(TARGET_MODE_EDIT);
       } else if (_value.equals("connect")) {
         setTargetMode(TARGET_MODE_CONNECT);
-      } else if (_value.equals("search"))  {
+      } else if (_value.equals("search")) {
         setTargetMode(TARGET_MODE_SEARCH);
       } else if (_value.equals("view")) {
         setTargetMode(TARGET_MODE_VIEW);
@@ -1321,7 +1228,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
      * @param _clause
      *          sql where clause for this filter
      */
-    private TargetTableFilter(String _clause) {
+    private TargetTableFilter(final String _clause) {
       setClause(_clause);
     }
 
@@ -1346,7 +1253,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
      * @see #clause
      * @see #getClause
      */
-    public void setClause(String _clause) {
+    public void setClause(final String _clause) {
       this.clause = _clause;
     }
   }

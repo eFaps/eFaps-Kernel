@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003 - 2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,12 @@
 
 package org.efaps.admin.ui;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.UIInterface;
-import org.efaps.admin.event.EventDefinition;
-import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return;
-import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.servlet.RequestHandler;
@@ -43,327 +33,16 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
+ * This class represents the Fields of the UserInterface.
+ * 
  * @author tmo
  * @version $Id$
- * @todo description
  */
 public class Field extends UserInterfaceObject {
   /**
    * Logger for this class
    */
   private static final Log LOG = LogFactory.getLog(Field.class);
-
-  /**
-   * All triggers for this Attribute are stored in this map.
-   */
-  private final Map<TriggerEvent, List<EventDefinition>> triggers =
-      new HashMap<TriggerEvent, List<EventDefinition>>();
-
-  public Field() {
-    super(0, null);
-  }
-
-  /**
-   * This is the constructor of the field class.
-   * 
-   * @param _id
-   *          id of the field instance
-   * @param _name
-   *          name of the field instance
-   */
-  public Field(long _id, String _name) {
-    super(_id, _name);
-  }
-
-  /**
-   * Returns for given parameter <i>_id</i> the instance of class {@link Field}.
-   * 
-   * @param _id
-   *          id to search in the cache
-   * @return instance of class {@link Field}
-   */
-  static public Field get(long _id) {
-    Collection col = null;
-
-    try {
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes(EFapsClassName.FIELD.name);
-      query.addSelect("Collection");
-      query.addWhereExprEqValue("ID", _id);
-      query.executeWithoutAccessCheck();
-
-      if (query.next()) {
-        col = Form.get((Long) query.get("Collection"));
-        if (col == null) {
-          col = Table.get((Long) query.get("Collection"));
-        }
-        query.close();
-      }
-    } catch (EFapsException e) {
-      LOG.error("get(long)", e);
-    }
-    return col.getFieldsMap().get(_id);
-  }
-
-  /**
-   * does this Field have Trigger
-   * 
-   * @return
-   */
-  public boolean hasTrigger() {
-    return !this.triggers.isEmpty();
-
-  }
-
-  /**
-   * Executes all Triggers difined for this Field in the given Order and returns
-   * a List with all Returns
-   * 
-   * @return List with Returns
-   */
-  public List<Return> executeTriggers() {
-
-    List<Return> ret = new ArrayList<Return>();
-
-    for (TriggerEvent triggerEvent : TriggerEvent.values()) {
-      ret.addAll(executeTriggers(triggerEvent));
-    }
-
-    return ret;
-  }
-
-  /**
-   * The method gets all triggers for the given trigger event and executes them
-   * in the given order. If no triggers are defined, nothing is done.
-   * 
-   * @param _triggerEvent
-   *          trigger events to execute
-   * @return List with Returns
-   */
-  public List<Return> executeTriggers(final TriggerEvent _triggerEvent) {
-    List<EventDefinition> trig = this.triggers.get(_triggerEvent);
-    List<Return> ret = new ArrayList<Return>();
-
-    Parameter para = new Parameter();
-    para.put(ParameterValues.INSTANCE, this);
-    for (EventDefinition evenDef : trig) {
-      ret.add((Return) evenDef.execute(para));
-    }
-    return ret;
-  }
-
-  /**
-   * add an EventDefinition to this field
-   * 
-   * @param _eventDef
-   *          EventDefinition to be added
-   */
-  public void addTrigger(final TriggerEvent _triggerEvent,
-      final EventDefinition _eventDef) {
-    List<EventDefinition> events = this.triggers.get(_triggerEvent);
-    if (events == null) {
-      events = new ArrayList<EventDefinition>();
-      this.triggers.put(_triggerEvent, events);
-    }
-    int pos = 0;
-    for (EventDefinition cur : events) {
-      if (_eventDef.getIndexPos() > cur.getIndexPos()) {
-        break;
-      }
-      pos++;
-    }
-    events.add(pos, _eventDef);
-  }
-
-  /**
-   * The instance method returns the label for this field. If no special label
-   * is defined, the viewable name of the attribute is returned (method
-   * {@link Attribute.getViewableName} is used).
-   * 
-   * @param _context
-   *          context for this request
-   * @return label of the field
-   */
-  public String getViewableName(Context _context) {
-    String ret = getLabel();
-    // if (ret==null) {
-    // if (getAttribute()!=null) {
-    // ret = getAttribute().getViewableName(_context);
-    // } else {
-    // ret = "";
-    // }
-    // }
-    return ret;
-  }
-
-  /**
-   * Test, if the value of instance variable {@link CommandAbstract.target} is
-   * equal to {@link CommandAbstract.TARGET_CONTENT}.
-   * 
-   * @return <i>true</i> if value is equal, otherwise false
-   * @see #target
-   * @see #getTarget
-   */
-  public boolean isTargetContent() {
-    return getTarget() == CommandAbstract.TARGET_CONTENT;
-  }
-
-  /**
-   * Test, if the value of instance variable {@link CommandAbstract.target} is
-   * equal to {@link CommandAbstract.TARGET_POPUP}.
-   * 
-   * @return <i>true</i> if value is equal, otherwise false
-   * @see #target
-   * @see #getTarget
-   */
-  public boolean isTargetPopup() {
-    return getTarget() == CommandAbstract.TARGET_POPUP;
-  }
-
-  /**
-   * Test, if the value of instance variable {@link CommandAbstract.target} is
-   * equal to {@link CommandAbstract.TARGET_HIDDEN}.
-   * 
-   * @return <i>true</i> if value is equal, otherwise false
-   * @see #target
-   * @see #getTarget
-   */
-  public boolean isTargetHidden() {
-    return getTarget() == CommandAbstract.TARGET_HIDDEN;
-  }
-
-  /**
-   * The method overrides the original method 'toString' and returns the
-   * information of the field user interface object.
-   * 
-   * @return name of the user interface object
-   */
-  public String toString() {
-    return new ToStringBuilder(this).appendSuper(super.toString()).append(
-        "expression", getExpression())
-        .append("alternateOID", getAlternateOID()).toString();
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * @param _context
-   *          eFaps context for this request
-   * @param _linkType
-   *          type of the link property
-   * @param _toId
-   *          to id
-   * @param _toType
-   *          to type
-   * @param _toName
-   *          to name
-   */
-  protected void setLinkProperty(EFapsClassName _linkType, long _toId,
-      EFapsClassName _toType, String _toName) throws Exception {
-    switch (_linkType) {
-      case LINK_ICON:
-        setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/"
-            + _toName));
-      break;
-      default:
-        super.setLinkProperty(_linkType, _toId, _toType, _toName);
-      break;
-    }
-  }
-
-  /**
-   * The instance method sets a new property value.
-   * 
-   * @param _context
-   *          eFaps context for this request
-   * @param _name
-   *          name of the property
-   * @param _value
-   *          value of the property
-   */
-  protected void setProperty(final String _name, final String _value)
-      throws CacheReloadException {
-    if (_name.equals("AlternateOID")) {
-      setAlternateOID(_value);
-    } else if (_name.equals("ClassNameUI")) {
-      try {
-        setClassUI((UIInterface) Class.forName(_value).newInstance());
-      } catch (ClassNotFoundException e) {
-        throw new CacheReloadException("could not found class " + "'" + _value
-            + "' for " + "'" + getName() + "'", e);
-      } catch (InstantiationException e) {
-        throw new CacheReloadException("could not instantiate class " + "'"
-            + _value + "' for " + "'" + getName() + "'", e);
-      } catch (IllegalAccessException e) {
-        throw new CacheReloadException("could not access class " + "'" + _value
-            + "' for " + "'" + getName() + "'", e);
-      }
-    } else if (_name.equals("Columns")) {
-      setCols(Integer.parseInt(_value));
-    } else if (_name.equals("Creatable")) {
-      setCreatable(_value.equals("true"));
-    } else if (_name.equals("CreateValue")) {
-      setCreateValue(_value);
-    } else if (_name.equals("Editable")) {
-      setEditable(_value.equals("true"));
-    } else if (_name.equals("Expression")) {
-      setExpression(_value);
-    } else if (_name.equals("GroupCount")) {
-      setGroupCount(Integer.parseInt(_value));
-    } else if (_name.equals("Hidden")) {
-      setHidden(_value.equals("true"));
-    } else if (_name.equals("HRef")) {
-      setReference(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.equals("Icon")) {
-      setIcon(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.equals("Label")) {
-      setLabel(_value);
-    } else if (_name.equals("ProgramValue")) {
-      try {
-        Class programValueClass = Class.forName(_value);
-        setProgramValue((FieldProgramValueInterface) programValueClass
-            .newInstance());
-      } catch (ClassNotFoundException e) {
-        throw new CacheReloadException("could not found class " + "'" + _value
-            + "' for " + "'" + getName() + "'", e);
-      } catch (InstantiationException e) {
-        throw new CacheReloadException("could not instantiate class " + "'"
-            + _value + "' for " + "'" + getName() + "'", e);
-      } catch (IllegalAccessException e) {
-        throw new CacheReloadException("could not access class " + "'" + _value
-            + "' for " + "'" + getName() + "'", e);
-      }
-      // try {
-      // } catch (ClassNotFoundException e) {
-      // } catch (InstantiationException e) {
-      // throw new RequestException(getClass(),
-      // "newInstance.InstantiationException", e);
-      // } catch (IllegalAccessException e) {
-      // throw new RequestException(getClass(),
-      // "newInstance.IllegalAccessException", e);
-      // }
-    } else if (_name.equals("Required")) {
-      if (_value.equals("true")) {
-        setRequired(true);
-      }
-    } else if (_name.equals("Rows")) {
-      setRows(Integer.parseInt(_value));
-    } else if (_name.equals("Searchable")) {
-      setSearchable(_value.equals("true"));
-    } else if (_name.equals("ShowTypeIcon")) {
-      setShowTypeIcon(_value.equals("true"));
-    } else if (_name.equals("Target")) {
-      if (_value.equals("content")) {
-        setTarget(CommandAbstract.TARGET_CONTENT);
-      } else if (_value.equals("hidden")) {
-        setTarget(CommandAbstract.TARGET_HIDDEN);
-      } else if (_value.equals("popup")) {
-        setTarget(CommandAbstract.TARGET_POPUP);
-      }
-    } else {
-      super.setProperty(_name, _value);
-    }
-  }
 
   // ///////////////////////////////////////////////////////////////////////////
 
@@ -533,6 +212,239 @@ public class Field extends UserInterfaceObject {
    */
   private UIInterface classUI = null;
 
+  /**
+   * Standart-Constructor
+   */
+  public Field() {
+    super(0, null);
+  }
+
+  /**
+   * This is the constructor of the field class.
+   * 
+   * @param _id
+   *          id of the field instance
+   * @param _name
+   *          name of the field instance
+   */
+  public Field(final long _id, final String _name) {
+    super(_id, _name);
+  }
+
+  /**
+   * Returns for given parameter <i>_id</i> the instance of class {@link Field}.
+   * 
+   * @param _id
+   *          id to search in the cache
+   * @return instance of class {@link Field}
+   */
+  static public Field get(final long _id) {
+    Collection col = null;
+
+    try {
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes(EFapsClassName.FIELD.name);
+      query.addSelect("Collection");
+      query.addWhereExprEqValue("ID", _id);
+      query.executeWithoutAccessCheck();
+
+      if (query.next()) {
+        col = Form.get((Long) query.get("Collection"));
+        if (col == null) {
+          col = Table.get((Long) query.get("Collection"));
+        }
+        query.close();
+      }
+    } catch (EFapsException e) {
+      LOG.error("get(long)", e);
+    }
+    return col.getFieldsMap().get(_id);
+  }
+
+  /**
+   * The instance method returns the label for this field. If no special label
+   * is defined, the viewable name of the attribute is returned (method
+   * {@link Attribute.getViewableName} is used).
+   * 
+   * @param _context
+   *          context for this request
+   * @return label of the field
+   */
+  public String getViewableName(final Context _context) {
+    String ret = getLabel();
+    return ret;
+  }
+
+  /**
+   * Test, if the value of instance variable {@link CommandAbstract.target} is
+   * equal to {@link CommandAbstract.TARGET_CONTENT}.
+   * 
+   * @return <i>true</i> if value is equal, otherwise false
+   * @see #target
+   * @see #getTarget
+   */
+  public boolean isTargetContent() {
+    return getTarget() == CommandAbstract.TARGET_CONTENT;
+  }
+
+  /**
+   * Test, if the value of instance variable {@link CommandAbstract.target} is
+   * equal to {@link CommandAbstract.TARGET_POPUP}.
+   * 
+   * @return <i>true</i> if value is equal, otherwise false
+   * @see #target
+   * @see #getTarget
+   */
+  public boolean isTargetPopup() {
+    return getTarget() == CommandAbstract.TARGET_POPUP;
+  }
+
+  /**
+   * Test, if the value of instance variable {@link CommandAbstract.target} is
+   * equal to {@link CommandAbstract.TARGET_HIDDEN}.
+   * 
+   * @return <i>true</i> if value is equal, otherwise false
+   * @see #target
+   * @see #getTarget
+   */
+  public boolean isTargetHidden() {
+    return getTarget() == CommandAbstract.TARGET_HIDDEN;
+  }
+
+  /**
+   * The method overrides the original method 'toString' and returns the
+   * information of the field user interface object.
+   * 
+   * @return name of the user interface object
+   */
+  public String toString() {
+    return new ToStringBuilder(this).appendSuper(super.toString()).append(
+        "expression", getExpression())
+        .append("alternateOID", getAlternateOID()).toString();
+  }
+
+  // ///////////////////////////////////////////////////////////////////////////
+
+  /**
+   * @param _context
+   *          eFaps context for this request
+   * @param _linkType
+   *          type of the link property
+   * @param _toId
+   *          to id
+   * @param _toType
+   *          to type
+   * @param _toName
+   *          to name
+   */
+  protected void setLinkProperty(final EFapsClassName _linkType,
+      final long _toId, final EFapsClassName _toType, final String _toName)
+      throws Exception {
+    switch (_linkType) {
+      case LINK_ICON:
+        setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/"
+            + _toName));
+      break;
+      default:
+        super.setLinkProperty(_linkType, _toId, _toType, _toName);
+      break;
+    }
+  }
+
+  /**
+   * The instance method sets a new property value.
+   * 
+   * @param _context
+   *          eFaps context for this request
+   * @param _name
+   *          name of the property
+   * @param _value
+   *          value of the property
+   */
+  protected void setProperty(final String _name, final String _value)
+      throws CacheReloadException {
+    if (_name.equals("AlternateOID")) {
+      setAlternateOID(_value);
+    } else if (_name.equals("ClassNameUI")) {
+      try {
+        setClassUI((UIInterface) Class.forName(_value).newInstance());
+      } catch (ClassNotFoundException e) {
+        throw new CacheReloadException("could not found class " + "'" + _value
+            + "' for " + "'" + getName() + "'", e);
+      } catch (InstantiationException e) {
+        throw new CacheReloadException("could not instantiate class " + "'"
+            + _value + "' for " + "'" + getName() + "'", e);
+      } catch (IllegalAccessException e) {
+        throw new CacheReloadException("could not access class " + "'" + _value
+            + "' for " + "'" + getName() + "'", e);
+      }
+    } else if (_name.equals("Columns")) {
+      setCols(Integer.parseInt(_value));
+    } else if (_name.equals("Creatable")) {
+      setCreatable(_value.equals("true"));
+    } else if (_name.equals("CreateValue")) {
+      setCreateValue(_value);
+    } else if (_name.equals("Editable")) {
+      setEditable(_value.equals("true"));
+    } else if (_name.equals("Expression")) {
+      setExpression(_value);
+    } else if (_name.equals("GroupCount")) {
+      setGroupCount(Integer.parseInt(_value));
+    } else if (_name.equals("Hidden")) {
+      setHidden(_value.equals("true"));
+    } else if (_name.equals("HRef")) {
+      setReference(RequestHandler.replaceMacrosInUrl(_value));
+    } else if (_name.equals("Icon")) {
+      setIcon(RequestHandler.replaceMacrosInUrl(_value));
+    } else if (_name.equals("Label")) {
+      setLabel(_value);
+    } else if (_name.equals("ProgramValue")) {
+      try {
+        Class programValueClass = Class.forName(_value);
+        setProgramValue((FieldProgramValueInterface) programValueClass
+            .newInstance());
+      } catch (ClassNotFoundException e) {
+        throw new CacheReloadException("could not found class " + "'" + _value
+            + "' for " + "'" + getName() + "'", e);
+      } catch (InstantiationException e) {
+        throw new CacheReloadException("could not instantiate class " + "'"
+            + _value + "' for " + "'" + getName() + "'", e);
+      } catch (IllegalAccessException e) {
+        throw new CacheReloadException("could not access class " + "'" + _value
+            + "' for " + "'" + getName() + "'", e);
+      }
+      // try {
+      // } catch (ClassNotFoundException e) {
+      // } catch (InstantiationException e) {
+      // throw new RequestException(getClass(),
+      // "newInstance.InstantiationException", e);
+      // } catch (IllegalAccessException e) {
+      // throw new RequestException(getClass(),
+      // "newInstance.IllegalAccessException", e);
+      // }
+    } else if (_name.equals("Required")) {
+      if (_value.equals("true")) {
+        setRequired(true);
+      }
+    } else if (_name.equals("Rows")) {
+      setRows(Integer.parseInt(_value));
+    } else if (_name.equals("Searchable")) {
+      setSearchable(_value.equals("true"));
+    } else if (_name.equals("ShowTypeIcon")) {
+      setShowTypeIcon(_value.equals("true"));
+    } else if (_name.equals("Target")) {
+      if (_value.equals("content")) {
+        setTarget(CommandAbstract.TARGET_CONTENT);
+      } else if (_value.equals("hidden")) {
+        setTarget(CommandAbstract.TARGET_HIDDEN);
+      } else if (_value.equals("popup")) {
+        setTarget(CommandAbstract.TARGET_POPUP);
+      }
+    } else {
+      super.setProperty(_name, _value);
+    }
+  }
+
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
@@ -543,7 +455,7 @@ public class Field extends UserInterfaceObject {
    * @see #expression
    * @see #getExpression
    */
-  public void setExpression(String _expression) {
+  public void setExpression(final String _expression) {
     this.expression = _expression;
   }
 
@@ -566,7 +478,7 @@ public class Field extends UserInterfaceObject {
    * @see #alternateOID
    * @see #getAlternateOID
    */
-  public void setAlternateOID(String _alternateOID) {
+  public void setAlternateOID(final String _alternateOID) {
     this.alternateOID = _alternateOID;
   }
 
@@ -589,7 +501,7 @@ public class Field extends UserInterfaceObject {
    * @see #createValue
    * @see #getCreateValue
    */
-  public void setCreateValue(String _createValue) {
+  public void setCreateValue(final String _createValue) {
     this.createValue = _createValue;
   }
 
@@ -612,7 +524,7 @@ public class Field extends UserInterfaceObject {
    * @see #label
    * @see #getLabel
    */
-  public void setLabel(String _label) {
+  public void setLabel(final String _label) {
     this.label = _label;
   }
 
@@ -635,7 +547,7 @@ public class Field extends UserInterfaceObject {
    * @see #rows
    * @see #getRows
    */
-  public void setRows(int _rows) {
+  public void setRows(final int _rows) {
     this.rows = _rows;
   }
 
@@ -658,7 +570,7 @@ public class Field extends UserInterfaceObject {
    * @see #cols
    * @see #getCols
    */
-  public void setCols(int _cols) {
+  public void setCols(final int _cols) {
     this.cols = _cols;
   }
 
@@ -681,7 +593,7 @@ public class Field extends UserInterfaceObject {
    * @see #creatable
    * @see #isCreatable
    */
-  public void setCreatable(boolean _creatable) {
+  public void setCreatable(final boolean _creatable) {
     this.creatable = _creatable;
   }
 
@@ -704,7 +616,7 @@ public class Field extends UserInterfaceObject {
    * @see #editable
    * @see #isEditable
    */
-  public void setEditable(boolean _editable) {
+  public void setEditable(final boolean _editable) {
     this.editable = _editable;
   }
 
@@ -727,7 +639,7 @@ public class Field extends UserInterfaceObject {
    * @see #searchable
    * @see #isSearchable
    */
-  public void setSearchable(boolean _searchable) {
+  public void setSearchable(final boolean _searchable) {
     this.searchable = _searchable;
   }
 
@@ -750,7 +662,7 @@ public class Field extends UserInterfaceObject {
    * @see #required
    * @see #isRequired
    */
-  public void setRequired(boolean _required) {
+  public void setRequired(final boolean _required) {
     this.required = _required;
   }
 
@@ -773,7 +685,7 @@ public class Field extends UserInterfaceObject {
    * @see #hidden
    * @see #isHidden
    */
-  public void setHidden(boolean _hidden) {
+  public void setHidden(final boolean _hidden) {
     this.hidden = _hidden;
   }
 
@@ -796,7 +708,7 @@ public class Field extends UserInterfaceObject {
    * @see #reference
    * @see #getReference
    */
-  public void setReference(String _reference) {
+  public void setReference(final String _reference) {
     this.reference = _reference;
   }
 
@@ -819,7 +731,7 @@ public class Field extends UserInterfaceObject {
    * @see #selIndex
    * @see #getSelIndex
    */
-  protected void setSelIndex(int _selIndex) {
+  protected void setSelIndex(final int _selIndex) {
     this.selIndex = _selIndex;
   }
 
@@ -842,7 +754,7 @@ public class Field extends UserInterfaceObject {
    * @see #radioButton
    * @see #isRadioButton
    */
-  public void setRadioButton(boolean _radioButton) {
+  public void setRadioButton(final boolean _radioButton) {
     this.radioButton = _radioButton;
   }
 
@@ -865,7 +777,7 @@ public class Field extends UserInterfaceObject {
    * @see #programValue
    * @see #getProgramValue
    */
-  public void setProgramValue(FieldProgramValueInterface _programValue) {
+  public void setProgramValue(final FieldProgramValueInterface _programValue) {
     this.programValue = _programValue;
   }
 
@@ -888,7 +800,7 @@ public class Field extends UserInterfaceObject {
    * @see #icon
    * @see #getIcon
    */
-  public void setIcon(String _icon) {
+  public void setIcon(final String _icon) {
     this.icon = _icon;
   }
 
@@ -922,7 +834,7 @@ public class Field extends UserInterfaceObject {
    * @see #target
    * @see #getTarget
    */
-  public void setTarget(int _target) {
+  public void setTarget(final int _target) {
     this.target = _target;
   }
 
@@ -945,7 +857,7 @@ public class Field extends UserInterfaceObject {
    * @see #showTypeIcon
    * @see #getShowTypeIcon
    */
-  public void setShowTypeIcon(boolean _showTypeIcon) {
+  public void setShowTypeIcon(final boolean _showTypeIcon) {
     this.showTypeIcon = _showTypeIcon;
   }
 
@@ -968,7 +880,7 @@ public class Field extends UserInterfaceObject {
    * @see #groupCount
    * @see #getGroupCount
    */
-  public void setGroupCount(int _groupCount) {
+  public void setGroupCount(final int _groupCount) {
     this.groupCount = _groupCount;
   }
 
@@ -991,7 +903,7 @@ public class Field extends UserInterfaceObject {
    * @see #classUI
    * @see #getClassUI
    */
-  private void setClassUI(UIInterface _classUI) {
+  private void setClassUI(final UIInterface _classUI) {
     this.classUI = _classUI;
   }
 }
