@@ -250,39 +250,24 @@ public abstract class UserInterfaceObject extends AdminObject {
   }
 
   /**
-   * Check, if the user of the context has access to this user interface object.
-   * The Check is made in the following hirachy: <br>
+   * Check, if the user of the context has access to this user interface object.<br>
+   * The Check is made in the following order: <br>
    * <ol>
-   * <li> has the context a Event of the Type
-   * <code>TriggerEvent.ACCESSCHECK</code> than the return of the trigger is
-   * the returned</li>
-   * <li>If no access user is assigned to this user interface object, all user
-   * have access.</li>
-   * <li>check if the context person is assigned to one of the user objects.</li>
+   * <li>If no access Uuser or role is assigned to this user interface object,
+   * all user have access and the return is <i>true</i> => go on with Step 3</li>
+   * <li>else check if the context person is assigned to one of the user
+   * objects.</li>
+   * <li> if Step 1 or Step 2 have <i>true</i> and the context an Event of the
+   * Type <code>TriggerEvent.ACCESSCHECK</code>, the return of the trigger
+   * initiated program is returned</li>
    * </ol>
    * 
-   * @param _context
-   *          context for this request (including the person)
-   * @return <i>true</i>if context user has access, otherwise <i>false</i> is
+   * @return <i>true</i> if context user has access, otherwise <i>false</i> is
    *         returned
    */
   public boolean hasAccess() {
     boolean ret = false;
-
-    if (hasTrigger(TriggerEvent.ACCESSCHECK)) {
-
-      List<EventDefinition> trigger =
-          this.triggers.get(TriggerEvent.ACCESSCHECK);
-      if (trigger != null) {
-        ParameterInterface parameter = new Parameter();
-        parameter.put(ParameterValues.UIOBJECT, this);
-        for (EventDefinition event : trigger) {
-          ReturnInterface retIn = event.execute(parameter);
-          ret = retIn.get(ReturnValues.TRUE) != null;
-        }
-      }
-
-    } else if (getAccess().isEmpty()) {
+    if (getAccess().isEmpty()) {
       ret = true;
     } else {
       for (UserObject userObject : getAccess()) {
@@ -292,42 +277,53 @@ public abstract class UserInterfaceObject extends AdminObject {
         }
       }
     }
+    if (ret && hasTrigger(TriggerEvent.ACCESSCHECK)) {
+      ret = false;
+      List<EventDefinition> trigger =
+          this.triggers.get(TriggerEvent.ACCESSCHECK);
+
+      ParameterInterface parameter = new Parameter();
+      parameter.put(ParameterValues.UIOBJECT, this);
+      for (EventDefinition event : trigger) {
+        ReturnInterface retIn = event.execute(parameter);
+        ret = retIn.get(ReturnValues.TRUE) != null;
+
+      }
+    }
     return ret;
   }
- 
- 
-  
+
   /**
    * @deprecated
    */
   public boolean hasAccess(final Context _context) {
     boolean ret = false;
-
-    if (hasTrigger(TriggerEvent.ACCESSCHECK)) {
-
-      List<EventDefinition> trigger =
-          this.triggers.get(TriggerEvent.ACCESSCHECK);
-      if (trigger != null) {
-        ParameterInterface parameter = new Parameter();
-        parameter.put(ParameterValues.UIOBJECT, this);
-        for (EventDefinition event : trigger) {
-          ReturnInterface retIn = event.execute(parameter);
-          ret = retIn.get(ReturnValues.TRUE) != null;
-        }
-      }
-
-    } else if (getAccess().isEmpty()) {
+    if (getAccess().isEmpty()) {
       ret = true;
     } else {
       for (UserObject userObject : getAccess()) {
-        if (userObject.isAssigned(_context)) {
+        if (userObject.isAssigned()) {
           ret = true;
           break;
         }
       }
     }
+    if (ret && hasTrigger(TriggerEvent.ACCESSCHECK)) {
+      ret = false;
+      List<EventDefinition> trigger =
+          this.triggers.get(TriggerEvent.ACCESSCHECK);
+
+      ParameterInterface parameter = new Parameter();
+      parameter.put(ParameterValues.UIOBJECT, this);
+      for (EventDefinition event : trigger) {
+        ReturnInterface retIn = event.execute(parameter);
+        ret = retIn.get(ReturnValues.TRUE) != null;
+
+      }
+    }
     return ret;
   }
+
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
@@ -429,7 +425,7 @@ public abstract class UserInterfaceObject extends AdminObject {
     List<ReturnInterface> ret = new ArrayList<ReturnInterface>();
 
     Parameter para = new Parameter();
-    para.put(ParameterValues.INSTANCE, this);
+    para.put(ParameterValues.UIOBJECT, this);
     for (EventDefinition evenDef : trig) {
       ret.add(evenDef.execute(para));
     }
