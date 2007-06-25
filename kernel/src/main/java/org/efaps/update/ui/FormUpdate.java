@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,10 @@ package org.efaps.update.ui;
 
 import java.io.File;
 import java.io.IOException;
+
+import org.apache.commons.digester.Digester;
+
+import org.xml.sax.SAXException;
 
 /**
  * @author tmo
@@ -49,9 +53,20 @@ public class FormUpdate extends AbstractCollectionUpdate  {
     return readXMLFile(new File(_fileName));
   }
 
-  public static FormUpdate readXMLFile(final File _file) throws IOException  {
-    return (FormUpdate) AbstractCollectionUpdate.readXMLFile(_file, 
-                                                             "ui-form", 
-                                                             FormUpdate.class);
+  public static FormUpdate readXMLFile(final File _file)  throws IOException {
+    FormUpdate ret = null;
+
+    try {
+      Digester digester = createDigester("ui-form", FormUpdate.class);
+      ret = (FormUpdate) digester.parse(_file);
+
+      if (ret != null) {
+        ret.setFile(_file);
+      }
+    } catch (SAXException e) {
+      e.printStackTrace();
+      // LOG.error("could not read file '" + _fileName + "'", e);
+    }
+    return ret;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,10 @@ package org.efaps.update.ui;
 
 import java.io.File;
 import java.io.IOException;
+
+import org.apache.commons.digester.Digester;
+
+import org.xml.sax.SAXException;
 
 /**
  * @author tmo
@@ -50,8 +54,19 @@ public class TableUpdate extends AbstractCollectionUpdate  {
   }
 
   public static TableUpdate readXMLFile(final File _file) throws IOException  {
-    return (TableUpdate) AbstractCollectionUpdate.readXMLFile(_file, 
-                                                              "ui-table", 
-                                                              TableUpdate.class);
+    TableUpdate ret = null;
+
+    try {
+      Digester digester = createDigester("ui-table", TableUpdate.class);
+      ret = (TableUpdate) digester.parse(_file);
+
+      if (ret != null) {
+        ret.setFile(_file);
+      }
+    } catch (SAXException e) {
+      e.printStackTrace();
+      // LOG.error("could not read file '" + _fileName + "'", e);
+    }
+    return ret;
   }
 }
