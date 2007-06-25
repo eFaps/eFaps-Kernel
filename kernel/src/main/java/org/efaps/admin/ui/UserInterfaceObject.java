@@ -421,13 +421,14 @@ public abstract class UserInterfaceObject extends AdminObject {
    * @return List with Returns
    */
   public List<ReturnInterface> executeTrigger(final TriggerEvent _triggerEvent) {
-    List<EventDefinition> trig = this.triggers.get(_triggerEvent);
     List<ReturnInterface> ret = new ArrayList<ReturnInterface>();
-
-    Parameter para = new Parameter();
-    para.put(ParameterValues.UIOBJECT, this);
-    for (EventDefinition evenDef : trig) {
-      ret.add(evenDef.execute(para));
+    if (hasTrigger(_triggerEvent)) {
+      List<EventDefinition> trig = this.triggers.get(_triggerEvent);
+      Parameter para = new Parameter();
+      para.put(ParameterValues.UIOBJECT, this);
+      for (EventDefinition evenDef : trig) {
+        ret.add(evenDef.execute(para));
+      }
     }
     return ret;
   }
