@@ -46,39 +46,33 @@ public class CommandUpdate extends AbstractUpdate {
   // static variables
 
   /** Link from UI object to role */
-  private final static Link        LINK2ACCESSROLE   = new Link(
-                                                         "Admin_UI_Access",
+  private final static Link LINK2ACCESSROLE   = new Link("Admin_UI_Access",
                                                          "UILink",
                                                          "Admin_User_Role",
                                                          "UserLink");
 
   /** Link from command to icon */
-  private final static Link        LINK2ICON         = new Link(
-                                                         "Admin_UI_LinkIcon",
+  private final static Link LINK2ICON         = new Link("Admin_UI_LinkIcon",
                                                          "From",
                                                          "Admin_UI_Image", "To");
 
   /** Link from command to table as target */
-  private final static Link        LINK2TARGETTABLE  = new Link(
-                                                         "Admin_UI_LinkTargetTable",
+  private final static Link LINK2TARGETTABLE  = new Link("Admin_UI_LinkTargetTable",
                                                          "From",
                                                          "Admin_UI_Table", "To");
 
   /** Link from command to form as target */
-  private final static Link        LINK2TARGETFORM   = new Link(
-                                                         "Admin_UI_LinkTargetForm",
+  private final static Link LINK2TARGETFORM   = new Link("Admin_UI_LinkTargetForm",
                                                          "From",
                                                          "Admin_UI_Form", "To");
 
   /** Link from command to menu as target */
-  private final static Link        LINK2TARGETMENU   = new Link(
-                                                         "Admin_UI_LinkTargetMenu",
+  private final static Link LINK2TARGETMENU   = new Link("Admin_UI_LinkTargetMenu",
                                                          "From",
                                                          "Admin_UI_Menu", "To");
 
   /** Link from command to search as target */
-  private final static Link        LINK2TARGETSEARCH = new Link(
-                                                         "Admin_UI_LinkTargetSearch",
+  private final static Link LINK2TARGETSEARCH = new Link("Admin_UI_LinkTargetSearch",
                                                          "From",
                                                          "Admin_UI_Search",
                                                          "To");
@@ -167,41 +161,40 @@ public class CommandUpdate extends AbstractUpdate {
       digester.addCallMethod("ui-command/definition/icon", "assignIcon", 1);
       digester.addCallParam("ui-command/definition/icon", 0);
 
-      digester.addCallMethod("ui-command/definition/access/role",
-          "assignAccessRole", 1);
+      digester.addCallMethod("ui-command/definition/access/role", "assignAccessRole", 1);
       digester.addCallParam("ui-command/definition/access/role", 0);
 
-      digester.addCallMethod("ui-command/definition/target/table",
-          "assignTargetTable", 1);
-      digester.addCallParam("ui-command/definition/target/table", 0);
-
-      digester.addCallMethod("ui-command/definition/target/form",
-          "assignTargetForm", 1);
+      // target definitions
+      digester.addCallMethod("ui-command/definition/target/form", "assignTargetForm", 1);
       digester.addCallParam("ui-command/definition/target/form", 0);
 
-      digester.addCallMethod("ui-command/definition/target/menu",
-          "assignTargetMenu", 1);
+      digester.addCallMethod("ui-command/definition/target/menu", "assignTargetMenu", 1);
       digester.addCallParam("ui-command/definition/target/menu", 0);
 
-      digester.addCallMethod("ui-command/definition/target/search",
-          "assignTargetSearch", 1);
+      digester.addCallMethod("ui-command/definition/target/search", "assignTargetSearch", 1);
       digester.addCallParam("ui-command/definition/target/search", 0);
 
+      digester.addCallMethod("ui-command/definition/target/table", "assignTargetTable", 1);
+      digester.addCallParam("ui-command/definition/target/table", 0);
+
+      digester.addFactoryCreate("ui-command/definition/target/evalute", new EventFactory("Admin_UI_TableEvaluateEvent"), false);
+      digester.addCallMethod("ui-command/definition/target/evalute/property", "addProperty", 2);
+      digester.addCallParam("ui-command/definition/target/evalute/property", 0, "name");
+      digester.addCallParam("ui-command/definition/target/evalute/property", 1);
+      digester.addSetNext("ui-command/definition/target/evalute", "addEvent", "org.efaps.update.event.Event");
+
+      // properties
       digester
           .addCallMethod("ui-command/definition/property", "addProperty", 2);
       digester.addCallParam("ui-command/definition/property", 0, "name");
       digester.addCallParam("ui-command/definition/property", 1);
 
       // Trigger
-      digester.addFactoryCreate("ui-command/definition/trigger",
-          new EventFactory(), false);
-      digester.addCallMethod("ui-command/definition/trigger/property",
-          "addProperty", 2);
-      digester
-          .addCallParam("ui-command/definition/trigger/property", 0, "name");
+      digester.addFactoryCreate("ui-command/definition/trigger", new EventFactory(), false);
+      digester.addCallMethod("ui-command/definition/trigger/property", "addProperty", 2);
+      digester.addCallParam("ui-command/definition/trigger/property", 0, "name");
       digester.addCallParam("ui-command/definition/trigger/property", 1);
-      digester.addSetNext("ui-command/definition/trigger", "addEvent",
-          "org.efaps.update.event.Event");
+      digester.addSetNext("ui-command/definition/trigger", "addEvent", "org.efaps.update.event.Event");
 
       ret = (CommandUpdate) digester.parse(_file);
 

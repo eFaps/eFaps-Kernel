@@ -50,7 +50,8 @@ public enum TriggerEvent  {
   RANGE_VALUE        ("Admin_Event_RangeValue"),
   UPDATE_OVERRIDE    ("Admin_Event_Trigger_UpdateOverride"),
   UPDATE_POST        ("Admin_Event_Trigger_UpdatePost"),
-  UPDATE_PRE         ("Admin_Event_Trigger_UpdatePre");
+  UPDATE_PRE         ("Admin_Event_Trigger_UpdatePre"),
+  UI_TABLE_EVALUATE  ("Admin_UI_TableEvaluateEvent");
   
   
   public final String name;
