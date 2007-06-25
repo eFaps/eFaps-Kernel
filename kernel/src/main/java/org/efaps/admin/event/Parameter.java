@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * Class witch can be used for parsing Parameters to the Events.
  * 
@@ -46,5 +48,17 @@ public class Parameter implements ParameterInterface {
 
   public Set entrySet() {
     return this.map.entrySet();
+  }
+
+  /**
+   * Returns a string representation of this parameter instance.
+   * 
+   * @return string representation of this parameter instance.
+   */
+  public String toString() {
+    return new ToStringBuilder(this)
+        .appendSuper(super.toString())
+        .append("map", map.toString())
+        .toString();
   }
 }
