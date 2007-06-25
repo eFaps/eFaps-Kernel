@@ -47,6 +47,7 @@
     </version>
     <name>Admin_Event_RangeValue</name>
     <parent>Admin_Event_Definition</parent>
+    <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 
 </datamodel-type>

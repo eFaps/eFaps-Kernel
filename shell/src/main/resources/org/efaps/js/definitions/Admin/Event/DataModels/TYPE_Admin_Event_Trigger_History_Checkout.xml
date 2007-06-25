@@ -47,6 +47,7 @@
     </version>
     <name>Admin_Event_Trigger_History_Checkout</name>
     <parent>Admin_Event_Trigger_CheckoutPost</parent>
+    <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 
 </datamodel-type>
