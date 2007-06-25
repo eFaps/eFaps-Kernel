@@ -35,15 +35,16 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sun.tools.javac.util.Name.Table;
+
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.ParameterInterface;
-import org.efaps.admin.event.ReturnInterface;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
-import org.efaps.admin.event.ReturnInterface.ReturnValues;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.lifecycle.Policy;
 import org.efaps.admin.lifecycle.Status;
 import org.efaps.admin.ui.Form;
@@ -57,8 +58,8 @@ import org.efaps.servlet.RequestHandler;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
-import org.efaps.util.cache.CacheReloadInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * This is the class for the type description. The type description holds
@@ -472,12 +473,12 @@ public class Type extends DataModelObject {
     boolean hasAccess = true;
     List<EventDefinition> triggers = this.getTrigger(TriggerEvent.ACCESSCHECK);
     if (triggers != null) {
-      ParameterInterface parameter = new Parameter();
+      Parameter parameter = new Parameter();
       parameter.put(ParameterValues.INSTANCE, _instance);
       parameter.put(ParameterValues.ACCESSTYPE, _accessType);
 
       for (EventDefinition event : triggers) {
-        ReturnInterface ret = event.execute(parameter);
+        Return ret = event.execute(parameter);
         hasAccess = ret.get(ReturnValues.TRUE) != null;
       }
     }

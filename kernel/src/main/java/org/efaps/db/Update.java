@@ -42,9 +42,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
-
-import org.efaps.db.Context;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 

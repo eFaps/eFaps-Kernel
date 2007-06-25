@@ -30,7 +30,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.ReturnInterface;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
@@ -369,8 +369,8 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * definded for this instance in the speciefied order, and returns a List with
    * the Returns of the Events
    */
-  public List<ReturnInterface> executeTrigger() {
-    List<ReturnInterface> ret = new ArrayList<ReturnInterface>();
+  public List<Return> executeTrigger() {
+    List<Return> ret = new ArrayList<Return>();
     List<EventDefinition> trigger =
         super.getTriggers().get(TriggerEvent.COMMAND);
 

@@ -23,9 +23,9 @@ package org.efaps.admin.datamodel.ui;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.efaps.admin.event.ReturnInterface;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.event.ReturnInterface.ReturnValues;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -49,7 +49,7 @@ public class LinkWithRangesUI implements UIInterface {
     if (_value != null) {
       if (_field.hasTrigger()) {
 
-        for (ReturnInterface values : _field
+        for (Return values : _field
             .executeTrigger(TriggerEvent.RANGE_VALUE)) {
           ret.append((String) ((Map) values.get(ReturnValues.VALUES))
               .get(_value.toString()));
@@ -68,7 +68,7 @@ public class LinkWithRangesUI implements UIInterface {
 
     if (_value != null) {
       if (_field.hasTrigger()) {
-        for (ReturnInterface values : _field
+        for (Return values : _field
             .executeTrigger(TriggerEvent.RANGE_VALUE)) {
 
           ret.append("<form><select name=\"").append(_field.getName()).append(
@@ -101,7 +101,7 @@ public class LinkWithRangesUI implements UIInterface {
     StringBuilder ret = new StringBuilder();
 
     if (_field.hasTrigger()) {
-      for (ReturnInterface values : _field
+      for (Return values : _field
           .executeTrigger(TriggerEvent.RANGE_VALUE)) {
 
         ret.append("<form><select name=\"").append(_field.getName()).append(

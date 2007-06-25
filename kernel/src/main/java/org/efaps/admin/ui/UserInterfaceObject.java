@@ -35,11 +35,10 @@ import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.ParameterInterface;
-import org.efaps.admin.event.ReturnInterface;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
-import org.efaps.admin.event.ReturnInterface.ReturnValues;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.user.Role;
 import org.efaps.admin.user.UserObject;
 import org.efaps.db.Context;
@@ -282,10 +281,10 @@ public abstract class UserInterfaceObject extends AdminObject {
       List<EventDefinition> trigger =
           this.triggers.get(TriggerEvent.ACCESSCHECK);
 
-      ParameterInterface parameter = new Parameter();
+      Parameter parameter = new Parameter();
       parameter.put(ParameterValues.UIOBJECT, this);
       for (EventDefinition event : trigger) {
-        ReturnInterface retIn = event.execute(parameter);
+        Return retIn = event.execute(parameter);
         ret = retIn.get(ReturnValues.TRUE) != null;
 
       }
@@ -313,10 +312,10 @@ public abstract class UserInterfaceObject extends AdminObject {
       List<EventDefinition> trigger =
           this.triggers.get(TriggerEvent.ACCESSCHECK);
 
-      ParameterInterface parameter = new Parameter();
+      Parameter parameter = new Parameter();
       parameter.put(ParameterValues.UIOBJECT, this);
       for (EventDefinition event : trigger) {
-        ReturnInterface retIn = event.execute(parameter);
+        Return retIn = event.execute(parameter);
         ret = retIn.get(ReturnValues.TRUE) != null;
 
       }
@@ -403,8 +402,8 @@ public abstract class UserInterfaceObject extends AdminObject {
    * 
    * @see #executeTrigger(TriggerEvent)
    */
-  public List<ReturnInterface> executeAllTriggers() {
-    List<ReturnInterface> ret = new ArrayList<ReturnInterface>();
+  public List<Return> executeAllTriggers() {
+    List<Return> ret = new ArrayList<Return>();
 
     for (TriggerEvent triggerEvent : TriggerEvent.values()) {
       ret.addAll(executeTrigger(triggerEvent));
@@ -420,8 +419,8 @@ public abstract class UserInterfaceObject extends AdminObject {
    *          trigger events to execute
    * @return List with Returns
    */
-  public List<ReturnInterface> executeTrigger(final TriggerEvent _triggerEvent) {
-    List<ReturnInterface> ret = new ArrayList<ReturnInterface>();
+  public List<Return> executeTrigger(final TriggerEvent _triggerEvent) {
+    List<Return> ret = new ArrayList<Return>();
     if (hasTrigger(_triggerEvent)) {
       List<EventDefinition> trig = this.triggers.get(_triggerEvent);
       Parameter para = new Parameter();

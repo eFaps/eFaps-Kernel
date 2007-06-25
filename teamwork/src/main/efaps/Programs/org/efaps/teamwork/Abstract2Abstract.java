@@ -22,10 +22,11 @@ package org.efaps.teamwork;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.efaps.admin.event.EventExecution;
-import org.efaps.admin.event.ParameterInterface;
-import org.efaps.admin.event.ReturnInterface;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
+import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -37,7 +38,7 @@ public class Abstract2Abstract implements EventExecution {
    */
   private static final Log LOG = LogFactory.getLog(Abstract2Abstract.class);
 
-  public ReturnInterface execute(ParameterInterface _parameter) {
+  public Return execute(Parameter _parameter) {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     String abstractlink = ((Long) instance.getId()).toString();
 
@@ -88,7 +89,7 @@ public class Abstract2Abstract implements EventExecution {
     return null;
   }
 
-  public ReturnInterface insertNewRoot(ParameterInterface _parameter) {
+  public Return insertNewRoot(Parameter _parameter) {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     String abstractlink = ((Long) instance.getId()).toString();
 

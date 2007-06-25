@@ -27,14 +27,34 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * Class witch can be used for parsing Parameters to the Events.
+ * Class witch is used for parsing Parameters to the Events.
  * 
  * @author jmo
  * @version $Id$
  * 
  */
-public class Parameter implements ParameterInterface {
+public class Parameter  {
+  /**
+   * This enum holds the Defenitions of Parameters, to be accessed
+   */
+  public enum ParameterValues {
+    /** Holds an AccessType, used for AccessCheck-Programs */
+    ACCESSTYPE,
+    /** Holds an Instance */
+    INSTANCE,
+    /**
+     * Holds the new Values for an Instance, used e.g. by Creation of a new
+     * Object
+     */
+    NEW_VALUES,
+    /** Holds the Properties of the trigger */
+    PROPERTIES,
+    /** Placemark for aditional Informations */
+    OTHERS,
+    /** Holds an UserInterfaceObject */
+    UIOBJECT;
 
+  }
   private Map<ParameterValues, Object> map = new HashMap<ParameterValues, Object>();
 
   public void put(ParameterValues _key, Object _value) {

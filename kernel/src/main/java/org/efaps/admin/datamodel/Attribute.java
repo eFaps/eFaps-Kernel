@@ -42,7 +42,7 @@ import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -221,12 +221,12 @@ public class Attribute extends DataModelObject {
    * 
    * @return List with Returns
    */
-  public List<Return> executeTriggers() {
+  public List<Return> executeAllTriggers() {
 
     List<Return> ret = new ArrayList<Return>();
 
     for (TriggerEvent triggerEvent : TriggerEvent.values()) {
-      ret.addAll(executeTriggers(triggerEvent));
+      ret.addAll(executeTrigger(triggerEvent));
     }
 
     return ret;
@@ -240,7 +240,7 @@ public class Attribute extends DataModelObject {
    *          trigger events to execute
    * @return List with Returns
    */
-  public List<Return> executeTriggers(final TriggerEvent _triggerEvent) {
+  public List<Return> executeTrigger(final TriggerEvent _triggerEvent) {
     List<EventDefinition> trig = this.triggers.get(_triggerEvent);
     List<Return> ret = new ArrayList<Return>();
 

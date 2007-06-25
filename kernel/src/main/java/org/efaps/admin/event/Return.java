@@ -27,13 +27,22 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
- * Class witch can be used for getting the Return of the Events.
+ * Class witch is used for getting the Return of the Events.
  * 
  * @author jmo
  * @version $Id$
  * 
  */
-public class Return implements ReturnInterface {
+public class Return  {
+  
+  public enum ReturnValues {
+    /** used to return a Map of Values */
+    VALUES,
+    /** used to return true */
+    TRUE;
+  }
+  
+  
   private Map<ReturnValues, Object> map = new HashMap<ReturnValues, Object>();
 
   public Object get(ReturnValues _key) {

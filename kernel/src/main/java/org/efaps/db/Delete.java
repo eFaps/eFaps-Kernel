@@ -26,13 +26,14 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.transaction.StoreResource;
 import org.efaps.util.EFapsException;

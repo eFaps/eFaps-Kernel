@@ -40,5 +40,5 @@ public interface EventExecution {
    * @param _map
    *          Map with values from the trigger
    */
-  public ReturnInterface execute(final ParameterInterface _parameter);
+  public Return execute(final Parameter _parameter);
 }

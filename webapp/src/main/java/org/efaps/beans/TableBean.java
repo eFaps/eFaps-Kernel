@@ -20,7 +20,6 @@
 
 package org.efaps.beans;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,16 +27,15 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Table;
-import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-import org.efaps.admin.event.ReturnInterface;
-import org.efaps.admin.event.TriggerEvent;
 
 /**
  * @author tmo
@@ -119,7 +117,7 @@ public class TableBean extends AbstractCollectionBean  {
     Context context = Context.getThreadContext();
     System.out.println("--->selectedFilter=" + getSelectedFilter());
 
-List<ReturnInterface> list = getCommand().executeTrigger(TriggerEvent.UI_TABLE_EVALUATE);
+List<Return> list = getCommand().executeTrigger(TriggerEvent.UI_TABLE_EVALUATE);
 
 System.out.println("list="+list);
 

@@ -31,11 +31,10 @@ import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventExecution;
-import org.efaps.admin.event.ParameterInterface;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
-import org.efaps.admin.event.ReturnInterface;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
-import org.efaps.admin.event.ReturnInterface.ReturnValues;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
@@ -147,11 +146,11 @@ public class SimpleAccessCheckOnType implements EventExecution {
     return hasAccess;
   }
 
-  public ReturnInterface execute(ParameterInterface _parameter) {
+  public Return execute(Parameter _parameter) {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     AccessType accessType =
         (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
-    ReturnInterface ret = new Return();
+    Return ret = new Return();
 
     if (checkAccess(instance, accessType)) {
       ret.put(ReturnValues.TRUE, true);

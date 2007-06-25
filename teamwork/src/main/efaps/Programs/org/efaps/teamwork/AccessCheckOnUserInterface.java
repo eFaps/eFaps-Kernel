@@ -29,11 +29,10 @@ import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventExecution;
-import org.efaps.admin.event.ParameterInterface;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
-import org.efaps.admin.event.ReturnInterface;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
-import org.efaps.admin.event.ReturnInterface.ReturnValues;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
@@ -104,7 +103,7 @@ public class AccessCheckOnUserInterface implements EventExecution {
     return hasAccess;
   }
 
-  public ReturnInterface execute(ParameterInterface _parameter) {
+  public Return execute(Parameter _parameter) {
 
     AccessType accesstype =
         AccessType.getAccessType((String) ((Map) _parameter
@@ -114,7 +113,7 @@ public class AccessCheckOnUserInterface implements EventExecution {
         Type.get((String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
             .get("Type"));
 
-    ReturnInterface ret = new Return();
+    Return ret = new Return();
 
     if (checkAccess(type, accesstype)) {
       ret.put(ReturnValues.TRUE, true);

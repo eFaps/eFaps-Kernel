@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.program.java.EFapsClassLoader;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Field;
@@ -151,8 +151,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
           Class.forName(this.resourceName, true, new EFapsClassLoader(this
               .getClass().getClassLoader()));
       this.method =
-          cls.getMethod(this.methodName,
-              new Class[] { ParameterInterface.class });
+          cls.getMethod(this.methodName, new Class[] { Parameter.class });
       this.progInstance = ((EventExecution) cls.newInstance());
     } catch (ClassNotFoundException e) {
       LOG.error("could not find Class: '" + this.resourceName + "'", e);
@@ -170,12 +169,12 @@ public class EventDefinition extends AdminObject implements EventExecution {
 
   }
 
-  public ReturnInterface execute(final ParameterInterface _parameter) {
-    ReturnInterface ret = null;
+  public Return execute(final Parameter _parameter) {
+    Return ret = null;
     _parameter.put(ParameterValues.PROPERTIES, super.getProperties());
     try {
 
-      ret = (ReturnInterface) this.method.invoke(this.progInstance, _parameter);
+      ret = (Return) this.method.invoke(this.progInstance, _parameter);
 
     } catch (SecurityException e) {
       LOG.error("could not access class: '" + this.resourceName, e);
@@ -344,7 +343,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
       if (query.next()) {
         type = (Type) query.get("Type");
       } else {
-        //wird gebraucht, da fuer Admin_Abstract die Query nicht funktioniert
+        // wird gebraucht, da fuer Admin_Abstract die Query nicht funktioniert
         type = Type.get(abstractID);
       }
     } catch (EFapsException e) {

@@ -32,11 +32,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.event.EventExecution;
-import org.efaps.admin.event.ParameterInterface;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
-import org.efaps.admin.event.ReturnInterface;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
-import org.efaps.admin.event.ReturnInterface.ReturnValues;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
@@ -57,7 +56,7 @@ public class RangesValue implements EventExecution {
    */
   private static final Log LOG = LogFactory.getLog(RangesValue.class);
 
-  public ReturnInterface execute(ParameterInterface _parameter) {
+  public Return execute(Parameter _parameter) {
     Return ret = new Return();
     try {
 

@@ -24,17 +24,25 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.event.EventExecution;
-import org.efaps.admin.event.ParameterInterface;
-import org.efaps.admin.event.ReturnInterface;
+import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.runlevel.RunLevel;
 
+/**
+ * Class to relaod the Cache.<br>
+ * This Class is a Java eFaps Program wich is stored inside the eFaps-Database.
+ * It is executed on Userinteraction through a trigger on a Command.
+ * 
+ * @author jmo
+ * @version $Id$
+ */
 public class ReloadCache implements EventExecution {
   /**
    * Logger for this class
    */
   private static final Log LOG = LogFactory.getLog(ReloadCache.class);
 
-  public ReturnInterface execute(ParameterInterface _parameter) {
+  public Return execute(Parameter _parameter) {
     try {
       RunLevel.init("webapp");
       RunLevel.execute();

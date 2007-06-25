@@ -29,11 +29,10 @@ import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventExecution;
-import org.efaps.admin.event.ParameterInterface;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
-import org.efaps.admin.event.ReturnInterface;
-import org.efaps.admin.event.ParameterInterface.ParameterValues;
-import org.efaps.admin.event.ReturnInterface.ReturnValues;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.db.Delete;
@@ -63,7 +62,7 @@ public class Member implements EventExecution {
    * @param _parameter
    * @return null
    */
-  public ReturnInterface insertNewMember(ParameterInterface _parameter) {
+  public Return insertNewMember(Parameter _parameter) {
 
     Iterator iter = ((Map) _parameter.get(ParameterValues.NEW_VALUES))
         .entrySet().iterator();
@@ -183,7 +182,7 @@ public class Member implements EventExecution {
     return ID;
   }
 
-  public ReturnInterface editMember(ParameterInterface _parameter) {
+  public Return editMember(Parameter _parameter) {
     System.out.print("geht doch");
     
     Return ret = new Return();
@@ -193,7 +192,7 @@ public class Member implements EventExecution {
     return ret;
   }
 
-  public ReturnInterface execute(ParameterInterface _parameter) {
+  public Return execute(Parameter _parameter) {
 
     Iterator iter = ((Map) _parameter.get(ParameterValues.NEW_VALUES))
         .entrySet().iterator();
@@ -243,7 +242,7 @@ public class Member implements EventExecution {
    * @param _parameter
    * @return null
    */
-  public ReturnInterface insertCollectionCreator(ParameterInterface _parameter) {
+  public Return insertCollectionCreator(Parameter _parameter) {
 
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     String abstractlink = ((Long) instance.getId()).toString();
@@ -303,7 +302,7 @@ public class Member implements EventExecution {
    * @param _parameter
    * @return
    */
-  public ReturnInterface removeMember(ParameterInterface _parameter) {
+  public Return removeMember(Parameter _parameter) {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     String tempID = ((Long) instance.getId()).toString();
 
