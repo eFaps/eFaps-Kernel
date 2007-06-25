@@ -58,7 +58,7 @@ public class Parameter implements ParameterInterface {
   public String toString() {
     return new ToStringBuilder(this)
         .appendSuper(super.toString())
-        .append("map", map.toString())
+        .append("map", this.map.toString())
         .toString();
   }
 }
