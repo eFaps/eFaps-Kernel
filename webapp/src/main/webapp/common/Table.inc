@@ -21,6 +21,9 @@
  
 --%>
 
+<%@page import="org.efaps.beans.FieldValue"%>
+<%@page import="org.efaps.beans.TableBean"%>
+
 <%@taglib prefix="c"    uri="http://java.sun.com/jstl/core"%>
 <%@taglib prefix="h"    uri="http://java.sun.com/jsf/html"%>
 <%@taglib prefix="f"    uri="http://java.sun.com/jsf/core"%>
@@ -34,14 +37,11 @@
 System.out.println("create new cacheKey = "+cacheKey);
   }
 
-  org.efaps.beans.TableBeanInterface uiObject = (org.efaps.beans.TableBeanInterface)request.getAttribute("uiObject");
+  TableBean uiObject = (TableBean) request.getAttribute("uiObject");
   if (uiObject==null)  {
-    uiObject = (org.efaps.beans.TableBeanInterface)cache.getTableBean(cacheKey, request.getParameter("command"));
+    uiObject = (TableBean) cache.getTableBean(cacheKey, request.getParameter("command"));
     request.setAttribute("uiObject", uiObject);
   }
-  uiObject.setResponse(response);
-
-
 %>
 
 <c:choose>
@@ -309,17 +309,17 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
     out.print("\"/></td>");
   }
 
-  for (org.efaps.beans.TableBean.Value col : row.getValues())  {
+  for (FieldValue col : row.getValues())  {
 
-    if (!col.getField().isHidden())  {
+    if (!col.getFieldDef().getField().isHidden())  {
       out.print("<td>");
 
       // show href
-      if (col.getField().getReference()!=null)  {
-        String href = col.getField().getReference();
+      if (col.getFieldDef().getField().getReference()!=null)  {
+        String href = col.getFieldDef().getField().getReference();
         String target = "Content";
         href += "&oid=" + col.getInstance().getOid();
-        if (col.getField().isTargetPopup())  {
+        if (col.getFieldDef().getField().isTargetPopup())  {
           target = "Popup";
         } else if (uiObject.getNodeId()!=null) {
           href += "&nodeId=" + uiObject.getNodeId();
@@ -332,14 +332,14 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
       }
 
       // image
-      if (col.getField().getIcon()!=null)  {
+      if (col.getFieldDef().getField().getIcon()!=null)  {
         out.print("<img src=\"");
-        out.print(col.getField().getIcon());
+        out.print(col.getFieldDef().getField().getIcon());
         out.print("\"/>");
       }
 
       // show type icon?
-      if (col.getField().isShowTypeIcon())  {
+      if (col.getFieldDef().getField().isShowTypeIcon())  {
         String imgUrl = col.getInstance().getType().getIcon();
         if (imgUrl!=null)  {
           out.print("<img src=\"");
@@ -351,9 +351,9 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
 
       // show column value
       if (col.getValue()!=null)  {
-        if (uiObject.isCreateMode() && col.getField().isEditable())  {
+        if (uiObject.isCreateMode() && col.getFieldDef().getField().isEditable())  {
           out.print(col.getCreateHtml());
-        } else if (uiObject.isEditMode() && col.getField().isEditable())  {
+        } else if (uiObject.isEditMode() && col.getFieldDef().getField().isEditable())  {
           out.print(col.getEditHtml());
         } else  {
           out.print(col.getViewHtml());
@@ -361,7 +361,7 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
       }
 
       // end href
-      if (col.getField().getReference()!=null)  {
+      if (col.getFieldDef().getField().getReference()!=null)  {
         out.print("</a>");
       }
 

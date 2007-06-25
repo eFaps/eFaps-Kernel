@@ -38,10 +38,6 @@
 
   <%-- /** constructor for the menu tree bean with some initialise code **/ --%>
   <jsp:useBean id="uiObject" class="org.efaps.beans.MenuTreeBean" scope="request">
-    <%
-      uiObject.setResponse(response);
-      uiObject.setRequest(request);
-    %>
     <jsp:setProperty name="uiObject" property="oid" param="oid"/>
     <c:set var="label"><str:replace replace="'" with="\\'"><fmt:message><c:out value="${uiObject.instance.type.treeMenuName}.Label"/></fmt:message></str:replace></c:set>
 

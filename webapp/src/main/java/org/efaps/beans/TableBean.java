@@ -36,6 +36,8 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+import org.efaps.admin.event.ReturnInterface;
+import org.efaps.admin.event.TriggerEvent;
 
 /**
  * @author tmo
@@ -43,8 +45,7 @@ import org.efaps.util.EFapsException;
  *          jmo $
  * @todo description
  */
-public class TableBean extends AbstractCollectionBean implements
-    TableBeanInterface {
+public class TableBean extends AbstractCollectionBean  {
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -55,7 +56,16 @@ public class TableBean extends AbstractCollectionBean implements
    * @see #evalFieldDefs
    * @see #getFieldDefs
    */
-  final private List < FieldDef > fieldDefs = new ArrayList < FieldDef > ();
+  private final List < FieldDefinition > fieldDefs
+          = new ArrayList < FieldDefinition > ();
+
+  /**
+   * All evaluated rows of this table are stored in this list.
+   *
+   * @see #getValues
+   */
+  private final List < Row > values
+          = new ArrayList < Row > ();
 
   /**
    * The instance variable stores the table which must be shown.
@@ -109,7 +119,12 @@ public class TableBean extends AbstractCollectionBean implements
     Context context = Context.getThreadContext();
     System.out.println("--->selectedFilter=" + getSelectedFilter());
 
+List<ReturnInterface> list = getCommand().executeTrigger(TriggerEvent.UI_TABLE_EVALUATE);
+
+System.out.println("list="+list);
+
     SearchQuery query = new SearchQuery();
+
 
     if (getCommand().getProperty("TargetQueryTypes") != null) {
       query.setQueryTypes(getCommand().getProperty("TargetQueryTypes"));
@@ -135,8 +150,6 @@ public class TableBean extends AbstractCollectionBean implements
 
     query.execute();
 
-    setValues(new ArrayList<Row>());
-
     executeRowResult(context, query);
 
     setInitialised(true);
@@ -156,7 +169,7 @@ public class TableBean extends AbstractCollectionBean implements
       if (label != null)  {
         label = DBProperties.getProperty(label);
       }
-      this.fieldDefs.add(new FieldDef(label, field));
+      this.fieldDefs.add(new FieldDefinition(label, field));
     }
   }
 
@@ -165,18 +178,18 @@ public class TableBean extends AbstractCollectionBean implements
     while (_query.next()) {
       Row row = new Row(_query.getRowOIDs(_context));
       boolean toAdd = false;
-      for (Field field : getTable().getFields()) {
+      for (FieldDefinition fieldDef : this.fieldDefs) {
         Object value = null;
         Attribute attr = null;
         // if (field.getProgramValue()!=null) {
         // attrValue = field.getProgramValue().evalAttributeValue(_context,
         // _query);
         // } else
-        if (field.getExpression() != null) {
-          value = _query.get(field);
-          attr = _query.getAttribute(field);
+        if (fieldDef.getField().getExpression() != null) {
+          value = _query.get(fieldDef.getField());
+          attr = _query.getAttribute(fieldDef.getField());
         }
-        Instance instance = _query.getInstance(_context, field);
+        Instance instance = _query.getInstance(_context, fieldDef.getField());
         // if (attrValue!=null) {
         // attrValue.setField(field);
         // }
@@ -185,7 +198,7 @@ public class TableBean extends AbstractCollectionBean implements
           classUI = attr.getAttributeType().getUI();
         }
         toAdd = toAdd || (value != null) || (instance != null);
-        row.add(field, classUI, value, instance);
+        row.add(fieldDef, classUI, value, instance);
       }
       if (toAdd) {
         getValues().add(row);
@@ -250,6 +263,28 @@ public class TableBean extends AbstractCollectionBean implements
   /////////////////////////////////////////////////////////////////////////////
 
   /////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * This is the getter method for the instance variable {@link #fieldDefs}.
+   * 
+   * @return value of instance variable {@link #fieldDefs}
+   * @see #fieldDefs
+   * @see #evalFieldDefs
+   */
+  public List < FieldDefinition > getFieldDefs()  {
+    return this.fieldDefs;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #values}.
+   *
+   * @return value of instance variable {@link #values}
+   * @see #values
+   * @see #setValues
+   */
+  public List < Row > getValues()  {
+    return this.values;
+  }
 
   /**
    * This is the getter method for the instance variable {@link #table}.
@@ -343,17 +378,6 @@ public class TableBean extends AbstractCollectionBean implements
     this.selectedFilter = _selectedFilter;
   }
 
-  /**
-   * This is the getter method for the instance variable {@link #fieldDefs}.
-   * 
-   * @return value of instance variable {@link #fieldDefs}
-   * @see #fieldDefs
-   * @see #evalFieldDefs
-   */
-  public List < FieldDef > getFieldDefs()  {
-    return this.fieldDefs;
-  }
-
   /////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
@@ -363,15 +387,38 @@ public class TableBean extends AbstractCollectionBean implements
    */
   public class Row {
 
+    ///////////////////////////////////////////////////////////////////////////
+    // instance variables
+
+    /**
+     * The instance variable stores the values for the table.
+     * 
+     * @see #getValues
+     */
+    private final List < FieldValue > values = new ArrayList < FieldValue >();
+
+    /**
+     * The instance variable stores all oids in a string.
+     * 
+     * @see #getOids
+     */
+    private final String oids;
+
+    ///////////////////////////////////////////////////////////////////////////
+    // contructors / destructors
+
     /**
      * The constructor creates a new instance of class Row.
      * 
      * @param _oids
      *          string with all oids for this row
      */
-    public Row(String _oids) {
-      setOids(_oids);
+    public Row(final String _oids) {
+      this.oids = _oids;
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // instance methods
 
     /**
      * The instance method adds a new attribute value (from instance
@@ -379,11 +426,13 @@ public class TableBean extends AbstractCollectionBean implements
      * 
      * @see #values
      */
-    public void add(Field _field, UIInterface _classUI, Object _value,
-                    Instance _instance) {
+    public void add(final FieldDefinition _field,
+                    final UIInterface _classUI,
+                    final Object _value,
+                    final Instance _instance) {
 
-      getValues().add(
-          new Value(null, _field, _classUI, _value, _instance));
+      this.values.add(
+            new FieldValue(_field, _classUI, _value, _instance));
     }
 
     /**
@@ -398,29 +447,12 @@ public class TableBean extends AbstractCollectionBean implements
     // /////////////////////////////////////////////////////////////////////////
 
     /**
-     * The instance variable stores the values for the table.
-     * 
-     * @see #getValues
-     */
-    private List<Value> values = new ArrayList<Value>();
-
-    /**
-     * The instance variable stores all oids in a string.
-     * 
-     * @see #getOids
-     * @see #setOids
-     */
-    private String      oids   = null;
-
-    // /////////////////////////////////////////////////////////////////////////
-
-    /**
      * This is the getter method for the values variable {@link #values}.
      * 
      * @return value of values variable {@link #values}
      * @see #values
      */
-    public List<Value> getValues() {
+    public List < FieldValue > getValues() {
       return this.values;
     }
 
@@ -429,60 +461,9 @@ public class TableBean extends AbstractCollectionBean implements
      * 
      * @return value of instance variable {@link #oids}
      * @see #oids
-     * @see #setOids
      */
     public String getOids() {
       return this.oids;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #oids}.
-     * 
-     * @param _oids
-     *          new value for instance variable {@link #oids}
-     * @see #oids
-     * @see #getOids
-     */
-    public void setOids(String _oids) {
-      this.oids = _oids;
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  
-  public class FieldDef {
-
-    /** Stores the label of the field definition. */
-    final String label;
-
-    /** Stores the field of the field definition. */
-    final Field field;
-
-    private FieldDef(final String _label,
-                     final Field _field)
-    {
-      this.label = _label;
-      this.field = _field;
-    }
-
-    /**
-     * Getter method for instance variable {@link #label}.
-     *
-     * @see #label
-     */
-    public String getLabel()  {
-      return this.label;
-    }
-
-    /**
-     * Getter method for instance variable {@link #field}.
-     *
-     * @see #field
-     */
-    public Field getField()  {
-      return this.field;
     }
   }
 }

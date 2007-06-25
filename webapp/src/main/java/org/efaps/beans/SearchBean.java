@@ -21,6 +21,7 @@
 package org.efaps.beans;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -43,8 +44,11 @@ import org.efaps.util.EFapsException;
  *          2007) jmo $
  * @todo description
  */
-public class SearchBean extends AbstractCollectionBean implements
-    TableBeanInterface {
+public class SearchBean extends AbstractCollectionBean  {
+
+public List getValues()  {
+  return null;
+}
 
   public SearchBean() throws EFapsException {
     super();
@@ -167,8 +171,8 @@ Type type = Type.get(getCommand().getProperty("SearchType"));
     query.add(context, getTable());
     query.execute();
 
-    setValues(new ArrayList());
-    getTableBean().setValues(getValues());
+//    setValues(new ArrayList());
+//    getTableBean().setValues(getValues());
     getTableBean().executeRowResult(context, query);
 
     setInitialised(true);
@@ -184,8 +188,8 @@ Type type = Type.get(getCommand().getProperty("SearchType"));
    * @see #add4Form
    */
   public void execute4SearchForm() throws Exception {
-    setValues(new ArrayList());
-    getValues().add(null);
+//    setValues(new ArrayList());
+//    getValues().add(null);
 
 //    Type type = ((Search.SearchCommand) getCommand()).getSearchType();
 Type type = Type.get(getCommand().getProperty("SearchType"));
@@ -515,18 +519,4 @@ Type type = Type.get(getCommand().getProperty("SearchType"));
   public boolean sort() {
     return getTableBean().sort();
   }
-
-  /**
-   * This is the setter method for the response variable {@link #response}.
-   * 
-   * @param _response
-   *          new value for response variable {@link #response}
-   * @see #response
-   * @see #getResponse
-   */
-  public void setResponse(HttpServletResponse _response) {
-    super.setResponse(_response);
-    getTableBean().setResponse(_response);
-  }
-
 }

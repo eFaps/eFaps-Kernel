@@ -24,6 +24,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
@@ -66,7 +67,16 @@ public class FormBean extends AbstractCollectionBean {
    * @see #getForm
    * @see #setForm
    */
-  private Form     form       = null;
+  private Form form = null;
+
+  /**
+   * The instance variable stores the result list of the execution of the
+   * query.
+   *
+   * @see #getValues
+   * @see #setValues
+   */
+  private final List < FieldValue > values = new ArrayList < FieldValue > ();
 
   /**
    * The instance variable stores the instance for the unique key.
@@ -129,7 +139,6 @@ public class FormBean extends AbstractCollectionBean {
   public void execute() throws Exception {
     Context context = Context.getThreadContext();
     if (isCreateMode() || isSearchMode()) {
-      setValues(new ArrayList());
       getValues().add(null);
 
       Type type = null;
@@ -166,16 +175,13 @@ public class FormBean extends AbstractCollectionBean {
       query.setObject(instance);
       query.add(context, getForm());
 
-/*      ValueParser parser = new ValueParser(new StringReader(getTitle()));
-      ValueList list = parser.ExpressionString();
-      list.makeSelect(context, query);
-*/
       query.addAllFromString(context, getUkTitle());
       query.execute();
 
       if (query.next()) {
-        setValues(new ArrayList());
-        getValues().add(query.getInstance(context, instance.getType()));
+//        getValues().add(query.getInstance(context, instance.getType()));
+addFieldValue(null, null, null, null, query.getInstance(context, instance.getType()));
+
         for (int i = 0; i < getForm().getFields().size(); i++) {
           Field field = (Field) getForm().getFields().get(i);
 
@@ -192,10 +198,6 @@ public class FormBean extends AbstractCollectionBean {
             }
           }
         }
-        // setTitle(query.replaceAllInString(context, getTitle()));
-/*
-        setTitle(list.makeString(context, query));
-*/
         setUkTitle(query.replaceAllInString(context, getUkTitle()));
       }
 
@@ -460,9 +462,12 @@ public class FormBean extends AbstractCollectionBean {
    * 
    * @see #values
    */
-  public void addFieldValue(String _label, Field _field, UIInterface _classUI,
-                            Object _value, Instance _instance) {
-    getValues().add(new Value(_label, _field, _classUI, _value, _instance));
+  public void addFieldValue(final String _label,
+                            final Field _field,
+                            final UIInterface _classUI,
+                            final Object _value,
+                            final Instance _instance) {
+    getValues().add(new FieldValue(new FieldDefinition(_label, _field), _classUI, _value, _instance));
   }
 
   /**
@@ -520,6 +525,17 @@ public class FormBean extends AbstractCollectionBean {
    */
   public void setForm(Form _form) {
     this.form = _form;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #values}.
+   *
+   * @return value of instance variable {@link #values}
+   * @see #values
+   * @see #setValues
+   */
+  public List < FieldValue > getValues()  {
+    return this.values;
   }
 
   /**

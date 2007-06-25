@@ -33,13 +33,9 @@
     uiObject = cache.getFormBean(request.getParameter("command"));
     request.setAttribute("uiObject", uiObject);
 
-    uiObject.setResponse(response);
-    uiObject.setRequest(request);
-
     %><%-- /** execute method **/ --%><%
     
 
-uiObject.setTitle("");
 uiObject.setUkTitle("");
 
     uiObject.execute();
@@ -242,7 +238,7 @@ function eFapsSubmit()  {
         <table class="eFapsForm">
           <c:if test="${uiObject.values ne null}">
             <c:if test="${uiObject.values[0] ne null}">
-              <input type="hidden" name="oid" value="<c:out value="${uiObject.values[0].oid}"/>"/>
+              <input type="hidden" name="oid" value="<c:out value="${uiObject.values[0].instance.oid}"/>"/>
             </c:if>
 
             <%-- /** group count and row group count is default equal 1,
@@ -256,15 +252,15 @@ function eFapsSubmit()  {
 
                 <%-- /** if the field is a group count field, store the value in the row group count variable,
                          (only if not create node or field is creatable) **/ --%>
-                <c:when test="${value.field.groupCount > 0 && (uiObject.createMode ne true or value.field.creatable)  && (uiObject.searchMode ne true or value.field.searchable)}">
-                  <c:set var="rowGroupCount" value="${value.field.groupCount}"/>
+                <c:when test="${value.fieldDef.field.groupCount > 0 && (uiObject.createMode ne true or value.fieldDef.field.creatable)  && (uiObject.searchMode ne true or value.fieldDef.field.searchable)}">
+                  <c:set var="rowGroupCount" value="${value.fieldDef.field.groupCount}"/>
                 </c:when>
 
                 <%-- /* only if:
                         - in createmode field is createable
                         - in searchmode field is searchable
                         - otherwise show field */ --%>
-                <c:when test="${(uiObject.createMode ne true or value.field.creatable) and (uiObject.searchMode ne true or value.field.searchable)}">
+                <c:when test="${(uiObject.createMode ne true or value.fieldDef.field.creatable) and (uiObject.searchMode ne true or value.fieldDef.field.searchable)}">
 
                   <%-- /** start start row tag if first column **/ --%>
                   <c:if test="${groupCount == 1}">
@@ -273,7 +269,7 @@ function eFapsSubmit()  {
 
                   <%-- /** use required style class only if defined and not in edit or create mode **/ --%>
                   <c:choose>
-                    <c:when test="${value.field.required and (uiObject.editMode or uiObject.createMode)}">
+                    <c:when test="${value.fieldDef.field.required and (uiObject.editMode or uiObject.createMode)}">
                       <td class="eFapsFormLabelRequired">
                     </c:when>
                     <c:otherwise>
@@ -282,17 +278,17 @@ function eFapsSubmit()  {
                   </c:choose>
 
                   <%-- /** show the label of the field **/ --%>
-                  <c:out value="${value.label}"/></td>
+                  <c:out value="${value.fieldDef.label}"/></td>
 
                   <%-- /** make column with correct span **/ --%>
                   <td class="eFapsFormInputField" colspan="<c:out value="${2 * (uiObject.maxGroupCount - rowGroupCount) + 1}"/>">
 
                     <%-- /** show href START **/ --%>
-                    <c:if test="${value.field.reference ne null and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
-                      <c:set var="targetUrl" value="${value.field.reference}&oid=${value.instance.oid}"/>
+                    <c:if test="${value.fieldDef.field.reference ne null and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
+                      <c:set var="targetUrl" value="${value.fieldDef.field.reference}&oid=${value.instance.oid}"/>
 
                       <c:choose>
-                        <c:when test="${value.field.targetPopup}">
+                        <c:when test="${value.fieldDef.field.targetPopup}">
                           <c:set var="targetWindow" value="Popup"/>
                         </c:when>
                         <c:otherwise>
@@ -311,19 +307,19 @@ function eFapsSubmit()  {
 
 
                     <%-- /** show type icon if needed **/ --%>
-                    <c:if test="${value.field.showTypeIcon and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
+                    <c:if test="${value.fieldDef.field.showTypeIcon and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
                       <img src="<c:out value="${value.instance.type.icon}"/>"/>&nbsp;
                     </c:if>
 
                     <%-- /** show value **/ --%>
                     <c:choose>
-                      <c:when test="${uiObject.createMode and value.field.creatable}">
+                      <c:when test="${uiObject.createMode and value.fieldDef.field.creatable}">
                         <c:out value="${value.createHtml}" escapeXml="false"/>
                       </c:when>
-                      <c:when test="${uiObject.editMode and value.field.editable}">
+                      <c:when test="${uiObject.editMode and value.fieldDef.field.editable}">
                         <c:out value="${value.editHtml}" escapeXml="false"/>
                       </c:when>
-                      <c:when test="${uiObject.searchMode and value.field.searchable}">
+                      <c:when test="${uiObject.searchMode and value.fieldDef.field.searchable}">
                         <c:out value="${value.searchHtml}" escapeXml="false"/>
                       </c:when>
                       <c:otherwise>
@@ -332,7 +328,7 @@ function eFapsSubmit()  {
                     </c:choose>
 
                     <%-- /** show href END **/ --%>
-                    <c:if test="${value.field.reference ne null and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
+                    <c:if test="${value.fieldDef.field.reference ne null and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
                       </a>
                     </c:if>
 

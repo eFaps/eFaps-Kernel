@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,50 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public abstract class AbstractCollectionBean extends AbstractBean implements CollectionBeanInterface  {
+public abstract class AbstractCollectionBean extends AbstractBean  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * The instance variable stores the command instance for this form request.
+   *
+   * @see #getCommand
+   * @see #setCommand
+   */
+  private CommandAbstract command = null;
+
+  /**
+   * The instance variable stores the mode of the form.
+   *
+   * @see #getMode
+   * @see #setMode
+   */
+  private int mode = CommandAbstract.TARGET_MODE_UNKNOWN;
+
+  /**
+   * The instance variable store the node id for this table or form bean used
+   * e.g. in references.
+   *
+   * @see #getNodeId
+   * @see #setNodeId
+   */
+  private String nodeId = null;
+
+  /**
+   * The instance variable stores the hidden values printed as form value.
+   *
+   * @see #getHiddenValues
+   */
+  private List < HiddenValue > hiddenValues = new ArrayList < HiddenValue >();
+
+  /**
+   * Stores the maximal group count for a row.
+   *
+   * @see #getMaxGroupCount
+   * @see #setMaxGroupCount
+   */
+  private int maxGroupCount = 1;
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -63,7 +106,6 @@ public abstract class AbstractCollectionBean extends AbstractBean implements Col
    * @see #menuFooter
    * @see #menuHeader
    * @see #mode
-   * @see #targetFrame
    */
   public void setCommandName(String _name) throws EFapsException  {
       Context context = Context.getThreadContext();
@@ -73,7 +115,6 @@ public abstract class AbstractCollectionBean extends AbstractBean implements Col
       }
       if (getCommand()!=null)  {
         setMode(getCommand().getTargetMode());
-        setTargetFrame(getCommand().getTarget());
       }
   }
 
@@ -131,91 +172,6 @@ public abstract class AbstractCollectionBean extends AbstractBean implements Col
   /////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @return <i>true</i> if the target frame is popup, otherwise <i>false</i>
-   * @see #targetFrame
-   */
-  public boolean isPopup()  {
-    return getTargetFrame() == CommandAbstract.TARGET_POPUP;
-  }
-
-  /**
-   * @return <i>true</i> if the target frame is content, otherwise <i>false</i>
-   * @see #targetFrame
-   */
-  public boolean isContent()  {
-    return getTargetFrame() == CommandAbstract.TARGET_CONTENT;
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance variable stores the command instance for this form request.
-   *
-   * @see #getCommand
-   * @see #setCommand
-   */
-  private CommandAbstract command = null;
-
-  /**
-   * The instance variable stores the result list of the execution of the
-   * query.
-   *
-   * @see #getValues
-   * @see #setValues
-   */
-  private List<Object> values = null;
-
-  /**
-   * The instance variable stores the mode of the form.
-   *
-   * @see #getMode
-   * @see #setMode
-   */
-  private int mode = CommandAbstract.TARGET_MODE_UNKNOWN;
-
-  /**
-   * The instance variable stores the target frame where the form is shown.
-   *
-   * @see #getTargetFrame
-   * @see #setTargetFrame
-   */
-  private int targetFrame = CommandAbstract.TARGET_UNKNOWN;
-
-  /**
-   * The instance variable stores the title of the form.
-   *
-   * @see #getTitle
-   * @see #setTitle
-   */
-  private String title = null;
-
-  /**
-   * The instance variable store the node id for this table or form bean used
-   * e.g. in references.
-   *
-   * @see #getNodeId
-   * @see #setNodeId
-   */
-  private String nodeId = null;
-
-  /**
-   * The instance variable stores the hidden values printed as form value.
-   *
-   * @see #getHiddenValues
-   */
-  private List<HiddenValue> hiddenValues = new ArrayList<HiddenValue>();
-
-  /**
-   * Stores the maximal group count for a row.
-   *
-   * @see #getMaxGroupCount
-   * @see #setMaxGroupCount
-   */
-  private int maxGroupCount = 1;
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
    * This is the getter method for the instance variable {@link #command}.
    *
    * @return value of instance variable {@link #command}
@@ -238,28 +194,6 @@ public abstract class AbstractCollectionBean extends AbstractBean implements Col
   }
 
   /**
-   * This is the getter method for the instance variable {@link #values}.
-   *
-   * @return value of instance variable {@link #values}
-   * @see #values
-   * @see #setValues
-   */
-  public List <Object>getValues()  {
-    return this.values;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #values}.
-   *
-   * @param _values  new value for instance variable {@link #values}
-   * @see #values
-   * @see #getValues
-   */
-  public void setValues(List _values)  {
-    this.values = _values;
-  }
-
-  /**
    * This is the getter method for the instance variable {@link #mode}.
    *
    * @return value of instance variable {@link #mode}
@@ -279,50 +213,6 @@ public abstract class AbstractCollectionBean extends AbstractBean implements Col
    */
   protected void setMode(int _mode)  {
     this.mode = _mode;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #targetFrame}.
-   *
-   * @return value of instance variable {@link #targetFrame}
-   * @see #targetFrame
-   * @see #setTargetFrame
-   */
-  public int getTargetFrame()  {
-    return this.targetFrame;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #targetFrame}.
-   *
-   * @param _targetFrame  new value for instance variable {@link #targetFrame}
-   * @see #targetFrame
-   * @see #getTargetFrame
-   */
-  private void setTargetFrame(int _targetFrame)  {
-    this.targetFrame = _targetFrame;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #title}.
-   *
-   * @return value of instance variable {@link #title}
-   * @see #title
-   * @see #setTitle
-   */
-  public String getTitle()  {
-    return this.title;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #title}.
-   *
-   * @param _title  new value for instance variable {@link #title}
-   * @see #title
-   * @see #getTitle
-   */
-  public void setTitle(String _title)  {
-    this.title = _title;
   }
 
   /**

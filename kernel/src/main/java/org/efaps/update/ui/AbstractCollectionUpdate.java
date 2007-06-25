@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,9 @@ import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import org.xml.sax.SAXException;
+
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -39,7 +42,6 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.update.event.Event;
 import org.efaps.update.event.EventFactory;
 import org.efaps.util.EFapsException;
-import org.xml.sax.SAXException;
 
 /**
  * @author tmo
@@ -69,74 +71,57 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
   // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
-  protected static AbstractUpdate readXMLFile(final File _file,
-                                              final String _xmlTagName,
-                                              final Class _createClass)
-                                                                       throws IOException {
-    AbstractCollectionUpdate ret = null;
+  /**
+   *
+   */
+  protected static Digester createDigester(final String _xmlTagName,
+                                           final Class _createClass)
+  throws IOException  {
+    Digester digester = new Digester();
+    digester.setValidating(false);
+    digester.addObjectCreate(_xmlTagName, _createClass);
 
-    try {
-      Digester digester = new Digester();
-      digester.setValidating(false);
-      digester.addObjectCreate(_xmlTagName, _createClass);
+    digester.addCallMethod(_xmlTagName + "/uuid", "setUUID", 1);
+    digester.addCallParam(_xmlTagName + "/uuid", 0);
 
-      digester.addCallMethod(_xmlTagName + "/uuid", "setUUID", 1);
-      digester.addCallParam(_xmlTagName + "/uuid", 0);
+    digester.addObjectCreate(_xmlTagName + "/definition", Definition.class);
+    digester.addSetNext(_xmlTagName + "/definition", "addDefinition");
 
-      digester.addObjectCreate(_xmlTagName + "/definition", Definition.class);
-      digester.addSetNext(_xmlTagName + "/definition", "addDefinition");
+    digester.addCallMethod(_xmlTagName + "/definition/version", "setVersion", 4);
+    digester.addCallParam(_xmlTagName + "/definition/version/application", 0);
+    digester.addCallParam(_xmlTagName + "/definition/version/global", 1);
+    digester.addCallParam(_xmlTagName + "/definition/version/local", 2);
+    digester.addCallParam(_xmlTagName + "/definition/version/mode", 3);
 
-      digester.addCallMethod(_xmlTagName + "/definition/version", "setVersion",
-          4);
-      digester.addCallParam(_xmlTagName + "/definition/version/application", 0);
-      digester.addCallParam(_xmlTagName + "/definition/version/global", 1);
-      digester.addCallParam(_xmlTagName + "/definition/version/local", 2);
-      digester.addCallParam(_xmlTagName + "/definition/version/mode", 3);
+    digester.addCallMethod(_xmlTagName + "/definition/name", "setName", 1);
+    digester.addCallParam(_xmlTagName + "/definition/name", 0);
 
-      digester.addCallMethod(_xmlTagName + "/definition/name", "setName", 1);
-      digester.addCallParam(_xmlTagName + "/definition/name", 0);
+    digester.addCallMethod(_xmlTagName + "/definition/property", "addProperty", 2);
+    digester.addCallParam(_xmlTagName + "/definition/property", 0, "name");
+    digester.addCallParam(_xmlTagName + "/definition/property", 1);
 
-      digester.addCallMethod(_xmlTagName + "/definition/property",
-          "addProperty", 2);
-      digester.addCallParam(_xmlTagName + "/definition/property", 0, "name");
-      digester.addCallParam(_xmlTagName + "/definition/property", 1);
+    digester.addObjectCreate(_xmlTagName + "/definition/field", Field.class);
+    digester.addSetNext(_xmlTagName + "/definition/field", "addField");
 
-      digester.addObjectCreate(_xmlTagName + "/definition/field", Field.class);
-      digester.addSetNext(_xmlTagName + "/definition/field", "addField");
+    digester.addCallMethod(_xmlTagName + "/definition/field", "setName", 1);
+    digester.addCallParam(_xmlTagName + "/definition/field", 0, "name");
 
-      digester.addCallMethod(_xmlTagName + "/definition/field", "setName", 1);
-      digester.addCallParam(_xmlTagName + "/definition/field", 0, "name");
+    digester.addCallMethod(_xmlTagName + "/definition/field/icon", "setIcon",
+        1);
+    digester.addCallParam(_xmlTagName + "/definition/field/icon", 0);
 
-      digester.addCallMethod(_xmlTagName + "/definition/field/icon", "setIcon",
-          1);
-      digester.addCallParam(_xmlTagName + "/definition/field/icon", 0);
+    digester.addCallMethod(_xmlTagName + "/definition/field/property", "addProperty", 2);
+    digester.addCallParam(_xmlTagName + "/definition/field/property", 0, "name");
+    digester.addCallParam(_xmlTagName + "/definition/field/property", 1);
 
-      digester.addCallMethod(_xmlTagName + "/definition/field/property",
-          "addProperty", 2);
-      digester.addCallParam(_xmlTagName + "/definition/field/property", 0,
-          "name");
-      digester.addCallParam(_xmlTagName + "/definition/field/property", 1);
+    digester.addFactoryCreate(_xmlTagName + "/definition/field/trigger", new EventFactory());
 
-      digester.addFactoryCreate(_xmlTagName + "/definition/field/trigger",
-          new EventFactory());
-
-      digester.addCallMethod(_xmlTagName + "/definition/field/trigger/property",
-          "addProperty", 2);
-      digester.addCallParam(_xmlTagName + "/definition/field/trigger/property", 0,
-          "name");
-      digester.addCallParam(_xmlTagName + "/definition/field/trigger/property", 1);
-      digester.addSetNext(_xmlTagName + "/definition/field/trigger", "addTrigger",
-          "org.efaps.update.event.Event");
-      ret = (AbstractCollectionUpdate) digester.parse(_file);
-
-      if (ret != null) {
-        ret.setFile(_file);
-      }
-    } catch (SAXException e) {
-      e.printStackTrace();
-      // LOG.error("could not read file '" + _fileName + "'", e);
-    }
-    return ret;
+    digester.addCallMethod(_xmlTagName + "/definition/field/trigger/property", "addProperty", 2);
+    digester.addCallParam(_xmlTagName + "/definition/field/trigger/property", 0, "name");
+    digester.addCallParam(_xmlTagName + "/definition/field/trigger/property", 1);
+    digester.addSetNext(_xmlTagName + "/definition/field/trigger", "addTrigger", "org.efaps.update.event.Event");
+    
+    return digester;
   }
 
   // ///////////////////////////////////////////////////////////////////////////
