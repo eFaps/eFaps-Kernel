@@ -100,7 +100,11 @@ public class Event {
    */
   public Event(final String _name, final String _event, final String _program,
       final String _method, final String _index) {
-    this.name = _name;
+    if (_name == null)  {
+      this.name = _event;
+    } else  {
+      this.name = _name;
+    }
     this.event = _event;
     this.program = _program;
     this.method = _method;
