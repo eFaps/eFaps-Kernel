@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 /**
  * Class witch can be used for getting the Return of the Events.
  * 
@@ -48,4 +50,15 @@ public class Return implements ReturnInterface {
 
   }
 
+  /**
+   * Returns a string representation of this parameter instance.
+   * 
+   * @return string representation of this parameter instance.
+   */
+  public String toString() {
+    return new ToStringBuilder(this)
+        .appendSuper(super.toString())
+        .append("map", this.map.toString())
+        .toString();
+  }
 }
