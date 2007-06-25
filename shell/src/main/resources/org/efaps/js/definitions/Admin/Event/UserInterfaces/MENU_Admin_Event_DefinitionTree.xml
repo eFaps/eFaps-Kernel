@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -54,12 +54,11 @@
     <name>Admin_Event_DefinitionTree</name>
     <target>
       <form>Admin_Event_DefinitionForm</form>
-      <!--menu>TeamWork_CollectionTree_Menu</menu-->
+      <menu>Admin_Event_DefinitionTree_Menu_Action</menu>
     </target>
     <!-- childs -->
     <childs>
-      <child>Admin_Program_JavaTree_Classes</child>
-      <child>Admin_Program_JavaTree_UsedBy</child>
+      <child>Admin_UI_AbstractTree_Properties</child>
     </childs>
     <!-- properties -->
     <property name="Target">content</property>

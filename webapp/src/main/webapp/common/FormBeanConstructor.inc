@@ -27,10 +27,7 @@
   if (uiObject==null)  {
     uiObject = cache.getFormBean(context.getParameter("command"));
     request.setAttribute("uiObject", uiObject);
-
-    uiObject.setResponse(response);
-    uiObject.setRequest(request);
-
+   
 %>
 <%--
 
@@ -53,18 +50,10 @@
 
 
       <c:set var="title"><str:replace replace="'" with="\\'"><fmt:message><c:out value="${uiObject.command.targetTitle}"/></fmt:message></str:replace></c:set>
-<%
-System.out.println("title="+pageContext.getAttribute("title"));
-%>
-      <jsp:setProperty name="uiObject" property="title" value="<%=pageContext.getAttribute("title")%>"/>
-<jsp:setProperty name="uiObject" property="ukTitle" value=""/>
-<%--
-      <c:set var="title"><str:replace replace="'" with="\\'"><fmt:message><c:out value="${commandName}"/>.UniqueKey.Title</fmt:message></str:replace></c:set>
-      <jsp:setProperty name="uiObject" property="ukTitle" value="<%=pageContext.getAttribute("title")%>"/>
---%>
-      <c:remove var="title"/>
 
-      <%-- /** execute method **/ --%>
+     <jsp:setProperty name="uiObject" property="ukTitle" value=""/>
+     
+     <%-- /** execute method **/ --%>
       <c:choose>
         <c:when test="${method eq 'ukTest'}">
           <%((org.efaps.beans.FormBean)uiObject).ukTest();%>

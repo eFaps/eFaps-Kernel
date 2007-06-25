@@ -63,7 +63,6 @@
     <field name="name">
       <property name="Expression">Name</property>
       <property name="Label">Admin_Event_Definition/Name.Label</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
     </field>
     <field name="abstract">
       <property name="Expression">Abstract.Name</property>
@@ -82,6 +81,9 @@
     <field name="javaprog">
       <property name="Expression">JavaProg.Name</property>
       <property name="Label">Admin_Event_Definition/JavaProg.Label</property>
+      <property name="ShowTypeIcon">true</property>
+      <property name="AlternateOID">JavaProg.OID</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
     </field>
     
     <field name="method">
