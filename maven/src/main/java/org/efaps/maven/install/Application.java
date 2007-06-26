@@ -88,7 +88,7 @@ public class Application {
    */
   public void install() throws EFapsException, Exception {
     loadInstalledVersions();
-    boolean installed = false;
+    
     LOG.info("Install application '" + this.application + "'");
     for (ApplicationVersion version : versions) {
       if (LOG.isInfoEnabled()) {
@@ -105,17 +105,13 @@ public class Application {
         version.install();
         storeVersion(version.getNumber());
 
-        installed = true;
         if (LOG.isInfoEnabled()) {
           LOG.info("Finished installation of version " + version.getNumber());
         }
       }
     }
 
-    if (installed) {
-      ApplicationVersion version = getLastVersion();
-      version.importData();
-    }
+    
   }
 
   /**

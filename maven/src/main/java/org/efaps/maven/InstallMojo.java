@@ -23,42 +23,50 @@ package org.efaps.maven;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import org.efaps.maven.install.Application;
+import org.efaps.maven.install.ApplicationVersion;
 import org.efaps.util.EFapsException;
 
 /**
- *
  * @author tmo
  * @version $Id$
  * @goal install
  */
-public final class InstallMojo extends AbstractMojo  {
-  
-  /////////////////////////////////////////////////////////////////////////////
+public final class InstallMojo extends AbstractMojo {
+
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
-  public void execute() throws MojoExecutionException  {
-Maven2CommonsLog.logger=getLog();
-System.getProperties().setProperty(org.apache.commons.logging.Log.class.getName(),
-                                   Maven2CommonsLog.class.getName());    
+  public void execute() throws MojoExecutionException {
+    Maven2CommonsLog.logger = getLog();
+    System.getProperties().setProperty(
+        org.apache.commons.logging.Log.class.getName(),
+        Maven2CommonsLog.class.getName());
 
     getLog().info("Initialise Database Connection");
-    if (!initDatabase())  {
+    if (!initDatabase()) {
       getLog().error("Database Connection could not be initialised!");
-    } else  {
-      try  {
+    } else {
+      try {
         login("Administrator", "");
         reloadCache();
         startTransaction();
-       
+
         Application appl = getApplication();
-        if (appl != null)  {
+        if (appl != null) {
           appl.install();
         }
 
         commitTransaction();
-      } catch (EFapsException e)  {
+        if (appl != null) {
+          startTransaction();
+          ApplicationVersion version = appl.getLastVersion();
+          version.importData();
+          commitTransaction();
+        }
+
+      } catch (EFapsException e) {
         getLog().error(e);
-      } catch (Exception e)  {
+      } catch (Exception e) {
         getLog().error(e);
       }
     }
