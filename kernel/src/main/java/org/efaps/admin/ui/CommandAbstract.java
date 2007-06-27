@@ -20,7 +20,6 @@
 
 package org.efaps.admin.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -28,10 +27,6 @@ import java.util.Vector;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.event.EventDefinition;
-import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return;
-import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.servlet.RequestHandler;
@@ -362,22 +357,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    */
   protected void add(final Role _role) {
     getAccess().add(_role);
-  }
-
-  /**
-   * executes the Triggers of the <code>TriggerEvent.COMMAND</code> which are
-   * definded for this instance in the speciefied order, and returns a List with
-   * the Returns of the Events
-   */
-  public List<Return> executeTrigger() {
-    List<Return> ret = new ArrayList<Return>();
-    List<EventDefinition> trigger =
-        super.getTriggers().get(TriggerEvent.COMMAND);
-
-    for (EventDefinition evenDef : trigger) {
-      ret.add(evenDef.execute(new Parameter()));
-    }
-    return ret;
   }
 
   /**

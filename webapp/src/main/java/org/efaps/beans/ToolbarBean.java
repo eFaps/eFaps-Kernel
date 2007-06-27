@@ -88,9 +88,9 @@ System.out.println("----MenuMainToolBarBean.getJSFMenu");
       List < NavigationMenuItem > ret = new Vector < NavigationMenuItem > ();
 
       if (_menu != null)  {
-Context context = Context.getThreadContext();
+
         for (CommandAbstract command : _menu.getCommands())  {
-          if (command.hasAccess(context))  {
+          if (command.hasAccess())  {
             ret.add(getJSFNavigationMenuItem(command));
           }
         }
@@ -124,10 +124,16 @@ Context context = Context.getThreadContext();
   protected String getTargetURL(final CommandAbstract _command)  {
     StringBuilder url = new StringBuilder();
 
-// TODO set submitUrl _command.isSubmit()
     // always javascript (needed for faces..)
-    url.append("javascript:eFapsCommonOpenUrl(\"");
-
+    url.append("javascript:");
+    
+    if(_command.isSubmit()){
+      url.append("eFapsCommonSubmit(\"");
+    }else{
+      url.append("eFapsCommonOpenUrl(\"");
+    }
+      
+   
     // add link
     if ((_command.getReference() != null) &&
         (_command.getReference().length() > 0))  {
@@ -218,13 +224,13 @@ if (this.originalCommand.getTargetMode() == CommandAbstract.TARGET_MODE_SEARCH) 
 
 if (this.originalCommand != null)  {
       if (this.originalCommand.getTargetMenu() != null)  {
-Context context = Context.getThreadContext();
-        if (this.originalCommand.getTargetMenu().hasAccess(context))  {
+
+        if (this.originalCommand.getTargetMenu().hasAccess())  {
           this.menu = this.originalCommand.getTargetMenu();
         }
       } else if (this.originalCommand.getTargetSearch() != null)  {
-Context context = Context.getThreadContext();
-        if (this.originalCommand.getTargetSearch().hasAccess(context))  {
+
+        if (this.originalCommand.getTargetSearch().hasAccess())  {
           this.menu = this.originalCommand.getTargetSearch();
           this.search = true;
         }

@@ -25,6 +25,7 @@
 <%@page import="org.efaps.admin.ui.Command"%>
 <%@page import="org.efaps.admin.ui.CommandAbstract"%>
 <%@page import="org.efaps.admin.ui.Menu"%>
+<%@page import="org.efaps.admin.event.TriggerEvent"%>
 
 <jsp:useBean id="cache" class="org.efaps.beans.CacheSessionBean" scope="session"/>
 
@@ -33,6 +34,8 @@
   if (command==null)  {
     command = Menu.get(request.getParameter("command"));
   }
+  
+   
   if (command==null)  {
   } else if (command.getTargetForm()!=null)  {
     %><%@include file="Form.inc"%><%
@@ -41,6 +44,7 @@
   } else if (command.getTargetSearch()!=null)  {
     %><%@include file="Search.inc"%><%
   } else if (command.hasTrigger()){
-    command.executeTrigger();
+    command.executeTrigger(TriggerEvent.COMMAND,
+                           (String[])request.getParameterValues("selectedRow"));
   }
 %>

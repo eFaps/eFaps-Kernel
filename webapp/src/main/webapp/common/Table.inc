@@ -201,7 +201,7 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
 
 
 
-    <form method="post" target="<c:out value="${targetProcess}"/>">
+    <form id="eFapsSubmitForm" name="eFapsSubmitForm" method="post" target="" >
       <input type="hidden" name="command" value=""/>
       <input type="hidden" name="tableCommand" value="<c:out value="${uiObject.command.name}"/>"/>
       <input type="hidden" name="eFapsTableFilter" value=""/>

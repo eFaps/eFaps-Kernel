@@ -420,11 +420,31 @@ public abstract class UserInterfaceObject extends AdminObject {
    * @return List with Returns
    */
   public List<Return> executeTrigger(final TriggerEvent _triggerEvent) {
+    return executeTrigger(_triggerEvent, null);
+  }
+
+  /**
+   * The method gets all triggers for the given trigger event and executes them
+   * in the given order. If no triggers are defined, nothing is done. With the
+   * Paramter <i>_otherParameters</i> aditianal Paramters can be parsed to the
+   * Program.
+   * 
+   * @param _triggerEvent
+   *          trigger events to be executed
+   * @param _otherParameters
+   *          aditionall Parameters to be passed to the Program
+   * @return List with Returns
+   */
+  public List<Return> executeTrigger(final TriggerEvent _triggerEvent,
+      Object _otherParameters) {
     List<Return> ret = new ArrayList<Return>();
     if (hasTrigger(_triggerEvent)) {
       List<EventDefinition> trig = this.triggers.get(_triggerEvent);
       Parameter para = new Parameter();
       para.put(ParameterValues.UIOBJECT, this);
+      if (_otherParameters != null) {
+        para.put(ParameterValues.OTHERS, _otherParameters);
+      }
       for (EventDefinition evenDef : trig) {
         ret.add(evenDef.execute(para));
       }

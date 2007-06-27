@@ -54,7 +54,6 @@
     <name>TeamWork_CollectionTree_SubCollections_Menu_Action_Delete</name>
     <icon>TeamWork_CollectionRemoveImage</icon>
     <!-- property definitions -->
-    <property name="Action">delete</property>
     <property name="AskUser">true</property>
     <property name="Submit">true</property>
     <!-- trigger -->
@@ -62,6 +61,7 @@
       <property name="AccessType">delete</property>
       <property name="Type">TeamWork_Collection</property>
     </trigger>
+    <trigger name="TeamWork_CollectionTree_SubCollections_Menu_Action_Delete_COMMAND" event="COMMAND" program="org.efaps.webapp.programs.CommonDelete" method="execute" index="1"/>
   
   </definition>
 

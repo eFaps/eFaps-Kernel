@@ -56,6 +56,9 @@
     <property name="Action">delete</property>
     <property name="AskUser">true</property>
     <property name="Submit">true</property>
+    <!-- trigger -->
+    <trigger name="TeamWork_SourceTree_Versions_Menu_Action_Delete_COMMAND" event="COMMAND" program="org.efaps.webapp.programs.CommonDelete" method="execute" index="1"/>
+  
   </definition>
 
 </ui-command>

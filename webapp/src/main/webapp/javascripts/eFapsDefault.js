@@ -107,6 +107,13 @@ function eFapsCommonGetScrollY() {
   return scrollY;
 }
 
+function eFapsCommonSubmit(_href,_target){
+  document.eFapsSubmitForm.action = _href;
+  document.eFapsSubmitForm.target = _target
+  document.eFapsSubmitForm.submit();
+}
+
+
 /**
  * The function opens the url in a window.
  *
