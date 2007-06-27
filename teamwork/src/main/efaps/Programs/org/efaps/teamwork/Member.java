@@ -48,7 +48,6 @@ import org.efaps.util.EFapsException;
  * 
  * @author jmo
  * @version $Id$
- * 
  */
 public class Member implements EventExecution {
   /**
@@ -64,11 +63,13 @@ public class Member implements EventExecution {
    */
   public Return insertNewMember(Parameter _parameter) {
 
-    Iterator iter = ((Map) _parameter.get(ParameterValues.NEW_VALUES))
-        .entrySet().iterator();
+    Iterator iter =
+        ((Map) _parameter.get(ParameterValues.NEW_VALUES)).entrySet()
+            .iterator();
 
-    String defaultaccessSet = (String) ((Map) _parameter
-        .get(ParameterValues.PROPERTIES)).get("DefaultAccessSet");
+    String defaultaccessSet =
+        (String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
+            .get("DefaultAccessSet");
 
     Map<String, String> newValues = new HashMap<String, String>();
 
@@ -184,18 +185,18 @@ public class Member implements EventExecution {
 
   public Return editMember(Parameter _parameter) {
     System.out.print("geht doch");
-    
+
     Return ret = new Return();
     ret.put(ReturnValues.VALUES, "test");
-    
-    
+
     return ret;
   }
 
   public Return execute(Parameter _parameter) {
 
-    Iterator iter = ((Map) _parameter.get(ParameterValues.NEW_VALUES))
-        .entrySet().iterator();
+    Iterator iter =
+        ((Map) _parameter.get(ParameterValues.NEW_VALUES)).entrySet()
+            .iterator();
     Map<String, String> newValues = new HashMap<String, String>();
     while (iter.hasNext()) {
       Map.Entry entry = (Map.Entry) iter.next();
@@ -223,7 +224,7 @@ public class Member implements EventExecution {
       update.add("AccessSetLink", newValues.get("AccessSetLink"));
       update.add("AbstractLink", newValues.get("AbstractLink"));
       update.add("UserAbstractLink", newValues.get("UserAbstractLink"));
-      update.executeWithoutAccessCheck();
+      update.execute();
     } catch (EFapsException e) {
 
       LOG.error("execute(Map<TriggerKeys4Values,Object>)", e);
@@ -247,8 +248,9 @@ public class Member implements EventExecution {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     String abstractlink = ((Long) instance.getId()).toString();
 
-    String accessSet = (String) ((Map) _parameter
-        .get(ParameterValues.PROPERTIES)).get("AccessSet");
+    String accessSet =
+        (String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
+            .get("AccessSet");
 
     try {
 
@@ -258,7 +260,7 @@ public class Member implements EventExecution {
       insert.add("AccessSetLink", getAccessSetID(accessSet));
       insert.add("UserAbstractLink", ((Long) Context.getThreadContext()
           .getPerson().getId()).toString());
-      insert.executeWithoutAccessCheck();
+      insert.execute();
 
     } catch (EFapsException e) {
 
@@ -310,8 +312,9 @@ public class Member implements EventExecution {
     try {
       context = Context.getThreadContext();
 
-      String abstractid = context.getParameter("oid").substring(
-          context.getParameter("oid").indexOf(".") + 1);
+      String abstractid =
+          context.getParameter("oid").substring(
+              context.getParameter("oid").indexOf(".") + 1);
 
       SearchQuery query = new SearchQuery();
       query.setQueryTypes("TeamWork_MemberRights");

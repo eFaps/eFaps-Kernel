@@ -20,14 +20,11 @@
 
 package org.efaps.teamwork;
 
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
@@ -36,16 +33,16 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * Class to check the AccessRights for the UserInterfaces in TeamWork.<br>
- * 
  * @author jmo
- * @version $Id$
+ * @version $Id$ TODO loeschen von sich selber nicht erlaubt, loeschen von
+ *          letzdem holder nicht erlaubt
  */
-public class AccessCheckOnUserInterface implements EventExecution {
+public class AccessCheckOnMember implements EventExecution {
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables
@@ -53,61 +50,68 @@ public class AccessCheckOnUserInterface implements EventExecution {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG =
-      LogFactory.getLog(AccessCheckOnUserInterface.class);
+  private static final Log LOG = LogFactory.getLog(AccessCheckOnMember.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
-   * Check for the debending on the Current oid if the current context user has
-   * the access defined in the list of access types.
+   * Check for the instance object if the current context user has the access
+   * defined in the list of access types.
    */
-  private boolean checkAccess(final Type _type, final AccessType _accessType) {
+  private boolean checkAccess(final Instance _instance,
+      final AccessType _accessType) {
     boolean hasAccess = false;
 
-    
-    try {
-      Context context = Context.getThreadContext();
-      for (Role role : context.getPerson().getRoles()) {
-        // the TeamWorkAdmin has all rights in TeamWork, so
-        // no further controlling is needed
-        if (role.getName().equals("TeamWorkAdmin")) {
-          return true;
+    // this only checks the rights for ..
+    if ("TeamWork_Member".equals(_instance.getType().getName())
+        || "TeamWork_MemberRights".equals(_instance.getType().getName())) {
+      try {
+        Context context = Context.getThreadContext();
+        for (Role role : context.getPerson().getRoles()) {
+          // the TeamWorkAdmin has all rights on a TeamWork_RootCollection, so
+          // no further controlling is needed
+          if (role.getName().equals("TeamWorkAdmin")) {
+
+            return true;
+          }
         }
-      }
-
-      // first check if the Person has rights, if no check for Groups
-      long accessSetID =
-          getSpecificAccessSetID(context.getParameter("oid"), context
-              .getPerson().getId());
-
-      if (accessSetID != 0) {
-        AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
-        if (accessSet.getAccessTypes().contains(_accessType)
-            && accessSet.getDataModelTypes().contains(_type)) {
-          hasAccess = true;
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("checkAccess(Instance, AccessType) - "
+              + context.getParameter("oid"));
         }
+        // first check if the Person has rights, if no check for Groups
+        long accessSetID =
+            getSpecificAccessSetID(context.getParameter("oid"), context
+                .getPerson().getId());
 
-      } else {
-        for (Group group : context.getPerson().getGroups()) {
-          accessSetID =
-              getSpecificAccessSetID(context.getParameter("oid"), group.getId());
-          if (accessSetID != 0) {
+        if (accessSetID != 0) {
+          AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
+          if (accessSet.getAccessTypes().contains(_accessType)) {
+            hasAccess = true;
+          }
 
-            AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
-            if (accessSet.getAccessTypes().contains(_accessType)
-                && accessSet.getDataModelTypes().contains(_type)) {
-              hasAccess = true;
+        } else {
+          for (Group group : context.getPerson().getGroups()) {
+            accessSetID =
+                getSpecificAccessSetID(context.getParameter("oid"), group
+                    .getId());
+            if (accessSetID != 0) {
+
+              AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
+              if (accessSet.getAccessTypes().contains(_accessType)) {
+                hasAccess = true;
+              }
+              break;
             }
-            break;
+
           }
 
         }
-      }
 
-    } catch (EFapsException e) {
-      LOG.error("checkAccess(Instance, AccessType)", e);
+      } catch (EFapsException e) {
+        LOG.error("checkAccess(Instance, AccessType)", e);
+      }
     }
 
     return hasAccess;
@@ -136,18 +140,12 @@ public class AccessCheckOnUserInterface implements EventExecution {
   }
 
   public Return execute(Parameter _parameter) {
-
-    AccessType accesstype =
-        AccessType.getAccessType((String) ((Map) _parameter
-            .get(ParameterValues.PROPERTIES)).get("AccessType"));
-
-    Type type =
-        Type.get((String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
-            .get("Type"));
-
+    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    AccessType accessType =
+        (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
     Return ret = new Return();
 
-    if (checkAccess(type, accesstype)) {
+    if (checkAccess(instance, accessType)) {
       ret.put(ReturnValues.TRUE, true);
     }
     return ret;

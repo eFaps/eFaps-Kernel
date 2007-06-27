@@ -42,7 +42,8 @@
     <access-type>checkin</access-type>
     
     <type>TeamWork_Source</type>
-   
+    <type>TeamWork_SourceVersion</type>
+    
     <role>TeamWorkAdmin</role>
     <role>TeamWorkPowerUser</role>
     

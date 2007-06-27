@@ -98,6 +98,7 @@
     </trigger>
     
     <trigger name="TeamWork_MemberRights_DeleteOverride" event="DELETE_OVERRIDE" program="org.efaps.teamwork.Member" method="removeMember" index="1"/>
-
+    
+    <trigger name="TeamWork_MemberRights_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnMember" method="execute" index="1"/>
   </definition>
 </datamodel-type>

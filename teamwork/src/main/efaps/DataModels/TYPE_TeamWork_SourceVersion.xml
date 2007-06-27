@@ -120,5 +120,8 @@
     <property name="StoreResource">org.efaps.db.transaction.VFSStoreResource</property>
     <property name="StoreVFSName">eFaps/store/documents</property>
 
+
+    <trigger name="TeamWork_SourceVersion_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnSourceVersion" method="execute" index="1"/>
+
   </definition>
 </datamodel-type>

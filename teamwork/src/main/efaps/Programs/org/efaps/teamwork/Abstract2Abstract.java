@@ -105,7 +105,7 @@ public class Abstract2Abstract implements EventExecution {
       insert.add("AbstractLink", _abstractlink);
       insert.add("AncestorLink", _ancestorlink);
       insert.add("Rank", _rank);
-      insert.executeWithoutAccessCheck();
+      insert.execute();
 
     } catch (EFapsException e) {
 

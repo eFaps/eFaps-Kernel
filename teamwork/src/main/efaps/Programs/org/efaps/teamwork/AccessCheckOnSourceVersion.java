@@ -37,7 +37,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
-public class AccessCheckOnTypeInstance implements EventExecution {
+public class AccessCheckOnSourceVersion implements EventExecution {
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables
@@ -46,7 +46,7 @@ public class AccessCheckOnTypeInstance implements EventExecution {
    * Logging instance used in this class.
    */
   private static final Log LOG =
-      LogFactory.getLog(AccessCheckOnTypeInstance.class);
+      LogFactory.getLog(AccessCheckOnSourceVersion.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -61,31 +61,29 @@ public class AccessCheckOnTypeInstance implements EventExecution {
     System.out.println(_instance);
     System.out.println(_accessType);
     // this only checks the rights for ..
-    if ("TeamWork_RootCollection".equals(_instance.getType().getName())
-        || "TeamWork_Collection".equals(_instance.getType().getName())
-        || "TeamWork_Source".equals(_instance.getType().getName())
-        || "TeamWork_Abstract2Abstract".equals(_instance.getType().getName())) {
+    if ("TeamWork_SourceVersion".equals(_instance.getType().getName())) {
       try {
         Context context = Context.getThreadContext();
         for (Role role : context.getPerson().getRoles()) {
           // the TeamWorkAdmin has all rights on a TeamWork_RootCollection, so
           // no further controlling is needed
           if (role.getName().equals("TeamWorkAdmin")) {
-
             return true;
           }
         }
         // if create, get the parent
-        Instance instance;
-        if (_accessType == AccessType.getAccessType("create")) {
-          instance = new Instance(context.getParameter("oid"));
+        Instance instance = new Instance(context.getParameter("oid"));
+        String OID = null;
+        if ("TeamWork_SourceVersion".equals(instance.getType().getName())) {
+          OID = getParentOID(context.getParameter("oid"));
+
         } else {
-          instance = _instance;
+          OID = context.getParameter("oid");
         }
 
         // first check if the Person has rights, if no check for Groups
         long accessSetID =
-            getSpecificAccessSetID(instance, context.getPerson().getId());
+            getSpecificAccessSetID(OID, context.getPerson().getId());
 
         if (accessSetID != 0) {
           AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
@@ -97,7 +95,7 @@ public class AccessCheckOnTypeInstance implements EventExecution {
 
         } else {
           for (Group group : context.getPerson().getGroups()) {
-            accessSetID = getSpecificAccessSetID(instance, group.getId());
+            accessSetID = getSpecificAccessSetID(OID, group.getId());
             if (accessSetID != 0) {
 
               AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
@@ -122,12 +120,30 @@ public class AccessCheckOnTypeInstance implements EventExecution {
     return hasAccess;
   }
 
-  private long getSpecificAccessSetID(final Instance _instance,
+  private String getParentOID(final String _oid) {
+    SearchQuery query = new SearchQuery();
+    String OID = null;
+    try {
+      query.setObject(_oid);
+      query.addSelect("ParentSourceLink.OID");
+      query.executeWithoutAccessCheck();
+      if (query.next()) {
+        OID = (String) query.get("ParentSourceLink.OID");
+      }
+
+    } catch (EFapsException e) {
+
+      LOG.error("getParentOID(String)", e);
+    }
+    return OID;
+  }
+
+  private long getSpecificAccessSetID(final String _oid,
       final long _abstractuserid) {
     SearchQuery query = new SearchQuery();
     long ret = 0;
     try {
-      query.setExpand(_instance, "TeamWork_MemberRights\\AbstractLink");
+      query.setExpand(_oid, "TeamWork_MemberRights\\AbstractLink");
       query.addSelect("AccessSetLink");
       query.addWhereExprEqValue("UserAbstractLink", _abstractuserid);
 

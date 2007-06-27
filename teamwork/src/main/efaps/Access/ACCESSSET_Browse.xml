@@ -41,6 +41,7 @@
     <type>TeamWork_RootCollection</type>
     <type>TeamWork_Collection</type>
     <type>TeamWork_Source</type>
+    <type>TeamWork_SourceVersion</type>
 
     <role>TeamWorkAdmin</role>
     <role>TeamWorkPowerUser</role>

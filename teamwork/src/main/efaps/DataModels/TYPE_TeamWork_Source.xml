@@ -64,5 +64,7 @@
 	<trigger name="TeamWork_Source_InsertPost" event="INSERT_POST" program="org.efaps.teamwork.Abstract2Abstract" method="execute" index="1">
 		<property name="PropertyName">PropertyValue</property>
     </trigger>
+    
+    <trigger name="TeamWork_Source_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnTypeInstance" method="execute" index="1"/>
   </definition>
 </datamodel-type>

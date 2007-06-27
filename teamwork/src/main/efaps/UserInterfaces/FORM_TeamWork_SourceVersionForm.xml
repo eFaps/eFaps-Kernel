@@ -21,35 +21,7 @@
  Last Changed:    $Date$
  Last Changed By: $Author$
 
-  with (addField("revision"))  {
-    addProperty("Columns",                      "40");
-    addProperty("Creatable",                    "true");
-    addProperty("Editable",                     "true");
-    addProperty("Expression",                   "Revision");
-    addProperty("Required",                     "true");
-    addProperty("Searchable",                   "true");
-  }
-  with (addField("file"))  {
-    addProperty("ClassNameUI",                  "org.efaps.admin.datamodel.ui.FileUI");
-    addProperty("Columns",                      "40");
-    addProperty("Creatable",                    "true");
-    addProperty("Editable",                     "true");
-    addProperty("Label",                        "TeamCenter_Document/File.Label");
-    addProperty("Required",                     "true");
-    addProperty("Searchable",                   "false");
-  }
-  with (addField("fileGroup"))  {
-    addProperty("Creatable",                    "false");
-    addProperty("GroupCount",                   "2");
-  }
-  with (addField("fileName"))  {
-    addProperty("Columns",                      "40");
-    addProperty("Creatable",                    "false");
-    addProperty("Editable",                     "false");
-    addProperty("Expression",                   "FileName");
-    addProperty("Required",                     "false");
-    addProperty("Searchable",                   "true");
-  }
+ 
 -->
 
 <ui-form>

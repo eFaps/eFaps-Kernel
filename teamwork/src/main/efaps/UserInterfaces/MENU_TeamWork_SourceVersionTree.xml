@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -24,20 +24,20 @@
 -->
 
 <ui-menu>
-  <uuid>6236f862-a9bb-4888-9d8a-c86e40555b47</uuid>
+  <uuid>f13eb28f-5d85-4b26-bc13-b7c9572f51c8</uuid>
 
   <!-- ************************************************************************
     version definition used to create the menu 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>eFaps</application>
+      <application>teamwork</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:586 $</local>
       <mode>true</mode>
-      <mode>(version==10)</mode>
+      <mode>(version==2)</mode>
     </version>
-    <name>Admin_DataModel_TypeTree</name>
+    <name>TeamWork_SourceVersionTree</name>
   </definition>
     
   <!-- ************************************************************************
@@ -45,28 +45,22 @@
   ************************************************************************* -->
   <definition>
     <version>
-      <application>eFaps</application>
+      <application>teamwork</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:586 $</local>
       <mode>true</mode>
-      <mode>(version==11)</mode>
+      <mode>(version>=3)</mode>
     </version>
-    <name>Admin_DataModel_TypeTree</name>
-    <!-- targets -->
+    <name>TeamWork_SourceVersionTree</name>
     <target>
-      <form>Admin_DataModel_TypeForm</form>
-      <menu>Admin_DataModel_TypeTree_Menu</menu>
+      <form>TeamWork_SourceVersionForm</form>
+      <menu>TeamWork_SourceVersionTree_Menu</menu>
     </target>
-    <!-- childs -->
-    <childs>
-      <child>Admin_DataModel_TypeTree_Attributes</child>
-      <child>Admin_DataModel_TypeTree_ChildTypes</child>
-      <child>Admin_DataModel_AbstractTree_Properties</child>
-      <child>Admin_AbstractTree_Events</child>
-    </childs>
-    <!-- properties -->
+    
+    <!-- property definitions -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
   </definition>
 
 </ui-menu>
+

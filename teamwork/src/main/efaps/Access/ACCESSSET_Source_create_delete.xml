@@ -45,7 +45,9 @@
     <access-type>delete</access-type>
     
     <type>TeamWork_Source</type>
-   
+    <type>TeamWork_SourceVersion</type>
+    <type>TeamWork_Abstract2Abstract</type>
+    
     <role>TeamWorkAdmin</role>
     <role>TeamWorkPowerUser</role>
     

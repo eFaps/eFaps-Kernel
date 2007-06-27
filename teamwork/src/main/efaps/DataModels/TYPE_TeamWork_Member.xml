@@ -115,7 +115,7 @@
     </attribute>
 
     <!-- property definitions -->
-
+    <trigger name="TeamWork_Member_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnMember" method="execute" index="1"/>
 
   </definition>
 </datamodel-type>
