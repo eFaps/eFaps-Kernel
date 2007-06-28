@@ -20,8 +20,10 @@
 
 package org.efaps.teamwork;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -355,6 +357,48 @@ public class Member implements EventExecution {
 
     } catch (EFapsException e) {
       LOG.error("removeMember(ParameterInterface)", e);
+    }
+
+    return null;
+
+  }
+
+  /**
+   * This method is used to remove all Members from a RootCollection. It is only
+   * used when a Root is deleted.
+   * 
+   * @param _parameter
+   * @return
+   */
+  public Return removeAllMember(Parameter _parameter) {
+    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    List<String> toDelete = new ArrayList<String>();
+    try {
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes("TeamWork_Abtsract2Abstract");
+      query.addSelect("AbstractLink");
+      query.addWhereExprEqValue("AncestorLink", instance.getId());
+      query.executeWithoutAccessCheck();
+      while (query.next()) {
+        toDelete.add((String) query.get("AbstractLink"));
+      }
+      query.close();
+
+      for (String delID : toDelete) {
+        query = new SearchQuery();
+        query.setQueryTypes("TeamWork_Member");
+        query.addSelect("OID");
+        query.addWhereExprEqValue("AbstractLink", delID);
+        query.executeWithoutAccessCheck();
+        if (query.next()) {
+          Delete delete = new Delete((String) query.get("OID"));
+          delete.execute();
+        }
+      }
+
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
     }
 
     return null;
