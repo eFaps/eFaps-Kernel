@@ -58,9 +58,7 @@
 	<trigger name="TeamWork_RootCollection_INSERT_POST_2" event="INSERT_POST" program="org.efaps.teamwork.Member" method="insertCollectionCreator" index="2">
       <property name="AccessSet">CollectionHolder</property>
     </trigger>
-    <trigger name="TeamWork_RootCollection_DELETE_PRE_1" event="DELETE_PRE" program="org.efaps.teamwork.Member" method="removeAllMember" index="1"/>
-	<trigger name="TeamWork_RootCollection_DELETE_PRE_2" event="DELETE_PRE" program="org.efaps.teamwork.Abstract2Abstract" method="deleteRoot" index="1"/>
-	
     
+    <trigger name="TeamWork_RootCollection_DELETE_PRE" event="DELETE_PRE" program="org.efaps.teamwork.CascadeDelete" method="execute" index="1"/>
   </definition>
 </datamodel-type>

@@ -96,10 +96,6 @@ public class Abstract2Abstract implements EventExecution {
     insertDB(abstractlink, abstractlink, "1");
     return null;
   }
-  public Return deleteRoot(Parameter _parameter){
-    return null;
-    
-  }
   
   
   private void insertDB(final String _abstractlink, final String _ancestorlink,

@@ -66,5 +66,7 @@
     </trigger>
     
     <trigger name="TeamWork_Source_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnTypeInstance" method="execute" index="1"/>
+    
+    <trigger name="TeamWork_Collection_DELETE_PRE" event="DELETE_PRE" program="org.efaps.teamwork.CascadeDelete" method="execute" index="1"/>
   </definition>
 </datamodel-type>
