@@ -53,9 +53,11 @@
     </version>
     <name>Admin_Access_AccessSetMyDesk_Menu_Action_Delete</name>
     <!-- properties -->
-    <property name="Action">delete</property>
     <property name="AskUser">true</property>
     <property name="Submit">true</property>
+    <!-- trigger -->
+    <trigger name="Admin_Access_AccessSetMyDesk_Menu_Action_Delete_COMMAND" event="COMMAND" program="org.efaps.webapp.programs.CommonDelete" method="execute" index="1"/>
+  
   </definition>
 
 </ui-command>

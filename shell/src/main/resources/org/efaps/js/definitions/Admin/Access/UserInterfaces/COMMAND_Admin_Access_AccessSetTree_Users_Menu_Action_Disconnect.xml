@@ -57,6 +57,11 @@
     <property name="AskUser">true</property>
     <property name="DeleteIndex">1</property>
     <property name="Submit">true</property>
+    
+    <!-- trigger -->
+    <trigger name="Admin_Access_AccessSetTree_Users_Menu_Action_Disconnect_COMMAND"
+     event="COMMAND" program="org.efaps.webapp.programs.CommonDelete" method="execute" index="1"/>
+  
   </definition>
 
 </ui-command>

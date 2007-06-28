@@ -20,15 +20,16 @@
 
 package org.efaps.webapp.programs;
 
+import java.util.StringTokenizer;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.StringTokenizer;
 
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.ui.Command;
 import org.efaps.db.Delete;
 import org.efaps.util.EFapsException;
 
@@ -40,26 +41,31 @@ public class CommonDelete implements EventExecution {
 
   public Return execute(Parameter _parameter) {
     String[] oids = (String[]) _parameter.get(ParameterValues.OTHERS);
+    Command command = (Command) _parameter.get(ParameterValues.UIOBJECT);
+
     if (oids != null) {
       for (int i = 0; i < oids.length; i++) {
         String oid = oids[i];
+        if (command.getDeleteIndex() > 0) {
+          StringTokenizer tokens = new StringTokenizer(oid, "|");
+          int count = 0;
+          while (tokens.hasMoreTokens() && count < command.getDeleteIndex()) {
+            oid = tokens.nextToken();
+            count++;
 
-        StringTokenizer tokens = new StringTokenizer(oid, "|");
-
-        while (tokens.hasMoreTokens()) {
-          oid = tokens.nextToken();
-          Delete delete = new Delete(oid);
-          try {
-            delete.execute();
-          } catch (EFapsException e) {
-            LOG.error("execute(Parameter)", e);
           }
+        }
+        Delete del = new Delete(oid);
+        try {
+          del.execute();
+        } catch (EFapsException e) {
+          LOG.error("execute(Parameter)", e);
         }
 
       }
+
     }
-
     return null;
-  }
 
+  }
 }
