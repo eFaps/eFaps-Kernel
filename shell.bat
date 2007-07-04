@@ -61,19 +61,30 @@ REM Transaction Manager
 set CP=%CP%;%shellPathLib%\geronimo-spec-jta-1.0-M1.jar
 set CP=%CP%;%shellPathLib%\slide-kernel-2.1.jar
 
+REM Java compiler
+set CP=%CP%;%shellPathLib%\commons-jci-core-1.0.jar
+set CP=%CP%;%shellPathLib%\commons-jci-fam-1.0.jar
+set CP=%CP%;%shellPathLib%\commons-jci-javac-1.0.jar
+set CP=%CP%;%shellPathLib%\asm-2.2.jar
+set CP=%CP%;%shellPathLib%\asm-util-2.2.1.jar
+set CP=%CP%;%shellPathLib%\asm-tree-2.2.1.jar
+set CP=%CP%;%shellPathLib%\asm-analysis-2.2.1.jar
+set CP=%CP%;%shellPathLib%\dependency-0.2.jar
+
 REM Connection Pooling
 set CP=%CP%;%shellPathLib%\commons-dbcp-1.2.2.jar
 set CP=%CP%;%shellPathLib%\commons-pool-1.3.jar
 set CP=%CP%;%shellPathLib%\commons-collections-3.1.jar
 
-REM jci
-set CP=%CP%;%shellPathLib%\commons-jci-core-1.0.jar
-set CP=%CP%;%shellPathLib%\commons-jci-fam-1.0.jar
-set CP=%CP%;%shellPathLib%\commons-jci-javac-1.0.jar
-
 REM Database Driver
 set CP=%CP%;%shellPathLib%\derbyclient-10.1.2.1.jar
 set CP=%CP%;%shellPathLib%\postgresql-8.2-504.jdbc3.jar
+
+REM VFSStore
+set CP=%CP%;%shellPathLib%\commons-vfs-1.0.jar
+
+REM needed for Programs
+set CP=%CP%;%shellPathLib%\commons-collections-3.1.jar
 
 REM used for stores
 REM set CP=%CP%;%derbyLibPath%\commons-vfs-20050307052300.jar
