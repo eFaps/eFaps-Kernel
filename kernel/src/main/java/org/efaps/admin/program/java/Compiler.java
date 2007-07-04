@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import org.apache.commons.jci.compilers.CompilationResult;
 import org.apache.commons.jci.compilers.JavaCompiler;
@@ -171,7 +172,7 @@ public class Compiler {
       String name = (String) query.get("Name");
       Long id = (Long) query.get("ID");
       File file = new File(File.separator
-          + name.replaceAll("\\.", File.separator) + ".java");
+          + name.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + ".java");
       String absName = file.getAbsolutePath();
       this.file2id.put(absName, id);
     }
