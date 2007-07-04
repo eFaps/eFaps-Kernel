@@ -38,12 +38,12 @@ REM Mozillas JavaScript
 set CP=%CP%;%shellPathLib%\js-1.6R1.jar
 
 REM Logging with log4j
-set CP=%CP%;%shellPathLib%\log4j-1.2.9.jar
-set CP=%CP%;%shellPathLib%\commons-logging-1.0.4.jar
+set CP=%CP%;%shellPathLib%\log4j-1.2.14.jar
+set CP=%CP%;%shellPathLib%\commons-logging-1.1.jar
 
 Rem digester to read xml files
-set CP=%CP%;%shellPathLib%\commons-digester-1.7.jar
-set CP=%CP%;%shellPathLib%\commons-beanutils-1.6.jar
+set CP=%CP%;%shellPathLib%\commons-digester-1.8.jar
+set CP=%CP%;%shellPathLib%\commons-beanutils-1.7.0.jar
 
 REM command line parser
 set CP=%CP%;%shellPathLib%\commons-cli-1.0.jar
@@ -52,7 +52,7 @@ REM evaluate expression in the xml files
 set CP=%CP%;%shellPathLib%\commons-jexl-1.1.jar
 
 REM used for toString methods
-set CP=%CP%;%shellPathLib%\commons-lang-2.1.jar
+set CP=%CP%;%shellPathLib%\commons-lang-2.3.jar
 
 REM HTTP Servlet Api
 set CP=%CP%;%shellPathLib%\servlet-api-2.4.jar
@@ -62,9 +62,14 @@ set CP=%CP%;%shellPathLib%\geronimo-spec-jta-1.0-M1.jar
 set CP=%CP%;%shellPathLib%\slide-kernel-2.1.jar
 
 REM Connection Pooling
-set CP=%CP%;%shellPathLib%\commons-dbcp-1.2.1.jar
-set CP=%CP%;%shellPathLib%\commons-pool-1.2.jar
-set CP=%CP%;%shellPathLib%\commons-collections-2.1.jar
+set CP=%CP%;%shellPathLib%\commons-dbcp-1.2.2.jar
+set CP=%CP%;%shellPathLib%\commons-pool-1.3.jar
+set CP=%CP%;%shellPathLib%\commons-collections-3.1.jar
+
+REM jci
+set CP=%CP%;%shellPathLib%\commons-jci-core-1.0.jar
+set CP=%CP%;%shellPathLib%\commons-jci-fam-1.0.jar
+set CP=%CP%;%shellPathLib%\commons-jci-javac-1.0.jar
 
 REM Database Driver
 set CP=%CP%;%shellPathLib%\derbyclient-10.1.2.1.jar
