@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.tags;
+package org.efaps.webapp.tags;
 
 import java.io.IOException;
 
@@ -28,7 +28,8 @@ import javax.faces.context.FacesContext;
 import org.apache.myfaces.custom.dialog.ModalDialogRenderer;
 
 public class ModalDialogsRenderer extends ModalDialogRenderer {
-  public static final String RENDERER_TYPE = "org.efaps.tags.ModalDialogs";
+  public static final String RENDERER_TYPE =
+      "org.efaps.webapp.tags.ModalDialogs";
 
   public void encodeBegin(FacesContext context, UIComponent _component)
       throws IOException {
@@ -40,7 +41,6 @@ public class ModalDialogsRenderer extends ModalDialogRenderer {
       super.encodeBegin(context, _component);
       StringBuffer buf = new StringBuffer();
 
-      buf.append("<div align=\"center\">");
       buf.append("<table border=\"0\" cellspacing=\"10\" >");
       buf.append("<tr><td  colspan=\"2\" align=\"center\">");
       buf.append(modaldialog.getQuestion());
@@ -60,7 +60,7 @@ public class ModalDialogsRenderer extends ModalDialogRenderer {
       buf.append("').hide();\">");
       buf.append(modaldialog.getCancelText());
       buf.append("</button>");
-      buf.append("</td></tr></table></div>");
+      buf.append("</td></tr></table>");
       context.getResponseWriter().append(buf.toString());
 
       super.encodeEnd(context, _component);

@@ -37,39 +37,18 @@
     </h:panelGrid>
   </h:form>
   
-<style type="text/css">
+ <style type="text/css">
        .dojoDialog {
            background: #eee;
            border: 2px solid #999;
            -moz-border-radius: 5px;
-           padding: 4px; /*positioning outside of the visible scope
+           padding: 20px; /*positioning outside of the visible scope
 to prevent some ui glitches visibility hidden does not work*/
            position: absolute;
            left: -800px;
            top: -800px;
        }
-
-       .viewDialog {
-           background: #eee;
-           border: 1px solid #999;
-           -moz-border-radius: 5px;
-           padding: 40px; /*positioning outside of the visible scope
-to prevent some ui glitches visibility hidden does not work*/
-           position: absolute;
-           left: -800px;
-           top: -800px;
-       }
-
-       .viewDialogDecoration {
-           width: 600px;
-       }
-
-       .viewDialogContent {
-           width: 600px;
-           height: 500px;
-       }
-
-   </style>
+ </style>
   
 
 

@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.tags;
+package org.efaps.webapp.tags;
 
 import java.util.Iterator;
 import java.util.List;
@@ -31,9 +31,11 @@ import org.efaps.beans.ToolbarBean;
 
 public class UIModalDialogs extends ModalDialog {
 
-  public static final String COMPONENT_TYPE = "org.efaps.tags.ModalDialogs";
+  public static final String COMPONENT_TYPE =
+      "org.efaps.webapp.tags.ModalDialogs";
 
-  public static final String COMPONENT_FAMILY = "org.efaps.tags.ModalDialogs";
+  public static final String COMPONENT_FAMILY =
+      "org.efaps.webapp.tags.ModalDialogs";
 
   private List modaldialogs;
 

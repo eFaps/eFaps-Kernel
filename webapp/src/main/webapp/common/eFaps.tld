@@ -8,7 +8,7 @@
   <short-name>eFaps Tag Library</short-name>
   <tag>
     <name>ModalDialogs</name>
-    <tag-class>org.efaps.tags.ModalDialogsTag</tag-class>
+    <tag-class>org.efaps.webapp.tags.ModalDialogsTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <name>dialogVar</name>

@@ -60,7 +60,8 @@ public class DBProperties {
   /**
    * Cache for the Properties
    */
-  private static final Map<String, HashMap<String, String>> PROPERTIESCACHE = new HashMap<String, HashMap<String, String>>();
+  private static final Map<String, HashMap<String, String>> PROPERTIESCACHE =
+      new HashMap<String, HashMap<String, String>>();
 
   /**
    * are the Properties initialised?
@@ -68,10 +69,27 @@ public class DBProperties {
   private static boolean INITIALISED = false;
 
   /**
+   * Method to find out if a specified key is existing.<br>
+   * It is only checked in the default.
+   * 
+   * @param _key
+   *          Key to search for
+   * @return true if the key exists
+   */
+  public static boolean hasProperty(String _key) {
+
+    if (!isInitialised()) {
+      initialise();
+    }
+
+    return PROPERTIESCACHE.get(DEFAULT).get(_key) != null;
+  }
+
+  /**
    * Method that returns the value, depending on the language of the Context,
-   * for the given key. The Search for the key, first searches for a localized
-   * Version and if not found for a Default. If no value can be found, the key
-   * will be returned.
+   * for the given key. <br>
+   * The Search for the key, first searches for a localized Version and if not
+   * found for a Default. If no value can be found, the key will be returned.
    * 
    * @param _key
    *          Key to Search for
@@ -121,18 +139,20 @@ public class DBProperties {
       PROPERTIESCACHE.clear();
     }
 
-    final String sqlStmt = " select distinct KEY, DEFAULTV,'" + DEFAULT
-        + "' as LANG, SEQUENCE " + " from T_ADPROP "
-        + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
-        + " order by SEQUENCE";
+    final String sqlStmt =
+        " select distinct KEY, DEFAULTV,'" + DEFAULT + "' as LANG, SEQUENCE "
+            + " from T_ADPROP "
+            + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
+            + " order by SEQUENCE";
 
     initialiseCache(sqlStmt);
 
-    final String sqlStmt2 = "select distinct KEY, VALUE, LANG, SEQUENCE from T_ADPROP "
-        + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID "
-        + " inner join T_ADPROPLOC on T_ADPROPLOC.PROPID = T_ADPROP.ID "
-        + " inner join T_ADLANG on T_ADLANG.ID = T_ADPROPLOC.LANGID "
-        + " order by LANG, SEQUENCE";
+    final String sqlStmt2 =
+        "select distinct KEY, VALUE, LANG, SEQUENCE from T_ADPROP "
+            + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID "
+            + " inner join T_ADPROPLOC on T_ADPROPLOC.PROPID = T_ADPROP.ID "
+            + " inner join T_ADLANG on T_ADLANG.ID = T_ADPROPLOC.LANGID "
+            + " order by LANG, SEQUENCE";
 
     initialiseCache(sqlStmt2);
 
@@ -160,8 +180,8 @@ public class DBProperties {
 
     Map<String, String> map = null;
     try {
-      ConnectionResource con = Context.getThreadContext()
-          .getConnectionResource();
+      ConnectionResource con =
+          Context.getThreadContext().getConnectionResource();
       Statement stmt = con.getConnection().createStatement();
 
       ResultSet rs = stmt.executeQuery(_sqlstmt);

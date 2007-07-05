@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.tags;
+package org.efaps.webapp.tags;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.CommandAbstract;
@@ -53,11 +53,23 @@ public class EFapsModalDialog {
   }
 
   public String getCancelText() {
-    return "Cancel";
+    String ret;
+    if (DBProperties.hasProperty(command.getName() + ".Cancel")) {
+      ret = DBProperties.getProperty(command.getName() + ".Cancel");
+    } else {
+      ret = DBProperties.getProperty("webapp.EFapsModalDialog.Cancel");
+    }
+    return ret;
   }
 
   public String getSubmitText() {
-    return "Yes";
+    String ret;
+    if (DBProperties.hasProperty(command.getName() + ".Submit")) {
+      ret = DBProperties.getProperty(command.getName() + ".Submit");
+    } else {
+      ret = DBProperties.getProperty("webapp.EFapsModalDialog.Submit");
+    }
+    return ret;
   }
 
 }

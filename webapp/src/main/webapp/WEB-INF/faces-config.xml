@@ -105,15 +105,15 @@
   </managed-bean>
   <render-kit>
     <renderer>
-      <component-family>org.efaps.tags.ModalDialogs</component-family>
-      <renderer-type>org.efaps.tags.ModalDialogs</renderer-type>
-      <renderer-class>org.efaps.tags.ModalDialogsRenderer</renderer-class>
+      <component-family>org.efaps.webapp.tags.ModalDialogs</component-family>
+      <renderer-type>org.efaps.webapp.tags.ModalDialogs</renderer-type>
+      <renderer-class>org.efaps.webapp.tags.ModalDialogsRenderer</renderer-class>
     </renderer>
   </render-kit>
 
   <component>
-    <component-type>org.efaps.tags.ModalDialogs</component-type>
-    <component-class>org.efaps.tags.UIModalDialogs</component-class>
+    <component-type>org.efaps.webapp.tags.ModalDialogs</component-type>
+    <component-class>org.efaps.webapp.tags.UIModalDialogs</component-class>
     
     <property>
       <property-name>dialogVar</property-name>

@@ -32,8 +32,8 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.MenuAbstract;
 import org.efaps.db.Context;
-import org.efaps.tags.EFapsModalDialog;
 import org.efaps.util.EFapsException;
+import org.efaps.webapp.tags.EFapsModalDialog;
 
 /**
  * The bean is used for the main tool bar on the main header JSP page.

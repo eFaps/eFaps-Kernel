@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.tags;
+package org.efaps.webapp.tags;
 
 import org.apache.myfaces.custom.dialog.ModalDialogTag;
 
