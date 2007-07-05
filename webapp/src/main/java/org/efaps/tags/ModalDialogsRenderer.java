@@ -34,11 +34,11 @@ public class ModalDialogsRenderer extends ModalDialogRenderer {
       throws IOException {
     UIModalDialogs uimodaldialogs = (UIModalDialogs) _component;
     for (uimodaldialogs.getIterator(); uimodaldialogs.getIterator().hasNext();) {
-
+      EFapsModalDialog modaldialog =
+          (EFapsModalDialog) uimodaldialogs.getIterator().next();
+      uimodaldialogs.setActiveModalDialog(modaldialog);
       super.encodeBegin(context, _component);
       StringBuffer buf = new StringBuffer();
-      ModalDialog modaldialog =
-          (ModalDialog) uimodaldialogs.getIterator().next();
 
       buf.append("<div align=\"center\">");
       buf.append("<table border=\"0\" cellspacing=\"10\" >");
@@ -46,13 +46,19 @@ public class ModalDialogsRenderer extends ModalDialogRenderer {
       buf.append(modaldialog.getQuestion());
       buf.append("</td></tr><tr><td align=\"center\" width=\"50%\">");
       buf.append("<button type=\"button\" name=\"cancel\" value=\"\"");
-      buf.append(" onclick=\"" + modaldialog.getScript()
-          + "\">submit!</button>");
+      buf.append(" onclick=\"");
+      buf.append(modaldialog.getScript());
+      buf.append("\">");
+      buf.append(modaldialog.getSubmitText());
+      buf.append("</button>");
       buf.append("</td><td align=\"center\" width=\"50%\">");
-      buf.append("<button type=\"button\" id=\"cancelDialog\" value=\"\"");
-
-      buf.append("onclick=\"dojo.widget.byId('eFapsDialog').hide();\">");
-      buf.append("abbrechen!");
+      buf.append("<button type=\"button\" id=\"");
+      buf.append(uimodaldialogs.getHiderIds());
+      buf.append("\" value=\"\"");
+      buf.append("onclick=\"dojo.widget.byId('");
+      buf.append(modaldialog.getDialogId());
+      buf.append("').hide();\">");
+      buf.append(modaldialog.getCancelText());
       buf.append("</button>");
       buf.append("</td></tr></table></div>");
       context.getResponseWriter().append(buf.toString());

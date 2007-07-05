@@ -23,22 +23,41 @@ package org.efaps.tags;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.CommandAbstract;
 
-public class ModalDialog {
+public class EFapsModalDialog {
+
   private final CommandAbstract command;
 
   private final String script;
 
-  public ModalDialog(final CommandAbstract _command, final String _script) {
+  public EFapsModalDialog(final CommandAbstract _command, final String _script) {
     this.command = _command;
     this.script = _script.replace("\"", "'");
   }
 
   public String getScript() {
-    return this.script + ";dojo.widget.byId('eFapsDialog').hide();";
+    return this.script + ";dojo.widget.byId('" + this.getDialogId()
+        + "').hide();";
+  }
+
+  public String getDialogVar() {
+    return getDialogId();
   }
 
   public String getQuestion() {
     return DBProperties.getProperty(command.getName() + ".Question");
+  }
+
+  public String getDialogId() {
+    String ret = "eFapsDialog" + ((Long) this.command.getId()).toString();
+    return ret;
+  }
+
+  public String getCancelText() {
+    return "Cancel";
+  }
+
+  public String getSubmitText() {
+    return "Yes";
   }
 
 }

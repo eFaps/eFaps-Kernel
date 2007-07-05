@@ -32,7 +32,7 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.MenuAbstract;
 import org.efaps.db.Context;
-import org.efaps.tags.ModalDialog;
+import org.efaps.tags.EFapsModalDialog;
 import org.efaps.util.EFapsException;
 
 /**
@@ -69,7 +69,7 @@ public class ToolbarBean {
    */
   private CommandAbstract originalCommand = null;
 
-  private List<ModalDialog> modalDialogs = new ArrayList<ModalDialog>();
+  private List<EFapsModalDialog> modalDialogs = new ArrayList<EFapsModalDialog>();
 
   public List getModalDialogs() {
     return modalDialogs;
@@ -200,9 +200,9 @@ public class ToolbarBean {
     url.append(")");
 
     if (_command.isAskUser()) {
-
-      modalDialogs.add(new ModalDialog(_command, url.toString()));
-      return ("javascript:eFapsDialog.show();");
+      EFapsModalDialog modaldialog = new EFapsModalDialog(_command, url.toString());
+      modalDialogs.add(modaldialog);
+      return ("javascript:" + modaldialog.getDialogVar() + ".show();");
     }
 
     return "javascript:" + url.toString();

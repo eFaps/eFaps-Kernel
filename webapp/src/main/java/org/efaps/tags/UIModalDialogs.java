@@ -39,6 +39,8 @@ public class UIModalDialogs extends ModalDialog {
 
   private Iterator iterator;
 
+  private EFapsModalDialog activemodaldialog;
+
   public UIModalDialogs() {
     super();
     setRendererType(null);
@@ -51,17 +53,17 @@ public class UIModalDialogs extends ModalDialog {
 
   @Override
   public String getDialogId() {
-    return "eFapsDialog";
+    return this.activemodaldialog.getDialogId();
   }
 
   @Override
   public String getDialogVar() {
-    return "eFapsDialog";
+    return this.activemodaldialog.getDialogVar();
   }
 
   @Override
   public String getHiderIds() {
-    return "cancelDialog";
+    return "cancel" + this.activemodaldialog.getDialogVar();
   }
 
   public Iterator getIterator() {
@@ -70,6 +72,10 @@ public class UIModalDialogs extends ModalDialog {
     }
     return iterator;
 
+  }
+
+  public void setActiveModalDialog(final EFapsModalDialog _modaldialog) {
+    this.activemodaldialog = _modaldialog;
   }
 
   private List getDialogList() {
