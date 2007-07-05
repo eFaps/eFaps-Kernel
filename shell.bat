@@ -55,7 +55,7 @@ REM used for toString methods
 set CP=%CP%;%shellPathLib%\commons-lang-2.3.jar
 
 REM HTTP Servlet Api
-set CP=%CP%;%shellPathLib%\servlet-api-2.4.jar
+set CP=%CP%;%shellPathLib%\servlet-api-2.5.jar
 
 REM Transaction Manager
 set CP=%CP%;%shellPathLib%\geronimo-spec-jta-1.0-M1.jar

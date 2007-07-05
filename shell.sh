@@ -98,7 +98,7 @@ CP=$CP:$shellPathLib/commons-jexl-1.1.jar
 CP=$CP:$shellPathLib/commons-lang-2.3.jar
 
 # HTTP Servlet Api
-CP=$CP:$shellPathLib/servlet-api-2.4.jar
+CP=$CP:$shellPathLib/servlet-api-2.5.jar
 
 # Transaction Manager
 CP=$CP:$shellPathLib/geronimo-spec-jta-1.0-M1.jar
