@@ -177,18 +177,7 @@ function eFapsSubmit()  {
     <h:outputText value="#{titleBean.title}"/>
   </h:panelGrid>
 
-  <h:form id="eFapsFrameToolbarMenu">
-    <h:panelGrid>
-      <t:jscookMenu layout="hbr" theme="ThemeOffice" styleLocation="../styles">
-        <t:navigationMenuItems value="#{menuTableToolbar.JSFMenu}"/>
-      </t:jscookMenu>
-    </h:panelGrid>
-  </h:form>
-
-
-
-
-
+  <%@include file="ToolBarMenu.inc"%>
 
           <div class="eFapsFrameFooter">
 
