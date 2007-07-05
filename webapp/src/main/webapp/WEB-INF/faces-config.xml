@@ -103,5 +103,40 @@
       <value>#{param.command}</value>
     </managed-property>
   </managed-bean>
+  <render-kit>
+    <renderer>
+      <component-family>org.efaps.tags.ModalDialogs</component-family>
+      <renderer-type>org.efaps.tags.ModalDialogs</renderer-type>
+      <renderer-class>org.efaps.tags.ModalDialogsRenderer</renderer-class>
+    </renderer>
+  </render-kit>
 
+  <component>
+    <component-type>org.efaps.tags.ModalDialogs</component-type>
+    <component-class>org.efaps.tags.UIModalDialogs</component-class>
+    
+    <property>
+      <property-name>dialogVar</property-name>
+      <property-class>String</property-class>
+    </property>
+    <property>
+      <property-name>dialogId</property-name>
+      <property-class>String</property-class>
+    </property>
+    <property>
+      <property-name>hiderIds</property-name>
+      <property-class>String</property-class>
+    </property>
+    <property>
+      <property-name>dialogAttr</property-name>
+      <property-class>String</property-class>
+    </property>
+    <property>
+      <property-name>styleClass</property-name>
+      <property-class>String</property-class>
+    </property>
+    
+  
+    
+  </component>
 </faces-config>

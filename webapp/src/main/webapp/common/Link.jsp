@@ -46,5 +46,16 @@
   } else if (command.hasTrigger()){
     command.executeTrigger(TriggerEvent.COMMAND,
                            (String[])request.getParameterValues("selectedRow"));
+    //after a commandtrigger is executet the page is updatet                   
+    %>
+    <html>
+      <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
+      <body>
+        <script language="Javascript">
+          parent.eFapsCommonRefresh();
+        </script>
+      </body>
+    </html>  
+    <%                     
   }
 %>

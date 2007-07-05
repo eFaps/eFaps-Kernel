@@ -23,7 +23,7 @@
 
 <%@page import="org.efaps.beans.FieldValue"%>
 <%@page import="org.efaps.beans.TableBean"%>
-
+<%@taglib prefix="s"    uri="http://myfaces.apache.org/sandbox"  %>
 <%@taglib prefix="c"    uri="http://java.sun.com/jstl/core"%>
 <%@taglib prefix="h"    uri="http://java.sun.com/jsf/html"%>
 <%@taglib prefix="f"    uri="http://java.sun.com/jsf/core"%>
@@ -157,18 +157,12 @@ headerDiv.style.left = - div.scrollLeft;
 
 <f:view>
 
+
   <h:panelGrid id="eFapsFrameTitle">
     <h:outputText value="#{titleBean.title}"/>
   </h:panelGrid>
 
-  <h:form id="eFapsFrameToolbarMenu">
-    <h:panelGrid>
-      <t:jscookMenu layout="hbr" theme="ThemeOffice" styleLocation="../styles">
-        <t:navigationMenuItems value="#{menuTableToolbar.JSFMenu}"/>
-      </t:jscookMenu>
-    </h:panelGrid>
-  </h:form>
-
+  <%@include file="ToolBarMenu.inc"%>
   
 
 <c:choose>
