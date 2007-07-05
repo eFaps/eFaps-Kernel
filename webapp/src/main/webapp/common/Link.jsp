@@ -47,15 +47,17 @@
     command.executeTrigger(TriggerEvent.COMMAND,
                            (String[])request.getParameterValues("selectedRow"));
     //after a commandtrigger is executet the page is updatet                   
+    if (!"true".equals(command.getProperty("NoUpdateAfterCOMMAND"))){
     %>
-    <html>
-      <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
-      <body>
-        <script language="Javascript">
-          parent.eFapsCommonRefresh();
-        </script>
-      </body>
-    </html>  
-    <%                     
+      <html>
+        <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
+        <body>
+          <script language="Javascript">
+            parent.eFapsCommonRefresh();
+          </script>
+        </body>
+      </html>  
+    <%
+    }               
   }
 %>
