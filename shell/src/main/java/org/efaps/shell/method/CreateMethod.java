@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,14 +53,6 @@ public final class CreateMethod extends AbstractJavaScriptMethod  {
    * @todo descriptionâ
    */
   public void doMethod() throws EFapsException,Exception {
-    StringReader reader = new StringReader("eFapsCreateAll();");
-
-    Main.evaluateScript(getJavaScriptContext(), 
-                        Main.getGlobal(), 
-                        reader, 
-                        null, 
-                        "<stdin>", 
-                        0, 
-                        null);
+    evaluate(new StringReader("eFapsCreateAll();"), "init");
   }
 }

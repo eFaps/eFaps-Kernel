@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,14 @@
 package org.efaps.shell.method;
 
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.io.Reader;
 
 import org.apache.commons.cli.Option;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.tools.shell.Global;
-import org.mozilla.javascript.tools.shell.Main;
+import org.mozilla.javascript.ImporterTopLevel;
 
 import org.efaps.js.EFapsInstance;
 import org.efaps.util.EFapsException;
@@ -51,6 +51,11 @@ public abstract class AbstractJavaScriptMethod extends AbstractMethod  {
    # @see #getJavaScriptContext
    */
   private Context javaScriptContext = null;
+
+  /**
+   *
+   */
+  private org.mozilla.javascript.Scriptable scope = null;
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
@@ -77,22 +82,44 @@ public abstract class AbstractJavaScriptMethod extends AbstractMethod  {
     // create new javascript context
     this.javaScriptContext = Context.enter();
 
+    this.scope = new ImporterTopLevel(javaScriptContext);;
+
+    // define the context javascript property
+    Object wrappedContext = Context.javaToJS(this.javaScriptContext, this.scope);
+    ScriptableObject.putProperty(scope, "javaScriptContext", wrappedContext);
+
+    // define the scope javascript property
+    Object wrappedScope = Context.javaToJS(this.scope , this.scope);
+    ScriptableObject.putProperty(scope, "javaScriptScope", wrappedScope);
+
     // define the scriptable Java Class mapping
-    Global global = Main.getGlobal();
-    ScriptableObject.defineClass(global, EFapsInstance.class);
+    ScriptableObject.defineClass(scope, EFapsInstance.class);
 
     // run init javascript file
     ClassLoader classLoader = getClass().getClassLoader();
     Reader in = new InputStreamReader(
                       classLoader.getResourceAsStream("org/efaps/js/Init.js"));
-    Main.evaluateScript(getJavaScriptContext(), 
-                        global, in, null, "Init", 1, null);
+
+    evaluate(in, "init"); 
 
     // execute the doMethod method
     super.execute();
   }
 
-  
+  /**
+   * Evalutes given script.
+   *
+   * @param _in   reader with the script to execute
+   * @param _name name
+   */
+  protected void evaluate(final Reader _in,
+                          final String _name) throws IOException
+  {
+    this.javaScriptContext.evaluateReader(this.scope,
+                                          _in, 
+                                          _name, 1, null); 
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
 

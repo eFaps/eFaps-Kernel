@@ -1,3 +1,24 @@
+/*
+ * Copyright 2003-2007 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Author:          tmo
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
+
 importClass(Packages.java.io.File);
 importClass(Packages.java.io.FileReader);
 importClass(Packages.java.io.InputStreamReader);
@@ -101,7 +122,6 @@ function eFapsGetAllFiles(_path, _subDir)  {
  * @param _throwNoError (Boolean) true, if no error should thrown
  */
 function eFapsLoad(_fileName, _throwNoError)  {
-  var context = Packages.org.mozilla.javascript.Context.enter();
   var reader;
   var errorString;
   
@@ -112,7 +132,7 @@ function eFapsLoad(_fileName, _throwNoError)  {
     } else  {
       var reader = new FileReader(new File(_fileName));
     }
-    context.evaluateReader(Main.getGlobal(), reader, _fileName, 1, null);
+    javaScriptContext.evaluateReader(javaScriptScope, reader, _fileName, 1, null);
   } catch (e)  {
     if (_throwNoError)  {
       print('');
@@ -145,18 +165,14 @@ function eFapsLoadPath(_path, _subDir)  {
 }
 
 /**
- * Store the original load command in an other function called originalLoad to 
- * be sure, that the original load command exists if the current load command
- * does not work correctly.<br/>
- * The original load is overwritten with the specific implementation from this
- * javascript file.<br/>
- * All functions and classes in the sub directories are loaded.
+ * Prints the given text out.
+ *
+ * @param _text (String) text to print out
  */
-try  {
-  originalLoad
-} catch (e)  {
-  originalLoad=load
-  load=eFapsLoad;
-  eFapsLoadPath("org/efaps/js/functions", true);
-  eFapsLoadPath("org/efaps/js/classes", true);
+function print(_text)  {
+  java.lang.System.out.println(_text);
 }
+
+// load all scripts defined in the functions directory
+eFapsLoadPath("org/efaps/js/functions", true);
+
