@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,9 +35,10 @@ import org.efaps.db.databases.AbstractDatabase;
 
 /**
  * 
- * 
+ * @todo description
+ * @todo move to webapps project
  * @author tmo
- * @version $Rev$
+ * @version $Id$
  */
 public class RequestHandler extends HttpServlet {
 
@@ -123,6 +124,7 @@ public class RequestHandler extends HttpServlet {
     if (url.indexOf('?') < 0) {
       url += "?";
     }
+    url = url.replaceAll("//", "/");
     return url;
   }
 
