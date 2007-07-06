@@ -225,7 +225,6 @@ public class JavaUpdate extends AbstractUpdate {
         pkg = pkg.replaceFirst(";$", "");
         name = pkg + "." + name;
       }
-System.out.println("name="+name);
       setName(name);
     }
 
@@ -262,7 +261,6 @@ System.out.println("name="+name);
       query.close();
 
       // if no instance exists, a new insert must be done
-System.out.println("name2="+getValue("Name"));
       if (instance == null) {
         insert = new Insert(_dataModelType);
         insert.add("Name", getValue("Name"));
