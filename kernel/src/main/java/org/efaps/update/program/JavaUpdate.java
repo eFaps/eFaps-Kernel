@@ -20,8 +20,10 @@
 
 package org.efaps.update.program;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -34,6 +36,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -155,10 +158,9 @@ public class JavaUpdate extends AbstractUpdate {
     private String  rootPath       = null;
 
     /**
-     * Boolean that stores, if the ClassName was allready set by
-     * {@link setClassName}
+     * Code of the Program is stored.
      */
-    private boolean classNameIsSet = false;
+    private StringBuilder code = null;
 
     /**
      * default constructor
@@ -171,19 +173,18 @@ public class JavaUpdate extends AbstractUpdate {
      * sets the name of this Java definition (the name is the package name
      * together with the name of the file exluding the <code>.java</code>).
      * 
-     * @param _file
-     *          file with the Java code
+     * @param _file   file with the Java code
      */
     public JavaDefinition(final File _file) throws IOException {
       setVersion("eFaps", "1", "1", "true");
-      setClassName(_file);
+      this.rootPath = _file.getParent();
+      this.file = _file.getName();
     }
 
     /**
      * This is the setter method for instance variable {@link #file}.
      * 
-     * @param _number
-     *          new value for instance variable {@link #file}
+     * @param _number new value for instance variable {@link #file}
      * @see #file
      */
     public void setFile(final String _file) {
@@ -191,28 +192,29 @@ public class JavaUpdate extends AbstractUpdate {
     }
 
     /**
-     * This Method reads the code in the file, extracts the package name and
-     * sets the name of this Java definition (the name is the package name
-     * together with the name of the file exluding the <code>.java</code>).
-     * 
-     * @param _file
-     *          file with the Java code
+     * Read the code from the file defined through filename.
      */
-    private void setClassName(final File _file) throws IOException {
+    private void readCode() throws FileNotFoundException,IOException  {
       final char[] buf = new char[1024];
+      this.code = new StringBuilder();
 
-      Reader r = new InputStreamReader(new FileInputStream(_file));
+      File file = new File(this.rootPath + "/" + this.file);
 
-      StringBuilder code = new StringBuilder();
+      Reader r = new InputStreamReader(new FileInputStream(file));
       int length;
       while ((length = r.read(buf)) > 0) {
         code.append(buf, 0, length);
       }
+    }
 
-      addValue("Code", code.toString());
+    /**
+     * This Method extracts the package name and sets the name of this Java
+     * definition (the name is the package name together with the name of the
+     * file exluding the <code>.java</code>).
+     */
+    private void setClassName() throws IOException {
 
-      String name = _file.getName();
-      name = name.substring(0, name.lastIndexOf('.'));
+      String name = this.file.substring(0, this.file.lastIndexOf('.'));
 
       // regular expression for the package name
       Pattern pattern = Pattern.compile("package +[^;]+;");
@@ -223,9 +225,8 @@ public class JavaUpdate extends AbstractUpdate {
         pkg = pkg.replaceFirst(";$", "");
         name = pkg + "." + name;
       }
-
+System.out.println("name="+name);
       setName(name);
-      this.classNameIsSet = true;
     }
 
     /**
@@ -233,20 +234,19 @@ public class JavaUpdate extends AbstractUpdate {
      * programs are searched by the name (and not by UUID like in the super
      * class).
      * 
-     * @param _dataModelType
-     *          instance of the type of the object which must be updated
-     * @param _uuid
-     *          uuid of the object to update
-     * @param _allLinkTypes
-     *          all link types to update
+     * @param _dataModelType  instance of the type of the object which must be
+     *                        updated
+     * @param _uuid           uuid of the object to update
+     * @param _allLinkTypes   all link types to update
      */
-    public void updateInDB(final Type _dataModelType, final String _uuid,
+    public void updateInDB(final Type _dataModelType,
+                           final String _uuid,
                            final Set<Link> _allLinkTypes)
-                                                         throws EFapsException,
-                                                         Exception {
-      if (!this.classNameIsSet) {
-        setClassName(new File(this.rootPath + "/" + this.file));
-      }
+            throws EFapsException, Exception {
+
+      readCode();
+      setClassName();
+
       Instance instance = null;
       Insert insert = null;
 
@@ -262,19 +262,25 @@ public class JavaUpdate extends AbstractUpdate {
       query.close();
 
       // if no instance exists, a new insert must be done
+System.out.println("name2="+getValue("Name"));
       if (instance == null) {
         insert = new Insert(_dataModelType);
         insert.add("Name", getValue("Name"));
       }
 
-      updateInDB(instance, _allLinkTypes, insert);
+      instance = updateInDB(instance, _allLinkTypes, insert);
+
+      // checkin source code
+      Checkin checkin = new Checkin(instance);
+      checkin.executeWithoutAccessCheck(this.file,
+                new ByteArrayInputStream(this.code.toString().getBytes("UTF8")),
+                this.code.length());
     }
 
     /**
      * This is the setter method for instance variable {@link #rootPath}.
      * 
-     * @param _number
-     *          new value for instance variable {@link #rootPath}
+     * @param _number new value for instance variable {@link #rootPath}
      * @see #rootPath
      */
     public void setRootPath(final String _rootPath) {

@@ -41,7 +41,9 @@
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="CODE"   type="CLOB"/>
+      <column name="CODE"       type="BLOB"/>
+      <column name="FILENAME"   type="STRING_SHORT" length="128"/>
+      <column name="FILELENGTH" type="INTEGER"/>
      </database>
   </definition>
 

@@ -112,6 +112,7 @@
     <!-- properties -->
     <property name="StoreAttributeFileLength">FileLength</property>
     <property name="StoreAttributeFileName">FileName</property>
+    <property name="StoreCompress">NONE</property>
     <property name="StoreJDBCBlob">CLASS</property>
     <property name="StoreJDBCKey">ID</property>
     <property name="StoreJDBCTable">T_PRGJAVACLASS</property>

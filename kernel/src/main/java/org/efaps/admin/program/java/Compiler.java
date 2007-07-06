@@ -36,7 +36,9 @@ import org.apache.commons.jci.stores.ResourceStore;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.db.Checkout;
 import org.efaps.db.Delete;
+import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
@@ -287,15 +289,14 @@ public class Compiler {
         }
       } else {
         try {
-          SearchQuery query = new SearchQuery();
-          query.setObject(javaType, file2id.get(_resourceName));
-          query.addSelect("Code");
-          query.executeWithoutAccessCheck();
-          if (query.next()) {
-            String code = (String) query.get("Code");
-            ret = code.getBytes();
-          }
-          query.close();
+          Checkout checkout = new Checkout(new Instance(javaType,
+                                                        file2id.get(_resourceName)));
+          InputStream is = checkout.executeWithoutAccessCheck();
+          ret = new byte[is.available()];
+          is.read(ret);
+          is.close();
+        } catch (IOException e) {
+          LOG.error(e);
         } catch (EFapsException e) {
           LOG.error(e);
         }

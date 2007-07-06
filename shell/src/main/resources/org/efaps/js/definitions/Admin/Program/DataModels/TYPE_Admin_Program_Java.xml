@@ -49,6 +49,13 @@
     <parent>Admin_Program_Abstract</parent>
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_Program_JavaImage</property>
+    <property name="StoreAttributeFileLength">FileLength</property>
+    <property name="StoreAttributeFileName">FileName</property>
+    <property name="StoreCompress">NONE</property>
+    <property name="StoreJDBCBlob">CODE</property>
+    <property name="StoreJDBCKey">ID</property>
+    <property name="StoreJDBCTable">T_PRGABSTRACT</property>
+    <property name="StoreResource">org.efaps.db.transaction.JDBCStoreResource</property>
     <property name="Tree">Admin_Program_JavaTree</property>
   </definition>
 
