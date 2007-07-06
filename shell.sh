@@ -107,12 +107,25 @@ CP=$CP:$shellPathLib/slide-kernel-2.1.jar
 # Java compiler
 CP=$CP:$shellPathLib/commons-jci-core-1.0.jar
 CP=$CP:$shellPathLib/commons-jci-fam-1.0.jar
-CP=$CP:$shellPathLib/commons-jci-javac-1.0.jar
 CP=$CP:$shellPathLib/asm-2.2.jar
 CP=$CP:$shellPathLib/asm-util-2.2.1.jar
 CP=$CP:$shellPathLib/asm-tree-2.2.1.jar
 CP=$CP:$shellPathLib/asm-analysis-2.2.1.jar
 CP=$CP:$shellPathLib/dependency-0.2.jar
+# javac
+CP=$CP:$shellPathLib/commons-jci-javac-1.0.jar
+# eclipse
+CP=$CP:$shellPathLib/commons-jci-eclipse-1.0.jar
+CP=$CP:$shellPathLib/core-3.2.0.658.jar
+# groovy
+CP=$CP:$shellPathLib/commons-jci-groovy-1.0.jar
+CP=$CP:$shellPathLib/groovy-all-1.0-jsr-03.jar
+# rhino
+CP=$CP:$shellPathLib/commons-jci-rhino-1.0.jar
+CP=$CP:$shellPathLib/js-1.6R5.jar
+# janino
+CP=$CP:$shellPathLib/commons-jci-janino-1.0.jar
+CP=$CP:$shellPathLib/janino-2.4.3.jar
 
 # Connection Pooling
 CP=$CP:$shellPathLib/commons-dbcp-1.2.2.jar

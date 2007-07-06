@@ -31,6 +31,7 @@ import java.util.regex.Matcher;
 import org.apache.commons.jci.compilers.CompilationResult;
 import org.apache.commons.jci.compilers.JavaCompiler;
 import org.apache.commons.jci.compilers.JavaCompilerFactory;
+import org.apache.commons.jci.compilers.JavaCompilerSettings;
 import org.apache.commons.jci.readers.ResourceReader;
 import org.apache.commons.jci.stores.ResourceStore;
 import org.apache.commons.logging.Log;
@@ -45,12 +46,20 @@ import org.efaps.util.EFapsException;
 /**
  * The class is used to compile all checked in Java programs. Because the
  * depencies of a class are not known, all Java programs stored in eFaps are
- * compiled.<br/> The compiler uses <a href="http://java.sun.com">Sun's Javac</a>.
+ * compiled.<br/>
+ * Following compilers could be used and defined via the Java system property
+ * <code>org.efaps.admin.program.java.Compiler.compiler</code>:
+ * <ul>
+ * <li>javac - uses <a href="http://java.sun.com">Sun's Javac</a>.</li>
+ * <li>eclipse</li>
+ * <li>groovy</li>
+ * <li>rhino</li>
+ * <li>janino</li>
+ * </ul>
  * 
  * @author tmo
  * @author jmo
- * @version $Id: Compiler.java 764 2007-04-07 14:07:50 +0000 (Sat, 07 Apr 2007)
- *          tmo $
+ * @version $Id$
  * @todo exception handling in the resource reader
  * 
  */
@@ -62,7 +71,22 @@ public class Compiler {
   /**
    * Logging instance used in this class.
    */
-  private static final Log        LOG      = LogFactory.getLog(Compiler.class);
+  private static final Log LOG = LogFactory.getLog(Compiler.class);
+
+  /**
+   * Name of the system property to get the name of the used Java compiler.
+   *
+   * @see #compile
+   */
+  private static final String PROPERTY_COMPILER
+          = "org.efaps.admin.program.java.Compiler.compiler";
+
+  /**
+   * Defines the default Java compiler used to compile Java code in eFaps.
+   *
+   * @see #compile
+   */
+  private static final String DEFAULT_COMPILER = "javac";
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -70,12 +94,12 @@ public class Compiler {
   /**
    * Type instance of Java program.
    */
-  private final Type              javaType;
+  private final Type javaType;
 
   /**
    * Type instance of compile Java program.
    */
-  private final Type              classType;
+  private final Type classType;
 
   /**
    * Mapping between Java file name and id of internal eFaps Java program.
@@ -122,37 +146,48 @@ public class Compiler {
     ResourceReader reader = new EFapsResourceReader();
     ResourceStore store = new EFapsResourceStore(this);
 
-    JavaCompiler compiler = new JavaCompilerFactory().createCompiler("javac");
+    String compName = System.getProperty(PROPERTY_COMPILER, DEFAULT_COMPILER);
+    JavaCompiler compiler = new JavaCompilerFactory().createCompiler(compName);
 
-    // all checked in files must be compiled!
-    final String[] resource = file2id.keySet().toArray(
-        new String[file2id.size()]);
-
-    if (LOG.isInfoEnabled()) {
-      for (int i = 0; i < resource.length; i++) {
-        LOG.info("compiling " + resource[i]);
+    if (compiler == null)  {
+      LOG.error("no compiler found for compiler " + compName + "!");
+      LOG.error("please define system property " + PROPERTY_COMPILER);
+    } else  {
+      // output of used compiler
+      if (LOG.isInfoEnabled()) {
+        LOG.info("using compiler " + compName);
       }
-    }
 
-    final CompilationResult result = compiler.compile(resource, reader, store,
-        Compiler.class.getClassLoader());
-
-    for (Long id : this.class2id.values()) {
-      (new Delete(this.classType, id)).executeWithoutAccessCheck();
-    }
-
-    if (result.getErrors().length > 0) {
-      LOG.error(result.getErrors().length + " errors:");
-      for (int i = 0; i < result.getErrors().length; i++) {
-        LOG.error(result.getErrors()[i]);
+      // all checked in files must be compiled!
+      final String[] resource = file2id.keySet().toArray(
+          new String[file2id.size()]);
+  
+      if (LOG.isInfoEnabled()) {
+        for (int i = 0; i < resource.length; i++) {
+          LOG.info("compiling " + resource[i]);
+        }
       }
-    }
-
-    if (LOG.isInfoEnabled()) {
-      if (result.getWarnings().length > 0) {
-        LOG.info(result.getWarnings().length + " warnings:");
-        for (int i = 0; i < result.getWarnings().length; i++) {
-          LOG.info(result.getWarnings()[i]);
+  
+      final CompilationResult result = compiler.compile(resource, reader, store,
+          Compiler.class.getClassLoader());
+  
+      for (Long id : this.class2id.values()) {
+        (new Delete(this.classType, id)).executeWithoutAccessCheck();
+      }
+  
+      if (result.getErrors().length > 0) {
+        LOG.error(result.getErrors().length + " errors:");
+        for (int i = 0; i < result.getErrors().length; i++) {
+          LOG.error(result.getErrors()[i]);
+        }
+      }
+  
+      if (LOG.isInfoEnabled()) {
+        if (result.getWarnings().length > 0) {
+          LOG.info(result.getWarnings().length + " warnings:");
+          for (int i = 0; i < result.getWarnings().length; i++) {
+            LOG.info(result.getWarnings()[i]);
+          }
         }
       }
     }

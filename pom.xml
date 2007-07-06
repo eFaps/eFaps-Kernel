@@ -253,6 +253,26 @@
       <artifactId>commons-jci-javac</artifactId>
       <version>1.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-eclipse</artifactId>
+      <version>1.0</version>
+    </dependency> 
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-groovy</artifactId>
+      <version>1.0</version>
+    </dependency> 
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-rhino</artifactId>
+      <version>1.0</version>
+    </dependency> 
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-jci-janino</artifactId>
+      <version>1.0</version>
+    </dependency> 
 
     <!-- file system used for checkin / checkout on external resources -->
     <!-- http://jakarta.apache.org/commons/vfs/ -->
