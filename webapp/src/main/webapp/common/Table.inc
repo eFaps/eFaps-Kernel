@@ -73,75 +73,34 @@ System.out.println("create new cacheKey = "+cacheKey);
      */
     function eFapsPositionTable() {
 
-var div = document.getElementById("eFapsFrameForm");
-//alert("div="+div);
-var menu = document.getElementById("eFapsFrameToolbarMenu");
-var headerTable = document.getElementById("eFapsTableHeader");
-//alert("menu="+menu);
-
-
-var newHeight = eFapsCommonGetWindowHeight()
-                      - menu.offsetTop
-                      - menu.offsetHeight
-                      - headerTable.offsetHeight;
-//alert("newHeight="+newHeight);
-
-<%-- /** if create / edit / search mode, a button line is shown */ --%>
-<c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
-  newHeight = newHeight - 40;
-</c:if>
-
-if (newHeight > 0)  {
-  div.style.maxHeight = newHeight + 'px';
-  div.style.minHeight = newHeight + 'px';
-} else  {
-  div.style.maxHeight = newHeight + '0px';
-  div.style.minHeight = newHeight + 'px';
-}
-
+      var div = document.getElementById("eFapsTableContent");
+      var headerTable = document.getElementById("eFapsTableHeader");
       var bodyTable = document.getElementById("eFapsTableBody");
 
-//alert(""+div.offsetLeft);
-//alert(""+div.scrollLeft);
-/*
-      if (isIE)  {
-        headerTable.style.top = document.body.scrollTop + "px";
-        headerTable.style.left = bodyTable.offsetLeft + "px";
-      } else  {
-        headerTable.style.position = "fixed";
-        headerTable.style.left = (bodyTable.offsetLeft - document.body.scrollLeft)  + "px";
-      }
-    
-      headerTable.style.width = bodyTable.offsetWidth + "px";
-*/    
-      var header = headerTable.rows[0];
-
-//headerTable.style.marginLeft= "10px";
-//alert("" + (- div.scrollLeft));
-var headerDiv = document.getElementById("eFapsFrameTableHeader");
-headerDiv.style.left = - div.scrollLeft;
-
       var row = bodyTable.rows[0];
-      var width = bodyTable.offsetWidth + "px";
-      headerTable.style.width = width;
-      headerTable.style.minWidth = width;
-      headerTable.style.maxWidth = width;
+      var headers = headerTable.getElementsByTagName("div");
+
       if (row)  {
         for (var i=0; i<row.cells.length; i++)  {
           if (row.cells[i].offsetWidth)  {
-            var width = (row.cells[i].offsetWidth-2) + "px";
-            header.cells[i].style.width = width;
-            header.cells[i].style.maxWidth = width;
-            header.cells[i].style.minWidth = width;
+            headers[i].style.width = row.cells[i].offsetWidth + "px";
+            headers[i].style.left = (row.cells[i].offsetLeft - div.scrollLeft) + "px";
           }
+        }
+      } else  {
+        var pos = 4;
+        for (var i=0; i<headers.length; i++)  {
+          headers[i].style.left = pos + "px";
+          pos = pos + 2 + headers[i].offsetWidth;
         }
       }
     }
 </script>
 
   </head>  
-  
-  <body onLoad="eFapsTableProcessEnd()" onUnLoad="eFapsCleanUpSession('<%=cacheKey%>')" class="<c:out value="${bodyClass}"/>">
+
+  <body onLoad="eFapsTableProcessEnd()" onUnLoad="eFapsCleanUpSession('<%=cacheKey%>')" class1="<c:out value="${bodyClass}"/>">
+<div id="eFapsTable">
 
 
     <%-- /** filter bar **/ --%>
@@ -156,8 +115,6 @@ headerDiv.style.left = - div.scrollLeft;
           <%-- /** menu bar **/ --%>
 
 <f:view>
-
-
   <h:panelGrid id="eFapsFrameTitle">
     <h:outputText value="#{titleBean.title}"/>
   </h:panelGrid>
@@ -193,6 +150,62 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
 </c:choose>
 
 
+    <%-- /*******************************************************************/ --%>
+    <%-- /** Table Header                                                  **/ --%>
+    <%-- /*******************************************************************/ --%>
+
+    <div id="eFapsTableHeader">
+      <%-- /** show select checkbox only if not mode print and show check boxes is defined **/ --%>
+      <c:if test="${(empty param.mode or param.mode ne 'print') and uiObject.showCheckBoxes}">
+        <div width="1%">
+          <input type="checkbox" onClick="eFapsTableSelectDeselectAll(document,'selectedRow',this.checked)"/>
+        </div>
+      </c:if>
+
+      <%-- /** show table header labels **/ --%>
+      <c:forEach items="${uiObject.fieldDefs}" var="one">
+        <%-- /** show only fields if they are not hidden! **/ --%>
+        <c:if test="${one.field.hidden eq false}">
+          <div title="<c:out value="${one.label}"/>">
+            <%-- /** make href for the sort **/ --%>
+            <c:choose>
+              <%-- /** sort dir is down if key is equal current field and direction is up **/ --%>
+              <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
+                <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','-')">
+              </c:when>
+              <%-- /** otherwise sort dir is down **/ --%>
+              <c:otherwise>
+                <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','')">
+              </c:otherwise>
+            </c:choose>
+            <%-- /** show label **/ --%>
+            <c:out value="${one.label}"/>
+            <%-- /** show the sort image **/ --%>
+            <c:choose>
+              <%-- /** show sort up image **/ --%>
+              <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection eq '-'}">
+                <img src="../images/eFapsTableButtonSortDown.gif"/>
+              </c:when>
+              <%-- /** show sort down image **/ --%>
+              <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
+                <img src="../images/eFapsTableButtonSortUp.gif"/>
+              </c:when>
+              <%-- /** otherwise show a dummy image **/ --%>
+              <c:otherwise>
+                <img src="../images/eFapsTableButtonSortDummy.gif"/>
+              </c:otherwise>
+            </c:choose>
+            </a>
+          </div>
+        </c:if>
+      </c:forEach>
+    </div>
+
+    <%-- /*******************************************************************/ --%>
+    <%-- /** Table Values                                                  **/ --%>
+    <%-- /*******************************************************************/ --%>
+
+<div id="eFapsTableContent" onScroll="eFapsPositionTable()">
 
 
     <form id="eFapsSubmitForm" name="eFapsSubmitForm" method="post" target="" >
@@ -207,75 +220,11 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
       </c:forEach>
 
 
-    <%-- /*******************************************************************/ --%>
-    <%-- /** Table Header                                                  **/ --%>
-    <%-- /*******************************************************************/ --%>
-<div id="eFapsFrameTableHeader" style="position:relative;">
-
-    <c:if test="${empty param.mode or param.mode ne 'print'}">
-      <table class="eFapsTable" id="eFapsTableHeader">
-        <tr>
-          <%-- /** show select checkbox only if not mode print and show check boxes is defined **/ --%>
-          <c:if test="${(empty param.mode or param.mode ne 'print') and uiObject.showCheckBoxes}">
-            <th class="eFapsTableHeader" width="1%">
-              <input type="checkbox" onClick="eFapsTableSelectDeselectAll(document,'selectedRow',this.checked)"/>
-            </th>
-          </c:if>
-
-          <%-- /** show table header labels **/ --%>
-          <c:forEach items="${uiObject.fieldDefs}" var="one">
-            <%-- /** show only fields if they are not hidden! **/ --%>
-            <c:if test="${one.field.hidden eq false}">
-              <th class="eFapsTableHeader">
-                <%-- /** make href for the sort **/ --%>
-                <c:choose>
-                  <%-- /** sort dir is down if key is equal current field and direction is up **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
-                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','-')">
-                  </c:when>
-                  <%-- /** otherwise sort dir is down **/ --%>
-                  <c:otherwise>
-                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','')">
-                  </c:otherwise>
-                </c:choose>
-                <%-- /** show label **/ --%>
-                <c:out value="${one.label}"/>
-                <%-- /** show the sort image **/ --%>
-                <c:choose>
-                  <%-- /** show sort up image **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection eq '-'}">
-                    <img src="../images/eFapsTableButtonSortDown.gif"/>
-                  </c:when>
-                  <%-- /** show sort down image **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
-                    <img src="../images/eFapsTableButtonSortUp.gif"/>
-                  </c:when>
-                  <%-- /** otherwise show a dummy image **/ --%>
-                  <c:otherwise>
-                    <img src="../images/eFapsTableButtonSortDummy.gif"/>
-                  </c:otherwise>
-                </c:choose>
-                </a>
-              </th>
-            </c:if>
-          </c:forEach>
-        </tr>
-      </table>
-    </c:if>
-</div>
-    
-    
-<div id="eFapsFrameForm" style="overflow:auto;max-width:100%;" onScroll="eFapsPositionTable()">
-
-    <table class="eFapsTable" id="eFapsTableBody">
+    <table id="eFapsTableBody">
 
 
-<%-- /*******************************************************************/ --%>
-<%-- /** Table Values                                                  **/ --%>
-<%-- /*******************************************************************/ --%>
 
 
-        <c:set var="odd" value="true"/>
 <%
 // store print mode
 String mode = request.getParameter("mode");
@@ -368,57 +317,9 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
 
 
 %>
-        <%-- Show header again to get correct width --%>
-        <tr>
-          <%-- /** show select checkbox only if not mode print and show check boxes is defined **/ --%>
-          <c:if test="${(empty param.mode or param.mode ne 'print') and uiObject.showCheckBoxes}">
-            <th class="eFapsTableHeader" width="1%">
-            </th>
-          </c:if>
-
-          <%-- /** show table header labels **/ --%>
-          <c:forEach items="${uiObject.fieldDefs}" var="one">
-            <%-- /** show only fields if they are not hidden! **/ --%>
-            <c:if test="${one.field.hidden eq false}">
-              <th class="eFapsTableHeader">
-                <%-- /** make href for the sort **/ --%>
-                <c:choose>
-                  <%-- /** sort dir is down if key is equal current field and direction is up **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
-                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','-')">
-                  </c:when>
-                  <%-- /** otherwise sort dir is down **/ --%>
-                  <c:otherwise>
-                    <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','')">
-                  </c:otherwise>
-                </c:choose>
-                <%-- /** show label **/ --%>
-                <c:out value="${one.label}"/>
-                <%-- /** show the sort image **/ --%>
-                <c:choose>
-                  <%-- /** show sort up image **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection eq '-'}">
-                    <img src="../images/eFapsTableButtonSortDown.gif"/>
-                  </c:when>
-                  <%-- /** show sort down image **/ --%>
-                  <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
-                    <img src="../images/eFapsTableButtonSortUp.gif"/>
-                  </c:when>
-                  <%-- /** otherwise show a dummy image **/ --%>
-                  <c:otherwise>
-                    <img src="../images/eFapsTableButtonSortDummy.gif"/>
-                  </c:otherwise>
-                </c:choose>
-                </a>
-              </th>
-            </c:if>
-          </c:forEach>
-        </tr>
-
       </table>
 
     </form>
-</div>
   
 </f:view>
 <%
@@ -433,7 +334,8 @@ System.out.println("...............................END:"+new java.util.Date());
 <%--
     <div class="eFapsFrameFooter">
     </div>
---%>
+--%></div>
+
   </body>
     
 

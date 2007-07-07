@@ -343,37 +343,107 @@ table.eFapsForm tr td a img  {
 ** Style Sheet for Web Tables
 ******************************************************************************/
 
-/* web table itself */
-table.eFapsTable  {
-	padding-top: 6px;
-	padding-left: 6px;
+/* div used to hold the complete table */
+#eFapsTable {
+ position: absolute;
+ top:0;
+ right:0;
+ bottom:0;
+ left:0;
+ border-width: 0;
+}
+* html #eFapsTable {
+ height:100%;
 }
 
 /* Table Header Appearance */
-th.eFapsTableHeader {
+#eFapsTableHeader {
+        position:absolute;
+        top: 60px;
+        height: 20px;
+        left: 5px;
+        right: 0;
+        margin-left: 0;
+        padding-left: 0;
+}
+
+#eFapsTableHeader div {
+        position: absolute;
+        top: 0px;
         text-align: left;
         color: white;
         background-color: #00A000;
 	border-style: none;
-	border-width: 0;
 	white-space: nowrap;
+        overflow: hidden;
+        height: 20px;
 }
 
 /* Table Header Link Appearance */
-th.eFapsTableHeader a {
+#eFapsTableHeader div a {
         text-align: left;
         color: white;
         text-decoration: none;
 }
-th.eFapsTableHeader a:hover {
+#eFapsTableHeader div a:hover {
         text-decoration: underline;
         color: #ccffff;
 }
 
 /* Table Header Image */
-th.eFapsTableHeader a img {
+#eFapsTableHeader div a img {
 	border-style: none;
 	border-width: 0;
+}
+
+/* table content without footer */
+#eFapsTableContent {
+        position: absolute;
+        top: 80px;
+        right: 0;
+        bottom: 0;
+        left: 5px;
+        margin-left: 0;
+        padding-left: 0;
+        border-width: 0px; 
+        overflow:auto;
+}
+* html #eFapsTableContent { 
+        position: static;
+        height: 100%;
+        width: 100%;
+        bottom: 45px;
+        border-left: 5px solid white;
+        border-top: 60px solid white;
+        border-bottom: 45px solid white;
+}
+
+/* table content with footer */
+#eFapsTableContentWithFooter {
+        position: absolute;
+        top: 80px;
+        right: 0;
+        bottom: 100px;
+        left: 5px;
+        margin-left: 0;
+        padding-left: 0;
+        border-width: 0px; 
+        overflow:auto;
+}
+* html #eFapsTableContentWithFooter { /* IE */
+        position: static;
+        height: 100%;
+        width: 100%;
+        border-left: 5px solid white;
+        border-top: 60px solid white;
+        border-bottom: 100px solid white;
+}
+
+/* web table itself */
+#eFapsTableContent table  {
+        margin: 0;
+	padding: 0;
+        width: 100%;
 }
 
 /* Odd Table Row Appearance */
@@ -391,8 +461,6 @@ tr.eFapsTableRowOdd td a img,
 tr.eFapsTableRowEven td a img  {
 	border-width: 0;
 	border-style: none;
-/*	width: 19px;*/
-/*	height: 20px;*/
 }
 
 /******************************************************************************

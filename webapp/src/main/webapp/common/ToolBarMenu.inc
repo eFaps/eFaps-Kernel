@@ -29,7 +29,8 @@
 <%@taglib prefix="s"    uri="http://myfaces.apache.org/sandbox"  %>
 <%@taglib prefix="eFaps"   uri="eFaps.tld"%>
 
- <h:form id="eFapsFrameToolbarMenu">
+<div style="position:absolute;z-index:100;">
+  <h:form id="eFapsFrameToolbarMenu">
     <h:panelGrid>
       <t:jscookMenu layout="hbr" theme="ThemeOffice" styleLocation="../styles">
         <t:navigationMenuItems value="#{menuTableToolbar.JSFMenu}"/>
@@ -56,3 +57,5 @@ to prevent some ui glitches visibility hidden does not work*/
     styleClass="dojoDialog"  >
 
 </eFaps:ModalDialogs>
+
+</div>
