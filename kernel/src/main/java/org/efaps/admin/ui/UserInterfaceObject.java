@@ -406,21 +406,44 @@ public abstract class UserInterfaceObject extends AdminObject {
     List<Return> ret = new ArrayList<Return>();
 
     for (TriggerEvent triggerEvent : TriggerEvent.values()) {
-      ret.addAll(executeTrigger(triggerEvent));
+      ret.addAll(executeEvent(triggerEvent));
     }
     return ret;
   }
 
   /**
-   * The method gets all triggers for the given trigger event and executes them
-   * in the given order. If no triggers are defined, nothing is done.
+   * The method gets all events for the given event type and executes them
+   * in the given order. If no events are defined, nothing is done.
    * 
-   * @param _triggerEvent
-   *          trigger events to execute
+   * @param _triggerEvent   type of event to execute
+   * @param _args           arguments used as parameter (doubles with first
+   *                        parameters defining the key, second parameter the
+   *                        value itself)
    * @return List with Returns
    */
-  public List<Return> executeTrigger(final TriggerEvent _triggerEvent) {
-    return executeTrigger(_triggerEvent, null);
+  public List<Return> executeEvent(final TriggerEvent _triggerEvent,
+                                   final Object... _args)  {
+
+    List<Return> ret = new ArrayList<Return>();
+    if (hasTrigger(_triggerEvent)) {
+      Parameter param = new Parameter();
+
+      // add all parameters
+      for (int i = 0; i < _args.length; i += 2)  {
+        if (((i + 1) < _args.length) && (_args[i] instanceof ParameterValues))  {
+          param.put((ParameterValues) _args[i], _args[i+1]);
+        }
+      }
+
+      // add ui object parameter
+      param.put(ParameterValues.UIOBJECT, this);
+
+      // execute all triggers
+      for (EventDefinition evenDef : this.triggers.get(_triggerEvent)) {
+        ret.add(evenDef.execute(param));
+      }
+    }
+    return ret;
   }
 
   /**
@@ -434,22 +457,13 @@ public abstract class UserInterfaceObject extends AdminObject {
    * @param _otherParameters
    *          aditionall Parameters to be passed to the Program
    * @return List with Returns
+   * @deprecated use {@link #executeEvent} instead
    */
   public List<Return> executeTrigger(final TriggerEvent _triggerEvent,
       Object _otherParameters) {
-    List<Return> ret = new ArrayList<Return>();
-    if (hasTrigger(_triggerEvent)) {
-      List<EventDefinition> trig = this.triggers.get(_triggerEvent);
-      Parameter para = new Parameter();
-      para.put(ParameterValues.UIOBJECT, this);
-      if (_otherParameters != null) {
-        para.put(ParameterValues.OTHERS, _otherParameters);
-      }
-      for (EventDefinition evenDef : trig) {
-        ret.add(evenDef.execute(para));
-      }
-    }
-    return ret;
+  
+    return executeEvent(_triggerEvent,
+                        ParameterValues.OTHERS, _otherParameters);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
