@@ -34,8 +34,7 @@ import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Table;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
-import org.efaps.db.Query;
+import org.efaps.db.ListQuery;
 import org.efaps.util.EFapsException;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return;
@@ -127,7 +126,7 @@ public class TableBean extends AbstractCollectionBean  {
     }
 
     // evaluate for all expressions in the table
-    Query query = new Query(instances);
+    ListQuery query = new ListQuery(instances);
     for (FieldDefinition fieldDef : this.fieldDefs) {
       if (fieldDef.getField().getExpression() != null)  {
         query.addSelect(fieldDef.getField().getExpression());
@@ -161,7 +160,7 @@ public class TableBean extends AbstractCollectionBean  {
     }
   }
 
-  void executeRowResult(Query _query) throws Exception {
+  void executeRowResult(final ListQuery _query) throws Exception {
     while (_query.next()) {
 //      Row row = new Row(_query.getRowOIDs(_context));
 Row row = new Row("1");

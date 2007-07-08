@@ -173,7 +173,7 @@ Type type = Type.get(getCommand().getProperty("SearchType"));
 
 //    setValues(new ArrayList());
 //    getTableBean().setValues(getValues());
-    getTableBean().executeRowResult(context, query);
+//    getTableBean().executeRowResult(context, query);
 
     setInitialised(true);
   }
