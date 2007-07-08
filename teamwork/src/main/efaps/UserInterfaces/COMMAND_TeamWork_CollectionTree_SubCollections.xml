@@ -56,6 +56,8 @@
     <target>
       <menu>TeamWork_CollectionTree_SubCollections_Menu</menu>
       <table>TeamWork_CollectionTable</table>
+      <evalute program="org.efaps.events.ui.table.QueryExpand"
+               method="execute"/>
     </target>
     <!-- property definitions -->
     <property name="Target">content</property>

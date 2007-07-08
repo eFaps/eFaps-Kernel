@@ -55,6 +55,8 @@
     <!-- target definitions -->
     <target>
       <table>Admin_Program_JavaClassTable</table>
+      <evalute program="org.efaps.events.ui.table.QueryExpand"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

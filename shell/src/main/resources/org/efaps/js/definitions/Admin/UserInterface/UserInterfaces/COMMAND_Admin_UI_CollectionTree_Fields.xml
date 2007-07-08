@@ -57,6 +57,8 @@
     <target>
       <table>Admin_UI_FieldList</table>
       <menu>Admin_UI_CollectionTree_Fields_Menu</menu>
+      <evalute program="org.efaps.events.ui.table.QueryExpand"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

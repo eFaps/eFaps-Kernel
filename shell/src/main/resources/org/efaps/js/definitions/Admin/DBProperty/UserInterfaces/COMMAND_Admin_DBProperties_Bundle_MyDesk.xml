@@ -59,6 +59,8 @@
     <!-- target definitions -->
     <target>
       <table>Admin_DBProperties_BundleTable</table>
+      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

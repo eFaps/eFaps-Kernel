@@ -60,6 +60,8 @@
     <!-- target definitions -->
     <target>
       <table>Admin_DataModel_SQLTableTable</table>
+      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

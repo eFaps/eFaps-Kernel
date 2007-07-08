@@ -56,6 +56,8 @@
     <target>
       <menu>TeamWork_SourceTree_Versions_Menu</menu>
       <table>TeamWork_SourceVersionTable</table>
+      <evalute program="org.efaps.events.ui.table.QueryExpand"
+               method="execute"/>
     </target>
     <!-- property definitions -->
     <property name="DefaultSelected">true</property>

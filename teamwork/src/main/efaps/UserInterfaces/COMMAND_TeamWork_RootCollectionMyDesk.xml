@@ -52,16 +52,18 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_RootCollectionMyDesk</name>
-    <!-- target definitions -->
-    <target>
-      <table>TeamWork_CollectionTable</table>
-      <menu>TeamWork_RootCollectionMyDesk_Menu</menu>
-    </target>
+    <!-- access definitions -->
     <access>
       <role>TeamWorkAdmin</role>
       <role>TeamWorkPowerUser</role>
     </access>
-    
+    <!-- target definitions -->
+    <target>
+      <table>TeamWork_CollectionTable</table>
+      <menu>TeamWork_RootCollectionMyDesk_Menu</menu>
+      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
+               method="execute"/>
+    </target>
     <!-- property definitions -->
     <property name="Target">content</property>
     <property name="TargetQueryTypes">TeamWork_RootCollection</property>

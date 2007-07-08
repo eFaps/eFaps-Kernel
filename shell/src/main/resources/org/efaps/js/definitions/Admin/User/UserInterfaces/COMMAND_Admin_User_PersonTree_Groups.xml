@@ -57,6 +57,8 @@
     <target>
       <menu>Admin_User_PersonTree_Groups_Menu</menu>
       <table>Admin_User_AbstractTable</table>
+      <evalute program="org.efaps.events.ui.table.QueryExpand"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

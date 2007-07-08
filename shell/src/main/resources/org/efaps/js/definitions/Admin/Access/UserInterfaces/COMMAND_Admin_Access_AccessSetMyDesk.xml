@@ -61,6 +61,8 @@
     <target>
       <table>Admin_Access_AccessSetTable</table>
       <menu>Admin_Access_AccessSetMyDesk_Menu</menu>
+      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

@@ -61,6 +61,8 @@
     <!-- target definitions -->
     <target>
       <search>Admin_Common_Search</search>
+      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">popup</property>

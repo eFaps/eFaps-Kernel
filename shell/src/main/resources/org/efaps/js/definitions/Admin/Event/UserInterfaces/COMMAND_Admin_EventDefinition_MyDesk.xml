@@ -61,6 +61,8 @@
     <target>
       <table>Admin_Event_DefinitionTable</table>
       <!--menu>TeamWork_RootCollectionMyDesk_Menu</menu-->
+      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

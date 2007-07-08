@@ -56,6 +56,8 @@
     <target>
       <table>Admin_UI_LinkList4Links</table>
       <menu>Admin_UI_FieldTree_Links_Menu</menu>
+      <evalute program="org.efaps.events.ui.table.QueryExpand"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

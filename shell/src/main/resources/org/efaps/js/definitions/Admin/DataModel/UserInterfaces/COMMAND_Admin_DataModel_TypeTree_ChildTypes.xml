@@ -56,6 +56,8 @@
     <!-- target definitions -->
     <target>
       <table>Admin_DataModel_TypeTable</table>
+      <evalute program="org.efaps.events.ui.table.QueryExpand"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

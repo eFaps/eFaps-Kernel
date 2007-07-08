@@ -57,6 +57,8 @@
     <target>
       <menu>Admin_DataModel_AbstractTree_Properties_Menu</menu>
       <table>Admin_PropertyTable</table>
+      <evalute program="org.efaps.events.ui.table.QueryExpand"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

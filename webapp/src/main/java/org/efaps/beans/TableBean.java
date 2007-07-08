@@ -35,12 +35,16 @@ import org.efaps.admin.ui.Table;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.db.Query;
 import org.efaps.util.EFapsException;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.event.TriggerEvent;
 
 /**
  * @author tmo
- * @version $Id: TableBean.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb 2007)
- *          jmo $
+ * @version $Id$
  * @todo description
  */
 public class TableBean extends AbstractCollectionBean  {
@@ -111,44 +115,30 @@ public class TableBean extends AbstractCollectionBean  {
   }
 
   public void execute() throws Exception {
-
     evalFieldDefs();
 
-    Context context = Context.getThreadContext();
-    System.out.println("--->selectedFilter=" + getSelectedFilter());
-
-List<Return> list = getCommand().executeTrigger(TriggerEvent.UI_TABLE_EVALUATE);
-
-System.out.println("list="+list);
-
-    SearchQuery query = new SearchQuery();
-
-
-    if (getCommand().getProperty("TargetQueryTypes") != null) {
-      query.setQueryTypes(getCommand().getProperty("TargetQueryTypes"));
-    } else if (getCommand().getProperty("TargetExpand") != null) {
-      query.setExpand(getInstance(), getCommand().getProperty(
-          "TargetExpand"));
+    // first get list of object ids
+    List<Return> ret = getCommand().executeEvent(TriggerEvent.UI_TABLE_EVALUATE,
+                                                 ParameterValues.INSTANCE, getInstance());
+    List<List<Instance>> lists = (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
+    List < Instance > instances = new ArrayList < Instance > ();
+    for (List < Instance > oneList : lists)  {
+      instances.add(oneList.get(0));
     }
 
-    query.add(context, getTable());
-
-    if (getCommand().getTargetTableFilters() != null) {
-      if (getSelectedFilter() == 0
-          && getCommand().getTargetTableFilters().size() > 0) {
-        setSelectedFilter(1);
+    // evaluate for all expressions in the table
+    Query query = new Query(instances);
+    for (FieldDefinition fieldDef : this.fieldDefs) {
+      if (fieldDef.getField().getExpression() != null)  {
+        query.addSelect(fieldDef.getField().getExpression());
       }
-      /*
-       * if (getCommand().getTargetTableFilters().size()>=getSelectedFilter() &&
-       * getSelectedFilter()>0) { String clause =
-       * ((CommandAbstract.TargetTableFilter)getCommand().getTargetTableFilters().get(getSelectedFilter()-1)).getClause();
-       * if (clause!=null) { query.addWhere(context, clause); } }
-       */
+      if (fieldDef.getField().getAlternateOID() != null) {
+        query.addSelect(fieldDef.getField().getAlternateOID());
+      }
     }
-
     query.execute();
 
-    executeRowResult(context, query);
+    executeRowResult(query);
 
     setInitialised(true);
   }
@@ -171,11 +161,11 @@ System.out.println("list="+list);
     }
   }
 
-
-  void executeRowResult(Context _context, SearchQuery _query) throws Exception {
+  void executeRowResult(Query _query) throws Exception {
     while (_query.next()) {
-      Row row = new Row(_query.getRowOIDs(_context));
-      boolean toAdd = false;
+//      Row row = new Row(_query.getRowOIDs(_context));
+Row row = new Row("1");
+//      boolean toAdd = false;
       for (FieldDefinition fieldDef : this.fieldDefs) {
         Object value = null;
         Attribute attr = null;
@@ -183,11 +173,18 @@ System.out.println("list="+list);
         // attrValue = field.getProgramValue().evalAttributeValue(_context,
         // _query);
         // } else
-        if (fieldDef.getField().getExpression() != null) {
-          value = _query.get(fieldDef.getField());
-          attr = _query.getAttribute(fieldDef.getField());
+        if (fieldDef.getField().getExpression() != null)  {
+          value = _query.getValue(fieldDef.getField().getExpression());
+          attr = _query.getAttribute(fieldDef.getField().getExpression());
         }
-        Instance instance = _query.getInstance(_context, fieldDef.getField());
+//        Instance instance = _query.getInstance(fieldDef.getField().getExpression());
+        Instance instance;
+        if (fieldDef.getField().getAlternateOID() != null)  {
+          instance = new Instance((String)_query.getValue(fieldDef.getField().getAlternateOID()));
+        } else  {
+          instance = _query.getInstance();
+        }
+
         // if (attrValue!=null) {
         // attrValue.setField(field);
         // }
@@ -195,12 +192,13 @@ System.out.println("list="+list);
         if (attr != null) {
           classUI = attr.getAttributeType().getUI();
         }
-        toAdd = toAdd || (value != null) || (instance != null);
-        row.add(fieldDef, classUI, value, instance);
+//        toAdd = toAdd || (value != null) || (instance != null);
+//        row.add(fieldDef, classUI, value, instance);
+row.add(fieldDef, classUI, value, instance);
       }
-      if (toAdd) {
+//      if (toAdd) {
         getValues().add(row);
-      }
+//      }
     }
   }
 

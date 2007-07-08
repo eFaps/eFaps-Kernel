@@ -60,6 +60,8 @@
     <!-- target definitions -->
     <target>
       <table>Admin_Access_AccessTypeTable</table>
+      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

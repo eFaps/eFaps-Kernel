@@ -61,6 +61,8 @@
     <target>
       <table>Admin_UI_FileList</table>
       <menu>Admin_UI_ImageMyDesk_Menu</menu>
+      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>

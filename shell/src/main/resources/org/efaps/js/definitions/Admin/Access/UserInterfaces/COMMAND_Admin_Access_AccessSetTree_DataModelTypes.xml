@@ -57,6 +57,8 @@
     <target>
       <menu>Admin_Access_AccessSetTree_DataModelTypes_Menu</menu>
       <table>Admin_DataModel_TypeTable</table>
+      <evalute program="org.efaps.events.ui.table.QueryExpand"
+               method="execute"/>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
