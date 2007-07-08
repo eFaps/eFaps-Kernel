@@ -57,7 +57,7 @@
       <name>OID</name>
       <type>OID</type>
       <sqltable>Admin_User_AbstractSQLTable</sqltable>
-      <sqlcolumn>ID</sqlcolumn>
+      <sqlcolumn>TYPEID,ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ID</name>
