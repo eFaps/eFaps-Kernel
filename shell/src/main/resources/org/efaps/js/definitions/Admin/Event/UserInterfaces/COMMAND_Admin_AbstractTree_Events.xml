@@ -58,6 +58,7 @@
       <menu>Admin_UI_CommandTree_Links_Menu</menu>
       <evaluate program="org.efaps.events.ui.table.QueryExpand">
         <property name="Expand">Admin_Event_Definition\Abstract</property>
+        <property name="ExpandChildTypes">true</property>
       </evaluate>
       
     </target>

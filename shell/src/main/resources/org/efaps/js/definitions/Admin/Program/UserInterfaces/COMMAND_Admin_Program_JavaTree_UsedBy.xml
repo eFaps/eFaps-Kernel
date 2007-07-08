@@ -57,6 +57,7 @@
       <table>Admin_Event_DefinitionTable</table>
       <evaluate program="org.efaps.events.ui.table.QueryExpand">
         <property name="Expand">Admin_Event_Definition\JavaProg</property>
+        <property name="ExpandChildTypes">true</property>
       </evaluate>
     </target>
     <!-- properties -->
