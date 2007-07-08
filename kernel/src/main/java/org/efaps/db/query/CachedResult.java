@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,33 +39,54 @@ import java.sql.Timestamp;
  * not work with Oracle JDBC drivers.
  * 
  * @author tmo
- * @version $Id: $
+ * @version $Id$
+ * @todo description
  */
 public class CachedResult {
 
-  private Map<Object, List> cache = new HashMap<Object, List>();
+  //////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * Used to cache for given key (Object) the list of values (List).
+   */
+  private final Map<Object,List> cache = new HashMap<Object, List>();
 
   /**
    * The variable stores the same values than in {@link #cache}, but without
    * key. The order is not changed, the order is the same than the result of
    * select statement.
    */
-  private List<List>        rows       = new ArrayList<List>();
+  private final List<List>        rows       = new ArrayList<List>();
 
   private Iterator<List>    iter       = null;
 
   /**
    * The instance variable is a pointer to the current row in the cached result
    * table list.
+   *
+   * @see #beforeFirst
+   * @see #next
+   * @see #gotoKey
    */
-  private List              currentRow = null;
+  private List currentRow = null;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
 
   public CachedResult() {
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // instance methods
+
   /**
    * Moves the cursor to the front of this cached result object, just before the
    * first row. This method has no effect if the cached result contains no rows.
+   * Attention! After that, method {@link #next} must be called to get first
+   * row!
+   *
+   * @see #next
    */
   public void beforeFirst() {
     this.iter = this.rows.iterator();
@@ -77,8 +98,8 @@ public class CachedResult {
    * method next makes the first row the current row; the second call makes the
    * second row the current row, and so on.
    * 
-   * @return true if the new current row is valid; false if there are no more
-   *         rows
+   * @return <i>true</i> if the new current row is valid; <i>false</i> if there
+   *         are no more rows
    */
   public boolean next() {
     if (this.iter == null) {
@@ -89,6 +110,17 @@ public class CachedResult {
       this.currentRow = this.iter.next();
     }
     return ret;
+  }
+
+  /**
+   * Moves the cursor to the row defined with given key.
+   *
+   * @param _key  key defing next row
+   * @return <i>true</i> if a row for the key exists, otherwise <i>false>
+   */
+  public boolean gotoKey(final Object _key)  {
+    this.currentRow = this.cache.get(_key);
+    return (this.currentRow != null);
   }
 
   /**
@@ -106,7 +138,7 @@ public class CachedResult {
    *          cache
    */
   public void populate(final ResultSet _rs, final int _keyIndex)
-                                                                throws SQLException {
+                                                          throws SQLException {
     ResultSetMetaData metaData = _rs.getMetaData();
     int columnCount = metaData.getColumnCount();
 
@@ -146,16 +178,20 @@ public class CachedResult {
   }
 
   /**
-   * @param _index
-   *          column index
+   * @param _index  column index
+   * @return object on given column index
+   * @see #currentRow
    */
   public Object getObject(final int _index) {
     return this.currentRow.get(_index - 1);
   }
 
   /**
-   * @param _index
-   *          column index
+   *
+   *
+   * @param _index  column index
+   * @return string representation for the object on given column index
+   * @see #currentRow
    */
   public String getString(final int _index) {
     Object obj = getObject(_index);
@@ -164,8 +200,15 @@ public class CachedResult {
   }
 
   /**
-   * @param _index
-   *          column index
+   * Returns the long representation for the object on given column index. If
+   * the object on the given column index is not an instance of class
+   * {@link java.lang.Number} (if it is a number, the long value is used),
+   * the value is converted in a string and then parsed as long.
+   *
+   * @param _index  column index
+   * @return long representation for the object on given column index;
+   *         <code>null</code> if no value is defined
+   * @see #currentRow
    */
   public Long getLong(final int _index) {
     Long ret = null;
@@ -179,8 +222,15 @@ public class CachedResult {
   }
 
   /**
-   * @param _index
-   *          column index
+   * Returns the double representation for the object on given column index. If
+   * the object on the given column index is not an instance of class
+   * {@link java.lang.Number} (if it is a number, the double value is used),
+   * the value is converted in a string and then parsed as double.
+   *
+   * @param _index  column index
+   * @return double representation for the object on given column index;
+   *         <code>null</code> if no value is defined
+   * @see #currentRow
    */
   public Double getDouble(final int _index) {
     Double ret = null;
@@ -194,8 +244,12 @@ public class CachedResult {
   }
 
   /**
-   * @param _index
-   *          column index
+   * 
+   *
+   * @param _index  column index
+   * @return time stamp representation for the object on given column index for
+   *         time stamp and date instances, otherwise <code>null</code>
+   * @see #currentRow
    */
   public Timestamp getTimestamp(final int _index) {
     Timestamp ret = null;
