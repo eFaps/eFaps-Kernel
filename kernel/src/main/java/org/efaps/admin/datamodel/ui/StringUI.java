@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.efaps.util.EFapsException;
 /**
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public class StringUI implements UIInterface  {
 
@@ -36,9 +37,15 @@ public class StringUI implements UIInterface  {
   public String getViewHtml(Context _context, Object _value, Field _field) throws EFapsException  {
     String ret = null;
 
-    if (_value!=null)  {
-      String value = _value.toString();
-      ret = (value!=null ? value.replaceAll("\\n", "<br/>") : "");
+    if (_value != null)  {
+      ret = _value.toString();
+      if (ret != null)  {
+        ret = ret.replaceAll("\\n", "<br/>")
+                 .replaceAll("<", "&lt;")
+                 .replaceAll(">", "&gt;");
+      } else  {
+        ret = "";
+      }
     } else  {
 // throw new EFapsException();
     }
