@@ -61,12 +61,12 @@
     <target>
       <table>Admin_Access_AccessSetTable</table>
       <menu>Admin_Access_AccessSetMyDesk_Menu</menu>
-      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+        <property name="Types">Admin_Access_AccessSet</property>
+      </evaluate>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetQueryTypes">Admin_Access_AccessSet</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>
 

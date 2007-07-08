@@ -59,12 +59,12 @@
     <!-- target definitions -->
     <target>
       <table>Admin_DBPropertiesTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+        <property name="Types">Admin_DBProperties</property>
+      </evaluate>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetQueryTypes">Admin_DBProperties</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>
 

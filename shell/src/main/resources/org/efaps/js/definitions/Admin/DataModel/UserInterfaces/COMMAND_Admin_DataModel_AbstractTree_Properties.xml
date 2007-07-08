@@ -57,12 +57,12 @@
     <target>
       <menu>Admin_DataModel_AbstractTree_Properties_Menu</menu>
       <table>Admin_PropertyTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryExpand"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+        <property name="Expand">Admin_Property\Abstract</property>
+      </evaluate>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetExpand">Admin_Property\Abstract</property>
     <property name="TargetMode">view</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>

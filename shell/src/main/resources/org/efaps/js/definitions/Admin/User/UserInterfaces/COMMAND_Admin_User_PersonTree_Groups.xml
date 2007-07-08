@@ -57,12 +57,12 @@
     <target>
       <menu>Admin_User_PersonTree_Groups_Menu</menu>
       <table>Admin_User_AbstractTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryExpand"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+        <property name="Expand">Admin_User_Person2Group\UserFromLink.UserToLink</property>
+      </evaluate>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetExpand">Admin_User_Person2Group\UserFromLink.UserToLink</property>
     <property name="TargetMode">view</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>

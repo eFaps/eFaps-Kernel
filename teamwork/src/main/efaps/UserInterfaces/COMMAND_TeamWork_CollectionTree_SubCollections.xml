@@ -56,12 +56,12 @@
     <target>
       <menu>TeamWork_CollectionTree_SubCollections_Menu</menu>
       <table>TeamWork_CollectionTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryExpand"
-               method="execute"/>
+       <evaluate program="org.efaps.events.ui.table.QueryExpand">
+        <property name="Expand">TeamWork_Collection\ParentCollectionLink</property>
+      </evaluate>
     </target>
     <!-- property definitions -->
     <property name="Target">content</property>
-    <property name="TargetExpand">TeamWork_Collection\ParentCollectionLink</property>
     <property name="TargetMode">view</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>

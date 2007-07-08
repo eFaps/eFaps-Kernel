@@ -55,12 +55,12 @@
     <!-- target definitions -->
     <target>
       <table>Admin_Program_JavaClassTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryExpand"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+        <property name="Expand">Admin_Program_JavaClass\ProgramLink</property>
+      </evaluate>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetExpand">Admin_Program_JavaClass\ProgramLink</property>
     <property name="TargetMode">view</property>
   </definition>
 

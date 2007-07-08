@@ -25,19 +25,39 @@ import org.apache.commons.digester.ObjectCreationFactory;
 import org.xml.sax.Attributes;
 
 /**
- * Factory for creating <code>Trigger</code>
+ * Factory for creating <code>org.efaps.update.event.Event</code>.<br>
+ * There are two way to use the Factory:<br>
+ * 1. e.g. < trigger name="TeamWork_MemberRights_DeleteOverride"
+ * event="DELETE_OVERRIDE" program="org.efaps.teamwork.Member"
+ * method="removeMember" index="1"/> with a call of the default Construtor<br>
+ * 2. e.g. < evaluate program="org.efaps.events.ui.table.QueryEvaluate"> with a
+ * call of the Contructor setting the event<br>
+ * If for the parameter method no value is given, it will be sett to the default
+ * "execute"
  * 
  * @author jmo
  * @version $Id$
- * 
  */
 public class EventFactory implements ObjectCreationFactory {
+
+  /**
+   * stores the Name of the event
+   */
   private String event = null;
 
+  /**
+   * default Constructor
+   */
   public EventFactory() {
 
   }
 
+  /**
+   * Constructor setting the Event
+   * 
+   * @param _event
+   *          EventName to be set
+   */
   public EventFactory(final String _event) {
     this.event = _event;
   }
@@ -47,9 +67,15 @@ public class EventFactory implements ObjectCreationFactory {
       this.event = _attributes.getValue("event");
     }
 
-    Event ret = new Event(_attributes.getValue("name"), this.event, _attributes
-        .getValue("program"), _attributes.getValue("method"), _attributes
-        .getValue("index"));
+    String method = _attributes.getValue("method");
+
+    if (method == null) {
+      method = "execute";
+    }
+
+    Event ret =
+        new Event(_attributes.getValue("name"), this.event, _attributes
+            .getValue("program"), method, _attributes.getValue("index"));
     ret.setTrigger(_attributes.getValue("event") != null);
     return ret;
   }

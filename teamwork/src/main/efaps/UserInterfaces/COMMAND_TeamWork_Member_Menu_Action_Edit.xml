@@ -56,14 +56,14 @@
     <!-- target definitions -->
     <target>
       <table>TeamWork_MemberTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryExpand"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+        <property name="Expand">TeamWork_MemberRights\AbstractLink</property>
+      </evaluate>
     </target>
     <!-- property definitions -->
     <property name="DefaultSelected">false</property>
     <property name="Target">popup</property>
     <property name="TargetMode">edit</property>
-    <property name="TargetExpand">TeamWork_MemberRights\AbstractLink</property>
     <property name="TargetShowCheckBoxes">true</property>
     <!-- trigger -->
    	<trigger name="TeamWork_Member_Menu_Action_Edit_COMMAND" event="COMMAND" program="org.efaps.teamwork.Member" method="execute" index="1"/>

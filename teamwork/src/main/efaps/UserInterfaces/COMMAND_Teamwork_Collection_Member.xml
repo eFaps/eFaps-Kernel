@@ -56,14 +56,14 @@
     <target>
       <menu>TeamWork_Member_Menu</menu>
       <table>TeamWork_MemberTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryExpand"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+        <property name="Expand">TeamWork_MemberRights\AbstractLink</property>
+      </evaluate>
     </target>
     <!-- property definitions -->
     <property name="DefaultSelected">false</property>
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
-    <property name="TargetExpand">TeamWork_MemberRights\AbstractLink</property>
     <property name="TargetMode">view</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>

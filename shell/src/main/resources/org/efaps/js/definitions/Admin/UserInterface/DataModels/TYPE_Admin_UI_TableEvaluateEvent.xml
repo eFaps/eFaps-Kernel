@@ -47,6 +47,8 @@
     </version>
     <name>Admin_UI_TableEvaluateEvent</name>
     <parent>Admin_Event_Definition</parent>
+    <!-- properties -->
+    <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
-
+  
 </datamodel-type>

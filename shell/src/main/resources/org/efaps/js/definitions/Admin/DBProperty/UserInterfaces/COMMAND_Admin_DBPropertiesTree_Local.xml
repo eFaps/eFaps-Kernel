@@ -56,12 +56,13 @@
     <target>
       <table>Admin_DBProperties_LocalTable</table>
       <menu>Admin_DBProperties_Local_Menu</menu>
-      <evalute program="org.efaps.events.ui.table.QueryExpand"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+        <property name="Expand">Admin_DBProperties_Local\PropertyID</property>
+      </evaluate>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetExpand">Admin_DBProperties_Local\PropertyID</property>
+    
     <property name="TargetMode">view</property>
   </definition>
 

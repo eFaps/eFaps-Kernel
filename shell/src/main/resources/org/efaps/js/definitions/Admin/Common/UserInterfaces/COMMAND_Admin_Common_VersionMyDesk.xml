@@ -60,13 +60,14 @@
     <!-- target definitions -->
     <target>
       <table>Admin_Common_VersionTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+        <property name="Types">Admin_Common_Version</property>
+      </evaluate>
     </target>
 <!--  addIcon("Admin_Integration_WebDAVImage");-->
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetQueryTypes">Admin_Common_Version</property>
+    
   </definition>
 
 </ui-command>

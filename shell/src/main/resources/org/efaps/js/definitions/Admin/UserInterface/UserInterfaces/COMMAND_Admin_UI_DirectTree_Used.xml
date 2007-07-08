@@ -55,12 +55,12 @@
     <!-- target definitions -->
     <target>
       <table>Admin_UI_LinkList4UsedBy</table>
-      <evalute program="org.efaps.events.ui.table.QueryExpand"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+        <property name="Expand">Admin_UI_Link\To</property>
+      </evaluate>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetExpand">Admin_UI_Link\To</property>
     <property name="TargetMode">view</property>
   </definition>
 

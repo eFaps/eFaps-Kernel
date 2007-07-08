@@ -61,12 +61,12 @@
     <target>
       <menu>Admin_User_JAASSystemMyDesk_Menu</menu>
       <table>Admin_User_JAASSystemTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+        <property name="Types">Admin_User_JAASSystem</property>
+      </evaluate>         
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetQueryTypes">Admin_User_JAASSystem</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>
 

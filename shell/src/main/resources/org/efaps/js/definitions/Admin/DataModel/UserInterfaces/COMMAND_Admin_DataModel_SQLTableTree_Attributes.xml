@@ -56,12 +56,12 @@
     <!-- target definitions -->
     <target>
       <table>Admin_DataModel_AttributeTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryExpand"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+        <property name="Expand">Admin_DataModel_Attribute\Table</property>
+      </evaluate>  
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetExpand">Admin_DataModel_Attribute\Table</property>
     <property name="TargetMode">view</property>
   </definition>
 

@@ -57,12 +57,12 @@
     <target>
       <menu>Admin_Access_AccessSetTree_AccessTypes_Menu</menu>
       <table>Admin_Access_AccessTypeTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryExpand"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+        <property name="Expand">Admin_Access_AccessSet2Type\AccessSetLink.AccessTypeLink</property>
+      </evaluate>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetExpand">Admin_Access_AccessSet2Type\AccessSetLink.AccessTypeLink</property>
     <property name="TargetMode">view</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>

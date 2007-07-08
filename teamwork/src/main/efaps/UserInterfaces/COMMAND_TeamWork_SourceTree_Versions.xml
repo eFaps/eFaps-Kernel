@@ -56,14 +56,14 @@
     <target>
       <menu>TeamWork_SourceTree_Versions_Menu</menu>
       <table>TeamWork_SourceVersionTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryExpand"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+        <property name="Expand">TeamWork_SourceVersion\ParentSourceLink</property>
+      </evaluate>
     </target>
     <!-- property definitions -->
     <property name="DefaultSelected">true</property>
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
-    <property name="TargetExpand">TeamWork_SourceVersion\ParentSourceLink</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>
 

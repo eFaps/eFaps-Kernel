@@ -60,12 +60,13 @@
     <!-- target definitions -->
     <target>
       <table>Admin_DataModel_AttributeTypeTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+        <property name="Types">Admin_DataModel_AttributeType</property>
+      </evaluate>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetQueryTypes">Admin_DataModel_AttributeType</property>
+    
   </definition>
 
 </ui-command>

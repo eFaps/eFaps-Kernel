@@ -122,12 +122,6 @@
       <property name="Expression">Modified</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="code">
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">Code</property>
-      <property name="Searchable">true</property>
-    </field>
   </definition>
 
 </ui-form>

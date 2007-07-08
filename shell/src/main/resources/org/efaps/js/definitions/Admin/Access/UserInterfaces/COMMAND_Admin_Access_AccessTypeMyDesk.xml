@@ -60,12 +60,13 @@
     <!-- target definitions -->
     <target>
       <table>Admin_Access_AccessTypeTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+        <property name="Types">Admin_Access_AccessType</property>
+      </evaluate>       
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetQueryTypes">Admin_Access_AccessType</property>
+    
   </definition>
 
 </ui-command>

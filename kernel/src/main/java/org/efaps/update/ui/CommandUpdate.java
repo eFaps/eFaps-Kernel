@@ -177,11 +177,11 @@ public class CommandUpdate extends AbstractUpdate {
       digester.addCallMethod("ui-command/definition/target/table", "assignTargetTable", 1);
       digester.addCallParam("ui-command/definition/target/table", 0);
 
-      digester.addFactoryCreate("ui-command/definition/target/evalute", new EventFactory("Admin_UI_TableEvaluateEvent"), false);
-      digester.addCallMethod("ui-command/definition/target/evalute/property", "addProperty", 2);
-      digester.addCallParam("ui-command/definition/target/evalute/property", 0, "name");
-      digester.addCallParam("ui-command/definition/target/evalute/property", 1);
-      digester.addSetNext("ui-command/definition/target/evalute", "addEvent", "org.efaps.update.event.Event");
+      digester.addFactoryCreate("ui-command/definition/target/evaluate", new EventFactory("Admin_UI_TableEvaluateEvent"), false);
+      digester.addCallMethod("ui-command/definition/target/evaluate/property", "addProperty", 2);
+      digester.addCallParam("ui-command/definition/target/evaluate/property", 0, "name");
+      digester.addCallParam("ui-command/definition/target/evaluate/property", 1);
+      digester.addSetNext("ui-command/definition/target/evaluate", "addEvent", "org.efaps.update.event.Event");
 
       // properties
       digester

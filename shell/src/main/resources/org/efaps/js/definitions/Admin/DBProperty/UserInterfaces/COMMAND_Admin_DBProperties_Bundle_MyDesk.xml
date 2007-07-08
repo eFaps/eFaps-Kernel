@@ -59,12 +59,12 @@
     <!-- target definitions -->
     <target>
       <table>Admin_DBProperties_BundleTable</table>
-      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+        <property name="Types">Admin_DBProperties_Bundle</property>
+      </evaluate>
     </target>
     <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetQueryTypes">Admin_DBProperties_Bundle</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>
 

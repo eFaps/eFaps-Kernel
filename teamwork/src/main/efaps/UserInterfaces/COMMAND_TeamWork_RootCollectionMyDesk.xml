@@ -61,12 +61,12 @@
     <target>
       <table>TeamWork_CollectionTable</table>
       <menu>TeamWork_RootCollectionMyDesk_Menu</menu>
-      <evalute program="org.efaps.events.ui.table.QueryEvaluate"
-               method="execute"/>
+      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+        <property name="Types">TeamWork_RootCollection</property>
+      </evaluate>
     </target>
     <!-- property definitions -->
     <property name="Target">content</property>
-    <property name="TargetQueryTypes">TeamWork_RootCollection</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>
 
