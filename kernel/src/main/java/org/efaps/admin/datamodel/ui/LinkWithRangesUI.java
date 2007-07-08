@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,8 +49,7 @@ public class LinkWithRangesUI implements UIInterface {
     if (_value != null) {
       if (_field.hasTrigger()) {
 
-        for (Return values : _field
-            .executeTrigger(TriggerEvent.RANGE_VALUE)) {
+        for (Return values : _field.executeEvent(TriggerEvent.RANGE_VALUE)) {
           ret.append((String) ((Map) values.get(ReturnValues.VALUES))
               .get(_value.toString()));
         }
@@ -68,8 +67,7 @@ public class LinkWithRangesUI implements UIInterface {
 
     if (_value != null) {
       if (_field.hasTrigger()) {
-        for (Return values : _field
-            .executeTrigger(TriggerEvent.RANGE_VALUE)) {
+        for (Return values : _field.executeEvent(TriggerEvent.RANGE_VALUE)) {
 
           ret.append("<form><select name=\"").append(_field.getName()).append(
               "\" size=\"1\">");
@@ -101,8 +99,7 @@ public class LinkWithRangesUI implements UIInterface {
     StringBuilder ret = new StringBuilder();
 
     if (_field.hasTrigger()) {
-      for (Return values : _field
-          .executeTrigger(TriggerEvent.RANGE_VALUE)) {
+      for (Return values : _field.executeEvent(TriggerEvent.RANGE_VALUE)) {
 
         ret.append("<form><select name=\"").append(_field.getName()).append(
             "\" size=\"1\">");
