@@ -217,34 +217,37 @@ public class ToolbarBean {
    * this command, the header menu, footer menu, mode and the target frame is
    * set.
    * 
-   * @param _name
-   *          name of the command object
    * @see #menuFooter
    * @see #menuHeader
    * @see #mode
    * @see #targetFrame
+   * @todo description
    */
-  public void setCommandName(final String _name) throws EFapsException {
-    this.originalCommand = getCommand(_name);
-
-    if (this.originalCommand != null) {
-
-      if (this.originalCommand.getTargetMode() == CommandAbstract.TARGET_MODE_SEARCH) {
-        Context context = Context.getThreadContext();
-        this.originalCommand = getCommand(context.getParameter("search"));
-      }
-
+  public void setCommandName(final String _commandName) throws EFapsException {
+    if (_commandName != null)  {
+      this.originalCommand = getCommand(_commandName);
+  
       if (this.originalCommand != null) {
-        if (this.originalCommand.getTargetMenu() != null) {
-
-          if (this.originalCommand.getTargetMenu().hasAccess()) {
-            this.menu = this.originalCommand.getTargetMenu();
+  
+        if (this.originalCommand.getTargetMode() == CommandAbstract.TARGET_MODE_SEARCH) {
+          String searchName = Context.getThreadContext().getParameter("search");
+          if (searchName != null)  {
+            this.originalCommand = getCommand(searchName);
           }
-        } else if (this.originalCommand.getTargetSearch() != null) {
-
-          if (this.originalCommand.getTargetSearch().hasAccess()) {
-            this.menu = this.originalCommand.getTargetSearch();
-            this.search = true;
+        }
+  
+        if (this.originalCommand != null) {
+          if (this.originalCommand.getTargetMenu() != null) {
+  
+            if (this.originalCommand.getTargetMenu().hasAccess()) {
+              this.menu = this.originalCommand.getTargetMenu();
+            }
+          } else if (this.originalCommand.getTargetSearch() != null) {
+  
+            if (this.originalCommand.getTargetSearch().hasAccess()) {
+              this.menu = this.originalCommand.getTargetSearch();
+              this.search = true;
+            }
           }
         }
       }

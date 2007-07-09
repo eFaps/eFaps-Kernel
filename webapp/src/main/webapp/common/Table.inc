@@ -30,7 +30,7 @@
 <%@taglib prefix="t"    uri="http://myfaces.apache.org/tomahawk"%>
 
 <%
-  String cacheKey  = request.getParameter("cacheKey");
+  String cacheKey  = context.getParameter("cacheKey");
 
   if (cacheKey==null)  {
     cacheKey = Long.toString(System.currentTimeMillis());
@@ -39,7 +39,7 @@ System.out.println("create new cacheKey = "+cacheKey);
 
   TableBean uiObject = (TableBean) request.getAttribute("uiObject");
   if (uiObject==null)  {
-    uiObject = (TableBean) cache.getTableBean(cacheKey, request.getParameter("command"));
+    uiObject = (TableBean) cache.getTableBean(cacheKey, context.getParameter("command"));
     request.setAttribute("uiObject", uiObject);
   }
 %>
@@ -120,16 +120,15 @@ System.out.println("create new cacheKey = "+cacheKey);
   </h:panelGrid>
 
   <%@include file="ToolBarMenu.inc"%>
-  
 <c:choose>
 
   <%-- /** initialise the user interface object **/ --%>
   <c:when test="${uiObject.initialised eq false}">
     <%-- /** set other parameters **/ --%>
-    <jsp:setProperty name="uiObject" property="commandName" param="command"/>
-    <jsp:setProperty name="uiObject" property="oid" param="oid"/>
-    <jsp:setProperty name="uiObject" property="nodeId" param="nodeId"/>
     <%
+      uiObject.setCommandName(context.getParameter("command"));
+      uiObject.setOid(context.getParameter("oid"));
+      uiObject.setNodeId(context.getParameter("nodeId"));
 System.out.println(".............................START:"+new java.util.Date());
       uiObject.execute();
 System.out.println("............................MIDDLE:"+new java.util.Date());
@@ -226,7 +225,7 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
 
 <%
 // store print mode
-String mode = request.getParameter("mode");
+String mode = context.getParameter("mode");
 boolean printMode = (mode!=null && mode.equals("print") ? true : false);
 
 

@@ -108,7 +108,6 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
    * @see #mode
    */
   public void setCommandName(String _name) throws EFapsException  {
-      Context context = Context.getThreadContext();
       setCommand(Command.get(_name));
       if (getCommand() == null)  {
         setCommand(Menu.get(_name));

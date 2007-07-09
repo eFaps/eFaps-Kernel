@@ -133,10 +133,18 @@ uiObject.setUkTitle("");
 function eFapsSubmit()  {
   var div = document.getElementById("eFapsFormWithFooter");
   var form = div.getElementsByTagName("form")[1];
-  
+
+  <c:choose>
+    <c:when test="${uiObject.searchMode}">
+      form.action = "../common/Link.jsf";
+    </c:when>
+    <c:otherwise>
+      form.action = "../common/FormProcess.jsp";
+    </c:otherwise>
+  </c:choose>
+
 //  eFapsProcessStart();
   form.submit();
-
 
 //  if (!this.submitLock)
 //  {
@@ -206,8 +214,13 @@ function eFapsSubmit()  {
 
 
 
-      <form method="post" enctype="multipart/form-data" target="<c:out value="${targetProcess}"/>" action="../common/FormProcess.jsp">
+      <form method="post" enctype="multipart/form-data" target="<c:out value="${targetProcess}"/>">
         <input type="hidden" name="command" value=""/>
+
+<c:if test="${uiObject.searchMode}">
+  <input type="hidden" name="eFapsShowSearchResult" value="true"/>
+  <input type="hidden" name="command" value="<%=request.getParameter("command")%>"/>
+</c:if>
 
         <%-- /** show the hidden values for this user interface **/ --%>
         <c:forEach items="${uiObject.hiddenValues}" var="hiddenValue">
@@ -343,10 +356,26 @@ function eFapsSubmit()  {
           <c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
             <div id="eFapsFooter">
               <h:form>
-                <h:commandLink onclick="eFapsSubmit();return false;" title="Create">
-                  <h:graphicImage value="../images/eFapsButtonDone.gif"/>
-                  <h:outputText value="Edit"/>
-                </h:commandLink>
+                <c:choose>
+                  <c:when test="${uiObject.createMode}">
+                    <h:commandLink id="eFapsCreate" onclick="eFapsSubmit();return false;" title="Create">
+                      <h:graphicImage value="../images/eFapsButtonDone.gif"/>
+                      <h:outputText value="Create"/>
+                    </h:commandLink>
+                  </c:when>
+                  <c:when test="${uiObject.editMode}">
+                    <h:commandLink id="eFapsEdit" onclick="eFapsSubmit();return false;" title="Edit">
+                      <h:graphicImage value="../images/eFapsButtonDone.gif"/>
+                      <h:outputText value="Edit"/>
+                    </h:commandLink>
+                  </c:when>
+                  <c:when test="${uiObject.searchMode}">
+                    <h:commandLink id="eFapsSearch" onclick="eFapsSubmit();return false;" title="Search">
+                      <h:graphicImage value="../images/eFapsButtonNext.gif"/>
+                      <h:outputText value="Search"/>
+                    </h:commandLink>
+                  </c:when>
+                </c:choose>
                 <h:commandLink onclick="eFapsCommonCloseWindow();return false;" title="Create">
                   <h:graphicImage value="../images/eFapsButtonCancel.gif"/>
                   <h:outputText value="Close"/>

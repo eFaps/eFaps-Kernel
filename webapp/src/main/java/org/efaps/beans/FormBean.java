@@ -36,6 +36,8 @@ import org.efaps.admin.datamodel.UniqueKey;
 import org.efaps.admin.datamodel.attributetype.AbstractFileType;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
@@ -136,6 +138,9 @@ public class FormBean extends AbstractCollectionBean {
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
+  /**
+   * @todo search is not correct defined
+   */
   public void execute() throws Exception {
     Context context = Context.getThreadContext();
     if (isCreateMode() || isSearchMode()) {
@@ -145,7 +150,13 @@ public class FormBean extends AbstractCollectionBean {
       if (isCreateMode())  {
         type = getCommand().getTargetCreateType();
       } else if (isSearchMode())  {
-        type = Type.get(getCommand().getProperty("SearchType"));
+List<EventDefinition> events = getCommand().getEvents(TriggerEvent.UI_TABLE_EVALUATE);
+for (EventDefinition eventDef : events)  {
+  String tmp = eventDef.getProperty("Types");
+  if (tmp != null)  {
+    type = Type.get(tmp);
+  }
+}
       }
 
       for (int i = 0; i < getForm().getFields().size(); i++) {

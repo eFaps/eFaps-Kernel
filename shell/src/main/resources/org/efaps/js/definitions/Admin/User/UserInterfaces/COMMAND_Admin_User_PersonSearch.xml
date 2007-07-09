@@ -57,9 +57,11 @@
     <target>
       <form>Admin_User_PersonForm</form>
       <table>Admin_User_PersonTable</table>
+      <evaluate program="org.efaps.events.ui.search.QuerySearch">
+        <property name="Types">Admin_User_Person</property>
+      </evaluate>
     </target>
     <!-- properties -->
-    <property name="SearchType">Admin_User_Person</property>
     <property name="TargetMode">search</property>
   </definition>
 
