@@ -20,7 +20,6 @@
 
 package org.efaps.beans;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,12 +36,11 @@ import org.efaps.admin.datamodel.attributetype.AbstractFileType;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
-import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
 import org.efaps.beans.form.FormFieldUpdateInterface;
-import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Checkin;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
@@ -150,7 +148,7 @@ public class FormBean extends AbstractCollectionBean {
       if (isCreateMode())  {
         type = getCommand().getTargetCreateType();
       } else if (isSearchMode())  {
-List<EventDefinition> events = getCommand().getEvents(TriggerEvent.UI_TABLE_EVALUATE);
+List<EventDefinition> events = getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
 for (EventDefinition eventDef : events)  {
   String tmp = eventDef.getProperty("Types");
   if (tmp != null)  {

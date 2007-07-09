@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.EventType;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -54,7 +54,7 @@ public class Event {
   private final Map<String, String> properties = new HashMap<String, String>();
 
   /**
-   * event as defined in {@link org.efaps.admin.event.TriggerEvent}
+   * event as defined in {@link org.efaps.admin.event.EventType}
    */
   private final String              event;
 
@@ -90,7 +90,7 @@ public class Event {
    * @param _name
    *          name of the Event
    * @param _event
-   *          event as defined in {@link org.efaps.admin.event.TriggerEvent}
+   *          event as defined in {@link org.efaps.admin.event.EventType}
    * @param _program
    *          name of the programm invoked in this trigger
    * @param _method
@@ -130,7 +130,7 @@ public class Event {
 
       String eventtype;
       if (isTrigger) {
-        eventtype = TriggerEvent.valueOf(this.event).name;
+        eventtype = EventType.valueOf(this.event).name;
       } else {
         eventtype = this.event;
       }

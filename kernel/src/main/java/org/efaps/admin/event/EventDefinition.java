@@ -241,8 +241,8 @@ public class EventDefinition extends AdminObject implements EventExecution {
       EFapsClassName eFapsClass =
           EFapsClassName.getEnum(getTypeName(abstractID));
 
-      TriggerEvent triggerEvent = null;
-      for (TriggerEvent trigger : TriggerEvent.values()) {
+      EventType triggerEvent = null;
+      for (EventType trigger : EventType.values()) {
         Type triggerClass = Type.get(trigger.name);
         if (eventType.isKindOf(triggerClass)) {
           if (LOG.isDebugEnabled()) {
@@ -259,7 +259,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
           LOG.debug("    type=" + type);
         }
 
-        type.addTrigger(triggerEvent, new EventDefinition(eventId, eventName,
+        type.addEvent(triggerEvent, new EventDefinition(eventId, eventName,
             eventPos, resName, method, eventOID));
 
       } else if (eFapsClass == EFapsClassName.COMMAND) {
@@ -268,8 +268,8 @@ public class EventDefinition extends AdminObject implements EventExecution {
         if (LOG.isDebugEnabled()) {
           LOG.debug("    Command=" + command.getName());
         }
-        command.addTrigger(triggerEvent, new EventDefinition(eventId,
-            eventName, eventPos, resName, method, eventOID));
+        command.addEvent(triggerEvent, new EventDefinition(eventId, eventName,
+            eventPos, resName, method, eventOID));
 
       } else if (eFapsClass == EFapsClassName.FIELD) {
 
@@ -279,7 +279,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
           LOG.debug("       Field=" + field.getName());
         }
 
-        field.addTrigger(triggerEvent, new EventDefinition(eventId, eventName,
+        field.addEvent(triggerEvent, new EventDefinition(eventId, eventName,
             eventPos, resName, method, eventOID));
 
       } else if (eFapsClass == EFapsClassName.DATAMODEL_ATTRIBUTE) {
@@ -288,7 +288,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
           LOG.debug("      Attribute=" + attribute.getName());
         }
 
-        attribute.addTrigger(triggerEvent, new EventDefinition(eventId,
+        attribute.addEvent(triggerEvent, new EventDefinition(eventId,
             eventName, eventPos, resName, method, eventOID));
 
       } else if (LOG.isDebugEnabled()) {

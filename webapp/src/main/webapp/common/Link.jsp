@@ -25,7 +25,9 @@
 <%@page import="org.efaps.admin.ui.Command"%>
 <%@page import="org.efaps.admin.ui.CommandAbstract"%>
 <%@page import="org.efaps.admin.ui.Menu"%>
-<%@page import="org.efaps.admin.event.TriggerEvent"%>
+<%@page import="org.efaps.admin.event.EventType"%>
+<%@page import="org.efaps.admin.event.Parameter"%>
+<%@page import="org.efaps.admin.event.Parameter.ParameterValues"%>
 <%@page import="org.efaps.db.Context"%>
 
 <jsp:useBean id="cache" class="org.efaps.beans.CacheSessionBean" scope="session"/>
@@ -59,10 +61,15 @@ System.out.println("searchresult="+context.getParameter("eFapsShowSearchResult")
     %><%@include file="Table.inc"%><%
   } else if (command.getTargetSearch() != null)  {
     %><%@include file="Search.inc"%><%
-  } else if (command.hasTrigger()){
-    command.executeTrigger(TriggerEvent.COMMAND,
-                           (String[])request.getParameterValues("selectedRow"));
-    //after a commandtrigger is executet the page is updatet                   
+  } else if (command.hasEvents()){
+    String[] oids = (String[])request.getParameterValues("selectedRow");
+    
+    if(oids!=null){
+      command.executeEvents(EventType.COMMAND, ParameterValues.OTHERS, oids);
+    }else {
+      command.executeEvents(EventType.COMMAND);
+    }
+   //after a commandtrigger is executet the page is updatet                   
     if (!"true".equals(command.getProperty("NoUpdateAfterCOMMAND"))){
     %>
       <html>

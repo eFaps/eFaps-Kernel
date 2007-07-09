@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.efaps.admin.event.Return;
-import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
@@ -47,9 +47,9 @@ public class LinkWithRangesUI implements UIInterface {
     StringBuilder ret = new StringBuilder();
 
     if (_value != null) {
-      if (_field.hasTrigger()) {
+      if (_field.hasEvents()) {
 
-        for (Return values : _field.executeEvent(TriggerEvent.RANGE_VALUE)) {
+        for (Return values : _field.executeEvents(EventType.RANGE_VALUE)) {
           ret.append((String) ((Map) values.get(ReturnValues.VALUES))
               .get(_value.toString()));
         }
@@ -66,8 +66,8 @@ public class LinkWithRangesUI implements UIInterface {
     StringBuilder ret = new StringBuilder();
 
     if (_value != null) {
-      if (_field.hasTrigger()) {
-        for (Return values : _field.executeEvent(TriggerEvent.RANGE_VALUE)) {
+      if (_field.hasEvents()) {
+        for (Return values : _field.executeEvents(EventType.RANGE_VALUE)) {
 
           ret.append("<form><select name=\"").append(_field.getName()).append(
               "\" size=\"1\">");
@@ -98,8 +98,8 @@ public class LinkWithRangesUI implements UIInterface {
       final Field _field) throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
-    if (_field.hasTrigger()) {
-      for (Return values : _field.executeEvent(TriggerEvent.RANGE_VALUE)) {
+    if (_field.hasEvents()) {
+      for (Return values : _field.executeEvents(EventType.RANGE_VALUE)) {
 
         ret.append("<form><select name=\"").append(_field.getName()).append(
             "\" size=\"1\">");

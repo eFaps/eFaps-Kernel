@@ -32,7 +32,7 @@ import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.transaction.StoreResource;
@@ -63,13 +63,12 @@ public class Delete {
    * @see #getInstance
    * @see #setInstance
    */
-  private final Instance   instance;
+  private final Instance instance;
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
-   * 
    * @param _instance
    * @todo description
    */
@@ -78,7 +77,6 @@ public class Delete {
   }
 
   /**
-   * 
    * @param _type
    * @param _id
    * @todo description
@@ -88,7 +86,6 @@ public class Delete {
   }
 
   /**
-   * 
    * @param _type
    * @param _id
    * @todo description
@@ -120,8 +117,9 @@ public class Delete {
    * @see #executeWithoutAccessCheck
    */
   public void execute() throws EFapsException {
-    boolean hasAccess = this.instance.getType().hasAccess(this.instance,
-        AccessTypeEnums.DELETE.getAccessType());
+    boolean hasAccess =
+        this.instance.getType().hasAccess(this.instance,
+            AccessTypeEnums.DELETE.getAccessType());
     if (!hasAccess) {
       throw new EFapsException(getClass(), "execute.NoAccess", this.instance);
     }
@@ -142,8 +140,8 @@ public class Delete {
   public void executeWithoutAccessCheck() throws EFapsException {
     Context context = Context.getThreadContext();
     ConnectionResource con = null;
-    executeTrigger(TriggerEvent.DELETE_PRE);
-    if (!executeTrigger(TriggerEvent.DELETE_OVERRIDE)) {
+    executeEvents(EventType.DELETE_PRE);
+    if (!executeEvents(EventType.DELETE_OVERRIDE)) {
       try {
 
         con = context.getConnectionResource();
@@ -212,7 +210,7 @@ public class Delete {
         }
       }
     }
-    executeTrigger(TriggerEvent.DELETE_POST);
+    executeEvents(EventType.DELETE_POST);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -230,20 +228,19 @@ public class Delete {
   }
 
   /**
-   * The method gets all triggers for the given trigger event and executes them
-   * in the given order. If no triggers are defined, nothing is done. The method
-   * return TRUE if a trigger was found, otherwise FALSE.
+   * The method gets all events for the given EventType and executes them in the
+   * given order. If no events are defined, nothing is done. The method return
+   * TRUE if a event was found, otherwise FALSE.
    * 
    * @param _context
    *          eFaps context for this request
-   * @param _triggerEvent
-   *          trigger events to execute
-   * 
+   * @param _eventtype
+   *          EventType to execute
    * @return true if a trigger was found and executed, otherwise false
    */
-  private boolean executeTrigger(final TriggerEvent _triggerEvent) {
-    List<EventDefinition> triggers = getInstance().getType().getTrigger(
-        _triggerEvent);
+  private boolean executeEvents(final EventType _eventtype) {
+    List<EventDefinition> triggers =
+        getInstance().getType().getEvents(_eventtype);
     if (triggers != null) {
       Parameter parameter = new Parameter();
 

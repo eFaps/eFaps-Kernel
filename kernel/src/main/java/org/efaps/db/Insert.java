@@ -38,7 +38,7 @@ import org.efaps.admin.datamodel.AttributeType;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.EventType;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
@@ -150,9 +150,9 @@ public class Insert extends Update {
     Context context = Context.getThreadContext();
     ConnectionResource con = null;
     try {
-      executeTrigger(TriggerEvent.INSERT_PRE);
+      executeEvents(EventType.INSERT_PRE);
 
-      if (!executeTrigger(TriggerEvent.INSERT_OVERRIDE)) {
+      if (!executeEvents(EventType.INSERT_OVERRIDE)) {
         con = context.getConnectionResource();
 
         if (test4Unique(context)) {
@@ -178,7 +178,7 @@ public class Insert extends Update {
         con.commit();
       }
 
-      executeTrigger( TriggerEvent.INSERT_POST);
+      executeEvents( EventType.INSERT_POST);
     } catch (EFapsException e) {
       if (con != null) {
         con.abort();

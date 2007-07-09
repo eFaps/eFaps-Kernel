@@ -31,7 +31,7 @@ package org.efaps.admin.event;
  * @version $Id$
  * 
  */
-public enum TriggerEvent  {
+public enum EventType  {
 
   ACCESSCHECK        ("Admin_Event_AccessCheck"),
   CHECKIN_OVERRIDE   ("Admin_Event_Trigger_CheckinOverride"),
@@ -56,7 +56,7 @@ public enum TriggerEvent  {
   
   public final String name;
 
-  private TriggerEvent(final String _name)  {
+  private EventType(final String _name)  {
     this.name = _name;
   }
 }

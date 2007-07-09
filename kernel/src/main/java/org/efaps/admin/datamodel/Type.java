@@ -23,7 +23,6 @@ package org.efaps.admin.datamodel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,7 +39,7 @@ import org.efaps.admin.access.AccessType;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
-import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.lifecycle.Policy;
@@ -231,12 +230,6 @@ public class Type extends DataModelObject {
    * @see #getLinks
    */
   private Map<String, Attribute> links = new HashMap<String, Attribute>();
-
-  /**
-   * All triggers for this type are stored in this map.
-   */
-  private final Map<TriggerEvent, List<EventDefinition>> trigger =
-      new HashMap<TriggerEvent, List<EventDefinition>>();
 
   /**
    * All access sets which are assigned to this type are store in this instance
@@ -469,13 +462,13 @@ public class Type extends DataModelObject {
   public boolean hasAccess(final Instance _instance,
       final AccessType _accessType) throws EFapsException {
     boolean hasAccess = true;
-    List<EventDefinition> triggers = this.getTrigger(TriggerEvent.ACCESSCHECK);
-    if (triggers != null) {
+    List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
+    if (events != null) {
       Parameter parameter = new Parameter();
       parameter.put(ParameterValues.INSTANCE, _instance);
       parameter.put(ParameterValues.ACCESSTYPE, _accessType);
 
-      for (EventDefinition event : triggers) {
+      for (EventDefinition event : events) {
         Return ret = event.execute(parameter);
         hasAccess = ret.get(ReturnValues.TRUE) != null;
       }
@@ -576,41 +569,6 @@ public class Type extends DataModelObject {
       // System.out.println("childTypes("+parent.getName()+")="+parent.getChildTypes());
       parent = parent.getParentType();
     }
-  }
-
-  /**
-   * Adds a new trigger event to this type.
-   * 
-   * @param _triggerEvent
-   *          trigger class name to add
-   * @param _eventDef
-   *          event defition to add
-   */
-  public void addTrigger(final TriggerEvent _triggerEvent,
-      final EventDefinition _eventDef) {
-    List<EventDefinition> events = this.trigger.get(_triggerEvent);
-    if (events == null) {
-      events = new ArrayList<EventDefinition>();
-      this.trigger.put(_triggerEvent, events);
-    }
-    int pos = 0;
-    for (EventDefinition cur : events) {
-      if (_eventDef.getIndexPos() > cur.getIndexPos()) {
-        break;
-      }
-      pos++;
-    }
-    events.add(pos, _eventDef);
-  }
-
-  /**
-   * Returns the ordered list of triggers assigned to this type instance.
-   * 
-   * @param _triggerEvent
-   *          trigger class name for which the triggers should returned
-   */
-  public List<EventDefinition> getTrigger(final TriggerEvent _triggerEvent) {
-    return this.trigger.get(_triggerEvent);
   }
 
   /**

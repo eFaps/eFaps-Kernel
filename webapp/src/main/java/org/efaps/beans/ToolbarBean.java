@@ -149,7 +149,7 @@ public class ToolbarBean {
       url.append(_command.getReference());
     } else if ((_command.getTargetTable() != null)
         || (_command.getTargetForm() != null)
-        || (_command.getTargetSearch() != null) || (_command.hasTrigger())) {
+        || (_command.getTargetSearch() != null) || (_command.hasEvents())) {
       url.append("Link.jsf?");
       // hack (no url found!)
     } else {
@@ -188,7 +188,7 @@ public class ToolbarBean {
           }
         break;
         default:
-          if (_command.hasTrigger()) {
+          if (_command.hasEvents()) {
             url.append("eFapsFrameHidden");
           } else {
             url.append("Content");

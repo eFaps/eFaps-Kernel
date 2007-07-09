@@ -25,10 +25,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -38,11 +35,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.efaps.admin.event.EventDefinition;
-import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return;
-import org.efaps.admin.event.TriggerEvent;
-import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -77,12 +69,6 @@ public class Attribute extends DataModelObject {
   private final static String SQL_SELECT =
       "select " + "ID," + "NAME," + "DMTABLE," + "DMTYPE," + "DMATTRIBUTETYPE,"
           + "DMTYPELINK," + "SQLCOLUMN " + "from V_ADMINATTRIBUTE";
-
-  /**
-   * All triggers for this Attribute are stored in this map.
-   */
-  private final Map<TriggerEvent, List<EventDefinition>> triggers =
-      new HashMap<TriggerEvent, List<EventDefinition>>();
 
   /**
    * This is the instance variable for the table, where attribute is stored.
@@ -170,87 +156,6 @@ public class Attribute extends DataModelObject {
   }
 
   // ///////////////////////////////////////////////////////////////////////////
-  /**
-   * Adds a new trigger event to this Attribute.
-   * 
-   * @param _triggerEvent
-   *          trigger class name to add
-   * @param _eventDef
-   *          event defition to add
-   */
-  public void addTrigger(final TriggerEvent _triggerEvent,
-      final EventDefinition _eventDef) {
-    List<EventDefinition> events = this.triggers.get(_triggerEvent);
-    if (events == null) {
-      events = new ArrayList<EventDefinition>();
-      this.triggers.put(_triggerEvent, events);
-    }
-    int pos = 0;
-    for (EventDefinition cur : events) {
-      if (_eventDef.getIndexPos() > cur.getIndexPos()) {
-        break;
-      }
-      pos++;
-    }
-    events.add(pos, _eventDef);
-  }
-
-  /**
-   * Returns the ordered list of triggers assigned to this Attribue instance.
-   * 
-   * @param _triggerEvent
-   *          trigger class name for which the triggers should returned
-   */
-  public List<EventDefinition> getTrigger(final TriggerEvent _triggerEvent) {
-    return this.triggers.get(_triggerEvent);
-  }
-
-  /**
-   * does this Attribute have Trigger
-   * 
-   * @return
-   */
-  public boolean hasTrigger() {
-    return !this.triggers.isEmpty();
-
-  }
-
-  /**
-   * Executes all Triggers difined for this Attribute in the given Order and
-   * returns a List with all Returns
-   * 
-   * @return List with Returns
-   */
-  public List<Return> executeAllTriggers() {
-
-    List<Return> ret = new ArrayList<Return>();
-
-    for (TriggerEvent triggerEvent : TriggerEvent.values()) {
-      ret.addAll(executeTrigger(triggerEvent));
-    }
-
-    return ret;
-  }
-
-  /**
-   * The method gets all triggers for the given trigger event and executes them
-   * in the given order. If no triggers are defined, nothing is done.
-   * 
-   * @param _triggerEvent
-   *          trigger events to execute
-   * @return List with Returns
-   */
-  public List<Return> executeTrigger(final TriggerEvent _triggerEvent) {
-    List<EventDefinition> trig = this.triggers.get(_triggerEvent);
-    List<Return> ret = new ArrayList<Return>();
-
-    Parameter para = new Parameter();
-    para.put(ParameterValues.INSTANCE, this);
-    for (EventDefinition evenDef : trig) {
-      ret.add((Return) evenDef.execute(para));
-    }
-    return ret;
-  }
 
   /**
    * This method returns <i>true</i> if a link exists. This is made with a test

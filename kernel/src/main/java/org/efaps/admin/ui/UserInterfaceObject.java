@@ -24,19 +24,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
-import org.efaps.admin.event.TriggerEvent;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.user.Role;
@@ -71,12 +68,6 @@ public abstract class UserInterfaceObject extends AdminObject {
    * @see #getAccess
    */
   private final Set<UserObject> access = new HashSet<UserObject>();
-
-  /**
-   * All triggers for this UserInterfaceObject are stored in this map.
-   */
-  private final Map<TriggerEvent, List<EventDefinition>> triggers =
-      new HashMap<TriggerEvent, List<EventDefinition>>();
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -276,45 +267,13 @@ public abstract class UserInterfaceObject extends AdminObject {
         }
       }
     }
-    if (ret && hasTrigger(TriggerEvent.ACCESSCHECK)) {
+    if (ret && super.hasEvents(EventType.ACCESSCHECK)) {
       ret = false;
-      List<EventDefinition> trigger =
-          this.triggers.get(TriggerEvent.ACCESSCHECK);
+      List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
 
       Parameter parameter = new Parameter();
       parameter.put(ParameterValues.UIOBJECT, this);
-      for (EventDefinition event : trigger) {
-        Return retIn = event.execute(parameter);
-        ret = retIn.get(ReturnValues.TRUE) != null;
-
-      }
-    }
-    return ret;
-  }
-
-  /**
-   * @deprecated
-   */
-  public boolean hasAccess(final Context _context) {
-    boolean ret = false;
-    if (getAccess().isEmpty()) {
-      ret = true;
-    } else {
-      for (UserObject userObject : getAccess()) {
-        if (userObject.isAssigned()) {
-          ret = true;
-          break;
-        }
-      }
-    }
-    if (ret && hasTrigger(TriggerEvent.ACCESSCHECK)) {
-      ret = false;
-      List<EventDefinition> trigger =
-          this.triggers.get(TriggerEvent.ACCESSCHECK);
-
-      Parameter parameter = new Parameter();
-      parameter.put(ParameterValues.UIOBJECT, this);
-      for (EventDefinition event : trigger) {
+      for (EventDefinition event : events) {
         Return retIn = event.execute(parameter);
         ret = retIn.get(ReturnValues.TRUE) != null;
 
@@ -334,147 +293,6 @@ public abstract class UserInterfaceObject extends AdminObject {
    */
   protected Set<UserObject> getAccess() {
     return this.access;
-  }
-
-  /**
-   * Adds a new trigger event to this UserInterfaceObject.
-   * 
-   * @see #triggers
-   * @param _triggerEvent
-   *          trigger class name to add
-   * @param _eventDef
-   *          EventDefinition to add
-   */
-  public void addTrigger(final TriggerEvent _triggerEvent,
-      final EventDefinition _eventDef) {
-    List<EventDefinition> events = this.triggers.get(_triggerEvent);
-    if (events == null) {
-      events = new ArrayList<EventDefinition>();
-      this.triggers.put(_triggerEvent, events);
-    }
-    int pos = 0;
-    for (EventDefinition cur : events) {
-      if (_eventDef.getIndexPos() > cur.getIndexPos()) {
-        break;
-      }
-      pos++;
-    }
-    events.add(pos, _eventDef);
-
-  }
-
-  /**
-   * returns the Map with all the triggers for this instance
-   * 
-   * @see #triggers
-   * @return
-   */
-  protected Map<TriggerEvent, List<EventDefinition>> getTriggers() {
-    return this.triggers;
-  }
-
-  /**
-   * Returns the list of events defined for given event type.
-   *
-   * @param _triggerEvent event type
-   * @return list of events for the given event type
-   */
-  public List<EventDefinition> getEvents(final TriggerEvent _eventType)  {
-    return this.triggers.get(_eventType);
-  }
-
-  /**
-   * does this instance have Triggers?
-   * 
-   * @see #triggers
-   * @return true, if this instance has a trigger, otherwise false
-   */
-  public boolean hasTrigger() {
-    return !this.triggers.isEmpty();
-  }
-
-  /**
-   * does this instance have Triggers, for the specified TriggerEvent ?
-   *
-   * @return true, if this instance has a trigger, otherwise false
-   */
-  public boolean hasTrigger(final TriggerEvent _triggerEvent) {
-    boolean has = false;
-    if (!this.triggers.isEmpty()) {
-      has = this.triggers.get(_triggerEvent) != null;
-    }
-    return has;
-  }
-
-  /**
-   * executes the Triggers which are definded for this instance in the
-   * speciefied order, and retruns List with the Returns of the Events
-   * 
-   * @see #executeTrigger(TriggerEvent)
-   * @deprecated
-   */
-  public List<Return> executeAllTriggers() {
-    List<Return> ret = new ArrayList<Return>();
-
-    for (TriggerEvent triggerEvent : TriggerEvent.values()) {
-      ret.addAll(executeEvent(triggerEvent));
-    }
-    return ret;
-  }
-
-  /**
-   * The method gets all events for the given event type and executes them
-   * in the given order. If no events are defined, nothing is done.
-   * 
-   * @param _triggerEvent   type of event to execute
-   * @param _args           arguments used as parameter (doubles with first
-   *                        parameters defining the key, second parameter the
-   *                        value itself)
-   * @return List with Returns
-   */
-  public List<Return> executeEvent(final TriggerEvent _triggerEvent,
-                                   final Object... _args)  {
-
-    List<Return> ret = new ArrayList<Return>();
-    if (hasTrigger(_triggerEvent)) {
-      Parameter param = new Parameter();
-
-      // add all parameters
-      for (int i = 0; i < _args.length; i += 2)  {
-        if (((i + 1) < _args.length) && (_args[i] instanceof ParameterValues))  {
-          param.put((ParameterValues) _args[i], _args[i+1]);
-        }
-      }
-
-      // add ui object parameter
-      param.put(ParameterValues.UIOBJECT, this);
-
-      // execute all triggers
-      for (EventDefinition evenDef : this.triggers.get(_triggerEvent)) {
-        ret.add(evenDef.execute(param));
-      }
-    }
-    return ret;
-  }
-
-  /**
-   * The method gets all triggers for the given trigger event and executes them
-   * in the given order. If no triggers are defined, nothing is done. With the
-   * Paramter <i>_otherParameters</i> aditianal Paramters can be parsed to the
-   * Program.
-   * 
-   * @param _triggerEvent
-   *          trigger events to be executed
-   * @param _otherParameters
-   *          aditionall Parameters to be passed to the Program
-   * @return List with Returns
-   * @deprecated use {@link #executeEvent} instead
-   */
-  public List<Return> executeTrigger(final TriggerEvent _triggerEvent,
-      Object _otherParameters) {
-  
-    return executeEvent(_triggerEvent,
-                        ParameterValues.OTHERS, _otherParameters);
   }
 
   // ///////////////////////////////////////////////////////////////////////////

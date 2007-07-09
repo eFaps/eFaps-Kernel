@@ -41,7 +41,7 @@ import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -59,8 +59,7 @@ public class Update {
   /**
    * Logging instance used in this class.
    */
-  private static final Log                                   LOG           = LogFactory
-                                                                               .getLog(Update.class);
+  private static final Log LOG = LogFactory.getLog(Update.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -71,7 +70,7 @@ public class Update {
    * @see #getInstance
    * @see #setInstance
    */
-  private Instance                                           instance      = null;
+  private Instance instance = null;
 
   /**
    * The string instance variable stores the table names of the select
@@ -79,11 +78,14 @@ public class Update {
    * 
    * @see #getExpr4Tables
    */
-  private Map<SQLTable, Map<String, AttributeTypeInterface>> expr4Tables   = new Hashtable<SQLTable, Map<String, AttributeTypeInterface>>();
+  private Map<SQLTable, Map<String, AttributeTypeInterface>> expr4Tables =
+      new Hashtable<SQLTable, Map<String, AttributeTypeInterface>>();
 
-  private final Map<String, AttributeTypeInterface>          mapAttr2Value = new HashMap<String, AttributeTypeInterface>();
+  private final Map<String, AttributeTypeInterface> mapAttr2Value =
+      new HashMap<String, AttributeTypeInterface>();
 
-  protected final Map<Attribute, Object>                     values        = new HashMap<Attribute, Object>();
+  protected final Map<Attribute, Object> values =
+      new HashMap<Attribute, Object>();
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -139,8 +141,8 @@ public class Update {
    *          data model type
    */
   protected void addAlwaysUpdateAttributes() throws EFapsException {
-    Iterator iter = getInstance().getType().getAttributes().entrySet()
-        .iterator();
+    Iterator iter =
+        getInstance().getType().getAttributes().entrySet().iterator();
     while (iter.hasNext()) {
       Map.Entry entry = (Map.Entry) iter.next();
       Attribute attr = (Attribute) entry.getValue();
@@ -164,20 +166,19 @@ public class Update {
   }
 
   /**
-   * The method gets all triggers for the given trigger event and executes them
-   * in the given order. If no triggers are defined, nothing is done. The method
-   * return TRUE if a trigger was found, otherwise FALSE.
+   * The method gets all events for the given EventType and executes them in the
+   * given order. If no events are defined, nothing is done. The method return
+   * TRUE if a event was found, otherwise FALSE.
    * 
    * @param _context
    *          eFaps context for this request
-   * @param _triggerEvent
+   * @param eventtype
    *          trigger events to execute
-   * 
    * @return true if a trigger was found and executed, otherwise false
    */
-  protected boolean executeTrigger(final TriggerEvent _triggerEvent) {
-    List<EventDefinition> triggers = getInstance().getType().getTrigger(
-        _triggerEvent);
+  protected boolean executeEvents(final EventType eventtype) {
+    List<EventDefinition> triggers =
+        getInstance().getType().getEvents(eventtype);
     if (triggers != null) {
       Parameter parameter = new Parameter();
       parameter.put(ParameterValues.NEW_VALUES, this.values);
@@ -197,7 +198,7 @@ public class Update {
    *          attribute value
    */
   public void add(final String _attr, final String _value)
-                                                          throws EFapsException {
+      throws EFapsException {
     Attribute attr = getInstance().getType().getAttribute(_attr);
     if (attr == null) {
       throw new EFapsException(getClass(), "add.UnknownAttributeName");
@@ -209,7 +210,7 @@ public class Update {
    * @deprecated use {@link #add(String,String)}
    */
   public void add(Context _context, String _attr, String _value)
-                                                                throws EFapsException {
+      throws EFapsException {
     add(_attr, _value);
   }
 
@@ -220,7 +221,7 @@ public class Update {
    *          new attribute value
    */
   public void add(final Attribute _attr, final String _value)
-                                                             throws EFapsException {
+      throws EFapsException {
     add(_attr, _value, true);
   }
 
@@ -228,7 +229,7 @@ public class Update {
    * @deprecated use {@link #add(Attribute,String)}
    */
   public void add(Context _context, Attribute _attr, String _value)
-                                                                   throws EFapsException {
+      throws EFapsException {
     add(_attr, _value, true);
   }
 
@@ -240,7 +241,7 @@ public class Update {
    * @param _triggerRelevant
    */
   public void add(final Attribute _attr, final String _value,
-                  final boolean _triggerRelevant) throws EFapsException {
+      final boolean _triggerRelevant) throws EFapsException {
     add(_attr, (Object) _value, _triggerRelevant);
   }
 
@@ -248,7 +249,7 @@ public class Update {
   // timestamp methods
 
   public void add(final String _attr, final Timestamp _value)
-                                                             throws EFapsException {
+      throws EFapsException {
     Attribute attr = getInstance().getType().getAttribute(_attr);
     if (attr == null) {
       throw new EFapsException(getClass(), "add.UnknownAttributeName");
@@ -263,7 +264,7 @@ public class Update {
    *          new attribute value
    */
   public void add(final Attribute _attr, final Timestamp _value)
-                                                                throws EFapsException {
+      throws EFapsException {
     add(_attr, (Object) _value, true);
   }
 
@@ -271,9 +272,9 @@ public class Update {
   // private common method
 
   private void add(final Attribute _attr, final Object _value,
-                   final boolean _triggerRelevant) throws EFapsException {
-    Map<String, AttributeTypeInterface> expressions = getExpr4Tables().get(
-        _attr.getTable());
+      final boolean _triggerRelevant) throws EFapsException {
+    Map<String, AttributeTypeInterface> expressions =
+        getExpr4Tables().get(_attr.getTable());
 
     if (expressions == null) {
       expressions = new HashMap<String, AttributeTypeInterface>();
@@ -340,8 +341,9 @@ public class Update {
    * 
    */
   public void execute() throws Exception {
-    boolean hasAccess = getType().hasAccess(getInstance(),
-        AccessTypeEnums.MODIFY.getAccessType());
+    boolean hasAccess =
+        getType().hasAccess(getInstance(),
+            AccessTypeEnums.MODIFY.getAccessType());
 
     if (!hasAccess) {
       throw new EFapsException(getClass(), "execute.NoAccess");
@@ -356,9 +358,9 @@ public class Update {
     Context context = Context.getThreadContext();
     ConnectionResource con = null;
     try {
-      executeTrigger(TriggerEvent.UPDATE_PRE);
+      executeEvents(EventType.UPDATE_PRE);
 
-      if (!executeTrigger(TriggerEvent.UPDATE_OVERRIDE)) {
+      if (!executeEvents(EventType.UPDATE_OVERRIDE)) {
         con = context.getConnectionResource();
 
         if (test4Unique(context)) {
@@ -387,7 +389,7 @@ public class Update {
         }
         con.commit();
       }
-      executeTrigger(TriggerEvent.UPDATE_POST);
+      executeEvents(EventType.UPDATE_POST);
     } catch (Exception e) {
       e.printStackTrace();
       throw e;
@@ -400,11 +402,8 @@ public class Update {
   }
 
   private PreparedStatement createOneStatement(final Context _context,
-                                               final ConnectionResource _con,
-                                               final SQLTable _table,
-                                               final Map _expressions)
-                                                                      throws SQLException,
-                                                                      EFapsException {
+      final ConnectionResource _con, final SQLTable _table,
+      final Map _expressions) throws SQLException, EFapsException {
     List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
     StringBuilder cmd = new StringBuilder();
     cmd.append("update ").append(_table.getSqlTable()).append(" set ");
@@ -432,8 +431,8 @@ public class Update {
       LOG.trace(cmd.toString());
     }
 
-    PreparedStatement stmt = _con.getConnection().prepareStatement(
-        cmd.toString());
+    PreparedStatement stmt =
+        _con.getConnection().prepareStatement(cmd.toString());
     for (int i = 0, j = 1; i < list.size(); i++, j++) {
       AttributeTypeInterface attr = (AttributeTypeInterface) list.get(i);
       if (LOG.isTraceEnabled()) {

@@ -27,19 +27,16 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
-import org.efaps.admin.event.TriggerEvent;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Table;
-import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.util.EFapsException;
-import org.efaps.admin.event.Parameter.ParameterValues;
-import org.efaps.admin.event.Return;
-import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.event.TriggerEvent;
 
 /**
  * @author tmo
@@ -117,7 +114,7 @@ public class TableBean extends AbstractCollectionBean  {
     evalFieldDefs();
 
     // first get list of object ids
-    List<Return> ret = getCommand().executeEvent(TriggerEvent.UI_TABLE_EVALUATE,
+    List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                                                  ParameterValues.INSTANCE, getInstance());
     List<List<Instance>> lists = (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
     List < Instance > instances = new ArrayList < Instance > ();
