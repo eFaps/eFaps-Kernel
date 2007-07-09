@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -374,6 +374,16 @@ public abstract class UserInterfaceObject extends AdminObject {
   }
 
   /**
+   * Returns the list of events defined for given event type.
+   *
+   * @param _triggerEvent event type
+   * @return list of events for the given event type
+   */
+  public List<EventDefinition> getEvents(final TriggerEvent _eventType)  {
+    return this.triggers.get(_eventType);
+  }
+
+  /**
    * does this instance have Triggers?
    * 
    * @see #triggers
@@ -385,7 +395,7 @@ public abstract class UserInterfaceObject extends AdminObject {
 
   /**
    * does this instance have Triggers, for the specified TriggerEvent ?
-   * 
+   *
    * @return true, if this instance has a trigger, otherwise false
    */
   public boolean hasTrigger(final TriggerEvent _triggerEvent) {
@@ -401,6 +411,7 @@ public abstract class UserInterfaceObject extends AdminObject {
    * speciefied order, and retruns List with the Returns of the Events
    * 
    * @see #executeTrigger(TriggerEvent)
+   * @deprecated
    */
   public List<Return> executeAllTriggers() {
     List<Return> ret = new ArrayList<Return>();
