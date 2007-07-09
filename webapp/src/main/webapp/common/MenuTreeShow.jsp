@@ -23,23 +23,18 @@
 
 <%@page errorPage="Exception.jsp"%>
 <%@taglib prefix="c"    uri="http://java.sun.com/jstl/core"%>
-<%@taglib prefix="fmt"  uri="http://java.sun.com/jstl/fmt" %>
 <%@taglib prefix="str"  uri="http://jakarta.apache.org/taglibs/string"%>
 <%@taglib prefix="un"   uri="http://jakarta.apache.org/taglibs/unstandard-1.0"%>
 
-<%-- /** set to request locale **/ --%>
-<c:set var="locale"><%=request.getLocale()%></c:set>
-<fmt:setLocale value="${locale}"/>
-<c:remove var="locale"/>
+<%@page import="org.efaps.admin.dbproperty.DBProperties"%>
 
 <%@include file = "../common/StdTop.inc"%>
 
-<fmt:bundle basename="StringResource">
 
   <%-- /** constructor for the menu tree bean with some initialise code **/ --%>
   <jsp:useBean id="uiObject" class="org.efaps.beans.MenuTreeBean" scope="request">
     <jsp:setProperty name="uiObject" property="oid" param="oid"/>
-    <c:set var="label"><str:replace replace="'" with="\\'"><fmt:message><c:out value="${uiObject.instance.type.treeMenuName}.Label"/></fmt:message></str:replace></c:set>
+    <c:set var="label"><str:replace replace="'" with="\\'"><c:out value="${uiObject.instance.type.treeMenuName}"/></str:replace></c:set>
 
     <jsp:setProperty name="uiObject" property="menuLabel" value="<%=pageContext.getAttribute("label")%>"/>
 
@@ -108,7 +103,7 @@ subTree = tree.getSubNodeWithId("<c:out value="${uiObject.instance.oid}"/>");
             selected =
           </c:if>
           addSubNode("",
-              "<fmt:message><c:out value="${one.sub.name}"/>.Label</fmt:message>",
+              "<c:out value="${one.sub.labelProperty}"/>",
               false,
               <%@include file="MenuTreeOneCommand.inc"%>);
         </c:forEach>
@@ -138,5 +133,5 @@ subTree = tree.getSubNodeWithId("<c:out value="${uiObject.instance.oid}"/>");
     </div>
   </body>
 </html>
-</fmt:bundle>
+
 <%@include file = "../common/StdBottom.inc"%>

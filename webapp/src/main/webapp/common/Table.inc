@@ -23,7 +23,7 @@
 
 <%@page import="org.efaps.beans.FieldValue"%>
 <%@page import="org.efaps.beans.TableBean"%>
-<%@taglib prefix="s"    uri="http://myfaces.apache.org/sandbox"  %>
+
 <%@taglib prefix="c"    uri="http://java.sun.com/jstl/core"%>
 <%@taglib prefix="h"    uri="http://java.sun.com/jsf/html"%>
 <%@taglib prefix="f"    uri="http://java.sun.com/jsf/core"%>
@@ -121,7 +121,6 @@ System.out.println("create new cacheKey = "+cacheKey);
 
   <%@include file="ToolBarMenu.inc"%>
   
-
 <c:choose>
 
   <%-- /** initialise the user interface object **/ --%>

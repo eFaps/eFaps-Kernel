@@ -25,7 +25,6 @@ import java.io.StringReader;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.SearchQuery;
-import org.efaps.util.EFapsException;
 
 /**
  * The bean is used for the title of JSP pages.
@@ -39,7 +38,7 @@ public class TitleBean  {
   // instance variables
 
   /**
-   * Name of the command used to evalute the title.
+   * Name of the command used to evaluate the title.
    *
    * @see #getTitle
    * @see #setCommandName
@@ -47,7 +46,7 @@ public class TitleBean  {
   private String commandName = null;
 
   /**
-   * Object id of the instance which is used to evalute the expressions.
+   * Object id of the instance which is used to evaluate the expressions.
    *
    * @see #getTitle
    * @see #setOid

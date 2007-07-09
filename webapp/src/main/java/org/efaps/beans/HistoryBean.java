@@ -111,7 +111,7 @@ public class HistoryBean extends AbstractBean {
   /**
    * The value stores the bean used to translate strings.
    */
-  private ResourceBundleBean i18nBean        = null;
+//  private ResourceBundleBean i18nBean        = null;
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
@@ -189,13 +189,13 @@ public class HistoryBean extends AbstractBean {
           Attribute attr = Attribute.get(rs.getLong(4));
           String attrName = "";
           if (attr != null) {
-            attrName = this.i18nBean.translate(instance.getType().getName()
-                + "/" + attr.getName() + ".Label");
+//            attrName = this.i18nBean.translate(instance.getType().getName()
+//                + "/" + attr.getName() + ".Label");
           }
 
           String value = rs.getString(5);
 
-          row.add(new ColumnValue<String>(this.i18nBean.translate(eventType)));
+//          row.add(new ColumnValue<String>(this.i18nBean.translate(eventType)));
           row.add(new ColumnValue<Date>(rs.getTimestamp(2)));
           row.add(new ColumnValue<String>(Person.get(rs.getLong(3)).getName()));
           row.add(new ColumnValue<String>(attrName));
@@ -316,16 +316,16 @@ public class HistoryBean extends AbstractBean {
       dateTimeConverter.setType("both");
 
       List<ColumnHeader> headerList = new ArrayList<ColumnHeader>();
-      headerList.add(new ColumnHeader("0", this.i18nBean
-          .translate("History.Header.EventType"), stringConverter));
-      headerList.add(new ColumnHeader("1", this.i18nBean
-          .translate("History.Header.Modified"), dateTimeConverter));
-      headerList.add(new ColumnHeader("2", this.i18nBean
-          .translate("History.Header.Modifier"), stringConverter));
-      headerList.add(new ColumnHeader("3", this.i18nBean
-          .translate("History.Header.AttributeName"), stringConverter));
-      headerList.add(new ColumnHeader("4", this.i18nBean
-          .translate("History.Header.AttributeNewValue"), stringConverter));
+//      headerList.add(new ColumnHeader("0", this.i18nBean
+//          .translate("History.Header.EventType"), stringConverter));
+//      headerList.add(new ColumnHeader("1", this.i18nBean
+//          .translate("History.Header.Modified"), dateTimeConverter));
+//      headerList.add(new ColumnHeader("2", this.i18nBean
+//          .translate("History.Header.Modifier"), stringConverter));
+//      headerList.add(new ColumnHeader("3", this.i18nBean
+//          .translate("History.Header.AttributeName"), stringConverter));
+//      headerList.add(new ColumnHeader("4", this.i18nBean
+//          .translate("History.Header.AttributeNewValue"), stringConverter));
       this.columnHeaders = new ListDataModel(headerList);
     }
     return this.columnHeaders;
@@ -384,8 +384,8 @@ public class HistoryBean extends AbstractBean {
    *          new value to set
    * @see #i18nBean
    */
-  public void setI18nBean(final ResourceBundleBean _i18nBean) {
-    this.i18nBean = _i18nBean;
-  }
+//  public void setI18nBean(final ResourceBundleBean _i18nBean) {
+////    this.i18nBean = _i18nBean;
+//  }
 
 }

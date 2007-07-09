@@ -101,14 +101,36 @@ public class DBProperties {
     }
 
     String language = null;
-    String value = null;
+
     try {
       language = Context.getThreadContext().getLocale().getLanguage();
     } catch (EFapsException e) {
-
       LOG.error("not able to read the language from the context", e);
     }
-    Map map = PROPERTIESCACHE.get(language);
+    return getProperty(_key, language);
+
+  }
+
+  /**
+   * Method that returns the value, depending on the parameter _language, for
+   * the given key. <br>
+   * The Search for the key, first searches for a localized Version and if not
+   * found for a Default. If no value can be found, the key will be returned.
+   * 
+   * @param _key
+   *          Key to Search for
+   * @param _language
+   *          language to use
+   * @return if key exists, the value for the key, otherwise the key
+   */
+  public static String getProperty(final String _key, final String _language) {
+    if (!isInitialised()) {
+      initialise();
+    }
+
+    String value = null;
+
+    Map map = PROPERTIESCACHE.get(_language);
     if (map != null) {
       value = (String) map.get(_key);
     }

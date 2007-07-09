@@ -20,6 +20,7 @@
 
 package org.efaps.beans;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
@@ -86,11 +87,11 @@ public class MenuTreeBean extends MenuAbstractBean {
 
     SearchQuery query = new SearchQuery();
     query.setObject(getInstance());
-    query.addAllFromString(_context, getMenuLabel());
+    query.addAllFromString(_context, this.menuLabel);
     query.execute();
 
     if (query.next()) {
-      setMenuLabel(query.replaceAllInString(_context, getMenuLabel()));
+      this.menuLabel = query.replaceAllInString(_context, this.menuLabel);
     }
 
     query.close();
@@ -118,7 +119,7 @@ public class MenuTreeBean extends MenuAbstractBean {
    * @see #getMenuLabel
    */
   public void setMenuLabel(String _menuLabel) {
-    this.menuLabel = _menuLabel;
+    this.menuLabel = DBProperties.getProperty(_menuLabel + ".Label");
   }
 
 }

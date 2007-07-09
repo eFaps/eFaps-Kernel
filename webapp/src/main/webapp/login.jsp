@@ -21,15 +21,8 @@
  
 --%> 
 
-<%@taglib prefix="c"    uri="http://java.sun.com/jstl/core"%>
-<%@taglib prefix="fmt"  uri="http://java.sun.com/jstl/fmt" %>
+<%@page import="org.efaps.admin.dbproperty.DBProperties"%>
 
-<%-- /** set to request locale **/ --%>
-<c:set var="locale"><%=request.getLocale()%></c:set>
-<fmt:setLocale value="${locale}"/>
-<c:remove var="locale"/>
-
-<fmt:bundle basename="StringResource">
 
   <html>
     <head>
@@ -40,7 +33,7 @@
       function test4top() {
         <%-- /**  test if previous login doesn't work **/ --%>
         if (top.wrongLogin)  {
-          alert("<fmt:message key="Login.Wrong.Label"/>");
+          alert("<%=DBProperties.getProperty("Login.Wrong.Label",request.getLocale().getLanguage())%>");
         }
         <%-- /**  do we have top? no => reload to top **/ --%>
         if(top!=self)  {
@@ -54,15 +47,15 @@
         <center>
           <table border="0">
             <tr>
-              <td><fmt:message key="Login.Name.Label"/></td>
+              <td><%=DBProperties.getProperty("Login.Name.Label",request.getLocale().getLanguage())%></td>
               <td><input type="text" name="name" value="" size="15"/></td>
             </tr>
             <tr>
-              <td><fmt:message key="Login.Password.Label"/></td>
+              <td><%=DBProperties.getProperty("Login.Password.Label",request.getLocale().getLanguage())%></td>
               <td><input type="password" name="password" value="" size="15"/></td>
             </tr>
             <tr>
-              <td align="right" colspan="2"><input type="submit" value="<fmt:message key="Login.Button.Label"/>"/></td>
+              <td align="right" colspan="2"><input type="submit" value="<%=DBProperties.getProperty("Login.Button.Label",request.getLocale().getLanguage())%>"/></td>
           	</tr>
           </table>
         </center>
@@ -70,4 +63,3 @@
     </body>
   </html>
 
-</fmt:bundle>

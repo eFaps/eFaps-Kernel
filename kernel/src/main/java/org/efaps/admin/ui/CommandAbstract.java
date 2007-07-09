@@ -27,6 +27,7 @@ import java.util.Vector;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.servlet.RequestHandler;
@@ -428,6 +429,15 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    */
   public void setIcon(final String _icon) {
     this.icon = _icon;
+  }
+
+  /**
+   * This method returns the Property of the Label and not the name
+   * 
+   * @return String
+   */
+  public String getLabelProperty() {
+    return DBProperties.getProperty(this.label);
   }
 
   /**

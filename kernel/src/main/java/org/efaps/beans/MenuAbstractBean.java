@@ -64,7 +64,7 @@ abstract protected void execute(Context _context) throws Exception;
    * @see #execute()
    */
   protected void setMenu(Context _context, Menu _menu) throws Exception  {
-    if (_menu.hasAccess(_context))  {
+    if (_menu.hasAccess())  {
       setMenuHolder(new MenuHolder(_context, _menu));
     }
   }
@@ -226,7 +226,7 @@ abstract protected void execute(Context _context) throws Exception;
       Iterator iter = _menu.getCommands().iterator();
       while (iter.hasNext())  {
         UserInterfaceObject obj = (UserInterfaceObject)iter.next();
-        if (obj.hasAccess(_context))  {
+        if (obj.hasAccess())  {
           if (obj instanceof MenuAbstract)  {
             getSubs().add(new MenuHolder(_context, (MenuAbstract)obj));
           } else  {

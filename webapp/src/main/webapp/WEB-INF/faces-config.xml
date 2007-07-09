@@ -29,18 +29,6 @@
 
 <faces-config>
 
-  <!-- resource bundle bean used for translation-->
-  <managed-bean>
-    <managed-bean-name>i18n</managed-bean-name>
-    <managed-bean-class>org.efaps.beans.ResourceBundleBean</managed-bean-class>
-    <managed-bean-scope>application</managed-bean-scope>
-    <!-- set bundle (base) name -->
-    <managed-property>
-      <property-name>bundleName</property-name>
-      <value>StringResource</value>
-    </managed-property>
-  </managed-bean>
-
   <!-- history bean -->
   <managed-bean>
     <managed-bean-name>history</managed-bean-name>

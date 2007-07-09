@@ -20,28 +20,21 @@
   Last Changed By: $Author$
  
 --%>
-
-<%@taglib prefix="c"    uri="http://java.sun.com/jstl/core"%>
-<%@taglib prefix="fmt"  uri="http://java.sun.com/jstl/fmt" %>
+<%@page import="org.efaps.admin.dbproperty.DBProperties"%>
 
 <%@include file = "../common/StdTop.inc"%>
 
-<c:set var="locale"><%=request.getLocale()%></c:set>
-<fmt:setLocale value="${locale}"/>
-<c:remove var="locale"/>
-<fmt:bundle basename="StringResource">
-  <tr>
-    <td class="eFapsLogo">
-      <div class="eFapsLogoWelcome">
-        <fmt:message key="LogoRowInclude.Welcome.Label"/>
-        <%=context.getPerson().getFirstName()%>
-        <%=context.getPerson().getLastName()%>
-      </div>
-      <div class="eFapsLogoVersion">
-        <fmt:message key="LogoRowInclude.Version.Label"/>
-      </div>
-    </td>
-  </tr>
-</fmt:bundle>
+<tr>
+  <td class="eFapsLogo">
+   <div class="eFapsLogoWelcome">
+      <%=DBProperties.getProperty("LogoRowInclude.Welcome.Label")%>
+      <%=context.getPerson().getFirstName()%>
+      <%=context.getPerson().getLastName()%>
+    </div>
+    <div class="eFapsLogoVersion">
+      <%=DBProperties.getProperty("LogoRowInclude.Version.Label")%>
+    </div>
+  </td>
+</tr>
 
 <%@include file = "../common/StdBottom.inc"%>
