@@ -57,7 +57,7 @@
     <property name="Submit">true</property>
     <!-- trigger -->
     <trigger name="Admin_UI_CommandTree_Links_Menu_Action_Disconnect_COMMAND" 
-      event="COMMAND" program="org.efaps.webapp.programs.CommonDelete" method="execute" index="1"/>
+      event="COMMAND" program="org.efaps.events.ui.table.CommonDelete" method="execute" index="1"/>
   
     
   </definition>

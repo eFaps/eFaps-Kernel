@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.programs;
+package org.efaps.events.ui.table;
 
 import java.util.StringTokenizer;
 

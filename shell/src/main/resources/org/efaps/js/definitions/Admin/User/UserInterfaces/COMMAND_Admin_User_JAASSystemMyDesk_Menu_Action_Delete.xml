@@ -57,7 +57,7 @@
     <property name="Submit">true</property>
   
     <!-- trigger -->
-    <trigger name="Admin_User_JAASSystemMyDesk_Menu_Action_Delete_COMMAND" event="COMMAND" program="org.efaps.webapp.programs.CommonDelete" method="execute" index="1"/>
+    <trigger name="Admin_User_JAASSystemMyDesk_Menu_Action_Delete_COMMAND" event="COMMAND" program="org.efaps.events.ui.table.CommonDelete" method="execute" index="1"/>
   
   </definition>
 

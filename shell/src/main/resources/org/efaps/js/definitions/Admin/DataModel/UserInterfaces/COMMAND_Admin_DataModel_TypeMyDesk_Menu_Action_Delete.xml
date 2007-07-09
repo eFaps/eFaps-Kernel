@@ -58,7 +58,7 @@
     
      <!-- trigger -->
     <trigger name="Admin_DataModel_TypeMyDesk_Menu_Action_Delete_COMMAND"
-     event="COMMAND" program="org.efaps.webapp.programs.CommonDelete" method="execute" index="1"/>
+     event="COMMAND" program="org.efaps.events.ui.table.CommonDelete" method="execute" index="1"/>
   
   </definition>
 
