@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>3fa6f282-ed58-4086-bf15-a01305f6930d</uuid>
+  <uuid>83ba670b-4ee5-4089-8f69-b0cbaaa4e1a7</uuid>
 
   <!-- create type -->
   <definition>
@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_Event_Trigger_History_Checkout</name>
+    <name>Admin_HistoryAttributes</name>
   </definition>
 
   <!-- define type -->
@@ -45,8 +45,40 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Event_Trigger_History_Checkout</name>
-    <parent>Admin_Event_Trigger_CheckoutPost</parent>
+    <name>Admin_HistoryAttributes</name>
+    <attribute>
+      <name>OID</name>
+      <type>OID</type>
+      <sqltable>Admin_HistoryAttributesSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>Admin_HistoryAttributesSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>HistoryID</name>
+      <type>Link</type>
+      <typelink>Admin_History_Abstract</typelink>
+      <sqltable>Admin_HistoryAttributesSQLTable</sqltable>
+      <sqlcolumn>HISTORYID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Attribute</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_Attribute</typelink>
+      <sqltable>Admin_HistoryAttributesSQLTable</sqltable>
+      <sqlcolumn>ATTRIBUTEID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Value</name>
+      <type>String</type>
+      <sqltable>Admin_HistoryAttributesSQLTable</sqltable>
+      <sqlcolumn>VALUE</sqlcolumn>
+    </attribute>
+     
     <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 

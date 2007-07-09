@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>7a965077-e012-40ed-9b22-8d075e991f43</uuid>
+  <uuid>4315461e-5507-4d91-9b39-7195527d59bc</uuid>
 
   <!-- create type -->
   <definition>
@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_Event_Trigger_History_Delete</name>
+    <name>Admin_History_Checkin</name>
   </definition>
 
   <!-- define type -->
@@ -45,8 +45,8 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Event_Trigger_History_Delete</name>
-    <parent>Admin_Event_Trigger_DeletePost</parent>
+    <name>Admin_History_Checkin</name>
+    <parent>Admin_History_Abstract</parent>
     <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 

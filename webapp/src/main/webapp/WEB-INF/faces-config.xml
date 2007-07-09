@@ -29,23 +29,6 @@
 
 <faces-config>
 
-  <!-- history bean -->
-  <managed-bean>
-    <managed-bean-name>history</managed-bean-name>
-    <managed-bean-class>org.efaps.beans.HistoryBean</managed-bean-class>
-    <managed-bean-scope>request</managed-bean-scope>
-    <!-- translation resource settings -->
-    <managed-property>
-      <property-name>i18nBean</property-name>
-      <value>#{i18n}</value>
-    </managed-property>
-    <!-- set object id from request parameters (after setting of i18nBean!) -->
-    <managed-property>
-      <property-name>oid</property-name>
-      <value>#{param.oid}</value>
-    </managed-property>
-  </managed-bean>
-
   <!-- main toolbar menu -->
   <managed-bean>
     <managed-bean-name>menuMainToolbar</managed-bean-name>

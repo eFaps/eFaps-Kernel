@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -24,7 +24,7 @@
 -->
 
 <datamodel-sqltable>
-  <uuid>18bd1cff-c982-47ac-81e5-a4df96ee4b6f</uuid>
+  <uuid>fc7afd62-a520-4321-8723-a4e2e59b8449</uuid>
 
   <!-- History of Events for Objects -->
   <definition>
@@ -35,17 +35,14 @@
       <mode>(version==2)</mode>
     </version>
     <database>
-      <table-name>HISTORY</table-name>
+      <table-name>T_HISTORYATTRIBUTE</table-name>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="EVENTTYPEID"        type="INTEGER"                      not-null="true"/>
-      <column name="FORTYPEID"          type="INTEGER"                      not-null="true"/>
-      <column name="FORID"              type="INTEGER"                      not-null="true"/>
-      <column name="MODIFIER"           type="INTEGER"                      not-null="true"/>
-      <column name="MODIFIED"           type="DATETIME"                     not-null="true"/>
-      <column name="ATTRID"             type="INTEGER"/>
-      <column name="ATTRVALUE"          type="STRING_LONG"  length="2000"/>
+      <column name="HISTORYID"   type="INTEGER"                      not-null="true"/>
+      <column name="ATTRIBUTEID" type="INTEGER"                      not-null="true"/>
+      <column name="VALUE"       type="STRING_LONG" length="2000"    not-null="true"/>
+      
      </database>
   </definition>
 
@@ -57,12 +54,10 @@
       <mode>(version==3)</mode>
     </version>
     <database>
-      <table-name>HISTORY</table-name>
+      <table-name>T_HISTORYATTRIBUTE</table-name>
       <update>true</update>
       <!-- constraints -->
-      <foreign name="HIST_FK_EVNTYPEID"     key="EVENTTYPEID"   reference="DMTYPE(ID)"/>
-      <foreign name="HIST_FK_FORTYPEID"     key="FORTYPEID"     reference="DMTYPE(ID)"/>
-      <foreign name="HIST_FK_MODIFIER"      key="MODIFIER"      reference="USERABSTRACT(ID)"/>
+      <foreign name="HISTATT_FK_HISTORYID"  key="HISTORYID"     reference="T_HISTORY(ID)"/>
     </database>
   </definition>
 
@@ -73,9 +68,9 @@
       <local>$Rev$</local>
       <mode>(version==4)</mode>
     </version>
-    <name>Admin_Event_HistorySQLTable</name>
+    <name>Admin_HistoryAttributesSQLTable</name>
     <database>
-      <table-name>HISTORY</table-name>
+      <table-name>T_HISTORYATTRIBUTE</table-name>
     </database>
   </definition>
 </datamodel-sqltable>
