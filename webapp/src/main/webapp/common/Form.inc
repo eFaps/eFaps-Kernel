@@ -122,34 +122,8 @@ uiObject.setUkTitle("");
                 '../images/eFapsButtonCancel.gif');
         </c:if>
 --%>
-        eFapsPositionForm();
-        window.onresize = function() { eFapsPositionForm(); }
 
-
-        eFapsProcessEnd();
       }
-
-
-  function eFapsPositionForm() {
-    var div = document.getElementById("eFapsForm");
-    var menu = document.getElementById("eFapsFrameToolbarMenu");
-    var newHeight = eFapsCommonGetWindowHeight()
-                          - menu.offsetTop
-                          - menu.offsetHeight;
-
-    <%-- /** if create / edit / search mode, a button line is shown */ --%>
-    <c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
-      newHeight = newHeight - 40;
-    </c:if>
-
-    if (newHeight > 0)  {
-      div.style.maxHeight = newHeight + 'px';
-      div.style.minHeight = newHeight + 'px';
-    } else  {
-      div.style.maxHeight = newHeight + '0px';
-      div.style.minHeight = newHeight + 'px';
-    }
-	}
 
 /**
  * The current form is submitted to the given href.
@@ -157,8 +131,8 @@ uiObject.setUkTitle("");
  * @see #execute
  */
 function eFapsSubmit()  {
-  var div = document.getElementById("eFapsForm");
-  var form = div.getElementsByTagName("form")[0];
+  var div = document.getElementById("eFapsFormWithFooter");
+  var form = div.getElementsByTagName("form")[1];
   
 //  eFapsProcessStart();
   form.submit();
@@ -191,8 +165,6 @@ function eFapsSubmit()  {
 }
 
 </script>
-
-
         </head>
         <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css"/>
         <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
@@ -204,6 +176,14 @@ function eFapsSubmit()  {
 
         <body onLoad="eFapsFormProcessEnd()" onUnLoad="eFapsCleanUpSession('<%=timeStamp%>')" class="<c:out value="${bodyClass}"/>">
 
+<c:choose>
+  <c:when test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
+    <div id="eFapsFormWithFooter">
+  </c:when>
+  <c:otherwise>
+    <div id="eFapsForm">
+  </c:otherwise>
+</c:choose>
 
 
           <%-- /** menu bar **/ --%>
@@ -215,7 +195,16 @@ function eFapsSubmit()  {
   </h:panelGrid>
   <%@include file="ToolBarMenu.inc"%>
 
-<div id="eFapsForm" style="overflow:auto;max-width:100%;">
+<c:choose>
+  <c:when test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
+    <div id="eFapsFormContentWithFooter">
+  </c:when>
+  <c:otherwise>
+    <div id="eFapsFormContent">
+  </c:otherwise>
+</c:choose>
+
+
 
       <form method="post" enctype="multipart/form-data" target="<c:out value="${targetProcess}"/>" action="../common/FormProcess.jsp">
         <input type="hidden" name="command" value=""/>
@@ -225,7 +214,7 @@ function eFapsSubmit()  {
           <input type="hidden" name="<c:out value="${hiddenValue.name}"/>" value="<c:out value="${hiddenValue.value}"/>"/>
         </c:forEach>
 
-        <table class="eFapsForm">
+        <table>
           <c:if test="${uiObject.values ne null}">
             <c:if test="${uiObject.values[0] ne null}">
               <input type="hidden" name="oid" value="<c:out value="${uiObject.values[0].instance.oid}"/>"/>
@@ -351,27 +340,25 @@ function eFapsSubmit()  {
 </div>
 
 
-          <div class="eFapsFrameFooter">
-
-<c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
-  <h:form>
-    <h:commandLink onclick="eFapsSubmit();return false;" title="Create">
-      <h:graphicImage value="../images/eFapsButtonDone.gif"/>
-      <h:outputText value="Edit"/>
-    </h:commandLink>
-    <h:commandLink onclick="eFapsCommonCloseWindow();return false;" title="Create">
-      <h:graphicImage value="../images/eFapsButtonCancel.gif"/>
-      <h:outputText value="Close"/>
-    </h:commandLink>
-  </h:form>
-</c:if>
-
-          </div>
+          <c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
+            <div id="eFapsFooter">
+              <h:form>
+                <h:commandLink onclick="eFapsSubmit();return false;" title="Create">
+                  <h:graphicImage value="../images/eFapsButtonDone.gif"/>
+                  <h:outputText value="Edit"/>
+                </h:commandLink>
+                <h:commandLink onclick="eFapsCommonCloseWindow();return false;" title="Create">
+                  <h:graphicImage value="../images/eFapsButtonCancel.gif"/>
+                  <h:outputText value="Close"/>
+                </h:commandLink>
+              </h:form>
+            </div>
+          </c:if>
 
 </f:view>
           <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="about:blank">
           </iframe>
-          
+</div>          
         </body>
       </html>
 

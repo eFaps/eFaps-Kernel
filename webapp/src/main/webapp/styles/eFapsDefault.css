@@ -25,19 +25,19 @@
 
 /* Background Appearance */
 body {
-	background-color: white;
-	padding: 0px;
-	margin: 0px; 
-	border: 0px hidden transparent; 
-	border-style: none; 
-	max-height: 100%; 
-	overflow: hidden;
+        background-color: white;
+        padding: 0px;
+        margin: 0px; 
+        border: 0px hidden transparent; 
+        border-style: none; 
+        max-height: 100%; 
+        overflow: hidden;
 }
 
 /* Font Appearance */
 body, th, td, p, div {
-	font-family: arial, verdana, helvetica, sans-serif;
-	font-size: 8pt;
+        font-family: arial, verdana, helvetica, sans-serif;
+        font-size: 8pt;
 }
 
 /******************************************************************************
@@ -58,16 +58,16 @@ table.eFapsLogin {
  * Table representing the complete main JSP.
  */
 table.eFapsMainTable {
-	width: 100%;
-	height: 100%; 
-	max-height: 100%; 
-	overflow: hidden; 
-	margin: 0px; 
-	padding: 0px; 
-	border: 0px none transparent; 
-	border-spacing: 0px; 
-	border-collapse: collapse; 
-	background-color: white;
+        width: 100%;
+        height: 100%; 
+        max-height: 100%; 
+        overflow: hidden; 
+        margin: 0px; 
+        padding: 0px; 
+        border: 0px none transparent; 
+        border-spacing: 0px; 
+        border-collapse: collapse; 
+        background-color: white;
 }
 
 /**
@@ -75,13 +75,13 @@ table.eFapsMainTable {
  */
 td.eFapsMainTableRowMenu {
         width: 100%;
-	padding: 0px; 
-	padding-left: 4px; 
-	margin: 0px; 
-	border-width: 1px; 
-	border-style: solid; 
-	background-color: #dadada;
-	height: 25px;
+        padding: 0px; 
+        padding-left: 4px; 
+        margin: 0px; 
+        border-width: 1px; 
+        border-style: solid; 
+        background-color: #dadada;
+        height: 25px;
 }
 
 /******************************************************************************
@@ -89,37 +89,37 @@ td.eFapsMainTableRowMenu {
 /*****************************************************************************/
 
 td.eFapsLogo {
-	padding: 0px; 
-	padding-right: 10px; 
-	margin: 0px; 
-	text-align: right; 
-	height: 41px; 
-	background-image:url(../servlet/image/Admin_Common_HeaderImage); 
+        padding: 0px; 
+        padding-right: 10px; 
+        margin: 0px; 
+        text-align: right; 
+        height: 41px; 
+        background-image:url(../servlet/image/Admin_Common_HeaderImage); 
 }
 
 /**
  * Welcome Text
  */
 div.eFapsLogoWelcome {
-	white-space: nowrap;
-	position: relative;
-	margin: 0px; 
-	padding: 0px; 
-	font-size: 12pt; 
-	font-weight: bold; 
-	top: 0px; 
+        white-space: nowrap;
+        position: relative;
+        margin: 0px; 
+        padding: 0px; 
+        font-size: 12pt; 
+        font-weight: bold; 
+        top: 0px; 
 }
 
 /**
  * Version Text
  */
 div.eFapsLogoWelcomeVersion {
-	white-space: nowrap;
-	position: relative; 
-	margin: 0px; 
-	padding: 0px; 
-	font-size: 8pt; 
-	top: 3px; 
+        white-space: nowrap;
+        position: relative; 
+        margin: 0px; 
+        padding: 0px; 
+        font-size: 8pt; 
+        top: 3px; 
 }
 
 /******************************************************************************
@@ -128,30 +128,7 @@ div.eFapsLogoWelcomeVersion {
 
 /* top header */
 body.eFapsTopHeader  {
-	background-color: #007000;
-}
-
-/******************************************************************************
-** General Body settings for Frames
-******************************************************************************/
-
-/* body class in mode view */
-body.eFapsFrameView  {
-	background-color: #FFFFFF;
-}
-
-/** 
- * body class in mode edit
- */
-body.eFapsFrameEdit  {
-	background-color: #FFFFFF;
-}
-
-/**
- * the table is the header of the edit form
- */
-body.eFapsFrameEdit>table  {
-	background-color: #DDDECB;
+        background-color: #007000;
 }
 
 /*****************************************************************************/
@@ -163,17 +140,17 @@ body.eFapsFrameEdit>table  {
  */
 #eFapsFrameTitle  {
         width: 100%;
-	margin: 0px; 
-	padding: 0px; 
-	color: #008800;
-	font-weight: bold;
+        margin: 0px; 
+        padding: 0px; 
+        color: #008800;
+        font-weight: bold;
 }
 
-#eFapsFrameTitle>tbody>tr>td  {
+#eFapsFrameTitle tbody tr td  {
         padding-left: 3px;
-	font-size: 13pt;
-	height: 28px;
-	white-space: nowrap;
+        font-size: 13pt;
+        height: 28px;
+        white-space: nowrap;
 }
 
 /*****************************************************************************/
@@ -184,16 +161,16 @@ body.eFapsFrameEdit>table  {
  * Toolbar Menu
  */
 #eFapsFrameToolbarMenu  {
-	padding: 0px;
-	margin: 0px;
+        padding: 0px;
+        margin: 0px;
 }
 
 #eFapsFrameToolbarMenu>table  {
-	border-width: 1px;
-	border-style: solid;
-	padding: 0px;
-	margin: 0px;
-	background-color: #dadada;
+        border-width: 1px;
+        border-style: solid;
+        padding: 0px;
+        margin: 0px;
+        background-color: #dadada;
         width: 100%;
         height: 25px;
 }
@@ -203,86 +180,49 @@ body.eFapsFrameEdit>table  {
 /*****************************************************************************/
 
 div.eFapsFrameFilter  {
-	position: absolute;
-	right: 20px;
-	top: 20px;
+        position: absolute;
+        right: 20px;
+        top: 20px;
 }
 
 /*****************************************************************************/
-/* Frame Footer                                                              */
+/* Frame Footer (Menu)                                                       */
 /*****************************************************************************/
 
-.eFapsFrameFooter  {
-	position: absolute;
-	left: 0px;
-	bottom: 0px;
-	width: 100%;
-	height: 40px;
-	margin: 0;
-	padding: 0;
-/*	border-top-width: 1px;
-	border-top-style: solid;
-	border-top-color: black;
-*/
+#eFapsFooter  {
+        position: absolute;
+        right: 10px;
+        bottom: 0px;
+        height: 40px;
+        margin: 0;
+        padding: 0;
+        border-style: none;
+        background: #DDDECB;
 }
-
-/*****************************************************************************/
-/* Frame Footer Menu                                                         */
-/*****************************************************************************/
-
-/* Id of the frame header menu bar. */
-#eFapsFrameFooterMenu  {
-	position: absolute;
-	left: 10px;
-	bottom: 25px;
+* html #eFapsFooter { /* IE */
+        height: 60px;
+        border-bottom: 50px solid #DDDECB;
 }
 
 /* complete css class for the header menu bar */
-.eFapsFrameFooterMenu  {
-	color: #003366;
-	float: left;
-	border-width: 0;
-	border-style: none;
+#eFapsFooter a  {
+        color: #003366;
+        float: left;
+        border-width: 0;
+        border-style: none;
+}
+* html #eFapsFooter a  {
+        padding-bottom: 3px;
 }
 
 /* A margin must be before and after the image of the footer menu */
-img.eFapsFrameFooterMenu  {
-	margin-top: 3px;
-	margin-left: 10px;
-	margin-right: 5px;
+#eFapsFooter img  {
+        border-width: 0;
+        margin-bottom: -3px;
+        margin-left: 10px;
+        margin-right: 5px;
 }
-
-/*****************************************************************************/
-/* Frame Footer Action Menu                                                  */
-/*****************************************************************************/
-
-.eFapsFrameFooterAction  {
-	color: #003366;
-	border-width: 0;
-	border-style: none;
-	vertical-align: middle;
-	margin: 2px;
-	padding: 0;
-	white-space: nowrap;
-}
-
-/* complete div with the footer action buttons */
-#eFapsFrameFooterAction  {
-	position: absolute;
-	right: 0px;
-	bottom: 5px;
-	white-space: nowrap;
-}
-
-/* The divs must be always left side! */
-div.eFapsFrameFooterAction  {
-	float: left;
-}
-
-/* A margin must be before and after the image of the header menu */
-img.eFapsFrameFooterAction  {
-	margin-left: 10px;
-	margin-right: 0px;
+* html #eFapsFooter img  {
 }
 
 /*****************************************************************************/
@@ -290,22 +230,91 @@ img.eFapsFrameFooterAction  {
 /*****************************************************************************/
 
 .eFapsFrameHidden  {
-	visibility: hidden;
-	height: 0px;
-	width: 0px;
+        visibility: hidden;
+        height: 0px;
+        width: 0px;
 }
 
 /******************************************************************************
 ** Style Sheet for Web Forms
 ******************************************************************************/
 
+/* div used to hold the complete web form without footer */
+#eFapsForm {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border-width: 0;
+}
+* html #eFapsForm { /* IE */
+        height: 100%;
+}
+
+/* div used to hold the complete web form with footer */
+#eFapsFormWithFooter {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border-width: 0;
+        background: #DDDECB;
+}
+* html #eFapsFormWithFooter { /* IE */
+        height: 100%;
+}
+
+/* web form content without footer */
+#eFapsFormContent {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin-left: 0;
+        padding-left: 0;
+        border-width: 0px; 
+        overflow:auto;
+}
+* html #eFapsFormContent { /* IE */
+        position: static;
+        height: 100%;
+        width: 100%;
+        bottom: 45px;
+        border-left: 5px solid white;
+        border-top: 40px solid white;
+        border-bottom: 45px solid white;
+}
+
+/* web form content with footer */
+#eFapsFormContentWithFooter {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        bottom: 50px;
+        left: 0;
+        margin-left: 0;
+        padding-left: 0;
+        border-width: 0px; 
+        overflow:auto;
+        background: white;
+}
+* html #eFapsFormContentWithFooter { /* IE */
+        position: static;
+        height: 100%;
+        width: 100%;
+        border-left: 0 solid #DDDECB;
+        border-top: 40px solid #DDDECB;
+        border-bottom: 90px solid #DDDECB;
+}
+
 /* web form itself */
-table.eFapsForm  {
-	/*width: 100%;*/
-	margin-top: 6px;
-margin-left: 6px;
-/*	padding-left: 6px;*/
-/*padding-right: 40px;*/
+#eFapsFormContent table,
+#eFapsFormContentWithFooter table {
+        margin-top: 6px;
+        margin-left: 6px;
 }
 
 /* Default Label Appearance */
@@ -315,7 +324,7 @@ td.eFapsFormLabel {
         font-weight: bold;
         height: 24px;
         width: 200px;
-padding-left: 4px;
+        padding-left: 4px;
 }
 
 /* Required Label Appearance */
@@ -330,13 +339,14 @@ td.eFapsFormLabelRequired {
 /* Input Field Appearance */
 td.eFapsFormInputField {
         background-color: #eeeeee;
-        font-size: 12px;
+        font-size: 12px;0
 }
 
 /* image in a field of a web form */
-table.eFapsForm tr td a img  {
-	border-width: 0;
-	border-style: none;
+#eFapsFormContent table tr td a img,
+#eFapsFormContentWithFooter table tr td a img {
+        border-width: 0;
+        border-style: none;
 }
 
 /******************************************************************************
@@ -345,15 +355,15 @@ table.eFapsForm tr td a img  {
 
 /* div used to hold the complete table */
 #eFapsTable {
- position: absolute;
- top:0;
- right:0;
- bottom:0;
- left:0;
- border-width: 0;
+        position: absolute;
+        top:0;
+        right:0;
+        bottom:0;
+        left:0;
+        border-width: 0;
 }
 * html #eFapsTable {
- height:100%;
+        height:100%;
 }
 
 /* Table Header Appearance */
@@ -373,8 +383,8 @@ table.eFapsForm tr td a img  {
         text-align: left;
         color: white;
         background-color: #00A000;
-	border-style: none;
-	white-space: nowrap;
+        border-style: none;
+        white-space: nowrap;
         overflow: hidden;
         height: 20px;
 }
@@ -392,8 +402,8 @@ table.eFapsForm tr td a img  {
 
 /* Table Header Image */
 #eFapsTableHeader div a img {
-	border-style: none;
-	border-width: 0;
+        border-style: none;
+        border-width: 0;
 }
 
 /* table content without footer */
@@ -408,7 +418,7 @@ table.eFapsForm tr td a img  {
         border-width: 0px; 
         overflow:auto;
 }
-* html #eFapsTableContent { 
+* html #eFapsTableContent { /* IE */
         position: static;
         height: 100%;
         width: 100%;
@@ -440,9 +450,10 @@ table.eFapsForm tr td a img  {
 }
 
 /* web table itself */
-#eFapsTableContent table  {
+#eFapsTableContent table,
+#eFapsTableContentWithFooter table {
         margin: 0;
-	padding: 0;
+        padding: 0;
         width: 100%;
 }
 
@@ -459,27 +470,8 @@ tr.eFapsTableRowEven {
 /* image of buttons in a row of a web table */
 tr.eFapsTableRowOdd td a img,
 tr.eFapsTableRowEven td a img  {
-	border-width: 0;
-	border-style: none;
-}
-
-/******************************************************************************
-** Button Settings
-******************************************************************************/
-
-/* Button Link Appearance */
-a.eFapsButtonLink {
-	color: #008000;
-}
-a.eFapsButtonLink:hover {
-	color: #008000;
-}
-
-
-.eFapsButtonDoneCancel {
-	color: #008000;
-	text-align: right;
-	white-space: nowrap;
+        border-width: 0;
+        border-style: none;
 }
 
 /******************************************************************************
@@ -488,131 +480,84 @@ a.eFapsButtonLink:hover {
 
 /* body of a tree navigation menu */
 body.eFapsTreeNav {
-	background-color: #FFFFFF;
-	white-space: nowrap;
+        background-color: #FFFFFF;
+        white-space: nowrap;
 }
 
 /* span (with and without child nodes) */
 span.eFapsTreeNav,
 span.eFapsTreeNavHCN {
-	color: #000000;
-	text-decoration: none;
-	border-width: 0;
-	padding-top: 2px;
-	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size: 11px;
+        color: #000000;
+        text-decoration: none;
+        border-width: 0;
+        padding-top: 2px;
+        font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+        font-size: 11px;
 }
 
 /* h reference (with and without child nodes) */
 a.eFapsTreeNav,
 a.eFapsTreeNavHCN  {
-	color: #000000;
-	text-decoration: none;
-	border-width: 0;
-	padding-top: 2px;
-	padding-bottom: 1px;
-	padding-right: 2px;
-	padding-left: 2px;
-	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size: 11px;
+        color: #000000;
+        text-decoration: none;
+        border-width: 0;
+        padding-top: 2px;
+        padding-bottom: 1px;
+        padding-right: 2px;
+        padding-left: 2px;
+        font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+        font-size: 11px;
 }
 
 /* h reference (with and without child nodes) */
 a.eFapsTreeNav:hover,
 a.eFapsTreeNavHCN:hover  {
-	background-color: #AAFFAA;
+        background-color: #AAFFAA;
 }
 
 /* focused h refence (with and without child nodes) */
 a.eFapsTreeNavFocus,
 a.eFapsTreeNavHCNFocus  {
-	background-color: green;
-	color: white;
-	padding-top: 2px;
-	padding-bottom: 1px;
-	padding-right: 2px;
-	padding-left: 2px;
-	border-style: none;
-	border-width: 0;
-	text-decoration: none;
-	font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
-	font-size: 11px;
+        background-color: green;
+        color: white;
+        padding-top: 2px;
+        padding-bottom: 1px;
+        padding-right: 2px;
+        padding-left: 2px;
+        border-style: none;
+        border-width: 0;
+        text-decoration: none;
+        font-family: Verdana, Geneva, Arial, Helvetica, sans-serif;
+        font-size: 11px;
 }
 
 /* plus / minus / line images */
 img.eFapsTreeNavImages  {
-	width: 19px;
-	height: 20px;
-	border-style: none;
-	border-width: 0;
-	padding-top: 0px;
-	padding-bottom: 0px;
-	margin-top: 0px;
-	margin-bottom: -4px;
+        width: 19px;
+        height: 20px;
+        border-style: none;
+        border-width: 0;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        margin-top: 0px;
+        margin-bottom: -4px;
 }
 
 /* type images in front of the text */
 img.eFapsTreeNavImages4Text {
-	width: 15px;
-	height: 13px;
+        width: 15px;
+        height: 13px;
 }
 
 /* span holding all images needed for type tree nodes */
 span.eFapsTreeTypeImages  {
-	padding-left: 7px;
+        padding-left: 7px;
 }
 
 /* one image needed for type tree nodes */
 img.eFapsTreeTypeImages  {
-	border-style: none;
-	border-width: 0;
-}
-
-/******************************************************************************
-** Search settings
-******************************************************************************/
-
-div.eFapsSearchMenu  {
-	font-family: arial, verdana, helvetica, sans-serif;
-	font-size: 10pt;
-	margin-bottom: 15px;
-	line-height: 25px;
-}
-
-a.eFapsSearchMenu,
-a.eFapsSearchMenu:link,
-a.eFapsSearchMenu:visited,
-a.eFapsSearchMenu:active  {
-	color: green;
-	text-decoration: none;
-	font-weight: bold;
-}
-
-div.eFapsSearchCommand  {
-	margin-left: 11px;
-	line-height: 18px;
-}
-
-a.eFapsSearchCommand,
-a.eFapsSearchCommand:link,
-a.eFapsSearchCommand:visited,
-a.eFapsSearchCommand:active  {
-	color: black;
-	text-decoration: none;
-	padding-left: 4px;
-}
-
-a.eFapsSearchCommandSelected,
-a.eFapsSearchCommandSelected:link,
-a.eFapsSearchCommandSelected:visited,
-a.eFapsSearchCommandSelected:active  {
-	background-color: green;
-	color: yellow;
-	text-decoration: none;
-	padding-left: 4px;
-	padding-right: 4px;
-	padding-top: 2px;
-	padding-bottom: 2px;
+        border-style: none;
+        border-width: 0;
 }
 
 /******************************************************************************
@@ -620,22 +565,22 @@ a.eFapsSearchCommandSelected:active  {
 ******************************************************************************/
 
 table.eFapsError  {
-	border-style: solid;
-	border-color: #FF0000;
+        border-style: solid;
+        border-color: #FF0000;
 }
 
 /* Error Label Appearance */
 td.eFapsErrorLabel {
-	background-color: #FFB0B0;
-	color: black;
-	font-weight: bold;
-	height: 24px;
-	width: 90px;
+        background-color: #FFB0B0;
+        color: black;
+        font-weight: bold;
+        height: 24px;
+        width: 90px;
 }
 
 /* Error Text Appearance */
 td.eFapsErrorText {
-	background-color: #FFD0D0;
-	font-size: 12px;
+        background-color: #FFD0D0;
+        font-size: 12px;
 }
 
