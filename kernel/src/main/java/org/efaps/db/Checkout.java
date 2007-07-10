@@ -28,6 +28,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.EventType;
 import org.efaps.db.transaction.StoreResource;
 import org.efaps.util.EFapsException;
 
@@ -46,17 +47,10 @@ public class Checkout extends AbstractAction {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG      = LogFactory.getLog(Checkout.class);
+  private static final Log LOG = LogFactory.getLog(Checkout.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
-
-  /**
-   * Instance holding the oid of the object which is checked out.
-   * 
-   * @see #getInstance
-   */
-  private final Instance   instance;
 
   /**
    * Stores the file name after pre processing.
@@ -64,7 +58,7 @@ public class Checkout extends AbstractAction {
    * @see #preprocess
    * @see #getFileName
    */
-  private String           fileName = null;
+  private String fileName = null;
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
@@ -95,7 +89,7 @@ public class Checkout extends AbstractAction {
    *          name of the attribute where the blob is in
    */
   public Checkout(final Instance _instance) {
-    this.instance = _instance;
+    super.setInstance(_instance);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -144,8 +138,9 @@ public class Checkout extends AbstractAction {
    *           out of the eFaps object
    */
   public void execute(final OutputStream _out) throws EFapsException {
-    boolean hasAccess = this.instance.getType().hasAccess(this.instance,
-        AccessTypeEnums.CHECKOUT.getAccessType());
+    boolean hasAccess =
+        super.getInstance().getType().hasAccess(super.getInstance(),
+            AccessTypeEnums.CHECKOUT.getAccessType());
     if (!hasAccess) {
       throw new EFapsException(getClass(), "execute.NoAccess");
     }
@@ -161,19 +156,24 @@ public class Checkout extends AbstractAction {
    *           if checkout action fails
    */
   public void executeWithoutAccessCheck(final OutputStream _out)
-                                                                throws EFapsException {
+      throws EFapsException {
     Context context = Context.getThreadContext();
     StoreResource store = null;
     try {
-      store = context.getStoreResource(getInstance().getType(), getInstance()
-          .getId());
-      store.read(_out);
-      store.commit();
+      executeEvents(EventType.CHECKOUT_PRE);
+      if (!executeEvents(EventType.CHECKOUT_OVERRIDE)) {
+        store =
+            context.getStoreResource(getInstance().getType(), getInstance()
+                .getId());
+        store.read(_out);
+        store.commit();
+      }
+      executeEvents(EventType.CHECKOUT_POST);
     } catch (EFapsException e) {
-      LOG.error("could not checkout " + this.instance, e);
+      LOG.error("could not checkout " + super.getInstance(), e);
       throw e;
     } catch (Throwable e) {
-      LOG.error("could not checkout " + this.instance, e);
+      LOG.error("could not checkout " + super.getInstance(), e);
       throw new EFapsException(getClass(),
           "executeWithoutAccessCheck.Throwable", e);
     }
@@ -198,8 +198,9 @@ public class Checkout extends AbstractAction {
    * @see #executeWithoutAccessCheck()
    */
   public InputStream execute() throws EFapsException {
-    boolean hasAccess = this.instance.getType().hasAccess(this.instance,
-        AccessTypeEnums.CHECKOUT.getAccessType());
+    boolean hasAccess =
+        super.getInstance().getType().hasAccess(super.getInstance(),
+            AccessTypeEnums.CHECKOUT.getAccessType());
     if (!hasAccess) {
       throw new EFapsException(getClass(), "execute.NoAccess");
     }
@@ -222,14 +223,19 @@ public class Checkout extends AbstractAction {
     StoreResource store = null;
     InputStream in = null;
     try {
-      store = context.getStoreResource(getInstance().getType(), getInstance()
-          .getId());
-      in = store.read();
+      executeEvents(EventType.CHECKOUT_PRE);
+      if (!executeEvents(EventType.CHECKOUT_OVERRIDE)) {
+        store =
+            context.getStoreResource(getInstance().getType(), getInstance()
+                .getId());
+        in = store.read();
+      }
+      executeEvents(EventType.CHECKOUT_POST);
     } catch (EFapsException e) {
-      LOG.error("could not checkout " + this.instance, e);
+      LOG.error("could not checkout " + super.getInstance(), e);
       throw e;
     } catch (Throwable e) {
-      LOG.error("could not checkout " + this.instance, e);
+      LOG.error("could not checkout " + super.getInstance(), e);
       throw new EFapsException(getClass(),
           "executeWithoutAccessCheck.Throwable", e);
     }
@@ -243,16 +249,6 @@ public class Checkout extends AbstractAction {
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
-
-  /**
-   * This is the getter method for instance variable {@link #instance}.
-   * 
-   * @return value of instance variable {@link #instance}
-   * @see #instance
-   */
-  protected Instance getInstance() {
-    return this.instance;
-  }
 
   /**
    * This is the getter method for instance variable {@link #fileName}.

@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.event.EventType;
 import org.efaps.util.EFapsException;
 import org.efaps.db.transaction.StoreResource;
 
@@ -52,11 +53,6 @@ public class Checkin extends AbstractAction {
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
-  /**
-   * Instance holding the oid of the object which is checked out.
-   */
-  private final Instance   instance;
-
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
@@ -77,11 +73,10 @@ public class Checkin extends AbstractAction {
    *          instance on which the checkin is made
    */
   public Checkin(final Instance _instance) {
-    this.instance = _instance;
+    super.setInstance(_instance);
   }
 
   /**
-   * 
    * @param _fileName
    *          file name to checkin (could include also the path)
    * @param _in
@@ -93,9 +88,10 @@ public class Checkin extends AbstractAction {
    * @todo description
    */
   public void execute(final String _fileName, final InputStream _in,
-                      final int _size) throws EFapsException {
-    boolean hasAccess = this.instance.getType().hasAccess(this.instance,
-        AccessTypeEnums.CHECKIN.getAccessType());
+      final int _size) throws EFapsException {
+    boolean hasAccess =
+        super.getInstance().getType().hasAccess(super.getInstance(),
+            AccessTypeEnums.CHECKIN.getAccessType());
     if (!hasAccess) {
       throw new EFapsException(getClass(), "execute.NoAccess");
     }
@@ -123,54 +119,58 @@ public class Checkin extends AbstractAction {
    * @todo history entries
    */
   public void executeWithoutAccessCheck(final String _fileName,
-                                        final InputStream _in, final int _size)
-                                                                               throws EFapsException {
+      final InputStream _in, final int _size) throws EFapsException {
 
     Context context = Context.getThreadContext();
     StoreResource storeRsrc = null;
     boolean ok = false;
     try {
-      Type type = this.instance.getType();
+      executeEvents(EventType.CHECKIN_PRE);
+      if (!executeEvents(EventType.CHECKIN_OVERRIDE)) {
+        Type type = super.getInstance().getType();
 
-      String attrFileName = type.getProperty(PROPERTY_STORE_ATTR_FILE_NAME);
-      String attrFileLength = type.getProperty(PROPERTY_STORE_ATTR_FILE_LENGTH);
+        String attrFileName = type.getProperty(PROPERTY_STORE_ATTR_FILE_NAME);
+        String attrFileLength =
+            type.getProperty(PROPERTY_STORE_ATTR_FILE_LENGTH);
 
-      storeRsrc = context.getStoreResource(type, this.instance.getId());
-      int size = storeRsrc.write(_in, _size);
-      storeRsrc.commit();
-      storeRsrc = null;
+        storeRsrc = context.getStoreResource(type, super.getInstance().getId());
+        int size = storeRsrc.write(_in, _size);
+        storeRsrc.commit();
+        storeRsrc = null;
 
-      File file = new File(_fileName);
-      String fileName = file.getName();
+        File file = new File(_fileName);
+        String fileName = file.getName();
 
-      // remove the path from the filename
-      int lastSeperatorPosX = fileName.lastIndexOf("/");
-      int lastSeperatorPosWin = fileName.lastIndexOf("\\");
-      int lastSeperatorPosMac = fileName.lastIndexOf(":");
+        // remove the path from the filename
+        int lastSeperatorPosX = fileName.lastIndexOf("/");
+        int lastSeperatorPosWin = fileName.lastIndexOf("\\");
+        int lastSeperatorPosMac = fileName.lastIndexOf(":");
 
-      int lastSeperatorPos = lastSeperatorPosX;
-      if (lastSeperatorPos < lastSeperatorPosWin) {
-        lastSeperatorPos = lastSeperatorPosWin;
+        int lastSeperatorPos = lastSeperatorPosX;
+        if (lastSeperatorPos < lastSeperatorPosWin) {
+          lastSeperatorPos = lastSeperatorPosWin;
+        }
+        if (lastSeperatorPos < lastSeperatorPosMac) {
+          lastSeperatorPos = lastSeperatorPosMac;
+        }
+
+        if (lastSeperatorPos > -1 && lastSeperatorPos < fileName.length() - 1) {
+          fileName = fileName.substring(lastSeperatorPos + 1);
+        }
+
+        // set file name and length in the eFaps object
+        Update update = new Update(super.getInstance());
+        update.add(attrFileName, fileName);
+        update.add(attrFileLength, "" + size);
+        update.executeWithoutAccessCheck();
+        ok = true;
       }
-      if (lastSeperatorPos < lastSeperatorPosMac) {
-        lastSeperatorPos = lastSeperatorPosMac;
-      }
-
-      if (lastSeperatorPos > -1 && lastSeperatorPos < fileName.length() - 1) {
-        fileName = fileName.substring(lastSeperatorPos + 1);
-      }
-
-      // set file name and length in the eFaps object
-      Update update = new Update(this.instance);
-      update.add(attrFileName, fileName);
-      update.add(attrFileLength, "" + size);
-      update.executeWithoutAccessCheck();
-      ok = true;
+      executeEvents(EventType.CHECKIN_POST);
     } catch (EFapsException e) {
-      LOG.error("could not checkin " + this.instance, e);
+      LOG.error("could not checkin " + super.getInstance(), e);
       throw e;
     } catch (Throwable e) {
-      LOG.error("could not checkin " + this.instance, e);
+      LOG.error("could not checkin " + super.getInstance(), e);
       throw new EFapsException(Checkin.class,
           "executeWithoutAccessCheck.Throwable", e);
     }
