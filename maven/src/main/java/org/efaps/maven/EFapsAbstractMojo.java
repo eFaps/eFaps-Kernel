@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.apache.commons.digester.Digester;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.slide.transaction.SlideTransactionManager;
+
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
@@ -45,12 +46,11 @@ import org.efaps.util.EFapsException;
 /**
  * 
  * @author tmo
- * @version $Id: AbstractMojo.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
- *          2007) jmo $
+ * @version $Id$
  */
-abstract class AbstractMojo implements Mojo {
+abstract class EFapsAbstractMojo implements Mojo {
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -59,7 +59,7 @@ abstract class AbstractMojo implements Mojo {
    */
   final public static TransactionManager transactionManager = new SlideTransactionManager();
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -104,10 +104,7 @@ abstract class AbstractMojo implements Mojo {
    */
   private File                           eFapsDir;
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors / desctructors
-
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -295,7 +292,7 @@ abstract class AbstractMojo implements Mojo {
     return transactionManager;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
 
   /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,26 +20,31 @@
 
 package org.efaps.maven;
 
+import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import org.efaps.maven.install.Application;
 import org.efaps.util.EFapsException;
 
 /**
+ * Makes an update of an eFaps application for the last version of the
+ * application.
  *
  * @author tmo
  * @version $Id$
  * @goal update
  */
-public final class UpdateMojo extends AbstractMojo  {
+public final class UpdateMojo extends EFapsAbstractMojo  {
   
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
+  /**
+   * Executes the update goal.
+   */
   public void execute() throws MojoExecutionException  {
-Maven2CommonsLog.logger=getLog();
-System.getProperties().setProperty(org.apache.commons.logging.Log.class.getName(),
-                                   Maven2CommonsLog.class.getName());    
+    System.getProperties().setProperty(Log.class.getName(),
+                                       Maven2CommonsLog.class.getName());    
 
     getLog().info("Initialise Database Connection");
     if (!initDatabase())  {

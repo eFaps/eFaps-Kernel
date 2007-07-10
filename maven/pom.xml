@@ -1,6 +1,6 @@
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -70,13 +70,13 @@
       <version>1.0-SNAPSHOT</version>
     </dependency>
 
-<!-- it's used for some depencies in the type class -->
-<dependency>
-  <groupId>javax.servlet</groupId>
-  <artifactId>servlet-api</artifactId>
-  <version>2.5</version>
-  <scope>compile</scope>
-</dependency>
+    <!-- it's used for some depencies in the type class -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>compile</scope>
+    </dependency>
 
     <!-- maven plugin api -->
     <dependency>
@@ -85,6 +85,12 @@
       <version>2.0.7</version>
     </dependency>
     
+    <!-- to compile the derby start / shutdown goals -->
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbynet</artifactId>
+      <version>10.2.2.0</version>
+    </dependency>
   </dependencies>
 
 </project>
