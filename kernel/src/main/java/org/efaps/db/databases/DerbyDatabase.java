@@ -95,7 +95,7 @@ public class DerbyDatabase extends AbstractDatabase  {
     this.columnMap.put(ColumnType.DATETIME,     "timestamp");
     this.columnMap.put(ColumnType.BLOB,         "blob(2G)");
     this.columnMap.put(ColumnType.CLOB,         "clob(2G)");
-    this.columnMap.put(ColumnType.BOOLEAN,      "boolean");
+    this.columnMap.put(ColumnType.BOOLEAN,      "smallint");
   }
 
   public String getCurrentTimeStamp()  {
