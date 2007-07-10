@@ -45,7 +45,7 @@ public final class InstallMojo extends EFapsAbstractMojo {
   public void execute() throws MojoExecutionException {
     System.getProperties().setProperty(Log.class.getName(),
                                        Maven2CommonsLog.class.getName());    
-
+    Maven2CommonsLog.logger = getLog();
     getLog().info("Initialise Database Connection");
     if (!initDatabase()) {
       getLog().error("Database Connection could not be initialised!");
