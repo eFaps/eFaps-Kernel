@@ -16,18 +16,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-command>
-  <uuid>e7e44152-d765-4d61-beaf-c3ce8d490876</uuid>
+<ui-table>
+  <uuid>cd42d35e-7cc4-4afb-8883-7805a39f7e49</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the command 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Main_Util_History</name>
+    <name>Admin_HistoryTable</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the command 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,9 +51,27 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Main_Util_History</name>
-    <!-- properties -->
-    <property name="HRef">${COMMONURL}/History.jsf</property>
+    <name>Admin_HistoryTable</name>
+    <!-- fields -->
+    <field name="eventtype">
+      <property name="Expression">EventType</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">Admin_History/EventType.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="creator">
+      <property name="Expression">Creator</property>
+      <property name="Label">Admin_History/Creator.Label</property>
+    </field>
+     <field name="creator">
+      <property name="Expression">Created</property>
+      <property name="Label">Admin_History/Created.Label</property>
+    </field>
+    <field name="buttonOpenInNewWindow">
+      <icon>eFapsActionNewWindow</icon>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Target">popup</property>
+    </field>
   </definition>
 
-</ui-command>
+</ui-table>

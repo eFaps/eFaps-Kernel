@@ -23,48 +23,45 @@
 
 -->
 
-<ui-menu>
-  <uuid>3c886ff6-8602-4385-b1a1-58856e9f39c2</uuid>
+<ui-command>
+  <uuid>e7e44152-d765-4d61-beaf-c3ce8d490876</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>teamwork</application>
+      <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==2)</mode>
+      <mode>(version==10)</mode>
     </version>
-    <name>TeamWork_SourceTree</name>
+    <name>Admin_History</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>teamwork</application>
+      <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version>=3)</mode>
+      <mode>(version==11)</mode>
     </version>
-    <name>TeamWork_SourceTree</name>
+    <name>Admin_History</name>
+    <!-- target definitions -->
     <target>
-      <form>TeamWork_SourceForm</form>
-      <menu>TeamWork_SourceTree_Menu</menu>
+      <table>Admin_HistoryTable</table>
+      <evaluate program="org.efaps.events.history.HistoryQuery">
+        <property name="Types">Admin_Common_Version</property>
+      </evaluate>
     </target>
-    <childs>
-      <child>TeamWork_SourceTree_Versions</child>
-      <child>Admin_History</child>
-      <child>TeamWork_Source_Member</child>
-    </childs>
-    <!-- property definitions -->
+
+    <!-- properties -->
     <property name="Target">content</property>
-    <property name="TargetMode">view</property>
   </definition>
 
-</ui-menu>
-
+</ui-command>

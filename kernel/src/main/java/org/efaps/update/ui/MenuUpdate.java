@@ -28,6 +28,8 @@ import java.util.Set;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
+import org.efaps.update.event.EventFactory;
+
 /**
  * @author tmo
  * @version $Id$
@@ -120,7 +122,14 @@ public class MenuUpdate extends CommandUpdate  {
       digester.addCallMethod("ui-menu/definition/property", "addProperty", 2);
       digester.addCallParam("ui-menu/definition/property", 0, "name");
       digester.addCallParam("ui-menu/definition/property", 1);
+      
+      digester.addFactoryCreate("ui-menu/definition/target/evaluate", new EventFactory("Admin_UI_TableEvaluateEvent"), false);
+      digester.addCallMethod("ui-menu/definition/target/evaluate/property", "addProperty", 2);
+      digester.addCallParam("ui-menu/definition/target/evaluate/property", 0, "name");
+      digester.addCallParam("ui-menu/definition/target/evaluate/property", 1);
+      digester.addSetNext("ui-menu/definition/target/evaluate", "addEvent", "org.efaps.update.event.Event");
 
+      
       ret = (MenuUpdate) digester.parse(_file);
 
       if (ret != null)  {

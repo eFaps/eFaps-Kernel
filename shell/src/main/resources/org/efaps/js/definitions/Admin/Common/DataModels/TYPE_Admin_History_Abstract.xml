@@ -59,6 +59,12 @@
       <sqlcolumn>TYPEID,ID</sqlcolumn>
     </attribute>
     <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>Admin_HistorySQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    <attribute>
       <name>ForID</name>
       <type>Integer</type>
       <sqltable>Admin_HistorySQLTable</sqltable>

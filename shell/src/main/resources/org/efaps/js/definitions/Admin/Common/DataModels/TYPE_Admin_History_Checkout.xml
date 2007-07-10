@@ -47,7 +47,7 @@
     </version>
     <name>Admin_History_Checkout</name>
     <parent>Admin_History_Abstract</parent>
-    <property name="Tree">Admin_Event_DefinitionTree</property>
+    <property name="Tree">Admin_HistoryTree</property>
   </definition>
 
 </datamodel-type>

@@ -31,6 +31,7 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.program.java.EFapsClassLoader;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Field;
+import org.efaps.admin.ui.Menu;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -289,6 +290,15 @@ public class EventDefinition extends AdminObject implements EventExecution {
         }
 
         attribute.addEvent(triggerEvent, new EventDefinition(eventId,
+            eventName, eventPos, resName, method, eventOID));
+
+      } else if (eFapsClass == EFapsClassName.MENU) {
+        Menu menu = Menu.get(abstractID);
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("      Menu=" + menu.getName());
+        }
+
+        menu.addEvent(triggerEvent, new EventDefinition(eventId,
             eventName, eventPos, resName, method, eventOID));
 
       } else if (LOG.isDebugEnabled()) {
