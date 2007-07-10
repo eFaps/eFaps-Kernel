@@ -162,7 +162,7 @@ public class DBProperties {
     }
 
     final String sqlStmt =
-        " select distinct KEY, DEFAULTV,'" + DEFAULT + "' as LANG, SEQUENCE "
+        " select distinct PROPKEY, DEFAULTV,'" + DEFAULT + "' as LANG, SEQUENCE "
             + " from T_ADPROP "
             + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
             + " order by SEQUENCE";
@@ -170,7 +170,7 @@ public class DBProperties {
     initialiseCache(sqlStmt);
 
     final String sqlStmt2 =
-        "select distinct KEY, VALUE, LANG, SEQUENCE from T_ADPROP "
+        "select distinct PROPKEY, VALUE, LANG, SEQUENCE from T_ADPROP "
             + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID "
             + " inner join T_ADPROPLOC on T_ADPROPLOC.PROPID = T_ADPROP.ID "
             + " inner join T_ADLANG on T_ADLANG.ID = T_ADPROPLOC.LANGID "
@@ -218,7 +218,7 @@ public class DBProperties {
           }
         }
 
-        map.put(rs.getString("KEY").trim(), value.trim());
+        map.put(rs.getString("PROPKEY").trim(), value.trim());
       }
       INITIALISED = true;
     } catch (EFapsException e) {
