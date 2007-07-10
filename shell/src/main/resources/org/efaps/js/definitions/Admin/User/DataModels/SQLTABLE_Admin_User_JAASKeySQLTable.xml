@@ -48,7 +48,7 @@
       <column name="USERABSTRACT"   type="INTEGER"                      not-null="true"/>
       <column name="USERJAASSYSTEM" type="INTEGER"                      not-null="true"/>
       <!-- constraints -->
-      <unique name="USRJAASKY_UK_SYSKEY" columns="USERJAASSYSTEM,KEY"/>
+      <unique name="USRJAASKY_UK_SYSKEY" columns="USERJAASSYSTEM,JAASKEY"/>
     </database>
   </definition>
 
