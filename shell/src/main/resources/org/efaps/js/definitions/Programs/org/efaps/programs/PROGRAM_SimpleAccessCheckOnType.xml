@@ -23,7 +23,7 @@
 
 -->
 
-<program>
+<esjp>
   
 
   <!-- ************************************************************************
@@ -41,4 +41,4 @@
     <file>SimpleAccessCheckOnType.java</file>
   </definition>
 
-</program>
+</esjp>

@@ -23,7 +23,7 @@
 
 -->
 
-<program>
+<esjp>
   
 
   <!-- ************************************************************************
@@ -41,4 +41,4 @@
     <file>AccessCheckOnUserInterface.java</file>
   </definition>
 
-</program>
+</esjp>

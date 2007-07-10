@@ -23,7 +23,7 @@
 
 -->
 
-<program>
+<esjp>
   <uuid>52c47510-0dc0-48ad-b3de-b38814b90007</uuid>
 
   <!-- ************************************************************************
@@ -41,4 +41,4 @@
     <file>QueryEvaluate.java</file>
   </definition>
 
-</program>
+</esjp>

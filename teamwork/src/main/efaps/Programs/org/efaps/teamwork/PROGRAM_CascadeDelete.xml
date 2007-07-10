@@ -23,7 +23,7 @@
 
 -->
 
-<program>
+<esjp>
   
   <!-- ************************************************************************
     version definition used to create / update the Program 
@@ -40,4 +40,4 @@
     <file>CascadeDelete.java</file>
   </definition>
 
-</program>
+</esjp>

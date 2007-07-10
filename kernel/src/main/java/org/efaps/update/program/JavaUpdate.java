@@ -101,19 +101,19 @@ public class JavaUpdate extends AbstractUpdate {
       try {
         Digester digester = new Digester();
         digester.setValidating(false);
-        digester.addObjectCreate("program", JavaUpdate.class);
+        digester.addObjectCreate("esjp", JavaUpdate.class);
 
-        digester.addObjectCreate("program/definition", JavaDefinition.class);
-        digester.addSetNext("program/definition", "addDefinition");
+        digester.addObjectCreate("esjp/definition", JavaDefinition.class);
+        digester.addSetNext("esjp/definition", "addDefinition");
 
-        digester.addCallMethod("program/definition/version", "setVersion", 4);
-        digester.addCallParam("program/definition/version/application", 0);
-        digester.addCallParam("program/definition/version/global", 1);
-        digester.addCallParam("program/definition/version/local", 2);
-        digester.addCallParam("program/definition/version/mode", 3);
+        digester.addCallMethod("esjp/definition/version", "setVersion", 4);
+        digester.addCallParam("esjp/definition/version/application", 0);
+        digester.addCallParam("esjp/definition/version/global", 1);
+        digester.addCallParam("esjp/definition/version/local", 2);
+        digester.addCallParam("esjp/definition/version/mode", 3);
 
-        digester.addCallMethod("program/definition/file", "setFile", 1);
-        digester.addCallParam("program/definition/file", 0);
+        digester.addCallMethod("esjp/definition/file", "setFile", 1);
+        digester.addCallParam("esjp/definition/file", 0);
 
         update = (JavaUpdate) digester.parse(_file);
 

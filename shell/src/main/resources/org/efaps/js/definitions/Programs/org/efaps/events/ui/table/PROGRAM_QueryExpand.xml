@@ -23,7 +23,7 @@
 
 -->
 
-<program>
+<esjp>
   <uuid>cc4ecef1-b7e0-4979-b7d8-03aff89f9423</uuid>
 
   <!-- ************************************************************************
@@ -41,4 +41,4 @@
     <file>QueryExpand.java</file>
   </definition>
 
-</program>
+</esjp>

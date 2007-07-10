@@ -23,7 +23,7 @@
 
 -->
 
-<program>
+<esjp>
   
   <!-- ************************************************************************
     version definition used to create / update the Program 
@@ -39,4 +39,4 @@
     <file>Member.java</file>
   </definition>
 
-</program>
+</esjp>

@@ -23,7 +23,7 @@
 
 -->
 
-<program>
+<esjp>
   <uuid>20f5ae1f-91f5-4e98-aedb-22269ec7c2c7</uuid>
 
   <!-- ************************************************************************
@@ -41,4 +41,4 @@
     <file>QuerySearch.java</file>
   </definition>
 
-</program>
+</esjp>
