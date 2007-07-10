@@ -71,7 +71,7 @@
       <local>$Rev$</local>
       <mode>(version==4)</mode>
     </version>
-    <name>Admin_HistorySQLTable</name>
+    <name>Common_HistorySQLTable</name>
     <typeid-column>TYPEID</typeid-column>
     <database>
       <table-name>T_HISTORY</table-name>

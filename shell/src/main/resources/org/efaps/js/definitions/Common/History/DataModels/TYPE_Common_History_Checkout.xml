@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_History_Checkout</name>
+    <name>Common_History_Checkout</name>
   </definition>
 
   <!-- define type -->
@@ -45,9 +45,9 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_History_Checkout</name>
-    <parent>Admin_History_Abstract</parent>
-    <property name="Tree">Admin_HistoryTree</property>
+    <name>Common_History_Checkout</name>
+    <parent>Common_History_Abstract</parent>
+    <property name="Tree">Common_HistoryTree</property>
   </definition>
 
 </datamodel-type>

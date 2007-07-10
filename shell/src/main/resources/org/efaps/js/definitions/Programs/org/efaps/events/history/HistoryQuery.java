@@ -49,7 +49,7 @@ public class HistoryQuery implements EventExecution {
       Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
 
       SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Admin_History_Abstract");
+      query.setQueryTypes("Common_History_Abstract");
       query.setExpandChildTypes(true);
       query.addSelect("OID");
       query.addWhereExprEqValue("ForID", instance.getId());

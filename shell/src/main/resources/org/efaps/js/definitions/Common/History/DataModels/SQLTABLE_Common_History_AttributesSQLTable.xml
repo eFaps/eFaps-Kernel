@@ -68,7 +68,7 @@
       <local>$Rev$</local>
       <mode>(version==4)</mode>
     </version>
-    <name>Admin_HistoryAttributesSQLTable</name>
+    <name>Common_HistoryAttributesSQLTable</name>
     <database>
       <table-name>T_HISTORYATTRIBUTE</table-name>
     </database>

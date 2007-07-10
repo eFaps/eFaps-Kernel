@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_History_Abstract</name>
+    <name>Common_History_Abstract</name>
   </definition>
 
   <!-- define type -->
@@ -45,54 +45,54 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_History_Abstract</name>
+    <name>Common_History_Abstract</name>
     <attribute>
       <name>EventType</name>
       <type>Type</type>
-      <sqltable>Admin_HistorySQLTable</sqltable>
+      <sqltable>Common_HistorySQLTable</sqltable>
       <sqlcolumn>TYPEID</sqlcolumn>
     </attribute>
     <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_HistorySQLTable</sqltable>
+      <sqltable>Common_HistorySQLTable</sqltable>
       <sqlcolumn>TYPEID,ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_HistorySQLTable</sqltable>
+      <sqltable>Common_HistorySQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ForID</name>
       <type>Integer</type>
-      <sqltable>Admin_HistorySQLTable</sqltable>
+      <sqltable>Common_HistorySQLTable</sqltable>
       <sqlcolumn>FORID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ForType</name>
       <type>Link</type>
       <typelink>Admin_DataModel_Type</typelink>
-      <sqltable>Admin_HistorySQLTable</sqltable>
+      <sqltable>Common_HistorySQLTable</sqltable>
       <sqlcolumn>FORTYPEID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ForOID</name>
       <type>OID</type>
-      <sqltable>Admin_HistorySQLTable</sqltable>
+      <sqltable>Common_HistorySQLTable</sqltable>
       <sqlcolumn>FORTYPEID,FORID</sqlcolumn>
     </attribute>
     <attribute>
       <name>Creator</name>
       <type>CreatorLink</type>
-      <sqltable>Admin_HistorySQLTable</sqltable>
+      <sqltable>Common_HistorySQLTable</sqltable>
       <sqlcolumn>CREATOR</sqlcolumn>
     </attribute>
     <attribute>
       <name>Created</name>
       <type>Created</type>
-      <sqltable>Admin_HistorySQLTable</sqltable>
+      <sqltable>Common_HistorySQLTable</sqltable>
       <sqlcolumn>CREATED</sqlcolumn>
     </attribute>
     

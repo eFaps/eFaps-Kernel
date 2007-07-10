@@ -59,7 +59,7 @@
     <childs>
       <child>TeamWork_CollectionTree_SubCollections</child>
       <child>TeamWork_CollectionTree_Sources</child>
-      <child>Admin_History</child>
+      <child>Common_History</child>
       <child>TeamWork_Collection_Member</child>
     </childs>
     <!-- property definitions -->

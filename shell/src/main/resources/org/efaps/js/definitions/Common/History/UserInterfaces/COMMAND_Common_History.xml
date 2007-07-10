@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_History</name>
+    <name>Common_History</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,10 +51,10 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_History</name>
+    <name>Common_History</name>
     <!-- target definitions -->
     <target>
-      <table>Admin_HistoryTable</table>
+      <table>Common_HistoryTable</table>
       <evaluate program="org.efaps.events.history.HistoryQuery">
         <property name="Types">Admin_Common_Version</property>
       </evaluate>

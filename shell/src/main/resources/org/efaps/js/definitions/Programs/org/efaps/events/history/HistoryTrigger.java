@@ -62,7 +62,7 @@ public class HistoryTrigger implements EventExecution {
           Attribute attr = (Attribute) entry.getKey();
           String value = (String) entry.getValue().toString();
           
-          insert = new Insert("Admin_HistoryAttributes");
+          insert = new Insert("Common_HistoryAttributes");
           insert.add("HistoryID", ID);
           insert.add("Attribute", ((Long) attr.getId()).toString());
           insert.add("Value", value);

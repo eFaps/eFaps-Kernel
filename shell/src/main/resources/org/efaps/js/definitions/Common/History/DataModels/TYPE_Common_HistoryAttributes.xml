@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_HistoryAttributes</name>
+    <name>Common_HistoryAttributes</name>
   </definition>
 
   <!-- define type -->
@@ -45,37 +45,37 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_HistoryAttributes</name>
+    <name>Common_HistoryAttributes</name>
     <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_HistoryAttributesSQLTable</sqltable>
+      <sqltable>Common_HistoryAttributesSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_HistoryAttributesSQLTable</sqltable>
+      <sqltable>Common_HistoryAttributesSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>HistoryID</name>
       <type>Link</type>
-      <typelink>Admin_History_Abstract</typelink>
-      <sqltable>Admin_HistoryAttributesSQLTable</sqltable>
+      <typelink>Common_History_Abstract</typelink>
+      <sqltable>Common_HistoryAttributesSQLTable</sqltable>
       <sqlcolumn>HISTORYID</sqlcolumn>
     </attribute>
     <attribute>
       <name>Attribute</name>
       <type>Link</type>
       <typelink>Admin_DataModel_Attribute</typelink>
-      <sqltable>Admin_HistoryAttributesSQLTable</sqltable>
+      <sqltable>Common_HistoryAttributesSQLTable</sqltable>
       <sqlcolumn>ATTRIBUTEID</sqlcolumn>
     </attribute>
     <attribute>
       <name>Value</name>
       <type>String</type>
-      <sqltable>Admin_HistoryAttributesSQLTable</sqltable>
+      <sqltable>Common_HistoryAttributesSQLTable</sqltable>
       <sqlcolumn>VALUE</sqlcolumn>
     </attribute>
      

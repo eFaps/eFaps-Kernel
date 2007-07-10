@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_HistoryAttributesTable</name>
+    <name>Common_HistoryAttributesTable</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,15 +51,15 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_HistoryAttributesTable</name>
+    <name>Common_HistoryAttributesTable</name>
     <!-- fields -->
     <field name="attribute">
       <property name="Expression">Attribute.Name</property>
-      <property name="Label">Admin_HistoryAttributes/Attribute.Label</property>
+      <property name="Label">Common_HistoryAttributes/Attribute.Label</property>
     </field>
     <field name="value">
       <property name="Expression">Value</property>
-      <property name="Label">Admin_HistoryAttributes/Value.Label</property>
+      <property name="Label">Common_HistoryAttributes/Value.Label</property>
     </field>
      
     

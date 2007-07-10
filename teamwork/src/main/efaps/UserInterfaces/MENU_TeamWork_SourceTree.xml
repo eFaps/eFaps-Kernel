@@ -58,7 +58,7 @@
     </target>
     <childs>
       <child>TeamWork_SourceTree_Versions</child>
-      <child>Admin_History</child>
+      <child>Common_History</child>
       <child>TeamWork_Source_Member</child>
     </childs>
     <!-- property definitions -->
