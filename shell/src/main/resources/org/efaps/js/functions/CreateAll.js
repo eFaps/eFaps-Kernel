@@ -71,6 +71,7 @@ function _insert(_stmt, _subject, _text, _table, _columns, _values)  {
   if (rs.next())  {
     ret= rs.getString(1);
   }
+  rs.close();
   return ret;
 }
 
@@ -644,12 +645,12 @@ var _stmt = _con.createStatement();
     ]);
 
     _exec(_stmt, "View 'V_USERPERSONJASSKEY'", "view representing all persons related to the JAAS keys",
-      "create or replace view V_USERPERSONJASSKEY as "
+      "create view V_USERPERSONJASSKEY as "
         + "select "
         +       "USERABSTRACT.ID,"
         +       "USERABSTRACT.NAME,"
         +       "USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
-        +       "USERJAASKEY.KEY as JAASKEY "
+        +       "USERJAASKEY.JAASKEY as JAASKEY "
         +   "from USERABSTRACT,USERJAASKEY "
         +   "where USERABSTRACT.TYPEID=" + typeIdPerson + " "
         +       "and USERABSTRACT.ID=USERJAASKEY.USERABSTRACT"
@@ -657,7 +658,7 @@ var _stmt = _con.createStatement();
 
 
     _exec(_stmt, "View 'V_USERROLE'", "view representing all roles",
-      "create or replace view V_USERROLE as "
+      "create view V_USERROLE as "
         + "select "
         +       "USERABSTRACT.ID,"
         +       "USERABSTRACT.NAME "
@@ -666,19 +667,19 @@ var _stmt = _con.createStatement();
     );
 
     _exec(_stmt, "View 'V_USERROLEJASSKEY'", "view representing all roles related to the JAAS keys",
-      "create or replace view V_USERROLEJASSKEY as "
+      "create view V_USERROLEJASSKEY as "
         + "select "
         +       "USERABSTRACT.ID,"
         +       "USERABSTRACT.NAME,"
         +       "USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
-        +       "USERJAASKEY.KEY as JAASKEY "
+        +       "USERJAASKEY.JAASKEY as JAASKEY "
         +   "from USERABSTRACT,USERJAASKEY "
         +   "where USERABSTRACT.TYPEID=" + typeIdRole + " "
         +       "and USERABSTRACT.ID=USERJAASKEY.USERABSTRACT"
     );
 
     _exec(_stmt, "View 'V_USERGROUP'", "view representing all groups",
-      "create or replace view V_USERGROUP as "+
+      "create view V_USERGROUP as "+
         "select "+
             "USERABSTRACT.ID,"+
             "USERABSTRACT.NAME "+
@@ -687,19 +688,19 @@ var _stmt = _con.createStatement();
     );
 
     _exec(_stmt, "View 'V_USERGROUPJASSKEY'", "view representing all groups related to the JAAS keys",
-      "create or replace view V_USERGROUPJASSKEY as "
+      "create view V_USERGROUPJASSKEY as "
         + "select "
         +       "USERABSTRACT.ID,"
         +       "USERABSTRACT.NAME,"
         +       "USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
-        +       "USERJAASKEY.KEY as JAASKEY "
+        +       "USERJAASKEY.JAASKEY as JAASKEY "
         +   "from USERABSTRACT,USERJAASKEY "
         +   "where USERABSTRACT.TYPEID=" + typeIdGroup + " "
         +       "and USERABSTRACT.ID=USERJAASKEY.USERABSTRACT"
     );
 
     _exec(_stmt, "View 'V_USERPERSON2ROLE'", "view representing connection between person and role depending on JAAS systems",
-      "create or replace view V_USERPERSON2ROLE as "
+      "create view V_USERPERSON2ROLE as "
         + "select "
         +       "USERABSTRACT2ABSTRACT.ID,"
         +       "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"
@@ -710,7 +711,7 @@ var _stmt = _con.createStatement();
     );
 
     _exec(_stmt, "View 'V_USERPERSON2GROUP'", "view representing connection between person and group depending on JAAS systems",
-      "create or replace view V_USERPERSON2GROUP as "
+      "create view V_USERPERSON2GROUP as "
         + "select "
         +       "USERABSTRACT2ABSTRACT.ID,"
         +       "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"

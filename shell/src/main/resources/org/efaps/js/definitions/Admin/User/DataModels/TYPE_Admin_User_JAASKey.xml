@@ -63,7 +63,7 @@
       <name>Key</name>
       <type>String</type>
       <sqltable>Admin_User_JAASKeySQLTable</sqltable>
-      <sqlcolumn>KEY</sqlcolumn>
+      <sqlcolumn>JAASKEY</sqlcolumn>
     </attribute>
     <attribute>
       <name>Creator</name>

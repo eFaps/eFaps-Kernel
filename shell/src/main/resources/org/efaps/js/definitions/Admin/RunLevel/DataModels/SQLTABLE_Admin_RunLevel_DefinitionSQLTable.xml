@@ -43,7 +43,7 @@
       <!-- columns -->
       <column name="RUNLEVELID" type="INTEGER"      not-null="true" />
       <column name="PRIORITY"   type="INTEGER"      not-null="true" />
-      <column name="CLASS"      type="STRING_SHORT" not-null="true" length="255"/> 
+      <column name="CLASS"      type="STRING_SHORT" not-null="true" length="254"/> 
       <column name="METHOD"     type="STRING_SHORT" not-null="true" length="128"/> 
       <column name="PARAMETER"  type="STRING_SHORT"                 length="128"/>
      </database>

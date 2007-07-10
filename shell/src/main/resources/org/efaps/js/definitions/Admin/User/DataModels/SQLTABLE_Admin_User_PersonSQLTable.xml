@@ -63,7 +63,7 @@
     <database>
       <!-- create view representing all persons -->
       <sql>
-        create or replace view V_USERPERSON as
+        create view V_USERPERSON as
            select
                  USERABSTRACT.ID,
                  USERABSTRACT.NAME,

@@ -83,7 +83,7 @@
       <foreign name="USERJAASSYS_FK_MDFR"   key="MODIFIER"      reference="USERPERSON(ID)"/>
       <!-- create view representing all JAAS systems -->
       <sql>
-        create or replace view V_USERJAASSYSTEM as
+        create view V_USERJAASSYSTEM as
            select
                ID,
                NAME,
