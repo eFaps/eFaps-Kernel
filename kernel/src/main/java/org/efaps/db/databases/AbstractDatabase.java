@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public abstract class AbstractDatabase  {
 
@@ -145,7 +148,20 @@ public abstract class AbstractDatabase  {
   public boolean supportsGetGeneratedKeys()  {
     return false;
   }
-  
+
+  /**
+   * The method returns if a database implementation support to get multiple
+   * auto generated keys. If defined to <i>true</i>, the insert is done with
+   * defined column names for the auto generated columns. Otherwise only
+   * {@link java.sql.Statement#RETURN_GENERATED_KEYS} is given for the insert.
+   *
+   * @return always <i>false</i> because not implemented in this class
+   * @see #supportsGetGeneratedKeys
+   */
+  public boolean supportsMultiGeneratedKeys()  {
+    return false;
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // static methods
   

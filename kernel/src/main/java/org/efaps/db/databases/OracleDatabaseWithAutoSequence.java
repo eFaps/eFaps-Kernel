@@ -106,7 +106,14 @@ public class OracleDatabaseWithAutoSequence extends OracleDatabase  {
   public boolean supportsGetGeneratedKeys()  {
     return true;
   }
- 
+
+  /**
+   * @return always <i>true</i> because supported by Derby database
+   */
+  public boolean supportsMultiGeneratedKeys()  {
+    return true;
+  }
+
   /**
    * This method normally returns for given table and column a new id. Because
    * this database driver support auto generated keys, an SQL exception is

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,31 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/**
+ *
+ * @author tmo
+ * @version $Id$
+ * @todo description
+ */
 public class PostgreSQLDatabase extends AbstractDatabase  {
 
-// TODO: specificy real column type
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Log LOG = LogFactory.getLog(OracleDatabase.class);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructor / desctructors
+
+  /**
+   * @todo specificy real column type
+   */
   public PostgreSQLDatabase()  {
     this.columnMap.put(ColumnType.INTEGER,      "bigint");
     this.columnMap.put(ColumnType.REAL,         "real");
@@ -64,10 +86,10 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
     Statement stmtExec = _con.createStatement();
 
     try  {
-System.out.println("Remove Tables");
       // remove all tables
-      // cascade drops all views, sequences
-//    print("Remove Tables");
+      if (LOG.isInfoEnabled())  {
+        LOG.info("Remove all Tables");
+      }
       ResultSet rs = stmtSel.executeQuery(
           "select c.RELNAME "
               + "from PG_CLASS c,PG_ROLES r "
@@ -78,8 +100,9 @@ System.out.println("Remove Tables");
       );
       while (rs.next())  {
         String tableName = rs.getString(1);
-System.out.println("  - Table '" + tableName + "'");
-//      print("  - Table '"+table+"'");
+        if (LOG.isDebugEnabled())  {
+          LOG.debug("  - Table '" + tableName + "'");
+        }
         stmtExec.execute("drop table " + tableName + " cascade");
       }
       rs.close();

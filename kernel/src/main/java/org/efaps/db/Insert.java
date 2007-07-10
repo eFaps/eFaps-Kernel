@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ package org.efaps.db;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -44,8 +45,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @version $Id: Insert.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb 2007)
- *          jmo $
+ * @version $Id$
  * @todo description
  */
 public class Insert extends Update {
@@ -223,7 +223,7 @@ public class Insert extends Update {
     try {
       if ((ret == 0) && !Context.getDbType().supportsGetGeneratedKeys()) {
         ret = Context.getDbType().getNewId(_con.getConnection(),
-            _table.getSqlTable(), "ID");
+            _table.getSqlTable(), _table.getSqlColId());
       }
 
       stmt = createOneStatement(_context, _con, _table, _expressions, ret);
@@ -312,8 +312,13 @@ public class Insert extends Update {
 
     PreparedStatement stmt;
     if (_id == 0) {
-      stmt = _con.getConnection().prepareStatement(cmd.toString(),
-          new String[] { "ID" });
+      if (Context.getDbType().supportsMultiGeneratedKeys())  {
+        stmt = _con.getConnection().prepareStatement(cmd.toString(),
+                                  new String[] { _table.getSqlColId() });
+      } else  {
+        stmt = _con.getConnection().prepareStatement(cmd.toString(),
+                                  Statement.RETURN_GENERATED_KEYS);
+      }
     } else {
       stmt = _con.getConnection().prepareStatement(cmd.toString());
     }

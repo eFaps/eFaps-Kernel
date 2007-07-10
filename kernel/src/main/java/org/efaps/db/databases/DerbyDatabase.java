@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,68 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/**
+ * @author tmo
+ * @version $Id$
+ * @todo description
+ */
 public class DerbyDatabase extends AbstractDatabase  {
 
-// TODO: specificy real column type
+  //////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Log LOG = LogFactory.getLog(OracleDatabase.class);
+
+  /**
+   * SQL Select statement for all foreign keys and constraints.
+   *
+   * @see #deleteAll
+   */
+  private static final String SELECT_ALL_KEYS
+          = "select t.TABLENAME, c.CONSTRAINTNAME "
+              + "from SYS.SYSSCHEMAS s, SYS.SYSTABLES t, SYS.SYSCONSTRAINTS c "
+              + "where s.AUTHORIZATIONID<>'DBA' "
+                    + "and s.SCHEMAID=t.SCHEMAID "
+                    + "and t.TABLEID=c.TABLEID "
+                    + "and c.TYPE='F'";
+
+  /**
+   * SQL Select statement for all views.
+   *
+   * @see #deleteAll
+   */
+  private static final String SELECT_ALL_VIEWS
+          = "select t.TABLENAME "
+              + "from SYS.SYSSCHEMAS s, SYS.SYSTABLES t "
+              + "where s.AUTHORIZATIONID<>'DBA' "
+                    + "and s.SCHEMAID=t.SCHEMAID "
+                    + "and t.TABLETYPE='V'";
+
+  /**
+   * SQL Select statement for all tables.
+   *
+   * @see #deleteAll
+   */
+  private static final String SELECT_ALL_TABLES
+          = "select t.TABLENAME "
+              + "from SYS.SYSSCHEMAS s, SYS.SYSTABLES t "
+              + "where s.AUTHORIZATIONID<>'DBA' "
+                    +"and s.SCHEMAID=t.SCHEMAID "
+                    + "and t.TABLETYPE='T'";
+
+
+  //////////////////////////////////////////////////////////////////////////////
+  // constructors
+
+  /**
+   * @todo specificy real column type
+   */
   public DerbyDatabase()  {
     this.columnMap.put(ColumnType.INTEGER,      "bigint");
 //    this.columnMap.put(ColumnType.REAL,         "real");
@@ -42,6 +101,9 @@ public class DerbyDatabase extends AbstractDatabase  {
   public String getCurrentTimeStamp()  {
     return "current_timestamp";
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * This is the Derby specific implementation of an all deletion. Following
@@ -64,32 +126,44 @@ public class DerbyDatabase extends AbstractDatabase  {
 
     try  {
     // remove all foreign keys
-//    print("Remove Foreign Keys");
-      ResultSet rs = stmtSel.executeQuery("select t.TABLENAME, c.CONSTRAINTNAME from SYS.SYSSCHEMAS s, SYS.SYSTABLES t, SYS.SYSCONSTRAINTS c where s.AUTHORIZATIONID<>'DBA' and s.SCHEMAID=t.SCHEMAID and t.TABLEID=c.TABLEID and c.TYPE='F'");
+      if (LOG.isInfoEnabled())  {
+        LOG.info("Remove all Foreign Keys");
+      }
+      ResultSet rs = stmtSel.executeQuery(SELECT_ALL_KEYS);
       while (rs.next())  {
         String tableName = rs.getString(1);
         String constrName = rs.getString(2);
-//      print("  - Table '"+table+"' Constraint '"+constr+"'");
+        if (LOG.isDebugEnabled())  {
+          LOG.debug("  - Table '" + tableName + "' Constraint '" + constrName + "'");
+        }
         stmtExec.execute("alter table " + tableName + " drop constraint " + constrName);
       }
       rs.close();
 
       // remove all views
-//    print("Remove Views");
-      rs = stmtSel.executeQuery("select t.TABLENAME from SYS.SYSSCHEMAS s, SYS.SYSTABLES t where s.AUTHORIZATIONID<>'DBA' and s.SCHEMAID=t.SCHEMAID and t.TABLETYPE='V'");
+      if (LOG.isInfoEnabled())  {
+        LOG.info("Remove all Views");
+      }
+      rs = stmtSel.executeQuery(SELECT_ALL_VIEWS);
       while (rs.next())  {
         String viewName = rs.getString(1);
-//      print("  - View '"+table+"'");
+        if (LOG.isDebugEnabled())  {
+          LOG.debug("  - View '" + viewName + "'");
+        }
         stmtExec.execute("drop view " + viewName);
       }
       rs.close();
 
       // remove all tables
-//    print("Remove Tables");
-      rs = stmtSel.executeQuery("select t.TABLENAME from SYS.SYSSCHEMAS s, SYS.SYSTABLES t where s.AUTHORIZATIONID<>'DBA' and s.SCHEMAID=t.SCHEMAID and t.TABLETYPE='T'");
+      if (LOG.isInfoEnabled())  {
+        LOG.info("Remove all Tables");
+      }
+      rs = stmtSel.executeQuery(SELECT_ALL_TABLES);
       while (rs.next())  {
         String tableName = rs.getString(1);
-//      print("  - Table '"+table+"'");
+        if (LOG.isDebugEnabled())  {
+          LOG.debug("  - Table '" + tableName + "'");
+        }
         stmtExec.execute("drop table " + tableName);
       }
       rs.close();
@@ -153,7 +227,7 @@ public class DerbyDatabase extends AbstractDatabase  {
 
       // create table itself
       StringBuilder cmd = new StringBuilder();
-      cmd.append("create table ").append(_table).append(" ")
+      cmd.append("create table ").append(_table).append(" (")
          .append("  ID bigint not null");
 
       // autoincrement
@@ -172,7 +246,7 @@ public class DerbyDatabase extends AbstractDatabase  {
            .append("  references ").append(_parentTable).append("(ID)");
       }
 
-      cmd.append(");");
+      cmd.append(")");
       stmt.executeUpdate(cmd.toString());
 
     } finally  {

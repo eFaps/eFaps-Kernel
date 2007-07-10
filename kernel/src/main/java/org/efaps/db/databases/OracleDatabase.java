@@ -108,7 +108,7 @@ public class OracleDatabase extends AbstractDatabase  {
       while (rs.next())  {
         String viewName = rs.getString(1);
         if (LOG.isDebugEnabled())  {
-          LOG.info("  - View '" + viewName + "'");
+          LOG.debug("  - View '" + viewName + "'");
         }
         stmtExec.execute("drop view " + viewName);
       }
@@ -122,7 +122,7 @@ public class OracleDatabase extends AbstractDatabase  {
       while (rs.next())  {
         String tableName = rs.getString(1);
         if (LOG.isDebugEnabled())  {
-          LOG.info("  - Table '" + tableName + "'");
+          LOG.debug("  - Table '" + tableName + "'");
         }
         stmtExec.execute("drop table " + tableName + " cascade constraints");
       }
@@ -136,7 +136,7 @@ public class OracleDatabase extends AbstractDatabase  {
       while (rs.next())  {
         String seqName = rs.getString(1);
         if (LOG.isDebugEnabled())  {
-          LOG.info("  - Sequence '" + seqName + "'");
+          LOG.debug("  - Sequence '" + seqName + "'");
         }
         stmtExec.execute("drop sequence " + seqName);
       }
