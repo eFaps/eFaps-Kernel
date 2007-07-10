@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.events.history;
+package org.efaps.esjp.common.history;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,14 +33,14 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-import org.efaps.events.ui.table.QueryEvaluate;
+
 import org.efaps.util.EFapsException;
 
 public class HistoryQuery implements EventExecution {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(QueryEvaluate.class);
+  private static final Log LOG = LogFactory.getLog(HistoryQuery.class);
 
   public Return execute(final Parameter _parameter) {
     Return ret = new Return();

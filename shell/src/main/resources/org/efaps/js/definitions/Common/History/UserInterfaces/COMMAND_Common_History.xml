@@ -55,7 +55,7 @@
     <!-- target definitions -->
     <target>
       <table>Common_HistoryTable</table>
-      <evaluate program="org.efaps.events.history.HistoryQuery">
+      <evaluate program="org.efaps.esjp.common.history.HistoryQuery">
         <property name="Types">Admin_Common_Version</property>
       </evaluate>
     </target>

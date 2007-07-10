@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.events.history;
+package org.efaps.esjp.common.history;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
