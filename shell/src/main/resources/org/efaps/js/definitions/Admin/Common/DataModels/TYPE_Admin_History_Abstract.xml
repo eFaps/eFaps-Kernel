@@ -47,17 +47,16 @@
     </version>
     <name>Admin_History_Abstract</name>
     <attribute>
+      <name>EventType</name>
+      <type>Type</type>
+      <sqltable>Admin_HistorySQLTable</sqltable>
+      <sqlcolumn>TYPEID</sqlcolumn>
+    </attribute>
+    <attribute>
       <name>OID</name>
       <type>OID</type>
       <sqltable>Admin_HistorySQLTable</sqltable>
-      <sqlcolumn>ID</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>EventType</name>
-      <type>Link</type>
-      <typelink>Admin_DataModel_Type</typelink>
-      <sqltable>Admin_HistorySQLTable</sqltable>
-      <sqlcolumn>EVENTTYPEID</sqlcolumn>
+      <sqlcolumn>TYPEID,ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ForID</name>
@@ -66,10 +65,17 @@
       <sqlcolumn>FORID</sqlcolumn>
     </attribute>
     <attribute>
+      <name>ForType</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
+      <sqltable>Admin_HistorySQLTable</sqltable>
+      <sqlcolumn>FORTYPEID</sqlcolumn>
+    </attribute>
+    <attribute>
       <name>ForOID</name>
       <type>OID</type>
       <sqltable>Admin_HistorySQLTable</sqltable>
-      <sqlcolumn>EVENTTYPEID,FORID</sqlcolumn>
+      <sqlcolumn>FORTYPEID,FORID</sqlcolumn>
     </attribute>
     <attribute>
       <name>Creator</name>
@@ -81,7 +87,7 @@
       <name>Created</name>
       <type>Created</type>
       <sqltable>Admin_HistorySQLTable</sqltable>
-      <sqlcolumn>CREATOR</sqlcolumn>
+      <sqlcolumn>CREATED</sqlcolumn>
     </attribute>
     
     <property name="Tree">Admin_Event_DefinitionTree</property>

@@ -39,7 +39,7 @@
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="EVENTTYPEID"        type="INTEGER"                      not-null="true"/>
+      <column name="TYPEID"             type="INTEGER"                      not-null="true"/>
       <column name="FORTYPEID"          type="INTEGER"                      not-null="true"/>
       <column name="FORID"              type="INTEGER"                      not-null="true"/>
       <column name="CREATOR"            type="INTEGER"                      not-null="true"/>
@@ -58,7 +58,7 @@
       <table-name>T_HISTORY</table-name>
       <update>true</update>
       <!-- constraints -->
-      <foreign name="HIST_FK_EVNTYPEID"     key="EVENTTYPEID"   reference="DMTYPE(ID)"/>
+      <foreign name="HIST_FK_EVNTYPEID"     key="TYPEID"        reference="DMTYPE(ID)"/>
       <foreign name="HIST_FK_FORTYPEID"     key="FORTYPEID"     reference="DMTYPE(ID)"/>
       <foreign name="HIST_FK_MODIFIER"      key="CREATOR"       reference="USERABSTRACT(ID)"/>
     </database>
@@ -72,6 +72,7 @@
       <mode>(version==4)</mode>
     </version>
     <name>Admin_HistorySQLTable</name>
+    <typeid-column>TYPEID</typeid-column>
     <database>
       <table-name>T_HISTORY</table-name>
     </database>
