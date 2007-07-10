@@ -255,7 +255,7 @@
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derbyclient</artifactId>
-      <version>10.1.2.1</version>
+      <version>10.2.2.0</version>
       <scope>package</scope>
     </dependency>
 
@@ -290,8 +290,9 @@
       <groupId>org.apache.myfaces.tomahawk</groupId>
       <artifactId>tomahawk-sandbox</artifactId>
       <version>1.1.6</version>
+      <scope>compile</scope>
     </dependency>
-    
+
     <!-- To Create HTML Codes used in the WebDAV integration -->
     <dependency>
       <groupId>ecs</groupId>
