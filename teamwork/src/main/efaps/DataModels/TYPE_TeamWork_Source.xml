@@ -49,7 +49,7 @@
     <parent>TeamWork_Collection</parent>
 
     <attribute>
-      <name>ParentCollectionLink</name>
+      <name>ParentCollection</name>
       <type>Link</type>
       <typelink>TeamWork_Collection</typelink>
       <sqltable>TeamWork_AbstractSQLTable</sqltable>
@@ -61,12 +61,24 @@
     <property name="Icon">${ROOTURL}/servlet/image/TeamWork_SourceImage</property>
     <property name="Tree">TeamWork_SourceTree</property>
 	
-	<trigger name="TeamWork_Source_InsertPost" event="INSERT_POST" program="org.efaps.teamwork.Abstract2Abstract" method="execute" index="1">
+	<!-- triggers -->
+	<trigger name="TeamWork_Source_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnTypeInstance" />
+    
+	<trigger name="TeamWork_Source_INSERT_POST_1" event="INSERT_POST" program="org.efaps.teamwork.Abstract2Abstract" index="1">
 		<property name="PropertyName">PropertyValue</property>
     </trigger>
+    <trigger name="TeamWork_Source_INSERT_POST_2" event="INSERT_POST" program="org.efaps.events.history.HistoryTrigger" index="2">
+      <property name="Type">Admin_History_Insert</property>
+    </trigger>
     
-    <trigger name="TeamWork_Source_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnTypeInstance" method="execute" index="1"/>
+     <trigger name="TeamWork_Source_UPDATE_POST" event="UPDATE_POST" program="org.efaps.events.history.HistoryTrigger">
+      <property name="Type">Admin_History_Update</property>
+    </trigger>
     
-    <trigger name="TeamWork_Collection_DELETE_PRE" event="DELETE_PRE" program="org.efaps.teamwork.CascadeDelete" method="execute" index="1"/>
+    <trigger name="TeamWork_Source_DELETE_PRE" event="DELETE_PRE" program="org.efaps.teamwork.CascadeDelete" index="1"/>
+  
+    <trigger name="TeamWork_Source_DELETE_POST" event="DELETE_POST" program="org.efaps.events.history.HistoryTrigger">
+      <property name="Type">Admin_History_Delete</property>
+    </trigger>
   </definition>
 </datamodel-type>

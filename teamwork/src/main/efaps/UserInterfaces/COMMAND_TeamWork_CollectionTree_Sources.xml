@@ -57,7 +57,7 @@
       <menu>TeamWork_CollectionTree_Sources_Menu</menu>
       <table>TeamWork_SourceTable</table>
       <evaluate program="org.efaps.events.ui.table.QueryExpand">
-        <property name="Expand">TeamWork_Source\ParentCollectionLink</property>
+        <property name="Expand">TeamWork_Source\ParentCollection</property>
       </evaluate>
     </target>
     <!-- property definitions -->

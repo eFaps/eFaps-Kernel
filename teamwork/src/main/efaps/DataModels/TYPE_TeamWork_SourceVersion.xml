@@ -120,8 +120,15 @@
     <property name="StoreResource">org.efaps.db.transaction.VFSStoreResource</property>
     <property name="StoreVFSName">eFaps/store/documents</property>
 
-
+    <!-- triggers -->
     <trigger name="TeamWork_SourceVersion_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnSourceVersion" method="execute" index="1"/>
+
+    <trigger name="TeamWork_SourceVersion_CHECKIN_POST" event="CHECKIN_POST" program="org.efaps.events.history.HistoryTrigger">
+      <property name="Type">Admin_History_Checkin</property>
+    </trigger>
+    <trigger name="TeamWork_SourceVersion_CHECKOUT_POST" event="CHECKOUT_POST" program="org.efaps.events.history.HistoryTrigger">
+      <property name="Type">Admin_History_Checkout</property>
+    </trigger>
 
   </definition>
 </datamodel-type>
