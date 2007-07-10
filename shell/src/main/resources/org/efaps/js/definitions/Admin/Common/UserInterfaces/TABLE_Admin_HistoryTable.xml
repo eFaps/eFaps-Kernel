@@ -59,6 +59,11 @@
       <property name="Label">Admin_History/EventType.Label</property>
       <property name="ShowTypeIcon">true</property>
     </field>
+    <field name="fortype">
+      <property name="Expression">ForType.Name</property>
+      <property name="Label">Admin_History/ForType.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
     <field name="creator">
       <property name="Expression">Creator</property>
       <property name="Label">Admin_History/Creator.Label</property>

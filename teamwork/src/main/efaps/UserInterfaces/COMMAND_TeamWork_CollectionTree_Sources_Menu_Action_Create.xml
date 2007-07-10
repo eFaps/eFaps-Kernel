@@ -58,7 +58,7 @@
     </target>
     <!-- property definitions -->
     <property name="Target">popup</property>
-    <property name="TargetConnectAttribute">TeamWork_Source/ParentCollectionLink</property>
+    <property name="TargetConnectAttribute">TeamWork_Source/ParentCollection</property>
     <property name="TargetCreateType">TeamWork_Source</property>
     <property name="TargetMode">create</property>
   </definition>
