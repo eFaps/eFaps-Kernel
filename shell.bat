@@ -1,6 +1,6 @@
 @REM --------------------------------------------------------------------------
 @REM
-@REM Copyright 2006 The eFaps Team
+@REM Copyright 2003-2007 The eFaps Team
 @REM
 @REM Licensed under the Apache License, Version 2.0 (the "License");
 @REM you may not use this file except in compliance with the License.
@@ -33,9 +33,6 @@ set CP=
 REM eFaps itself
 set CP=%CP%;%shellPath%\classes
 set CP=%CP%;%shellPathLib%\eFaps-Kernel-1.0-SNAPSHOT.jar
-
-REM Mozillas JavaScript
-set CP=%CP%;%shellPathLib%\js-1.6R1.jar
 
 REM Logging with log4j
 set CP=%CP%;%shellPathLib%\log4j-1.2.14.jar
@@ -70,6 +67,20 @@ set CP=%CP%;%shellPathLib%\asm-util-2.2.1.jar
 set CP=%CP%;%shellPathLib%\asm-tree-2.2.1.jar
 set CP=%CP%;%shellPathLib%\asm-analysis-2.2.1.jar
 set CP=%CP%;%shellPathLib%\dependency-0.2.jar
+REM javac
+set CP=%CP%;%shellPathLib%\commons-jci-javac-1.0.jar
+REM eclipse
+set CP=%CP%;%shellPathLib%\commons-jci-eclipse-1.0.jar
+set CP=%CP%;%shellPathLib%\core-3.2.0.658.jar
+REM groovy
+set CP=%CP%;%shellPathLib%\commons-jci-groovy-1.0.jar
+set CP=%CP%;%shellPathLib%\groovy-all-1.0-jsr-03.jar
+REM rhino
+set CP=%CP%;%shellPathLib%\commons-jci-rhino-1.0.jar
+set CP=%CP%;%shellPathLib%\js-1.6R5.jar
+REM janino
+set CP=%CP%;%shellPathLib%\commons-jci-janino-1.0.jar
+set CP=%CP%;%shellPathLib%\janino-2.4.3.jar
 
 REM Connection Pooling
 set CP=%CP%;%shellPathLib%\commons-dbcp-1.2.2.jar
@@ -77,7 +88,7 @@ set CP=%CP%;%shellPathLib%\commons-pool-1.3.jar
 set CP=%CP%;%shellPathLib%\commons-collections-3.1.jar
 
 REM Database Driver
-set CP=%CP%;%shellPathLib%\derbyclient-10.1.2.1.jar
+set CP=%CP%;%shellPathLib%\derbyclient-10.2.2.0.jar
 set CP=%CP%;%shellPathLib%\postgresql-8.2-504.jdbc3.jar
 
 REM VFSStore
@@ -95,4 +106,4 @@ echo Classpath:
 echo ~~~~~~~~~~
 echo %CP%
 
-%JAVA_HOME%\bin\java -classpath %CP% org.efaps.js.Shell -bootstrap %BOOTSTRAP% %1 %2 %3 %4 %5 %6 %7 %8 %9
+"%JAVA_HOME%\bin\java" -classpath %CP% org.efaps.js.Shell -bootstrap %BOOTSTRAP% %1 %2 %3 %4 %5 %6 %7 %8 %9
