@@ -312,7 +312,7 @@ public class Compiler {
       byte[] ret = null;
       int index = _resourceName.lastIndexOf('.');
       String extension = _resourceName.substring(index);
-
+      String resourceName = (new File(_resourceName)).getAbsolutePath();
       if (".class".equals(extension)) {
         try {
           InputStream is = new FileInputStream(_resourceName);
@@ -325,7 +325,7 @@ public class Compiler {
       } else {
         try {
           Checkout checkout = new Checkout(new Instance(javaType,
-                                                        file2id.get(_resourceName)));
+                                                        file2id.get(resourceName)));
           InputStream is = checkout.executeWithoutAccessCheck();
           ret = new byte[is.available()];
           is.read(ret);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,10 +86,9 @@ public class EFapsResourceStore implements ResourceStore {
       LOG.debug("write '" + _resourceName + "'");
     }
     try {
-
-      String javaClassName = _resourceName.replaceAll("\\.class", "").replaceAll(
-          File.separator, ".").replaceFirst(".", "");
-     
+      String resourceName = getInternalClassName(new File(_resourceName).getAbsoluteFile()).toString();
+      String javaClassName = resourceName.replaceAll("\\.class", "")
+                                         .replaceFirst(".", "");
 
       Long id = compiler.getclass2id().get(javaClassName);
       Instance instance;
@@ -98,7 +97,8 @@ public class EFapsResourceStore implements ResourceStore {
             "\\$.*", "")
             + ".java";
 
-        Long parentId = this.compiler.getfile2id().get(parent);
+
+        Long parentId = this.compiler.getfile2id().get(new File(parent).getAbsolutePath());
 
         Insert insert = new Insert(this.compiler.getclassType());
         insert.add("Name", javaClassName);
@@ -117,6 +117,24 @@ public class EFapsResourceStore implements ResourceStore {
     } catch (Exception e) {
       LOG.error("unable to write to Database '" + _resourceName + "'", e);
     }
+  }
+
+  /**
+   * Convert the file of the class name in a name without slashes / backslashes
+   * (instead points are used for the internal representation of the class
+   * name).
+   *
+   * @param _file file with name to convert
+   */
+  protected StringBuilder getInternalClassName(final File _file)  {
+    StringBuilder ret = null;
+    if (_file.getParentFile() == null)  {
+      ret = new StringBuilder(_file.getName());
+    } else  {
+      ret = getInternalClassName(_file.getParentFile())
+                  .append(".").append(_file.getName());
+    }
+    return ret;
   }
 
   /**
