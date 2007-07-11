@@ -37,8 +37,6 @@
     <name>Admin_Event_Definition</name>
     <parent>Admin_Abstract</parent>
    
-    
-    
     <attribute>
       <name>IndexPosition</name>
       <type>Integer</type>
@@ -73,7 +71,7 @@
       <name>JavaProg</name>
       <type>Link</type>
       <sqltable>Admin_Event_DefinitionSQLTable</sqltable>
-      <sqlcolumn>PROGRAM</sqlcolumn>
+      <sqlcolumn>ESJP</sqlcolumn>
       <typelink>Admin_Program_Java</typelink>
     </attribute>
     
