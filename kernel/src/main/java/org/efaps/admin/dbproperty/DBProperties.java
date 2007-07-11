@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,8 +60,8 @@ public class DBProperties {
   /**
    * Cache for the Properties
    */
-  private static final Map<String, HashMap<String, String>> PROPERTIESCACHE =
-      new HashMap<String, HashMap<String, String>>();
+  private static final Map<String, Map<String, String>> PROPERTIESCACHE =
+      new HashMap<String, Map<String, String>>();
 
   /**
    * are the Properties initialised?
@@ -136,7 +136,10 @@ public class DBProperties {
     }
 
     if (value == null) {
-      value = PROPERTIESCACHE.get(DEFAULT).get(_key);
+      Map<String,String> defaultProps = PROPERTIESCACHE.get(DEFAULT);
+      if (defaultProps != null)  {
+        value = PROPERTIESCACHE.get(DEFAULT).get(_key);
+      }
     }
 
     return (value == null) ? "?? - " + _key + " - ??" : value;
