@@ -31,6 +31,7 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
@@ -45,11 +46,21 @@ public class HistoryTrigger implements EventExecution {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     Map values = (Map) _parameter.get(ParameterValues.NEW_VALUES);
     Map properties = (Map) _parameter.get(ParameterValues.PROPERTIES);
+    String type = (String) properties.get("Type");
 
     try {
-      Insert insert = new Insert((String) properties.get("Type"));
+
+      Insert insert = new Insert(type);
       insert.add("ForID", ((Long) instance.getId()).toString());
       insert.add("ForType", ((Long) instance.getType().getId()).toString());
+      if ("Common_History_AddChild".equals(type)
+          || "Common_History_RemoveChild".equals(type)) {
+        Context context = Context.getThreadContext();
+        String oid = context.getParameter("oid");
+        System.out.println(oid);
+        insert.add("ParentOID", oid);
+      }
+
       insert.execute();
       String ID = insert.getId();
       insert.close();
@@ -61,7 +72,7 @@ public class HistoryTrigger implements EventExecution {
           Map.Entry entry = (Map.Entry) iter.next();
           Attribute attr = (Attribute) entry.getKey();
           String value = (String) entry.getValue().toString();
-          
+
           insert = new Insert("Common_HistoryAttributes");
           insert.add("HistoryID", ID);
           insert.add("Attribute", ((Long) attr.getId()).toString());

@@ -49,7 +49,7 @@ public class HistoryQuery implements EventExecution {
       Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
 
       SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Common_History_Abstract");
+      query.setQueryTypes("Common_History_Update");
       query.setExpandChildTypes(true);
       query.addSelect("OID");
       query.addWhereExprEqValue("ForID", instance.getId());
@@ -64,6 +64,21 @@ public class HistoryQuery implements EventExecution {
         list.add(instances);
       }
 
+      query.close();
+      query = new SearchQuery();
+      query.setQueryTypes("Common_History_AddChild");
+      query.setExpandChildTypes(true);
+      query.addSelect("OID");
+      query.addWhereExprEqValue("ParentOID", instance.getType().getId() + "."
+          + instance.getId());
+      query.execute();
+      while (query.next()) {
+        System.out.println((String) query.get("OID"));
+        List<Instance> instances = new ArrayList<Instance>(1);
+        instances.add(new Instance((String) query.get("OID")));
+        list.add(instances);
+      }
+      query.close();
       ret.put(ReturnValues.VALUES, list);
     } catch (EFapsException e) {
       LOG.error("execute(Parameter)", e);

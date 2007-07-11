@@ -42,6 +42,7 @@
       <column name="TYPEID"             type="INTEGER"                      not-null="true"/>
       <column name="FORTYPEID"          type="INTEGER"                      not-null="true"/>
       <column name="FORID"              type="INTEGER"                      not-null="true"/>
+      <column name="PARENTOID"          type="STRING_SHORT" length="50"/>
       <column name="CREATOR"            type="INTEGER"                      not-null="true"/>
       <column name="CREATED"            type="DATETIME"                     not-null="true"/>
      </database>

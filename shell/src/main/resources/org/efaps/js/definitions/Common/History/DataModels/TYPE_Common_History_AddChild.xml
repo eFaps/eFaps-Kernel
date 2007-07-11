@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>510ced6e-101a-434c-b891-069861e64fc2</uuid>
+  <uuid>1ea2a1c4-447f-48c0-af00-faf7863eef8d</uuid>
 
   <!-- create type -->
   <definition>
@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Common_History_Insert</name>
+    <name>Common_History_AddChild</name>
   </definition>
 
   <!-- define type -->
@@ -45,8 +45,15 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Common_History_Insert</name>
-    <parent>Common_History_Update</parent>
+    <name>Common_History_AddChild</name>
+    <parent>Common_History_Abstract</parent>
+    <attribute>
+      <name>ParentOID</name>
+      <type>String</type>
+      <sqltable>Common_HistorySQLTable</sqltable>
+      <sqlcolumn>PARENTOID</sqlcolumn>
+    </attribute>
+    
     <property name="Tree">Common_HistoryTree</property>
   </definition>
 
