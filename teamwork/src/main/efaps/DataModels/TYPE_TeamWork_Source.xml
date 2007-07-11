@@ -68,7 +68,7 @@
 		<property name="PropertyName">PropertyValue</property>
     </trigger>
     <trigger name="TeamWork_Source_INSERT_POST_2" event="INSERT_POST" program="org.efaps.esjp.common.history.HistoryTrigger" index="2">
-      <property name="Type">Common_History_Insert</property>
+      <property name="Type">Common_History_AddChild</property>
     </trigger>
     
      <trigger name="TeamWork_Source_UPDATE_POST" event="UPDATE_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
@@ -78,7 +78,7 @@
     <trigger name="TeamWork_Source_DELETE_PRE" event="DELETE_PRE" program="org.efaps.teamwork.CascadeDelete" index="1"/>
   
     <trigger name="TeamWork_Source_DELETE_POST" event="DELETE_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
-      <property name="Type">Common_History_Delete</property>
+      <property name="Type">Common_History_RemoveChild</property>
     </trigger>
   </definition>
 </datamodel-type>

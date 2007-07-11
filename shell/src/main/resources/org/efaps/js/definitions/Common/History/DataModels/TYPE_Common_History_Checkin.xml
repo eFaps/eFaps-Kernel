@@ -46,7 +46,7 @@
       <mode>(version==6)</mode>
     </version>
     <name>Common_History_Checkin</name>
-    <parent>Common_History_Abstract</parent>
+    <parent>Common_History_Update</parent>
     <property name="Tree">Common_HistoryTree</property>
   </definition>
 

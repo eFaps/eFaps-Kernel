@@ -122,13 +122,18 @@
 
     <!-- triggers -->
     <trigger name="TeamWork_SourceVersion_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnSourceVersion" method="execute" index="1"/>
-
-    <trigger name="TeamWork_SourceVersion_CHECKIN_POST" event="CHECKIN_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
+    
+    <trigger name="TeamWork_SourceVersion_INSERT_POST" event="INSERT_POST" program="org.efaps.esjp.common.history.HistoryTrigger" >
+      <property name="Type">Common_History_AddChild</property>
+    </trigger>
+    <trigger name="TeamWork_SourceVersion_CHECKIN_POST" event="CHECKIN_POST" program="org.efaps.esjp.common.history.HistoryTrigger" >
       <property name="Type">Common_History_Checkin</property>
     </trigger>
     <trigger name="TeamWork_SourceVersion_CHECKOUT_POST" event="CHECKOUT_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
       <property name="Type">Common_History_Checkout</property>
     </trigger>
-
+    <trigger name="TeamWork_SourceVersion_DELETE_POST" event="DELETE_POST" program="org.efaps.esjp.common.history.HistoryTrigger" >
+      <property name="Type">Common_History_RemoveChild</property>
+    </trigger>
   </definition>
 </datamodel-type>
