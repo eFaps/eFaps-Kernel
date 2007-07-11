@@ -71,7 +71,7 @@
       <name>JavaProg</name>
       <type>Link</type>
       <sqltable>Admin_Event_DefinitionSQLTable</sqltable>
-      <sqlcolumn>ESJP</sqlcolumn>
+      <sqlcolumn>PRG</sqlcolumn>
       <typelink>Admin_Program_Java</typelink>
     </attribute>
     

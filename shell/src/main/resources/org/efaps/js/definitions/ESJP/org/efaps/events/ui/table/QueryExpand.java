@@ -56,16 +56,12 @@ public class QueryExpand implements EventExecution {
 
       String expand = (String) properties.get("Expand");
 
-      boolean expandChildTypes =
-          "true".equals((String) properties.get("ExpandChildTypes"));
-
       if (LOG.isDebugEnabled()) {
         LOG.debug("Expand=" + expand);
       }
 
       SearchQuery query = new SearchQuery();
       query.setExpand(instance, expand);
-      query.setExpandChildTypes(expandChildTypes);
       query.addSelect("OID");
       query.execute();
 

@@ -41,7 +41,7 @@
       <!-- columns -->
       <column name="ABSTRACT" type="INTEGER"      not-null="true"/>
       <column name="INDEXPOS" type="INTEGER"      not-null="true"/>
-      <column name="ESJP"     type="INTEGER"      not-null="true"/>
+      <column name="PRG"      type="INTEGER"      not-null="true"/>
       <column name="METHOD"   type="STRING_SHORT" not-null="true"   length="128"/>
     </database>
   </definition>
@@ -59,7 +59,7 @@
     <database>
       <table-name>T_EVENTDEF</table-name>
       <update>true</update>
-      <foreign name="T_EVENTDEF_FK_ESJP" key="ESJP" reference="ABSTRACT(ID)"/>
+      <foreign name="T_EVENTDEF_FK_PRG" key="PRG" reference="ABSTRACT(ID)"/>
     </database>
   </definition>
 </datamodel-sqltable>
