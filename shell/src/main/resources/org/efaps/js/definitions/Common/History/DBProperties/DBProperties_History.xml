@@ -24,8 +24,8 @@
 -->
 
 <eFaps-DBProperties>
-  <uuid>f10521f6-4343-4d2c-b525-7fc56df9d0e2</uuid>
-  <bundle name="efaps" sequence="1"/>
+  <uuid>7ef23b46-cac5-40dc-80af-9caae76d5a24</uuid>
+  <bundle name="efaps_History" sequence="1"/>
   <resource>
     <type>Properties</type>
     <language></language> 

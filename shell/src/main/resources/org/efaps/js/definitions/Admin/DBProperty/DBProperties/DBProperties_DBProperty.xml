@@ -17,23 +17,23 @@
  limitations under the License.
 
  Author:          jmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev: 1013 $
+ Last Changed:    $Date: 2007-07-12 10:04:58 -0500 (Thu, 12 Jul 2007) $
+ Last Changed By: $Author: jmo $
 
 -->
 
 <eFaps-DBProperties>
-  <uuid>134561b2-830c-40f3-85ff-899f8af1972f</uuid>
-  <bundle name="efaps_Event" sequence="1"/>
+  <uuid>308e0827-fa99-4740-8e8b-312e48382bee</uuid>
+  <bundle name="efaps_DBProperties" sequence="1"/>
   <resource>
     <type>Properties</type>
     <language></language> 
-    <file>Event.properties</file>
+    <file>DBProperty.properties</file>
   </resource>
   <resource>
     <type>Properties</type>
     <language>de</language> 
-    <file>Event_de.properties</file>
+    <file>DBProperty_de.properties</file>
   </resource>
 </eFaps-DBProperties>

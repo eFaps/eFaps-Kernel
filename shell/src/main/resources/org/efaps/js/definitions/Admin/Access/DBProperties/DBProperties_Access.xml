@@ -24,16 +24,16 @@
 -->
 
 <eFaps-DBProperties>
-  <uuid>134561b2-830c-40f3-85ff-899f8af1972f</uuid>
-  <bundle name="efaps_Event" sequence="1"/>
+  <uuid>74d94462-c5c7-40f7-a6a6-f74f0856db52</uuid>
+  <bundle name="efaps_Access" sequence="1"/>
   <resource>
     <type>Properties</type>
     <language></language> 
-    <file>Event.properties</file>
+    <file>Access.properties</file>
   </resource>
   <resource>
     <type>Properties</type>
     <language>de</language> 
-    <file>Event_de.properties</file>
+    <file>Access_de.properties</file>
   </resource>
 </eFaps-DBProperties>
