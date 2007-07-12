@@ -64,6 +64,7 @@
       <child>Admin_UI_AbstractTree_Properties</child>
       <child>Admin_UI_CommandTree_Links</child>
       <child>Admin_UI_DirectTree_Used</child>
+      <child>Admin_AbstractTree_Events</child>
     </childs>
     <!-- properties -->
     <property name="Target">content</property>

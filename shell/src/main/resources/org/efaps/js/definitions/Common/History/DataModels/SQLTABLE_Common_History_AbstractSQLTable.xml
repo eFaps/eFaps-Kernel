@@ -35,14 +35,13 @@
       <mode>(version==2)</mode>
     </version>
     <database>
-      <table-name>T_HISTORY</table-name>
+      <table-name>T_HISTORYABSTRACT</table-name>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
       <column name="TYPEID"             type="INTEGER"                      not-null="true"/>
       <column name="FORTYPEID"          type="INTEGER"                      not-null="true"/>
       <column name="FORID"              type="INTEGER"                      not-null="true"/>
-      <column name="PARENTOID"          type="STRING_SHORT" length="50"/>
       <column name="CREATOR"            type="INTEGER"                      not-null="true"/>
       <column name="CREATED"            type="DATETIME"                     not-null="true"/>
      </database>
@@ -56,7 +55,7 @@
       <mode>(version==3)</mode>
     </version>
     <database>
-      <table-name>T_HISTORY</table-name>
+      <table-name>T_HISTORYABSTRACT</table-name>
       <update>true</update>
       <!-- constraints -->
       <foreign name="HIST_FK_EVNTYPEID"     key="TYPEID"        reference="DMTYPE(ID)"/>
@@ -72,10 +71,10 @@
       <local>$Rev$</local>
       <mode>(version==4)</mode>
     </version>
-    <name>Common_HistorySQLTable</name>
+    <name>Common_History_AbstractSQLTable</name>
     <typeid-column>TYPEID</typeid-column>
     <database>
-      <table-name>T_HISTORY</table-name>
+      <table-name>T_HISTORYABSTRACT</table-name>
     </database>
   </definition>
 </datamodel-sqltable>

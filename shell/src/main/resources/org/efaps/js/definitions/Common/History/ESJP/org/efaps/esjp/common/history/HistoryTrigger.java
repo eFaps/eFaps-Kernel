@@ -57,8 +57,10 @@ public class HistoryTrigger implements EventExecution {
           || "Common_History_RemoveChild".equals(type)) {
         Context context = Context.getThreadContext();
         String oid = context.getParameter("oid");
-        System.out.println(oid);
-        insert.add("ParentOID", oid);
+        String typeid = oid.substring(0, oid.indexOf("."));
+        String toid = oid.substring(oid.indexOf(".") + 1);
+        insert.add("ToType", typeid);
+        insert.add("ToID", toid);
       }
 
       insert.execute();
@@ -73,7 +75,7 @@ public class HistoryTrigger implements EventExecution {
           Attribute attr = (Attribute) entry.getKey();
           String value = (String) entry.getValue().toString();
 
-          insert = new Insert("Common_HistoryAttributes");
+          insert = new Insert("Common_History_Attributes");
           insert.add("HistoryID", ID);
           insert.add("Attribute", ((Long) attr.getId()).toString());
           insert.add("Value", value);

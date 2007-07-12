@@ -49,50 +49,50 @@
     <attribute>
       <name>EventType</name>
       <type>Type</type>
-      <sqltable>Common_HistorySQLTable</sqltable>
+      <sqltable>Common_History_AbstractSQLTable</sqltable>
       <sqlcolumn>TYPEID</sqlcolumn>
     </attribute>
     <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Common_HistorySQLTable</sqltable>
+      <sqltable>Common_History_AbstractSQLTable</sqltable>
       <sqlcolumn>TYPEID,ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Common_HistorySQLTable</sqltable>
+      <sqltable>Common_History_AbstractSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ForID</name>
       <type>Integer</type>
-      <sqltable>Common_HistorySQLTable</sqltable>
+      <sqltable>Common_History_AbstractSQLTable</sqltable>
       <sqlcolumn>FORID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ForType</name>
       <type>Link</type>
       <typelink>Admin_DataModel_Type</typelink>
-      <sqltable>Common_HistorySQLTable</sqltable>
+      <sqltable>Common_History_AbstractSQLTable</sqltable>
       <sqlcolumn>FORTYPEID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ForOID</name>
       <type>OID</type>
-      <sqltable>Common_HistorySQLTable</sqltable>
+      <sqltable>Common_History_AbstractSQLTable</sqltable>
       <sqlcolumn>FORTYPEID,FORID</sqlcolumn>
     </attribute>
     <attribute>
       <name>Creator</name>
       <type>CreatorLink</type>
-      <sqltable>Common_HistorySQLTable</sqltable>
+      <sqltable>Common_History_AbstractSQLTable</sqltable>
       <sqlcolumn>CREATOR</sqlcolumn>
     </attribute>
     <attribute>
       <name>Created</name>
       <type>Created</type>
-      <sqltable>Common_HistorySQLTable</sqltable>
+      <sqltable>Common_History_AbstractSQLTable</sqltable>
       <sqlcolumn>CREATED</sqlcolumn>
     </attribute>
     

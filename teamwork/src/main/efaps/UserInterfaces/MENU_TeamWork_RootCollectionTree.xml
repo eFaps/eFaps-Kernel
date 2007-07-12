@@ -58,7 +58,7 @@
     </target>
     <childs>
       <child>TeamWork_CollectionTree_SubCollections</child>
-      <child>Common_History</child>
+      <child>Common_History_Abstract</child>
       <child>TeamWork_RootCollection_Member</child>
     </childs>
     <!-- property definitions -->

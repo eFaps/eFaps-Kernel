@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Common_HistoryTree</name>
+    <name>Common_History_AttributesTree</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,12 +51,12 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Common_HistoryTree</name>
+    <name>Common_History_AttributesTree</name>
     <!-- targets -->
     <target>
-      <table>Common_HistoryAttributesTable</table>
+      <table>Common_History_AttributesTable</table>
       <evaluate program="org.efaps.events.ui.table.QueryExpand">
-        <property name="Expand">Common_HistoryAttributes\HistoryID</property>
+        <property name="Expand">Common_History_Attributes\HistoryID</property>
       </evaluate>
     </target>
     <!-- properties -->

@@ -24,7 +24,7 @@
 -->
 
 <datamodel-sqltable>
-  <uuid>fc7afd62-a520-4321-8723-a4e2e59b8449</uuid>
+  <uuid>251e7dfc-8bb8-4430-83c3-52b5588aa7da</uuid>
 
   <!-- History of Events for Objects -->
   <definition>
@@ -35,14 +35,12 @@
       <mode>(version==2)</mode>
     </version>
     <database>
-      <table-name>T_HISTORYATTRIBUTES</table-name>
+      <table-name>T_HISTORYREFERENCE</table-name>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="HISTORYID"   type="INTEGER"                      not-null="true"/>
-      <column name="ATTRIBUTEID" type="INTEGER"                      not-null="true"/>
-      <column name="VALUE"       type="STRING_LONG" length="2000"    not-null="true"/>
-      
+      <column name="TOTYPEID"          type="INTEGER"                      not-null="true"/>
+      <column name="TOID"              type="INTEGER"                      not-null="true"/>
      </database>
   </definition>
 
@@ -54,10 +52,10 @@
       <mode>(version==3)</mode>
     </version>
     <database>
-      <table-name>T_HISTORYATTRIBUTES</table-name>
+      <table-name>T_HISTORYREFERENCE</table-name>
       <update>true</update>
       <!-- constraints -->
-      <foreign name="HISTATT_FK_HISTORYID"  key="HISTORYID"     reference="T_HISTORYABSTRACT(ID)"/>
+      <foreign name="HIST_FK_TOTYPEID"     key="TOTYPEID"        reference="DMTYPE(ID)"/>
     </database>
   </definition>
 
@@ -66,11 +64,12 @@
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==4)</mode>
+      <mode>(version==5)</mode>
     </version>
-    <name>Common_History_AttributesSQLTable</name>
+    <name>Common_History_ReferenceSQLTable</name>
+    <parent>Common_History_AbstractSQLTable</parent>
     <database>
-      <table-name>T_HISTORYATTRIBUTES</table-name>
+      <table-name>T_HISTORYREFERENCE</table-name>
     </database>
   </definition>
 </datamodel-sqltable>

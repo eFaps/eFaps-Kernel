@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>0751cef9-5ab0-45ab-9b2b-aa04ba54c9ec</uuid>
+  <uuid>5d0328b3-2cd1-403d-9880-d2cef5bdc5f1</uuid>
 
   <!-- create type -->
   <definition>
@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Common_History_RemoveChild</name>
+    <name>Common_History_Reference</name>
   </definition>
 
   <!-- define type -->
@@ -45,8 +45,21 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Common_History_RemoveChild</name>
-    <parent>Common_History_Reference</parent>
+    <name>Common_History_Reference</name>
+    <parent>Common_History_Abstract</parent>
+    <attribute>
+      <name>ToType</name>
+       <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
+      <sqltable>Common_History_ReferenceSQLTable</sqltable>
+      <sqlcolumn>TOTYPEID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>ToID</name>
+      <type>Integer</type>
+      <sqltable>Common_History_ReferenceSQLTable</sqltable>
+      <sqlcolumn>TOID</sqlcolumn>
+    </attribute>
     <property name="Tree">Common_History_AttributesTree</property>
   </definition>
 

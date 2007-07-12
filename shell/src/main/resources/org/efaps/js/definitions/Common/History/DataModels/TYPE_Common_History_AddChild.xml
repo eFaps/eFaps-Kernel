@@ -46,15 +46,8 @@
       <mode>(version==6)</mode>
     </version>
     <name>Common_History_AddChild</name>
-    <parent>Common_History_Abstract</parent>
-    <attribute>
-      <name>ParentOID</name>
-      <type>String</type>
-      <sqltable>Common_HistorySQLTable</sqltable>
-      <sqlcolumn>PARENTOID</sqlcolumn>
-    </attribute>
-    
-    <property name="Tree">Common_HistoryTree</property>
+    <parent>Common_History_Reference</parent>
+    <property name="Tree">Common_History_AttributesTree</property>
   </definition>
 
 </datamodel-type>

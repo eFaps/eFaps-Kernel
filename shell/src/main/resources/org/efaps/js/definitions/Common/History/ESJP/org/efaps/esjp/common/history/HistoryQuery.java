@@ -66,11 +66,11 @@ public class HistoryQuery implements EventExecution {
 
       query.close();
       query = new SearchQuery();
-      query.setQueryTypes("Common_History_AddChild");
+      query.setQueryTypes("Common_History_Reference");
       query.setExpandChildTypes(true);
       query.addSelect("OID");
-      query.addWhereExprEqValue("ParentOID", instance.getType().getId() + "."
-          + instance.getId());
+      query.addWhereExprEqValue("ToType", instance.getType().getId());
+      query.addWhereExprEqValue("ToID", instance.getId());
       query.execute();
       while (query.next()) {
         System.out.println((String) query.get("OID"));

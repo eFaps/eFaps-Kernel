@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Common_HistoryTable</name>
+    <name>Common_History_AbstractTable</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,26 +51,26 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Common_HistoryTable</name>
+    <name>Common_History_AbstractTable</name>
     <!-- fields -->
     <field name="eventtype">
       <property name="Expression">EventType</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Label">Common_History/EventType.Label</property>
+      <property name="Label">Common_History_Abstract/EventType.Label</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="fortype">
       <property name="Expression">ForType.Name</property>
-      <property name="Label">Common_History/ForType.Label</property>
+      <property name="Label">Common_History_Abstract/ForType.Label</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="creator">
       <property name="Expression">Creator</property>
-      <property name="Label">Common_History/Creator.Label</property>
+      <property name="Label">Common_History_Abstract/Creator.Label</property>
     </field>
      <field name="creator">
       <property name="Expression">Created</property>
-      <property name="Label">Common_History/Created.Label</property>
+      <property name="Label">Common_History_Abstract/Created.Label</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>

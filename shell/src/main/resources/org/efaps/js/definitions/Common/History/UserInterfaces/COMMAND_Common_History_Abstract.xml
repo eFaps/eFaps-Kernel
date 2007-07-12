@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Common_History</name>
+    <name>Common_History_Abstract</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,10 +51,10 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Common_History</name>
+    <name>Common_History_Abstract</name>
     <!-- target definitions -->
     <target>
-      <table>Common_HistoryTable</table>
+      <table>Common_History_AbstractTable</table>
       <evaluate program="org.efaps.esjp.common.history.HistoryQuery"/>
     </target>
 
