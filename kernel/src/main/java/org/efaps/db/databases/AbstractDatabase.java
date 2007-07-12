@@ -162,6 +162,16 @@ public abstract class AbstractDatabase  {
     return false;
   }
 
+  /**
+   * The method returns if a database implementation supports for blobs binary
+   * input stream supports the available method or not.
+   *
+   * @return always <i>false</i> because not implemented in this class
+   */
+  public boolean supportsBlobInputStreamAvailable()  {
+    return false;
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // static methods
   

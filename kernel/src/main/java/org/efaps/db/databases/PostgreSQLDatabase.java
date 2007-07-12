@@ -229,4 +229,11 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
     }
     return ret;
   }
+
+  /**
+   * @return always <i>true</i> because supported by PostgreSQL database
+   */
+  public boolean supportsBlobInputStreamAvailable()  {
+    return true;
+  }
 }

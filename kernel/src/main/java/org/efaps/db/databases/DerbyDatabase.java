@@ -260,4 +260,11 @@ public class DerbyDatabase extends AbstractDatabase  {
   public boolean supportsGetGeneratedKeys()  {
     return true;
   }
+
+  /**
+   * @return always <i>true</i> because supported by Derby database
+   */
+  public boolean supportsBlobInputStreamAvailable()  {
+    return true;
+  }
 }

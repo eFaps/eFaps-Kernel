@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ package org.efaps.db.transaction;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -181,15 +182,13 @@ public class JDBCStoreResource extends StoreResource {
           this.blobColumn).append(" ").append("from ").append(this.table)
           .append(" ").append("where ").append(this.keyColumn).append("=")
           .append(getFileId());
-      // System.out.println("cmd.toString()="+cmd.toString());
       ResultSet resultSet = stmt.executeQuery(cmd.toString());
       if (!resultSet.next()) {
         // @todo exception throwing
         // throw new Exception("could not found file");
       }
 
-      in = new JDBCStoreResourceInputStream(this, res, resultSet
-          .getBinaryStream(1));
+      in = new JDBCStoreResourceInputStream(this, res, resultSet.getBlob(1));
     } catch (IOException e) {
       LOG.error("read of content failed", e);
       throw new EFapsException(JDBCStoreResource.class, "read.SQLException", e);
@@ -299,17 +298,74 @@ public class JDBCStoreResource extends StoreResource {
     return true;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // input stream wrapper class
+
+  /**
+   * This class impements an InputStream to read bytes from a
+   * {@link java.sql.Blob} if the get binary stream of the blob does not
+   * support the available method (and returns e.g. always 0 like the Oracle
+   * JDBC driver).
+   *
+   * @todo avaible must be long! (because of max integer value!)
+   */
+  private class BlobInputStream extends InputStream  {
+    
+    /**
+     * Stores the blob for this input stream.
+     */
+    private final Blob blob;
+
+    private final InputStream in;
+
+    /**
+     * Hold the available bytes in the input stream.
+     */
+    private int available;
+    
+    BlobInputStream(final Blob _blob) throws SQLException  {
+      this.blob = _blob;
+      this.in = _blob.getBinaryStream();
+      this.available = (int) blob.length();
+    }
+
+    public int read() throws IOException  {
+      available--;
+      return this.in.read();
+    }
+
+    public int read(final byte[] _bytes) throws IOException  {
+      int length = _bytes.length;
+      if (this.available > 0)  {
+        if (this.available < length)  {
+          length = this.available;
+        }
+        this.available = this.available - length;
+        this.in.read(_bytes);
+      } else  {
+          length = -1;
+      }
+      return length;
+    }
+
+    public int available() throws IOException  {
+      return this.available;
+    }
+  }
+
 
   private class JDBCStoreResourceInputStream extends StoreResourceInputStream {
 
     private final ConnectionResource res;
 
     JDBCStoreResourceInputStream(final StoreResource _storeRes,
-        final ConnectionResource _res, final InputStream _in)
-        throws IOException {
-      super(_storeRes, _in);
+                                 final ConnectionResource _res,
+                                 final Blob _blob)
+                                 throws IOException, SQLException {
+      super(_storeRes,
+            Context.getDbType().supportsBlobInputStreamAvailable()
+            ? _blob.getBinaryStream()
+            : new BlobInputStream(_blob));
       this.res = _res;
     }
 
