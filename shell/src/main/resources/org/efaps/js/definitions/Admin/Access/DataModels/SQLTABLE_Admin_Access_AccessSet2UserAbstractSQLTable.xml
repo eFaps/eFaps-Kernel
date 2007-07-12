@@ -61,9 +61,9 @@
       <table-name>ACCESSSET2USER</table-name>
       <update>true</update>
       <foreign name="ACSST2USER_FK_SET"     key="ACCESSSET"     reference="ACCESSSET(ID)"/>
-      <foreign name="ACSST2USER_FK_TYPE"    key="USERABSTRACT"  reference="USERABSTRACT(ID)"/>
-      <foreign name="ACSST2USER_FK_CRTR"    key="CREATOR"       reference="USERPERSON(ID)"/>
-      <foreign name="ACSST2USER_FK_MDFR"    key="MODIFIER"      reference="USERPERSON(ID)"/>
+      <foreign name="ACSST2USER_FK_TYPE"    key="USERABSTRACT"  reference="T_USERABSTRACT(ID)"/>
+      <foreign name="ACSST2USER_FK_CRTR"    key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="ACSST2USER_FK_MDFR"    key="MODIFIER"      reference="T_USERPERSON(ID)"/>
      </database>
   </definition>
 

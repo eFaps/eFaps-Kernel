@@ -555,7 +555,7 @@ var _con = con.getConnection();
 var _stmt = _con.createStatement();
 
   _insert(_stmt, "Insert JAAS System eFaps", null,
-          "USERJAASSYSTEM",
+          "T_USERJAASSYSTEM",
           "NAME, UUID, "
                 + "CREATOR, CREATED, MODIFIER, MODIFIED, "
                 + "CLASSNAMEPERSON,"
@@ -576,23 +576,23 @@ var _stmt = _con.createStatement();
                 + "'getName'");
 
   _insert(_stmt, "Insert Administrator Person", null,
-          "USERABSTRACT",
+          "T_USERABSTRACT",
           "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS",
           "-10000, 'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 10001"
   );
   _exec(_stmt, null, null,
-    "insert into USERPERSON(ID, FIRSTNAME, LASTNAME, EMAIL, URL, PASSWORD) "+
+    "insert into T_USERPERSON(ID, FIRSTNAME, LASTNAME, EMAIL, URL, PASSWORD) "+
         "values (1,'The','Administrator','info@efaps.org','www.efaps.org', '')"
   );
 
   _insert(_stmt, "Insert Administrator Role",  null,
-          "USERABSTRACT",
+          "T_USERABSTRACT",
           "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS",
           "-11000, 'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 10001"
   );
 
   _insert(_stmt, "Connect Administrator Person to Role Administration", null,
-          "USERABSTRACT2ABSTRACT",
+          "T_USERABSTRACT2ABSTRACT",
           "TYPEID,CREATOR,CREATED,MODIFIER,MODIFIED,USERABSTRACTFROM,USERABSTRACTTO,USERJAASSYSTEM",
           "-12000, 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 1, 2, 1"
   );
@@ -627,98 +627,98 @@ var _stmt = _con.createStatement();
     text = "Insert Type for 'Admin_User_Person2Group' (only to store ID for type)";
     var typeIdPerson2Group  = _eFapsCreateInsertType(_stmt, text, "fec64148-a39b-4f69-bedd-9c3bcfe8e1602", "Admin_User_Person2Group", null);
 
-    _exec(_stmt, "Table 'USERABSTRACT'", "update type id for persons",
-      "update USERABSTRACT set TYPEID=" + typeIdPerson + " where TYPEID=-10000"
+    _exec(_stmt, "Table 'T_USERABSTRACT'", "update type id for persons",
+      "update T_USERABSTRACT set TYPEID=" + typeIdPerson + " where TYPEID=-10000"
     );
-    _exec(_stmt, "Table 'USERABSTRACT'", "update type id for persons",
-      "update USERABSTRACT set TYPEID=" + typeIdRole + " where TYPEID=-11000"
+    _exec(_stmt, "Table 'T_USERABSTRACT'", "update type id for persons",
+      "update T_USERABSTRACT set TYPEID=" + typeIdRole + " where TYPEID=-11000"
     );
-    eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "USERABSTRACT", [
+    eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "T_USERABSTRACT", [
         ["constraint USERABSTR_FK_TYPEID foreign key(TYPEID) references DMTYPE(ID)"]
     ]);
 
-    _exec(_stmt, "Table 'USERABSTRACT2ABSTRACT'", "update type id for connection between person and role",
-      "update USERABSTRACT2ABSTRACT set TYPEID="+typeIdPerson2Role+" where TYPEID=-12000"
+    _exec(_stmt, "Table 'T_USERABSTRACT2ABSTRACT'", "update type id for connection between person and role",
+      "update T_USERABSTRACT2ABSTRACT set TYPEID="+typeIdPerson2Role+" where TYPEID=-12000"
     );
-    eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "USERABSTRACT2ABSTRACT", [
+    eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "T_USERABSTRACT2ABSTRACT", [
         ["constraint USRABS2ABS_FK_TYPEID foreign key(TYPEID) references DMTYPE(ID)"]
     ]);
 
     _exec(_stmt, "View 'V_USERPERSONJASSKEY'", "view representing all persons related to the JAAS keys",
       "create view V_USERPERSONJASSKEY as "
         + "select "
-        +       "USERABSTRACT.ID,"
-        +       "USERABSTRACT.NAME,"
-        +       "USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
-        +       "USERJAASKEY.JAASKEY as JAASKEY "
-        +   "from USERABSTRACT,USERJAASKEY "
-        +   "where USERABSTRACT.TYPEID=" + typeIdPerson + " "
-        +       "and USERABSTRACT.ID=USERJAASKEY.USERABSTRACT"
+        +       "T_USERABSTRACT.ID,"
+        +       "T_USERABSTRACT.NAME,"
+        +       "T_USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
+        +       "T_USERJAASKEY.JAASKEY as JAASKEY "
+        +   "from T_USERABSTRACT,T_USERJAASKEY "
+        +   "where T_USERABSTRACT.TYPEID=" + typeIdPerson + " "
+        +       "and T_USERABSTRACT.ID=T_USERJAASKEY.USERABSTRACT"
     );
 
 
     _exec(_stmt, "View 'V_USERROLE'", "view representing all roles",
       "create view V_USERROLE as "
         + "select "
-        +       "USERABSTRACT.ID,"
-        +       "USERABSTRACT.NAME "
-        +   "from USERABSTRACT "
-        +   "where USERABSTRACT.TYPEID=" + typeIdRole
+        +       "T_USERABSTRACT.ID,"
+        +       "T_USERABSTRACT.NAME "
+        +   "from T_USERABSTRACT "
+        +   "where T_USERABSTRACT.TYPEID=" + typeIdRole
     );
 
     _exec(_stmt, "View 'V_USERROLEJASSKEY'", "view representing all roles related to the JAAS keys",
       "create view V_USERROLEJASSKEY as "
         + "select "
-        +       "USERABSTRACT.ID,"
-        +       "USERABSTRACT.NAME,"
-        +       "USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
-        +       "USERJAASKEY.JAASKEY as JAASKEY "
-        +   "from USERABSTRACT,USERJAASKEY "
-        +   "where USERABSTRACT.TYPEID=" + typeIdRole + " "
-        +       "and USERABSTRACT.ID=USERJAASKEY.USERABSTRACT"
+        +       "T_USERABSTRACT.ID,"
+        +       "T_USERABSTRACT.NAME,"
+        +       "T_USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
+        +       "T_USERJAASKEY.JAASKEY as JAASKEY "
+        +   "from T_USERABSTRACT,T_USERJAASKEY "
+        +   "where T_USERABSTRACT.TYPEID=" + typeIdRole + " "
+        +       "and T_USERABSTRACT.ID=T_USERJAASKEY.USERABSTRACT"
     );
 
     _exec(_stmt, "View 'V_USERGROUP'", "view representing all groups",
       "create view V_USERGROUP as "+
         "select "+
-            "USERABSTRACT.ID,"+
-            "USERABSTRACT.NAME "+
-          "from USERABSTRACT "+
-          "where USERABSTRACT.TYPEID="+typeIdGroup
+            "T_USERABSTRACT.ID,"+
+            "T_USERABSTRACT.NAME "+
+          "from T_USERABSTRACT "+
+          "where T_USERABSTRACT.TYPEID="+typeIdGroup
     );
 
     _exec(_stmt, "View 'V_USERGROUPJASSKEY'", "view representing all groups related to the JAAS keys",
       "create view V_USERGROUPJASSKEY as "
         + "select "
-        +       "USERABSTRACT.ID,"
-        +       "USERABSTRACT.NAME,"
-        +       "USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
-        +       "USERJAASKEY.JAASKEY as JAASKEY "
-        +   "from USERABSTRACT,USERJAASKEY "
-        +   "where USERABSTRACT.TYPEID=" + typeIdGroup + " "
-        +       "and USERABSTRACT.ID=USERJAASKEY.USERABSTRACT"
+        +       "T_USERABSTRACT.ID,"
+        +       "T_USERABSTRACT.NAME,"
+        +       "T_USERJAASKEY.USERJAASSYSTEM as JAASSYSID,"
+        +       "T_USERJAASKEY.JAASKEY as JAASKEY "
+        +   "from T_USERABSTRACT,T_USERJAASKEY "
+        +   "where T_USERABSTRACT.TYPEID=" + typeIdGroup + " "
+        +       "and T_USERABSTRACT.ID=T_USERJAASKEY.USERABSTRACT"
     );
 
     _exec(_stmt, "View 'V_USERPERSON2ROLE'", "view representing connection between person and role depending on JAAS systems",
       "create view V_USERPERSON2ROLE as "
         + "select "
-        +       "USERABSTRACT2ABSTRACT.ID,"
-        +       "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"
-        +       "USERABSTRACT2ABSTRACT.USERABSTRACTTO,"
-        +       "USERABSTRACT2ABSTRACT.USERJAASSYSTEM as JAASSYSID "
-        +   "from USERABSTRACT2ABSTRACT "
-        +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Role
+        +       "T_USERABSTRACT2ABSTRACT.ID,"
+        +       "T_USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"
+        +       "T_USERABSTRACT2ABSTRACT.USERABSTRACTTO,"
+        +       "T_USERABSTRACT2ABSTRACT.USERJAASSYSTEM as JAASSYSID "
+        +   "from T_USERABSTRACT2ABSTRACT "
+        +   "where T_USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Role
     );
 
     _exec(_stmt, "View 'V_USERPERSON2GROUP'", "view representing connection between person and group depending on JAAS systems",
       "create view V_USERPERSON2GROUP as "
         + "select "
-        +       "USERABSTRACT2ABSTRACT.ID,"
-        +       "USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"
-        +       "USERABSTRACT2ABSTRACT.USERABSTRACTTO,"
-        +       "USERABSTRACT2ABSTRACT.USERJAASSYSTEM as JAASSYSID "
-        +   "from USERABSTRACT2ABSTRACT "
-        +   "where USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Group
+        +       "T_USERABSTRACT2ABSTRACT.ID,"
+        +       "T_USERABSTRACT2ABSTRACT.USERABSTRACTFROM,"
+        +       "T_USERABSTRACT2ABSTRACT.USERABSTRACTTO,"
+        +       "T_USERABSTRACT2ABSTRACT.USERJAASSYSTEM as JAASSYSID "
+        +   "from T_USERABSTRACT2ABSTRACT "
+        +   "where T_USERABSTRACT2ABSTRACT.TYPEID=" + typeIdPerson2Group
     );
 con.commit();
 }

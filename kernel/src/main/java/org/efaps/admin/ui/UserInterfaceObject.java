@@ -132,11 +132,11 @@ public abstract class UserInterfaceObject extends AdminObject {
     try {
       stmt = Context.getThreadContext().getConnection().createStatement();
       ResultSet rs =
-          stmt.executeQuery("select " + "UIABSTRACT2UIABSTRACT.TYPEID,"
-              + "UIABSTRACT2UIABSTRACT.TOID," + "ABSTRACT.TYPEID,"
-              + "ABSTRACT.NAME " + "from UIABSTRACT2UIABSTRACT, ABSTRACT "
-              + "where UIABSTRACT2UIABSTRACT.FROMID=" + getId()
-              + " and UIABSTRACT2UIABSTRACT.TOID=ABSTRACT.ID");
+          stmt.executeQuery("select " + "T_UIABSTRACT2UIABSTRACT.TYPEID,"
+              + "T_UIABSTRACT2UIABSTRACT.TOID," + "ABSTRACT.TYPEID,"
+              + "ABSTRACT.NAME " + "from T_UIABSTRACT2UIABSTRACT, ABSTRACT "
+              + "where T_UIABSTRACT2UIABSTRACT.FROMID=" + getId()
+              + " and T_UIABSTRACT2UIABSTRACT.TOID=ABSTRACT.ID");
       while (rs.next()) {
         long conTypeId = rs.getLong(1);
         long toId = rs.getLong(2);
@@ -213,8 +213,8 @@ public abstract class UserInterfaceObject extends AdminObject {
     try {
       stmt = Context.getThreadContext().getConnection().createStatement();
       ResultSet rs =
-          stmt.executeQuery("select " + "UIACCESS.USERABSTRACT "
-              + "from UIACCESS " + "where UIACCESS.UIABSTRACT=" + getId());
+          stmt.executeQuery("select " + "T_UIACCESS.USERABSTRACT "
+              + "from T_UIACCESS " + "where T_UIACCESS.UIABSTRACT=" + getId());
       while (rs.next()) {
         long userId = rs.getLong(1);
         UserObject userObject = UserObject.getUserObject(userId);

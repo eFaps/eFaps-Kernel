@@ -66,7 +66,7 @@
     <property name="StoreAttributeFileName">FileName</property>
     <property name="StoreJDBCBlob">FILECONTENT</property>
     <property name="StoreJDBCKey">ID</property>
-    <property name="StoreJDBCTable">UIFILE</property>
+    <property name="StoreJDBCTable">T_UIFILE</property>
     <property name="StoreResource">org.efaps.db.transaction.JDBCStoreResource</property>
     <property name="Tree">Admin_UI_FileTree</property>
   </definition>

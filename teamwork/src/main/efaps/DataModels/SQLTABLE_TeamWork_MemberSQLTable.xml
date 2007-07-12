@@ -67,10 +67,10 @@
       <table-name>T_TWMEMBER</table-name>
       <update>true</update>
       <!-- contraints -->
-      <foreign name="T_TWMEMBER_FK_CRTR"         key="CREATOR"      reference="USERPERSON(ID)"/>
-      <foreign name="T_TWMEMBER_FK_MDFR"         key="MODIFIER"     reference="USERPERSON(ID)"/>
+      <foreign name="T_TWMEMBER_FK_CRTR"         key="CREATOR"      reference="T_USERPERSON(ID)"/>
+      <foreign name="T_TWMEMBER_FK_MDFR"         key="MODIFIER"     reference="T_USERPERSON(ID)"/>
       <foreign name="T_TWMEMBER_FK_ABSTRACT"     key="ABSTRACT"     reference="T_TWABSTRACT(ID)"/>
-      <foreign name="T_TWMEMBER_FK_USERABSTRACT" key="USERABSTRACT" reference="USERABSTRACT(ID)"/>
+      <foreign name="T_TWMEMBER_FK_USERABSTRACT" key="USERABSTRACT" reference="T_USERABSTRACT(ID)"/>
       <foreign name="T_TWMEMBER_FK_ACCESSSET"    key="ACCESSSET"    reference="ACCESSSET(ID)"/>
     </database>
     

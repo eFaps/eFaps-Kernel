@@ -60,7 +60,7 @@
       <!-- constraints -->
       <foreign name="HIST_FK_EVNTYPEID"     key="TYPEID"        reference="DMTYPE(ID)"/>
       <foreign name="HIST_FK_FORTYPEID"     key="FORTYPEID"     reference="DMTYPE(ID)"/>
-      <foreign name="HIST_FK_MODIFIER"      key="CREATOR"       reference="USERABSTRACT(ID)"/>
+      <foreign name="HIST_FK_MODIFIER"      key="CREATOR"       reference="T_USERABSTRACT(ID)"/>
     </database>
   </definition>
 

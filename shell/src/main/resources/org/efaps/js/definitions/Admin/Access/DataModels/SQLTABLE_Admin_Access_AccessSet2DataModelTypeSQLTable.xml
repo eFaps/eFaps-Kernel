@@ -62,8 +62,8 @@
       <update>true</update>
       <foreign name="ACSST2DMTP_FK_SET"     key="ACCESSSET"     reference="ACCESSSET(ID)"/>
       <foreign name="ACSST2DMTP_FK_TYPE"    key="DMTYPE"        reference="DMTYPE(ID)"/>
-      <foreign name="ACSST2DMTP_FK_CRTR"    key="CREATOR"       reference="USERPERSON(ID)"/>
-      <foreign name="ACSST2DMTP_FK_MDFR"    key="MODIFIER"      reference="USERPERSON(ID)"/>
+      <foreign name="ACSST2DMTP_FK_CRTR"    key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="ACSST2DMTP_FK_MDFR"    key="MODIFIER"      reference="T_USERPERSON(ID)"/>
      </database>
   </definition>
 

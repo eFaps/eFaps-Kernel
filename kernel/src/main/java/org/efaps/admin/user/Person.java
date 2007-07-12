@@ -56,7 +56,7 @@ public class Person extends UserObject {
 
   /**
    * Enum for all known and updated attributes from a person. Only this cuold be
-   * defined which are in the SQL table USERPERSON.
+   * defined which are in the SQL table T_USERPERSON.
    */
   public enum AttrName {
     /** Attribute Name for the First Name of the person. */
@@ -321,7 +321,7 @@ public class Person extends UserObject {
           StringBuilder cmd = new StringBuilder();
           PreparedStatement stmt = null;
           try {
-            cmd.append("update USERPERSON set ");
+            cmd.append("update T_USERPERSON set ");
             boolean first = true;
             for (AttrName attrName : this.attrUpdated) {
               if (first) {
@@ -839,7 +839,7 @@ public class Person extends UserObject {
       StringBuilder cmd = new StringBuilder();
       try {
 
-        cmd.append("update USERPERSON ").append("set LASTLOGIN=").append(
+        cmd.append("update T_USERPERSON ").append("set LASTLOGIN=").append(
             Context.getDbType().getCurrentTimeStamp()).append(" ").append(
             "where ID=").append(getId());
         stmt = rsrc.getConnection().createStatement();
@@ -1155,7 +1155,7 @@ public class Person extends UserObject {
         stmt.close();
 
         cmd = new StringBuilder();
-        cmd.append("insert into USERPERSON").append(
+        cmd.append("insert into T_USERPERSON").append(
             "(ID,FIRSTNAME,LASTNAME,EMAIL) ").append("values (").append(persId)
             .append(",'-','-','-')");
         stmt = rsrc.getConnection().prepareStatement(cmd.toString());

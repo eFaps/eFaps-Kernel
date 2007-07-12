@@ -66,8 +66,8 @@
       <table-name>T_TWABSTRACT</table-name>
       <update>true</update>
       <!-- contraints -->
-      <foreign name="T_TWABSTRACT_FK_CRTR"    key="CREATOR"   reference="USERPERSON(ID)"/>
-      <foreign name="T_TWABSTRACT_FK_MDFR"    key="MODIFIER"  reference="USERPERSON(ID)"/>
+      <foreign name="T_TWABSTRACT_FK_CRTR"    key="CREATOR"   reference="T_USERPERSON(ID)"/>
+      <foreign name="T_TWABSTRACT_FK_MDFR"    key="MODIFIER"  reference="T_USERPERSON(ID)"/>
       <foreign name="T_TWABSTRACT_FK_PARENT"  key="PARENT"    reference="T_TWABSTRACT(ID)"/>
      </database>
   </definition>

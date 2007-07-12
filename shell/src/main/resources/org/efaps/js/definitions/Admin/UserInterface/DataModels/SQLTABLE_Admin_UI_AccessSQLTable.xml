@@ -35,7 +35,7 @@
       <mode>(version==1)</mode>
     </version>
     <database>
-      <table-name>UIACCESS</table-name>
+      <table-name>T_UIACCESS</table-name>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
@@ -58,12 +58,12 @@
       <mode>(version==3)</mode>
     </version>
     <database>
-      <table-name>UIACCESS</table-name>
+      <table-name>T_UIACCESS</table-name>
       <update>true</update>
-      <foreign name="UIACS_FK_USRABSTR"     key="USERABSTRACT"  reference="USERABSTRACT(ID)"/>
+      <foreign name="UIACS_FK_USRABSTR"     key="USERABSTRACT"  reference="T_USERABSTRACT(ID)"/>
       <foreign name="UIACS_FK_UIABSTR"      key="UIABSTRACT"    reference="ABSTRACT(ID)"/>
-      <foreign name="UIACS_FK_CRTR"         key="CREATOR"       reference="USERPERSON(ID)"/>
-      <foreign name="UIACS_FK_MDFR"         key="MODIFIER"      reference="USERPERSON(ID)"/>
+      <foreign name="UIACS_FK_CRTR"         key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="UIACS_FK_MDFR"         key="MODIFIER"      reference="T_USERPERSON(ID)"/>
      </database>
   </definition>
 
@@ -76,7 +76,7 @@
     </version>
     <name>Admin_UI_AccessSQLTable</name>
     <database>
-      <table-name>UIACCESS</table-name>
+      <table-name>T_UIACCESS</table-name>
     </database>
   </definition>
 </datamodel-sqltable>

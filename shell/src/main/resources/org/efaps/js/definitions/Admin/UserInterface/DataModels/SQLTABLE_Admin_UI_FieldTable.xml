@@ -35,7 +35,7 @@
       <mode>(version==1)</mode>
     </version>
     <database>
-      <table-name>UIFIELD</table-name>
+      <table-name>T_UIFIELD</table-name>
       <parent-table>ABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
@@ -52,7 +52,7 @@
       <mode>(version==3)</mode>
     </version>
     <database>
-      <table-name>UIFIELD</table-name>
+      <table-name>T_UIFIELD</table-name>
       <update>true</update>
       <foreign name="UIFLD_FK_CLCT"         key="COLLECTION"    reference="ABSTRACT(ID)"/>
      </database>
@@ -68,7 +68,7 @@
     <name>Admin_UI_FieldTable</name>
     <parent>Admin_AbstractSQLTable</parent>
     <database>
-      <table-name>UIFIELD</table-name>
+      <table-name>T_UIFIELD</table-name>
     </database>
   </definition>
 </datamodel-sqltable>

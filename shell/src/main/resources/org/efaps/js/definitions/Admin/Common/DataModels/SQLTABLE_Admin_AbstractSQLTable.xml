@@ -84,8 +84,8 @@
       <table-name>ABSTRACT</table-name>
       <!-- constraints -->
       <foreign name="ABSTR_FK_TYPEID"       key="TYPEID"        reference="DMTYPE(ID)"/>
-      <foreign name="ABSTR_FK_CRTR"         key="CREATOR"       reference="USERPERSON(ID)"/>
-      <foreign name="ABSTR_FK_MDFR"         key="MODIFIER"      reference="USERPERSON(ID)"/>
+      <foreign name="ABSTR_FK_CRTR"         key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="ABSTR_FK_MDFR"         key="MODIFIER"      reference="T_USERPERSON(ID)"/>
     </database>
   </definition>
 

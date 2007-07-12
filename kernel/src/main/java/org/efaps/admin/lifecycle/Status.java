@@ -83,7 +83,7 @@ public boolean checkAccess(Context _context, AccessType _accessType)  {
 
   for (Map.Entry<Role,Set<AccessType>> entry : this.access.entrySet())   {
     Role role = entry.getKey();
-    if (role.isAssigned(_context))  {
+    if (role.isAssigned())  {
       Set<AccessType> userAccess = entry.getValue();
       if (userAccess.contains(_accessType))  {
         ret = true;
@@ -150,7 +150,7 @@ public boolean checkAccess(Context _context, AccessType _accessType)  {
     try  {
       ResultSet rs = stmt.executeQuery(
           "select "+
-            "USERABSTRACT,"+
+            "T_USERABSTRACT,"+
             "LCACCESSTYPE "+
           "from LCSTATUSACCESS "+
           "where LCSTATUS="+getId()

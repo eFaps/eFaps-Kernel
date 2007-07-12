@@ -35,8 +35,8 @@
       <mode>(version==2)</mode>
     </version>
     <database>
-      <table-name>USERPERSON</table-name>
-      <parent-table>USERABSTRACT</parent-table>
+      <table-name>T_USERPERSON</table-name>
+      <parent-table>T_USERABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
@@ -65,19 +65,19 @@
       <sql>
         create view V_USERPERSON as
            select
-                 USERABSTRACT.ID,
-                 USERABSTRACT.NAME,
-                 USERPERSON.FIRSTNAME,
-                 USERPERSON.LASTNAME,
-                 USERPERSON.EMAIL,
-                 USERPERSON.ORG,
-                 USERPERSON.URL,
-                 USERPERSON.PHONE,
-                 USERPERSON.MOBILE,
-                 USERPERSON.FAX,
-                 USERPERSON.PASSWORD
-             from USERABSTRACT,USERPERSON
-             where USERABSTRACT.ID=USERPERSON.ID
+                 T_USERABSTRACT.ID,
+                 T_USERABSTRACT.NAME,
+                 T_USERPERSON.FIRSTNAME,
+                 T_USERPERSON.LASTNAME,
+                 T_USERPERSON.EMAIL,
+                 T_USERPERSON.ORG,
+                 T_USERPERSON.URL,
+                 T_USERPERSON.PHONE,
+                 T_USERPERSON.MOBILE,
+                 T_USERPERSON.FAX,
+                 T_USERPERSON.PASSWORD
+             from T_USERABSTRACT,T_USERPERSON
+             where T_USERABSTRACT.ID=T_USERPERSON.ID
       </sql>
     </database>
   </definition>
@@ -92,7 +92,7 @@
     <name>Admin_User_PersonSQLTable</name>
     <parent>Admin_User_AbstractSQLTable</parent>
     <database>
-      <table-name>USERPERSON</table-name>
+      <table-name>T_USERPERSON</table-name>
     </database>
   </definition>
 </datamodel-sqltable>

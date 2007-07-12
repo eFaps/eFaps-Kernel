@@ -62,8 +62,8 @@
     <database>
       <table-name>ACCESSSET</table-name>
       <update>true</update>
-      <foreign name="ACSST_FK_CRTR"         key="CREATOR"       reference="USERPERSON(ID)"/>
-      <foreign name="ACSST_FK_MDFR"         key="MODIFIER"      reference="USERPERSON(ID)"/>
+      <foreign name="ACSST_FK_CRTR"         key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="ACSST_FK_MDFR"         key="MODIFIER"      reference="T_USERPERSON(ID)"/>
      </database>
   </definition>
 

@@ -65,8 +65,8 @@
       <!-- constraints -->
       <unique  name="T_PRGJVCL_UK_NAME"     columns="NAME"/>
       <foreign name="T_PRGJVCL_FK_PRG"      key="PROGRAM"       reference="T_PRGABSTRACT(ID)"/>
-      <foreign name="T_PRGJVCL_FK_CRTR"     key="CREATOR"       reference="USERPERSON(ID)"/>
-      <foreign name="T_PRGJVCL_FK_MDFR"     key="MODIFIER"      reference="USERPERSON(ID)"/>
+      <foreign name="T_PRGJVCL_FK_CRTR"     key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="T_PRGJVCL_FK_MDFR"     key="MODIFIER"      reference="T_USERPERSON(ID)"/>
     </database>
   </definition>
 
