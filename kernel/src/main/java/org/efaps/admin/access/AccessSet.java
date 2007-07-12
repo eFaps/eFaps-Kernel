@@ -64,7 +64,7 @@ public class AccessSet extends AdminObject  {
                                                 + "ID,"
                                                 + "UUID,"
                                                 + "NAME "
-                                              + "from ACCESSSET";
+                                              + "from T_ACCESSSET";
 
   /**
    * This is the sql select statement to select the links from all access sets
@@ -75,7 +75,7 @@ public class AccessSet extends AdminObject  {
   private static final String SQL_SET2TYPE = "select "
                                                 + "ACCESSSET,"
                                                 + "ACCESSTYPE "
-                                              + "from ACCESSSET2TYPE";
+                                              + "from T_ACCESSSET2TYPE";
 
   /**
    * This is the sql select statement to select the links from all access sets
@@ -86,7 +86,7 @@ public class AccessSet extends AdminObject  {
   private static final String SQL_SET2DMTYPE = "select "
                                                   + "ACCESSSET,"
                                                   + "DMTYPE "
-                                                + "from ACCESSSET2DMTYPE";
+                                                + "from T_ACCESSSET2DMTYPE";
 
   /**
    * Stores all instances of class {@link AccessSet}.

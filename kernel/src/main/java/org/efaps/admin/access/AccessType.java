@@ -59,7 +59,7 @@ public class AccessType extends AdminObject  {
                                                 + "ID,"
                                                 + "UUID,"
                                                 + "NAME "
-                                              + "from ACCESSTYPE";
+                                              + "from T_ACCESSTYPE";
 
   /**
    * Stores all instances of class {@link AccessType}.

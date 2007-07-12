@@ -107,7 +107,7 @@ public class SimpleAccessCheckOnType implements EventExecution {
     boolean hasAccess = false;
 
     StringBuilder cmd = new StringBuilder();
-    cmd.append("select count(*) from ACCESSSET2USER ").append(
+    cmd.append("select count(*) from T_ACCESSSET2USER ").append(
         "where ACCESSSET in (").append(_accessSets).append(") ").append(
         "and USERABSTRACT in (").append(_users).append(")");
 

@@ -71,7 +71,7 @@
       <foreign name="T_TWMEMBER_FK_MDFR"         key="MODIFIER"     reference="T_USERPERSON(ID)"/>
       <foreign name="T_TWMEMBER_FK_ABSTRACT"     key="ABSTRACT"     reference="T_TWABSTRACT(ID)"/>
       <foreign name="T_TWMEMBER_FK_USERABSTRACT" key="USERABSTRACT" reference="T_USERABSTRACT(ID)"/>
-      <foreign name="T_TWMEMBER_FK_ACCESSSET"    key="ACCESSSET"    reference="ACCESSSET(ID)"/>
+      <foreign name="T_TWMEMBER_FK_ACCESSSET"    key="ACCESSSET"    reference="T_ACCESSSET(ID)"/>
     </database>
     
   </definition>

@@ -35,7 +35,7 @@
       <mode>(version==1)</mode>
     </version>
     <database>
-      <table-name>ACCESSSET2DMTYPE</table-name>
+      <table-name>T_ACCESSSET2DMTYPE</table-name>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
@@ -58,9 +58,9 @@
       <mode>(version==3)</mode>
     </version>
     <database>
-      <table-name>ACCESSSET2DMTYPE</table-name>
+      <table-name>T_ACCESSSET2DMTYPE</table-name>
       <update>true</update>
-      <foreign name="ACSST2DMTP_FK_SET"     key="ACCESSSET"     reference="ACCESSSET(ID)"/>
+      <foreign name="ACSST2DMTP_FK_SET"     key="ACCESSSET"     reference="T_ACCESSSET(ID)"/>
       <foreign name="ACSST2DMTP_FK_TYPE"    key="DMTYPE"        reference="DMTYPE(ID)"/>
       <foreign name="ACSST2DMTP_FK_CRTR"    key="CREATOR"       reference="T_USERPERSON(ID)"/>
       <foreign name="ACSST2DMTP_FK_MDFR"    key="MODIFIER"      reference="T_USERPERSON(ID)"/>
@@ -76,7 +76,7 @@
     </version>
     <name>Admin_Access_AccessSet2DataModelTypeSQLTable</name>
     <database>
-      <table-name>ACCESSSET2DMTYPE</table-name>
+      <table-name>T_ACCESSSET2DMTYPE</table-name>
     </database>
   </definition>
 </datamodel-sqltable>
