@@ -39,7 +39,7 @@ importClass(Packages.org.efaps.update.ui.TableUpdate);
 importClass(Packages.org.efaps.update.user.JAASSystemUpdate);
 importClass(Packages.org.efaps.update.user.RoleUpdate);
 importClass(Packages.org.efaps.update.program.JavaUpdate);
-importClass(Packages.org.efaps.admin.program.java.Compiler);
+importClass(Packages.org.efaps.admin.program.esjp.Compiler);
 importClass(Packages.org.efaps.importer.DataImport);
 importClass(Packages.org.efaps.update.dbproperty.DBPropertiesUpdate);
 

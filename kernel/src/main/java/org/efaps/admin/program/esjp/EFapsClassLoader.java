@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.program.java;
+package org.efaps.admin.program.esjp;
 
 import java.util.HashMap;
 import java.util.Map;

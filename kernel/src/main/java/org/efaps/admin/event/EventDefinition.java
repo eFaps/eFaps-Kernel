@@ -28,7 +28,7 @@ import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.Parameter.ParameterValues;
-import org.efaps.admin.program.java.EFapsClassLoader;
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Menu;

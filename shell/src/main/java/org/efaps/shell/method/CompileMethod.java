@@ -20,7 +20,7 @@
 
 package org.efaps.shell.method;
 
-import org.efaps.admin.program.java.Compiler;
+import org.efaps.admin.program.esjp.Compiler;
 import org.efaps.util.EFapsException;
 
 /**
