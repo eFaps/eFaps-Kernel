@@ -21,20 +21,17 @@
 package org.efaps.admin.ui;
 
 import java.util.List;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.Vector;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
-import org.efaps.db.Context;
 import org.efaps.servlet.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- * This clas represents the Commands wich enable the interaction with a User.<br>
+ * This class represents the Commands wich enable the interaction with a User.<br>
  * Buttons in the UserInterface a represented by this Class.
  * 
  * @author tmo
@@ -332,7 +329,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   // Constructors
   /**
    * Constructor to set the id and name of the command object. The constructor
-   * also sets the label of the command.
+   * also sets the label of the command and the titel of the target.
    * 
    * @param _id
    *          id of the command to set
@@ -848,22 +845,16 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * The instance method returns the label of a command (or also menu). The
-   * instance method looks in the properties, if a property entry with prefix
+   * instance method looks in the DBProperties, if a property entry with prefix
    * <i>Command.</i> and name is found. This value is returned. If no entry is
    * found, the name of the command is returned.
    * 
-   * @param _context
-   *          context for this request
    * @return label of the command (or menu)
    */
-  public String getViewableName(final Context _context) {
+  public String getViewableName() {
     String name = getName();
-    ResourceBundle msgs =
-        ResourceBundle.getBundle("org.efaps.properties.AttributeRessource",
-            _context.getLocale());
-    try {
-      name = msgs.getString("Command." + name);
-    } catch (MissingResourceException e) {
+    if (DBProperties.hasProperty("Command." + getName())) {
+      name = DBProperties.getProperty("Command." + getName());
     }
     return name;
   }
