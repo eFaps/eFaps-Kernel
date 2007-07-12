@@ -58,8 +58,8 @@
       <table-name>T_HISTORYABSTRACT</table-name>
       <update>true</update>
       <!-- constraints -->
-      <foreign name="HIST_FK_EVNTYPEID"     key="TYPEID"        reference="DMTYPE(ID)"/>
-      <foreign name="HIST_FK_FORTYPEID"     key="FORTYPEID"     reference="DMTYPE(ID)"/>
+      <foreign name="HIST_FK_EVNTYPEID"     key="TYPEID"        reference="T_DMTYPE(ID)"/>
+      <foreign name="HIST_FK_FORTYPEID"     key="FORTYPEID"     reference="T_DMTYPE(ID)"/>
       <foreign name="HIST_FK_MODIFIER"      key="CREATOR"       reference="T_USERABSTRACT(ID)"/>
     </database>
   </definition>

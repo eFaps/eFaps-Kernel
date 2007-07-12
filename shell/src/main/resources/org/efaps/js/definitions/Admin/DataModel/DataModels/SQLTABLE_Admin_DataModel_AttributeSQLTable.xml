@@ -36,8 +36,8 @@
     </version>
 
     <database>
-      <table-name>DMATTRIBUTE</table-name>
-      <parent-table>ABSTRACT</parent-table>
+      <table-name>T_DMATTRIBUTE</table-name>
+      <parent-table>T_ABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
@@ -62,24 +62,24 @@
       <sql>
         create view V_ADMINATTRIBUTE as
           select
-                ABSTRACT.ID,
-                ABSTRACT.NAME,
-                DMATTRIBUTE.DMTABLE,
-                DMATTRIBUTE.DMTYPE,
-                DMATTRIBUTE.DMATTRIBUTETYPE,
-                DMATTRIBUTE.DMTYPELINK,
-                DMATTRIBUTE.SQLCOLUMN
-            from DMATTRIBUTE,ABSTRACT
-            where ABSTRACT.ID=DMATTRIBUTE.ID
+                T_ABSTRACT.ID,
+                T_ABSTRACT.NAME,
+                T_DMATTRIBUTE.DMTABLE,
+                T_DMATTRIBUTE.DMTYPE,
+                T_DMATTRIBUTE.DMATTRIBUTETYPE,
+                T_DMATTRIBUTE.DMTYPELINK,
+                T_DMATTRIBUTE.SQLCOLUMN
+            from T_DMATTRIBUTE,T_ABSTRACT
+            where T_ABSTRACT.ID=T_DMATTRIBUTE.ID
       </sql>
       <!-- update of the sql table -->
-      <table-name>DMATTRIBUTE</table-name>
+      <table-name>T_DMATTRIBUTE</table-name>
       <update>true</update>
       <!-- constraints -->
-      <foreign name="DMATTR_FK_DMTABLE"     key="DMTABLE"           reference="DMTABLE(ID)"/>
-      <foreign name="DMATTR_FK_DMTYPE"      key="DMTYPE"            reference="DMTYPE(ID)"/>
-      <foreign name="DMATTR_FK_DMATTRTP"    key="DMATTRIBUTETYPE"   reference="DMATTRIBUTETYPE(ID)"/>
-      <foreign name="DMATTR_FK_DMTPLINK"    key="DMTYPELINK"        reference="DMTYPE(ID)"/>
+      <foreign name="DMATTR_FK_DMTABLE"     key="DMTABLE"           reference="T_DMTABLE(ID)"/>
+      <foreign name="DMATTR_FK_DMTYPE"      key="DMTYPE"            reference="T_DMTYPE(ID)"/>
+      <foreign name="DMATTR_FK_DMATTRTP"    key="DMATTRIBUTETYPE"   reference="T_DMATTRIBUTETYPE(ID)"/>
+      <foreign name="DMATTR_FK_DMTPLINK"    key="DMTYPELINK"        reference="T_DMTYPE(ID)"/>
     </database>
   </definition>
 
@@ -94,7 +94,7 @@
     <name>Admin_DataModel_AttributeSQLTable</name>
     <parent>Admin_AbstractSQLTable</parent>
     <database>
-      <table-name>DMATTRIBUTE</table-name>
+      <table-name>T_DMATTRIBUTE</table-name>
     </database>
   </definition>
 </datamodel-sqltable>

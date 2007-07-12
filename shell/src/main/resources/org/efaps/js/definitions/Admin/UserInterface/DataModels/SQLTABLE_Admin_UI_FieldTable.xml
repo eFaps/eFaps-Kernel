@@ -36,7 +36,7 @@
     </version>
     <database>
       <table-name>T_UIFIELD</table-name>
-      <parent-table>ABSTRACT</parent-table>
+      <parent-table>T_ABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
@@ -54,7 +54,7 @@
     <database>
       <table-name>T_UIFIELD</table-name>
       <update>true</update>
-      <foreign name="UIFLD_FK_CLCT"         key="COLLECTION"    reference="ABSTRACT(ID)"/>
+      <foreign name="UIFLD_FK_CLCT"         key="COLLECTION"    reference="T_ABSTRACT(ID)"/>
      </database>
   </definition>
 

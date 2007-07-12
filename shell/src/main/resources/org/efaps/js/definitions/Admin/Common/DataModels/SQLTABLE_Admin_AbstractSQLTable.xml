@@ -38,7 +38,7 @@
     <database>
       <create>true</create>
       <update>true</update>
-      <table-name>ABSTRACT</table-name>
+      <table-name>T_ABSTRACT</table-name>
       <!-- columns -->
       <column name="TYPEID"     type="INTEGER"                    not-null="true"/>
       <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
@@ -62,28 +62,28 @@
     <database>
       <!-- update type id for sql tables -->
       <sql>
-        update ABSTRACT
-            set TYPEID=(select ID from ABSTRACT where NAME='Admin_DataModel_SQLTable')
+        update T_ABSTRACT
+            set TYPEID=(select ID from T_ABSTRACT where NAME='Admin_DataModel_SQLTable')
             where TYPEID=-20000
       </sql>
       <!-- update type id for types -->
       <sql>
-        update ABSTRACT
-            set TYPEID=(select ID from ABSTRACT where NAME='Admin_DataModel_Type')
+        update T_ABSTRACT
+            set TYPEID=(select ID from T_ABSTRACT where NAME='Admin_DataModel_Type')
             where TYPEID=-21000
       </sql>
       <!-- update type id for attributes -->
       <sql>
-        update ABSTRACT
-            set TYPEID=(select ID from ABSTRACT where NAME='Admin_DataModel_Attribute')
+        update T_ABSTRACT
+            set TYPEID=(select ID from T_ABSTRACT where NAME='Admin_DataModel_Attribute')
             where TYPEID=-22000
       </sql>
       <!-- update of the sql table -->
       <create>false</create>
       <update>false</update>
-      <table-name>ABSTRACT</table-name>
+      <table-name>T_ABSTRACT</table-name>
       <!-- constraints -->
-      <foreign name="ABSTR_FK_TYPEID"       key="TYPEID"        reference="DMTYPE(ID)"/>
+      <foreign name="ABSTR_FK_TYPEID"       key="TYPEID"        reference="T_DMTYPE(ID)"/>
       <foreign name="ABSTR_FK_CRTR"         key="CREATOR"       reference="T_USERPERSON(ID)"/>
       <foreign name="ABSTR_FK_MDFR"         key="MODIFIER"      reference="T_USERPERSON(ID)"/>
     </database>
@@ -99,7 +99,7 @@
     </version>
     <name>Admin_AbstractSQLTable</name>
     <database>
-      <table-name>ABSTRACT</table-name>
+      <table-name>T_ABSTRACT</table-name>
     </database>
   </definition>
 </datamodel-sqltable>

@@ -36,8 +36,8 @@
     </version>
 
     <database>
-      <table-name>DMTYPE</table-name>
-      <parent-table>ABSTRACT</parent-table>
+      <table-name>T_DMTYPE</table-name>
+      <parent-table>T_ABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
@@ -62,18 +62,18 @@
       <sql>
         create view V_ADMINTYPE as
             select 
-                ABSTRACT.ID,
-                ABSTRACT.NAME,
-                DMTYPE.PARENTDMTYPE,
-                DMTYPE.SQLCACHEEXPR
-            from DMTYPE,ABSTRACT
-            where ABSTRACT.ID=DMTYPE.ID
+                T_ABSTRACT.ID,
+                T_ABSTRACT.NAME,
+                T_DMTYPE.PARENTDMTYPE,
+                T_DMTYPE.SQLCACHEEXPR
+            from T_DMTYPE,T_ABSTRACT
+            where T_ABSTRACT.ID=T_DMTYPE.ID
       </sql>
       <!-- update of the sql table -->
-      <table-name>DMTYPE</table-name>
+      <table-name>T_DMTYPE</table-name>
       <update>true</update>
       <!-- constraints -->
-      <foreign name="DMTYPE_FK_PRNTDMTP"    key="PARENTDMTYPE"  reference="DMTYPE(ID)"/>
+      <foreign name="T_DMTYPE_FK_PRNTDMTP"    key="PARENTDMTYPE"  reference="T_DMTYPE(ID)"/>
     </database>
   </definition>
 
@@ -89,7 +89,7 @@
     <name>Admin_DataModel_TypeSQLTable</name>
     <parent>Admin_AbstractSQLTable</parent>
     <database>
-      <table-name>DMTYPE</table-name>
+      <table-name>T_DMTYPE</table-name>
     </database>
   </definition>
 </datamodel-sqltable>

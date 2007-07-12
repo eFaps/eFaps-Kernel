@@ -36,7 +36,7 @@
     </version>
     <database>
       <table-name>T_UIFILE</table-name>
-      <parent-table>ABSTRACT</parent-table>
+      <parent-table>T_ABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
       <!-- columns -->

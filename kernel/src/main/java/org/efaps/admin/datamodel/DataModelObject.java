@@ -67,10 +67,10 @@ public abstract class DataModelObject extends AdminObject  {
       stmt = Context.getThreadContext().getConnection().createStatement();
       ResultSet rs = stmt.executeQuery(
           "select "+
-            "PROPERTY.NAME,"+
-            "PROPERTY.VALUE "+
-          "from PROPERTY "+
-          "where PROPERTY.ABSTRACT=" + getId() + ""
+            "T_PROPERTY.NAME,"+
+            "T_PROPERTY.VALUE "+
+          "from T_PROPERTY "+
+          "where T_PROPERTY.ABSTRACT=" + getId() + ""
       );
       while (rs.next())  {
         String name =   rs.getString(1).trim();

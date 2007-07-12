@@ -38,13 +38,13 @@
     <database>
       <create>true</create>
       <update>true</update>
-      <table-name>PROPERTY</table-name>
+      <table-name>T_PROPERTY</table-name>
       <!-- columns -->
       <column name="ABSTRACT"   type="INTEGER"                    not-null="true"/>
       <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
       <column name="VALUE"      type="STRING_SHORT" length="128"/>
       <!-- constraints -->
-      <unique name="PROPERTY_UK_ABNAME" columns="ABSTRACT,NAME"/>
+      <unique name="T_PROPERTY_UK_ABNAME" columns="ABSTRACT,NAME"/>
     </database>
   </definition>
 
@@ -59,9 +59,9 @@
     <database>
       <create>false</create>
       <update>false</update>
-      <table-name>PROPERTY</table-name>
+      <table-name>T_PROPERTY</table-name>
       <!-- constraints -->
-      <foreign name="PROPERTY_FK_ABSTR"     key="ABSTRACT"      reference="ABSTRACT(ID)"/>
+      <foreign name="T_PROPERTY_FK_ABSTR"     key="ABSTRACT"      reference="T_ABSTRACT(ID)"/>
 <!-- on delete cascade -->
      </database>
   </definition>
@@ -76,7 +76,7 @@
     </version>
     <name>Admin_PropertyTable</name>
     <database>
-      <table-name>PROPERTY</table-name>
+      <table-name>T_PROPERTY</table-name>
     </database>
   </definition>
 </datamodel-sqltable>

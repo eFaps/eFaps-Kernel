@@ -73,7 +73,7 @@ function eFapsCommonSQLTableUpdate(_con, _stmt, _text, _table, _array)  {
 function eFapsCommonVersionInsert(_con, _stmt, _name, _version)  {
   eFapsCommonLog("Update application '" + _name + "'", "new version " + _version);
   _stmt.execute(
-      "insert into COMMONVERSION "
+      "insert into T_COMMONVERSION "
         +   "(NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED) "
         +   "values ('" + _name + "'," + _version + "," 
                 + "1," + Context.getDbType().getCurrentTimeStamp() + ","
