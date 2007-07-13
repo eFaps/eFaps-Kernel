@@ -72,7 +72,7 @@
       <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
       <sqlcolumn>SEQUENCE</sqlcolumn>
     </attribute>
- 
+    <property name="Tree">Admin_DBProperties_BundleTree</property>
   </definition>
   
 </datamodel-type>

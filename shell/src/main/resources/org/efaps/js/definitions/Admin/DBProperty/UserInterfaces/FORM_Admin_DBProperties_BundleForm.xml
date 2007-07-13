@@ -24,7 +24,7 @@
 -->
 
 <ui-form>
-  <uuid>7d7fe7a3-094b-4152-8e10-2855d0ecd963</uuid>
+  <uuid>25eca2d6-0752-49a8-a862-fd2b3f0b5613</uuid>
 
   <!-- ************************************************************************
     version definition used to create the table 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_DBPropertiesForm</name>
+    <name>Admin_DBProperties_BundleForm</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,7 +51,7 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DBPropertiesForm</name>
+    <name>Admin_DBProperties_BundleForm</name>
     <!-- fields -->
     <field name="type">
       <property name="Creatable">false</property>
@@ -60,29 +60,29 @@
       <property name="Searchable">false</property>
       <property name="ShowTypeIcon">true</property>
     </field>
-    <field name="key">
+    <field name="name">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
       <property name="Editable">true</property>
-      <property name="Expression">Key</property>
+      <property name="Expression">Name</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="default">
+    <field name="uuid">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
       <property name="Editable">true</property>
-      <property name="Expression">Default</property>
+      <property name="Expression">UUID</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="bundleid">
+    <field name="sequence">
       <property name="Columns">20</property>
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
-      <property name="Expression">BundleID.Name</property>
-      <property name="Required">false</property>
-      <property name="Label">Admin_DBPropertiesForm/BundleID.Name</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Sequence</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
     </field>
     
   </definition>

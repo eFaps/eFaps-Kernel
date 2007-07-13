@@ -24,7 +24,7 @@
 -->
 
 <ui-menu>
-  <uuid>f2ad0156-a8dc-44c5-9e62-0ad97ef56b51</uuid>
+  <uuid>bf2b4084-49a2-4bbb-b1ad-7c5e27f2ab97</uuid>
 
   <!-- ************************************************************************
     version definition used to create the menu 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_DBPropertiesTree_Menu</name>
+    <name>Admin_DBProperties_BundleTree</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,13 +51,19 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DBPropertiesTree_Menu</name>
-    
+    <name>Admin_DBProperties_BundleTree</name>
+    <target>
+      <form>Admin_DBProperties_BundleForm</form>
+      <menu>Admin_DBProperties_BundleTree_Menu</menu>
+    </target>
     <!-- childs -->
     <childs>
-      <child>Admin_DBPropertiesTree_Menu_Action</child>
+      <child>Admin_DBProperties_BundleTree_DBProperties</child>
+     
     </childs>
-    
+    <!-- properties -->
+    <property name="Target">content</property>
+    <property name="TargetMode">view</property>
   </definition>
 
 </ui-menu>

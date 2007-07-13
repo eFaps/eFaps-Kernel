@@ -17,47 +17,48 @@
  limitations under the License.
 
  Author:          jmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev:586 $
+ Last Changed:    $Date:2007-01-04 14:59:51 +0100 (Do, 04 Jan 2007) $
+ Last Changed By: $Author:tmo $
 
 -->
 
-<ui-menu>
-  <uuid>f2ad0156-a8dc-44c5-9e62-0ad97ef56b51</uuid>
+<ui-command>
+  <uuid>ca8a55cb-87ab-40bb-ac0b-778a2b4d9274</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:586 $</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_DBPropertiesTree_Menu</name>
+    <name>Admin_DBProperties_Menu_Action_Delete</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:586 $</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DBPropertiesTree_Menu</name>
+    <name>Admin_DBProperties_Menu_Action_Delete</name>
     
-    <!-- childs -->
-    <childs>
-      <child>Admin_DBPropertiesTree_Menu_Action</child>
-    </childs>
-    
+    <!-- properties -->
+    <property name="AskUser">true</property>
+    <property name="Submit">true</property>
+    <!-- trigger -->
+    <trigger name="Admin_User_GroupMyDesk_Menu_Action_Delete_COMMAND" event="COMMAND" program="org.efaps.events.ui.table.CommonDelete" method="execute" index="1"/>
+  
   </definition>
 
-</ui-menu>
+</ui-command>

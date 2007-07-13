@@ -24,7 +24,7 @@
 -->
 
 <ui-menu>
-  <uuid>f2ad0156-a8dc-44c5-9e62-0ad97ef56b51</uuid>
+  <uuid>49f854e1-be3c-448c-b969-7392e1b4d910</uuid>
 
   <!-- ************************************************************************
     version definition used to create the menu 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_DBPropertiesTree_Menu</name>
+    <name>Admin_DBProperties_Menu_Action</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,12 +51,14 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DBPropertiesTree_Menu</name>
+    <name>Admin_DBProperties_Menu_Action</name>
     
     <!-- childs -->
     <childs>
-      <child>Admin_DBPropertiesTree_Menu_Action</child>
+      <child>Admin_DBProperties_Menu_Action_Create</child>
+      <child>Admin_DBProperties_Menu_Action_Delete</child>
     </childs>
+    <!-- properties -->
     
   </definition>
 
