@@ -33,23 +33,17 @@
 <jsp:useBean id="cache" class="org.efaps.beans.CacheSessionBean" scope="session"/>
 
 <%
-Context context = Context.getThreadContext();
-System.out.println("Link.jsp.1");
+  Context context = Context.getThreadContext();
   CommandAbstract command = Command.get(context.getParameter("command"));
-System.out.println("Link.jsp.2");
   if (command==null)  {
-System.out.println("Link.jsp.3");
     command = Menu.get(context.getParameter("command"));
-System.out.println("Link.jsp.4");
   }
-System.out.println("Link.jsp.5");
 
   
    
   if (command==null)  {
 System.out.println("command == NULL!!!!!!!");
   } else if (command.getTargetMode() == CommandAbstract.TARGET_MODE_SEARCH)  {
-System.out.println("searchresult="+context.getParameter("eFapsShowSearchResult"));
     if ("true".equalsIgnoreCase(context.getParameter("eFapsShowSearchResult")))  {
       %><%@include file="Table.inc"%><%
     } else  {
@@ -59,8 +53,6 @@ System.out.println("searchresult="+context.getParameter("eFapsShowSearchResult")
     %><%@include file="Form.inc"%><%
   } else if (command.getTargetTable() != null)  {
     %><%@include file="Table.inc"%><%
-  } else if (command.getTargetSearch() != null)  {
-    %><%@include file="Search.inc"%><%
   } else if (command.hasEvents()){
     String[] oids = (String[])request.getParameterValues("selectedRow");
     
