@@ -202,7 +202,7 @@ public abstract class AbstractMethod  {
 
     // buildup reference and initialise datasource object
     String factory = props.get("factory").toString();
-    String dsClass = props.get("dsClass").toString();
+    String dsClass = (String) props.get("dsClass");
     if ((dsClass == null) || (dsClass.length() == 0))  {
       dsClass = DataSource.class.getName();
     }
