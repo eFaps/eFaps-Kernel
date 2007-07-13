@@ -42,20 +42,21 @@ System.out.println("create new cacheKey = "+cacheKey);
     uiObject = (TableBean) cache.getTableBean(cacheKey, context.getParameter("command"));
     request.setAttribute("uiObject", uiObject);
   }
+
+  // initialise the user interface object (if needed)
+  if (!uiObject.isInitialised())  {
+System.out.println(".............................START:"+new java.util.Date());
+    uiObject.setCommandName(context.getParameter("command"));
+    uiObject.setOid(context.getParameter("oid"));
+    uiObject.setNodeId(context.getParameter("nodeId"));
+    uiObject.execute();
+System.out.println("............................MIDDLE:"+new java.util.Date());
+  }
 %>
 
-<c:choose>
-  <c:when test="${param.mode eq 'edit' or uiObject.editMode}">
-    <c:set var="bodyClass" value="eFapsFrameEdit"/>
-  </c:when>
-  <c:otherwise>
-    <c:set var="bodyClass" value="eFapsFrameView"/>
-  </c:otherwise>
-</c:choose>
 <html>
 
-<%-- /** normal table **/ --%>
-    
+
   <head>
 
     <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css"/>
@@ -73,7 +74,14 @@ System.out.println("create new cacheKey = "+cacheKey);
      */
     function eFapsPositionTable() {
 
-      var div = document.getElementById("eFapsTableContent");
+      <c:choose>
+        <c:when test="${uiObject.searchMode}">
+          var div = document.getElementById("eFapsTableContentWithFooter");
+        </c:when>
+        <c:otherwise>
+          var div = document.getElementById("eFapsTableContent");
+        </c:otherwise>
+      </c:choose>
       var headerTable = document.getElementById("eFapsTableHeader");
       var bodyTable = document.getElementById("eFapsTableBody");
 
@@ -84,7 +92,7 @@ System.out.println("create new cacheKey = "+cacheKey);
         for (var i=0; i<row.cells.length; i++)  {
           if (row.cells[i].offsetWidth)  {
             headers[i].style.width = row.cells[i].offsetWidth + "px";
-            headers[i].style.left = (row.cells[i].offsetLeft - div.scrollLeft) + "px";
+            headers[i].style.left = (row.cells[i].offsetLeft - div.scrollLeft + 5) + "px";
           }
         }
       } else  {
@@ -99,8 +107,18 @@ System.out.println("create new cacheKey = "+cacheKey);
 
   </head>  
 
-  <body onLoad="eFapsTableProcessEnd()" onUnLoad="eFapsCleanUpSession('<%=cacheKey%>')" class1="<c:out value="${bodyClass}"/>">
-<div id="eFapsTable">
+  <body onLoad="eFapsTableProcessEnd()" onUnLoad="eFapsCleanUpSession('<%=cacheKey%>')">
+  
+<c:choose>
+  <c:when test="${uiObject.searchMode}">
+    <div id="eFapsTableWithFooter">
+  </c:when>
+  <c:otherwise>
+    <div id="eFapsTable">
+  </c:otherwise>
+</c:choose>
+
+
 
 
     <%-- /** filter bar **/ --%>
@@ -112,40 +130,14 @@ System.out.println("create new cacheKey = "+cacheKey);
       </form>
     </div>
 --%>
-          <%-- /** menu bar **/ --%>
 
 <f:view>
   <h:panelGrid id="eFapsFrameTitle">
     <h:outputText value="#{titleBean.title}"/>
   </h:panelGrid>
 
+  <%-- menu bar --%>
   <%@include file="ToolBarMenu.inc"%>
-<c:choose>
-
-  <%-- /** initialise the user interface object **/ --%>
-  <c:when test="${uiObject.initialised eq false}">
-    <%-- /** set other parameters **/ --%>
-    <%
-      uiObject.setCommandName(context.getParameter("command"));
-      uiObject.setOid(context.getParameter("oid"));
-      uiObject.setNodeId(context.getParameter("nodeId"));
-System.out.println(".............................START:"+new java.util.Date());
-      uiObject.execute();
-System.out.println("............................MIDDLE:"+new java.util.Date());
-    %>
-  </c:when>
-
-  <%-- /** **/ --%>
-  <c:when test="${uiObject.selectedFilter ne param.filter and param.filter ne null and param.filter ne '' and param.filter ne '0'}">
-    <jsp:setProperty name="uiObject" property="selectedFilter" param="filter"/>
-    <%
-System.out.println(".............................START:"+new java.util.Date());
-      uiObject.execute();
-System.out.println("............................MIDDLE:"+new java.util.Date());
-    %>
-  </c:when>
-
-</c:choose>
 
 
     <%-- /*******************************************************************/ --%>
@@ -203,7 +195,15 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
     <%-- /** Table Values                                                  **/ --%>
     <%-- /*******************************************************************/ --%>
 
-<div id="eFapsTableContent" onScroll="eFapsPositionTable()">
+<c:choose>
+  <c:when test="${uiObject.searchMode}">
+    <div id="eFapsTableContentWithFooter" onScroll="eFapsPositionTable()">
+  </c:when>
+  <c:otherwise>
+    <div id="eFapsTableContent" onScroll="eFapsPositionTable()">
+  </c:otherwise>
+</c:choose>
+
 
 
     <form id="eFapsSubmitForm" name="eFapsSubmitForm" method="post" target="" >
@@ -318,7 +318,20 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
       </table>
 
     </form>
-  
+</div>
+
+    <%-- footer frame (if needed) --%>
+    <c:if test="${uiObject.searchMode}">
+      <div id="eFapsFooter">
+        <h:form>
+          <h:commandLink id="Close" onclick="eFapsCommonCloseWindow();return false;" title="Create">
+            <h:graphicImage value="../images/eFapsButtonCancel.gif"/>
+            <h:outputText value="Close"/>
+          </h:commandLink>
+        </h:form>
+      </div>
+    </c:if>
+
 </f:view>
 <%
 System.out.println("...............................END:"+new java.util.Date());
@@ -327,12 +340,6 @@ System.out.println("...............................END:"+new java.util.Date());
     <%-- /** hidden frame **/ --%>
     <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="about:blank">
     </iframe>
-
-    <%-- /** footer frame **/ --%>
-<%--
-    <div class="eFapsFrameFooter">
-    </div>
---%></div>
 
   </body>
     

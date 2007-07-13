@@ -366,12 +366,26 @@ td.eFapsFormInputField {
         height:100%;
 }
 
+/* div used to hold the complete web form with footer */
+#eFapsTableWithFooter {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        border-width: 0;
+        background: #DDDECB;
+}
+* html #eFapsTableWithFooter { /* IE */
+        height: 100%;
+}
+
 /* Table Header Appearance */
 #eFapsTableHeader {
         position:absolute;
         top: 60px;
         height: 20px;
-        left: 5px;
+        left: 0;
         right: 0;
         margin-left: 0;
         padding-left: 0;
@@ -379,7 +393,7 @@ td.eFapsFormInputField {
 
 #eFapsTableHeader div {
         position: absolute;
-        top: 0px;
+        top: 0;
         text-align: left;
         color: white;
         background-color: #00A000;
@@ -414,9 +428,9 @@ td.eFapsFormInputField {
         bottom: 0;
         left: 5px;
         margin-left: 0;
-        padding-left: 0;
-        border-width: 0px; 
-        overflow:auto;
+        padding-left: 5px;
+        border-width: 0; 
+        overflow: auto;
 }
 * html #eFapsTableContent { /* IE */
         position: static;
@@ -433,20 +447,21 @@ td.eFapsFormInputField {
         position: absolute;
         top: 80px;
         right: 0;
-        bottom: 100px;
-        left: 5px;
+        bottom: 50px;
+        left: 0;
         margin-left: 0;
-        padding-left: 0;
-        border-width: 0px; 
-        overflow:auto;
+        padding-left: 5px;
+        border-width: 0; 
+        overflow: auto;
+        background: white;
 }
 * html #eFapsTableContentWithFooter { /* IE */
         position: static;
         height: 100%;
         width: 100%;
-        border-left: 5px solid white;
+        border-left: 0px solid white;
         border-top: 60px solid white;
-        border-bottom: 100px solid white;
+        border-bottom: 90px solid white;
 }
 
 /* web table itself */
