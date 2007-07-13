@@ -29,6 +29,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
@@ -77,9 +78,11 @@ public class Type extends DataModelObject {
 
   /**
    * This is the sql select statement to select all types from the database.
+   *
+   * @see #initialise
    */
   private static final String SQL_SELECT =
-      "select " + "ID," + "NAME," + "PARENTDMTYPE," + "SQLCACHEEXPR "
+      "select ID,UUID,NAME,PARENTDMTYPE,SQLCACHEEXPR "
           + "from V_ADMINTYPE";
 
   /**
@@ -246,12 +249,14 @@ public class Type extends DataModelObject {
   /**
    * This is the constructor for class Type. Every instance of class Type must
    * have a name (parameter <i>_name</i>).
-   * 
-   * @param _name
+   *
+   * @param _id     id of th type
+   * @param _uuid   universal unique identifier
+   * @param _name   name of the type
    *          name of the instance
    */
-  private Type(final long _id, final String _name) {
-    super(_id, null, _name);
+  private Type(final long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
     Attribute typeAttr = new Attribute(0, "Type", "");
     typeAttr.setAttributeType(AttributeType.get("Type"));
     addAttribute(typeAttr);
@@ -812,13 +817,11 @@ public class Type extends DataModelObject {
     return this.links;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  // static methods
 
   /**
    * Initialise the cache of types.
-   * 
-   * @param _context
-   *          eFaps context for this request
    */
   public static void initialise() throws CacheReloadException {
     ConnectionResource con = null;
@@ -835,24 +838,19 @@ public class Type extends DataModelObject {
         ResultSet rs = stmt.executeQuery(SQL_SELECT);
         while (rs.next()) {
           long id = rs.getLong(1);
-          String name = rs.getString(2).trim();
-          long parentTypeId = rs.getLong(3);
-          String sqlCacheExpr = rs.getString(4);
+          String uuid = rs.getString(2).trim();
+          String name = rs.getString(3).trim();
+          long parentTypeId = rs.getLong(4);
+          String sqlCacheExpr = rs.getString(5);
           sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
           if (LOG.isDebugEnabled()) {
             LOG.debug("read type '" + name + "' (id = " + id + ")");
           }
-          Type type = new Type(id, name);
+          Type type = new Type(id, uuid, name);
           if (type.getName().equals(EFapsClassName.USER_PERSON.name)) {
             type.setCache(Person.getCache());
           } else if (type.getName().equals(EFapsClassName.USER_ROLE.name)) {
             type.setCache(Role.getCache());
-          } else if (type.getName()
-              .equals(EFapsClassName.LIFECYCLE_POLICY.name)) {
-            type.setCache(Policy.getCache());
-          } else if (type.getName()
-              .equals(EFapsClassName.LIFECYCLE_STATUS.name)) {
-            type.setCache(Status.getCache());
           }
 
           getTypeCache().add(type);
@@ -922,6 +920,16 @@ public class Type extends DataModelObject {
    */
   public static Type get(final String _name) {
     return getTypeCache().get(_name);
+  }
+
+  /**
+   * Returns for given parameter <i>_uuid</i> the instance of class
+   * {@link Type}.
+   * 
+   * @return instance of class {@link Type}
+   */
+  public static Type get(final UUID _uuid) {
+    return getTypeCache().get(_uuid);
   }
 
   /**

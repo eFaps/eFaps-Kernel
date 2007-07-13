@@ -44,9 +44,6 @@
       <column name="PARENTDMTYPE"  type="INTEGER"/>
       <column name="SQLCACHEEXPR"  type="STRING_SHORT"  length="50"/>
     </database>
-<!--
-     ["STATUS  int  default 10001 not null"],
--->
   </definition>
 
   <definition>
@@ -63,6 +60,7 @@
         create view V_ADMINTYPE as
             select 
                 T_ABSTRACT.ID,
+                T_ABSTRACT.UUID,
                 T_ABSTRACT.NAME,
                 T_DMTYPE.PARENTDMTYPE,
                 T_DMTYPE.SQLCACHEEXPR
