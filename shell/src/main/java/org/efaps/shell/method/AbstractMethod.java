@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -202,11 +202,17 @@ public abstract class AbstractMethod  {
 
     // buildup reference and initialise datasource object
     String factory = props.get("factory").toString();
-    Reference ref = new Reference(DataSource.class.getName(), factory, null);
+    String dsClass = props.get("dsClass").toString();
+    if ((dsClass == null) || (dsClass.length() == 0))  {
+      dsClass = DataSource.class.getName();
+    }
+    Reference ref = new Reference(dsClass, factory, null);
     for (Object key : props.keySet())  {
-      Object value = props.get(key);
-      ref.add(new StringRefAddr(key.toString(), 
-                                (value == null) ? null : value.toString()));
+      if (!"dbType".equals(key) && !"factory".equals(key) &&  !"dsClass".equals(key))  {
+        Object value = props.get(key);
+        ref.add(new StringRefAddr(key.toString(), 
+                                  (value == null) ? null : value.toString()));
+      }
     }
     ObjectFactory of = null;
     try  {
