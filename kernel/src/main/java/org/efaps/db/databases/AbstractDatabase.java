@@ -167,8 +167,20 @@ public abstract class AbstractDatabase  {
    * input stream supports the available method or not.
    *
    * @return always <i>false</i> because not implemented in this class
+   * @see #supportsBinaryInputStream
    */
   public boolean supportsBlobInputStreamAvailable()  {
+    return false;
+  }
+
+  /**
+   * The method returns if a database implementation supports directly binary
+   * stream for result sets (instead of using first blobs).
+   *
+   * @return always <i>false</i> because not implemented in this class
+   * @see #supportsBlobInputStreamAvailable
+   */
+  public boolean supportsBinaryInputStream()  {
     return false;
   }
 

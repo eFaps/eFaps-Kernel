@@ -188,7 +188,11 @@ public class JDBCStoreResource extends StoreResource {
         // throw new Exception("could not found file");
       }
 
-      in = new JDBCStoreResourceInputStream(this, res, resultSet.getBlob(1));
+      if (Context.getDbType().supportsBinaryInputStream())  {
+        in = new JDBCStoreResourceInputStream(this, res, resultSet.getBinaryStream(1));
+      } else  {
+        in = new JDBCStoreResourceInputStream(this, res, resultSet.getBlob(1));
+      }
     } catch (IOException e) {
       LOG.error("read of content failed", e);
       throw new EFapsException(JDBCStoreResource.class, "read.SQLException", e);
@@ -358,6 +362,12 @@ public class JDBCStoreResource extends StoreResource {
 
     private final ConnectionResource res;
 
+    /**
+     *
+     * @param _storeRes store resource itself
+     * @param _res      connection resource
+     * @param _blob     blob with the input stream
+     */
     JDBCStoreResourceInputStream(final StoreResource _storeRes,
                                  final ConnectionResource _res,
                                  final Blob _blob)
@@ -366,6 +376,19 @@ public class JDBCStoreResource extends StoreResource {
             Context.getDbType().supportsBlobInputStreamAvailable()
             ? _blob.getBinaryStream()
             : new BlobInputStream(_blob));
+      this.res = _res;
+    }
+
+    /**
+     * @param _storeRes store resource itself
+     * @param _res      connection resource
+     * @param _in       binary input stream (from the blob)
+     */
+    JDBCStoreResourceInputStream(final StoreResource _storeRes,
+                                 final ConnectionResource _res,
+                                 final InputStream _in)
+                                 throws IOException {
+      super(_storeRes, _in);
       this.res = _res;
     }
 

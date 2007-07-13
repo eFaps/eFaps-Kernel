@@ -262,9 +262,9 @@ public class DerbyDatabase extends AbstractDatabase  {
   }
 
   /**
-   * @return always <i>true</i> because supported by Derby database
+   * @return always <i>true</i> because supported by PostgreSQL database
    */
-  public boolean supportsBlobInputStreamAvailable()  {
-    return true;
+  public boolean supportsBinaryInputStream()  {
+    return false;
   }
 }
