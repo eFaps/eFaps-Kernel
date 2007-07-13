@@ -33,6 +33,7 @@ import org.efaps.util.EFapsException;
  * @author tmo
  * @version $Id$
  * @goal update
+ * @requiresDependencyResolution compile
  */
 public final class UpdateMojo extends EFapsAbstractMojo  {
   

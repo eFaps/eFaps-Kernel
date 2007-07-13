@@ -42,15 +42,6 @@ public final class CompileMojo extends EFapsAbstractMojo {
   // instance methods
 
   /**
-   * Project classpath.
-   *
-   * @parameter expression="${project.compileClasspathElements}"
-   * @required
-   * @readonly
-   */
-  private List<String> classpathElements;
-
-  /**
    * Executes the esjp goal.
    */
   public void execute() throws MojoExecutionException {
@@ -65,7 +56,7 @@ public final class CompileMojo extends EFapsAbstractMojo {
         login("Administrator", "");
         reloadCache();
         startTransaction();
-        (new Compiler(this.classpathElements)).compile();
+        (new Compiler(getClasspathElements())).compile();
         commitTransaction();
 
       } catch (EFapsException e) {

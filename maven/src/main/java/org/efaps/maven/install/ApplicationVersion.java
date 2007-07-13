@@ -22,12 +22,14 @@ package org.efaps.maven.install;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import org.efaps.admin.program.esjp.Compiler;
 import org.efaps.importer.DataImport;
 import org.efaps.update.access.AccessSetUpdate;
 import org.efaps.update.access.AccessTypeUpdate;
@@ -62,7 +64,15 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
    * @see #setNumber
    * @see #getNumber
    */
-  private long               number   = 0;
+  private long number = 0;
+
+  /**
+   * Store the information wether a compile must be done after installing this
+   * version.
+   *
+   * @see #setCompile
+   */
+  private boolean compile = false;
 
   /**
    * All defined file sets for this application version.
@@ -71,7 +81,14 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
    */
   private final Set<FileSet> fileSets = new HashSet<FileSet>();
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * Project classpath.
+   *
+   * @see #setClasspathElements
+   */
+  private List<String> classpathElements = null;
+
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -169,8 +186,18 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
         update.updateInDB(jexlContext);
       }
     }
-
+    compile();
   }
+
+  /**
+   * Compile esjp's in the database (if the compile flag is set).
+   */
+  private void compile() throws EFapsException  {
+    if (this.compile)  {
+      (new Compiler(this.classpathElements)).compile();
+    }
+  }
+
 
   private Set<File> getFiles() {
     Set<File> ret = new HashSet<File>();
@@ -233,7 +260,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
 
   /**
@@ -257,6 +284,26 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
    */
   public Long getNumber() {
     return this.number;
+  }
+
+  /**
+   * This is the setter method for instance variable {@link #compile}.
+   * 
+   * @param _compile new value for instance variable {@link #compile}
+   * @see #compile
+   */
+  public void setCompile(final boolean _compile) {
+    this.compile = _compile;
+  }
+
+  /**
+   * This is the setter method for instance variable {@link #classpathElements}.
+   * 
+   * @param _compile new value for instance variable {@link #classpathElements}
+   * @see #classpathElements
+   */
+  public void setClasspathElements(final List<String> _classpathElements) {
+    this.classpathElements = _classpathElements;
   }
 
   /**

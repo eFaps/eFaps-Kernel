@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,16 +40,15 @@ import org.efaps.util.EFapsException;
  */
 public class Application {
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log        LOG         = LogFactory
-                                                  .getLog(Application.class);
+  private final static Log LOG = LogFactory.getLog(Application.class);
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -57,7 +56,7 @@ public class Application {
    * 
    * @see #setApplication
    */
-  private String                  application = null;
+  private String application = null;
 
   /**
    * Stores all versions of this application which must be installed.
@@ -71,9 +70,9 @@ public class Application {
    * 
    * @see #loadInstalledVersions
    */
-  private final Set<Long>         installed   = new HashSet<Long>();
+  private final Set<Long> installed = new HashSet<Long>();
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**

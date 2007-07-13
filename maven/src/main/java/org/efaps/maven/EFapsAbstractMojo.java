@@ -22,6 +22,7 @@ package org.efaps.maven;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 
 import javax.naming.Reference;
@@ -68,41 +69,50 @@ abstract class EFapsAbstractMojo implements Mojo {
    * @see #getLog
    * @see #setLog
    */
-  private Log                            log                = null;
+  private Log log = null;
 
   /**
    * @parameter expression="${org.efaps.db.factory}"
    */
-  private String                         factory;
+  private String factory;
 
   /**
    * Holds all properties of the connection to the database.
    * 
    * @parameter
    */
-  private Properties                     connection;
+  private Properties connection;
 
   /**
    * Stores the name of the logged in user.
    * 
    * @see #login
    */
-  private String                         userName;
+  private String userName;
 
   /**
    * @parameter expression="${org.efaps.db.type}"
    */
-  private String                         type;
+  private String type;
+
+  /**
+   * Project classpath.
+   *
+   * @parameter expression="${project.compileClasspathElements}"
+   * @required
+   * @readonly
+   */
+  private List<String> classpathElements;
 
   /**
    * @parameter expression="${basedir}/src/main/efaps/versions.xml"
    */
-  private File                           versionFile;
+  private File versionFile;
 
   /**
    * @parameter expression="${basedir}/src/main/efaps"
    */
-  private File                           eFapsDir;
+  private File eFapsDir;
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -128,9 +138,11 @@ abstract class EFapsAbstractMojo implements Mojo {
       digester.addObjectCreate("install/version", ApplicationVersion.class);
       digester.addSetNext("install/version", "addVersion");
 
-      digester.addCallMethod("install/version", "setNumber", 1,
-          new Class[] { Long.class });
+      digester.addCallMethod("install/version", "setNumber", 1, new Class[]{Long.class});
       digester.addCallParam("install/version", 0, "number");
+
+      digester.addCallMethod("install/version", "setCompile", 1, new Class[]{Boolean.class});
+      digester.addCallParam("install/version", 0, "compile");
 
       appl = (Application) digester.parse(this.versionFile);
 
@@ -140,6 +152,7 @@ abstract class EFapsAbstractMojo implements Mojo {
       fileSet.addIncludeFile(".*xml$");
       for (ApplicationVersion applVers : appl.getVersions()) {
         applVers.addFileSet(fileSet);
+        applVers.setClasspathElements(this.classpathElements);
       }
     } catch (IOException e) {
       getLog().error(
@@ -316,5 +329,15 @@ abstract class EFapsAbstractMojo implements Mojo {
    */
   public Log getLog() {
     return this.log;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #classpathElements}.
+   * 
+   * @return value of instance variable {@link #classpathElements}
+   * @see #classpathElements
+   */
+  protected List<String> getClasspathElements() {
+    return this.classpathElements;
   }
 }

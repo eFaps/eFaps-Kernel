@@ -33,6 +33,7 @@ import org.efaps.util.EFapsException;
  * @author tmo
  * @version $Id$
  * @goal install
+ * @requiresDependencyResolution compile
  */
 public final class InstallMojo extends EFapsAbstractMojo {
 
