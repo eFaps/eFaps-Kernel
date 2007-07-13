@@ -34,7 +34,6 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
     <name>TeamWork_Collection_Member</name>
@@ -48,7 +47,6 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>true</mode>
       <mode>(version==3)</mode>
     </version>
     <name>TeamWork_Collection_Member</name>
@@ -63,7 +61,6 @@
     <!-- property definitions -->
     <property name="DefaultSelected">false</property>
     <property name="Target">content</property>
-    <property name="TargetMode">view</property>
     <property name="TargetMode">view</property>
     <property name="TargetShowCheckBoxes">true</property>
   </definition>
