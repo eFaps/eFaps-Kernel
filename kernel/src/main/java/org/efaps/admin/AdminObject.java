@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,9 +70,6 @@ public abstract class AdminObject implements CacheObjectInterface {
     USER_ABSTRACT2ABSTRACT("Admin_User_Abstract2Abstract", null),
     USER_PERSON2ROLE("Admin_User_Person2Role", null),
     USER_PERSON2GROUP("Admin_User_Person2Group", null),
-
-    LIFECYCLE_POLICY("Admin_LifeCycle_Policy", null),
-    LIFECYCLE_STATUS("Admin_LifeCycle_Status", null),
 
     EVENT_DEFINITION("Admin_Event_Definition", null),
 
