@@ -100,14 +100,14 @@ public class EFapsResourceStore implements ResourceStore {
 
         Long parentId = this.compiler.getfile2id().get(new File(parent).getAbsolutePath());
 
-        Insert insert = new Insert(this.compiler.getclassType());
+        Insert insert = new Insert(this.compiler.getClassType());
         insert.add("Name", javaClassName);
         insert.add("ProgramLink", "" + parentId);
         insert.executeWithoutAccessCheck();
         instance = insert.getInstance();
         insert.close();
       } else {
-        instance = new Instance(this.compiler.getclassType(), id);
+        instance = new Instance(this.compiler.getClassType(), id);
         this.compiler.getclass2id().remove(javaClassName);
       }
 
@@ -154,14 +154,14 @@ public class EFapsResourceStore implements ResourceStore {
     }
     SearchQuery query = new SearchQuery();
     try {
-      query.setQueryTypes(this.compiler.getclassType().getName());
+      query.setQueryTypes(this.compiler.getClassType().getName());
       query.addSelect("ID");
       query.addWhereExprEqValue("Name", _resourceName);
       query.executeWithoutAccessCheck();
       if (query.next()) {
         Long id = (Long) query.get("ID");
-        Checkout checkout = new Checkout(new Instance(this.compiler
-            .getclassType(), id));
+        Checkout checkout = new Checkout(new Instance(
+                                        this.compiler.getClassType(), id));
         InputStream is = checkout.executeWithoutAccessCheck();
 
         ret = new byte[is.available()];

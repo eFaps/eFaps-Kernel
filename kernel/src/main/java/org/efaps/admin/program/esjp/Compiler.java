@@ -25,7 +25,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.regex.Matcher;
 
 import org.apache.commons.jci.compilers.CompilationResult;
@@ -65,7 +67,7 @@ import org.efaps.util.EFapsException;
  */
 public class Compiler {
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -88,13 +90,25 @@ public class Compiler {
    */
   private static final String DEFAULT_COMPILER = "javac";
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * UUID of the esjp type.
+   */
+  private static final UUID TYPE_ESJP
+          = UUID.fromString("11043a35-f73c-481c-8c77-00306dbce824");
+
+  /**
+   * UUID of the esjp class type.
+   */
+  private static final UUID TYPE_ESJPCLASS
+          = UUID.fromString("9118e1e3-ed4c-425d-8578-8d1f1d385110");
+
+  /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * Type instance of Java program.
    */
-  private final Type javaType;
+  private final Type esjpType;
 
   /**
    * Type instance of compile Java program.
@@ -111,23 +125,40 @@ public class Compiler {
    */
   private final Map<String, Long> class2id = new HashMap<String, Long>();
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * Stores the list of classpath needed to compile (if needed).
+   */
+  private final List<String> classPathElements;
+
+  /////////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
 
   /**
-   * The constructor initiliase the two type instances {@link #javaType} and
+   * The constructor initiliase the two type instances {@link #esjpType} and
    * {@link #classType}.
    * 
-   * @see #javaType
+   * @see #esjpType
    * @see #classType
    */
   public Compiler() {
-    this.javaType = Type.get("Admin_Program_Java");
-    this.classType = Type.get("Admin_Program_JavaClass");
-
+    this(null);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * The constructor initiliase the two type instances {@link #esjpType} and
+   * {@link #classType}.
+   *
+   * @param _classPathElements  list of class path elements
+   * @see #esjpType
+   * @see #classType
+   */
+  public Compiler(final List<String> _classPathElements) {
+    this.esjpType = Type.get(TYPE_ESJP);
+    this.classType = Type.get(TYPE_ESJPCLASS);
+    this.classPathElements = _classPathElements;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -159,29 +190,53 @@ public class Compiler {
       }
 
       // all checked in files must be compiled!
-      final String[] resource = file2id.keySet().toArray(
-          new String[file2id.size()]);
-  
+      final String[] resource
+            = file2id.keySet().toArray(new String[file2id.size()]);
+      String[] args = resource;
+
+      // if javac compiler then set classpath!
+      // (the list of programs to compile is given to the javac as argument
+      // array, so the classpath could be set in front of the programs to
+      // compile)
+      if (DEFAULT_COMPILER.equals(compName) && (this.classPathElements != null))  {
+        args = new String[resource.length + 2];
+        for (int i = 0; i < resource.length; i++) {
+          args[i + 2] = resource[i];
+        }
+
+        final String sep = System.getProperty("os.name").startsWith("Windows")
+                           ? ";"
+                           : ":";
+
+        StringBuilder classPath = new StringBuilder();
+        for (String classPathElement : this.classPathElements)  {
+          classPath.append(classPathElement).append(sep);
+        }
+
+        args[0] = "-classpath";
+        args[1] = classPath.toString();
+      }
+
       if (LOG.isInfoEnabled()) {
         for (int i = 0; i < resource.length; i++) {
           LOG.info("compiling " + resource[i]);
         }
       }
-  
-      final CompilationResult result = compiler.compile(resource, reader, store,
+
+      final CompilationResult result = compiler.compile(args, reader, store,
           Compiler.class.getClassLoader());
-  
+
       for (Long id : this.class2id.values()) {
         (new Delete(this.classType, id)).executeWithoutAccessCheck();
       }
-  
+
       if (result.getErrors().length > 0) {
         LOG.error(result.getErrors().length + " errors:");
         for (int i = 0; i < result.getErrors().length; i++) {
           LOG.error(result.getErrors()[i]);
         }
       }
-  
+
       if (LOG.isInfoEnabled()) {
         if (result.getWarnings().length > 0) {
           LOG.info(result.getWarnings().length + " warnings:");
@@ -201,7 +256,7 @@ public class Compiler {
    */
   protected void readJavaPrograms() throws EFapsException {
     SearchQuery query = new SearchQuery();
-    query.setQueryTypes(this.javaType.getName());
+    query.setQueryTypes(this.esjpType.getName());
     query.addSelect("ID");
     query.addSelect("Name");
     query.executeWithoutAccessCheck();
@@ -238,7 +293,7 @@ public class Compiler {
     }
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
   /**
    * get the Map containing the Mapping between Java file name and compiled Java
@@ -265,18 +320,12 @@ public class Compiler {
    * 
    * @return Type
    */
-  public Type getclassType() {
+  public Type getClassType() {
     return this.classType;
   }
 
-  /**
-   * get the Type instance of Java program.
-   * 
-   * @return Type
-   */
-  public Type getJavaType() {
-    return this.javaType;
-  }
+  /////////////////////////////////////////////////////////////////////////////
+  // class EFapsResourceReader
 
   /**
    * Reader class to read the source code within Java programs.
@@ -324,7 +373,7 @@ public class Compiler {
         }
       } else {
         try {
-          Checkout checkout = new Checkout(new Instance(javaType,
+          Checkout checkout = new Checkout(new Instance(esjpType,
                                                         file2id.get(resourceName)));
           InputStream is = checkout.executeWithoutAccessCheck();
           ret = new byte[is.available()];
@@ -339,5 +388,4 @@ public class Compiler {
       return ret;
     }
   }
-
 }

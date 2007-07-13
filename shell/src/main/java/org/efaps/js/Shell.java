@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,6 @@ public class Shell {
   final private static Set < AbstractMethod > methods 
                                  = new HashSet  < AbstractMethod > ();
   {
-    methods.add(new org.efaps.shell.method.CompileMethod());
     methods.add(new org.efaps.shell.method.CreateMethod());
     methods.add(new org.efaps.shell.method.GenerateUUIDMethod());
     methods.add(new org.efaps.shell.method.ImportDataMethod());
