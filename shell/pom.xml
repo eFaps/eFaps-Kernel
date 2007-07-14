@@ -56,6 +56,69 @@
         </configuration>
       </plugin>
 
+      <plugin>
+        <groupId>org.efaps</groupId>
+        <artifactId>maven-efaps-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <configuration>
+          <connection>
+            <property>
+              <name>username</name>
+              <value>${org.efaps.db.username}</value>
+            </property>
+            <property>
+              <name>password</name>
+              <value>${org.efaps.db.password}</value>
+            </property>
+            <property>
+              <name>driverClassName</name>
+              <value>${org.efaps.db.driverClassName}</value>
+            </property>
+            <property>
+              <name>url</name>
+              <value>${org.efaps.db.url}</value>
+            </property>
+            <property>
+              <name>factory</name>
+              <value>${org.efaps.db.factory}</value>
+            </property>
+            <property>
+              <name>maxActive</name>
+              <value>${org.efaps.db.maxActive}</value>
+            </property>
+            <property>
+              <name>maxIdle</name>
+              <value>${org.efaps.db.maxIdle}</value>
+            </property>
+            <property>
+              <name>maxWait</name>
+              <value>${org.efaps.db.maxWait}</value>
+            </property>
+            <property>
+              <name>removeAbandoned</name>
+              <value>${org.efaps.db.removeAbandoned}</value>
+            </property>
+            <property>
+              <name>logAbandoned</name>
+              <value>${org.efaps.db.logAbandoned}</value>
+            </property>
+          </connection>
+        </configuration>
+        <dependencies>
+          <!-- Connection Pooling -->
+          <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.2.1</version>
+          </dependency>
+          <!-- Derby Client Database Driver -->
+          <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>10.2.2.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
   </build>
 
