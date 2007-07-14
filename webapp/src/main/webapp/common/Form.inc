@@ -392,4 +392,3 @@ function eFapsSubmit()  {
       </html>
 
 
-<%@include file = "../common/StdBottom.inc"%>

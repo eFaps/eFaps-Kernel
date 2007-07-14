@@ -42,7 +42,6 @@ uiObject.setUkTitle("");
 <jsp:setProperty name="uiObject" property="nodeId" param="nodeId"/>
 
 
-<%@include file = "../common/StdBottom.inc"%>
 <html>
 
   <script type="text/javascript">

@@ -56,4 +56,3 @@ uiObject.setUkTitle("");
   </body>
 </html>
 
-<%@include file = "../common/StdBottom.inc"%>

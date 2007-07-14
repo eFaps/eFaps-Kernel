@@ -72,7 +72,6 @@
 
 
 %>
-<%@include file = "../common/StdBottom.inc"%>
 
 <html>
   <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>

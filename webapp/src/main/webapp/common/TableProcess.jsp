@@ -62,7 +62,7 @@ System.out.println("actionCommandName="+actionCommandName);
   }
 System.out.println("*************************************************");
 
-%><%@include file = "../common/StdBottom.inc"%>
+%>
 <html>
   <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
   <body>

@@ -37,4 +37,3 @@
   </td>
 </tr>
 
-<%@include file = "../common/StdBottom.inc"%>

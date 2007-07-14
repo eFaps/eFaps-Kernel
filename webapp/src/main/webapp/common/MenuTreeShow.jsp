@@ -131,4 +131,4 @@ subTree = tree.getSubNodeWithId("<c:out value="${uiObject.instance.oid}"/>");
   </body>
 </html>
 
-<%@include file = "../common/StdBottom.inc"%>
+
