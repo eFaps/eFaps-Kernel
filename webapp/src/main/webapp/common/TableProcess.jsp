@@ -1,6 +1,6 @@
 <%--
  
-  Copyright 2006 The eFaps Team
+  Copyright 2003-2007 The eFaps Team
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@
 <%@page import="org.efaps.admin.ui.Menu"%>
 <%@page import="org.efaps.db.Instance"%>
 
-<%@include file = "../common/StdTop.inc"%>
 <%
 
   String tableCommandName = request.getParameter("tableCommand");

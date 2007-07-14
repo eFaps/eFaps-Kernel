@@ -1,6 +1,6 @@
 <%--
  
-  Copyright 2006 The eFaps Team
+  Copyright 2003-2007 The eFaps Team
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -20,16 +20,16 @@
   Last Changed By: $Author$
  
 --%>
-<%@page import="org.efaps.admin.dbproperty.DBProperties"%>
 
-<%@include file = "../common/StdTop.inc"%>
+<%@page import="org.efaps.admin.dbproperty.DBProperties"%>
+<%@page import="org.efaps.db.Context"%>
 
 <tr>
   <td class="eFapsLogo">
    <div class="eFapsLogoWelcome">
       <%=DBProperties.getProperty("LogoRowInclude.Welcome.Label")%>
-      <%=context.getPerson().getFirstName()%>
-      <%=context.getPerson().getLastName()%>
+      <%=Context.getThreadContext().getPerson().getFirstName()%>
+      <%=Context.getThreadContext().getPerson().getLastName()%>
     </div>
     <div class="eFapsLogoVersion">
       <%=DBProperties.getProperty("LogoRowInclude.Version.Label")%>

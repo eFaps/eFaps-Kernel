@@ -1,6 +1,6 @@
 <%--
  
-  Copyright 2006 The eFaps Team
+  Copyright 2003-2007 The eFaps Team
  
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -27,9 +27,6 @@
 <%@taglib prefix="un"   uri="http://jakarta.apache.org/taglibs/unstandard-1.0"%>
 
 <%@page import="org.efaps.admin.dbproperty.DBProperties"%>
-
-<%@include file = "../common/StdTop.inc"%>
-
 
   <%-- /** constructor for the menu tree bean with some initialise code **/ --%>
   <jsp:useBean id="uiObject" class="org.efaps.beans.MenuTreeBean" scope="request">
