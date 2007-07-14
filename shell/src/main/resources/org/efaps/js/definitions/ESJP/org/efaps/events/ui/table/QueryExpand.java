@@ -62,14 +62,11 @@ public class QueryExpand implements EventExecution {
 
       SearchQuery query = new SearchQuery();
       query.setExpand(instance, expand);
-      query.addSelect("OID");
       query.execute();
 
       List<List<Instance>> list = new ArrayList<List<Instance>>();
       while (query.next()) {
-        List<Instance> instances = new ArrayList<Instance>(1);
-        instances.add(new Instance((String) query.get("OID")));
-        list.add(instances);
+        list.add(query.getExpandInstances());
       }
 
       ret.put(ReturnValues.VALUES, list);

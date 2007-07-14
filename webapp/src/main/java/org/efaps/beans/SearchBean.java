@@ -143,7 +143,7 @@ public List getValues()  {
    * result table
    */
   public void execute4ResultTable() throws Exception {
-    Context context = Context.getThreadContext();
+/*    Context context = Context.getThreadContext();
     SearchQuery query = new SearchQuery();
     // boolean selectId = mode.equalsIgnoreCase(MODE_CONNECT);
 
@@ -176,6 +176,7 @@ Type type = Type.get(getCommand().getProperty("SearchType"));
 //    getTableBean().executeRowResult(context, query);
 
     setInitialised(true);
+*/
   }
 
   // ///////////////////////////////////////////////////////////////////////////

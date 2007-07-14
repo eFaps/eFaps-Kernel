@@ -39,8 +39,6 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.ui.Collection;
-import org.efaps.admin.ui.Field;
 import org.efaps.db.query.CachedResult;
 import org.efaps.db.query.CompleteStatement;
 import org.efaps.db.query.WhereClause;
@@ -178,91 +176,6 @@ public abstract class AbstractQuery {
   // add for selecting something
 
   /**
-   * The instance method adds all fields of the collection user interface object
-   * to the search query.
-   * 
-   * @param _context
-   *          context for this request
-   * @param _collection
-   *          collection user interface object with fields to add
-   * @see #add(Field)
-   * @todo change against list of fields!!
-   */
-  public void add(Context _context, Collection _collection) throws Exception {
-    for (int i = 0; i < _collection.getFields().size(); i++) {
-      Field field = (Field) _collection.getFields().get(i);
-      add(field);
-    }
-  }
-
-  /**
-   * The method adds an single attribute from a type to the select statement.
-   * 
-   * @param _attr
-   *          attribute to add to the query
-   * @see #addSelect
-   */
-  public void add(Attribute _attr) throws EFapsException {
-    addSelect(false, _attr, _attr);
-  }
-
-  /**
-   * The method adds a single field from a form or a table to the select
-   * statement.
-   * 
-   * @param _field
-   *          field to add to the query
-   * @see #addSelect
-   */
-  public void add(Field _field) throws Exception {
-    addSelect(false, _field, this.type, _field.getExpression());
-    if (_field.getAlternateOID() != null) {
-      addSelect(true, _field, this.type, _field.getAlternateOID());
-    }
-  }
-
-  /**
-   * The method adds all attributes in the string beginning with a
-   * &quot;$&lt;&quot; and ending with a &quot;&gt;&quot;.
-   * 
-   * @param _context
-   *          context for this request
-   * @param _text
-   *          text string with all attributes
-   * @return <i>true</i> if an attribute from the text string is added to the
-   *         query
-   * @see #add(Attribute)
-   * @see #replaceAllInString
-   */
-  public boolean addAllFromString(final Context _context, final String _text)
-                                                                             throws Exception {
-    boolean ret = false;
-    int index = _text.indexOf("$<");
-    while (index >= 0) {
-      int end = _text.indexOf(">", index);
-      if (end < 0) {
-        break;
-      }
-      addSelect(_context, _text.substring(index + 2, end));
-      index = _text.indexOf("$<", end);
-      ret = true;
-    }
-    return ret;
-  }
-
-  /**
-   * The method adds an expression to the selectstatement.
-   * 
-   * @param _expression
-   *          expression to add
-   * @deprecated
-   */
-  public void addSelect(final Context _context, final String _expression)
-                                                                         throws EFapsException {
-    addSelect(false, _expression, this.type, _expression);
-  }
-
-  /**
    * The method adds an expression to the selectstatement.
    * 
    * @param _expression
@@ -307,7 +220,7 @@ public abstract class AbstractQuery {
    *          type to add in the correct order
    * @see #addTypes4Order(Type,boolean)
    */
-  public void addTypes4Order(final Type _type) {
+  protected void addTypes4Order(final Type _type) {
     addTypes4Order(_type, false);
   }
 
@@ -321,7 +234,7 @@ public abstract class AbstractQuery {
    * @see #selectTypesOrder
    * @see #getSelectType
    */
-  public void addTypes4Order(final Type _type, final boolean _nullAllowed) {
+  protected void addTypes4Order(final Type _type, final boolean _nullAllowed) {
     SelectType selectType = getSelectType(_type);
     selectType.setOrderIndex(getSelectTypesOrder().size());
     selectType.setNullAllowed(_nullAllowed);
@@ -377,48 +290,36 @@ public abstract class AbstractQuery {
    *          key for which the attribute value must returned
    * @return atribute value for given key
    */
-  public Object get(final Object _key) throws EFapsException {
+  public Object get(final String _key) throws EFapsException {
     Object ret = null;
 
-    Context context = Context.getThreadContext();
-    if (hasAccess(context, _key)) {
+    if (hasAccess(_key)) {
       SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
       if (selExpr != null) {
-        ret = selExpr.getAttrValue(context);
+        ret = selExpr.getAttrValue();
       }
     }
     return ret;
   }
 
-  /**
-   * @deprecated
-   */
-  public Object get(final Context _context, final Object _key)
-                                                              throws EFapsException {
-    return get(_key);
-  }
-
-  private boolean hasAccess(final Context _context, final Object _key)
-                                                                      throws EFapsException {
+  private boolean hasAccess(final String _key) throws EFapsException {
     boolean hasAccess = true;
     if (this.checkAccess) {
       Instance instance = null;
       String oid = null;
       SelExpr2Attr selExpr = getAllOIDSelExprMap().get(_key);
       if (selExpr != null) {
-        oid = (String) selExpr.getAttrValue(_context);
+        oid = (String) selExpr.getAttrValue();
       }
-      // System.out.println("------------oid="+oid);
       if ((oid != null) && !oid.equals("0.0")) {
         instance = new Instance(oid);
       } else {
-        instance = getInstance(_context, this.type);
+        instance = getInstance(this.type);
       }
       if (instance != null) {
         hasAccess = instance.getType().hasAccess(instance,
             AccessTypeEnums.SHOW.getAccessType());
       }
-      // System.out.println("------------hasAccess="+hasAccess);
     }
     return hasAccess;
   }
@@ -429,7 +330,7 @@ public abstract class AbstractQuery {
    * @param _key  key for which the attribute value must returned
    * @return attribute for given key
    */
-  public Attribute getAttribute(final Object _key)  throws Exception {
+  public Attribute getAttribute(final String _key)  throws Exception {
     Attribute ret = null;
     SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
     if (selExpr != null) {
@@ -442,39 +343,26 @@ public abstract class AbstractQuery {
    * All object ids for one row are returned. The objects id defined in the
    * expand are returned in the same order.
    * 
-   * @param _context
-   *          eFaps context for this request
-   * @return pipe separated string of object ids
+   * @return list of instances from the expand
    */
-  public String getRowOIDs(final Context _context) throws Exception {
-    StringBuffer rowOIDs = new StringBuffer();
-    boolean first = true;
+  public List<Instance> getExpandInstances() throws EFapsException {
+    final List<Instance> ret = new ArrayList<Instance>();
     for (Type type : types) {
-      String value = getOID(_context, type);
-      if (first) {
-        first = false;
-      } else {
-        rowOIDs.append('|');
-      }
-      rowOIDs.append(value);
+      ret.add(new Instance(getOID(type)));
     }
-    return rowOIDs.toString();
+    return ret;
   }
 
   /**
    * 
-   * @param _context
-   *          eFaps context for this request
-   * @param _key
-   *          key for which the object id value must returned
+   * @param _key      key for which the object id value must returned
    * @return object id for given key
    */
-  public String getOID(final Context _context, final Object _key)
-                                                                 throws EFapsException {
+  protected String getOID(final Object _key) throws EFapsException  {
     String ret = null;
     SelExpr2Attr selExpr = getAllOIDSelExprMap().get(_key);
     if (selExpr != null) {
-      ret = (String) selExpr.getAttrValue(_context);
+      ret = (String) selExpr.getAttrValue();
     }
     return ret;
   }
@@ -482,31 +370,10 @@ public abstract class AbstractQuery {
   /**
    * The instance method returns the instance for the current selected row.
    * 
-   * @param _context
-   *          context for this request
+   * @param _type
+   * @todo why is in this way implemented (other way than method getOID above)
    */
-  public Instance getInstance(Context _context, Field _field)
-                                                             throws EFapsException {
-    Instance ret = null;
-    if (hasAccess(_context, _field)) {
-      if ((_field != null) && (_field.getAlternateOID() != null)) {
-        String value = getOID(_context, _field);
-        ret = new Instance(value);
-      } else {
-        ret = getInstance(_context, this.type);
-      }
-    }
-    return ret;
-  }
-
-  /**
-   * The instance method returns the instance for the current selected row.
-   * 
-   * @param _context
-   *          context for this request
-   */
-  public Instance getInstance(Context _context, Type _type)
-                                                           throws EFapsException {
+  protected Instance getInstance(final Type _type) throws EFapsException  {
     SelectType selectType = getMainSelectTypes().get(_type);
     if (selectType == null) {
       LOG.error("Type '" + _type.getName()
@@ -530,40 +397,7 @@ public abstract class AbstractQuery {
     return new Instance(type, id);
   }
 
-  /**
-   * The instance method replaces all the attributes in the text string
-   * beginning with a &quot;$&lt;&quot; and ending with a &quot;&gt;&quot; with
-   * the related values.
-   * 
-   * @param _context
-   *          context for this request
-   * @param _text
-   *          text string with attributes to replace with the values
-   * @return replaced text string
-   * @see #addAllFromString
-   */
-  public String replaceAllInString(Context _context, String _text)
-                                                                  throws Exception {
-    int index = _text.indexOf("$<");
-    while (index >= 0) {
-      int end = _text.indexOf(">", index);
-      if (end < 0) {
-        break;
-      }
-      String expr = _text.substring(index + 2, end);
-
-      Object value = get(_context, expr);
-      if (value != null) {
-        _text = _text.substring(0, index) + value + _text.substring(end + 1);
-      } else {
-        _text = _text.substring(0, index) + _text.substring(end + 1);
-      }
-      index = _text.indexOf("$<", end);
-    }
-    return _text;
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * The instance method executes the query.
@@ -577,8 +411,6 @@ public abstract class AbstractQuery {
    * The instance method executes the query.
    */
   public void executeWithoutAccessCheck() throws EFapsException {
-    Context context = Context.getThreadContext();
-
     if (getMainJoinElement().selectSize() > 0) {
 
       int incSelIndex = 0;
@@ -608,8 +440,7 @@ public abstract class AbstractQuery {
           }
         }
 
-        executeOneCompleteStmt(context, completeStatement, joinElement
-            .getMatchColumn());
+        executeOneCompleteStmt(completeStatement, joinElement.getMatchColumn());
       }
 
       for (SelExpr2Attr selExpr : getAllSelExprMap().values()) {
@@ -626,22 +457,19 @@ public abstract class AbstractQuery {
    * The instance method executes exact one complete statement and populates the
    * result in the cached result {@link #cachedResult}.
    * 
-   * @param _context
-   *          context for this request
    * @param _complStmt
    *          complete statement instance to execute
    * @param _matchColumn
    *          column in the complete statement (result set) used to as key to
    *          compare in the cached result
    */
-  private void executeOneCompleteStmt(final Context _context,
-                                      final CompleteStatement _complStmt,
+  private void executeOneCompleteStmt(final CompleteStatement _complStmt,
                                       final int _matchColumn)
                                                              throws EFapsException {
 
     ConnectionResource con = null;
     try {
-      con = _context.getConnectionResource();
+      con = Context.getThreadContext().getConnectionResource();
 
       if (LOG.isTraceEnabled()) {
         LOG.trace(_complStmt.getStatement().toString());
@@ -997,22 +825,6 @@ public abstract class AbstractQuery {
     private Set<SelectType>               selectTypes       = new HashSet<SelectType>();
 
     /**
-     * The hash table instance variable stores depending on the key (field) the
-     * index in the select statement.
-     * 
-     * @see #getKeys
-     */
-    // private Map<Object,SelectExpression> keys = new
-    // HashMap<Object,SelectExpression>();
-    /**
-     * The hash table instance variable stores depending on the key (field) the
-     * index in the OID select statement.
-     * 
-     * @see #getKeysOID
-     */
-    // private Map<Object,SelectExpression> keysOID = new
-    // HashMap<Object,SelectExpression>();
-    /**
      * This is the instance variable to hold all expressions. The SQL statement
      * is stores as key, the value is the index of the expression in the select
      * statement. This is used that an expression is only once in a select
@@ -1236,12 +1048,10 @@ public abstract class AbstractQuery {
     }
 
     /**
-     * @param _context
-     *          eFaps context for this request
      * @return attribute value with the value returned from the select
      *         expression
      */
-    protected Object getAttrValue(Context _context) throws EFapsException {
+    protected Object getAttrValue() throws EFapsException {
       if (getAttribute() == null) {
         throw new EFapsException(getClass(), "SelectExpression.get.NoAttribute");
       }
@@ -1249,7 +1059,7 @@ public abstract class AbstractQuery {
       AttributeTypeInterface attrInterf = getAttribute().newInstance();
       Object ret = null;
       try {
-        ret = attrInterf.readValue(_context, cachedResult, getIndexes());
+        ret = attrInterf.readValue(Context.getThreadContext(), cachedResult, getIndexes());
       } catch (Exception e) {
         throw new EFapsException(getClass(), "getAttrValue.CouldNotReadValue",
             e);

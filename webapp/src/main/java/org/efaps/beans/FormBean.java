@@ -182,24 +182,35 @@ for (EventDefinition eventDef : events)  {
       }
       SearchQuery query = new SearchQuery();
       query.setObject(instance);
-      query.add(context, getForm());
 
-      query.addAllFromString(context, getUkTitle());
+      for (Field field : getForm().getFields()) {
+        if (field.getExpression() != null)  {
+          query.addSelect(field.getExpression());
+        }
+        if (field.getAlternateOID() != null) {
+          query.addSelect(field.getAlternateOID());
+        }
+      }
       query.execute();
 
       if (query.next()) {
 //        getValues().add(query.getInstance(context, instance.getType()));
-addFieldValue(null, null, null, null, query.getInstance(context, instance.getType()));
+addFieldValue(null, null, null, null, new Instance((String)query.get("OID")));
 
         for (int i = 0; i < getForm().getFields().size(); i++) {
           Field field = (Field) getForm().getFields().get(i);
 
           if (field.getExpression() != null) {
-            Object value = query.get(field);
-            addFieldValue(field, query.getAttribute(field), value,
-                query.getInstance(context, field));
-          } else if (field.getClassUI() != null) {
-            addFieldValue(field, instance);
+            Instance fldInstance;
+            if (field.getAlternateOID() == null) {
+              fldInstance = new Instance((String)query.get("OID"));
+            } else  {
+              fldInstance = new Instance((String)query.get(field.getAlternateOID()));
+            }
+            addFieldValue(field,
+                          query.getAttribute(field.getExpression()),
+                          query.get(field.getExpression()),
+                          fldInstance);
           } else if (field.getGroupCount() > 0) {
             addFieldValue(field, instance);
             if (getMaxGroupCount() < field.getGroupCount()) {
@@ -207,7 +218,6 @@ addFieldValue(null, null, null, null, query.getInstance(context, instance.getTyp
             }
           }
         }
-        setUkTitle(query.replaceAllInString(context, getUkTitle()));
       }
 
       query.close();
@@ -354,10 +364,10 @@ addFieldValue(null, null, null, null, query.getInstance(context, instance.getTyp
    * @see #ukInstance
    */
   public void ukTest() throws Exception {
-    Context context = Context.getThreadContext();
+/*    Context context = Context.getThreadContext();
     Map map = new HashMap();
     for (int i = 0; i < getForm().getFields().size(); i++) {
-
+*/
       /*
        * Field field = (Field) getForm().getFields().get(i); if
        * (field.getAttribute()!=null &&
@@ -365,7 +375,7 @@ addFieldValue(null, null, null, null, query.getInstance(context, instance.getTyp
        * map.put(field.getAttribute(),
        * getRequest().getParameter(field.getName())); }
        */
-    }
+/*    }
 
     Type type = getCommand().getTargetCreateType();
     for (Iterator ukIter = type.getUniqueKeys().iterator(); ukIter.hasNext();) {
@@ -392,6 +402,7 @@ addFieldValue(null, null, null, null, query.getInstance(context, instance.getTyp
         }
       }
     }
+*/
   }
 
   // ///////////////////////////////////////////////////////////////////////////

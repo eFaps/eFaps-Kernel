@@ -21,7 +21,9 @@
 package org.efaps.beans;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
@@ -117,9 +119,12 @@ public class TableBean extends AbstractCollectionBean  {
     List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                                                  ParameterValues.INSTANCE, getInstance());
     List<List<Instance>> lists = (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
-    List < Instance > instances = new ArrayList < Instance > ();
+    List<Instance> instances = new ArrayList<Instance>();
+    Map<Instance,List<Instance>> instMapper = new HashMap<Instance,List<Instance>>();
     for (List < Instance > oneList : lists)  {
-      instances.add(oneList.get(0));
+      Instance inst = oneList.get(oneList.size() - 1);
+      instances.add(inst);
+      instMapper.put(inst, oneList);
     }
 
     // evaluate for all expressions in the table
@@ -134,7 +139,7 @@ public class TableBean extends AbstractCollectionBean  {
     }
     query.execute();
 
-    executeRowResult(query);
+    executeRowResult(instMapper, query);
 
     setInitialised(true);
   }
@@ -157,10 +162,24 @@ public class TableBean extends AbstractCollectionBean  {
     }
   }
 
-  void executeRowResult(final ListQuery _query) throws Exception {
+  void executeRowResult(final Map<Instance,List<Instance>> _instMapper,
+                        final ListQuery _query) throws Exception {
     while (_query.next()) {
-//      Row row = new Row(_query.getRowOIDs(_context));
-Row row = new Row("1");
+
+      // get all found oids (typically more than one if it is an expand)
+      Instance instance = _query.getInstance();
+      StringBuilder oids = new StringBuilder();
+      boolean first = true;
+      for (Instance oneInstance : _instMapper.get(instance))  {
+        if (first)  {
+          first = false;
+        } else  {
+          oids.append("|");
+        }
+        oids.append(oneInstance.getOid());
+      }
+      Row row = new Row(oids.toString());
+
 //      boolean toAdd = false;
       for (FieldDefinition fieldDef : this.fieldDefs) {
         Object value = null;
@@ -174,11 +193,8 @@ Row row = new Row("1");
           attr = _query.getAttribute(fieldDef.getField().getExpression());
         }
 //        Instance instance = _query.getInstance(fieldDef.getField().getExpression());
-        Instance instance;
         if (fieldDef.getField().getAlternateOID() != null)  {
           instance = new Instance((String)_query.getValue(fieldDef.getField().getAlternateOID()));
-        } else  {
-          instance = _query.getInstance();
         }
 
         // if (attrValue!=null) {
