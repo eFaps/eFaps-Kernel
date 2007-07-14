@@ -20,6 +20,7 @@
 
 package org.efaps.beans;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.MenuAbstract;
 import org.efaps.admin.ui.UserInterfaceObject;
+import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -65,12 +67,6 @@ public class MenuTreeBean extends AbstractBean {
 
   public MenuTreeBean() throws EFapsException {
     super();
-    System.out.println("MenuTreeBean.constructor");
-  }
-
-  public void finalize() {
-    super.finalize();
-    System.out.println("MenuTreeBean.destructor");
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -101,16 +97,19 @@ public class MenuTreeBean extends AbstractBean {
       getMenuHolder().setIcon(getInstance().getType().getIcon());
     }
 
+    // change menu label
     SearchQuery query = new SearchQuery();
     query.setObject(getInstance());
-    query.addAllFromString(context, this.menuLabel);
-    query.execute();
-
-    if (query.next()) {
-      this.menuLabel = query.replaceAllInString(context, this.menuLabel);
+    ValueParser parser = new ValueParser(new StringReader(this.menuLabel));
+    ValueList list = parser.ExpressionString();
+    list.makeSelect(query);
+    if (query.selectSize() > 0) {
+      query.execute();
+      if (query.next()) {
+        this.menuLabel = list.makeString(query);
+      }
+      query.close();
     }
-
-    query.close();
   }
 
   /**
