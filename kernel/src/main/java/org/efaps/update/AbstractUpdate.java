@@ -78,7 +78,7 @@ public abstract class AbstractUpdate {
   /**
    * The name of the data model type is store in this instance variable.
    */
-  private final Type                     dataModelType;
+  private final String dataModelTypeName;
 
   /**
    * All known link types are set to this instance varaible.
@@ -104,16 +104,16 @@ public abstract class AbstractUpdate {
   /**
    * 
    */
-  protected AbstractUpdate(final String _dataModelType) {
-    this(_dataModelType, null);
+  protected AbstractUpdate(final String _dataModelTypeName) {
+    this(_dataModelTypeName, null);
   }
 
   /**
    * 
    */
-  protected AbstractUpdate(final String _dataModelType,
-      final Set<Link> _allLinkTypes) {
-    this.dataModelType = Type.get(_dataModelType);
+  protected AbstractUpdate(final String _dataModelTypeName,
+                           final Set<Link> _allLinkTypes) {
+    this.dataModelTypeName = _dataModelTypeName;
     this.allLinkTypes = _allLinkTypes;
   }
 
@@ -176,7 +176,7 @@ public abstract class AbstractUpdate {
           if ((this.file != null) && LOG.isInfoEnabled()) {
             LOG.info("Executing '" + this.file.getName() + "'");
           }
-          def.updateInDB(this.dataModelType, this.uuid, this.allLinkTypes);
+          def.updateInDB(Type.get(this.dataModelTypeName), this.uuid, this.allLinkTypes);
         }
         // _jexlContext.getVars().remove("exists");
       }
