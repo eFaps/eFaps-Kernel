@@ -61,6 +61,7 @@
     <childs>
       <child>Admin_UI_MenuTree_Childs</child>
       <child>Admin_UI_AbstractTree_Properties</child>
+      <child>Admin_UI_CommandTree_Links</child>
       <child>Admin_UI_DirectTree_Used</child>
     </childs>
     <!-- properties -->

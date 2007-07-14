@@ -25,6 +25,7 @@
 <%@page import="org.efaps.admin.ui.Command"%>
 <%@page import="org.efaps.admin.ui.CommandAbstract"%>
 <%@page import="org.efaps.admin.ui.Menu"%>
+<%@page import="org.efaps.admin.ui.Search"%>
 <%@page import="org.efaps.admin.event.EventType"%>
 <%@page import="org.efaps.admin.event.Parameter"%>
 <%@page import="org.efaps.admin.event.Parameter.ParameterValues"%>
@@ -39,8 +40,15 @@
     command = Menu.get(context.getParameter("command"));
   }
 
-  
-   
+
+  // if a target search is defined, use other command!
+  if (command.getTargetSearch() != null)  {
+    Search search = command.getTargetSearch();
+    context.getParameters().put("search", new String[]{search.getName()});
+    context.getParameters().put("command", new String[]{search.getDefaultCommand().getName()});
+    command = search.getDefaultCommand();
+  }
+
   if (command==null)  {
 System.out.println("command == NULL!!!!!!!");
   } else if (command.getTargetMode() == CommandAbstract.TARGET_MODE_SEARCH)  {

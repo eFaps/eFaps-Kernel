@@ -52,6 +52,10 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Common_Search</name>
+    <!-- defaults -->
+    <default>
+      <command>Admin_User_PersonSearch</command>
+    </default>
     <!-- childs -->
     <childs>
       <child>Admin_User_AbstractSearch</child>

@@ -61,6 +61,14 @@ public class Search extends MenuAbstract  {
           = new UserInterfaceObjectCache<Search>(Search.class);
 
   /////////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  /**
+   * Stores the default search command used when the search is called.
+   */
+  private CommandAbstract defaultCommand = null;
+
+  /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
   /**
@@ -97,7 +105,46 @@ public class Search extends MenuAbstract  {
     }
   }
 
+  /**
+   * @param _context  eFaps context for this request
+   * @param _linkType type of the link property
+   * @param _toId     to id
+   * @param _toType   to type
+   * @param _toName   to name
+   */
+  protected void setLinkProperty(final EFapsClassName _linkType,
+                                 final long _toId,
+                                 final EFapsClassName _toType,
+                                 final String _toName)  throws Exception {
+    switch (_linkType) {
+      case LINK_DEFAULT_SEARCHCOMMAND:
+        this.defaultCommand = Command.get(_toId);
+        if (this.defaultCommand == null)  {
+          this.defaultCommand = Menu.get(_toId);
+        }
+      break;
+      default:
+        super.setLinkProperty(_linkType, _toId, _toType, _toName);
+    }
+  }
+
   /////////////////////////////////////////////////////////////////////////////
+  // getter / setter methods
+
+
+  /**
+   * This is the getter method for the instance variable
+   * {@link #defaultCommand}.
+   * 
+   * @return value of instance variable {@link #defaultCommand}
+   * @see #defaultCommand
+   */
+  public CommandAbstract getDefaultCommand() {
+    return this.defaultCommand;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static methods
 
   /**
    * Returns for given parameter <i>_name</i> the instance of class

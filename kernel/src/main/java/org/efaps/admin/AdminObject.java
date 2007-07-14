@@ -49,12 +49,10 @@ public abstract class AdminObject implements CacheObjectInterface {
   public enum EFapsClassName {
 
     ATTRTYPE_LINK("Link", "440f472f-7be2-41d3-baec-4a2f0e4e5b31"),
-    ATTRTYPE_LINK_WITH_RANGES(
-                              "LinkWithRanges",
+    ATTRTYPE_LINK_WITH_RANGES("LinkWithRanges",
                               "9d6b2e3e-68ce-4509-a5f0-eae42323a696"),
     ATTRTYPE_CREATOR_LINK("CreatorLink", "76122fe9-8fde-4dd4-a229-e48af0fb4083"),
-    ATTRTYPE_MODIFIER_LINK(
-                           "ModifierLink",
+    ATTRTYPE_MODIFIER_LINK("ModifierLink",
                            "447a7c87-8395-48c4-b2ed-d4e96d46332c"),
 
     DATAMODEL_TYPE("Admin_DataModel_Type", null),
@@ -86,7 +84,9 @@ public abstract class AdminObject implements CacheObjectInterface {
     LINK_TARGET_FORM("Admin_UI_LinkTargetForm", null),
     LINK_TARGET_MENU("Admin_UI_LinkTargetMenu", null),
     LINK_TARGET_SEARCH("Admin_UI_LinkTargetSearch", null),
-    LINK_TARGET_TABLE("Admin_UI_LinkTargetTable", null);
+    LINK_TARGET_TABLE("Admin_UI_LinkTargetTable", null),
+    LINK_DEFAULT_SEARCHCOMMAND("Admin_UI_LinkDefaultSearchCommand",
+                               "3f827900-eda2-409f-be92-497dcacb0eef");
 
     public final String name;
 

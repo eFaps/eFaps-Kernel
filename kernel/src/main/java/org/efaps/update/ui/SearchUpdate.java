@@ -40,14 +40,14 @@ public class SearchUpdate extends MenuUpdate  {
 
  
 
-  /** Link from menu to child command / menu */
-//  private final static Link LINK2CHILD
-//             = new OrderedLink("Admin_UI_Menu2Command", 
-//                               "FromMenu", 
-//                               "Admin_UI_Command", "ToCommand");
+  /** Link from search to default search command */
+  private final static Link LINK2DEFAULTCMD = new Link("Admin_UI_LinkDefaultSearchCommand",
+                                                       "From",
+                                                       "Admin_UI_Command",
+                                                       "To");
 
   protected final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
-//    ALLLINKS.add(LINK2CHILD);
+    ALLLINKS.add(LINK2DEFAULTCMD);
     ALLLINKS.addAll(MenuUpdate.ALLLINKS);
   }
 
@@ -103,6 +103,9 @@ public class SearchUpdate extends MenuUpdate  {
       digester.addCallParam("ui-search/definition/property", 0, "name");
       digester.addCallParam("ui-search/definition/property", 1);
 
+      digester.addCallMethod("ui-search/definition/default/command", "assignDefaultCMD", 1);
+      digester.addCallParam("ui-search/definition/default/command", 0);
+
       ret = (SearchUpdate) digester.parse(_file);
 
       if (ret != null)  {
@@ -123,5 +126,13 @@ e.printStackTrace();
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
+    /**
+     * Assigns a command as default for the serch menu
+     * 
+     * @param _defaultCmd name of the default command used for the search
+     */
+    public void assignDefaultCMD(final String _defaultCmd) {
+      addLink(LINK2DEFAULTCMD, _defaultCmd);
+    }
   }
 }
