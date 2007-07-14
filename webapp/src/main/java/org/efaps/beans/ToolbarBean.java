@@ -87,13 +87,9 @@ public class ToolbarBean {
    * from the instance variable {@link #menuHolder}.
    * 
    * @return List of the NavigationMenuItems
-   * @see org.efaps.beans.MenuAbstractBean#menuHolder
-   * @see org.efaps.beans.MenuAbstractBean#setMenuHolder
-   * @see org.efaps.beans.MenuAbstractBean#getMenuHolder
    */
   protected List<NavigationMenuItem> getJSFMenu(final MenuAbstract _menu)
       throws Exception {
-    System.out.println("----MenuMainToolBarBean.getJSFMenu");
     List<NavigationMenuItem> ret = new Vector<NavigationMenuItem>();
 
     if (_menu != null) {

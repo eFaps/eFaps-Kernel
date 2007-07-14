@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,38 +24,94 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.MenuAbstract;
 import org.efaps.admin.ui.UserInterfaceObject;
 import org.efaps.db.Context;
+import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+
 
 /**
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public abstract class MenuAbstractBean extends AbstractBean  {
+public class MenuTreeBean extends AbstractBean {
 
   /////////////////////////////////////////////////////////////////////////////
-  // contructors
+  // instance variables
 
-  public MenuAbstractBean() throws EFapsException  {
+  /**
+   * The instance variable stores the menu label for this menu tree bean.
+   * 
+   * @see #setMenuLabel
+   * @see #getMenuLabel
+   */
+  private String menuLabel = null;
+
+  /**
+   * The instance variable stores the menu holder instance object.
+   *
+   * @see #getMenuHolder
+   * @see #MenuHolder
+   */
+  private MenuHolder menuHolder = null;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
+
+  public MenuTreeBean() throws EFapsException {
     super();
+    System.out.println("MenuTreeBean.constructor");
+  }
+
+  public void finalize() {
+    super.finalize();
+    System.out.println("MenuTreeBean.destructor");
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
-   * @see #execute(Context,Menu)
+   * Following steps are made from this method;
+   * <ul>
+   * <li>The method sets the menu from the type (setting 'Tree').</li>
+   * <li>If for the type a icon is specified, this icon is set if no icon is
+   * set for the menu.</li>
+   * <li>The object value are substitued in the label of the menu.</li>
+   * </ul>
+   * 
+   * @param _context
+   *          eFaps context for this request
    */
-  public void execute() throws Exception  {
-    execute(Context.getThreadContext());
-  }
+  public void execute() throws Exception {
+    Context context = Context.getThreadContext();
+    Menu menu = getInstance().getType().getTreeMenu();
+    if (menu == null) {
+      throw new Exception("no tree menu defined for type "
+          + getInstance().getType().getName());
+    }
+    setMenu(menu);
 
-abstract protected void execute(Context _context) throws Exception;
+    if (getMenuHolder().getIcon() == null) {
+      getMenuHolder().setIcon(getInstance().getType().getIcon());
+    }
+
+    SearchQuery query = new SearchQuery();
+    query.setObject(getInstance());
+    query.addAllFromString(context, this.menuLabel);
+    query.execute();
+
+    if (query.next()) {
+      this.menuLabel = query.replaceAllInString(context, this.menuLabel);
+    }
+
+    query.close();
+  }
 
   /**
    *
@@ -63,24 +119,37 @@ abstract protected void execute(Context _context) throws Exception;
    * @param _menu     menu instance object
    * @see #execute()
    */
-  protected void setMenu(Context _context, Menu _menu) throws Exception  {
+  protected void setMenu(final Menu _menu) throws Exception  {
     if (_menu.hasAccess())  {
-      setMenuHolder(new MenuHolder(_context, _menu));
+      this.menuHolder = new MenuHolder(_menu);
     }
   }
 
   /////////////////////////////////////////////////////////////////////////////
+  // getter / setter methods
 
   /**
-   * The instance variable stores the menu holder instance object.
-   *
-   * @see #getMenuHolder
-   * @see #setMenuHolder
-   * @see #MenuHolder
+   * This is the getter method for the instance variable {@link #menuLabel}.
+   * 
+   * @return value of instance variable {@link #menuLabel}
+   * @see #menuLabel
+   * @see #setMenuLabel
    */
-  private MenuHolder menuHolder = null;
+  public String getMenuLabel() {
+    return this.menuLabel;
+  }
 
-  /////////////////////////////////////////////////////////////////////////////
+  /**
+   * This is the setter method for the instance variable {@link #menuLabel}.
+   * 
+   * @param _menuLabel
+   *          new value for instance variable {@link #menuLabel}
+   * @see #menuLabel
+   * @see #getMenuLabel
+   */
+  public void setMenuLabel(String _menuLabel) {
+    this.menuLabel = DBProperties.getProperty(_menuLabel + ".Label");
+  }
 
   /**
    * This is the getter method for the instance variable {@link #menuHolder}.
@@ -93,20 +162,8 @@ abstract protected void execute(Context _context) throws Exception;
     return this.menuHolder;
   }
 
-  /**
-   * This is the setter method for the instance variable {@link #menuHolder}.
-   *
-   * @param _menuHolder  new value for instance variable {@link #menuHolder}
-   * @see #menuHolder
-   * @see #getMenuHolder
-   */
-  public void setMenuHolder(MenuHolder _menuHolder)  {
-    this.menuHolder = _menuHolder;
-  }
-
   /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  // class used to hold one command
 
   /**
    * The class wraps commands. An instance of the command holder is only added
@@ -122,7 +179,7 @@ abstract protected void execute(Context _context) throws Exception;
      * @param _sub      command or menu which is holded by this class
      * @see #sub
      */
-    protected CommandHolder(Context _context, CommandAbstract _sub)  {
+    protected CommandHolder(CommandAbstract _sub)  {
       setSub(_sub);
       setIcon(_sub.getIcon());
     }
@@ -203,8 +260,7 @@ abstract protected void execute(Context _context) throws Exception;
   }
 
   /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  // class used to hold one menu
 
   /**
    * The class wraps a menu. An instance of the menu holder checks for all
@@ -221,16 +277,16 @@ abstract protected void execute(Context _context) throws Exception;
      * @param _menu     menu instance object
      * @see #execute(Context)
      */
-    public MenuHolder(Context _context, MenuAbstract _menu)  {
-      super(_context, _menu);
+    public MenuHolder(MenuAbstract _menu)  {
+      super(_menu);
       Iterator iter = _menu.getCommands().iterator();
       while (iter.hasNext())  {
         UserInterfaceObject obj = (UserInterfaceObject)iter.next();
         if (obj.hasAccess())  {
           if (obj instanceof MenuAbstract)  {
-            getSubs().add(new MenuHolder(_context, (MenuAbstract)obj));
+            getSubs().add(new MenuHolder((MenuAbstract)obj));
           } else  {
-            getSubs().add(new CommandHolder(_context, (CommandAbstract)obj));
+            getSubs().add(new CommandHolder((CommandAbstract)obj));
           }
         }
       }
