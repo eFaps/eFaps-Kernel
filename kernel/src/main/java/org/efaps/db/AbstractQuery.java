@@ -48,8 +48,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @version $Id: AbstractQuery.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
- *          2007) jmo $
+ * @version $Id$
  * @todo description
  */
 public abstract class AbstractQuery {

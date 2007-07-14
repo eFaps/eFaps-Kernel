@@ -145,6 +145,13 @@
             <artifactId>log4j</artifactId>
             <version>1.2.14</version>
           </dependency>
+<dependency>
+  <groupId>oracle</groupId>
+  <artifactId>oracle</artifactId>
+  <version>unknown</version>
+  <scope>system</scope>
+  <systemPath>${basedir}/../ojdbc14_g.jar</systemPath>
+</dependency>
         </dependencies>
       </plugin>
 

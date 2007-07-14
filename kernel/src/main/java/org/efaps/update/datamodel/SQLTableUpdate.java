@@ -517,7 +517,7 @@ e.printStackTrace();
             cmd.append("(").append(column.length).append(")");
           }
           if (column.isNotNull)  {
-            cmd.append(" not null");
+/**/            cmd.append(" not null");
           }
           if (LOG.isDebugEnabled())  {
             LOG.info("    ..SQL> " + cmd.toString());
@@ -534,7 +534,7 @@ e.printStackTrace();
           if (LOG.isDebugEnabled())  {
             LOG.info("    ..SQL> " + cmd.toString());
           }
-          stmt.execute(cmd.toString());
+/**/          stmt.execute(cmd.toString());
         }
         
         // update foreign keys
