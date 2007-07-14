@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,6 +173,30 @@ public class Instance  {
     String ret = null;
     if ((getType() != null) && (getId() != 0))  {
       ret = getType().getId() + "." + getId();
+    }
+    return ret;
+  }
+
+  /**
+   * @return id represented by this instance
+   * @see #id
+   */
+  public int hashCode()  {
+    return (int) this.id;
+  }
+
+  /**
+   * @return <i>true</i> if the given object in _obj is an instance and holds
+   *         the same type and id
+   * @see #id
+   * @see #type
+   */
+  public boolean equals(final Object _obj)  {
+    boolean ret = false;
+    if (_obj instanceof Instance)  {
+      Instance other = (Instance) _obj;
+      ret = (other.getId() == getId())
+            && (other.getType().getId() == getType().getId());
     }
     return ret;
   }
