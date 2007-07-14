@@ -30,7 +30,6 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.ImporterTopLevel;
 
-import org.efaps.js.EFapsInstance;
 import org.efaps.util.EFapsException;
 
 /**
@@ -91,9 +90,6 @@ public abstract class AbstractJavaScriptMethod extends AbstractMethod  {
     // define the scope javascript property
     Object wrappedScope = Context.javaToJS(this.scope , this.scope);
     ScriptableObject.putProperty(scope, "javaScriptScope", wrappedScope);
-
-    // define the scriptable Java Class mapping
-    ScriptableObject.defineClass(scope, EFapsInstance.class);
 
     // run init javascript file
     ClassLoader classLoader = getClass().getClassLoader();
