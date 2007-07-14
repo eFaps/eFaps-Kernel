@@ -35,6 +35,7 @@ import org.efaps.update.ui.CommandUpdate;
 import org.efaps.update.ui.FormUpdate;
 import org.efaps.update.ui.ImageUpdate;
 import org.efaps.update.ui.MenuUpdate;
+import org.efaps.update.ui.SearchUpdate;
 import org.efaps.update.ui.TableUpdate;
 import org.efaps.update.user.JAASSystemUpdate;
 import org.efaps.update.user.RoleUpdate;
@@ -155,6 +156,12 @@ public final class UpdateMethod extends AbstractMethod  {
     }
     for (String fileName : getCommandLine().getArgs())  {
       CommandUpdate update = CommandUpdate.readXMLFile(fileName);
+      if (update != null)  {
+        update.updateInDB(jexlContext);
+      }
+    }
+    for (String fileName : getCommandLine().getArgs())  {
+      SearchUpdate update = SearchUpdate.readXMLFile(fileName);
       if (update != null)  {
         update.updateInDB(jexlContext);
       }
