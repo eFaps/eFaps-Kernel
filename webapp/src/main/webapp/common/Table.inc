@@ -338,7 +338,7 @@ System.out.println("...............................END:"+new java.util.Date());
 %>
 
     <%-- /** hidden frame **/ --%>
-    <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="about:blank">
+    <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="Blank.jsp">
     </iframe>
 
   </body>

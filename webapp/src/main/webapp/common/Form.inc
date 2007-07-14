@@ -385,7 +385,7 @@ function eFapsSubmit()  {
           </c:if>
 
 </f:view>
-          <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="about:blank">
+          <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="Blank.jsp">
           </iframe>
 </div>          
         </body>
