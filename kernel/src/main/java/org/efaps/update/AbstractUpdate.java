@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:598 $
- * Last Changed:    $Date:2007-01-07 18:09:40 +0100 (So, 07 Jan 2007) $
- * Last Changed By: $Author:tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.update;
@@ -50,11 +50,9 @@ import org.efaps.util.EFapsException;
  * the digester converted in Objects. After reading all Objects of one XML-File
  * the Objects are inserted coresponding to the Version.
  * 
- * 
  * @author tmo
  * @author jmo
- * @version $Id:AbstractUpdate.java 598 2007-01-07 18:09:40 +0100 (So, 07 Jan
- *          2007) tmo $
+ * @version $Id$
  */
 public abstract class AbstractUpdate {
 
