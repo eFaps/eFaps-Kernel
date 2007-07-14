@@ -22,14 +22,25 @@
 --%> 
 
 <%@page errorPage="Exception.jsp"%>
-<%@include file = "../common/StdTop.inc"%>
+
+<%@page import="org.efaps.db.Context"%>
 
 <jsp:useBean id="cache" class="org.efaps.beans.CacheSessionBean" scope="session"/>
 
-<%-- /** constructor for the form bean **/ --%>
-<c:set var="method" value="process"/>
-<%@include file = "../common/FormBeanConstructor.inc"%>
-<c:remove var="method"/>
+<%-- /** constructor for the form bean with some initialise code **/ --%>
+<%
+  org.efaps.beans.FormBean uiObject = (org.efaps.beans.FormBean)request.getAttribute("uiObject");
+  if (uiObject==null)  {
+    uiObject = cache.getFormBean(Context.getThreadContext().getParameter("command"));
+    request.setAttribute("uiObject", uiObject);
+
+uiObject.setUkTitle("");
+
+    uiObject.process();
+  }
+%>
+<jsp:setProperty name="uiObject" property="nodeId" param="nodeId"/>
+
 
 <html>
   <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
