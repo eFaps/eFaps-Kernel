@@ -21,15 +21,17 @@
 package org.efaps.update.dbproperty;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
@@ -54,36 +56,41 @@ import org.xml.sax.SAXException;
  */
 public class DBPropertiesUpdate {
 
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
   /**
-   * Logger for this class
+   * Logging instance used to give logging information of this class.
    */
-  private static final Log     LOG       = LogFactory
-                                             .getLog(DBPropertiesUpdate.class);
+  private final static Log LOG = LogFactory.getLog(DBPropertiesUpdate.class);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
    * the name of the Bundle
    */
-  private String               bundlename;
+  private String bundlename;
 
   /**
    * the UUID of the Bundle
    */
-  private String               bundeluuid;
+  private String bundeluuid;
 
   /**
    * the ID of the Bundle
    */
-  private String               bundleid;
+  private String bundleid;
 
   /**
    * Sequence of the Bundle
    */
-  private String               bundlesequence;
+  private String bundlesequence;
 
   /**
    * root of the XML-Filt to be imported
    */
-  private String               root;
+  private URI rootURI;
 
   /**
    * List of all Resources in this Properties
@@ -231,14 +238,12 @@ public class DBPropertiesUpdate {
    * Import Properties from a Properties-File as default, if the key is already
    * existing, the default will be replaced with the new default
    * 
-   * @param _filename
-   *          Complete Path/Name of the File to import
+   * @param _url  Complete Path/Name of the property file to import
    */
-  private void importFromProperties(String _filename) {
+  private void importFromProperties(final URL _url) {
 
     try {
-
-      FileInputStream propInFile = new FileInputStream(_filename);
+      InputStream propInFile = _url.openStream();
       Properties p2 = new Properties();
       p2.load(propInFile);
       Iterator<Entry<Object, Object>> x = p2.entrySet().iterator();
@@ -254,8 +259,6 @@ public class DBPropertiesUpdate {
         }
       }
 
-    } catch (FileNotFoundException e) {
-      LOG.error("ImportFromProperties() - Can’t find " + _filename, e);
     } catch (IOException e) {
       LOG.error("ImportFromProperties() - I/O failed.", e);
     }
@@ -285,19 +288,18 @@ public class DBPropertiesUpdate {
    * key is not existing, a new default(=value) will also be created. If the
    * language is not existing it will be created also.
    * 
-   * @param _filename
-   *          Complete Path/Name of the File to import
-   * @param _language
-   *          Language to use for the Import
+   * @param _url      Complete Path/Name of the File to import
+   * @param _language Language to use for the Import
    */
-  private void importFromProperties(String _filename, String _language) {
+  private void importFromProperties(final URL _url,
+                                    final String _language) {
 
     String propOID;
     String propID;
     String localOID;
     try {
 
-      FileInputStream propInFile = new FileInputStream(_filename);
+      InputStream propInFile = _url.openStream();
       Properties p2 = new Properties();
       p2.load(propInFile);
       Iterator<Entry<Object, Object>> x = p2.entrySet().iterator();
@@ -322,8 +324,6 @@ public class DBPropertiesUpdate {
         }
       }
 
-    } catch (FileNotFoundException e) {
-      LOG.error("ImportFromProperties() - Can’t find " + _filename, e);
     } catch (IOException e) {
       LOG.error("ImportFromProperties() - I/O failed.", e);
     }
@@ -512,22 +512,26 @@ public class DBPropertiesUpdate {
   /**
    * Import the Properties defined in a "eFaps-Properties" XML-File
    * 
-   * @param _XMLName
-   *          Path to the XML-File
+   * @param _XMLName  Path to the XML-File
    * @return DBPropertiesUpdate
+   * @deprecated
    */
-  public static DBPropertiesUpdate readXMLFile(String _XMLName) {
+  public static DBPropertiesUpdate readXMLFile(final String _XMLName) throws MalformedURLException  {
     return readXMLFile(new File(_XMLName));
   }
 
   /**
    * Import the Properties defined in a "eFaps-Properties" XML-File
    * 
-   * @param _XMLName
-   *          XML-Files
+   * @param _xmlfile  XML-Files
    * @return DBPropertiesUpdate
+   * @deprecated
    */
-  public static DBPropertiesUpdate readXMLFile(File _xmlfile) {
+  public static DBPropertiesUpdate readXMLFile(final File _xmlfile) throws MalformedURLException  {
+    return readXMLFile(_xmlfile.toURL());
+  }
+
+  public static DBPropertiesUpdate readXMLFile(final URL _url) {
     DBPropertiesUpdate propimport = null;
     Digester digester = new Digester();
 
@@ -551,17 +555,16 @@ public class DBPropertiesUpdate {
     digester.addSetNext("eFaps-DBProperties/resource", "addResource");
 
     try {
-      propimport = (DBPropertiesUpdate) digester.parse(_xmlfile);
+      propimport = (DBPropertiesUpdate) digester.parse(_url);
 
       if (propimport != null) {
-
-        propimport.root = _xmlfile.getParent();
+        propimport.rootURI = _url.toURI().resolve(".");
       }
+    } catch (URISyntaxException e) {
+      LOG.error("Could not get root directory", e);
     } catch (IOException e) {
-
       LOG.error("importProperties(String)", e);
     } catch (SAXException e) {
-
       LOG.error("importProperties(String)", e);
     }
     return propimport;
@@ -594,7 +597,7 @@ public class DBPropertiesUpdate {
    * Import a Bundle of Properties into the database
    * 
    */
-  public void updateInDB() {
+  public void updateInDB() throws MalformedURLException  {
     if (LOG.isInfoEnabled()) {
       LOG.info("Importing Properties '" + this.getBundleName() + "'");
     }
@@ -610,9 +613,9 @@ public class DBPropertiesUpdate {
 
       if (resource.type.equals("Properties")) {
         if (resource.language.equals("")) {
-          importFromProperties(this.root + "/" + resource.filename);
+          importFromProperties(this.rootURI.resolve(resource.filename).toURL());
         } else {
-          importFromProperties(this.root + "/" + resource.filename,
+          importFromProperties(this.rootURI.resolve(resource.filename).toURL(),
               resource.language);
         }
       }
