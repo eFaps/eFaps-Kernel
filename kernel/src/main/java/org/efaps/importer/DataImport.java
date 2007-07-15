@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ package org.efaps.importer;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -39,29 +41,37 @@ import org.xml.sax.SAXException;
  * 
  * @author jmo
  * @version $Id$
- * 
  */
 public class DataImport {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
   /**
-   * Logger for this class
+   * Logging instance used to give logging information of this class.
    */
-  private static final Log LOG      = LogFactory.getLog(DataImport.class);
+  private static final Log LOG = LogFactory.getLog(DataImport.class);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance variables
 
   /**
    * contains the RootObject wich is the base for all other Objects
    */
-  private RootObject       root     = null;
+  private RootObject root = null;
 
   /**
    * contains the Path of the Base for the Context
    */
-  private String           baseName = null;
+  private String baseName = null;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
 
   /**
    * DefaultConstructor used by Shell -create
    */
   public DataImport() {
-
   }
 
   /**
@@ -72,6 +82,9 @@ public class DataImport {
   public DataImport(final String _basename) {
     this.baseName = _basename;
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * initialises the Context for the VFS
@@ -96,15 +109,23 @@ public class DataImport {
   }
 
   /**
-   * Method that uses the {@link org.apache.commons.digester.Digester} to read
-   * the objects from the given xml-File an build the java-Objects in a
-   * parent-child Hirachy.
    * 
-   * @param _xml
-   *          String representing the Path to the XML-File
+   * @param _xml  String representing the file name including path to the
+   *              XML-File
+   * @see #readXMLFile(File)
+   * @see #readXMLFile(URL)
    */
-  public void readXMLFile(final String _xml) {
+  public void readXMLFile(final String _xml) throws MalformedURLException  {
     readXMLFile(new File(_xml));
+  }
+
+  /**
+   * 
+   * @param _xml  XML-File
+   * @see #readXMLFile(URL)
+   */
+  public void readXMLFile(final File _xml) throws MalformedURLException  {
+    readXMLFile(_xml.toURL());
   }
 
   /**
@@ -112,10 +133,9 @@ public class DataImport {
    * the objects from the given xml-File an build the java-Objects in a
    * parent-child Hirachy.
    * 
-   * @param _xml
-   *          XML-File
+   * @param _xml  URL to the XML-File
    */
-  public void readXMLFile(final File _xml) {
+  public void readXMLFile(final URL _xml) {
     Digester digester = new Digester();
 
     digester.setValidating(false);
@@ -205,7 +225,6 @@ public class DataImport {
     } catch (SAXException e) {
       e.printStackTrace(System.err);
     }
-
   }
 
   /**
