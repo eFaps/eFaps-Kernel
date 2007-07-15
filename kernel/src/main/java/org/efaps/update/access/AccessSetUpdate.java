@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,18 @@
 
 package org.efaps.update.access;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.efaps.update.AbstractUpdate;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.xml.sax.SAXException;
+
+import org.efaps.update.AbstractUpdate;
 
 /**
  * @author tmo
@@ -38,6 +42,11 @@ public class AccessSetUpdate extends AbstractUpdate  {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
+
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(AccessSetUpdate.class);
 
   
   /** Link to access types. */
@@ -91,13 +100,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static AccessSetUpdate readXMLFile(final String _fileName) throws IOException  {
-//    } catch (IOException e)  {
-//      LOG.error("could not open file '" + _fileName + "'", e);
-    return readXMLFile(new File(_fileName));
-  }
-
-  public static AccessSetUpdate readXMLFile(final File _file) throws IOException  {
+  public static AccessSetUpdate readXMLFile(final URL _url)  {
     AccessSetUpdate ret = null;
 
     try  {
@@ -135,14 +138,15 @@ public class AccessSetUpdate extends AbstractUpdate  {
       digester.addCallMethod("access-set/definition/group", "addGroup", 1);
       digester.addCallParam("access-set/definition/group", 0);
 
-      ret = (AccessSetUpdate) digester.parse(_file);
+      ret = (AccessSetUpdate) digester.parse(_url);
 
       if (ret != null)  {
-        ret.setFile(_file);
+        ret.setURL(_url);
       }
-    } catch (SAXException e)  {
-e.printStackTrace();
-      //      LOG.error("could not read file '" + _fileName + "'", e);
+    } catch (IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
+    } catch (SAXException e) {
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
   }

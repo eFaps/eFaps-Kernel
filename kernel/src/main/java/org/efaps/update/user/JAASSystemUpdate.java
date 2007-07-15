@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,18 @@
 
 package org.efaps.update.user;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.efaps.update.AbstractUpdate;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.xml.sax.SAXException;
+
+import org.efaps.update.AbstractUpdate;
 
 /**
  * @author tmo
@@ -39,6 +43,10 @@ public class JAASSystemUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static variables
 
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(JAASSystemUpdate.class);
 
   /** Link from JAAS systems to persons */
   private final static Link LINK2PERSONS
@@ -77,13 +85,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static JAASSystemUpdate readXMLFile(final String _fileName) throws IOException  {
-//    } catch (IOException e)  {
-//      LOG.error("could not open file '" + _fileName + "'", e);
-    return readXMLFile(new File(_fileName));
-  }
-
-  public static JAASSystemUpdate readXMLFile(final File _file) throws IOException  {
+  public static JAASSystemUpdate readXMLFile(final URL _url)  {
     JAASSystemUpdate ret = null;
 
     try  {
@@ -163,14 +165,15 @@ public class JAASSystemUpdate extends AbstractUpdate  {
       digester.addCallParam("user-jaassystem/definition/assigned-group/name", 0);
       digester.addCallParam("user-jaassystem/definition/assigned-group/key", 1);
 
-      ret = (JAASSystemUpdate) digester.parse(_file);
+      ret = (JAASSystemUpdate) digester.parse(_url);
 
       if (ret != null)  {
-        ret.setFile(_file);
+        ret.setURL(_url);
       }
-    } catch (SAXException e)  {
-e.printStackTrace();
-      //      LOG.error("could not read file '" + _fileName + "'", e);
+    } catch (IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
+    } catch (SAXException e) {
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
   }

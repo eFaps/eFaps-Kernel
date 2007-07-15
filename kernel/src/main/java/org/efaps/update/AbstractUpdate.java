@@ -20,7 +20,7 @@
 
 package org.efaps.update;
 
-import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -62,16 +62,15 @@ public abstract class AbstractUpdate {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log               LOG         = LogFactory
-                                                         .getLog(AbstractUpdate.class);
+  private final static Log LOG = LogFactory.getLog(AbstractUpdate.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
-   * The file is stored in this instance variable.
+   * The URL of the xml file is stored in this instance variable.
    */
-  private File                           file        = null;
+  private URL url = null;
 
   /**
    * The name of the data model type is store in this instance variable.
@@ -171,8 +170,8 @@ public abstract class AbstractUpdate {
         boolean exec = new Boolean(jexlExpr.evaluate(_jexlContext).toString());
         if (exec) {
           // def.updateInDB(instance, this.allLinkTypes, insert);
-          if ((this.file != null) && LOG.isInfoEnabled()) {
-            LOG.info("Executing '" + this.file.getName() + "'");
+          if ((this.url != null) && LOG.isInfoEnabled()) {
+            LOG.info("Executing '" + this.url.toString() + "'");
           }
           def.updateInDB(Type.get(this.dataModelTypeName), this.uuid, this.allLinkTypes);
         }
@@ -188,10 +187,10 @@ public abstract class AbstractUpdate {
   // getter and setter methods
 
   /**
-   * @see #file
+   * @see #url
    */
-  protected void setFile(final File _file) {
-    this.file = _file;
+  protected void setURL(final URL _url) {
+    this.url = _url;
   }
 
   /**

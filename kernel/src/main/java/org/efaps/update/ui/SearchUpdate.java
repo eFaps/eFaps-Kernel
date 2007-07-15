@@ -20,12 +20,15 @@
 
 package org.efaps.update.ui;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.xml.sax.SAXException;
 
 /**
@@ -38,7 +41,10 @@ public class SearchUpdate extends MenuUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static variables
 
- 
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(SearchUpdate.class);
 
   /** Link from search to default search command */
   private final static Link LINK2DEFAULTCMD = new Link("Admin_UI_LinkDefaultSearchCommand",
@@ -64,13 +70,7 @@ public class SearchUpdate extends MenuUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static SearchUpdate readXMLFile(final String _fileName) throws IOException  {
-//    } catch (IOException e)  {
-//      LOG.error("could not open file '" + _fileName + "'", e);
-    return readXMLFile(new File(_fileName));
-  }
-
-  public static SearchUpdate readXMLFile(final File _file) throws IOException  {
+  public static SearchUpdate readXMLFile(final URL _url)  {
     SearchUpdate ret = null;
 
     try  {
@@ -106,14 +106,15 @@ public class SearchUpdate extends MenuUpdate  {
       digester.addCallMethod("ui-search/definition/default/command", "assignDefaultCMD", 1);
       digester.addCallParam("ui-search/definition/default/command", 0);
 
-      ret = (SearchUpdate) digester.parse(_file);
+      ret = (SearchUpdate) digester.parse(_url);
 
       if (ret != null)  {
-        ret.setFile(_file);
+        ret.setURL(_url);
       }
-    } catch (SAXException e)  {
-e.printStackTrace();
-      //      LOG.error("could not read file '" + _fileName + "'", e);
+    } catch (IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
+    } catch (SAXException e) {
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
   }

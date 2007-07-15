@@ -20,8 +20,8 @@
 
 package org.efaps.update.datamodel;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -82,11 +82,7 @@ public class SQLTableUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static SQLTableUpdate readXMLFile(final String _fileName) throws IOException  {
-    return readXMLFile(new File(_fileName));
-  }
-
-  public static SQLTableUpdate readXMLFile(final File _file) throws IOException  {
+  public static SQLTableUpdate readXMLFile(final URL _url)  {
     SQLTableUpdate ret = null;
 
     try  {
@@ -151,15 +147,15 @@ public class SQLTableUpdate extends AbstractUpdate  {
       digester.addCallParam("datamodel-sqltable/definition/database/foreign", 1, "key");
       digester.addCallParam("datamodel-sqltable/definition/database/foreign", 2, "reference");
 
-      ret = (SQLTableUpdate) digester.parse(_file);
+      ret = (SQLTableUpdate) digester.parse(_url);
       
       if (ret != null)  {
-        ret.setFile(_file);
+        ret.setURL(_url);
       }
-    } catch (SAXException e)  {
-System.out.println("could not read file '" + _file + "'");
-e.printStackTrace();
-      //      LOG.error("could not read file '" + _fileName + "'", e);
+    } catch (IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
+    } catch (SAXException e) {
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
   }

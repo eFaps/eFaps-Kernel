@@ -20,22 +20,33 @@
 
 package org.efaps.update.integration;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.efaps.update.AbstractUpdate;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.xml.sax.SAXException;
+
+import org.efaps.update.AbstractUpdate;
 
 /**
  * @author tmo
- * @version $Id: WebDAVUpdate.java 723 2007-03-17 19:17:04 +0000 (Sat, 17 Mar
- *          2007) tmo $
+ * @version $Id$
  * @todo description
  */
 public class WebDAVUpdate extends AbstractUpdate {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(WebDAVUpdate.class);
 
   private final static Set<Link> ALLLINKS = new HashSet<Link>();
   {
@@ -46,7 +57,7 @@ public class WebDAVUpdate extends AbstractUpdate {
      */
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -56,17 +67,10 @@ public class WebDAVUpdate extends AbstractUpdate {
     super("Admin_Integration_WebDAV", ALLLINKS);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static WebDAVUpdate readXMLFile(final String _fileName)
-                                                                throws IOException {
-    // } catch (IOException e) {
-    // LOG.error("could not open file '" + _fileName + "'", e);
-    return readXMLFile(new File(_fileName));
-  }
-
-  public static WebDAVUpdate readXMLFile(final File _file) throws IOException {
+  public static WebDAVUpdate readXMLFile(final URL _url)  {
     WebDAVUpdate ret = null;
 
     try {
@@ -103,19 +107,22 @@ public class WebDAVUpdate extends AbstractUpdate {
           .addCallParam("integration-webdav/definition/property", 0, "name");
       digester.addCallParam("integration-webdav/definition/property", 1);
 
-      ret = (WebDAVUpdate) digester.parse(_file);
+      ret = (WebDAVUpdate) digester.parse(_url);
 
       if (ret != null) {
-        ret.setFile(_file);
+        ret.setURL(_url);
       }
+    } catch (IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
     } catch (SAXException e) {
-      e.printStackTrace();
-      // LOG.error("could not read file '" + _fileName + "'", e);
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
   public static class Definition extends DefinitionAbstract {

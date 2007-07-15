@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,15 +43,6 @@ function eFapsCommonLog(_subject, _text)  {
     print("  - " + _subject + "  (" + _text + ")");
   } else if (_subject!=null)  {
     print("  - " + _subject);
-  }
-}
-
-function eFapsCommonSQLTableCreate(_con, _stmt, _text, _table, _parentTable, _array)  {
-  eFapsCommonLog("Create Table '" + _table + "'", _text);
-  
-  Context.getDbType().createTable(_con, _table, _parentTable);
-  for (var i=0; i<_array.length; i++)  {
-    _stmt.execute("alter table " + _table + " add " + _array[i]);
   }
 }
 

@@ -20,6 +20,7 @@
 
 package org.efaps.maven.install;
 
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -30,13 +31,13 @@ import org.apache.commons.logging.LogFactory;
 
 import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
+import org.efaps.update.Install;
 import org.efaps.util.EFapsException;
 
 /**
  * 
  * @author tmo
- * @version $Id: Application.java 609 2007-01-07 18:34:38 +0000 (Sun, 07 Jan
- *          2007) tmo $
+ * @version $Id$
  */
 public class Application {
 
@@ -72,6 +73,11 @@ public class Application {
    */
   private final Set<Long> installed = new HashSet<Long>();
 
+  /**
+   * Install instance holding all xml update files.
+   */
+  private final Install install = new Install();
+
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
@@ -101,7 +107,7 @@ public class Application {
         if (LOG.isInfoEnabled()) {
           LOG.info("Starting installation of version " + version.getNumber());
         }
-        version.install();
+        version.install(this.install);
         storeVersion(version.getNumber());
 
         if (LOG.isInfoEnabled()) {
@@ -126,7 +132,7 @@ public class Application {
         LOG.info("Update version " + version.getNumber() + " of application "
             + "'" + this.application + "'");
       }
-      version.install();
+      version.install(this.install);
       if (LOG.isInfoEnabled()) {
         LOG.info("Finished update of version " + version.getNumber());
       }
@@ -181,6 +187,10 @@ public class Application {
    */
   public final ApplicationVersion getLastVersion() {
     return (ApplicationVersion) this.versions.toArray()[this.versions.size() - 1];
+  }
+
+  public void addURL(final URL _url)  {
+    this.install.addURL(_url);
   }
 
   // ///////////////////////////////////////////////////////////////////////////

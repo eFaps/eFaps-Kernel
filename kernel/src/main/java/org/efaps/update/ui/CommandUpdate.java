@@ -20,15 +20,19 @@
 
 package org.efaps.update.ui;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.xml.sax.SAXException;
+
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.event.EventFactory;
-import org.xml.sax.SAXException;
 
 /**
  * This Class is responsible for the Update of "Command" in the Database.<br/>It
@@ -42,8 +46,13 @@ import org.xml.sax.SAXException;
  */
 public class CommandUpdate extends AbstractUpdate {
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static variables
+
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(CommandUpdate.class);
 
   /** Link from UI object to role */
   private final static Link LINK2ACCESSROLE   = new Link("Admin_UI_Access",
@@ -87,7 +96,7 @@ public class CommandUpdate extends AbstractUpdate {
     ALLLINKS.add(LINK2TARGETSEARCH);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -104,24 +113,8 @@ public class CommandUpdate extends AbstractUpdate {
     super(_typeName, _allLinks);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static methods
-
-  /**
-   * Method that converts the given FileName into a <code>File</code> and then
-   * parses the File to <code>CommandUpdate readXMLFile(final File _file)</code>.
-   * {@link CommandUpdate}
-   * 
-   * @param _fileName
-   *          Name of the XML-File to be read by the digester
-   * @return CommandUpdate Definition read by digester
-   * @throws IOException
-   *           if file is not readable
-   */
-  public static CommandUpdate readXMLFile(final String _fileName)
-                                                                 throws IOException {
-    return readXMLFile(new File(_fileName));
-  }
 
   /**
    * Method that reads the given XML-File and than uses the
@@ -134,7 +127,7 @@ public class CommandUpdate extends AbstractUpdate {
    * @throws IOException
    *           if file is not readable
    */
-  public static CommandUpdate readXMLFile(final File _file) throws IOException {
+  public static CommandUpdate readXMLFile(final URL _url)  {
     CommandUpdate ret = null;
 
     try {
@@ -196,24 +189,27 @@ public class CommandUpdate extends AbstractUpdate {
       digester.addCallParam("ui-command/definition/trigger/property", 1);
       digester.addSetNext("ui-command/definition/trigger", "addEvent", "org.efaps.update.event.Event");
 
-      ret = (CommandUpdate) digester.parse(_file);
+      ret = (CommandUpdate) digester.parse(_url);
 
       if (ret != null) {
-        ret.setFile(_file);
+        ret.setURL(_url);
       }
+    } catch (IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
     } catch (SAXException e) {
-      e.printStackTrace();
-      // LOG.error("could not read file '" + _fileName + "'", e);
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
   public static class CommandDefinition extends DefinitionAbstract {
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
     /**

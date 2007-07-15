@@ -20,8 +20,8 @@
 
 package org.efaps.update.datamodel;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,13 +48,12 @@ import org.xml.sax.SAXException;
  * 
  * @author tmo
  * @author jmo
- * @version $Id: TypeUpdate.java 726 2007-03-17 22:14:14 +0000 (Sat, 17 Mar
- *          2007) tmo $
+ * @version $Id$
  * 
  */
 public class TypeUpdate extends AbstractUpdate {
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -71,7 +70,7 @@ public class TypeUpdate extends AbstractUpdate {
      */
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -85,33 +84,14 @@ public class TypeUpdate extends AbstractUpdate {
   // static methods
 
   /**
-   * Method that converts the given FileName into a <code>File</code> and then
-   * parses the File to <code>TypeUpdate readXMLFile(final File _file)</code>.
-   * {@link readXMLFile}
-   * 
-   * @param _fileName
-   *          Name of the XML-File to be read by the digester
-   * @return TypeUpdate Definition read by digester
-   * @throws IOException
-   *           if file is not readable
-   */
-  public static TypeUpdate readXMLFile(final String _fileName)
-                                                              throws IOException {
-    return readXMLFile(new File(_fileName));
-  }
-
-  /**
    * Method that reads the given XML-File and than uses the
    * <code>org.apache.commons.digester</code> to create the diffrent Class and
    * invokes the Methods to Update a Type
    * 
-   * @param _file
-   *          XML-File to be read by the digester
+   * @param _file XML-File to be read by the digester
    * @return TypUdate Definition read by digester
-   * @throws IOException
-   *           if file is not readable
    */
-  public static TypeUpdate readXMLFile(final File _file) throws IOException {
+  public static TypeUpdate readXMLFile(final URL _url)  {
     TypeUpdate ret = null;
 
     try {
@@ -184,18 +164,22 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addSetNext("datamodel-type/definition/trigger", "addEvent",
           "org.efaps.update.event.Event");
 
-      ret = (TypeUpdate) digester.parse(_file);
+      ret = (TypeUpdate) digester.parse(_url);
 
       if (ret != null) {
-        ret.setFile(_file);
+        ret.setURL(_url);
       }
+    } catch (IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
     } catch (SAXException e) {
-      LOG.error(_file.getName() + "' seems to be invalide XML", e);
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * The class defines an attribute of a type.
@@ -370,7 +354,9 @@ public class TypeUpdate extends AbstractUpdate {
     }
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
   public static class Definition extends DefinitionAbstract {

@@ -150,14 +150,14 @@ abstract class EFapsAbstractMojo implements Mojo {
       fileSet.setDirectory(null, eFapsDir.toString());
       fileSet.addIncludeDir(".*");
       fileSet.addIncludeFile(".*xml$");
-      for (ApplicationVersion applVers : appl.getVersions()) {
-        applVers.addFileSet(fileSet);
-        applVers.setClasspathElements(this.classpathElements);
+      for (File file : fileSet.getFiles())  {
+        appl.addURL(file.toURL());
       }
     } catch (IOException e) {
       getLog().error(
           "Could not open / read version file " + "'" + this.versionFile + "'");
     } catch (Exception e) {
+      getLog().error(e);
     }
     return appl;
   }

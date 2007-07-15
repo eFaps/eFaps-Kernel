@@ -25,33 +25,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.jexl.JexlHelper;
-import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import org.efaps.admin.program.esjp.Compiler;
 import org.efaps.importer.DataImport;
-import org.efaps.update.access.AccessSetUpdate;
-import org.efaps.update.access.AccessTypeUpdate;
-import org.efaps.update.datamodel.SQLTableUpdate;
-import org.efaps.update.datamodel.TypeUpdate;
-import org.efaps.update.dbproperty.DBPropertiesUpdate;
-import org.efaps.update.integration.WebDAVUpdate;
-import org.efaps.update.program.JavaUpdate;
-import org.efaps.update.ui.CommandUpdate;
-import org.efaps.update.ui.FormUpdate;
-import org.efaps.update.ui.ImageUpdate;
-import org.efaps.update.ui.MenuUpdate;
-import org.efaps.update.ui.SearchUpdate;
-import org.efaps.update.ui.TableUpdate;
-import org.efaps.update.user.JAASSystemUpdate;
-import org.efaps.update.user.RoleUpdate;
+import org.efaps.update.Install;
 import org.efaps.util.EFapsException;
 
 /**
  * 
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public class ApplicationVersion implements Comparable /* < ApplicationVersion > */{
 
@@ -75,13 +60,6 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
   private boolean compile = false;
 
   /**
-   * All defined file sets for this application version.
-   * 
-   * @see #addFileSet
-   */
-  private final Set<FileSet> fileSets = new HashSet<FileSet>();
-
-  /**
    * Project classpath.
    *
    * @see #setClasspathElements
@@ -95,97 +73,10 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
    * Installs the xml update scripts of the schema definitions for this version
    * defined in {@link #number}.
    */
-  public void install() throws EFapsException, Exception {
+  public void install(final Install _install) throws EFapsException, Exception {
 
-    Set<File> files = getFiles();
+    _install.install(this.number);
 
-    JexlContext jexlContext = JexlHelper.createContext();
-    jexlContext.getVars().put("version", this.number);
-
-    for (File file : files) {
-      RoleUpdate update = RoleUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      SQLTableUpdate update = SQLTableUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      TypeUpdate update = TypeUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      JAASSystemUpdate update = JAASSystemUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      AccessTypeUpdate update = AccessTypeUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      AccessSetUpdate update = AccessSetUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      ImageUpdate update = ImageUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      FormUpdate update = FormUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      TableUpdate update = TableUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      SearchUpdate update = SearchUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      MenuUpdate update = MenuUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      CommandUpdate update = CommandUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      WebDAVUpdate update = WebDAVUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (File file : files) {
-      JavaUpdate update = JavaUpdate.readXMLFile(file);
-      if (update != null) {
-        update.updateInDB(jexlContext);
-      }
-    }
     compile();
   }
 
@@ -196,26 +87,6 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
     if (this.compile)  {
       (new Compiler(this.classpathElements)).compile();
     }
-  }
-
-
-  private Set<File> getFiles() {
-    Set<File> ret = new HashSet<File>();
-    for (FileSet fileSet : this.fileSets) {
-      ret.addAll(fileSet.getFiles());
-    }
-    return ret;
-  }
-
-  /**
-   * Appends a new file set for this application version.
-   * 
-   * @param _fileSet
-   *          file set to append to this application version
-   * @see #fileSets
-   */
-  public void addFileSet(final FileSet _fileSet) {
-    this.fileSets.add(_fileSet);
   }
 
   /**
@@ -240,7 +111,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
    * imports Data from XML-Files and Properties
    */
   public void importData() {
-    Set<File> files = getFiles();
+/*    Set<File> files = getFiles();
 
     for (File file : files) {
       DataImport dimport = new DataImport();
@@ -257,7 +128,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
         prop.updateInDB();
       }
     }
-
+*/
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -312,7 +183,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
    * @return string representation of this Application
    */
   public String toString() {
-    return new ToStringBuilder(this).append("number", this.number).append(
-        "fileSets", this.fileSets).toString();
+    return new ToStringBuilder(this)
+            .append("number", this.number).toString();
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,33 @@
 
 package org.efaps.update.access;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import org.apache.commons.digester.Digester;
-import org.efaps.update.AbstractUpdate;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.xml.sax.SAXException;
+
+import org.efaps.update.AbstractUpdate;
 
 /**
  * @author tmo
- * @version $Id: AccessTypeUpdate.java 723 2007-03-17 19:17:04 +0000 (Sat, 17
- *          Mar 2007) tmo $
+ * @version $Id$
  * @todo description
  */
 public class AccessTypeUpdate extends AbstractUpdate {
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(AccessTypeUpdate.class);
+
+  /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -45,18 +56,10 @@ public class AccessTypeUpdate extends AbstractUpdate {
     super("Admin_Access_AccessType");
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static AccessTypeUpdate readXMLFile(final String _fileName)
-                                                                    throws IOException {
-    // } catch (IOException e) {
-    // LOG.error("could not open file '" + _fileName + "'", e);
-    return readXMLFile(new File(_fileName));
-  }
-
-  public static AccessTypeUpdate readXMLFile(final File _file)
-                                                              throws IOException {
+  public static AccessTypeUpdate readXMLFile(final URL _url)  {
     AccessTypeUpdate ret = null;
 
     try {
@@ -79,19 +82,20 @@ public class AccessTypeUpdate extends AbstractUpdate {
       digester.addCallMethod("access-type/definition/name", "setName", 1);
       digester.addCallParam("access-type/definition/name", 0);
 
-      ret = (AccessTypeUpdate) digester.parse(_file);
+      ret = (AccessTypeUpdate) digester.parse(_url);
 
       if (ret != null) {
-        ret.setFile(_file);
+        ret.setURL(_url);
       }
+    } catch (IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
     } catch (SAXException e) {
-      e.printStackTrace();
-      // LOG.error("could not read file '" + _fileName + "'", e);
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
   public static class Definition extends DefinitionAbstract {

@@ -20,10 +20,12 @@
 
 package org.efaps.update.ui;
 
-import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import org.apache.commons.digester.Digester;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
@@ -33,6 +35,14 @@ import org.xml.sax.SAXException;
  * @todo description
  */
 public class TableUpdate extends AbstractCollectionUpdate  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(TableUpdate.class);
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
@@ -47,25 +57,20 @@ public class TableUpdate extends AbstractCollectionUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static TableUpdate readXMLFile(final String _fileName) throws IOException  {
-//    } catch (IOException e)  {
-//      LOG.error("could not open file '" + _fileName + "'", e);
-    return readXMLFile(new File(_fileName));
-  }
-
-  public static TableUpdate readXMLFile(final File _file) throws IOException  {
+  public static TableUpdate readXMLFile(final URL _url)  {
     TableUpdate ret = null;
 
     try {
       Digester digester = createDigester("ui-table", TableUpdate.class);
-      ret = (TableUpdate) digester.parse(_file);
+      ret = (TableUpdate) digester.parse(_url);
 
       if (ret != null) {
-        ret.setFile(_file);
+        ret.setURL(_url);
       }
+    } catch (IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
     } catch (SAXException e) {
-      e.printStackTrace();
-      // LOG.error("could not read file '" + _fileName + "'", e);
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
   }

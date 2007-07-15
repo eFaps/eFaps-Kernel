@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,32 +20,19 @@
 
 package org.efaps.shell.method;
 
+import java.io.File;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.jexl.JexlHelper;
-import org.apache.commons.jexl.JexlContext;
 
-import org.efaps.update.access.AccessSetUpdate;
-import org.efaps.update.access.AccessTypeUpdate;
-import org.efaps.update.datamodel.SQLTableUpdate;
-import org.efaps.update.datamodel.TypeUpdate;
-import org.efaps.update.integration.WebDAVUpdate;
-import org.efaps.update.program.JavaUpdate;
-import org.efaps.update.ui.CommandUpdate;
-import org.efaps.update.ui.FormUpdate;
-import org.efaps.update.ui.ImageUpdate;
-import org.efaps.update.ui.MenuUpdate;
-import org.efaps.update.ui.SearchUpdate;
-import org.efaps.update.ui.TableUpdate;
-import org.efaps.update.user.JAASSystemUpdate;
-import org.efaps.update.user.RoleUpdate;
-
+import org.efaps.update.Install;
 import org.efaps.util.EFapsException;
 
 /**
  *
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 public final class UpdateMethod extends AbstractMethod  {
   
@@ -80,98 +67,20 @@ public final class UpdateMethod extends AbstractMethod  {
     login("Administrator", "");
     reloadCache();
     startTransaction();
- 
-    JexlContext jexlContext = JexlHelper.createContext();
-    String version = getCommandLine().getOptionValue("version");
-    if (version != null)  {
-      jexlContext.getVars().put("version", 
-                                Integer.parseInt(version));
+
+    Install install = new Install();
+    for (String fileName : getCommandLine().getArgs())  {
+      install.addURL(new File(fileName).toURL());
     }
 
-    for (String fileName : getCommandLine().getArgs())  {
-      JavaUpdate update = JavaUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
+    String versionStr = getCommandLine().getOptionValue("version");
+    Long version = null;
+    if (versionStr != null)  {
+      version = Long.parseLong(versionStr);
     }
-    for (String fileName : getCommandLine().getArgs())  {
-      RoleUpdate update = RoleUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      SQLTableUpdate update = SQLTableUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      TypeUpdate update = TypeUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      JAASSystemUpdate update = JAASSystemUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      AccessTypeUpdate update = AccessTypeUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      AccessSetUpdate update = AccessSetUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      ImageUpdate update = ImageUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      FormUpdate update = FormUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      TableUpdate update = TableUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      MenuUpdate update = MenuUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      CommandUpdate update = CommandUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      SearchUpdate update = SearchUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
-    for (String fileName : getCommandLine().getArgs())  {
-      WebDAVUpdate update = WebDAVUpdate.readXMLFile(fileName);
-      if (update != null)  {
-        update.updateInDB(jexlContext);
-      }
-    }
+
+    install.install(version);
+
     commitTransaction();
   }
 }

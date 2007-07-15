@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,17 @@
 
 package org.efaps.update.ui;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.xml.sax.SAXException;
 
@@ -43,6 +46,14 @@ import org.efaps.util.EFapsException;
  * @todo description
  */
 public class ImageUpdate extends AbstractUpdate  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(ImageUpdate.class);
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
@@ -63,21 +74,18 @@ public class ImageUpdate extends AbstractUpdate  {
    *
    * @param _rootPath   name of the path where the image file is located
    */
-  protected void setRootPath(final String _rootPath)  {
-    for (DefinitionAbstract def : getDefinitions())  {
-      ((ImageDefinition)def).setRootPath(_rootPath);
+  protected void setRootURI(final URI _rootURI) {
+    for (DefinitionAbstract def : getDefinitions()) {
+      ((ImageDefinition) def).setRootURI(_rootURI);
     }
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static ImageUpdate readXMLFile(final String _fileName) throws IOException  {
-    return readXMLFile(new File(_fileName));
-  }
-
-  public static ImageUpdate readXMLFile(final File _file) throws IOException  {
-    ImageUpdate ret = null;
+  public static ImageUpdate readXMLFile(final URL _url)
+                                      throws IOException,URISyntaxException  {
+    ImageUpdate update = null;
     try  {
       Digester digester = new Digester();
       digester.setValidating(false);
@@ -105,19 +113,20 @@ public class ImageUpdate extends AbstractUpdate  {
       digester.addCallMethod("ui-image/definition/file", "setFile", 1);
       digester.addCallParam("ui-image/definition/file", 0);
 
-      ret = (ImageUpdate) digester.parse(_file);
+      update = (ImageUpdate) digester.parse(_url);
       
-      if (ret != null)  {
-        ret.setRootPath(_file.getParent());
-        ret.setFile(_file);
+      if (update != null)  {
+        update.setRootURI(_url.toURI().resolve("."));
+        update.setURL(_url);
       }
     } catch (SAXException e)  {
-e.printStackTrace();
-      //      LOG.error("could not read file '" + _fileName + "'", e);
+      LOG.error(_url.toString() + "' seems to be invalide XML", e);
     }
-    return ret;
+    return update;
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
@@ -125,10 +134,10 @@ e.printStackTrace();
 
     /** Name of the Image file (incl. the path) to import. */
     private String file = null;
-    
+
     /** Name of the root path used to initialise the path for the image. */
-    private String rootPath = null;
-    
+    private URI rootURI = null;
+
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
@@ -141,7 +150,6 @@ e.printStackTrace();
      *                      create)
      * @param _allLinkTypes
      * @param _insert       insert instance (if new instance is to create)
-     * @see #setFieldsInDB
      */
     public Instance updateInDB(final Instance _instance,
                            final Set < Link > _allLinkTypes,
@@ -150,16 +158,19 @@ e.printStackTrace();
       Instance instance = super.updateInDB(_instance, _allLinkTypes, _insert);
 
       if (this.file != null)  {
-        InputStream  stream = new FileInputStream(new File(this.rootPath 
-                                                           + "/" + this.file));
+        InputStream in = this.rootURI.resolve(this.file).toURL().openStream();
+
         Checkin checkin = new Checkin(instance);
         checkin.executeWithoutAccessCheck(this.file, 
-                                          stream, 
-                                          stream.available());
-        stream.close();
+                                          in, 
+                                          in.available());
+        in.close();
       }
       return instance;
     }
+
+    ///////////////////////////////////////////////////////////////////////////
+    // instance getter / setter methods
 
     /**
      * This is the setter method for instance variable {@link #file}.
@@ -172,13 +183,13 @@ e.printStackTrace();
     }
     
     /**
-     * This is the setter method for instance variable {@link #rootPath}.
-     *
-     * @param _number new value for instance variable {@link #rootPath}
-     * @see #rootPath
+     * This is the setter method for instance variable {@link #rootURI}.
+     * 
+     * @param _number new value for instance variable {@link #rootURI}
+     * @see #rootURI
      */
-    public void setRootPath(final String _rootPath)  {
-      this.rootPath = _rootPath;
+    public void setRootURI(final URI _rootURI) {
+      this.rootURI = _rootURI;
     }
 
     /**
@@ -189,10 +200,9 @@ e.printStackTrace();
      */
     public String toString()  {
       return new ToStringBuilder(this)
-        .appendSuper(super.toString())
-        .append("file",       this.file)
-        .append("rootPath",   this.rootPath)
-        .toString();
+              .appendSuper(super.toString())
+              .append("file",     this.file)
+              .append("rootURI",  this.rootURI).toString();
     }
   }
 }

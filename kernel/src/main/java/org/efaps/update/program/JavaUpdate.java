@@ -21,12 +21,13 @@
 package org.efaps.update.program;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +36,9 @@ import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.xml.sax.SAXException;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
@@ -42,7 +46,6 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
-import org.xml.sax.SAXException;
 
 /**
  * The class updates java program from type <code>Admin_Program_Java</code>
@@ -50,14 +53,19 @@ import org.xml.sax.SAXException;
  * 
  * @author tmo
  * @version $Id$
+ * @todo encoding from java files!
  */
 public class JavaUpdate extends AbstractUpdate {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
   /**
    * Logging instance used to give logging information of this class.
    */
   private final static Log LOG = LogFactory.getLog(JavaUpdate.class);
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -67,20 +75,23 @@ public class JavaUpdate extends AbstractUpdate {
     super("Admin_Program_Java");
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // static methods
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
-   * Wrapper method for {@link #readXMLFile(File)}.
+   * Sets the root path in which the Class file is located. The value is set for
+   * each single definition of the JavaUpdate.
    * 
-   * @param _fileName
-   *          name of the Java file to read
-   * @see #readXMLFile(File);
+   * @param _rootURI  name of the path where the Class file is located
    */
-  public static JavaUpdate readXMLFile(final String _fileName)
-                                                              throws IOException {
-    return readXMLFile(new File(_fileName));
+  protected void setRootURI(final URI _rootURI) {
+    for (DefinitionAbstract def : getDefinitions()) {
+      ((JavaDefinition) def).setRootURI(_rootURI);
+    }
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static methods
 
   /**
    * If the extension of the file is <code>.java</code>, the method returns
@@ -90,121 +101,86 @@ public class JavaUpdate extends AbstractUpdate {
    * @param _file
    *          instance of the file to read
    */
-  public static JavaUpdate readXMLFile(final File _file) throws IOException {
+  public static JavaUpdate readXMLFile(final URL _url) throws URISyntaxException {
     JavaUpdate update = null;
-    String ext = _file.getName().substring(_file.getName().lastIndexOf('.'));
+    try {
+      Digester digester = new Digester();
+      digester.setValidating(false);
+      digester.addObjectCreate("esjp", JavaUpdate.class);
 
-    if (".java".equals(ext)) {
-      update = new JavaUpdate();
-      update.addDefinition(new JavaDefinition(_file));
-    } else if (".xml".equals(ext)) {
-      try {
-        Digester digester = new Digester();
-        digester.setValidating(false);
-        digester.addObjectCreate("esjp", JavaUpdate.class);
+      digester.addObjectCreate("esjp/definition", JavaDefinition.class);
+      digester.addSetNext("esjp/definition", "addDefinition");
 
-        digester.addObjectCreate("esjp/definition", JavaDefinition.class);
-        digester.addSetNext("esjp/definition", "addDefinition");
+      digester.addCallMethod("esjp/definition/version", "setVersion", 4);
+      digester.addCallParam("esjp/definition/version/application", 0);
+      digester.addCallParam("esjp/definition/version/global", 1);
+      digester.addCallParam("esjp/definition/version/local", 2);
+      digester.addCallParam("esjp/definition/version/mode", 3);
 
-        digester.addCallMethod("esjp/definition/version", "setVersion", 4);
-        digester.addCallParam("esjp/definition/version/application", 0);
-        digester.addCallParam("esjp/definition/version/global", 1);
-        digester.addCallParam("esjp/definition/version/local", 2);
-        digester.addCallParam("esjp/definition/version/mode", 3);
+      digester.addCallMethod("esjp/definition/file", "setFile", 1);
+      digester.addCallParam("esjp/definition/file", 0);
 
-        digester.addCallMethod("esjp/definition/file", "setFile", 1);
-        digester.addCallParam("esjp/definition/file", 0);
+      update = (JavaUpdate) digester.parse(_url);
 
-        update = (JavaUpdate) digester.parse(_file);
-
-        if (update != null) {
-          update.setRootPath(_file.getParent());
-          update.setFile(_file);
-        }
-
-      } catch (SAXException e) {
-        LOG.error(_file.getName() + "' seems to be invalide XML", e);
+      if (update != null) {
+        update.setRootURI(_url.toURI().resolve("."));
+        update.setURL(_url);
       }
+
+    } catch (IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
+    } catch (SAXException e) {
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return update;
   }
 
-  /**
-   * Sets the root path in which the Class file is located. The value is set for
-   * each single definition of the JavaUpdate.
-   * 
-   * @param _rootPath
-   *          name of the path where the Class file is located
-   */
-  protected void setRootPath(final String _rootPath) {
-    for (DefinitionAbstract def : getDefinitions()) {
-      ((JavaDefinition) def).setRootPath(_rootPath);
-    }
-  }
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  // class for the definitions
 
   /**
    * The Java definition holds the code and the name of the Java class.
    */
   public static class JavaDefinition extends DefinitionAbstract {
 
+    ///////////////////////////////////////////////////////////////////////////
+    // instance variables
+
     /**
-     * Name of the Java file (incl. the path) to import.
+     * Name of the Java file (without the path) to import.
      */
-    private String  file           = null;
+    private String file = null;
 
     /**
      * Name of the root path used to initialise the path for the Java File.
      */
-    private String  rootPath       = null;
-
+    private URI rootURI = null;
+  
     /**
      * Code of the Program is stored.
      */
     private StringBuilder code = null;
 
-    /**
-     * default constructor
-     */
-    public JavaDefinition() {
-    }
-
-    /**
-     * The constructor reads the code in the file, extracts the package name and
-     * sets the name of this Java definition (the name is the package name
-     * together with the name of the file exluding the <code>.java</code>).
-     * 
-     * @param _file   file with the Java code
-     */
-    public JavaDefinition(final File _file) throws IOException {
-      setVersion("eFaps", "1", "1", "true");
-      this.rootPath = _file.getParent();
-      this.file = _file.getName();
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #file}.
-     * 
-     * @param _number new value for instance variable {@link #file}
-     * @see #file
-     */
-    public void setFile(final String _file) {
-      this.file = _file;
-    }
+    ///////////////////////////////////////////////////////////////////////////
+    // instance methods
 
     /**
      * Read the code from the file defined through filename.
      */
-    private void readCode() throws FileNotFoundException,IOException  {
+    private void readCode() throws IOException  {
       final char[] buf = new char[1024];
       this.code = new StringBuilder();
 
-      File file = new File(this.rootPath + "/" + this.file);
+      InputStream in = this.rootURI.resolve(this.file).toURL().openStream();
 
-      Reader r = new InputStreamReader(new FileInputStream(file));
+      Reader r = new InputStreamReader(in);
       int length;
       while ((length = r.read(buf)) > 0) {
         code.append(buf, 0, length);
       }
+      r.close();
     }
 
     /**
@@ -212,7 +188,7 @@ public class JavaUpdate extends AbstractUpdate {
      * definition (the name is the package name together with the name of the
      * file exluding the <code>.java</code>).
      */
-    private void setClassName() throws IOException {
+    private void setClassName()  {
 
       String name = this.file.substring(0, this.file.lastIndexOf('.'));
 
@@ -275,19 +251,34 @@ public class JavaUpdate extends AbstractUpdate {
                 this.code.length());
     }
 
+    ///////////////////////////////////////////////////////////////////////////
+    // instance getter / setter methods
+
     /**
-     * This is the setter method for instance variable {@link #rootPath}.
+     * This is the setter method for instance variable {@link #file}.
      * 
-     * @param _number new value for instance variable {@link #rootPath}
-     * @see #rootPath
+     * @param _number new value for instance variable {@link #file}
+     * @see #file
      */
-    public void setRootPath(final String _rootPath) {
-      this.rootPath = _rootPath;
+    public void setFile(final String _file) {
+      this.file = _file;
+    }
+
+    /**
+     * This is the setter method for instance variable {@link #rootURI}.
+     * 
+     * @param _number new value for instance variable {@link #rootURI}
+     * @see #rootURI
+     */
+    public void setRootURI(final URI _rootURI) {
+      this.rootURI = _rootURI;
     }
 
     public String toString() {
-      return new ToStringBuilder(this).appendSuper(super.toString()).append(
-          "file", this.file).append("rootPath", this.rootPath).toString();
+      return new ToStringBuilder(this)
+              .appendSuper(super.toString())
+              .append("file", this.file)
+              .append("rootURI", this.rootURI).toString();
     }
   }
 }
