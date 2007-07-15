@@ -92,11 +92,11 @@ public abstract class AbstractJavaScriptMethod extends AbstractMethod  {
     ScriptableObject.putProperty(scope, "javaScriptScope", wrappedScope);
 
     // run init javascript file
-    ClassLoader classLoader = getClass().getClassLoader();
-    Reader in = new InputStreamReader(
-                      classLoader.getResourceAsStream("org/efaps/js/Init.js"));
-
-    evaluate(in, "init"); 
+//    ClassLoader classLoader = getClass().getClassLoader();
+//    Reader in = new InputStreamReader(
+//                      classLoader.getResourceAsStream("org/efaps/js/Init.js"));
+//
+//    evaluate(in, "init"); 
 
     // execute the doMethod method
     super.execute();

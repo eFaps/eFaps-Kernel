@@ -20,6 +20,8 @@
 
 package org.efaps.shell.method;
 
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
 
 import org.mozilla.javascript.tools.shell.Main;
@@ -53,6 +55,11 @@ public final class CreateMethod extends AbstractJavaScriptMethod  {
    * @todo descriptionâ
    */
   public void doMethod() throws EFapsException,Exception {
+    Reader in = new InputStreamReader(
+        getClass().getClassLoader()
+                  .getResourceAsStream("org/efaps/js/CreateAll.js"));
+    evaluate(in, "init");
+    in.close();
     evaluate(new StringReader("eFapsCreateAll();"), "init");
   }
 }

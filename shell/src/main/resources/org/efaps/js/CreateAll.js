@@ -21,29 +21,91 @@
 
 importClass(Packages.java.io.InputStreamReader);
 importClass(Packages.java.io.LineNumberReader);
-importClass(Packages.java.util.TreeSet);
+importClass(Packages.java.util.ArrayList);
 
 importClass(Packages.org.apache.commons.jexl.JexlHelper);
 importClass(Packages.org.apache.commons.jexl.JexlContext);
 
 importClass(Packages.org.efaps.admin.program.esjp.Compiler);
+importClass(Packages.org.efaps.admin.runlevel.RunLevel);
 importClass(Packages.org.efaps.admin.user.Person);
 importClass(Packages.org.efaps.db.Context);
 importClass(Packages.org.efaps.importer.DataImport);
-importClass(Packages.org.efaps.update.dbproperty.DBPropertiesUpdate);
+importClass(Packages.org.efaps.js.Shell);
 importClass(Packages.org.efaps.update.Install);
+importClass(Packages.org.efaps.update.dbproperty.DBPropertiesUpdate);
 
 var CURRENT_TIMESTAMP = Context.getDbType().getCurrentTimeStamp();
 
+/**
+ * Prints the given text out.
+ *
+ * @param _text (String) text to print out
+ */
+function _eFapsPrint(_text)  {
+  java.lang.System.out.println(_text);
+}
+
+/**
+ * Write out some log stuff. The format is:
+ * <ul>
+ *   <li>
+ *     if a subject and text is given:<br/>
+ *     <code>[SPACE][SPACE]-[SUBJECT][SPACE]([TEXT])</code>
+ *   </li>
+ *   <li>
+ *     if only subject is given:<br/>
+ *     <code>[SPACE][SPACE]-[SUBJECT]</code>
+ *   </li>
+ *   <li>otherwise nothing is printed</li>
+ * <ul>
+ *
+ * @param _subject  subject of the log text
+ * @param _text     text of the log text
+ */
+function _eFapsCommonLog(_subject, _text)  {
+  if (_text!=null && _subject!=null)  {
+    _eFapsPrint("  - " + _subject + "  (" + _text + ")");
+  } else if (_subject!=null)  {
+    _eFapsPrint("  - " + _subject);
+  }
+}
+
+/**
+ * Reloades the complete eFaps cache.
+ */
+function _eFapsReloadCache(_runLevel)  {
+  try  {
+    Shell.transactionManager.begin();
+    var context = new Context.newThreadContext(
+                                    Shell.transactionManager.getTransaction());
+    RunLevel.init(_runLevel);
+    RunLevel.execute();
+    Shell.transactionManager.rollback();
+    context.close();
+
+  } catch (e)  {
+    _eFapsPrint(e);
+  }
+}
+
+function _eFapsCommonSQLTableUpdate(_con, _stmt, _text, _table, _array)  {
+  _eFapsCommonLog("Update Table '" + _table + "'", _text);
+  
+  for (var i=0; i<_array.length; i++)  {
+    _stmt.execute("alter table " + _table + " add " + _array[i]);
+  }
+}
+
 function _exec(_stmt, _subject, _text, _cmd)  {
-  eFapsCommonLog(_subject, _text);
+  _eFapsCommonLog(_subject, _text);
   var bck = _stmt.execute(_cmd);
 }
 
 function _insert(_stmt, _subject, _text, _table, _columns, _values)  {
   var ret;
 
-  eFapsCommonLog(_subject, _text);
+  _eFapsCommonLog(_subject, _text);
 
   var cmd =  "insert into " + _table + " (";
   if (!Context.getDbType().supportsGetGeneratedKeys())  {
@@ -72,9 +134,9 @@ function _insert(_stmt, _subject, _text, _table, _columns, _values)  {
  * @see #eFapsCreateAll
  */
 function _eFapsCreateAllUpdatePassword()  {
-  print("");
-  print("Update Administrator Password");
-  print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+  _eFapsPrint("");
+  _eFapsPrint("Update Administrator Password");
+  _eFapsPrint("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
   try  {
     Shell.transactionManager.begin();
@@ -82,11 +144,11 @@ function _eFapsCreateAllUpdatePassword()  {
     var c = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
     Shell.setContext(c);
     c.getPerson().setPassword(c, "Administrator");
-    print("  - Done");
+    _eFapsPrint("  - Done");
     Shell.transactionManager.commit();
     c.close();
   } catch (e)  {
-    print("  - Error:"+e);
+    _eFapsPrint("  - Error:"+e);
     try  {
       Shell.transactionManager.rollback();
       c.close();
@@ -117,13 +179,17 @@ function eFapsCreateAll()  {
 
   var install = new Install();
 
+  _eFapsPrint("############ Read XML Files");
   var stream = cl.getResourceAsStream("org/efaps/js/definitions/index.txt");
   if (stream != null)  {
     var reader = new LineNumberReader(new InputStreamReader(stream, "UTF-8"));
 
     var line = reader.readLine();
+    var files = new ArrayList();
     while (line)  {
-      install.addURL(cl.getResource(line));
+      var url = cl.getResource(line);
+      install.addURL(url);
+      files.add(url);
       line = reader.readLine();
     }
     reader.close();
@@ -131,12 +197,14 @@ function eFapsCreateAll()  {
     error("Could not Found the index file 'index.txt'.");
   }
 
+  _eFapsPrint("############ Delete Old Data Model");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
   context.getDbType().deleteAll(context.getConnection());
   Shell.transactionManager.commit();
   context.close();
 
+  _eFapsPrint("############ Install Version 1");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
   Shell.setContext(context);
@@ -144,6 +212,7 @@ function eFapsCreateAll()  {
   Shell.transactionManager.commit();
   context.close();
 
+  _eFapsPrint("############ Install Version 2");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
   Shell.setContext(context);
@@ -163,6 +232,7 @@ function eFapsCreateAll()  {
   Shell.transactionManager.commit();
   context.close();
 
+  _eFapsPrint("############ Install Version 3");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
   Shell.setContext(context);
@@ -170,9 +240,10 @@ function eFapsCreateAll()  {
   Shell.transactionManager.commit();
   context.close();
 
-  print("############ Reload Cache");
-  reloadCache("shell");
+  _eFapsPrint("############ Reload Cache");
+  _eFapsReloadCache("shell");
 
+  _eFapsPrint("############ Install Version 4");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
@@ -180,9 +251,10 @@ function eFapsCreateAll()  {
   Shell.transactionManager.commit();
   context.close();
 
-  print("############ Reload Cache");
-  reloadCache("shell");
+  _eFapsPrint("############ Reload Cache");
+  _eFapsReloadCache("shell");
 
+  _eFapsPrint("############ Install Version 5 + 6");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   Shell.setContext(context);
@@ -191,89 +263,92 @@ function eFapsCreateAll()  {
   Shell.transactionManager.commit();
   context.close();
 
-  print("############ Reload Cache");
-  reloadCache("shell");
+  _eFapsPrint("############ Reload Cache");
+  _eFapsReloadCache("shell");
 
+  _eFapsPrint("############ Install Version 7");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   install.install(7);
   Shell.transactionManager.commit();
   context.close();
 
+  _eFapsPrint("############ Install Version 8");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   install.install(8);
   Shell.transactionManager.commit();
   context.close();
 
+  _eFapsPrint("############ Install Version 9");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   install.install(9);
   Shell.transactionManager.commit();
   context.close();
 
+  _eFapsPrint("############ Install Version 10");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   install.install(10);
   Shell.transactionManager.commit();
   context.close();
   
-  print("############ Reload Cache");
-  reloadCache("shell");
+  _eFapsPrint("############ Reload Cache");
+  _eFapsReloadCache("shell");
   
+  _eFapsPrint("############ Install Version 11");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   install.install(11);
   Shell.transactionManager.commit();
   context.close();
 
-  print("############ Reload Cache");
-  reloadCache("shell");
+  _eFapsPrint("############ Reload Cache");
+  _eFapsReloadCache("shell");
   
   
-  print("############ Compiling Programs");
+  _eFapsPrint("############ Compiling Programs");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   (new Compiler()).compile();
   Shell.transactionManager.commit();
   context.close();
   
-  print("############ Importing Data");
+  _eFapsPrint("############ Importing Data");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  _eFapsCreateAllImportData();
+  _eFapsCreateAllImportData(cl, "org/efaps/js/definitions/Data/IMPORT_Webapp_RunLevel.xml");
+  _eFpasCreateAllReadProperties(files);
   Shell.transactionManager.commit();
   context.close();
   
   _eFapsCreateAllUpdatePassword();
 }
 
-function _eFapsCreateAllImportData(){
-  var fileList = eFapsGetAllFiles("org/efaps/js/definitions", true);
-
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var dimport = new Packages.org.efaps.importer.DataImport();
-      dimport.initialise();
-      dimport.readXMLFile(file);
-      if (dimport.hasData()) {
-        dimport.updateInDB();
-      }
-      
-    }
+/**
+ * @param _cl   (ClassLoader) class loader to load the given file
+ * @param _file (String)      name of file with data to import
+ */
+function _eFapsCreateAllImportData(_cl, _file)  {
+  var dimport = new DataImport();
+  dimport.initialise();
+  dimport.readXMLFile(_cl.getResource(_file));
+  if (dimport.hasData()) {
+    dimport.updateInDB();
   }
-  
-  for (i in fileList)  {
-    var file = new Packages.java.io.File(fileList[i]);
-    var fileName = new Packages.java.lang.String(file.getName());
-    if (fileName.endsWith(".xml"))  {
-      var prop = DBPropertiesUpdate.readXMLFile(file);
-      if (prop != null)  {
-        prop.updateInDB();
-      }
+}
+        
+
+function _eFpasCreateAllReadProperties(_files)  {
+  var i = 0;
+  while (i < _files.size())  {
+    var url = _files.get(i);
+    var prop = DBPropertiesUpdate.readXMLFile(url);
+    if (prop != null)  {
+      prop.updateInDB();
     }
+    i++;
   }  
 }
 
@@ -382,7 +457,7 @@ function _eFapsCreateInsertProp(_stmt, _abstractId, _key, _value)  {
  * @param _stmt SQL statement to work on
  */
 function _eFapsCreateUserTablesStep1(_context)  {
-  print("Create User Tables");
+  _eFapsPrint("Create User Tables");
 
   var con = _context.getConnectionResource();
 var _con = con.getConnection();
@@ -441,7 +516,7 @@ con.commit();
  */
 function _eFapsCreateUserTablesStep2(_context)  {
 
-    print("Insert User Types and create User Views");
+    _eFapsPrint("Insert User Types and create User Views");
 var con = _context.getConnectionResource();
 var _con = con.getConnection();
 var _stmt = _con.createStatement();
@@ -467,14 +542,14 @@ var _stmt = _con.createStatement();
     _exec(_stmt, "Table 'T_USERABSTRACT'", "update type id for persons",
       "update T_USERABSTRACT set TYPEID=" + typeIdRole + " where TYPEID=-11000"
     );
-    eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "T_USERABSTRACT", [
+    _eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "T_USERABSTRACT", [
         ["constraint USERABSTR_FK_TYPEID foreign key(TYPEID) references T_DMTYPE(ID)"]
     ]);
 
     _exec(_stmt, "Table 'T_USERABSTRACT2ABSTRACT'", "update type id for connection between person and role",
       "update T_USERABSTRACT2ABSTRACT set TYPEID="+typeIdPerson2Role+" where TYPEID=-12000"
     );
-    eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "T_USERABSTRACT2ABSTRACT", [
+    _eFapsCommonSQLTableUpdate(_con, _stmt, "Foreign Contraint for column TYPEID", "T_USERABSTRACT2ABSTRACT", [
         ["constraint USRABS2ABS_FK_TYPEID foreign key(TYPEID) references T_DMTYPE(ID)"]
     ]);
 
@@ -563,7 +638,7 @@ con.commit();
  * @param _stmt SQL statement to work on
  */
 function _eFapsCreateDataModelTablesStep1(_context)  {
-  print("Create Data Model Tables");
+  _eFapsPrint("Create Data Model Tables");
 var con = _context.getConnectionResource();
 var _con = con.getConnection();
 var _stmt = _con.createStatement();
@@ -683,7 +758,7 @@ con.commit();
  * @param _stmt SQL statement to work on
  */
 function _eFapsCreateCommonTablesStep2(_context)  {
-  print("Create Common Tables Step 2");
+  _eFapsPrint("Create Common Tables Step 2");
 var con = _context.getConnectionResource();
 var _con = con.getConnection();
 var _stmt = _con.createStatement();
