@@ -24,8 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -90,7 +88,7 @@ public class DBPropertiesUpdate {
   /**
    * root of the XML-Filt to be imported
    */
-  private URI rootURI;
+  private String root;
 
   /**
    * List of all Resources in this Properties
@@ -558,10 +556,10 @@ public class DBPropertiesUpdate {
       propimport = (DBPropertiesUpdate) digester.parse(_url);
 
       if (propimport != null) {
-        propimport.rootURI = _url.toURI().resolve(".");
+        String urlStr = _url.toString();
+        int i = urlStr.lastIndexOf("/");
+        propimport.root = urlStr.substring(0, i + 1);
       }
-    } catch (URISyntaxException e) {
-      LOG.error("Could not get root directory", e);
     } catch (IOException e) {
       LOG.error("importProperties(String)", e);
     } catch (SAXException e) {
@@ -613,10 +611,10 @@ public class DBPropertiesUpdate {
 
       if (resource.type.equals("Properties")) {
         if (resource.language.equals("")) {
-          importFromProperties(this.rootURI.resolve(resource.filename).toURL());
+          importFromProperties(new URL(this.root + resource.filename));
         } else {
-          importFromProperties(this.rootURI.resolve(resource.filename).toURL(),
-              resource.language);
+          importFromProperties(new URL(this.root + resource.filename),
+                               resource.language);
         }
       }
     }

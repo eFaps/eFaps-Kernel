@@ -22,8 +22,6 @@ package org.efaps.update.ui;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Set;
 
@@ -72,19 +70,18 @@ public class ImageUpdate extends AbstractUpdate  {
    * Sets the root path in which the image file is located. The value is set
    * for each single definition of the image update.
    *
-   * @param _rootPath   name of the path where the image file is located
+   * @param _root   name of the path where the image file is located
    */
-  protected void setRootURI(final URI _rootURI) {
+  protected void setRoot(final String _root) {
     for (DefinitionAbstract def : getDefinitions()) {
-      ((ImageDefinition) def).setRootURI(_rootURI);
+      ((ImageDefinition) def).setRoot(_root);
     }
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static ImageUpdate readXMLFile(final URL _url)
-                                      throws IOException,URISyntaxException  {
+  public static ImageUpdate readXMLFile(final URL _url)  {
     ImageUpdate update = null;
     try  {
       Digester digester = new Digester();
@@ -116,11 +113,16 @@ public class ImageUpdate extends AbstractUpdate  {
       update = (ImageUpdate) digester.parse(_url);
       
       if (update != null)  {
-        update.setRootURI(_url.toURI().resolve("."));
+        String urlStr = _url.toString();
+        int i = urlStr.lastIndexOf("/");
+        urlStr = urlStr.substring(0, i + 1);
+        update.setRoot(urlStr);
         update.setURL(_url);
       }
-    } catch (SAXException e)  {
-      LOG.error(_url.toString() + "' seems to be invalide XML", e);
+    } catch (IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
+    } catch (SAXException e) {
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return update;
   }
@@ -136,7 +138,7 @@ public class ImageUpdate extends AbstractUpdate  {
     private String file = null;
 
     /** Name of the root path used to initialise the path for the image. */
-    private URI rootURI = null;
+    private String root = null;
 
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
@@ -158,8 +160,7 @@ public class ImageUpdate extends AbstractUpdate  {
       Instance instance = super.updateInDB(_instance, _allLinkTypes, _insert);
 
       if (this.file != null)  {
-        InputStream in = this.rootURI.resolve(this.file).toURL().openStream();
-
+        InputStream in = new URL(this.root + this.file).openStream();
         Checkin checkin = new Checkin(instance);
         checkin.executeWithoutAccessCheck(this.file, 
                                           in, 
@@ -183,13 +184,13 @@ public class ImageUpdate extends AbstractUpdate  {
     }
     
     /**
-     * This is the setter method for instance variable {@link #rootURI}.
+     * This is the setter method for instance variable {@link #root}.
      * 
-     * @param _number new value for instance variable {@link #rootURI}
-     * @see #rootURI
+     * @param _root   new value for instance variable {@link #root}
+     * @see #root
      */
-    public void setRootURI(final URI _rootURI) {
-      this.rootURI = _rootURI;
+    public void setRoot(final String _root) {
+      this.root = _root;
     }
 
     /**
@@ -201,8 +202,8 @@ public class ImageUpdate extends AbstractUpdate  {
     public String toString()  {
       return new ToStringBuilder(this)
               .appendSuper(super.toString())
-              .append("file",     this.file)
-              .append("rootURI",  this.rootURI).toString();
+              .append("file", this.file)
+              .append("root", this.root).toString();
     }
   }
 }

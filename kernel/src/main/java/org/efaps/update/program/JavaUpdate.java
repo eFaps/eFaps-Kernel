@@ -25,8 +25,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -81,12 +79,12 @@ public class JavaUpdate extends AbstractUpdate {
   /**
    * Sets the root path in which the Class file is located. The value is set for
    * each single definition of the JavaUpdate.
-   * 
-   * @param _rootURI  name of the path where the Class file is located
+   *
+   * @param _root   name of the path where the image file is located
    */
-  protected void setRootURI(final URI _rootURI) {
+  protected void setRoot(final String _root) {
     for (DefinitionAbstract def : getDefinitions()) {
-      ((JavaDefinition) def).setRootURI(_rootURI);
+      ((JavaDefinition) def).setRoot(_root);
     }
   }
 
@@ -101,7 +99,7 @@ public class JavaUpdate extends AbstractUpdate {
    * @param _file
    *          instance of the file to read
    */
-  public static JavaUpdate readXMLFile(final URL _url) throws URISyntaxException {
+  public static JavaUpdate readXMLFile(final URL _url)  {
     JavaUpdate update = null;
     try {
       Digester digester = new Digester();
@@ -123,7 +121,10 @@ public class JavaUpdate extends AbstractUpdate {
       update = (JavaUpdate) digester.parse(_url);
 
       if (update != null) {
-        update.setRootURI(_url.toURI().resolve("."));
+        String urlStr = _url.toString();
+        int i = urlStr.lastIndexOf("/");
+        urlStr = urlStr.substring(0, i + 1);
+        update.setRoot(urlStr);
         update.setURL(_url);
       }
 
@@ -156,7 +157,7 @@ public class JavaUpdate extends AbstractUpdate {
     /**
      * Name of the root path used to initialise the path for the Java File.
      */
-    private URI rootURI = null;
+    private String root = null;
   
     /**
      * Code of the Program is stored.
@@ -173,7 +174,7 @@ public class JavaUpdate extends AbstractUpdate {
       final char[] buf = new char[1024];
       this.code = new StringBuilder();
 
-      InputStream in = this.rootURI.resolve(this.file).toURL().openStream();
+      InputStream in = new URL(this.root + this.file).openStream();
 
       Reader r = new InputStreamReader(in);
       int length;
@@ -265,20 +266,20 @@ public class JavaUpdate extends AbstractUpdate {
     }
 
     /**
-     * This is the setter method for instance variable {@link #rootURI}.
+     * This is the setter method for instance variable {@link #root}.
      * 
-     * @param _number new value for instance variable {@link #rootURI}
-     * @see #rootURI
+     * @param _root   new value for instance variable {@link #root}
+     * @see #root
      */
-    public void setRootURI(final URI _rootURI) {
-      this.rootURI = _rootURI;
+    public void setRoot(final String _root) {
+      this.root = _root;
     }
 
     public String toString() {
       return new ToStringBuilder(this)
               .appendSuper(super.toString())
               .append("file", this.file)
-              .append("rootURI", this.rootURI).toString();
+              .append("root", this.root).toString();
     }
   }
 }
