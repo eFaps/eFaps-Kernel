@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,28 @@ package org.efaps.admin.datamodel.attributetype;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.efaps.db.Context;
 
 /**
- * @author grs, tmo
+ * @author grs
+ * @author tmo
  * @version $Id$
  */
 public class PasswordType extends StringType  {
 
-  ////////////////////////////////////////////////////////////////////////////7
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Log LOG = LogFactory.getLog(PasswordType.class);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
    * The localised string and the internal string value are equal. So the
@@ -40,11 +53,13 @@ public class PasswordType extends StringType  {
    * @param _context  context for this request
    * @param _value    new value to set
    */
-  public void set(Context _context, String _value)  {
-    setValue(getEncryptPassword(_value));
+  public void set(final Context _context, final Object _value)  {
+    if (_value instanceof String) {
+      setValue(getEncryptPassword((String) _value));
+    } else if (_value != null) {
+      setValue(getEncryptPassword(_value.toString()));
+    }
   }
-
-  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * Returns encrypted by salt password.
@@ -55,7 +70,7 @@ public class PasswordType extends StringType  {
    * @return encrypted by salt password
    * @exception EcfException if an error occurs
    */
-  private String getEncryptPassword(String _password)  {
+  private String getEncryptPassword(final String _password)  {
     String ret = null;
 
     byte[] encryptedPassword = null;
@@ -71,7 +86,7 @@ public class PasswordType extends StringType  {
       ret = convert.toString();
 
     } catch(NoSuchAlgorithmException e)  {
-e.printStackTrace();
+      LOG.error("no encrypt password algorithm", e);
     }
     return ret;
   }
