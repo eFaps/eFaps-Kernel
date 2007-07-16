@@ -142,10 +142,16 @@ public class SQLTableUpdate extends AbstractUpdate  {
       digester.addCallParam("datamodel-sqltable/definition/database/unique", 0, "name");
       digester.addCallParam("datamodel-sqltable/definition/database/unique", 1, "columns");
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/foreign", "addForeignKey", 3);
+      digester.addCallMethod("datamodel-sqltable/definition/database/foreign", "addForeignKey", 4,
+                             new Class[] {String.class, String.class, String.class, Boolean.class});
       digester.addCallParam("datamodel-sqltable/definition/database/foreign", 0, "name");
       digester.addCallParam("datamodel-sqltable/definition/database/foreign", 1, "key");
       digester.addCallParam("datamodel-sqltable/definition/database/foreign", 2, "reference");
+      digester.addCallParam("datamodel-sqltable/definition/database/foreign", 3, "cascade");
+
+      digester.addCallMethod("datamodel-sqltable/definition/database/check", "addCheckKey", 2);
+      digester.addCallParam("datamodel-sqltable/definition/database/check", 0, "name");
+      digester.addCallParam("datamodel-sqltable/definition/database/check", 1, "condition");
 
       ret = (SQLTableUpdate) digester.parse(_url);
       
@@ -243,13 +249,17 @@ public class SQLTableUpdate extends AbstractUpdate  {
     private final String key;
     /** Reference of the foreign key. */
     private final String reference;
+    /** Should a delete be cascaded? */
+    private final boolean cascade;
 
-    private ForeignKey(final String _name,
-                       final String _key,
-                       final String _reference)  {
+    private ForeignKey(final String  _name,
+                       final String  _key,
+                       final String  _reference,
+                       final boolean _cascade)  {
       this.name = _name;
       this.key = _key;
       this.reference = _reference;
+      this.cascade = _cascade;
     }
 
     /**
@@ -263,6 +273,37 @@ public class SQLTableUpdate extends AbstractUpdate  {
         .append("name",       this.name)
         .append("key",        this.key)
         .append("reference",  this.reference)
+        .toString();
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * The class defines a check constraint in a sql table.
+   */
+  private static class CheckKey  {
+    /** Name of the check constraint. */
+    private final String name;
+    /** Condition of the check constraint. */
+    private final String condition;
+
+    private CheckKey(final String _name, 
+                      final String _condition)  {
+      this.name      = _name;
+      this.condition = _condition;
+    }
+
+    /**
+     * Returns a string representation with values of all instance variables
+     * of a column.
+     *
+     * @return string representation of this definition of a column
+     */
+    public String toString()  {
+      return new ToStringBuilder(this)
+        .append("name",      this.name)
+        .append("condition", this.condition)
         .toString();
     }
   }
@@ -304,6 +345,8 @@ public class SQLTableUpdate extends AbstractUpdate  {
 
     private final List < ForeignKey > foreignKeys 
                                             = new ArrayList < ForeignKey > ();
+
+    private final List < CheckKey > checkKeys = new ArrayList < CheckKey > ();
 
     ///////////////////////////////////////////////////////////////////////////
     
@@ -377,8 +420,14 @@ public class SQLTableUpdate extends AbstractUpdate  {
 
     public void addForeignKey(final String _name,
                               final String _key,
-                              final String _reference)   {
-      this.foreignKeys.add(new ForeignKey(_name, _key, _reference));
+                              final String _reference,
+                              final boolean _cascade)   {
+      this.foreignKeys.add(new ForeignKey(_name, _key, _reference, _cascade));
+    }
+    
+    public void addCheckKey(final String _name,
+                            final String _condition)   {
+      this.checkKeys.add(new CheckKey(_name, _condition));
     }
 
     /**
@@ -540,6 +589,21 @@ public class SQLTableUpdate extends AbstractUpdate  {
              .append("add constraint ").append(foreignKey.name).append(" ")
              .append("foreign key(").append(foreignKey.key).append(") ")
              .append("references ").append(foreignKey.reference);
+          if (foreignKey.cascade)  {
+            cmd.append(" on delete cascade");
+          }
+          if (LOG.isDebugEnabled())  {
+            LOG.info("    ..SQL> " + cmd.toString());
+          }
+          stmt.execute(cmd.toString());
+        }
+        
+        // update check keys
+        for (CheckKey checkKey : this.checkKeys)  {
+          StringBuilder cmd = new StringBuilder();
+          cmd.append("alter table ").append(tableName).append(" ")
+             .append("add constraint ").append(checkKey.name).append(" ")
+             .append("check(").append(checkKey.condition).append(")");
           if (LOG.isDebugEnabled())  {
             LOG.info("    ..SQL> " + cmd.toString());
           }
