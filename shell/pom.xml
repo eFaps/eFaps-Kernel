@@ -72,6 +72,11 @@
                       <goal>execute</goal>
                   </goals>
                   <configuration>
+                      <properties>
+                        <sourcedir>${project.basedir}/src/main/resources</sourcedir>
+                        <targetdir>${project.basedir}/target/classes/org/efaps/js/definitions</targetdir>
+                      </properties>
+
                       <source>
                           <body>
                             import java.io.FileOutputStream;
@@ -80,19 +85,16 @@
 
                             log.info("Generating index for kernel install files...");
 
-                            String sourceDir = "${project.basedir}/src/main/resources";
-                            String targetDir = "${project.basedir}/target/classes/org/efaps/js/definitions";
-
                             def ant = new AntBuilder();
 
-                            ant.mkdir(dir:targetDir);
+                            ant.mkdir(dir:project.properties['targetdir']);
 
-                            def fileSet = ant.fileset(dir:sourceDir,includes:"**/*.xml");
+                            def fileSet = ant.fileset(dir:project.properties['sourcedir'],includes:"**/*.xml");
                             def ds = fileSet.getDirectoryScanner(fileSet.getProject());
 
                             String[] files = ds.getIncludedFiles();
 
-                            Writer writer = new OutputStreamWriter(new FileOutputStream(targetDir + "/index.txt"),
+                            Writer writer = new OutputStreamWriter(new FileOutputStream(project.properties['targetdir'] + "/index.txt"),
                                                                    "UTF-8");
                             for (Object file : files)  {
                               writer.write(file.replaceAll("\\\\", "/"));
