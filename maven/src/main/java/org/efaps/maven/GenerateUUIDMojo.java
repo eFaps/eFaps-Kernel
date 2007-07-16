@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.shell.method;
+package org.efaps.maven;
 
 import java.util.UUID;
 
