@@ -103,6 +103,8 @@
               <value>${org.efaps.db.logAbandoned}</value>
             </property>
           </connection>
+          <!-- used from the generateUUID goal -->
+          <count>${count}</count>
         </configuration>
         <dependencies>
           <!-- Connection Pooling -->

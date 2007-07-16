@@ -54,7 +54,6 @@ public class Shell {
                                  = new HashSet  < AbstractMethod > ();
   {
     methods.add(new org.efaps.shell.method.CreateMethod());
-    methods.add(new org.efaps.shell.method.GenerateUUIDMethod());
     methods.add(new org.efaps.shell.method.ImportDataMethod());
     methods.add(new org.efaps.shell.method.ImportPersonsMethod());
     methods.add(new org.efaps.shell.method.ShellMethod());

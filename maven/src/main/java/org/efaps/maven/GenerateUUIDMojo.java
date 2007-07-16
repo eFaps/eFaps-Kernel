@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,56 +22,39 @@ package org.efaps.shell.method;
 
 import java.util.UUID;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
-
-import org.efaps.util.EFapsException;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
 
 /**
  * A new universally unique identifier (UUID) is created and printed out.
  *
  * @author tmo
  * @version $Id$
+ * @goal generateUUID
  */
-public final class GenerateUUIDMethod extends AbstractMethod  {
-  
-  private final static Option PROPERTY_NUMBER  = OptionBuilder
-        .withArgName("number")
-        .hasArg()
-        .withDescription("number of unique identifiers to create")
-        .create("count");
+public final class GenerateUUIDMojo extends AbstractMojo  {
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
-  
+
   /**
-   *
+   * Number of UUID's to generate.
+   * 
+   * @parameter
    */
-  public GenerateUUIDMethod()  {
-    super("generateUUID", "generate unique univeral identifier",
-          PROPERTY_NUMBER);
-  }
+  private int count = 1;
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
    * The new universally unique identifier is created and printed out with a 
-   * normal call to the Java standard "System.out.println".
-   *
-   * @todo remove Exception
+   * normal call to the mojo log info.
    */
-  public void doMethod() throws EFapsException,Exception {
-    int count = 1;
-
-    String countString = getCommandLine().getOptionValue("count");
-    if (countString != null)  {
-      count = Integer.parseInt(countString);
-    }
-
-    for (int i = 0; i < count; i++)  {
+  public void execute() throws MojoExecutionException  {
+    for (int i = 0; i < this.count; i++)  {
       UUID uuid = UUID.randomUUID();
-      System.out.println("UUID[" + (i + 1) + "] = " + uuid.toString());
+      getLog().info("UUID[" + (i + 1) + "] = " + uuid.toString());
     }
   }
 }
