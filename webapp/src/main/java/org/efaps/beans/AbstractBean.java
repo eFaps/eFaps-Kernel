@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1031 $
+ * Last Changed:    $Date:2007-07-14 12:36:33 +0200 (Sa, 14 Jul 2007) $
+ * Last Changed By: $Author:tmo $
  */
 
 package org.efaps.beans;
@@ -27,24 +27,21 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
-/*
+/**
  * @author tmo
- * 
- * @version $Id: AbstractBean.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
- *          2007) jmo $ @todo description
+ * @version $Id$
+ * @todo description
  */
 public abstract class AbstractBean  {
 
   public AbstractBean() throws EFapsException {
-    System.out.println("AbstractBean.constructor");
     String oid = getParameter("oid");
     if (oid != null) {
-      this.instance = new Instance(getParameter("oid"));
+      this.instance = new Instance(oid);
     }
   }
 
   public void finalize() {
-    System.out.println("AbstractBean.destructor");
   }
 
   /**
