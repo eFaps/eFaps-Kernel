@@ -56,6 +56,7 @@
     <!-- access -->
     <access>
       <role>Administration</role>
+      <role>Admin_User_ModifyUsers</role>
     </access>
     <!-- target definitions -->
     <target>
