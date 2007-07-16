@@ -16,38 +16,29 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Author:          jmo
+ Revision:        $Rev:851 $
+ Last Changed:    $Date:2007-06-02 12:36:03 -0500 (Sat, 02 Jun 2007) $
+ Last Changed By: $Author:jmo $
 
 -->
 
-<access-set>
-  <uuid>ecc52b75-9778-4895-8a8c-0ddbc2e5c98c</uuid>
+<esjp>
+  
 
+  <!-- ************************************************************************
+    version definition used to create / update the Program 
+  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:851 $</local>
+      <mode>true</mode>
       <mode>(version==8)</mode>
     </version>
-
-    <name>Admin_User_ModifyUserAccessSet</name>
-
-    <access-type>create</access-type>
-    <access-type>read</access-type>
-    <access-type>show</access-type>
-    <access-type>modify</access-type>
-    <access-type>delete</access-type>
     
-    <type>Admin_User_Group</type>
-    <type>Admin_User_Person</type>
-    <type>Admin_User_Role</type>
-
-    <role>Administration</role>
-    <role>Admin_User_ModifyUsers</role>
+    <file>PersonJaaskey.java</file>
   </definition>
 
-</access-set>
+</esjp>

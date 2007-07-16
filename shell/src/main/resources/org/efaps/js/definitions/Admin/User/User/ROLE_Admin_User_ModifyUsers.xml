@@ -23,31 +23,19 @@
 
 -->
 
-<access-set>
-  <uuid>ecc52b75-9778-4895-8a8c-0ddbc2e5c98c</uuid>
+<user-role>
+  <uuid>2819571d-f5c4-4ff8-b7a3-383c195782be</uuid>
 
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==8)</mode>
+      <mode>(version==7)</mode>
     </version>
 
-    <name>Admin_User_ModifyUserAccessSet</name>
+    <name>Admin_User_ModifyUsers</name>
 
-    <access-type>create</access-type>
-    <access-type>read</access-type>
-    <access-type>show</access-type>
-    <access-type>modify</access-type>
-    <access-type>delete</access-type>
-    
-    <type>Admin_User_Group</type>
-    <type>Admin_User_Person</type>
-    <type>Admin_User_Role</type>
-
-    <role>Administration</role>
-    <role>Admin_User_ModifyUsers</role>
   </definition>
 
-</access-set>
+</user-role>

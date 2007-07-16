@@ -75,6 +75,10 @@
       <key>Administration</key>
     </assigned-role>
 
+    <assigned-role>
+      <name>Admin_User_ModifyUsers</name>
+      <key>Admin_User_ModifyUsers</key>
+    </assigned-role>
   </definition>
 
 </user-jaassystem>
