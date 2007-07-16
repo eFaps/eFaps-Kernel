@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,68 +20,56 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.util.Locale;
-
-import org.efaps.db.Context;
-
 /**
- *
+ * @author tmo
+ * @version $Id$
+ * 
  */
-abstract public class AbstractFileType extends AbstractType  {
+abstract public class AbstractFileType extends AbstractType {
 
-
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // user interface
 
-/**
- * @todo must an exception thrown?
- */
-public void set(final Context _context, final Object _value)  {
-}
   /**
-   * The method takes the name of the type and translates them with the help of
-   * the resourcebundle (and the string resource properties).
-   *
-   * @param _locale locale object
-   * @return localised type name
+   * @todo must an exception thrown?
    */
-  public String getViewableString(Locale _locale)  {
-    return null;
+  public void set(final Object _value) {
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * The value stores the file name of the file.
-   *
+   * 
    * @see #getFileName
    * @see #setFileName
    */
   private String fileName = null;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // setter and getter methods
 
   /**
    * This is the setter method for instance variable {@link #fileName}.
-   *
-   * @param _fileName new fileName for instance variable {@link #fileName}
+   * 
+   * @param _fileName
+   *          new fileName for instance variable {@link #fileName}
    * @see #fileName
    * @see #getFileName
    */
-  public void setFileName(String _fileName)  {
-    this.fileName = (_fileName!=null ? _fileName.trim() : null);
+  public void setFileName(final String _fileName) {
+    this.fileName = (_fileName != null ? _fileName.trim() : null);
   }
 
   /**
    * This is the getter method for instance variable {@link #fileName}.
-   *
+   * 
    * @return the fileName of the instance variable {@link #fileName}.
    * @see #fileName
    * @see #setFileName
    */
-  public String getFileName()  {
+  public String getFileName() {
     return this.fileName;
   }
 }

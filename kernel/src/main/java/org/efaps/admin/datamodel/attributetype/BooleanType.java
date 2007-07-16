@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,36 +23,34 @@ package org.efaps.admin.datamodel.attributetype;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.List;
 
-import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- * 
+ * @author tmo
+ * @version $Id$
  */
 public class BooleanType extends AbstractType {
 
   // ///////////////////////////////////////////////////////////////////////////
   // interface to the data base
-
-  public void update(Context _context, PreparedStatement _stmt, int _index)
-                                                                           throws SQLException {
+  @Override
+  public void update(final Object _object, final PreparedStatement _stmt,
+      final List<Integer> _index) throws SQLException {
     if (getValue()) {
-      _stmt.setInt(_index, 1);
+      _stmt.setInt(_index.get(0), 1);
     } else {
-      _stmt.setNull(_index, Types.INTEGER);
+      _stmt.setNull(_index.get(0), Types.INTEGER);
     }
+
   }
 
   /**
-   * 
-   * 
    * @todo test that only one value is given for indexes
    */
-  public Object readValue(Context _context, CachedResult _rs,
-                          ArrayList<Integer> _indexes) throws SQLException {
+  public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+      throws SQLException {
     Boolean value = false;
     Long longValue = _rs.getLong(_indexes.get(0).intValue());
     if ((longValue != null) && (longValue != 0)) {
@@ -66,13 +64,12 @@ public class BooleanType extends AbstractType {
   // interface to the user interface
 
   /**
-   * 
    * @param _context
    *          context for this request
    * @param _value
    *          new value to set
    */
-  public void set(Context _context, Object _value) {
+  public void set(final Object _value) {
     if (_value != null) {
       if (_value instanceof String) {
         if (((String) _value).equalsIgnoreCase("TRUE")) {
@@ -88,21 +85,9 @@ public class BooleanType extends AbstractType {
     }
   }
 
-  /**
-   * The method returns a string as the viewable value of the attribute type.
-   * 
-   * @param _locale
-   *          locale object
-   */
-  public String getViewableString(Locale _locale) {
-    return "" + getValue();
-  }
-
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * 
-   * 
    * @see #getValue
    * @see #setValue
    */
@@ -118,7 +103,7 @@ public class BooleanType extends AbstractType {
    * @see #value
    * @see #getValue
    */
-  public void setValue(boolean _value) {
+  public void setValue(final boolean _value) {
     this.value = _value;
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,31 +23,27 @@ package org.efaps.admin.datamodel.attributetype;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.NumberFormat;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
-import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- * 
+ * @author tmo
+ * @version $Id$
  */
 public class RealType extends AbstractType {
 
-  public void update(Context _context, PreparedStatement _stmt, int _index)
-                                                                           throws SQLException {
-    _stmt.setDouble(_index, getValue());
+  public void update(final Object _object, final PreparedStatement _stmt,
+      final List<Integer> _indexes) throws SQLException {
+    _stmt.setDouble(_indexes.get(0), getValue());
   }
 
   /**
-   * 
-   * 
    * @todo test that only one value is given for indexes
    */
-  public Object readValue(Context _context, CachedResult _rs,
-                          ArrayList<Integer> _indexes) {
-    // setValue(_rs.getDouble(_index));
+  public Object readValue(CachedResult _rs, List<Integer> _indexes) {
     setValue(_rs.getDouble(_indexes.get(0).intValue()));
     return _rs.getDouble(_indexes.get(0).intValue());
   }
@@ -62,7 +58,7 @@ public class RealType extends AbstractType {
    * @param _value
    *          new value to set
    */
-  public void set(Context _context, String _value) throws NumberFormatException {
+  public void set(String _value) throws NumberFormatException {
     if (_value != null) {
       setValue(Double.parseDouble(_value));
     }
@@ -125,36 +121,20 @@ public class RealType extends AbstractType {
     return this.value;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // methods of interface Comparable
-
-  /**
-   * Compares this object with the specified object for order. Returns a
-   * negative integer, zero, or a positive integer as this object is less than,
-   * equal to, or greater than the specified object.<br/> The method makes an
-   * real compare if the specified object is also an instance of IntegerType,
-   * otherwise the default implementation from {@link AbstractType#compareTo} is
-   * used.
-   * 
-   * @param _locale
-   *          locale object
-   * @param _object
-   *          the Object to be compared.
-   * @return a negative integer, zero, or a positive integer as this object is
-   *         less than, equal to, or greater than the specified object.
-   */
-  public int compareTo(Locale _locale, AttributeTypeInterface _object) {
-    int ret;
-    if (_object instanceof RealType) {
-      double tmp = getValue() - ((RealType) _object).getValue();
-      ret = (tmp < 0.0 ? -1 : (tmp > 0.0 ? 1 : 0));
-    } else {
-      ret = super.compareTo(_locale, _object);
-    }
-    return ret;
-  }
-
   public String toString() {
     return "" + getValue();
   }
+
+  @Override
+  public void set(Object _value) {
+    if (_value != null) {
+      if ((_value instanceof String) && (((String) _value).length() > 0)) {
+        setValue(Double.parseDouble((String) _value));
+      } else if (_value instanceof Number) {
+        setValue(((Number) _value).doubleValue());
+      }
+    }
+
+  }
+
 }

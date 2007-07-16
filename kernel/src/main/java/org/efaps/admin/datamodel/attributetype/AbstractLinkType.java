@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,91 +22,88 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 
-import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
  */
-public abstract class AbstractLinkType extends AbstractType  {
+public abstract class AbstractLinkType extends AbstractType {
 
   /**
-   *
-   * @param _context  context for this request
-   * @param _value    new value to set
+   * @param _value
+   *          new value to set
    */
-  public void set(final Context _context, final Object _value)  {
-    if (_value != null)  {
-      if ((_value instanceof String) && (((String) _value).length() > 0))  {
+  public void set(final Object _value) {
+    if (_value != null) {
+      if ((_value instanceof String) && (((String) _value).length() > 0)) {
         setValue(Long.parseLong((String) _value));
-      } else if (_value instanceof Long)  {
+      } else if (_value instanceof Long) {
         setValue((Long) _value);
       }
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Updates the value in the database with the stored value in the cache. If
    * the value is '0', the value in the database is set to <i>NULL</i> (a zero
    * in the cache means no link!).
-   *
    */
-  public void update(Context _context, PreparedStatement _stmt, int _index)  throws SQLException  {
-    if (getValue()==0)  {
-      _stmt.setNull(_index, java.sql.Types.INTEGER);
-    } else  {
-      _stmt.setLong(_index, getValue());
+  public void update(final Object _object, final PreparedStatement _stmt,
+      final List<Integer> _index) throws SQLException {
+    if (getValue() == 0) {
+      _stmt.setNull(_index.get(0), java.sql.Types.INTEGER);
+    } else {
+      _stmt.setLong(_index.get(0), getValue());
     }
   }
 
   /**
-   *
    * @param _rs
    * @param _index
    * @todo test that only one value is given for indexes
    */
-  public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes)  {
-//    setValue(_rs.getLong(_index));
-Long value = _rs.getLong(_indexes.get(0));
-setValue(value != null ? value : 0);
-return getValue();
+  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
+
+    Long value = _rs.getLong(_indexes.get(0));
+    setValue(value != null ? value : 0);
+    return getValue();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   *
-   *
    * @see #getValue
    * @see #setValue
    */
   private long value = 0;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the setter method for instance variable {@link #value}.
-   *
-   * @param _value new value for instance variable {@link #value}
+   * 
+   * @param _value
+   *          new value for instance variable {@link #value}
    * @see #value
    * @see #getValue
    */
-  public void setValue(long _value)  {
+  public void setValue(final long _value) {
     this.value = _value;
   }
 
   /**
    * This is the getter method for instance variable {@link #value}.
-   *
+   * 
    * @return the value of the instance variable {@link #value}.
    * @see #value
    * @see #setValue
    */
-  public long getValue()  {
+  public long getValue() {
     return this.value;
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2006 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,18 +22,18 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 
-import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- * 
+ * @author tmo
+ * @version $Id$
  */
 public class OIDType extends StringType {
 
-  public void update(Context _context, PreparedStatement _stmt, int _index)
-                                                                           throws SQLException {
+  public void update(final Object _object, final PreparedStatement _stmt,
+      final List<Integer> _indexes) throws SQLException {
     throw new SQLException("Update value for OID not allowed!!!");
   }
 
@@ -46,8 +46,7 @@ public class OIDType extends StringType {
    * @param _context
    *          eFaps context for this request
    */
-  public Object readValue(Context _context, CachedResult _rs,
-                          ArrayList<Integer> _indexes) {
+  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
     if (getAttribute().getSqlColNames().size() > 1) {
       long typeId = _rs.getLong(_indexes.get(0).intValue());
       long id = _rs.getLong(_indexes.get(1).intValue());

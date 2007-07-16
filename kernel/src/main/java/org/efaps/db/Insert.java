@@ -135,8 +135,9 @@ public class Insert extends Update {
   /**
    */
   public void execute() throws EFapsException {
-    boolean hasAccess = getType().hasAccess(new Instance(getType()),
-        AccessTypeEnums.CREATE.getAccessType());
+    boolean hasAccess =
+        getType().hasAccess(new Instance(getType()),
+            AccessTypeEnums.CREATE.getAccessType());
 
     if (!hasAccess) {
       throw new EFapsException(getClass(), "execute.NoAccess", getType());
@@ -162,8 +163,9 @@ public class Insert extends Update {
 
         SQLTable mainTable = getType().getMainTable();
 
-        long id = executeOneStatement(context, con, mainTable, getExpr4Tables()
-            .get(mainTable), 0);
+        long id =
+            executeOneStatement(context, con, mainTable, getExpr4Tables().get(
+                mainTable), 0);
 
         setInstance(new Instance(getInstance().getType(), id));
 
@@ -178,7 +180,7 @@ public class Insert extends Update {
         con.commit();
       }
 
-      executeEvents( EventType.INSERT_POST);
+      executeEvents(EventType.INSERT_POST);
     } catch (EFapsException e) {
       if (con != null) {
         con.abort();
@@ -213,17 +215,16 @@ public class Insert extends Update {
    * @see #createOneStatement
    */
   private long executeOneStatement(final Context _context,
-                                   final ConnectionResource _con,
-                                   final SQLTable _table,
-                                   final Map _expressions, final long _id)
-                                                                          throws EFapsException {
+      final ConnectionResource _con, final SQLTable _table,
+      final Map _expressions, final long _id) throws EFapsException {
 
     long ret = _id;
     PreparedStatement stmt = null;
     try {
       if ((ret == 0) && !Context.getDbType().supportsGetGeneratedKeys()) {
-        ret = Context.getDbType().getNewId(_con.getConnection(),
-            _table.getSqlTable(), _table.getSqlColId());
+        ret =
+            Context.getDbType().getNewId(_con.getConnection(),
+                _table.getSqlTable(), _table.getSqlColId());
       }
 
       stmt = createOneStatement(_context, _con, _table, _expressions, ret);
@@ -255,7 +256,6 @@ public class Insert extends Update {
   }
 
   /**
-   * 
    * @param _context
    *          context for this request
    * @param _id
@@ -264,11 +264,8 @@ public class Insert extends Update {
    * @return new created prepared statement
    */
   private PreparedStatement createOneStatement(final Context _context,
-                                               final ConnectionResource _con,
-                                               final SQLTable _table,
-                                               final Map _expressions,
-                                               final long _id)
-                                                              throws SQLException {
+      final ConnectionResource _con, final SQLTable _table,
+      final Map _expressions, final long _id) throws SQLException {
 
     List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
     StringBuilder cmd = new StringBuilder();
@@ -312,12 +309,14 @@ public class Insert extends Update {
 
     PreparedStatement stmt;
     if (_id == 0) {
-      if (Context.getDbType().supportsMultiGeneratedKeys())  {
-        stmt = _con.getConnection().prepareStatement(cmd.toString(),
-                                  new String[] { _table.getSqlColId() });
-      } else  {
-        stmt = _con.getConnection().prepareStatement(cmd.toString(),
-                                  Statement.RETURN_GENERATED_KEYS);
+      if (Context.getDbType().supportsMultiGeneratedKeys()) {
+        stmt =
+            _con.getConnection().prepareStatement(cmd.toString(),
+                new String[] { _table.getSqlColId() });
+      } else {
+        stmt =
+            _con.getConnection().prepareStatement(cmd.toString(),
+                Statement.RETURN_GENERATED_KEYS);
       }
     } else {
       stmt = _con.getConnection().prepareStatement(cmd.toString());
@@ -328,8 +327,10 @@ public class Insert extends Update {
       if (LOG.isTraceEnabled()) {
         LOG.trace(attr.toString());
       }
-
-      attr.update(_context, stmt, j);
+      // TODO remove List
+      List<Integer> x = new ArrayList<Integer>();
+      x.add(j);
+      attr.update(null, stmt, x);
     }
     if (_table.getSqlColType() != null) {
       stmt.setLong(list.size() + 1, getType().getId());

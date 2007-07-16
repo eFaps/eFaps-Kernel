@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,9 @@ import org.efaps.db.Context;
 /**
  * The class is the attribute type representation for the created date time of a
  * business object.
+ * 
+ * @author tmo
+ * @version $Id$
  */
 public class CreatedType extends DateTimeType {
 
@@ -40,7 +43,7 @@ public class CreatedType extends DateTimeType {
    *          string buffer with the statement
    * @return always <i>true</i>
    */
-  public boolean prepareUpdate(StringBuilder _stmt) {
+  public boolean prepareUpdate(final StringBuilder _stmt) {
     _stmt.append(Context.getDbType().getCurrentTimeStamp());
     return true;
   }

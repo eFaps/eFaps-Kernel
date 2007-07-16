@@ -22,8 +22,8 @@ package org.efaps.admin.user;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,15 +34,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.attributetype.PasswordType;
 import org.efaps.db.Context;
 import org.efaps.db.Update;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
-import org.efaps.util.cache.CacheReloadInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * @author tmo
@@ -91,15 +91,14 @@ public class Person extends UserObject {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log            LOG         = LogFactory
-                                                      .getLog(Person.class);
+  private final static Log LOG = LogFactory.getLog(Person.class);
 
   /**
    * Stores all instances of class {@link Person}.
    * 
    * @see #getCache
    */
-  private final static Cache <Person>         cache       = new PersonCache();
+  private final static Cache<Person> cache = new PersonCache();
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -110,7 +109,7 @@ public class Person extends UserObject {
    * @see #getRoles
    * @see #add(Role)
    */
-  private final Set<Role>             roles       = new HashSet<Role>();
+  private final Set<Role> roles = new HashSet<Role>();
 
   /**
    * HashSet instance variale to hold all groups for this person.
@@ -118,7 +117,7 @@ public class Person extends UserObject {
    * @see #getGroups
    * @see #add(Group)
    */
-  private final Set<Group>            groups      = new HashSet<Group>();
+  private final Set<Group> groups = new HashSet<Group>();
 
   /**
    * The map is used to store all attribute values depending on attribute names
@@ -128,7 +127,8 @@ public class Person extends UserObject {
    * @see #updateAttrValue
    * @see #AttrName
    */
-  private final Map<AttrName, String> attrValues  = new HashMap<AttrName, String>();
+  private final Map<AttrName, String> attrValues =
+      new HashMap<AttrName, String>();
 
   /**
    * The map is used to store information about updates on attribute values.
@@ -138,7 +138,7 @@ public class Person extends UserObject {
    * @see #commitAttrValuesInDB
    * @see #AttrName
    */
-  private final Set<AttrName>         attrUpdated = new HashSet<AttrName>();
+  private final Set<AttrName> attrUpdated = new HashSet<AttrName>();
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
@@ -405,14 +405,15 @@ public class Person extends UserObject {
       Type type = Type.get(EFapsClassName.USER_PERSON.name);
 
       Attribute attrPass = type.getAttribute("Password");
-      AttributeTypeInterface val = attrPass.newInstance();
-      val.set(context, _passwd);
-      String encrPass = val.getViewableString(null);
+      PasswordType val = (PasswordType) attrPass.newInstance();
+      val.set(_passwd);
+      String encrPass = val.getValue();
 
       try {
-        stmt = context.getConnection().prepareStatement(
-            "select count(*) " + "from V_USERPERSON "
-                + "where NAME=? and PASSWORD=?");
+        stmt =
+            context.getConnection().prepareStatement(
+                "select count(*) " + "from V_USERPERSON "
+                    + "where NAME=? and PASSWORD=?");
         stmt.setString(1, getName());
         stmt.setString(2, encrPass);
         ResultSet rs = stmt.executeQuery();
@@ -455,7 +456,7 @@ public class Person extends UserObject {
    *          new password to set for this user
    */
   public void setPassword(final Context _context, final String _newPasswd)
-                                                                          throws Exception {
+      throws Exception {
     Type type = Type.get(EFapsClassName.USER_PERSON.name);
 
     if (_newPasswd.length() == 0) {
@@ -559,7 +560,7 @@ public class Person extends UserObject {
    * @return set of all found roles for given JAAS system
    */
   public Set<Role> getRolesFromDB(final JAASSystem _jaasSystem)
-                                                               throws EFapsException {
+      throws EFapsException {
 
     Set<Role> ret = new HashSet<Role>();
     ConnectionResource rsrc = null;
@@ -622,7 +623,7 @@ public class Person extends UserObject {
    *           from calling methods
    */
   public void setRoles(final JAASSystem _jaasSystem, final Set<Role> _roles)
-                                                                            throws EFapsException {
+      throws EFapsException {
 
     if (_jaasSystem == null) {
       // TODO: throw exception
@@ -663,7 +664,7 @@ public class Person extends UserObject {
    * @see UserObject#assignToUserObjectInDb
    */
   public void assignRoleInDb(final JAASSystem _jaasSystem, final Role _role)
-                                                                            throws EFapsException {
+      throws EFapsException {
 
     assignToUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2ROLE.name),
         _jaasSystem, _role);
@@ -679,7 +680,7 @@ public class Person extends UserObject {
    * @see UserObject#unassignFromUserObjectInDb
    */
   public void unassignRoleInDb(final JAASSystem _jaasSystem, final Role _role)
-                                                                              throws EFapsException {
+      throws EFapsException {
 
     unassignFromUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2ROLE.name),
         _jaasSystem, _role);
@@ -696,7 +697,7 @@ public class Person extends UserObject {
    * @return set of all found groups for given JAAS system
    */
   public Set<Group> getGroupsFromDB(final JAASSystem _jaasSystem)
-                                                                 throws EFapsException {
+      throws EFapsException {
 
     Set<Group> ret = new HashSet<Group>();
     ConnectionResource rsrc = null;
@@ -760,7 +761,7 @@ public class Person extends UserObject {
    *           from calling methods
    */
   public void setGroups(final JAASSystem _jaasSystem, final Set<Group> _groups)
-                                                                               throws EFapsException {
+      throws EFapsException {
 
     if (_jaasSystem == null) {
       // TODO: throw exception
@@ -801,7 +802,7 @@ public class Person extends UserObject {
    * @see UserObject#assignToUserObjectInDb
    */
   public void assignGroupInDb(final JAASSystem _jaasSystem, final Group _group)
-                                                                               throws EFapsException {
+      throws EFapsException {
 
     assignToUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2GROUP.name),
         _jaasSystem, _group);
@@ -817,7 +818,7 @@ public class Person extends UserObject {
    * @see UserObject#unassignFromUserObjectInDb
    */
   public void unassignGroupInDb(final JAASSystem _jaasSystem, final Group _group)
-                                                                                 throws EFapsException {
+      throws EFapsException {
 
     unassignFromUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2GROUP.name),
         _jaasSystem, _group);
@@ -928,8 +929,9 @@ public class Person extends UserObject {
     Person ret = getCache().get(_id);
     if (ret == null) {
       System.out.println(" read person '" + _id + "' from db");
-      ret = getFromDB("select " + "V_USERPERSON.ID," + "V_USERPERSON.NAME "
-          + "from V_USERPERSON " + "where V_USERPERSON.ID=" + _id);
+      ret =
+          getFromDB("select " + "V_USERPERSON.ID," + "V_USERPERSON.NAME "
+              + "from V_USERPERSON " + "where V_USERPERSON.ID=" + _id);
     }
     return ret;
   }
@@ -947,8 +949,10 @@ public class Person extends UserObject {
   public static Person get(final String _name) throws EFapsException {
     Person ret = getCache().get(_name);
     if (ret == null) {
-      ret = getFromDB("select " + "V_USERPERSON.ID," + "V_USERPERSON.NAME "
-          + "from V_USERPERSON " + "where V_USERPERSON.NAME='" + _name + "'");
+      ret =
+          getFromDB("select " + "V_USERPERSON.ID," + "V_USERPERSON.NAME "
+              + "from V_USERPERSON " + "where V_USERPERSON.NAME='" + _name
+              + "'");
     }
     return ret;
   }
@@ -1027,8 +1031,7 @@ public class Person extends UserObject {
    * @see #get(long)
    */
   public static Person getWithJAASKey(final JAASSystem _jaasSystem,
-                                      final String _jaasKey)
-                                                            throws EFapsException {
+      final String _jaasKey) throws EFapsException {
     long personId = 0;
     ConnectionResource rsrc = null;
     try {
@@ -1059,7 +1062,7 @@ public class Person extends UserObject {
       }
       finally {
         try {
-          if (stmt != null)  {
+          if (stmt != null) {
             stmt.close();
           }
         } catch (SQLException e) {
@@ -1077,7 +1080,6 @@ public class Person extends UserObject {
 
   // TODO: Description
   /**
-   * 
    * @param _jaasSystem
    *          JAAS system which want to creaet a new person in eFaps
    * @param _jaasKey
@@ -1091,9 +1093,7 @@ public class Person extends UserObject {
    * @see #assignToJAASSystem
    */
   public static Person createPerson(final JAASSystem _jaasSystem,
-                                    final String _jaasKey,
-                                    final String _userName)
-                                                           throws EFapsException {
+      final String _jaasKey, final String _userName) throws EFapsException {
 
     long persId = 0;
     Type persType = Type.get(EFapsClassName.USER_PERSON.name);
@@ -1110,8 +1110,9 @@ public class Person extends UserObject {
         // TODO: check for uniqueness!
         // TODO: hard coded mofifier and creator
         if (!Context.getDbType().supportsGetGeneratedKeys()) {
-          persId = Context.getDbType().getNewId(rsrc.getConnection(),
-              persType.getMainTable().getSqlTable(), "ID");
+          persId =
+              Context.getDbType().getNewId(rsrc.getConnection(),
+                  persType.getMainTable().getSqlTable(), "ID");
           cmd.append("insert into ").append(
               persType.getMainTable().getSqlTable()).append(
               "(ID,TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ").append(
@@ -1129,8 +1130,9 @@ public class Person extends UserObject {
                 Context.getDbType().getCurrentTimeStamp()).append(")");
 
         if (persId == 0) {
-          stmt = rsrc.getConnection().prepareStatement(cmd.toString(),
-              new String[] { "ID" });
+          stmt =
+              rsrc.getConnection().prepareStatement(cmd.toString(),
+                  new String[] { "ID" });
         } else {
           stmt = rsrc.getConnection().prepareStatement(cmd.toString());
         }
@@ -1228,8 +1230,9 @@ public class Person extends UserObject {
     protected Map<Long, Person> getCache4Id() {
       Map<Long, Person> map = null;
       try {
-        map = (Map<Long, Person>) Context.getThreadContext()
-            .getSessionAttribute("PersonCacheId");
+        map =
+            (Map<Long, Person>) Context.getThreadContext().getSessionAttribute(
+                "PersonCacheId");
         if (map == null) {
           map = new HashMap<Long, Person>();
           Context.getThreadContext().setSessionAttribute("PersonCacheId", map);
@@ -1245,8 +1248,9 @@ public class Person extends UserObject {
     protected Map<String, Person> getCache4Name() {
       Map<String, Person> map = null;
       try {
-        map = (Map<String, Person>) Context.getThreadContext()
-            .getSessionAttribute("PersonCacheString");
+        map =
+            (Map<String, Person>) Context.getThreadContext()
+                .getSessionAttribute("PersonCacheString");
         if (map == null) {
           map = new HashMap<String, Person>();
           Context.getThreadContext().setSessionAttribute("PersonCacheString",

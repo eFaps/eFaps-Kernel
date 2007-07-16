@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,29 +20,26 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.List;
 
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
-import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- * 
+ * @author tmo
+ * @version $Id$
  */
 public class PersonLinkType extends AbstractLinkType {
 
   /**
-   * 
    * @param _rs
    * @param _index
    */
-  public Object readValue(Context _context, CachedResult _rs,
-                          ArrayList<Integer> _indexes) {
+  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
     Object ret = null;
 
-    Long userId = (Long) super.readValue(_context, _rs, _indexes);
+    Long userId = (Long) super.readValue(_rs, _indexes);
     if (userId != null) {
       try {
         ret = Person.get(getValue());
@@ -54,18 +51,6 @@ public class PersonLinkType extends AbstractLinkType {
       }
     }
 
-    return ret;
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * @param _locale
-   *          locale object
-   * @todo exception handling
-   */
-  public String getViewableString(Locale _locale) {
-    String ret = "";
     return ret;
   }
 

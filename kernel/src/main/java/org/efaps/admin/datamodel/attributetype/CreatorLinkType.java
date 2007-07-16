@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,16 +20,28 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 
 /**
  * The class is the attribute type representation for the creator person of a
  * business object.
+ * 
+ * @author tmo
+ * @version $Id$
  */
 public class CreatorLinkType extends PersonLinkType {
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(CreatorLinkType.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // interface to the data base
@@ -43,29 +55,25 @@ public class CreatorLinkType extends PersonLinkType {
    *          string buffer with the statement
    * @see #update
    */
-  public boolean prepareUpdate(StringBuilder _stmt) {
+  public boolean prepareUpdate(final StringBuilder _stmt) {
     _stmt.append("?");
     return false;
   }
 
-  /**
-   * The instance method sets the value in the prepared statement to the id of
-   * the current context user.
-   * 
-   * @param _context
-   *          context for this request
-   * @param _stmt
-   *          sql prepared statement where to set the value
-   * @param _index
-   *          index in the prepared statement to set the value
-   * @see #prepareUpdate
-   */
-  public void update(Context _context, PreparedStatement _stmt, int _index)
-                                                                           throws SQLException {
-    _stmt.setLong(_index, _context.getPerson().getId());
-  }
-
+  @Override
   public String toString() {
     return "" + getValue();
+  }
+
+  @Override
+  public void update(final Object _object, final PreparedStatement _stmt,
+      final List<Integer> _index) throws SQLException {
+
+    try {
+      _stmt.setLong(_index.get(0), Context.getThreadContext().getPerson()
+          .getId());
+    } catch (EFapsException e) {
+      LOG.error("update(Object, PreparedStatement, List<Integer>)", e);
+    }
   }
 }

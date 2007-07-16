@@ -22,36 +22,33 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 
-import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
  *
  */
-public class BlobType extends AbstractFileType  {
+public class BlobType extends AbstractFileType {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // db interface
 
-  public boolean prepareUpdate(StringBuilder _stmt)  {
+  public boolean prepareUpdate(final StringBuilder _stmt) {
     _stmt.append("''");
     return true;
   }
 
-  public void update(Context _context, PreparedStatement _stmt, int _index)  throws SQLException  {
+  @Override
+  public void update(final Object _object, final PreparedStatement _stmt,
+      final List<Integer> _index) throws SQLException {
     throw new SQLException("Update value for file not allowed!!!");
   }
 
-  /**
-   *
-   * @todo test that only one value is given for indexes
-   */
-  public Object readValue(Context _context, CachedResult _rs, ArrayList<Integer> _indexes) throws Exception  {
-setFileName(_rs.getString(_indexes.get(0).intValue()));
-//    throw new Exception("setValue value for file not allowed!!!");
-return getFileName();
+  public Object readValue(final CachedResult _rs, final List<Integer> _index)
+      throws Exception {
+    setFileName(_rs.getString(_index.get(0).intValue()));
+    return getFileName();
   }
 
 }

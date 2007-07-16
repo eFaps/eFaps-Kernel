@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -283,10 +283,12 @@ public class Update {
 
     AttributeTypeInterface attrType = _attr.newInstance();
     attrType.setAttribute(_attr);
-    attrType.set(Context.getThreadContext(), _value);
+    attrType.set(_value);
     // TODO: was, wenn ein attribute mehr als ein SQL Column hat?
     // expressions.put(_attr.getSqlColName(), attrType);
     expressions.put(_attr.getSqlColNames().get(0), attrType);
+
+    // merke object(Wert), merke attribute
 
     this.mapAttr2Value.put(_attr.getName(), attrType);
 
@@ -313,7 +315,7 @@ public class Update {
         for (Attribute attr : uk.getAttributes()) {
           AttributeTypeInterface value = mapAttr2Value.get(attr.getName());
           if (value != null) {
-            query.addWhereAttrEqValue(attr, value.getViewableString(null));
+            query.addWhereAttrEqValue(attr, value.toString());
             testNeeded = true;
           }
         }
@@ -438,7 +440,10 @@ public class Update {
       if (LOG.isTraceEnabled()) {
         LOG.trace(attr.toString());
       }
-      attr.update(_context, stmt, j);
+      //TODO remove List
+      List<Integer> x = new ArrayList<Integer>();
+      x.add(j);
+      attr.update(null, stmt, x);
     }
     return stmt;
   }

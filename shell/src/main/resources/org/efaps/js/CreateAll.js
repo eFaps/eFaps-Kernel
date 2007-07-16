@@ -486,7 +486,7 @@ var _stmt = _con.createStatement();
   _insert(_stmt, "Insert Administrator Person", null,
           "T_USERABSTRACT",
           "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS",
-          "-10000, 'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 10001"
+          "-10000, 'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", true"
   );
   _exec(_stmt, null, null,
     "insert into T_USERPERSON(ID, FIRSTNAME, LASTNAME, EMAIL, URL, PASSWORD) "+
@@ -496,7 +496,7 @@ var _stmt = _con.createStatement();
   _insert(_stmt, "Insert Administrator Role",  null,
           "T_USERABSTRACT",
           "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS",
-          "-11000, 'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", 10001"
+          "-11000, 'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", true"
   );
 
   _insert(_stmt, "Connect Administrator Person to Role Administration", null,

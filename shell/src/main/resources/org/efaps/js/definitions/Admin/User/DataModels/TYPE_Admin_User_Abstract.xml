@@ -84,6 +84,12 @@
       <sqlcolumn>REVISION</sqlcolumn>
     </attribute>
     <attribute>
+      <name>Status</name>
+      <type>Boolean</type>
+      <sqltable>Admin_User_AbstractSQLTable</sqltable>
+      <sqlcolumn>STATUS</sqlcolumn>
+    </attribute>
+    <attribute>
       <name>Creator</name>
       <type>CreatorLink</type>
       <sqltable>Admin_User_AbstractSQLTable</sqltable>

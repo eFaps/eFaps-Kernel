@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,30 +22,26 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.List;
 
-import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- * 
+ * @author tmo
+ * @version $Id$
  */
 public class StringType extends AbstractType {
 
-  public void update(Context _context, PreparedStatement _stmt, int _index)
-                                                                           throws SQLException {
-    _stmt.setString(_index, getValue());
+  public void update(final Object _object, final PreparedStatement _stmt,
+      final List<Integer> _indexes) throws SQLException {
+    _stmt.setString(_indexes.get(0), getValue());
   }
 
   /**
-   * 
-   * 
    * @todo test that only one value is given for indexes
    */
-  public Object readValue(Context _context, CachedResult _rs,
-                          ArrayList<Integer> _indexes) {
-    // setValue(_rs.getString(_index));
+  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
+
     setValue(_rs.getString(_indexes.get(0).intValue()));
     String ret = _rs.getString(_indexes.get(0).intValue());
     if (ret != null) {
@@ -65,7 +61,7 @@ public class StringType extends AbstractType {
    * @param _value
    *          new value to set
    */
-  public void set(final Context _context, final Object _value) {
+  public void set(final Object _value) {
     if (_value instanceof String) {
       setValue((String) _value);
     } else if (_value != null) {
@@ -73,22 +69,11 @@ public class StringType extends AbstractType {
     }
   }
 
-  /**
-   * The method returns a string as the viewable value of the attribute type.
-   * Here, the original value of the string is returned.
-   * 
-   * @param _locale
-   *          locale object
-   */
-  public String getViewableString(Locale _locale) {
-    return (getValue() != null ? getValue() : "");
-  }
+  
 
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * 
-   * 
    * @see #getValue
    * @see #setValue
    */
@@ -119,7 +104,7 @@ public class StringType extends AbstractType {
     return this.value;
   }
 
-  public String toString(){
+  public String toString() {
     return "" + getValue();
   }
 }

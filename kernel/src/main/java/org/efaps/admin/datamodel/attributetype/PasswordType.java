@@ -26,16 +26,14 @@ import java.security.NoSuchAlgorithmException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.efaps.db.Context;
-
 /**
  * @author grs
  * @author tmo
  * @version $Id$
  */
-public class PasswordType extends StringType  {
+public class PasswordType extends StringType {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -43,17 +41,17 @@ public class PasswordType extends StringType  {
    */
   private final static Log LOG = LogFactory.getLog(PasswordType.class);
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
    * The localised string and the internal string value are equal. So the
    * internal value can be set directly with method {@link #setValue}.
-   *
-   * @param _context  context for this request
-   * @param _value    new value to set
+   * 
+   * @param _value
+   *          new value to set
    */
-  public void set(final Context _context, final Object _value)  {
+  public void set(final Object _value) {
     if (_value instanceof String) {
       setValue(getEncryptPassword((String) _value));
     } else if (_value != null) {
@@ -62,30 +60,32 @@ public class PasswordType extends StringType  {
   }
 
   /**
-   * Returns encrypted by salt password.
-   * Uses SHA-1 Message Digest Algorithm as defined in NIST's FIPS 180-1.
-   * The output of this algorithm is a 160-bit digest.
-   *
-   * @param _password unencrypted password
+   * Returns encrypted by salt password. Uses SHA-1 Message Digest Algorithm as
+   * defined in NIST's FIPS 180-1. The output of this algorithm is a 160-bit
+   * digest.
+   * 
+   * @param _password
+   *          unencrypted password
    * @return encrypted by salt password
-   * @exception EcfException if an error occurs
+   * @exception EcfException
+   *              if an error occurs
    */
-  private String getEncryptPassword(final String _password)  {
+  private String getEncryptPassword(final String _password) {
     String ret = null;
 
     byte[] encryptedPassword = null;
-    try{
+    try {
       MessageDigest md = MessageDigest.getInstance("SHA-1");
       md.update("eFaps".getBytes());
       encryptedPassword = md.digest(_password.getBytes());
 
       StringBuffer convert = new StringBuffer();
-      for (int i = 0; i < encryptedPassword.length; i++)  {
+      for (int i = 0; i < encryptedPassword.length; i++) {
         convert.append(Integer.toHexString(encryptedPassword[i]));
       }
       ret = convert.toString();
 
-    } catch(NoSuchAlgorithmException e)  {
+    } catch (NoSuchAlgorithmException e) {
       LOG.error("no encrypt password algorithm", e);
     }
     return ret;

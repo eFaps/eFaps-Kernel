@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,21 +22,19 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.List;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- * 
+ * @author tmo
+ * @version $Id$
  */
 public class TypeType extends AbstractType {
 
-  public void update(Context _context, PreparedStatement _stmt, int _index)
-                                                                           throws SQLException {
+  public void update(final Object _object, final PreparedStatement _stmt,
+      final List<Integer> _indexes) throws SQLException {
     throw new SQLException("Update value for Type not allowed!!!");
   }
 
@@ -44,10 +42,9 @@ public class TypeType extends AbstractType {
    * The method reads from a SQL result set the value for the type. If no type
    * sql column is given in the type description, the value is read directly
    * from the attribute.
-   * 
    */
-  public Object readValue(Context _context, CachedResult _rs,
-                          ArrayList<Integer> _indexes) throws Exception {
+  public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
+      throws Exception {
     Type value;
 
     if (getAttribute().getSqlColNames().size() > 0) {
@@ -64,25 +61,7 @@ public class TypeType extends AbstractType {
   /**
    * @todo must an exception thrown?
    */
-  public void set(final Context _context, final Object _value) {
-  }
-
-  /**
-   * The method takes the name of the type and translates them with the help of
-   * the resourcebundle (and the string resource properties).
-   * 
-   * @param _locale
-   *          locale object
-   * @return localised type name
-   */
-  public String getViewableString(Locale _locale) {
-    String name = getValue().getName();
-
-    if (_locale != null) {
-      name=DBProperties.getProperty(name + ".Label");
-      
-    }
-    return name;
+  public void set(final Object _value) {
   }
 
   // ///////////////////////////////////////////////////////////////////////////

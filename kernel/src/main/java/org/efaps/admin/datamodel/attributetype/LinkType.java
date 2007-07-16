@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,22 +20,17 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import java.util.Locale;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
  */
-public class LinkType extends AbstractLinkType  {
+public class LinkType extends AbstractLinkType {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
-  /**
-   * @param _locale locale object
-   */
-  public String getViewableString(Locale _locale)  {
-    return ""+getValue();
-  }
-  public String toString(){
+  public String toString() {
     return "" + getValue();
   }
+
 }

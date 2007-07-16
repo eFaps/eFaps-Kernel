@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,46 +22,34 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Locale;
+import java.util.List;
 
-import org.efaps.admin.datamodel.AttributeTypeInterface;
-import org.efaps.db.Context;
 import org.efaps.db.query.CachedResult;
 
 /**
- * 
+ * @author tmo
+ * @version $Id$
  */
 public class IntegerType extends AbstractType {
 
-  public void update(Context _context, PreparedStatement _stmt, int _index)
-                                                                           throws SQLException {
-    _stmt.setInt(_index, getValue());
+  @Override
+  public void update(Object _object, PreparedStatement _stmt,
+      List<Integer> _index) throws SQLException {
+    _stmt.setInt(_index.get(0), getValue());
   }
 
   /**
-   * 
-   * 
    * @todo test that only one value is given for indexes
    */
-  public Object readValue(Context _context, CachedResult _rs,
-                          ArrayList<Integer> _indexes) {
-    // setValue(_rs.getInt(_index));
-    // setValue(_rs.getInt(_indexes.get(0).intValue()));
+  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
+
     setValue(_rs.getLong(_indexes.get(0).intValue()).intValue());
     return _rs.getLong(_indexes.get(0).intValue());
   }
 
   // //////////////////////////////////////////////////////////////////////////7
 
-  /**
-   * 
-   * @param _context
-   *          context for this request
-   * @param _value
-   *          new value to set
-   */
-  public void set(final Context _context, final Object _value) {
+  public void set(final Object _value) {
     if (_value != null) {
       if ((_value instanceof String) && (((String) _value).length() > 0)) {
         setValue(Integer.parseInt((String) _value));
@@ -71,22 +59,9 @@ public class IntegerType extends AbstractType {
     }
   }
 
-  /**
-   * The method returns a string as the viewable value of the attribute type.
-   * Here, the integer value is converted to a localised viewing string.
-   * 
-   * @param _locale
-   *          locale object
-   */
-  public String getViewableString(Locale _locale) {
-    return "" + getValue();
-  }
-
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * 
-   * 
    * @see #getValue
    * @see #setValue
    */
@@ -102,7 +77,7 @@ public class IntegerType extends AbstractType {
    * @see #value
    * @see #getValue
    */
-  public void setValue(int _value) {
+  public void setValue(final int _value) {
     this.value = _value;
   }
 
@@ -117,35 +92,8 @@ public class IntegerType extends AbstractType {
     return this.value;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // methods of interface Comparable
-
-  /**
-   * Compares this object with the specified object for order. Returns a
-   * negative integer, zero, or a positive integer as this object is less than,
-   * equal to, or greater than the specified object.<br/> The method makes an
-   * real compare if the specified object is also an instance of IntegerType,
-   * otherwise the default implementation from {@link AbstractType#compareTo} is
-   * used.
-   * 
-   * @param _locale
-   *          locale object
-   * @param _object
-   *          the Object to be compared.
-   * @return a negative integer, zero, or a positive integer as this object is
-   *         less than, equal to, or greater than the specified object.
-   */
-  public int compareTo(Locale _locale, AttributeTypeInterface _object) {
-    int ret;
-    if (_object instanceof IntegerType) {
-      ret = getValue() - ((IntegerType) _object).getValue();
-    } else {
-      ret = super.compareTo(_locale, _object);
-    }
-    return ret;
-  }
-
   public String toString() {
     return "" + getValue();
   }
+
 }

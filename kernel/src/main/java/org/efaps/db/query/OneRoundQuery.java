@@ -46,9 +46,9 @@ import org.efaps.db.transaction.ConnectionResource;
  * @author tmo
  * @version $Id$
  */
-public class OneRoundQuery  {
+public class OneRoundQuery {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -65,95 +65,95 @@ public class OneRoundQuery  {
    */
   private final Set<String> selects;
 
-  private final Map<Type,TypeMapping2Instances> typeMappings
-          = new HashMap<Type,TypeMapping2Instances>();
+  private final Map<Type, TypeMapping2Instances> typeMappings =
+      new HashMap<Type, TypeMapping2Instances>();
 
-  private final Map<SQLTable,SQLTableMapping2Attributes> sqlTableMappings
-          = new HashMap<SQLTable,SQLTableMapping2Attributes>();
+  private final Map<SQLTable, SQLTableMapping2Attributes> sqlTableMappings =
+      new HashMap<SQLTable, SQLTableMapping2Attributes>();
 
-private final CachedResult cachedResult = new CachedResult();
+  private final CachedResult cachedResult = new CachedResult();
 
+  private int colTypeId = 0;
 
-private int colTypeId = 0;
-
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
 
   /**
-   * @param _instances  list of instances for which this query is executed
+   * @param _instances
+   *          list of instances for which this query is executed
    * @todo check das alle instanzen von gleicher main table sind
    * @todo if no column for the type exists, all types must be the same!
    */
   public OneRoundQuery(final List<Instance> _instances,
-                       final Set<String> _selects)  {
+                       final Set<String> _selects) {
     this.instances = _instances;
     this.selects = _selects;
 
     this.mainSQLTable = _instances.get(0).getType().getMainTable();
 
     // if no column for the type exists, the type must be defined directly
-    if (this.mainSQLTable.getSqlColType() == null)  {
+    if (this.mainSQLTable.getSqlColType() == null) {
       this.type = _instances.get(0).getType();
-    } else  {
+    } else {
       this.type = null;
     }
 
-// das muss nur gemacht werden, wenn unterschiedliche typen existieren!?
-    SQLTableMapping2Attributes tmp = new SQLTableMapping2Attributes(this.mainSQLTable);
+    // das muss nur gemacht werden, wenn unterschiedliche typen existieren!?
+    SQLTableMapping2Attributes tmp =
+        new SQLTableMapping2Attributes(this.mainSQLTable);
     tmp.addInstances(this.instances);
     this.sqlTableMappings.put(this.mainSQLTable, tmp);
   }
-  
-  /////////////////////////////////////////////////////////////////////////////
+
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
-  public void execute()  {
+  public void execute() {
     // make type mapping to instances
-    for (Instance instance : this.instances)  {
-      TypeMapping2Instances typeMapping
-          = this.typeMappings.get(instance.getType());
-      if (typeMapping == null)  {
+    for (Instance instance : this.instances) {
+      TypeMapping2Instances typeMapping =
+          this.typeMappings.get(instance.getType());
+      if (typeMapping == null) {
         typeMapping = new TypeMapping2Instances(instance.getType());
         this.typeMappings.put(instance.getType(), typeMapping);
       }
       typeMapping.addInstance(instance);
     }
 
-    for (TypeMapping2Instances typeMapping : this.typeMappings.values())  {
+    for (TypeMapping2Instances typeMapping : this.typeMappings.values()) {
       typeMapping.evaluateSelects();
     }
 
     // evalute sql statements
     int curIndex = 2;
-    for (SQLTableMapping2Attributes sqlTableMapping : this.sqlTableMappings.values())  {
+    for (SQLTableMapping2Attributes sqlTableMapping : this.sqlTableMappings
+        .values()) {
       curIndex = sqlTableMapping.evaluateSQLStatement(curIndex - 1);
     }
 
     // get index of type id
-    if (this.mainSQLTable.getSqlColType() != null)  {
-      SQLTableMapping2Attributes sqlTableMapping
-              = this.sqlTableMappings.get(this.mainSQLTable);
-      colTypeId = sqlTableMapping.col2index.get(this.mainSQLTable.getSqlColType());
+    if (this.mainSQLTable.getSqlColType() != null) {
+      SQLTableMapping2Attributes sqlTableMapping =
+          this.sqlTableMappings.get(this.mainSQLTable);
+      colTypeId =
+          sqlTableMapping.col2index.get(this.mainSQLTable.getSqlColType());
     }
 
     beforeFirst();
   }
 
-
-
-
   /**
    * Adds one select statement to this query.
-   *
-   * @param _select   select statement to add
+   * 
+   * @param _select
+   *          select statement to add
    * @see #selects
    */
-  public void addSelect(final String _select)  {
+  public void addSelect(final String _select) {
     this.selects.add(_select);
   }
 
   /**
-   * 
    * @return <i>true</i> if a new row is selected and exists, otherwise
    *         <i>false</i>
    */
@@ -161,15 +161,13 @@ private int colTypeId = 0;
     return this.cachedResult.next();
   }
 
-  public void beforeFirst()  {
+  public void beforeFirst() {
     this.cachedResult.beforeFirst();
   }
 
-  public boolean gotoKey(final Object _id)  {
+  public boolean gotoKey(final Object _id) {
     return this.cachedResult.gotoKey(_id);
   }
-
-
 
   /**
    * The instance method returns for the given key the attribute value.
@@ -178,114 +176,115 @@ private int colTypeId = 0;
    *          key for which the attribute value must returned
    * @return atribute value for given key
    */
-  public Object getValue(final String _expression) throws Exception  {
+  public Object getValue(final String _expression) throws Exception {
     Object ret = null;
-    Context context = Context.getThreadContext();
 
     Type type = getType();
     TypeMapping2Instances typeMapping = typeMappings.get(type);
-    while ((type != null) && (typeMapping == null))  {
+    while ((type != null) && (typeMapping == null)) {
       type = type.getParentType();
       typeMapping = typeMappings.get(type);
     }
 
     ret = typeMapping.getValue(_expression);
-/*    if (hasAccess(context, _key)) {
-      SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
-      if (selExpr != null) {
-        ret = selExpr.getAttrValue(context);
-      }
-    }*/
+    /*
+     * if (hasAccess(context, _key)) { SelExpr2Attr selExpr =
+     * getAllSelExprMap().get(_key); if (selExpr != null) { ret =
+     * selExpr.getAttrValue(context); } }
+     */
     return ret;
   }
 
-  public Type getType() throws Exception  {
+  public Type getType() throws Exception {
     Type ret = this.type;
 
-    if (colTypeId > 0)  {
+    if (colTypeId > 0) {
       ret = Type.get(this.cachedResult.getLong(colTypeId));
     }
     return ret;
   }
 
-  public Instance getInstance() throws Exception  {
+  public Instance getInstance() throws Exception {
     return new Instance(getType(), this.cachedResult.getLong(1));
   }
 
   /**
    * The instance method returns for the given key the atribute.
    * 
-   * @param _key  key for which the attribute value must returned
+   * @param _key
+   *          key for which the attribute value must returned
    * @return attribute for given key
    */
-  public Attribute getAttribute(final String _expression)  throws Exception {
+  public Attribute getAttribute(final String _expression) throws Exception {
     Attribute ret = null;
-ret = getType().getAttribute(_expression);
-/*    SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
-    if (selExpr != null) {
-      ret = selExpr.getAttribute();
-    }*/
+    ret = getType().getAttribute(_expression);
+    /*
+     * SelExpr2Attr selExpr = getAllSelExprMap().get(_key); if (selExpr != null) {
+     * ret = selExpr.getAttribute(); }
+     */
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   // class used to store all types related to instances
-  class TypeMapping2Instances  {
+  class TypeMapping2Instances {
 
     /**
      * Defines the instances for which this type mapping to instances is
      * defined.
-     *
+     * 
      * @see #addInstance
      */
-    final Set < Instance > instances = new HashSet < Instance > ();
+    final Set<Instance> instances = new HashSet<Instance>();
 
     /**
      * Stores the type for which this type mapping is defined.
      */
     final Type type;
 
-    final Map < String, Attribute > expr2Attr
-            = new HashMap < String, Attribute > ();
+    final Map<String, Attribute> expr2Attr = new HashMap<String, Attribute>();
 
-    final Map < SQLTable, SQLTableMapping2Attributes > sqlTable2Attrs
-            = new HashMap < SQLTable, SQLTableMapping2Attributes > ();
+    final Map<SQLTable, SQLTableMapping2Attributes> sqlTable2Attrs =
+        new HashMap<SQLTable, SQLTableMapping2Attributes>();
 
     /**
-     * @param _type type for which this type mapping is defined
+     * @param _type
+     *          type for which this type mapping is defined
      * @see type
      */
-    TypeMapping2Instances(final Type _type)  {
+    TypeMapping2Instances(final Type _type) {
       this.type = _type;
     }
 
     /**
      * Adds an instance to the type mapping to instances.
-     *
-     * @param _instance instance to add
-     @ @see #instances
+     * 
+     * @param _instance
+     * instance to add @
+     * @see #instances
      */
-    void addInstance(final Instance _instance)  {
+    void addInstance(final Instance _instance) {
       this.instances.add(_instance);
     }
 
-    void evaluateSelects()  {
-      for (String select : selects)  {
+    void evaluateSelects() {
+      for (String select : selects) {
         Attribute attr = this.type.getAttribute(select);
-        if (attr != null)  {
+        if (attr != null) {
           this.expr2Attr.put(select, attr);
         }
       }
-      for (Attribute attribute : this.expr2Attr.values())  {
-        SQLTableMapping2Attributes sqlTable2Attr
-                = this.sqlTable2Attrs.get(attribute.getTable());
-        if (sqlTable2Attr == null)  {
+      for (Attribute attribute : this.expr2Attr.values()) {
+        SQLTableMapping2Attributes sqlTable2Attr =
+            this.sqlTable2Attrs.get(attribute.getTable());
+        if (sqlTable2Attr == null) {
           sqlTable2Attr = sqlTableMappings.get(attribute.getTable());
-          if (sqlTable2Attr == null)  {
-            sqlTable2Attr = new SQLTableMapping2Attributes(attribute.getTable());
+          if (sqlTable2Attr == null) {
+            sqlTable2Attr =
+                new SQLTableMapping2Attributes(attribute.getTable());
             sqlTableMappings.put(attribute.getTable(), sqlTable2Attr);
           }
           this.sqlTable2Attrs.put(attribute.getTable(), sqlTable2Attr);
@@ -293,50 +292,50 @@ ret = getType().getAttribute(_expression);
         sqlTable2Attr.addAttribute(attribute);
       }
       // add all instances to the sql table mapping
-      for (SQLTableMapping2Attributes sqlTableMapping : this.sqlTable2Attrs.values())  {
+      for (SQLTableMapping2Attributes sqlTableMapping : this.sqlTable2Attrs
+          .values()) {
         sqlTableMapping.addInstances(this.instances);
       }
     }
 
-    public Object getValue(final String _expression) throws Exception  {
-//System.out.println("getValue.expression="+_expression);
-Object ret = null;
+    public Object getValue(final String _expression) throws Exception {
+      // System.out.println("getValue.expression="+_expression);
+      Object ret = null;
       Attribute attr = this.expr2Attr.get(_expression);
-if (attr != null)  {
-SQLTableMapping2Attributes sqlTable2attr = this.sqlTable2Attrs.get(attr.getTable());
-      if (sqlTable2attr != null)  {
-        ret = sqlTable2attr.getValue(attr);
-} else  {
-  System.out.println("!!! NULLLLLLLL " + _expression);
-//  System.out.println("this.expr2Attr="+this.expr2Attr);
+      if (attr != null) {
+        SQLTableMapping2Attributes sqlTable2attr =
+            this.sqlTable2Attrs.get(attr.getTable());
+        if (sqlTable2attr != null) {
+          ret = sqlTable2attr.getValue(attr);
+        } else {
+          System.out.println("!!! NULLLLLLLL " + _expression);
+          // System.out.println("this.expr2Attr="+this.expr2Attr);
+        }
+      } else {
+        System.out.println("!!! NULLLLLLLL" + _expression);
+        // System.out.println("_expression="+_expression);
       }
-} else  {
-  System.out.println("!!! NULLLLLLLL" + _expression);
-//  System.out.println("_expression="+_expression);
-}
       return ret;
     }
 
     /**
      * Returns a string representation of this type mapping to instances.
      * 
-     * @return string representation of this  type mapping to instances
+     * @return string representation of this type mapping to instances
      */
-    public String toString()  {
-      return new ToStringBuilder(this)
-          .appendSuper(super.toString())
-          .append("type", this.type.toString())
-          .append("instances", this.instances.toString())
-          .append("sqlTable2Attrs", this.sqlTable2Attrs.toString())
-          .toString();
+    public String toString() {
+      return new ToStringBuilder(this).appendSuper(super.toString()).append(
+          "type", this.type.toString()).append("instances",
+          this.instances.toString()).append("sqlTable2Attrs",
+          this.sqlTable2Attrs.toString()).toString();
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
-  class SQLTableMapping2Attributes  {
+  class SQLTableMapping2Attributes {
 
     /**
      *
@@ -346,41 +345,40 @@ SQLTableMapping2Attributes sqlTable2attr = this.sqlTable2Attrs.get(attr.getTable
     /**
      * @see #addAttribute
      */
-    final private Set<Attribute> attributes = new HashSet < Attribute > ();
+    final private Set<Attribute> attributes = new HashSet<Attribute>();
 
     final private List<String> cols = new ArrayList<String>();
 
-    final private Map<String,Integer> col2index
-            = new HashMap<String,Integer>();
+    final private Map<String, Integer> col2index =
+        new HashMap<String, Integer>();
 
-    final private Map<Attribute,List<Integer>> attr2index
-            = new HashMap <Attribute,List<Integer>>();
+    final private Map<Attribute, List<Integer>> attr2index =
+        new HashMap<Attribute, List<Integer>>();
 
-
-    final Set < Instance > instances = new HashSet < Instance > ();
+    final Set<Instance> instances = new HashSet<Instance>();
 
     int index = 0;
 
     /**
      *
      */
-    SQLTableMapping2Attributes(final SQLTable _sqlTable)  {
+    SQLTableMapping2Attributes(final SQLTable _sqlTable) {
       this.sqlTable = _sqlTable;
       this.col2index.put(this.sqlTable.getSqlColId(), index++);
       this.cols.add(this.sqlTable.getSqlColId());
-      
-      if (this.sqlTable.getSqlColType() != null)  {
+
+      if (this.sqlTable.getSqlColType() != null) {
         this.col2index.put(this.sqlTable.getSqlColType(), index++);
         this.cols.add(this.sqlTable.getSqlColType());
       }
     }
 
-    void addAttribute(final Attribute _attribute)  {
-      if (!this.attr2index.containsKey(_attribute))  {
+    void addAttribute(final Attribute _attribute) {
+      if (!this.attr2index.containsKey(_attribute)) {
         ArrayList<Integer> idxs = new ArrayList<Integer>();
-        for (String col : _attribute.getSqlColNames())  {
+        for (String col : _attribute.getSqlColNames()) {
           Integer idx = this.col2index.get(col);
-          if (idx == null)  {
+          if (idx == null) {
             idx = index++;
             this.col2index.put(col, idx);
             this.cols.add(col);
@@ -389,128 +387,123 @@ SQLTableMapping2Attributes sqlTable2attr = this.sqlTable2Attrs.get(attr.getTable
         }
         this.attr2index.put(_attribute, idxs);
       }
-this.attributes.add(_attribute);
+      this.attributes.add(_attribute);
     }
-    
-    void addInstances(final Collection < Instance > _instances)  {
+
+    void addInstances(final Collection<Instance> _instances) {
       this.instances.addAll(_instances);
     }
-    
 
-    public Object getValue(final Attribute _attribute) throws Exception  {
-AttributeTypeInterface attrInterf = _attribute.newInstance();
-return attrInterf.readValue(Context.getThreadContext(),
-                            cachedResult,
-                            (ArrayList<Integer>) this.attr2index.get(_attribute));
+    public Object getValue(final Attribute _attribute) throws Exception {
+      AttributeTypeInterface attrInterf = _attribute.newInstance();
+      return attrInterf.readValue(cachedResult,
+          (ArrayList<Integer>) this.attr2index.get(_attribute));
     }
 
-    int evaluateSQLStatement(final int _startIndex)  {
+    int evaluateSQLStatement(final int _startIndex) {
       StringBuilder instSQL = new StringBuilder();
-      for (Instance instance : this.instances)  {
+      for (Instance instance : this.instances) {
         instSQL.append(instance.getId()).append(",");
       }
-      if (this.instances.size() > 0)  {
+      if (this.instances.size() > 0) {
         instSQL.deleteCharAt(instSQL.length() - 1);
       }
 
       // update mapping from attribute to indexes
-      for (Map.Entry < Attribute, List < Integer >> entry : this.attr2index.entrySet())  {
-        List < Integer > newList = new ArrayList<Integer>();
-        for (int curIndex : entry.getValue())  {
-          if (curIndex > 0)  {
+      for (Map.Entry<Attribute, List<Integer>> entry : this.attr2index
+          .entrySet()) {
+        List<Integer> newList = new ArrayList<Integer>();
+        for (int curIndex : entry.getValue()) {
+          if (curIndex > 0) {
             curIndex += _startIndex;
-          } else  {
+          } else {
             curIndex = 1;
           }
           newList.add(curIndex);
         }
         this.attr2index.put(entry.getKey(), newList);
-//System.out.println(""+entry.getKey().getName()+"="+newList);
+        // System.out.println(""+entry.getKey().getName()+"="+newList);
       }
 
       // update mapping from columns to index
-      for (Map.Entry < String, Integer > entry : this.col2index.entrySet())  {
+      for (Map.Entry<String, Integer> entry : this.col2index.entrySet()) {
         int curIndex = entry.getValue();
-        if (curIndex > 0)  {
+        if (curIndex > 0) {
           curIndex += _startIndex;
-        } else  {
+        } else {
           curIndex = 1;
         }
         this.col2index.put(entry.getKey(), curIndex);
-//System.out.println(""+entry.getKey()+"="+curIndex);
+        // System.out.println(""+entry.getKey()+"="+curIndex);
       }
 
       evaluateSQLStatement(instSQL);
       return (_startIndex + this.index);
     }
 
-    void evaluateSQLStatement(StringBuilder _instSQL)  {
+    void evaluateSQLStatement(StringBuilder _instSQL) {
 
       StringBuilder sql = new StringBuilder();
       sql.append("select distinct ");
-    
+
       // append columns including the id
-      for (String col : this.cols)  {
+      for (String col : this.cols) {
         sql.append(col).append(",");
       }
       sql.deleteCharAt(sql.length() - 1);
 
-      sql.append(" from ").append(this.sqlTable.getSqlTable())
-         .append(" where ID in (").append(_instSQL).append(")");
-//System.out.println("sql="+sql);
+      sql.append(" from ").append(this.sqlTable.getSqlTable()).append(
+          " where ID in (").append(_instSQL).append(")");
+      // System.out.println("sql="+sql);
 
+      ConnectionResource con = null;
+      try {
+        con = Context.getThreadContext().getConnectionResource();
 
-ConnectionResource con = null;
-try {
-  con = Context.getThreadContext().getConnectionResource();
+        // if (LOG.isTraceEnabled()) {
+        // LOG.trace(_complStmt.getStatement().toString());
+        // }
 
-//  if (LOG.isTraceEnabled()) {
-//    LOG.trace(_complStmt.getStatement().toString());
-//  }
+        Statement stmt = con.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery(sql.toString());
 
-  Statement stmt = con.getConnection().createStatement();
-  ResultSet rs = stmt.executeQuery(sql.toString());
+        cachedResult.populate(rs, 1);
 
-  cachedResult.populate(rs, 1);
-
-  rs.close();
-  stmt.close();
-  con.commit();
-  con = null;
-/*} catch (EFapsException e) {
-  if (con != null) {
-    con.abort();
-  }
-  throw e;
-*/
-} catch (Throwable e) {
-  // TODO: exception eintragen!
-  e.printStackTrace();
-//  throw new EFapsException(getClass(), "executeOneCompleteStmt.Throwable");
-} finally  {
-  if (con != null) {
-    try {
-      con.abort();
-    } catch (Exception e)  {
-e.printStackTrace();
-    }
-  }
-}
-
+        rs.close();
+        stmt.close();
+        con.commit();
+        con = null;
+        /*
+         * } catch (EFapsException e) { if (con != null) { con.abort(); } throw
+         * e;
+         */
+      } catch (Throwable e) {
+        // TODO: exception eintragen!
+        e.printStackTrace();
+        // throw new EFapsException(getClass(),
+        // "executeOneCompleteStmt.Throwable");
+      }
+      finally {
+        if (con != null) {
+          try {
+            con.abort();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        }
+      }
 
     }
 
     /**
      * Returns a string representation of this .
      * 
-     * @return string representation of this  
+     * @return string representation of this
      */
-    public String toString()  {
-      return new ToStringBuilder(this)
-          .appendSuper(super.toString())
-          .append("sqlTable", this.sqlTable.toString())
-          .append("attributes", this.attributes.toString())
-          .toString();
+    public String toString() {
+      return new ToStringBuilder(this).appendSuper(super.toString()).append(
+          "sqlTable", this.sqlTable.toString()).append("attributes",
+          this.attributes.toString()).toString();
     }
   }
 }

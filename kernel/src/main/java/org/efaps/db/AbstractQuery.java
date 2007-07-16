@@ -59,38 +59,38 @@ public abstract class AbstractQuery {
   /**
    * Logging instance used in this class.
    */
-  private static final Log          LOG              = LogFactory
-                                                         .getLog(AbstractQuery.class);
+  private static final Log LOG = LogFactory.getLog(AbstractQuery.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
-  private boolean                   checkAccess      = false;
+  private boolean checkAccess = false;
 
-  private CachedResult              cachedResult     = null;
+  private CachedResult cachedResult = null;
 
-  Type                              type             = null;
+  Type type = null;
 
-  ArrayList<Type>                   types            = new ArrayList<Type>();
+  ArrayList<Type> types = new ArrayList<Type>();
 
   /**
    * The instance variable stores the order of the select types.
    * 
    * @see #getSelectTypesOrder
    */
-  private List<SelectType>          selectTypesOrder = new ArrayList<SelectType>();
+  private List<SelectType> selectTypesOrder = new ArrayList<SelectType>();
 
   /**
    * The instance variable stores all single join elements.
    * 
    * @see #getJoinElements
    */
-  private List<JoinElement>         joinElements     = new ArrayList<JoinElement>();
+  private List<JoinElement> joinElements = new ArrayList<JoinElement>();
 
   /**
    * The instance variable maps expressions to join elements.
    */
-  private Map<String, JoinElement>  mapJoinElements  = new HashMap<String, JoinElement>();
+  private Map<String, JoinElement> mapJoinElements =
+      new HashMap<String, JoinElement>();
 
   /**
    * The instance variable stores the main instance of the join element. The
@@ -99,7 +99,7 @@ public abstract class AbstractQuery {
    * 
    * @see #getMainJoinElement
    */
-  private JoinElement               mainJoinElement  = new JoinElement();
+  private JoinElement mainJoinElement = new JoinElement();
 
   /**
    * The instance variable stores all main selected types. The key in this map
@@ -107,7 +107,8 @@ public abstract class AbstractQuery {
    * 
    * @see #getSelectTypes
    */
-  private Map<Type, SelectType>     mainSelectTypes  = new HashMap<Type, SelectType>();
+  private Map<Type, SelectType> mainSelectTypes =
+      new HashMap<Type, SelectType>();
 
   /**
    * The instance variable stores all main where clauses. This where clauses
@@ -116,7 +117,7 @@ public abstract class AbstractQuery {
    * 
    * @see #getMainWhereClauses
    */
-  private List<WhereClause>         mainWhereClauses = new ArrayList<WhereClause>();
+  private List<WhereClause> mainWhereClauses = new ArrayList<WhereClause>();
 
   /**
    * Should the child types als be expanded?
@@ -124,7 +125,7 @@ public abstract class AbstractQuery {
    * @see #isExpandChildTypes
    * @see #setExpandChildTypes
    */
-  private boolean                   expandChildTypes = true;
+  private boolean expandChildTypes = true;
 
   /**
    * The instance variable stores all select expressions and their relations to
@@ -132,7 +133,8 @@ public abstract class AbstractQuery {
    * 
    * @see #getAllSelExprMap
    */
-  private Map<Object, SelExpr2Attr> allSelExprMap    = new HashMap<Object, SelExpr2Attr>();
+  private Map<Object, SelExpr2Attr> allSelExprMap =
+      new HashMap<Object, SelExpr2Attr>();
 
   /**
    * The instance variable stores all OID select expressions and their relations
@@ -140,7 +142,8 @@ public abstract class AbstractQuery {
    * 
    * @see #getAllOIDSelExprMap
    */
-  private Map<Object, SelExpr2Attr> allOIDSelExprMap = new HashMap<Object, SelExpr2Attr>();
+  private Map<Object, SelExpr2Attr> allOIDSelExprMap =
+      new HashMap<Object, SelExpr2Attr>();
 
   // ///////////////////////////////////////////////////////////////////////////
 
@@ -194,7 +197,7 @@ public abstract class AbstractQuery {
    *          attribute itself which must be selected
    */
   protected void addSelect(final boolean _isOID, final Object _key,
-                           final Attribute _attr) throws EFapsException {
+      final Attribute _attr) throws EFapsException {
     getSelectType(_attr.getParent()).addSelect(_isOID, _key, _attr);
   }
 
@@ -207,8 +210,7 @@ public abstract class AbstractQuery {
    * @param _expression
    */
   protected void addSelect(final boolean _isOID, final Object _key,
-                           final Type _type, final String _expression)
-                                                                      throws EFapsException {
+      final Type _type, final String _expression) throws EFapsException {
     getSelectType(_type).addSelect(_isOID, _key, _expression);
   }
 
@@ -256,8 +258,9 @@ public abstract class AbstractQuery {
     // "+_type.getName());
     SelectType selectType = getMainSelectTypes().get(_type);
     if (selectType == null) {
-      selectType = new SelectType(getMainJoinElement(), _type,
-          getSelectTypesOrder().size());
+      selectType =
+          new SelectType(getMainJoinElement(), _type, getSelectTypesOrder()
+              .size());
       getMainSelectTypes().put(_type, selectType);
       for (JoinElement elm : getJoinElements()) {
         elm.addSelectType(selectType);
@@ -316,8 +319,9 @@ public abstract class AbstractQuery {
         instance = getInstance(this.type);
       }
       if (instance != null) {
-        hasAccess = instance.getType().hasAccess(instance,
-            AccessTypeEnums.SHOW.getAccessType());
+        hasAccess =
+            instance.getType().hasAccess(instance,
+                AccessTypeEnums.SHOW.getAccessType());
       }
     }
     return hasAccess;
@@ -326,10 +330,11 @@ public abstract class AbstractQuery {
   /**
    * The instance method returns for the given key the atribute.
    * 
-   * @param _key  key for which the attribute value must returned
+   * @param _key
+   *          key for which the attribute value must returned
    * @return attribute for given key
    */
-  public Attribute getAttribute(final String _key)  throws Exception {
+  public Attribute getAttribute(final String _key) throws Exception {
     Attribute ret = null;
     SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
     if (selExpr != null) {
@@ -353,11 +358,11 @@ public abstract class AbstractQuery {
   }
 
   /**
-   * 
-   * @param _key      key for which the object id value must returned
+   * @param _key
+   *          key for which the object id value must returned
    * @return object id for given key
    */
-  protected String getOID(final Object _key) throws EFapsException  {
+  protected String getOID(final Object _key) throws EFapsException {
     String ret = null;
     SelExpr2Attr selExpr = getAllOIDSelExprMap().get(_key);
     if (selExpr != null) {
@@ -372,7 +377,7 @@ public abstract class AbstractQuery {
    * @param _type
    * @todo why is in this way implemented (other way than method getOID above)
    */
-  protected Instance getInstance(final Type _type) throws EFapsException  {
+  protected Instance getInstance(final Type _type) throws EFapsException {
     SelectType selectType = getMainSelectTypes().get(_type);
     if (selectType == null) {
       LOG.error("Type '" + _type.getName()
@@ -388,15 +393,15 @@ public abstract class AbstractQuery {
     if (selectType.getIndexType() != null) {
       // long typeId =
       // getResultSet().getLong(selectType.getIndexType().intValue());
-      long typeId = this.cachedResult.getLong(selectType.getIndexType()
-          .intValue());
+      long typeId =
+          this.cachedResult.getLong(selectType.getIndexType().intValue());
       type = Type.get(typeId);
     }
 
     return new Instance(type, id);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The instance method executes the query.
@@ -463,8 +468,7 @@ public abstract class AbstractQuery {
    *          compare in the cached result
    */
   private void executeOneCompleteStmt(final CompleteStatement _complStmt,
-                                      final int _matchColumn)
-                                                             throws EFapsException {
+      final int _matchColumn) throws EFapsException {
 
     ConnectionResource con = null;
     try {
@@ -498,7 +502,6 @@ public abstract class AbstractQuery {
   }
 
   /**
-   * 
    * @return <i>true</i> if a new row is selected and exists, otherwise
    *         <i>false</i>
    */
@@ -630,7 +633,7 @@ public abstract class AbstractQuery {
     }
 
     protected void appendStatement(CompleteStatement _completeStatement,
-                                   int _orderIndex, boolean _childTypes) {
+        int _orderIndex, boolean _childTypes) {
       _completeStatement.append("select distinct ");
       appendSelectExpressions(_completeStatement, _orderIndex);
       appendFrom(_completeStatement, _orderIndex);
@@ -660,7 +663,7 @@ public abstract class AbstractQuery {
      *          ????????????????????
      */
     private void appendSelectExpressions(CompleteStatement _completeStatement,
-                                         int _orderIndex) {
+        int _orderIndex) {
       Iterator<SelectExpression> iter = getSelectExpressions().iterator();
       while (iter.hasNext()) {
         SelectExpression selectExpr = iter.next();
@@ -677,7 +680,7 @@ public abstract class AbstractQuery {
     }
 
     private void appendFrom(CompleteStatement _completeStatement,
-                            int _orderIndex) {
+        int _orderIndex) {
       for (SelectType selectType : getSelectTypes()) {
         if (_orderIndex < 0 || selectType.getOrderIndex() < _orderIndex) {
           selectType.appendFrom(_completeStatement);
@@ -686,7 +689,7 @@ public abstract class AbstractQuery {
     }
 
     private void appendWhereClause(CompleteStatement _completeStatement,
-                                   int _orderIndex, boolean _childTypes) {
+        int _orderIndex, boolean _childTypes) {
       Iterator<SelectType> typeIter = getSelectTypes().iterator();
       while (typeIter.hasNext()) {
         SelectType selectType = typeIter.next();
@@ -729,12 +732,12 @@ public abstract class AbstractQuery {
      * @return new select expression
      */
     private SelectExpression getSelectExpression(SelectType _selectType,
-                                                 String _expression,
-                                                 String _nullString) {
+        String _expression, String _nullString) {
       SelectExpression selectExpr = getExpressions().get(_expression);
       if (selectExpr == null) {
-        selectExpr = new SelectExpression(getExpressions().size() + 1,
-            _expression, this, _selectType, _nullString);
+        selectExpr =
+            new SelectExpression(getExpressions().size() + 1, _expression,
+                this, _selectType, _nullString);
         getExpressions().put(_expression, selectExpr);
         getSelectExpressions().add(selectExpr);
       }
@@ -756,17 +759,19 @@ public abstract class AbstractQuery {
      * @see #getSelectExpression
      */
     private void addSelectAttribute(int _index, SelectType _selectType,
-                                    boolean _isOID, Object _key, Attribute _attr) {
+        boolean _isOID, Object _key, Attribute _attr) {
       // System.out.println("addSelectAttribute="+_index+":"+_key+":"+_attr);
 
-      ArrayList<SelectExpression> selectExprs = new ArrayList<SelectExpression>();
+      ArrayList<SelectExpression> selectExprs =
+          new ArrayList<SelectExpression>();
 
       if (_attr.getTable() != null) {
         String sqlPrefix = _attr.getTable().getSqlTable() + _index;
         _selectType.getTypeTableNames().add(_attr.getTable());
         for (String _sqlColName : _attr.getSqlColNames()) {
-          SelectExpression selectExpr = getSelectExpression(_selectType,
-              sqlPrefix + "." + _sqlColName, "null");
+          SelectExpression selectExpr =
+              getSelectExpression(_selectType, sqlPrefix + "." + _sqlColName,
+                  "null");
           // System.out.println("selectExprs.add="+selectExpr);
           selectExprs.add(selectExpr);
         }
@@ -793,8 +798,8 @@ public abstract class AbstractQuery {
      */
     protected SelectType getNewSelectType(Type _type, boolean _nullAllowed) {
       // System.out.println("addTypes4Order="+_type.getName()+":"+getSelectTypesOrder().size());
-      SelectType selectType = new SelectType(this, _type,
-          (getSelectTypesOrder().size() + 1000));
+      SelectType selectType =
+          new SelectType(this, _type, (getSelectTypesOrder().size() + 1000));
       selectType.setOrderIndex(getSelectTypesOrder().size() + 1000);
       selectType.setNullAllowed(_nullAllowed);
       getSelectTypesOrder().add(selectType);
@@ -803,8 +808,7 @@ public abstract class AbstractQuery {
     }
 
     private void addWhere(SelectType _selectType1, Attribute _attr1,
-                          SelectType _selectType2, Attribute _attr2)
-                                                                    throws EFapsException {
+        SelectType _selectType2, Attribute _attr2) throws EFapsException {
       whereClauses.add(new WhereClauseAttrEqAttr(_selectType1, _attr1,
           _selectType2, _attr2));
     }
@@ -814,14 +818,14 @@ public abstract class AbstractQuery {
     }
 
     // /////////////////////////////////////////////////////////////////////////
-    private List<WhereClause>             whereClauses      = new ArrayList<WhereClause>();
+    private List<WhereClause> whereClauses = new ArrayList<WhereClause>();
 
     /**
      * The instance variable stores all select types of the select statement.
      * 
      * @see #getTableNames
      */
-    private Set<SelectType>               selectTypes       = new HashSet<SelectType>();
+    private Set<SelectType> selectTypes = new HashSet<SelectType>();
 
     /**
      * This is the instance variable to hold all expressions. The SQL statement
@@ -831,14 +835,16 @@ public abstract class AbstractQuery {
      * 
      * @see #getExpressions
      */
-    private Map<String, SelectExpression> expressions       = new HashMap<String, SelectExpression>();
+    private Map<String, SelectExpression> expressions =
+        new HashMap<String, SelectExpression>();
 
     /**
      * The instance variable stores all select expressions.
      * 
      * @see #getSelectExpressions
      */
-    private List<SelectExpression>        selectExpressions = new ArrayList<SelectExpression>();
+    private List<SelectExpression> selectExpressions =
+        new ArrayList<SelectExpression>();
 
     /**
      * The instance variable stores the order of the select types. The
@@ -847,7 +853,7 @@ public abstract class AbstractQuery {
      * 
      * @see #getSelectTypesOrder
      */
-    private List<SelectType>              selectTypesOrder  = new ArrayList<SelectType>();
+    private List<SelectType> selectTypesOrder = new ArrayList<SelectType>();
 
     /**
      * The instance variable stores the column index of this join element. The
@@ -857,7 +863,7 @@ public abstract class AbstractQuery {
      * @see #getMatchColumn
      * @see #setMatchColumn
      */
-    private int                           matchColumn       = 1;
+    private int matchColumn = 1;
 
     /**
      * The instance variable stores the number of previous select epxressions
@@ -867,7 +873,7 @@ public abstract class AbstractQuery {
      * @see #getIncSelIndex
      * @see #setIncSelIndex
      */
-    private int                           incSelIndex       = 0;
+    private int incSelIndex = 0;
 
     // /////////////////////////////////////////////////////////////////////////
 
@@ -997,7 +1003,7 @@ public abstract class AbstractQuery {
      * @see #getAttribute
      * @see #setAttribute
      */
-    private Attribute                   attribute = null;
+    private Attribute attribute = null;
 
     /**
      * Stores all select expression.
@@ -1005,7 +1011,7 @@ public abstract class AbstractQuery {
      * @see #getSelExpr
      * @see #setSelExpr
      */
-    private ArrayList<SelectExpression> selExprs  = null;
+    private ArrayList<SelectExpression> selExprs = null;
 
     /**
      * Stores all the indexes of the SQL select expression where the values of
@@ -1014,7 +1020,7 @@ public abstract class AbstractQuery {
      * 
      * @see #getIndexes
      */
-    private ArrayList<Integer>          indexes   = new ArrayList<Integer>();
+    private ArrayList<Integer> indexes = new ArrayList<Integer>();
 
     // /////////////////////////////////////////////////////////////////////////
 
@@ -1038,8 +1044,8 @@ public abstract class AbstractQuery {
     protected void initSelectIndex() {
       // System.out.println("~~~~~~~~~~~~++initSelectIndex+"+getSelExprs());
       for (SelectExpression selExpr : getSelExprs()) {
-        int index = selExpr.getJoinElement().getIncSelIndex()
-            + selExpr.getIndex();
+        int index =
+            selExpr.getJoinElement().getIncSelIndex() + selExpr.getIndex();
         // System.out.println("~~~~~~~~~~~~++index="+index);
         getIndexes().add(new Integer(index));
       }
@@ -1058,7 +1064,7 @@ public abstract class AbstractQuery {
       AttributeTypeInterface attrInterf = getAttribute().newInstance();
       Object ret = null;
       try {
-        ret = attrInterf.readValue(Context.getThreadContext(), cachedResult, getIndexes());
+        ret = attrInterf.readValue(cachedResult, getIndexes());
       } catch (Exception e) {
         throw new EFapsException(getClass(), "getAttrValue.CouldNotReadValue",
             e);
@@ -1137,7 +1143,8 @@ public abstract class AbstractQuery {
      * 
      */
     protected SelectExpression(int _index, String _expression,
-        JoinElement _joinElement, SelectType _selectType, String _nullString) {
+                               JoinElement _joinElement,
+                               SelectType _selectType, String _nullString) {
 
       setIndex(_index);
       setExpression(_expression);
@@ -1151,12 +1158,12 @@ public abstract class AbstractQuery {
     /**
      * 
      */
-    private int         index       = 0;
+    private int index = 0;
 
     /**
      * 
      */
-    private String      expression  = null;
+    private String expression = null;
 
     /**
      * 
@@ -1166,12 +1173,12 @@ public abstract class AbstractQuery {
     /**
      * 
      */
-    private SelectType  selectType  = null;
+    private SelectType selectType = null;
 
     /**
      * 
      */
-    private String      nullString  = null;
+    private String nullString = null;
 
     // /////////////////////////////////////////////////////////////////////////
 
@@ -1299,7 +1306,7 @@ public abstract class AbstractQuery {
 
   public class SelectType {
 
-    JoinElement joinElement = null; ;
+    JoinElement joinElement = null;;
 
     private JoinElement getJoinElement() {
       return this.joinElement;
@@ -1310,18 +1317,20 @@ public abstract class AbstractQuery {
       setType(_type);
       setTypeIndex(_typeIndex);
       getTypeTableNames().add(getType().getMainTable());
-      String expression = getType().getMainTable().getSqlTable()
-          + getTypeIndex() + "." + getType().getMainTable().getSqlColId();
-      SelectExpression selectExpr = getJoinElement().getSelectExpression(this,
-          expression, "0");
+      String expression =
+          getType().getMainTable().getSqlTable() + getTypeIndex() + "."
+              + getType().getMainTable().getSqlColId();
+      SelectExpression selectExpr =
+          getJoinElement().getSelectExpression(this, expression, "0");
       setIndexId(selectExpr.getIndex());
       getJoinElement().setMatchColumn(selectExpr.getIndex());
 
       if (getType().getMainTable().getSqlColType() != null) {
-        expression = getType().getMainTable().getSqlTable() + getTypeIndex()
-            + "." + getType().getMainTable().getSqlColType();
-        selectExpr = getJoinElement()
-            .getSelectExpression(this, expression, "0");
+        expression =
+            getType().getMainTable().getSqlTable() + getTypeIndex() + "."
+                + getType().getMainTable().getSqlColType();
+        selectExpr =
+            getJoinElement().getSelectExpression(this, expression, "0");
         setIndexType(selectExpr.getIndex());
       }
     }
@@ -1350,7 +1359,6 @@ public abstract class AbstractQuery {
     }
 
     /**
-     * 
      * @param _isOID
      *          must be set to <i>true</i> is select expression selects the OID
      *          of the business object.
@@ -1361,7 +1369,7 @@ public abstract class AbstractQuery {
      * @todo EFapsException Property
      */
     protected void addSelect(final boolean _isOID, final Object _key,
-                             final String _expression) throws EFapsException {
+        final String _expression) throws EFapsException {
       // System.out.println("AbstractQuery.addSelect("+_isOID+","+_key+","+_expression+")");
       if (_expression != null && _expression.length() > 0) {
         if (_expression.indexOf('.') >= 0) {
@@ -1397,10 +1405,11 @@ public abstract class AbstractQuery {
           // System.out.println("selectType.index="+selectType.getTypeIndex());
 
           // for ID selection
-          String expression = getType().getMainTable().getSqlTable()
-              + getTypeIndex() + "." + getType().getMainTable().getSqlColId();
-          SelectExpression selectExpr = elm.getSelectExpression(this,
-              expression, "null");
+          String expression =
+              getType().getMainTable().getSqlTable() + getTypeIndex() + "."
+                  + getType().getMainTable().getSqlColId();
+          SelectExpression selectExpr =
+              elm.getSelectExpression(this, expression, "null");
           elm.setMatchColumn(selectExpr.getIndex());
 
           getTypeTableNames().add(attr.getTable());
@@ -1425,11 +1434,11 @@ public abstract class AbstractQuery {
      */
     public void add4Where(Attribute _attr) {
       for (String _sqlColName : _attr.getSqlColNames()) {
-        String expression = _attr.getTable().getSqlTable() + getTypeIndex()
-            + "." + _sqlColName;
+        String expression =
+            _attr.getTable().getSqlTable() + getTypeIndex() + "." + _sqlColName;
         getTypeTableNames().add(_attr.getTable());
-        SelectExpression selectExpr = getJoinElement().getSelectExpression(
-            this, expression, "null");
+        SelectExpression selectExpr =
+            getJoinElement().getSelectExpression(this, expression, "null");
       }
     }
 
@@ -1445,7 +1454,7 @@ public abstract class AbstractQuery {
      *          also child types are allowed
      */
     protected void appendTypeWhereClause(CompleteStatement _completeStatement,
-                                         boolean _childTypes) {
+        boolean _childTypes) {
       if (getType().getMainTable().getSqlColType() != null) {
 
         if (_childTypes) {
@@ -1496,7 +1505,7 @@ public abstract class AbstractQuery {
      * @see #getType
      * @see #setType
      */
-    private Type          type           = null;
+    private Type type = null;
 
     /**
      * The instance method stores the index of the type id of this type.
@@ -1504,7 +1513,7 @@ public abstract class AbstractQuery {
      * @see #getIndexId
      * @see #setIndexId
      */
-    private Integer       indexType      = null;
+    private Integer indexType = null;
 
     /**
      * The instance method stores the index of the id of this type.
@@ -1512,7 +1521,7 @@ public abstract class AbstractQuery {
      * @see #getIndexId
      * @see #setIndexId
      */
-    private Integer       indexId        = null;
+    private Integer indexId = null;
 
     /**
      * The string instance variable stores the table names of the select
@@ -1529,7 +1538,7 @@ public abstract class AbstractQuery {
      * @see #getTypeIndex
      * @see #setTypeIndex
      */
-    private int           typeIndex      = 0;
+    private int typeIndex = 0;
 
     /**
      * The instance variable stores the index of the order.
@@ -1537,7 +1546,7 @@ public abstract class AbstractQuery {
      * @see #getOrderIndex
      * @see #setOrderIndex
      */
-    private int           orderIndex     = 0;
+    private int orderIndex = 0;
 
     /**
      * The instance variable stores if the type can be null.
@@ -1545,7 +1554,7 @@ public abstract class AbstractQuery {
      * @see #isNullAllowed
      * @see #setNullAllowed
      */
-    private boolean       nullAllowed    = false;
+    private boolean nullAllowed = false;
 
     // /////////////////////////////////////////////////////////////////////////
 

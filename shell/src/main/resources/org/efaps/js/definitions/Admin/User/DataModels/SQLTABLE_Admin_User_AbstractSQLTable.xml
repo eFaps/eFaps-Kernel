@@ -45,17 +45,16 @@
       <column name="NAME"       type="STRING_SHORT" length="128"    not-null="true"/>
       <column name="UUID"       type="STRING_SHORT" length="128"/>
       <column name="REVISION"   type="STRING_SHORT" length="40"/>
+      <column name="STATUS"     type="BOOLEAN"                     />
       <column name="CREATOR"    type="INTEGER"                      not-null="true"/>
       <column name="CREATED"    type="DATETIME"                     not-null="true"/>
       <column name="MODIFIER"   type="INTEGER"                      not-null="true"/>
       <column name="MODIFIED"   type="DATETIME"                     not-null="true"/>
-      <column name="STATUS"     type="INTEGER"/>
+      
       <!-- constraints -->
       <unique name="USERABSTR_UK_NAME" columns="NAME"/>
      </database>
-<!--
-     ["STATUS  int  default 10001 not null"],
--->
+
   </definition>
 
   <definition>
