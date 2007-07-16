@@ -142,7 +142,6 @@ function _eFapsCreateAllUpdatePassword()  {
     Shell.transactionManager.begin();
 
     var c = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-    Shell.setContext(c);
     c.getPerson().setPassword(c, "Administrator");
     _eFapsPrint("  - Done");
     Shell.transactionManager.commit();
@@ -207,7 +206,6 @@ function eFapsCreateAll()  {
   _eFapsPrint("############ Install Version 1");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
-  Shell.setContext(context);
   install.install(1);
   Shell.transactionManager.commit();
   context.close();
@@ -215,14 +213,12 @@ function eFapsCreateAll()  {
   _eFapsPrint("############ Install Version 2");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
-  Shell.setContext(context);
   install.install(2);
   Shell.transactionManager.commit();
   context.close();
 
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
-  Shell.setContext(context);
   _eFapsCreateUserTablesStep1(context);
   _eFapsCreateDataModelTablesStep1(context);
   _eFapsCreateCommonTablesStep2(context);
@@ -235,7 +231,6 @@ function eFapsCreateAll()  {
   _eFapsPrint("############ Install Version 3");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction());
-  Shell.setContext(context);
   install.install(3);
   Shell.transactionManager.commit();
   context.close();
@@ -246,7 +241,6 @@ function eFapsCreateAll()  {
   _eFapsPrint("############ Install Version 4");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  Shell.setContext(context);
   install.install(4);
   Shell.transactionManager.commit();
   context.close();
@@ -254,11 +248,16 @@ function eFapsCreateAll()  {
   _eFapsPrint("############ Reload Cache");
   _eFapsReloadCache("shell");
 
-  _eFapsPrint("############ Install Version 5 + 6");
+  _eFapsPrint("############ Install Version 5");
   Shell.transactionManager.begin();
   var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
-  Shell.setContext(context);
   install.install(5);
+  Shell.transactionManager.commit();
+  context.close();
+
+  _eFapsPrint("############ Install Version 6");
+  Shell.transactionManager.begin();
+  var context = Context.newThreadContext(Shell.transactionManager.getTransaction(), "Administrator");
   install.install(6);
   Shell.transactionManager.commit();
   context.close();

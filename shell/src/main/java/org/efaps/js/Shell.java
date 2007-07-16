@@ -48,8 +48,6 @@ public class Shell {
    */
   final public static TransactionManager transactionManager = new SlideTransactionManager();
 
-  static Context context=null;
-
   final private static Set < AbstractMethod > methods 
                                  = new HashSet  < AbstractMethod > ();
   {
@@ -106,14 +104,4 @@ public class Shell {
       (new HelpFormatter()).printHelp("eFaps", options);
     }
   }
-  
-  
-static public void setContext(Context _context)  {
-context=_context;
-}
-
-static public Context getContext()  {
-return context;
-}
-
 }
