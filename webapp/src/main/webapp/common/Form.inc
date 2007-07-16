@@ -131,8 +131,7 @@ uiObject.setUkTitle("");
  * @see #execute
  */
 function eFapsSubmit()  {
-  var div = document.getElementById("eFapsFormWithFooter");
-  var form = div.getElementsByTagName("form")[1];
+  var form = document.getElementById("eFapsFormForm");
 
   <c:choose>
     <c:when test="${uiObject.searchMode}">
@@ -214,7 +213,7 @@ function eFapsSubmit()  {
 
 
 
-      <form method="post" enctype="multipart/form-data" target="<c:out value="${targetProcess}"/>">
+      <form id="eFapsFormForm" method="post" enctype="multipart/form-data" target="<c:out value="${targetProcess}"/>">
         <input type="hidden" name="command" value=""/>
 
 <c:if test="${uiObject.searchMode}">
@@ -229,9 +228,6 @@ function eFapsSubmit()  {
 
         <table>
           <c:if test="${uiObject.values ne null}">
-            <c:if test="${uiObject.values[0] ne null}">
-              <input type="hidden" name="oid" value="<c:out value="${uiObject.values[0].instance.oid}"/>"/>
-            </c:if>
 
             <%-- /** group count and row group count is default equal 1,
                      because only one field should be shown per row **/ --%>
@@ -384,11 +380,11 @@ function eFapsSubmit()  {
             </div>
           </c:if>
 
-</f:view>
-          <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="Blank.jsp">
-          </iframe>
-</div>          
-        </body>
-      </html>
+      </f:view>
 
+      <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="Blank.jsp">
+      </iframe>
+    </div>          
+  </body>
+</html>
 
