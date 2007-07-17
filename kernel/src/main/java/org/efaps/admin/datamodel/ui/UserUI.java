@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
@@ -31,8 +32,8 @@ import org.efaps.util.EFapsException;
  */
 public class UserUI implements UIInterface {
 
-  public String getViewHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getViewHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     String ret = null;
 
     if (_value instanceof Person) {
@@ -47,13 +48,13 @@ public class UserUI implements UIInterface {
     return ret;
   }
 
-  public String getEditHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getEditHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     return "edit";
   }
 
-  public String getCreateHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getCreateHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
 
     StringBuilder ret = new StringBuilder();
     ret.append("<input type=\"hidden\" ").append("name=\"").append(
@@ -65,13 +66,14 @@ public class UserUI implements UIInterface {
 
   }
 
-  public String getSearchHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getSearchHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     return "search";
   }
 
-  public int compareTo(final UIInterface _uiinterface) {
-
+  public int compareTo(UIInterface _uiinterface, UIInterface __uiinterface2) {
+    // TODO Auto-generated method stub
     return 0;
   }
+
 }

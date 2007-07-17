@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.Field;
 import org.efaps.util.EFapsException;
@@ -27,7 +28,7 @@ import org.efaps.util.EFapsException;
 /**
  * A boolean value is shown in create mode with radio boxen which are not
  * preselected. In edit mode, the user could select a value.
- *
+ * 
  * @author jmo
  * @version $Id$
  * @todo description
@@ -35,57 +36,48 @@ import org.efaps.util.EFapsException;
  */
 public class BooleanUI implements UIInterface {
 
-  public int compareTo(UIInterface _uiinterface) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  public String getCreateHtml(final Object _value,
-                              final Field _field)  throws EFapsException {
+  public String getCreateHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     StringBuilder ret = new StringBuilder();
-    ret.append("<input type=\"radio\" ")
-           .append("name=\"").append(_field.getName()).append("\" ")
-           .append("value=\"").append("TRUE").append("\"/>")
-           .append(getTrue(_field)).append("<br/>")
-       .append("<input type=\"radio\" ")
-           .append("name=\"").append(_field.getName()).append("\" ")
-           .append("value=\"").append("FALSE").append("\"/>")
-           .append(getFalse(_field));
+    ret.append("<input type=\"radio\" ").append("name=\"").append(
+        _field.getName()).append("\" ").append("value=\"").append("TRUE")
+        .append("\"/>").append(getTrue(_field)).append("<br/>").append(
+            "<input type=\"radio\" ").append("name=\"")
+        .append(_field.getName()).append("\" ").append("value=\"").append(
+            "FALSE").append("\"/>").append(getFalse(_field));
     return ret.toString();
 
   }
 
-  public String getEditHtml(final Object _value,
-                            final Field _field)  throws EFapsException {
+  public String getEditHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
     if (_value instanceof Boolean) {
       boolean bool = (Boolean) _value;
 
-      ret.append("<input type=\"radio\" ")
-             .append(bool ? "checked=\"checked\" " : "")
-             .append("name=\"").append(_field.getName()).append("\" ")
-             .append("value=\"").append("TRUE").append("\"/>")
-             .append(getTrue(_field)).append("<br/>")
-         .append("<input type=\"radio\" ")
-             .append(bool ? "" : "checked=\"checked\" ")
-             .append("name=\"").append(_field.getName()).append("\" ")
-             .append("value=\"").append("FALSE").append("\"/>")
-             .append(getFalse(_field));
+      ret.append("<input type=\"radio\" ").append(
+          bool ? "checked=\"checked\" " : "").append("name=\"").append(
+          _field.getName()).append("\" ").append("value=\"").append("TRUE")
+          .append("\"/>").append(getTrue(_field)).append("<br/>").append(
+              "<input type=\"radio\" ").append(
+              bool ? "" : "checked=\"checked\" ").append("name=\"").append(
+              _field.getName()).append("\" ").append("value=\"")
+          .append("FALSE").append("\"/>").append(getFalse(_field));
     }
     return ret.toString();
   }
 
-  public String getSearchHtml(final Object _value,
-                              final Field _field)  throws EFapsException {
+  public String getSearchHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public String getViewHtml(final Object _value,
-                            final Field _field) throws EFapsException {
+  public String getViewHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     String ret = null;
-    
+
     if (_value instanceof Boolean) {
       boolean bool = (Boolean) _value;
       if (bool) {
@@ -99,7 +91,7 @@ public class BooleanUI implements UIInterface {
 
   private String getFalse(final Field _field) {
     String ret;
-    
+
     if (DBProperties.hasProperty(_field.getLabel() + ".false")) {
       ret = DBProperties.getProperty(_field.getLabel() + ".false");
     } else {
@@ -116,5 +108,10 @@ public class BooleanUI implements UIInterface {
       ret = "TRUE";
     }
     return ret;
+  }
+
+  public int compareTo(UIInterface _uiinterface, UIInterface __uiinterface2) {
+    // TODO Auto-generated method stub
+    return 0;
   }
 }

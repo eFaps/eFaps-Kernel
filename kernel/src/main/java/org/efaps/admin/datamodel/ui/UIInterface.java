@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.ui.Field;
 import org.efaps.util.EFapsException;
 
@@ -29,17 +30,18 @@ import org.efaps.util.EFapsException;
  */
 public interface UIInterface {
 
-  public String getViewHtml(final Object _value, final Field _field)
-      throws EFapsException;
+  public String getViewHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException;
 
-  public String getEditHtml(final Object _value, final Field _field)
-      throws EFapsException;
+  public String getEditHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException;
 
-  public String getCreateHtml(final Object _value, final Field _field)
-      throws EFapsException;
+  public String getCreateHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException;
 
-  public String getSearchHtml(final Object _value, final Field _field)
-      throws EFapsException;
+  public String getSearchHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException;
 
-  public int compareTo(final UIInterface _uiinterface);
+  public int compareTo(final UIInterface _uiinterface,
+      final UIInterface __uiinterface2);
 }

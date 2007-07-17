@@ -30,7 +30,6 @@ import org.efaps.db.SearchQuery;
 /**
  * @author tmo
  * @version $Id$
- * 
  */
 public class ValueList {
 
@@ -75,7 +74,8 @@ public class ValueList {
           // buf.append(_query.get(_context, token.value));
           Attribute attr = _query.getAttribute(token.value);
           Object value = _query.get(token.value);
-          buf.append(attr.getAttributeType().getUI().getViewHtml(value, null));
+          buf.append(attr.getAttributeType().getUI().getViewHtml(value, null,
+              attr));
         break;
         case TEXT:
           buf.append(token.value);

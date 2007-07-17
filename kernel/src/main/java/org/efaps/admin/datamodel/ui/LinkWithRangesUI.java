@@ -23,6 +23,7 @@ package org.efaps.admin.datamodel.ui;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -41,8 +42,8 @@ import org.efaps.util.EFapsException;
  */
 public class LinkWithRangesUI implements UIInterface {
 
-  public String getViewHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getViewHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
     if (_value != null) {
@@ -60,8 +61,8 @@ public class LinkWithRangesUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getEditHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getEditHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
     if (_value != null) {
@@ -93,8 +94,8 @@ public class LinkWithRangesUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getCreateHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getCreateHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
     if (_field.hasEvents()) {
@@ -120,14 +121,16 @@ public class LinkWithRangesUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getSearchHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getSearchHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     return "<input type=\"text\" " + "size=\"" + _field.getCols() + "\" "
         + "name=\"" + _field.getName() + "\" " + "value=\"*\"" + "/>";
   }
 
-  public int compareTo(final UIInterface _uiinterface) {
-
+  public int compareTo(UIInterface _uiinterface, UIInterface __uiinterface2) {
+    // TODO Auto-generated method stub
     return 0;
   }
+
+ 
 }

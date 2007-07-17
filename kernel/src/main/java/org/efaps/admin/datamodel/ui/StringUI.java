@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.ui.Field;
 import org.efaps.util.EFapsException;
 
@@ -30,8 +31,8 @@ import org.efaps.util.EFapsException;
  */
 public class StringUI implements UIInterface {
 
-  public String getViewHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getViewHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     String ret = null;
 
     if (_value != null) {
@@ -49,8 +50,8 @@ public class StringUI implements UIInterface {
     return ret;
   }
 
-  public String getEditHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getEditHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     String ret;
     if (_field.getRows() > 1) {
       ret =
@@ -70,8 +71,8 @@ public class StringUI implements UIInterface {
     return ret;
   }
 
-  public String getCreateHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getCreateHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     StringBuffer ret = new StringBuffer();
     if (_field.getRows() > 1) {
       ret.append("<textarea " + "type=\"text\" " + "cols=\"").append(
@@ -102,14 +103,15 @@ public class StringUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getSearchHtml(final Object _value, final Field _field)
-      throws EFapsException {
+  public String getSearchHtml(final Object _value, final Field _field,
+      final Attribute _attribute) throws EFapsException {
     return "<input type=\"text\" " + "size=\"" + _field.getCols() + "\" "
         + "name=\"" + _field.getName() + "\" " + "value=\"*\"" + "/>";
   }
 
-  public int compareTo(final UIInterface _uiinterface) {
-
+  public int compareTo(UIInterface _uiinterface, UIInterface __uiinterface2) {
+    // TODO Auto-generated method stub
     return 0;
   }
+
 }

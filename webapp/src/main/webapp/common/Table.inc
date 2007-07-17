@@ -21,7 +21,7 @@
  
 --%>
 
-<%@page import="org.efaps.beans.FieldValue"%>
+<%@page import="org.efaps.admin.datamodel.ui.FieldValue"%>
 <%@page import="org.efaps.beans.TableBean"%>
 
 <%@taglib prefix="c"    uri="http://java.sun.com/jstl/core"%>

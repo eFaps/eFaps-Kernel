@@ -47,7 +47,9 @@ public class BooleanType extends AbstractType {
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
       throws SQLException {
     Boolean value = _rs.getBoolean(_indexes.get(0).intValue());
-    setValue(value);
+    if (value != null) {
+      setValue(value);
+    }
     return value;
   }
 

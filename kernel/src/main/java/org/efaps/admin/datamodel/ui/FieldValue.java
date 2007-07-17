@@ -20,6 +20,7 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
@@ -38,7 +39,7 @@ public class FieldValue {
    * 
    * @see #getClassUI
    */
-  private final UIInterface classUI;
+  private final Attribute attribute;
 
   /**
    * The variable stores the instance for this value.
@@ -67,11 +68,10 @@ public class FieldValue {
   /**
    *
    */
-  public FieldValue(final FieldDefinition _fieldDef,
-                    final UIInterface _classUI, final Object _value,
-                    final Instance _instance) {
+  public FieldValue(final FieldDefinition _fieldDef, final Attribute _attr,
+                    final Object _value, final Instance _instance) {
     this.fieldDef = _fieldDef;
-    this.classUI = _classUI;
+    this.attribute = _attr;
     this.value = _value;
     this.instance = _instance;
   }
@@ -83,28 +83,32 @@ public class FieldValue {
    *
    */
   public String getCreateHtml() throws EFapsException {
-    return getClassUI().getCreateHtml(getValue(), getFieldDef().getField());
+    return getClassUI().getCreateHtml(getValue(), getFieldDef().getField(),
+        this.attribute);
   }
 
   /**
    *
    */
   public String getViewHtml() throws EFapsException {
-    return getClassUI().getViewHtml(getValue(), getFieldDef().getField());
+    return getClassUI().getViewHtml(getValue(), getFieldDef().getField(),
+        this.attribute);
   }
 
   /**
    *
    */
   public String getEditHtml() throws EFapsException {
-    return getClassUI().getEditHtml(getValue(), getFieldDef().getField());
+    return getClassUI().getEditHtml(getValue(), getFieldDef().getField(),
+        this.attribute);
   }
 
   /**
    *
    */
   public String getSearchHtml() throws EFapsException {
-    return getClassUI().getSearchHtml(getValue(), getFieldDef().getField());
+    return getClassUI().getSearchHtml(getValue(), getFieldDef().getField(),
+        this.attribute);
   }
 
   // /////////////////////////////////////////////////////////////////////////
@@ -117,7 +121,7 @@ public class FieldValue {
    * @see #classUI
    */
   public UIInterface getClassUI() {
-    return this.classUI;
+    return this.attribute.getAttributeType().getUI();
   }
 
   /**
@@ -148,5 +152,9 @@ public class FieldValue {
    */
   public Object getValue() {
     return this.value;
+  }
+
+  public Attribute getAttribute() {
+    return this.attribute;
   }
 }

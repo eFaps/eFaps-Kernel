@@ -202,13 +202,10 @@ public class TableBean extends AbstractCollectionBean  {
         // if (attrValue!=null) {
         // attrValue.setField(field);
         // }
-        UIInterface classUI = null;
-        if (attr != null) {
-          classUI = attr.getAttributeType().getUI();
-        }
+       
 //        toAdd = toAdd || (value != null) || (instance != null);
 //        row.add(fieldDef, classUI, value, instance);
-row.add(fieldDef, classUI, value, instance);
+       row.add(fieldDef, attr, value, instance);
       }
 //      if (toAdd) {
         getValues().add(row);
@@ -437,12 +434,12 @@ row.add(fieldDef, classUI, value, instance);
      * @see #values
      */
     public void add(final FieldDefinition _field,
-                    final UIInterface _classUI,
+                    final Attribute _attribute,
                     final Object _value,
                     final Instance _instance) {
 
       this.values.add(
-            new FieldValue(_field, _classUI, _value, _instance));
+            new FieldValue(_field, _attribute, _value, _instance));
     }
 
     /**

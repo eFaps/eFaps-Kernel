@@ -455,13 +455,8 @@ addFieldValue(null, null, null, null, new Instance((String)query.get("OID")));
       label = _attr.getParent().getName() + "/" + _attr.getName() + ".Label";
     }
     label = DBProperties.getProperty(label);
-    UIInterface classUI = null;
-    if (_field.getClassUI() != null) {
-      classUI = _field.getClassUI();
-    } else {
-      classUI = _attr.getAttributeType().getUI();
-    }
-    addFieldValue(label, _field, classUI, _value, _instance);
+   
+    addFieldValue(label, _field, _attr, _value, _instance);
   }
 
   /**
@@ -470,7 +465,7 @@ addFieldValue(null, null, null, null, new Instance((String)query.get("OID")));
    * @see #addFieldValue(String,Field,UIInterface,Object,Instance)
    */
   public void addFieldValue(Field _field, Instance _instance) {
-    addFieldValue(_field.getLabel(), _field, _field.getClassUI(), null,
+    addFieldValue(_field.getLabel(), _field, null, null,
         _instance);
   }
 
@@ -482,10 +477,10 @@ addFieldValue(null, null, null, null, new Instance((String)query.get("OID")));
    */
   public void addFieldValue(final String _label,
                             final Field _field,
-                            final UIInterface _classUI,
+                            final Attribute _attribute,
                             final Object _value,
                             final Instance _instance) {
-    getValues().add(new FieldValue(new FieldDefinition(_label, _field), _classUI, _value, _instance));
+    getValues().add(new FieldValue(new FieldDefinition(_label, _field), _attribute, _value, _instance));
   }
 
   /**
