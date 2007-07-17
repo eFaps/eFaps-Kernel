@@ -155,6 +155,7 @@
   <modules>
     <module>derby</module>
     <module>kernel</module>
+    <module>kernel-install</module>
     <module>maven</module>
     <module>shell</module>
     <module>webapp</module>
