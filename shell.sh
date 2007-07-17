@@ -76,7 +76,6 @@ CP=$CP:$EFAPS_HOME/ojdbc14_g.jar
 # eFaps itself
 CP=$CP:$shellPath/classes
 CP=$CP:$shellPathLib/eFaps-Kernel-1.0-SNAPSHOT.jar
-CP=$CP:$shellPathLib/eFaps-Kernel-Install-1.0-SNAPSHOT.jar
 
 # Logging with log4j
 CP=$CP:$shellPathLib/log4j-1.2.14.jar

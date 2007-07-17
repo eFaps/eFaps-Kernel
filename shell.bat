@@ -33,7 +33,6 @@ set CP=
 REM eFaps itself
 set CP=%CP%;%shellPath%\classes
 set CP=%CP%;%shellPathLib%\eFaps-Kernel-1.0-SNAPSHOT.jar
-set CP=%CP%;%shellPathLib%\eFaps-Kernel-Install-1.0-SNAPSHOT.jar
 
 REM Logging with log4j
 set CP=%CP%;%shellPathLib%\log4j-1.2.14.jar
