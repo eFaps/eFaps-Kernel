@@ -159,6 +159,9 @@ abstract class EFapsAbstractMojo implements Mojo {
       for (File file : fileSet.getFiles())  {
         appl.addURL(file.toURL());
       }
+      for (ApplicationVersion applVers : appl.getVersions()) {
+        applVers.setClasspathElements(this.classpathElements);
+      }
     } catch (IOException e) {
       getLog().error(
           "Could not open / read version file " + "'" + this.versionFile + "'");
