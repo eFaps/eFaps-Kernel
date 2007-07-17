@@ -84,6 +84,15 @@
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
+    <field name="status">
+      <property name="Columns">20</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Status</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
+    </field>
+    
     <field name="createGroup">
       <property name="Creatable">false</property>
       <property name="GroupCount">2</property>

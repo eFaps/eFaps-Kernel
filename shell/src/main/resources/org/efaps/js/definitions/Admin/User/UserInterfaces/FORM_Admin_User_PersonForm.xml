@@ -84,6 +84,14 @@
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
+    <field name="status">
+      <property name="Columns">20</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Status</property>
+      <property name="Searchable">true</property>
+      <property name="Label">Admin_User_Person/Status.Label</property>
+    </field>
     <field name="lastlogin">
       <property name="Creatable">false</property>
       <property name="Editable">false</property>

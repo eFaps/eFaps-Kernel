@@ -44,40 +44,41 @@ import java.sql.Timestamp;
  */
 public class CachedResult {
 
-  //////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * Used to cache for given key (Object) the list of values (List).
    */
-  private final Map<Object,List> cache = new HashMap<Object, List>();
+  private final Map<Object, List<Object>> cache =
+      new HashMap<Object, List<Object>>();
 
   /**
    * The variable stores the same values than in {@link #cache}, but without
    * key. The order is not changed, the order is the same than the result of
    * select statement.
    */
-  private final List<List>        rows       = new ArrayList<List>();
+  private final List<List> rows = new ArrayList<List>();
 
-  private Iterator<List>    iter       = null;
+  private Iterator<List> iter = null;
 
   /**
    * The instance variable is a pointer to the current row in the cached result
    * table list.
-   *
+   * 
    * @see #beforeFirst
    * @see #next
    * @see #gotoKey
    */
   private List currentRow = null;
 
-  //////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
   public CachedResult() {
   }
 
-  //////////////////////////////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -85,7 +86,7 @@ public class CachedResult {
    * first row. This method has no effect if the cached result contains no rows.
    * Attention! After that, method {@link #next} must be called to get first
    * row!
-   *
+   * 
    * @see #next
    */
   public void beforeFirst() {
@@ -98,8 +99,8 @@ public class CachedResult {
    * method next makes the first row the current row; the second call makes the
    * second row the current row, and so on.
    * 
-   * @return <i>true</i> if the new current row is valid; <i>false</i> if there
-   *         are no more rows
+   * @return <i>true</i> if the new current row is valid; <i>false</i> if
+   *         there are no more rows
    */
   public boolean next() {
     if (this.iter == null) {
@@ -114,11 +115,12 @@ public class CachedResult {
 
   /**
    * Moves the cursor to the row defined with given key.
-   *
-   * @param _key  key defing next row
+   * 
+   * @param _key
+   *          key defing next row
    * @return <i>true</i> if a row for the key exists, otherwise <i>false>
    */
-  public boolean gotoKey(final Object _key)  {
+  public boolean gotoKey(final Object _key) {
     this.currentRow = this.cache.get(_key);
     return (this.currentRow != null);
   }
@@ -138,7 +140,7 @@ public class CachedResult {
    *          cache
    */
   public void populate(final ResultSet _rs, final int _keyIndex)
-                                                          throws SQLException {
+      throws SQLException {
     ResultSetMetaData metaData = _rs.getMetaData();
     int columnCount = metaData.getColumnCount();
 
@@ -147,11 +149,11 @@ public class CachedResult {
         List<Object> list = new ArrayList<Object>(columnCount);
         for (int i = 1; i <= columnCount; i++) {
           switch (metaData.getColumnType(i)) {
-          case java.sql.Types.TIMESTAMP:
-            list.add(_rs.getTimestamp(i));
+            case java.sql.Types.TIMESTAMP:
+              list.add(_rs.getTimestamp(i));
             break;
-          default:
-            list.add(_rs.getObject(i));
+            default:
+              list.add(_rs.getObject(i));
           }
         }
         this.cache.put(_rs.getObject(_keyIndex), list);
@@ -164,11 +166,11 @@ public class CachedResult {
           for (int i = 1; i <= columnCount; i++) {
             if (i != _keyIndex) {
               switch (metaData.getColumnType(i)) {
-              case java.sql.Types.TIMESTAMP:
-                list.add(_rs.getTimestamp(i));
+                case java.sql.Types.TIMESTAMP:
+                  list.add(_rs.getTimestamp(i));
                 break;
-              default:
-                list.add(_rs.getObject(i));
+                default:
+                  list.add(_rs.getObject(i));
               }
             }
           }
@@ -178,7 +180,8 @@ public class CachedResult {
   }
 
   /**
-   * @param _index  column index
+   * @param _index
+   *          column index
    * @return object on given column index
    * @see #currentRow
    */
@@ -187,9 +190,8 @@ public class CachedResult {
   }
 
   /**
-   *
-   *
-   * @param _index  column index
+   * @param _index
+   *          column index
    * @return string representation for the object on given column index
    * @see #currentRow
    */
@@ -202,10 +204,11 @@ public class CachedResult {
   /**
    * Returns the long representation for the object on given column index. If
    * the object on the given column index is not an instance of class
-   * {@link java.lang.Number} (if it is a number, the long value is used),
-   * the value is converted in a string and then parsed as long.
-   *
-   * @param _index  column index
+   * {@link java.lang.Number} (if it is a number, the long value is used), the
+   * value is converted in a string and then parsed as long.
+   * 
+   * @param _index
+   *          column index
    * @return long representation for the object on given column index;
    *         <code>null</code> if no value is defined
    * @see #currentRow
@@ -224,10 +227,11 @@ public class CachedResult {
   /**
    * Returns the double representation for the object on given column index. If
    * the object on the given column index is not an instance of class
-   * {@link java.lang.Number} (if it is a number, the double value is used),
-   * the value is converted in a string and then parsed as double.
-   *
-   * @param _index  column index
+   * {@link java.lang.Number} (if it is a number, the double value is used), the
+   * value is converted in a string and then parsed as double.
+   * 
+   * @param _index
+   *          column index
    * @return double representation for the object on given column index;
    *         <code>null</code> if no value is defined
    * @see #currentRow
@@ -244,9 +248,35 @@ public class CachedResult {
   }
 
   /**
+   * Returns the boolean representation for the object on given column index. If
+   * the object on the given column index is not an instance of class Boolean.
+   * The value is interpreteded as number and converted to an eequal boolen.
    * 
-   *
-   * @param _index  column index
+   * @param _index
+   *          column index
+   * @return boolean representation for the object on given column index;
+   *         <code>null</code> if no value is defined
+   * @see #currentRow
+   */
+  public Boolean getBoolean(final int _index) {
+    Boolean ret = null;
+    Object obj = getObject(_index);
+    if (obj instanceof Boolean) {
+      ret = (Boolean) obj;
+    } else if (obj instanceof Number) {
+      Integer intvalue = ((Number) obj).intValue();
+      if ((intvalue != null) && (intvalue != 0)) {
+        ret = true;
+      } else {
+        ret = false;
+      }
+    }
+    return ret;
+  }
+
+  /**
+   * @param _index
+   *          column index
    * @return time stamp representation for the object on given column index for
    *         time stamp and date instances, otherwise <code>null</code>
    * @see #currentRow

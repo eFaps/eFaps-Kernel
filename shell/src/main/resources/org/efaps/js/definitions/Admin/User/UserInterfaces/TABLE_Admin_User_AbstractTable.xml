@@ -59,6 +59,10 @@
       <property name="Label">Admin_User_Abstract/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
     </field>
+    <field name="status">
+      <property name="Expression">Status</property>
+      <property name="Label">Admin_User_Abstract/Status.Label</property>
+    </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>

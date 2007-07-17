@@ -22,7 +22,6 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
@@ -38,11 +37,7 @@ public class BooleanType extends AbstractType {
   @Override
   public void update(final Object _object, final PreparedStatement _stmt,
       final List<Integer> _index) throws SQLException {
-    if (getValue()) {
-      _stmt.setInt(_index.get(0), 1);
-    } else {
-      _stmt.setNull(_index.get(0), Types.INTEGER);
-    }
+    _stmt.setBoolean(_index.get(0), getValue());
 
   }
 
@@ -51,11 +46,7 @@ public class BooleanType extends AbstractType {
    */
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
       throws SQLException {
-    Boolean value = false;
-    Long longValue = _rs.getLong(_indexes.get(0).intValue());
-    if ((longValue != null) && (longValue != 0)) {
-      value = true;
-    }
+    Boolean value = _rs.getBoolean(_indexes.get(0).intValue());
     setValue(value);
     return value;
   }
