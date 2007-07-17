@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev: 961 $
+ * Last Changed:    $Date: 2007-07-08 15:49:39 -0500 (Sun, 08 Jul 2007) $
+ * Last Changed By: $Author: tmo $
  */
 
 package org.efaps.admin.datamodel.ui;
@@ -20,16 +23,15 @@ package org.efaps.admin.datamodel.ui;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
-import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
+/**
+ * @author tmo
+ * @version $Id$
+ */
 public class UserUI implements UIInterface {
-  /**
-   * @param _locale
-   *          locale object
-   */
-  public String getViewHtml(Context _context, Object _value, Field _field)
-                                                                          throws EFapsException {
+
+  public String getViewHtml(Object _value, Field _field) throws EFapsException {
     String ret = null;
 
     if (_value instanceof Person) {
@@ -44,38 +46,25 @@ public class UserUI implements UIInterface {
     return ret;
   }
 
-  /**
-   * @param _locale
-   *          locale object
-   */
-  public String getEditHtml(Context _context, Object _value, Field _field)
-                                                                          throws EFapsException {
+  public String getEditHtml(Object _value, Field _field) throws EFapsException {
     return "edit";
   }
 
-  /**
-   * @param _locale
-   *          locale object
-   */
-  public String getCreateHtml(Context _context, Object _value, Field _field)
-                                                                            throws EFapsException {
+  public String getCreateHtml(Object _value, Field _field)
+      throws EFapsException {
 
     StringBuilder ret = new StringBuilder();
     ret.append("<input type=\"hidden\" ").append("name=\"").append(
         _field.getName()).append("\" id=\"UserUI\">");
 
-    ret.append("<iframe frameborder=\"0\" name=\"").append(_field.getName()).append(
-        "\" src=\"UserUI.jsp?\"></iframe>");
+    ret.append("<iframe frameborder=\"0\" name=\"").append(_field.getName())
+        .append("\" src=\"UserUI.jsp?\"></iframe>");
     return ret.toString();
 
   }
 
-  /**
-   * @param _locale
-   *          locale object
-   */
-  public String getSearchHtml(Context _context, Object _value, Field _field)
-                                                                            throws EFapsException {
+  public String getSearchHtml(Object _value, Field _field)
+      throws EFapsException {
     return "search";
   }
 }

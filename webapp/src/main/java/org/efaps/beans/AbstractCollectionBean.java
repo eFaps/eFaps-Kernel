@@ -22,12 +22,12 @@ package org.efaps.beans;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Menu;
-import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
@@ -288,28 +288,28 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
      *
      */
     public String getCreateHtml() throws EFapsException  {
-      return getClassUI().getCreateHtml(Context.getThreadContext(), getValue(), getField());
+      return getClassUI().getCreateHtml( getValue(), getField());
     }
 
     /**
      *
      */
     public String getViewHtml() throws EFapsException  {
-      return getClassUI().getViewHtml(Context.getThreadContext(), getValue(), getField());
+      return getClassUI().getViewHtml( getValue(), getField());
     }
 
     /**
      *
      */
     public String getEditHtml() throws EFapsException  {
-      return getClassUI().getEditHtml(Context.getThreadContext(), getValue(), getField());
+      return getClassUI().getEditHtml( getValue(), getField());
     }
 
     /**
      *
      */
     public String getSearchHtml() throws EFapsException  {
-      return getClassUI().getSearchHtml(Context.getThreadContext(), getValue(), getField());
+      return getClassUI().getSearchHtml( getValue(), getField());
     }
 
     ///////////////////////////////////////////////////////////////////////////

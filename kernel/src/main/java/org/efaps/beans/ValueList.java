@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.beans;
@@ -23,8 +26,12 @@ import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.SearchQuery;
-import org.efaps.db.Context;
 
+/**
+ * @author tmo
+ * @version $Id$
+ * 
+ */
 public class ValueList {
 
   public String getValueList() {
@@ -32,11 +39,11 @@ public class ValueList {
 
     for (Token token : this.tokens) {
       switch (token.type) {
-      case EXPRESSION:
-        buf.append("$<").append(token.value).append(">");
+        case EXPRESSION:
+          buf.append("$<").append(token.value).append(">");
         break;
-      case TEXT:
-        buf.append(token.value);
+        case TEXT:
+          buf.append(token.value);
         break;
       }
     }
@@ -59,19 +66,19 @@ public class ValueList {
     }
   }
 
-  public String makeString(final SearchQuery _query) throws Exception  {
+  public String makeString(final SearchQuery _query) throws Exception {
     StringBuffer buf = new StringBuffer();
 
     for (Token token : this.tokens) {
       switch (token.type) {
-      case EXPRESSION:
-        // buf.append(_query.get(_context, token.value));
-        Attribute attr = _query.getAttribute(token.value);
-        Object value = _query.get(token.value);
-        buf.append(attr.getAttributeType().getUI().getViewHtml(Context.getThreadContext(), value, null));
+        case EXPRESSION:
+          // buf.append(_query.get(_context, token.value));
+          Attribute attr = _query.getAttribute(token.value);
+          Object value = _query.get(token.value);
+          buf.append(attr.getAttributeType().getUI().getViewHtml(value, null));
         break;
-      case TEXT:
-        buf.append(token.value);
+        case TEXT:
+          buf.append(token.value);
         break;
       }
     }
@@ -81,9 +88,9 @@ public class ValueList {
 
   // /////////////////////////////////////////////////////////////////////////
 
-  private ArrayList<Token> tokens      = new ArrayList<Token>();
+  private ArrayList<Token> tokens = new ArrayList<Token>();
 
-  private Set<String>      expressions = new HashSet<String>();
+  private Set<String> expressions = new HashSet<String>();
 
   // /////////////////////////////////////////////////////////////////////////
 
@@ -100,7 +107,8 @@ public class ValueList {
   // /////////////////////////////////////////////////////////////////////////
 
   public enum TokenType {
-    EXPRESSION, TEXT
+    EXPRESSION,
+    TEXT
   };
 
   private class Token {
@@ -112,7 +120,7 @@ public class ValueList {
 
     private final TokenType type;
 
-    private final String    value;
+    private final String value;
   }
 
 }

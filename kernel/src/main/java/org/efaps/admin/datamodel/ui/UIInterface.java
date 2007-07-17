@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,36 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev: 961 $
+ * Last Changed:    $Date: 2007-07-08 15:49:39 -0500 (Sun, 08 Jul 2007) $
+ * Last Changed By: $Author: tmo $
  */
 
 package org.efaps.admin.datamodel.ui;
 
 import org.efaps.admin.ui.Field;
-import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
- * The interface describes the needed methods for using a file store.
+ * @author tmo
+ * @version $Id$
  */
-public interface UIInterface  {
+public interface UIInterface {
 
-  /**
-   * @param _locale   locale object
-   */
-  public String getViewHtml(Context _context, Object _value, Field _field) throws EFapsException;
+  public String getViewHtml(Object _value, Field _field) throws EFapsException;
 
-  /**
-   * @param _locale   locale object
-   */
-  public String getEditHtml(Context _context, Object _value, Field _field) throws EFapsException;
+  public String getEditHtml(Object _value, Field _field) throws EFapsException;
 
-  /**
-   * @param _locale   locale object
-   */
-  public String getCreateHtml(Context _context, Object _value, Field _field) throws EFapsException;
+  public String getCreateHtml(Object _value, Field _field)
+      throws EFapsException;
 
-  /**
-   * @param _locale   locale object
-   */
-  public String getSearchHtml(Context _context, Object _value, Field _field) throws EFapsException;
+  public String getSearchHtml(Object _value, Field _field)
+      throws EFapsException;
 }

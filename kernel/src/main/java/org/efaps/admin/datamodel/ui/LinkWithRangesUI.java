@@ -23,11 +23,10 @@ package org.efaps.admin.datamodel.ui;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.efaps.admin.event.Return;
 import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Field;
-import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
 /**
@@ -42,8 +41,8 @@ import org.efaps.util.EFapsException;
  */
 public class LinkWithRangesUI implements UIInterface {
 
-  public String getViewHtml(final Context _context, final Object _value,
-      final Field _field) throws EFapsException {
+  public String getViewHtml(final Object _value, final Field _field)
+      throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
     if (_value != null) {
@@ -61,15 +60,15 @@ public class LinkWithRangesUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getEditHtml(final Context _context, final Object _value,
-      final Field _field) throws EFapsException {
+  public String getEditHtml(final Object _value, final Field _field)
+      throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
     if (_value != null) {
       if (_field.hasEvents()) {
         for (Return values : _field.executeEvents(EventType.RANGE_VALUE)) {
 
-          ret.append("<form><select name=\"").append(_field.getName()).append(
+          ret.append("<select name=\"").append(_field.getName()).append(
               "\" size=\"1\">");
 
           Iterator iter =
@@ -84,7 +83,7 @@ public class LinkWithRangesUI implements UIInterface {
             ret.append("\">").append(entry.getValue()).append("</option>");
           }
 
-          ret.append("</select></form>");
+          ret.append("</select>");
         }
       }
 
@@ -94,8 +93,8 @@ public class LinkWithRangesUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getCreateHtml(final Context _context, final Object _value,
-      final Field _field) throws EFapsException {
+  public String getCreateHtml(final Object _value, final Field _field)
+      throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
     if (_field.hasEvents()) {
@@ -121,7 +120,7 @@ public class LinkWithRangesUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getSearchHtml(Context _context, Object _value, Field _field)
+  public String getSearchHtml(Object _value, Field _field)
       throws EFapsException {
     return "<input type=\"text\" " + "size=\"" + _field.getCols() + "\" "
         + "name=\"" + _field.getName() + "\" " + "value=\"*\"" + "/>";
