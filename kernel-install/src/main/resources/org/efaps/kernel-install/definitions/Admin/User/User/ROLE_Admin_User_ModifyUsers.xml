@@ -35,7 +35,7 @@
     </version>
 
     <name>Admin_User_ModifyUsers</name>
-
+	<status>true</status>
   </definition>
 
 </user-role>

@@ -33,6 +33,8 @@ importClass(Packages.org.efaps.db.Context);
 importClass(Packages.org.efaps.importer.DataImport);
 importClass(Packages.org.efaps.update.Install);
 importClass(Packages.org.efaps.update.dbproperty.DBPropertiesUpdate);
+importClass(Packages.org.efaps.db.Update);
+importClass(Packages.org.efaps.admin.datamodel.Type);
 
 var CURRENT_TIMESTAMP = Context.getDbType().getCurrentTimeStamp();
 
@@ -137,6 +139,15 @@ function _eFapsCreateAllUpdatePassword()  {
   try  {
     var c = Context.begin("Administrator");
     c.getPerson().setPassword(c, "Administrator");
+    
+    var update = new Update(Type.get("Admin_User_Abstract"),"1");
+    update.add("Status","true");
+    update.executeWithoutAccessCheck();
+    
+     var update = new Update(Type.get("Admin_User_Abstract"),"2");
+    update.add("Status","true");
+    update.executeWithoutAccessCheck();
+    
     _eFapsPrint("  - Done");
     Context.commit();
   } catch (e)  {
@@ -448,8 +459,8 @@ function _eFapsCreateUserTablesStep1()  {
 
   _insert(stmt, "Insert Administrator Person", null,
           "T_USERABSTRACT",
-          "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS",
-          "-10000, 'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", true"
+          "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED",
+          "-10000, 'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP
   );
   _exec(stmt, null, null,
     "insert into T_USERPERSON(ID, FIRSTNAME, LASTNAME, EMAIL, URL, PASSWORD) "+
@@ -458,8 +469,8 @@ function _eFapsCreateUserTablesStep1()  {
 
   _insert(stmt, "Insert Administrator Role",  null,
           "T_USERABSTRACT",
-          "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED, STATUS",
-          "-11000, 'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP + ", true"
+          "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED",
+          "-11000, 'Administration', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP
   );
 
   _insert(stmt, "Connect Administrator Person to Role Administration", null,

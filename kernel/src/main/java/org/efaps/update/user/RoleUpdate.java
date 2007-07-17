@@ -95,6 +95,8 @@ public class RoleUpdate extends AbstractUpdate  {
       digester.addCallMethod("user-role/definition/name", "setName", 1);
       digester.addCallParam("user-role/definition/name", 0);
 
+      digester.addCallMethod("user-role/definition/status", "setStatus", 1);
+      digester.addCallParam("user-role/definition/status", 0);
       ret = (RoleUpdate) digester.parse(_url);
 
       if (ret != null)  {
@@ -113,7 +115,8 @@ public class RoleUpdate extends AbstractUpdate  {
 
   public static class RoleDefinition extends DefinitionAbstract  {
     
-    ///////////////////////////////////////////////////////////////////////////
-    // instance methods
+    public void setStatus(final String _status){
+      addValue("Status", _status);
+    }
  }
 }

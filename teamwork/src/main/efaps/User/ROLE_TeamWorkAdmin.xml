@@ -35,6 +35,7 @@
     </version>
 
     <name>TeamWorkAdmin</name>
+    <status>true</status>
 
   </definition>
 

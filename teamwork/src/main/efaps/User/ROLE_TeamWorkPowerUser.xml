@@ -35,7 +35,7 @@
     </version>
 
     <name>TeamWorkPowerUser</name>
-
+    <status>true</status>
   </definition>
 
 </user-role>
