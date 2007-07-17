@@ -49,11 +49,10 @@ import org.xml.sax.SAXException;
  * @author tmo
  * @author jmo
  * @version $Id$
- * 
  */
 public class TypeUpdate extends AbstractUpdate {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -70,7 +69,7 @@ public class TypeUpdate extends AbstractUpdate {
      */
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -88,10 +87,11 @@ public class TypeUpdate extends AbstractUpdate {
    * <code>org.apache.commons.digester</code> to create the diffrent Class and
    * invokes the Methods to Update a Type
    * 
-   * @param _file XML-File to be read by the digester
+   * @param _file
+   *          XML-File to be read by the digester
    * @return TypUdate Definition read by digester
    */
-  public static TypeUpdate readXMLFile(final URL _url)  {
+  public static TypeUpdate readXMLFile(final URL _url) {
     TypeUpdate ret = null;
 
     try {
@@ -124,12 +124,14 @@ public class TypeUpdate extends AbstractUpdate {
           Attribute.class);
 
       digester.addCallMethod("datamodel-type/definition/attribute",
-          "setDefinitions", 5);
+          "setDefinitions", 6);
       digester.addCallParam("datamodel-type/definition/attribute/name", 0);
       digester.addCallParam("datamodel-type/definition/attribute/type", 1);
       digester.addCallParam("datamodel-type/definition/attribute/sqltable", 2);
       digester.addCallParam("datamodel-type/definition/attribute/sqlcolumn", 3);
       digester.addCallParam("datamodel-type/definition/attribute/typelink", 4);
+      digester.addCallParam("datamodel-type/definition/attribute/defaultvalue",
+          5);
 
       // Trigger for the Attribute
       digester.addFactoryCreate("datamodel-type/definition/attribute/trigger",
@@ -147,7 +149,7 @@ public class TypeUpdate extends AbstractUpdate {
       digester
           .addSetNext("datamodel-type/definition/attribute", "addAttribute");
 
-      // Properties
+      // Properties for the Type
       digester.addCallMethod("datamodel-type/definition/property",
           "addProperty", 2);
       digester.addCallParam("datamodel-type/definition/property", 0, "name");
@@ -177,14 +179,14 @@ public class TypeUpdate extends AbstractUpdate {
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The class defines an attribute of a type.
    */
-  public static class Attribute extends DefinitionAbstract{
+  public static class Attribute extends DefinitionAbstract {
 
     /** Name of the attribute. */
     private String name;
@@ -201,16 +203,21 @@ public class TypeUpdate extends AbstractUpdate {
     /** Name of the Linked Type (used for links to another type). */
     private String typeLink;
 
+    /** Events for this Attribute */
     private final List<Event> events = new ArrayList<Event>();
 
+    /** Defaultvalue for this Attribute */
+    private String defaultValue;
+
     public void setDefinitions(final String _name, final String _type,
-                               final String _sqltable, final String _sqlcolumn,
-                               final String _typelink) {
+        final String _sqltable, final String _sqlcolumn,
+        final String _typelink, final String _defaultvalue) {
       this.name = _name;
       this.type = _type;
       this.sqlTable = _sqltable;
       this.sqlColumn = _sqlcolumn;
       this.typeLink = _typelink;
+      this.defaultValue = _defaultvalue;
     }
 
     public void addEvent(Event _event) {
@@ -232,7 +239,7 @@ public class TypeUpdate extends AbstractUpdate {
      * @todo throw Exception is not allowed
      */
     protected void updateInDB(final Instance _instance, final String _typeName)
-                                                                               throws Exception {
+        throws Exception {
       long attrTypeId = getAttrTypeId(_typeName);
       long sqlTableId = getSqlTableId(_typeName);
       long typeLinkId = getTypeLinkId(_typeName);
@@ -262,11 +269,14 @@ public class TypeUpdate extends AbstractUpdate {
       } else {
         update.add("TypeLink", "" + typeLinkId);
       }
+      if (this.defaultValue != null) {
+        update.add("DefaultValue", this.defaultValue);
+      }
       update.executeWithoutAccessCheck();
 
       for (Event event : this.events) {
-        Instance newInstance = event
-            .updateInDB(update.getInstance(), this.name);
+        Instance newInstance =
+            event.updateInDB(update.getInstance(), this.name);
         setPropertiesInDb(newInstance, event.getProperties());
       }
     }
@@ -354,9 +364,9 @@ public class TypeUpdate extends AbstractUpdate {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
   public static class Definition extends DefinitionAbstract {
@@ -396,9 +406,8 @@ public class TypeUpdate extends AbstractUpdate {
      * @see #attributes
      */
     public Instance updateInDB(final Instance _instance,
-                               final Set<Link> _allLinkTypes,
-                               final Insert _insert) throws EFapsException,
-                                                    Exception {
+        final Set<Link> _allLinkTypes, final Insert _insert)
+        throws EFapsException, Exception {
       // set the id of the parent type (if defined)
       if ((this.parentType != null) && (this.parentType.length() > 0)) {
         SearchQuery query = new SearchQuery();

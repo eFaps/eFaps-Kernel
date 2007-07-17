@@ -47,7 +47,7 @@ import org.efaps.util.cache.CacheReloadInterface;
  * information about creation of a new instance of a type with default values.
  * 
  * @author tmo
- * @version $Id: $
+ * @version $Id$
  */
 public class Attribute extends DataModelObject {
 
@@ -68,7 +68,8 @@ public class Attribute extends DataModelObject {
    */
   private final static String SQL_SELECT =
       "select " + "ID," + "NAME," + "DMTABLE," + "DMTYPE," + "DMATTRIBUTETYPE,"
-          + "DMTYPELINK," + "SQLCOLUMN " + "from V_ADMINATTRIBUTE";
+          + "DMTYPELINK," + "SQLCOLUMN, " + "DEFAULTVAL "
+          + "from V_ADMINATTRIBUTE";
 
   /**
    * This is the instance variable for the table, where attribute is stored.
@@ -118,6 +119,14 @@ public class Attribute extends DataModelObject {
    * @see #setUniqueKeys
    */
   private Collection<UniqueKey> uniqueKeys = null;
+
+  /**
+   * The String holds the Defaultvalue for this Attribute
+   * 
+   * @see #getDefaultValue()
+   * @see #setDefaultValue(String)
+   */
+  private String defaultValue = null;
 
   /**
    * This is the constructor for class {@link Attribute}. Every instance of
@@ -355,6 +364,24 @@ public class Attribute extends DataModelObject {
     this.uniqueKeys = _uniqueKeys;
   }
 
+  /**
+   * This is the getter method for instance variable {@link #defaultValue}.
+   * 
+   * @return
+   */
+  public String getDefaultValue() {
+    return this.defaultValue;
+  }
+
+  /**
+   * This is the setter method for instance variable {@link #defaultValue}.
+   * 
+   * @param _defaultvalue
+   */
+  private void setDefaultValue(String _defaultvalue) {
+    this.defaultValue = _defaultvalue;
+  }
+
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
@@ -381,6 +408,7 @@ public class Attribute extends DataModelObject {
           long attrType = rs.getLong(5);
           long typeLinkId = rs.getLong(6);
           String sqlCol = rs.getString(7).trim();
+          String defaultval = rs.getString(8);
           Type type = Type.get(typeId);
 
           log.debug("read attribute '" + type.getName() + "/" + name + "' "
@@ -390,7 +418,9 @@ public class Attribute extends DataModelObject {
           attr.setTable(SQLTable.get(tableId));
           attr.setAttributeType(AttributeType.get(attrType));
           attr.setParent(type);
-
+          if (defaultval != null) {
+            attr.setDefaultValue(defaultval.trim());
+          }
           UUID uuid = attr.getAttributeType().getUUID();
           if (uuid.equals(EFapsClassName.ATTRTYPE_LINK.uuid)
               || uuid.equals(EFapsClassName.ATTRTYPE_LINK_WITH_RANGES.uuid)) {

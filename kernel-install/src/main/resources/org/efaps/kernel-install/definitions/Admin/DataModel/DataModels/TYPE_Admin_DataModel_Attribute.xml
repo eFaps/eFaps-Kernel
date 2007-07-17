@@ -71,6 +71,12 @@
       <sqlcolumn>DMTYPELINK</sqlcolumn>
       <typelink>Admin_DataModel_Type</typelink>
     </attribute>
+    <attribute>
+      <name>DefaultValue</name>
+      <type>String</type>
+      <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
+      <sqlcolumn>DEFAULTVAL</sqlcolumn>
+    </attribute>
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_DataModel_AttributeImage</property>
     <property name="Tree">Admin_DataModel_AttributeTree</property>

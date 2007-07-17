@@ -689,6 +689,7 @@ function _eFapsCreateDataModelTablesStep2()  {
   _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'AttributeType',     'DMATTRIBUTETYPE', 'Link', "Admin_DataModel_AttributeType");
   _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'TypeLink',          'DMTYPELINK',      'Link', "Admin_DataModel_Type");
   _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'SQLColumn',         'SQLCOLUMN',       'String', null);
+  _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'DefaultValue',      'DEFAULTVAL',      'String', null);
 
   /////////////////////////////////////////
   // insert 'admin property' 
