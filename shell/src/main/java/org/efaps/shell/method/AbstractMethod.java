@@ -287,9 +287,7 @@ public abstract class AbstractMethod  {
    * @todo description
    */
   protected void startTransaction() throws EFapsException,Exception  {
-    getTransactionManager().begin();
-    Context.newThreadContext(getTransactionManager().getTransaction(),
-                             this.userName);
+    Context.begin(this.userName);
   }
   
   /**
@@ -297,8 +295,7 @@ public abstract class AbstractMethod  {
    * @todo description
    */
   protected void abortTransaction() throws EFapsException,Exception  {
-    getTransactionManager().rollback();
-    Context.getThreadContext().close();
+    Context.rollback();
   }
 
   /**
@@ -306,15 +303,7 @@ public abstract class AbstractMethod  {
    * @todo description
    */
   protected void commitTransaction() throws EFapsException,Exception  {
-    getTransactionManager().commit();
-    Context.getThreadContext().close();
-  }
-
-  /**
-   * @todo description
-   */
-  protected TransactionManager getTransactionManager()  {
-    return Shell.transactionManager;
+    Context.commit();
   }
 
   /**

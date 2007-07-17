@@ -20,6 +20,8 @@
 
 package org.efaps.db;
 
+import java.lang.IllegalStateException;
+import java.lang.SecurityException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -30,8 +32,15 @@ import java.util.Set;
 import java.util.Stack;
 
 import javax.sql.DataSource;
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,10 +76,17 @@ public class Context {
    * Each thread has his own context object. The value is automatically
    * assigned from the filter class.
    */
-  private static ThreadLocal < Context > threadContext 
-                                      = new ThreadLocal < Context > ();
+  private static ThreadLocal<Context> threadContext
+                                              = new ThreadLocal<Context>();
 
   private static DataSource dataSource = null;
+
+  /**
+   * Stores the transaction manager.
+   *
+   * @see #setTransactionManager
+   */
+  private static TransactionManager transManag = null;
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -703,6 +719,59 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
     return context;
   }
 
+  /**
+   *
+   */
+  public static Context begin() throws EFapsException,
+                                                  NotSupportedException,
+                                                  SystemException  {
+    return begin((String) null);
+  }
+
+  /**
+   * @todo embed exceptions
+   */
+  public static Context begin(final String _userName)
+                                           throws EFapsException,
+                                                  NotSupportedException,
+                                                  SystemException  {
+    transManag.begin();
+    return newThreadContext(transManag.getTransaction(), _userName);
+  }
+
+  /**
+   * @todo embed exceptions
+   */
+  public static void commit()
+          throws EFapsException,
+                 RollbackException,
+                 HeuristicMixedException,
+                 HeuristicRollbackException,
+                 SecurityException,
+                 IllegalStateException,
+                 SystemException  {
+    try  {
+      transManag.commit();
+    } finally  {
+      getThreadContext().close();
+    }
+  }
+
+  /**
+   * @todo embed exceptions
+   */
+  public static void rollback()
+          throws EFapsException,
+                 IllegalStateException,
+                 SecurityException,
+                 SystemException  {
+    try  {
+      transManag.rollback();
+    } finally  {
+      getThreadContext().close();
+    }
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // static getter and setter methods
 
@@ -723,8 +792,15 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
   public static void setDataSource(final DataSource _dataSource)  {
     dataSource = _dataSource;
   }
-  
+
   protected static DataSource getDataSource()  {
     return dataSource;
+  }
+
+  /**
+   *Ê@see #transManag
+   */
+  public static void setTransactionManager(final TransactionManager _transManag)  {
+    transManag = _transManag;
   }
 }

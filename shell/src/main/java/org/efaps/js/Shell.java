@@ -22,7 +22,6 @@ package org.efaps.js;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.transaction.TransactionManager;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionGroup;
@@ -42,12 +41,6 @@ import org.efaps.shell.method.AbstractMethod;
  */
 public class Shell {
 
-  /**
-   * Theoretically all efaps contexts object instances must include a
-   * transaction manager.
-   */
-  final public static TransactionManager transactionManager = new SlideTransactionManager();
-
   final private static Set < AbstractMethod > methods 
                                  = new HashSet  < AbstractMethod > ();
   {
@@ -63,6 +56,7 @@ public class Shell {
    * Main entry point.
    */
   public static void main(String _args[]) throws Exception  {
+    Context.setTransactionManager(new SlideTransactionManager());
     (new Shell()).run(_args);
   }
 

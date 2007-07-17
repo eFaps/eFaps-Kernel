@@ -52,15 +52,6 @@ import org.efaps.util.EFapsException;
 abstract class EFapsAbstractMojo implements Mojo {
 
   /////////////////////////////////////////////////////////////////////////////
-  // static variables
-
-  /**
-   * Theoretically all efaps contexts object instances must include a
-   * transaction manager.
-   */
-  final public static TransactionManager transactionManager = new SlideTransactionManager();
-
-  /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -113,6 +104,13 @@ abstract class EFapsAbstractMojo implements Mojo {
    * @parameter expression="${basedir}/src/main/efaps"
    */
   private File eFapsDir;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
+
+  protected EFapsAbstractMojo()  {
+    Context.setTransactionManager(new SlideTransactionManager());
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -242,17 +240,15 @@ abstract class EFapsAbstractMojo implements Mojo {
   /**
    * The user with given user name and password makes a login.
    * 
-   * @param _userName
-   *          name of user who wants to make a login
-   * @param _password
-   *          password of the user used to check
+   * @param _userName   name of user who wants to make a login
+   * @param _password   password of the user used to check
    * @throws EFapsException
    *           if the user could not login
    * @see #userName
    * @todo real login with check of password
    */
-  protected void login(final String _userName, final String _password)
-                                                                      throws EFapsException {
+  protected void login(final String _userName,
+                       final String _password) throws EFapsException {
     this.userName = _userName;
   }
 
@@ -275,9 +271,7 @@ abstract class EFapsAbstractMojo implements Mojo {
    * @todo description
    */
   protected void startTransaction() throws EFapsException, Exception {
-    getTransactionManager().begin();
-    Context.newThreadContext(getTransactionManager().getTransaction(),
-        this.userName);
+    Context.begin(this.userName);
   }
 
   /**
@@ -285,8 +279,7 @@ abstract class EFapsAbstractMojo implements Mojo {
    * @todo description
    */
   protected void abortTransaction() throws EFapsException, Exception {
-    getTransactionManager().rollback();
-    Context.getThreadContext().close();
+    Context.rollback();
   }
 
   /**
@@ -294,15 +287,7 @@ abstract class EFapsAbstractMojo implements Mojo {
    * @todo description
    */
   protected void commitTransaction() throws EFapsException, Exception {
-    getTransactionManager().commit();
-    Context.getThreadContext().close();
-  }
-
-  /**
-   * @todo description
-   */
-  protected TransactionManager getTransactionManager() {
-    return transactionManager;
+    Context.commit();
   }
 
   /////////////////////////////////////////////////////////////////////////////
