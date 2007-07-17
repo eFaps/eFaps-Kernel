@@ -25,9 +25,13 @@ import org.efaps.admin.ui.Field;
 import org.efaps.util.EFapsException;
 
 /**
+ * A boolean value is shown in create mode with radio boxen which are not
+ * preselected. In edit mode, the user could select a value.
+ *
  * @author jmo
  * @version $Id$
- * TODO order of the boolean must be corrected
+ * @todo description
+ * @todo preseletect in create for default value
  */
 public class BooleanUI implements UIInterface {
 
@@ -36,43 +40,50 @@ public class BooleanUI implements UIInterface {
     return 0;
   }
 
-  public String getCreateHtml(Object _value, Field _field)
-      throws EFapsException {
+  public String getCreateHtml(final Object _value,
+                              final Field _field)  throws EFapsException {
     StringBuilder ret = new StringBuilder();
-    ret.append("<select name=\"").append(_field.getName()).append(
-        "\" size=\"1\">");
-    ret.append("<option value=\"").append("1").append("\">");
-    ret.append(getTrue(_field)).append("</option>");
-
-    ret.append("<option value=\"").append("0").append("\">");
-    ret.append(getFalse(_field)).append("</option>");
-
-    ret.append("</select>");
+    ret.append("<input type=\"radio\" ")
+           .append("name=\"").append(_field.getName()).append("\" ")
+           .append("value=\"").append("TRUE").append("\"/>")
+           .append(getTrue(_field)).append("<br/>")
+       .append("<input type=\"radio\" ")
+           .append("name=\"").append(_field.getName()).append("\" ")
+           .append("value=\"").append("FALSE").append("\"/>")
+           .append(getFalse(_field));
     return ret.toString();
 
   }
 
-  public String getEditHtml(Object _value, Field _field) throws EFapsException {
+  public String getEditHtml(final Object _value,
+                            final Field _field)  throws EFapsException {
     StringBuilder ret = new StringBuilder();
-    ret.append("<select name=\"").append(_field.getName()).append(
-        "\" size=\"1\">");
-    ret.append("<option value=\"").append("1").append("\">");
-    ret.append(getTrue(_field)).append("</option>");
 
-    ret.append("<option value=\"").append("0").append("\">");
-    ret.append(getFalse(_field)).append("</option>");
+    if (_value instanceof Boolean) {
+      boolean bool = (Boolean) _value;
 
-    ret.append("</select>");
+      ret.append("<input type=\"radio\" ")
+             .append(bool ? "checked=\"checked\" " : "")
+             .append("name=\"").append(_field.getName()).append("\" ")
+             .append("value=\"").append("TRUE").append("\"/>")
+             .append(getTrue(_field)).append("<br/>")
+         .append("<input type=\"radio\" ")
+             .append(bool ? "" : "checked=\"checked\" ")
+             .append("name=\"").append(_field.getName()).append("\" ")
+             .append("value=\"").append("FALSE").append("\"/>")
+             .append(getFalse(_field));
+    }
     return ret.toString();
   }
 
-  public String getSearchHtml(Object _value, Field _field)
-      throws EFapsException {
+  public String getSearchHtml(final Object _value,
+                              final Field _field)  throws EFapsException {
     // TODO Auto-generated method stub
     return null;
   }
 
-  public String getViewHtml(Object _value, Field _field) throws EFapsException {
+  public String getViewHtml(final Object _value,
+                            final Field _field) throws EFapsException {
     String ret = null;
     
     if (_value instanceof Boolean) {
@@ -106,5 +117,4 @@ public class BooleanUI implements UIInterface {
     }
     return ret;
   }
-  // true=1,false=0
 }
