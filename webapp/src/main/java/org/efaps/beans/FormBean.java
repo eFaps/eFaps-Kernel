@@ -21,18 +21,16 @@
 package org.efaps.beans;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.fileupload.FileItem;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.UniqueKey;
 import org.efaps.admin.datamodel.attributetype.AbstractFileType;
+import org.efaps.admin.datamodel.ui.FieldDefinition;
+import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
@@ -140,7 +138,7 @@ public class FormBean extends AbstractCollectionBean {
    * @todo search is not correct defined
    */
   public void execute() throws Exception {
-    Context context = Context.getThreadContext();
+    
     if (isCreateMode() || isSearchMode()) {
       getValues().add(null);
 

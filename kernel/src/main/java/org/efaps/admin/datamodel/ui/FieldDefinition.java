@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.beans;
+package org.efaps.admin.datamodel.ui;
 
 import org.efaps.admin.ui.Field;
 

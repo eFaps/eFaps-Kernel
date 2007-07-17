@@ -20,9 +20,7 @@
 
 package org.efaps.beans;
 
-import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
@@ -32,10 +30,7 @@ import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Search;
 import org.efaps.admin.ui.Table;
-import org.efaps.db.Context;
-import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
@@ -259,7 +254,7 @@ Type type = Type.get(getCommand().getProperty("SearchType"));
    */
   public void addFieldValue(String _label, Field _field, UIInterface _classUI,
                             Object _value, Instance _instance) {
-    getValues().add(new Value(_label, _field, _classUI, _value, _instance));
+//    getValues().add(new Value(_label, _field, _classUI, _value, _instance));
   }
 
   // END COPY

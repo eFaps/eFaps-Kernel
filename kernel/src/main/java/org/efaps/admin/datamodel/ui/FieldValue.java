@@ -18,9 +18,8 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.beans;
+package org.efaps.admin.datamodel.ui;
 
-import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
