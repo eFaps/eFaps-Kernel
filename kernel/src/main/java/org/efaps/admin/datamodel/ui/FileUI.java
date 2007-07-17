@@ -29,12 +29,14 @@ import org.efaps.util.EFapsException;
  */
 public class FileUI implements UIInterface {
 
-  public String getViewHtml(Object _value, Field _field) throws EFapsException {
+  public String getViewHtml(final Object _value, final Field _field)
+      throws EFapsException {
 
     return "view";
   }
 
-  public String getEditHtml(Object _value, Field _field) throws EFapsException {
+  public String getEditHtml(final Object _value, final Field _field)
+      throws EFapsException {
     StringBuffer ret = new StringBuffer();
 
     ret.append("<input name=\"").append(_field.getName()).append("\" ").append(
@@ -44,7 +46,7 @@ public class FileUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getCreateHtml(Object _value, Field _field)
+  public String getCreateHtml(final Object _value, final Field _field)
       throws EFapsException {
     StringBuffer ret = new StringBuffer();
 
@@ -67,8 +69,13 @@ public class FileUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getSearchHtml(Object _value, Field _field)
+  public String getSearchHtml(final Object _value, final Field _field)
       throws EFapsException {
     return "search";
+  }
+
+  public int compareTo(final UIInterface _uiinterface) {
+
+    return 0;
   }
 }

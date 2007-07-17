@@ -100,7 +100,7 @@ public class LinkWithRangesUI implements UIInterface {
     if (_field.hasEvents()) {
       for (Return values : _field.executeEvents(EventType.RANGE_VALUE)) {
 
-        ret.append("<form><select name=\"").append(_field.getName()).append(
+        ret.append("<select name=\"").append(_field.getName()).append(
             "\" size=\"1\">");
 
         Iterator iter =
@@ -112,7 +112,7 @@ public class LinkWithRangesUI implements UIInterface {
               .append(entry.getValue()).append("</option>");
         }
 
-        ret.append("</select></form>");
+        ret.append("</select>");
       }
     } else {
       // throw new EFapsException();
@@ -120,9 +120,14 @@ public class LinkWithRangesUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getSearchHtml(Object _value, Field _field)
+  public String getSearchHtml(final Object _value, final Field _field)
       throws EFapsException {
     return "<input type=\"text\" " + "size=\"" + _field.getCols() + "\" "
         + "name=\"" + _field.getName() + "\" " + "value=\"*\"" + "/>";
+  }
+
+  public int compareTo(final UIInterface _uiinterface) {
+
+    return 0;
   }
 }

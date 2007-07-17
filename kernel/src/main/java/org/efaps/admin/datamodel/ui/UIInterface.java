@@ -29,13 +29,17 @@ import org.efaps.util.EFapsException;
  */
 public interface UIInterface {
 
-  public String getViewHtml(Object _value, Field _field) throws EFapsException;
-
-  public String getEditHtml(Object _value, Field _field) throws EFapsException;
-
-  public String getCreateHtml(Object _value, Field _field)
+  public String getViewHtml(final Object _value, final Field _field)
       throws EFapsException;
 
-  public String getSearchHtml(Object _value, Field _field)
+  public String getEditHtml(final Object _value, final Field _field)
       throws EFapsException;
+
+  public String getCreateHtml(final Object _value, final Field _field)
+      throws EFapsException;
+
+  public String getSearchHtml(final Object _value, final Field _field)
+      throws EFapsException;
+
+  public int compareTo(final UIInterface _uiinterface);
 }

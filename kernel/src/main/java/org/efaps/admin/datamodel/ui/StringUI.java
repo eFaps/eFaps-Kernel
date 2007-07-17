@@ -30,7 +30,8 @@ import org.efaps.util.EFapsException;
  */
 public class StringUI implements UIInterface {
 
-  public String getViewHtml(Object _value, Field _field) throws EFapsException {
+  public String getViewHtml(final Object _value, final Field _field)
+      throws EFapsException {
     String ret = null;
 
     if (_value != null) {
@@ -48,7 +49,8 @@ public class StringUI implements UIInterface {
     return ret;
   }
 
-  public String getEditHtml(Object _value, Field _field) throws EFapsException {
+  public String getEditHtml(final Object _value, final Field _field)
+      throws EFapsException {
     String ret;
     if (_field.getRows() > 1) {
       ret =
@@ -68,7 +70,7 @@ public class StringUI implements UIInterface {
     return ret;
   }
 
-  public String getCreateHtml(Object _value, Field _field)
+  public String getCreateHtml(final Object _value, final Field _field)
       throws EFapsException {
     StringBuffer ret = new StringBuffer();
     if (_field.getRows() > 1) {
@@ -100,9 +102,14 @@ public class StringUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getSearchHtml(Object _value, Field _field)
+  public String getSearchHtml(final Object _value, final Field _field)
       throws EFapsException {
     return "<input type=\"text\" " + "size=\"" + _field.getCols() + "\" "
         + "name=\"" + _field.getName() + "\" " + "value=\"*\"" + "/>";
+  }
+
+  public int compareTo(final UIInterface _uiinterface) {
+
+    return 0;
   }
 }

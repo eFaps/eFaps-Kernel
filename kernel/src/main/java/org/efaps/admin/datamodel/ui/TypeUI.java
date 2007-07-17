@@ -31,7 +31,8 @@ import org.efaps.util.EFapsException;
  */
 public class TypeUI implements UIInterface {
 
-  public String getViewHtml(Object _value, Field _field) throws EFapsException {
+  public String getViewHtml(final Object _value, final Field _field)
+      throws EFapsException {
     String ret = null;
 
     if (_value instanceof Type) {
@@ -47,17 +48,23 @@ public class TypeUI implements UIInterface {
     return ret;
   }
 
-  public String getEditHtml(Object _value, Field _field) throws EFapsException {
+  public String getEditHtml(final Object _value, final Field _field)
+      throws EFapsException {
     return "edit";
   }
 
-  public String getCreateHtml(Object _value, Field _field)
+  public String getCreateHtml(final Object _value, final Field _field)
       throws EFapsException {
     return "create";
   }
 
-  public String getSearchHtml(Object _value, Field _field)
+  public String getSearchHtml(final Object _value, final Field _field)
       throws EFapsException {
     return "search";
+  }
+
+  public int compareTo(final UIInterface _uiinterface) {
+
+    return 0;
   }
 }
