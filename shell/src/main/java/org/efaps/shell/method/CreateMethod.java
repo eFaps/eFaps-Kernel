@@ -57,7 +57,7 @@ public final class CreateMethod extends AbstractJavaScriptMethod  {
   public void doMethod() throws EFapsException,Exception {
     Reader in = new InputStreamReader(
         getClass().getClassLoader()
-                  .getResourceAsStream("org/efaps/js/CreateAll.js"));
+                  .getResourceAsStream("org/efaps/kernel-install/CreateAll.js"));
     evaluate(in, "init");
     in.close();
     evaluate(new StringReader("eFapsCreateAll();"), "init");

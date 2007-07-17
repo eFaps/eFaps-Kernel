@@ -172,7 +172,7 @@ function eFapsCreateAll()  {
   var install = new Install();
 
   _eFapsPrint("############ Read XML Files");
-  var stream = cl.getResourceAsStream("org/efaps/js/definitions/index.txt");
+  var stream = cl.getResourceAsStream("org/efaps/kernel-install/index.txt");
   if (stream != null)  {
     var reader = new LineNumberReader(new InputStreamReader(stream, "UTF-8"));
 
@@ -280,7 +280,7 @@ function eFapsCreateAll()  {
 
   _eFapsPrint("############ Importing Data");
   Context.begin("Administrator");
-  _eFapsCreateAllImportData(cl, "org/efaps/js/definitions/Data/IMPORT_Webapp_RunLevel.xml");
+  _eFapsCreateAllImportData(files);
   _eFpasCreateAllReadProperties(files);
   Context.commit();
 
@@ -291,13 +291,18 @@ function eFapsCreateAll()  {
  * @param _cl   (ClassLoader) class loader to load the given file
  * @param _file (String)      name of file with data to import
  */
-function _eFapsCreateAllImportData(_cl, _file)  {
-  var dimport = new DataImport();
-  dimport.initialise();
-  dimport.readXMLFile(_cl.getResource(_file));
-  if (dimport.hasData()) {
-    dimport.updateInDB();
-  }
+function _eFapsCreateAllImportData(_files)  {
+  var i = 0;
+  while (i < _files.size())  {
+    var url = _files.get(i);
+    var dimport = new DataImport();
+    dimport.initialise();
+    dimport.readXMLFile(url);
+    if (dimport.hasData()) {
+      dimport.updateInDB();
+    }
+    i++;
+  }  
 }
 
 function _eFpasCreateAllReadProperties(_files)  {
