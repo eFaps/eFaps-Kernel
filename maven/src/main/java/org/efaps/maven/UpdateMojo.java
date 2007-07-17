@@ -20,7 +20,6 @@
 
 package org.efaps.maven;
 
-import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import org.efaps.maven.install.Application;
@@ -44,29 +43,23 @@ public final class UpdateMojo extends EFapsAbstractMojo  {
    * Executes the update goal.
    */
   public void execute() throws MojoExecutionException  {
-    System.getProperties().setProperty(Log.class.getName(),
-                                       Maven2CommonsLog.class.getName());    
-    Maven2CommonsLog.logger = getLog();
-    getLog().info("Initialise Database Connection");
-    if (!initDatabase())  {
-      getLog().error("Database Connection could not be initialised!");
-    } else  {
-      try  {
-        login("Administrator", "");
-        reloadCache();
-        startTransaction();
-       
-        Application appl = getApplication();
-        if (appl != null)  {
-          appl.updateLastVersion();
-        }
+    init();
 
-        commitTransaction();
-      } catch (EFapsException e)  {
-        getLog().error(e);
-      } catch (Exception e)  {
-        getLog().error(e);
+    try  {
+      login("Administrator", "");
+      reloadCache();
+      startTransaction();
+     
+      Application appl = getApplication();
+      if (appl != null)  {
+        appl.updateLastVersion();
       }
+
+      commitTransaction();
+    } catch (EFapsException e)  {
+      getLog().error(e);
+    } catch (Exception e)  {
+      getLog().error(e);
     }
   }
 }

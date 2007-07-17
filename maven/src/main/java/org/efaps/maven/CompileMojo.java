@@ -22,7 +22,6 @@ package org.efaps.maven;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import org.efaps.admin.program.esjp.Compiler;
@@ -45,25 +44,19 @@ public final class CompileMojo extends EFapsAbstractMojo {
    * Executes the esjp goal.
    */
   public void execute() throws MojoExecutionException {
-    System.getProperties().setProperty(Log.class.getName(),
-                                       Maven2CommonsLog.class.getName());    
-    Maven2CommonsLog.logger = getLog();
-    getLog().info("Initialise Database Connection");
-    if (!initDatabase()) {
-      getLog().error("Database Connection could not be initialised!");
-    } else {
-      try {
-        login("Administrator", "");
-        reloadCache();
-        startTransaction();
-        (new Compiler(getClasspathElements())).compile();
-        commitTransaction();
+    init();
 
-      } catch (EFapsException e) {
-        getLog().error(e);
-      } catch (Exception e) {
-        getLog().error(e);
-      }
+    try {
+      login("Administrator", "");
+      reloadCache();
+      startTransaction();
+      (new Compiler(getClasspathElements())).compile();
+      commitTransaction();
+
+    } catch (EFapsException e) {
+      getLog().error(e);
+    } catch (Exception e) {
+      getLog().error(e);
     }
   }
 }

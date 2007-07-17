@@ -56,6 +56,9 @@
         </configuration>
       </plugin>
 
+      <!--
+        eFaps plugin used to compile
+      -->
       <plugin>
         <groupId>org.efaps</groupId>
         <artifactId>maven-efaps-plugin</artifactId>
@@ -112,6 +115,25 @@
             <groupId>commons-dbcp</groupId>
             <artifactId>commons-dbcp</artifactId>
             <version>1.2.1</version>
+          </dependency>
+          <!-- Derby Client Database Driver -->
+          <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>10.2.2.0</version>
+          </dependency>
+          <!-- kernel install -->
+          <dependency>
+            <groupId>org.efaps</groupId>
+            <artifactId>eFaps-Kernel-Install</artifactId>
+            <version>1.0-SNAPSHOT</version>
+          </dependency>
+          <!-- Mozilla's JavaScript -->
+          <dependency>
+            <groupId>rhino</groupId>
+            <artifactId>js</artifactId>
+            <version>1.6R5</version>
+            <scope>compile</scope>
           </dependency>
         </dependencies>
       </plugin>

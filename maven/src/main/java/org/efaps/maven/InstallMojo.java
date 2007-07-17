@@ -44,36 +44,30 @@ public final class InstallMojo extends EFapsAbstractMojo {
    * Executes the install goal.
    */
   public void execute() throws MojoExecutionException {
-    System.getProperties().setProperty(Log.class.getName(),
-                                       Maven2CommonsLog.class.getName());    
-    Maven2CommonsLog.logger = getLog();
-    getLog().info("Initialise Database Connection");
-    if (!initDatabase()) {
-      getLog().error("Database Connection could not be initialised!");
-    } else {
-      try {
-        login("Administrator", "");
-        reloadCache();
-        startTransaction();
+    init();
 
-        Application appl = getApplication();
-        if (appl != null) {
-          appl.install();
-        }
+    try {
+      login("Administrator", "");
+      reloadCache();
+      startTransaction();
 
-        commitTransaction();
-        if (appl != null) {
-          startTransaction();
-          ApplicationVersion version = appl.getLastVersion();
-          version.importData();
-          commitTransaction();
-        }
-
-      } catch (EFapsException e) {
-        getLog().error(e);
-      } catch (Exception e) {
-        getLog().error(e);
+      Application appl = getApplication();
+      if (appl != null) {
+        appl.install();
       }
+
+      commitTransaction();
+      if (appl != null) {
+        startTransaction();
+        ApplicationVersion version = appl.getLastVersion();
+        version.importData();
+        commitTransaction();
+      }
+
+    } catch (EFapsException e) {
+      getLog().error(e);
+    } catch (Exception e) {
+      getLog().error(e);
     }
   }
 }

@@ -109,11 +109,19 @@ abstract class EFapsAbstractMojo implements Mojo {
   // constructors / destructors
 
   protected EFapsAbstractMojo()  {
-    Context.setTransactionManager(new SlideTransactionManager());
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
+
+  protected void init()  {
+    System.getProperties().setProperty(
+            org.apache.commons.logging.Log.class.getName(),
+            Maven2CommonsLog.class.getName());    
+    Maven2CommonsLog.logger = getLog();
+    Context.setTransactionManager(new SlideTransactionManager());
+    initDatabase();
+  }
 
   /**
    * <code>null</code> is returned, of the version file could not be opened
@@ -170,6 +178,8 @@ abstract class EFapsAbstractMojo implements Mojo {
    */
   protected boolean initDatabase() {
     boolean initialised = false;
+
+    getLog().info("Initialise Database Connection");
 
     // configure database type
     String dbClass = null;

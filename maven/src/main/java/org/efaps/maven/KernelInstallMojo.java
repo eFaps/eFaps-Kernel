@@ -18,48 +18,49 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.shell.method;
+package org.efaps.maven;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 
-import org.mozilla.javascript.tools.shell.Main;
+import org.apache.maven.plugin.MojoExecutionException;
 
 import org.efaps.util.EFapsException;
 
 /**
  *
- * @todo descriptionâ
  * @author tmo
  * @version $Id$
+ * @todo description
+ * @goal kernel-install
+ * @requiresDependencyResolution compile
  */
-public final class CreateMethod extends AbstractJavaScriptMethod  {
+public final class KernelInstallMojo extends AbstractJavaScriptMojo  {
   
-  /////////////////////////////////////////////////////////////////////////////
-  // constructors / desctructors
-  
-  /**
-   *
-   */
-  public CreateMethod()  {
-    super("create", "creates a new eFaps instance");
-  }
-
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
+   * Executes the kernel install goal.
    *
-   * @todo remove Exception
    * @todo descriptionâ
    */
-  public void doMethod() throws EFapsException,Exception {
-    Reader in = new InputStreamReader(
-        getClass().getClassLoader()
-                  .getResourceAsStream("org/efaps/kernel-install/CreateAll.js"));
-    evaluate(in, "init");
-    in.close();
-    evaluate(new StringReader("eFapsCreateAll();"), "init");
+  public void execute() throws MojoExecutionException  {
+    init();
+    try  {
+      Reader in = new InputStreamReader(
+          getClass().getClassLoader()
+                    .getResourceAsStream("org/efaps/kernel-install/CreateAll.js"));
+      evaluate(in, "CreateAll.js");
+      in.close();
+      putPropertyInJS("classPathElements", getClasspathElements());
+
+      evaluate(new StringReader("eFapsCreateAll();"), "eFapsCreateAll()");
+    } catch (IOException e)  {
+      throw new MojoExecutionException(
+            "Could not execute Kernal Installation script", e);
+    }
   }
 }
