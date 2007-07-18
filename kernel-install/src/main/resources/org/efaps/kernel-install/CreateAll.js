@@ -416,7 +416,7 @@ function _eFapsCreateInsertAttr(_stmt, _tableId, _typeId, _name, _sqlColumn, _at
                     "T_ABSTRACT",
                     "TYPEID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
                     typeIdAttr + ", '" + _name + "', '', 1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP);
-  _exec(_stmt, null, null, "insert into T_DMATTRIBUTE values  (" + ret + ", " + _tableId + ", " + _typeId + ",  " + attrTypeId + ", " + typeLinkId + ", '" + _sqlColumn + "')");
+  _exec(_stmt, null, null, "insert into T_DMATTRIBUTE (ID, DMTABLE, DMTYPE, DMATTRIBUTETYPE, DMTYPELINK, SQLCOLUMN ) values  (" + ret + ", " + _tableId + ", " + _typeId + ",  " + attrTypeId + ", " + typeLinkId + ", '" + _sqlColumn + "')");
   return ret;
 }
 
