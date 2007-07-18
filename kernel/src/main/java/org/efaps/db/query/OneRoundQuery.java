@@ -401,8 +401,20 @@ public class OneRoundQuery {
     }
 
     int evaluateSQLStatement(final int _startIndex) {
+
+      int maxExpression = Context.getDbType().getMaxExpressions();
+      List<StringBuilder> instSQLs = new ArrayList<StringBuilder>();
       StringBuilder instSQL = new StringBuilder();
+      instSQLs.add(instSQL);
+      int i = 0;
       for (Instance instance : this.instances) {
+        i++;
+        if (i > maxExpression - 1) {
+          instSQL.deleteCharAt(instSQL.length() - 1);
+          instSQL = new StringBuilder();
+          instSQLs.add(instSQL);
+          i = 0;
+        }
         instSQL.append(instance.getId()).append(",");
       }
       if (this.instances.size() > 0) {
@@ -437,25 +449,34 @@ public class OneRoundQuery {
         // System.out.println(""+entry.getKey()+"="+curIndex);
       }
 
-      evaluateSQLStatement(instSQL);
+      evaluateSQLStatement(instSQLs);
       return (_startIndex + this.index);
     }
 
-    void evaluateSQLStatement(StringBuilder _instSQL) {
+    void evaluateSQLStatement(final List<StringBuilder> _instSQLs) {
 
       StringBuilder sql = new StringBuilder();
-      sql.append("select distinct ");
 
-      // append columns including the id
-      for (String col : this.cols) {
-        sql.append(col).append(",");
+      boolean first = true;
+
+      for (StringBuilder instSQL : _instSQLs) {
+        if (first) {
+          sql.append("select distinct ");
+          first = false;
+        } else {
+          sql.append("union select ");
+        }
+
+        // append columns including the id
+        for (String col : this.cols) {
+          sql.append(col).append(",");
+        }
+        sql.deleteCharAt(sql.length() - 1);
+
+        sql.append(" from ").append(this.sqlTable.getSqlTable()).append(
+            " where ID in (").append(instSQL).append(")");
+        // System.out.println("sql="+sql);
       }
-      sql.deleteCharAt(sql.length() - 1);
-
-      sql.append(" from ").append(this.sqlTable.getSqlTable()).append(
-          " where ID in (").append(_instSQL).append(")");
-      // System.out.println("sql="+sql);
-
       ConnectionResource con = null;
       try {
         con = Context.getThreadContext().getConnectionResource();

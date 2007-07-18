@@ -68,6 +68,12 @@ public class OracleDatabase extends AbstractDatabase  {
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
+  public int getMaxExpressions() {
+    return 1000;
+  }
+  
+  
+  
   /**
    * The method returns string <code>sysdate</code> which let Oracle set the
    * timestamp automatically from the database server.
