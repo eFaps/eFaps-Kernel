@@ -26,8 +26,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
@@ -180,24 +178,7 @@ public class Attribute extends DataModelObject {
     return ret;
   }
 
-  /**
-   * Returns the name of the attribute.
-   * 
-   * @param _context
-   * @see #getName
-   */
-  public String getViewableName(Context _context) {
-    String name = getName();
-    ResourceBundle msgs =
-        ResourceBundle.getBundle("org.efaps.properties.AttributeRessource",
-            _context.getLocale());
-    try {
-      name = msgs.getString("Attribute." + getParent().getName() + "/" + name);
-    } catch (MissingResourceException e) {
-    }
-    return name;
-  }
-
+  
   /**
    * A unique key can added to this attribute instance. If no unique key is
    * added before, the instance variable {@link #uniqueKeys} is initialised.
@@ -237,6 +218,7 @@ public class Attribute extends DataModelObject {
     ret.setAttributeType(getAttributeType());
     ret.setUniqueKeys(getUniqueKeys());
     ret.getProperties().putAll(getProperties());
+    ret.setDefaultValue(this.getDefaultValue());
     return ret;
   }
 

@@ -26,8 +26,9 @@ import org.efaps.admin.ui.Field;
 import org.efaps.util.EFapsException;
 
 /**
- * A boolean value is shown in create mode with radio boxen which are not
- * preselected. In edit mode, the user could select a value.
+ * A boolean value is shown in create mode with radio boxen which are only
+ * preselected if a defaultvalue for the attribute was defined. In edit mode,
+ * the user could select a value.
  * 
  * @author jmo
  * @version $Id$
@@ -39,12 +40,24 @@ public class BooleanUI implements UIInterface {
   public String getCreateHtml(final Object _value, final Field _field,
       final Attribute _attribute) throws EFapsException {
     StringBuilder ret = new StringBuilder();
-    ret.append("<input type=\"radio\" ").append("name=\"").append(
-        _field.getName()).append("\" ").append("value=\"").append("TRUE")
-        .append("\"/>").append(getTrue(_field)).append("<br/>").append(
-            "<input type=\"radio\" ").append("name=\"")
-        .append(_field.getName()).append("\" ").append("value=\"").append(
-            "FALSE").append("\"/>").append(getFalse(_field));
+    Boolean bool = null;
+    if (_attribute.getDefaultValue() != null
+        && _attribute.getDefaultValue().length() > 0) {
+      if (_attribute.getDefaultValue().equalsIgnoreCase("TRUE")) {
+        bool = true;
+      } else {
+        bool = false;
+      }
+    }
+    ret.append("<input type=\"radio\" ").append(
+        (bool != null && bool) ? "checked=\"checked\" " : "").append("name=\"")
+        .append(_field.getName()).append("\" ");
+    ret.append("value=\"").append("TRUE").append("\"/>");
+    ret.append(getTrue(_field)).append("<br/>");
+    ret.append("<input type=\"radio\" ").append(
+        (bool != null && !bool) ? "checked=\"checked\" " : "")
+        .append("name=\"").append(_field.getName()).append("\" ").append(
+            "value=\"").append("FALSE").append("\"/>").append(getFalse(_field));
     return ret.toString();
 
   }
