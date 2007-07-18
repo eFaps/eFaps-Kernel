@@ -55,11 +55,8 @@ public abstract class AbstractLinkType extends AbstractType {
    */
   public void update(final Object _object, final PreparedStatement _stmt,
       final List<Integer> _index) throws SQLException {
-    if (getValue() == 0) {
-      _stmt.setNull(_index.get(0), java.sql.Types.INTEGER);
-    } else {
-      _stmt.setLong(_index.get(0), getValue());
-    }
+
+    _stmt.setObject(_index.get(0), getValue());
   }
 
   /**
@@ -69,8 +66,7 @@ public abstract class AbstractLinkType extends AbstractType {
    */
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
 
-    Long value = _rs.getLong(_indexes.get(0));
-    setValue(value != null ? value : 0);
+    setValue(_rs.getObject(_indexes.get(0)));
     return getValue();
   }
 
@@ -80,7 +76,7 @@ public abstract class AbstractLinkType extends AbstractType {
    * @see #getValue
    * @see #setValue
    */
-  private long value = 0;
+  private Object value = 0;
 
   // ///////////////////////////////////////////////////////////////////////////
 
@@ -92,7 +88,7 @@ public abstract class AbstractLinkType extends AbstractType {
    * @see #value
    * @see #getValue
    */
-  public void setValue(final long _value) {
+  public void setValue(final Object _value) {
     this.value = _value;
   }
 
@@ -103,7 +99,7 @@ public abstract class AbstractLinkType extends AbstractType {
    * @see #value
    * @see #setValue
    */
-  public long getValue() {
+  public Object getValue() {
     return this.value;
   }
 }

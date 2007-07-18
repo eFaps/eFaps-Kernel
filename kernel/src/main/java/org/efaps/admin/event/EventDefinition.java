@@ -217,12 +217,12 @@ public class EventDefinition extends AdminObject implements EventExecution {
     }
     while (query.next()) {
       String eventOID = (String) query.get("OID");
-      long eventId = (Long) query.get("ID");
+      long eventId = ((Number) query.get("ID")).longValue();
       Type eventType = (Type) query.get("Type");
       String eventName = (String) query.get("Name");
       long eventPos = (Long) query.get("IndexPosition");
-      long abstractID = (Long) query.get("Abstract");
-      Long programId = (Long) query.get("JavaProg");
+      long abstractID = ((Number) query.get("Abstract")).longValue();
+      Long programId = ((Number) query.get("JavaProg")).longValue();;
       String method = (String) query.get("Method");
 
       String resName = getClassName(programId.toString());
@@ -298,8 +298,8 @@ public class EventDefinition extends AdminObject implements EventExecution {
           LOG.debug("      Menu=" + menu.getName());
         }
 
-        menu.addEvent(triggerEvent, new EventDefinition(eventId,
-            eventName, eventPos, resName, method, eventOID));
+        menu.addEvent(triggerEvent, new EventDefinition(eventId, eventName,
+            eventPos, resName, method, eventOID));
 
       } else if (LOG.isDebugEnabled()) {
         LOG.debug("initialise() - unknown event trigger connection");

@@ -203,7 +203,7 @@ abstract public class MenuAbstract extends CommandAbstract {
       query.executeWithoutAccessCheck();
 
       while (query.next()) {
-        long commandId = (Long) query.get("ToCommand");
+        long commandId = ((Number) query.get("ToCommand")).longValue();
         long sortId = (Long) query.get("ID");
         add(sortId, commandId);
       }

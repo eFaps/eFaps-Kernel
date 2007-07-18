@@ -39,12 +39,18 @@ public class PersonLinkType extends AbstractLinkType {
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
     Object ret = null;
 
-    Long userId = (Long) super.readValue(_rs, _indexes);
+    Object userId = super.readValue(_rs, _indexes);
     if (userId != null) {
       try {
-        ret = Person.get(getValue());
+        long id = 0;
+        if (userId instanceof Number) {
+          id = ((Number) userId).longValue();
+        } else if (userId != null) {
+          id = Long.parseLong(userId.toString());
+        }
+        ret = Person.get(id);
         if (ret == null) {
-          ret = Role.get(getValue());
+          ret = Role.get(id);
         }
       } catch (Exception e) {
         e.printStackTrace();

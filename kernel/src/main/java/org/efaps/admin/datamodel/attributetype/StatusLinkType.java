@@ -35,12 +35,12 @@ public class StatusLinkType extends AbstractLinkType {
    * @return status object
    */
   public Status getStatus() {
-    try {
+/*    try {
       return Status.get(getValue());
     } catch (Throwable e) {
       e.printStackTrace();
     }
-    return null;
+*/    return null;
   }
 
   public String toString() {
