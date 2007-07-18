@@ -83,32 +83,28 @@ public class FieldValue {
    *
    */
   public String getCreateHtml() throws EFapsException {
-    return getClassUI().getCreateHtml(getValue(), getFieldDef().getField(),
-        this.attribute);
+    return getClassUI().getCreateHtml(this);
   }
 
   /**
    *
    */
   public String getViewHtml() throws EFapsException {
-    return getClassUI().getViewHtml(getValue(), getFieldDef().getField(),
-        this.attribute);
+    return getClassUI().getViewHtml(this);
   }
 
   /**
    *
    */
   public String getEditHtml() throws EFapsException {
-    return getClassUI().getEditHtml(getValue(), getFieldDef().getField(),
-        this.attribute);
+    return getClassUI().getEditHtml(this);
   }
 
   /**
    *
    */
   public String getSearchHtml() throws EFapsException {
-    return getClassUI().getSearchHtml(getValue(), getFieldDef().getField(),
-        this.attribute);
+    return getClassUI().getSearchHtml(this);
   }
 
   // /////////////////////////////////////////////////////////////////////////

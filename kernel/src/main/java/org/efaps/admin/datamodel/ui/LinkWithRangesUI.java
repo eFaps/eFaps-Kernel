@@ -23,7 +23,6 @@ package org.efaps.admin.datamodel.ui;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -40,18 +39,18 @@ import org.efaps.util.EFapsException;
  * @author jmo
  * @version $Id$
  */
-public class LinkWithRangesUI implements UIInterface {
-
-  public String getViewHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+public class LinkWithRangesUI extends AbstractUI {
+  @Override
+  public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
     StringBuilder ret = new StringBuilder();
 
-    if (_value != null) {
+    Field _field = _fieldValue.getFieldDef().getField();
+    if (_fieldValue.getValue() != null) {
       if (_field.hasEvents()) {
 
         for (Return values : _field.executeEvents(EventType.RANGE_VALUE)) {
           ret.append((String) ((Map) values.get(ReturnValues.VALUES))
-              .get(_value.toString()));
+              .get(_fieldValue.getValue().toString()));
         }
       }
 
@@ -61,15 +60,15 @@ public class LinkWithRangesUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getEditHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+  @Override
+  public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
     StringBuilder ret = new StringBuilder();
+    Field field = _fieldValue.getFieldDef().getField();
+    if (_fieldValue.getValue() != null) {
+      if (field.hasEvents()) {
+        for (Return values : field.executeEvents(EventType.RANGE_VALUE)) {
 
-    if (_value != null) {
-      if (_field.hasEvents()) {
-        for (Return values : _field.executeEvents(EventType.RANGE_VALUE)) {
-
-          ret.append("<select name=\"").append(_field.getName()).append(
+          ret.append("<select name=\"").append(field.getName()).append(
               "\" size=\"1\">");
 
           Iterator iter =
@@ -78,7 +77,7 @@ public class LinkWithRangesUI implements UIInterface {
           while (iter.hasNext()) {
             Map.Entry entry = (Map.Entry) iter.next();
             ret.append("<option value=\"").append(entry.getKey());
-            if (_value.toString().equals(entry.getKey())) {
+            if (_fieldValue.getValue().toString().equals(entry.getKey())) {
               ret.append("\" selected=\"selected");
             }
             ret.append("\">").append(entry.getValue()).append("</option>");
@@ -94,14 +93,15 @@ public class LinkWithRangesUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getCreateHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+  @Override
+  public String getCreateHtml(final FieldValue _fieldValue)
+      throws EFapsException {
     StringBuilder ret = new StringBuilder();
+    Field field = _fieldValue.getFieldDef().getField();
+    if (field.hasEvents()) {
+      for (Return values : field.executeEvents(EventType.RANGE_VALUE)) {
 
-    if (_field.hasEvents()) {
-      for (Return values : _field.executeEvents(EventType.RANGE_VALUE)) {
-
-        ret.append("<select name=\"").append(_field.getName()).append(
+        ret.append("<select name=\"").append(field.getName()).append(
             "\" size=\"1\">");
 
         Iterator iter =
@@ -121,16 +121,12 @@ public class LinkWithRangesUI implements UIInterface {
     return ret.toString();
   }
 
-  public String getSearchHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
-    return "<input type=\"text\" " + "size=\"" + _field.getCols() + "\" "
-        + "name=\"" + _field.getName() + "\" " + "value=\"*\"" + "/>";
+  @Override
+  public String getSearchHtml(final FieldValue _fieldValue)
+      throws EFapsException {
+    Field field = _fieldValue.getFieldDef().getField();
+    return "<input type=\"text\" " + "size=\"" + field.getCols() + "\" "
+        + "name=\"" + field.getName() + "\" " + "value=\"*\"" + "/>";
   }
 
-  public int compareTo(UIInterface _uiinterface, UIInterface __uiinterface2) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
- 
 }

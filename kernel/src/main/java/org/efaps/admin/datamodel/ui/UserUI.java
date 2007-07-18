@@ -20,7 +20,6 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
@@ -28,19 +27,19 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
+ * @author jmo
  * @version $Id$
  */
-public class UserUI implements UIInterface {
-
-  public String getViewHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+public class UserUI extends AbstractUI {
+  @Override
+  public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
     String ret = null;
-
-    if (_value instanceof Person) {
-      Person person = (Person) _value;
+    Object value = _fieldValue.getValue();
+    if (value instanceof Person) {
+      Person person = (Person) value;
       ret = person.getViewableName(null);
-    } else if (_value instanceof Role) {
-      Role role = (Role) _value;
+    } else if (value instanceof Role) {
+      Role role = (Role) value;
       ret = role.getViewableName(null);
     } else {
       // throw new EFapsException();
@@ -48,32 +47,39 @@ public class UserUI implements UIInterface {
     return ret;
   }
 
-  public String getEditHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
-    return "edit";
-  }
-
-  public String getCreateHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
-
+  @Override
+  public String getCreateHtml(final FieldValue _fieldValue)
+      throws EFapsException {
+    Field field = _fieldValue.getFieldDef().getField();
     StringBuilder ret = new StringBuilder();
     ret.append("<input type=\"hidden\" ").append("name=\"").append(
-        _field.getName()).append("\" id=\"UserUI\">");
+        field.getName()).append("\" id=\"UserUI\">");
 
-    ret.append("<iframe frameborder=\"0\" name=\"").append(_field.getName())
+    ret.append("<iframe frameborder=\"0\" name=\"").append(field.getName())
         .append("\" src=\"UserUI.jsp?\"></iframe>");
     return ret.toString();
 
   }
 
-  public String getSearchHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
-    return "search";
-  }
+  @Override
+  public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2) {
+    String value = null;
+    if (_fieldValue.getValue() instanceof Person) {
+      Person person = (Person) _fieldValue.getValue();
+      value = person.getViewableName(null);
+    } else if (_fieldValue.getValue() instanceof Role) {
+      Role role = (Role) _fieldValue.getValue();
+      value = role.getViewableName(null);
+    }
+    String value2 = null;
+    if (_fieldValue2.getValue() instanceof Person) {
+      Person person = (Person) _fieldValue2.getValue();
+      value = person.getViewableName(null);
+    } else if (_fieldValue2.getValue() instanceof Role) {
+      Role role = (Role) _fieldValue2.getValue();
+      value = role.getViewableName(null);
+    }
 
-  public int compareTo(UIInterface _uiinterface, UIInterface __uiinterface2) {
-    // TODO Auto-generated method stub
-    return 0;
+    return value.compareTo(value2);
   }
-
 }

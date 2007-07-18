@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 961 $
- * Last Changed:    $Date: 2007-07-08 15:49:39 -0500 (Sun, 08 Jul 2007) $
- * Last Changed By: $Author: tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel.ui;
@@ -23,21 +23,31 @@ package org.efaps.admin.datamodel.ui;
 import org.efaps.util.EFapsException;
 
 /**
- * @author tmo
  * @author jmo
  * @version $Id$
  */
-public interface UIInterface {
+public abstract class AbstractUI implements UIInterface {
 
-  public String getViewHtml(final FieldValue _fieldValue) throws EFapsException;
-
-  public String getEditHtml(final FieldValue _fieldValue) throws EFapsException;
+  public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2) {
+    return 0;
+  }
 
   public String getCreateHtml(final FieldValue _fieldValue)
-      throws EFapsException;
+      throws EFapsException {
+    return "create";
+  }
+
+  public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
+    return "edit";
+  }
 
   public String getSearchHtml(final FieldValue _fieldValue)
-      throws EFapsException;
+      throws EFapsException {
+    return "search";
+  }
 
-  public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2);
+  public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
+    return "view";
+  }
+
 }

@@ -20,7 +20,6 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.ui.Field;
 import org.efaps.util.EFapsException;
 
@@ -29,14 +28,13 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public class StringUI implements UIInterface {
-
-  public String getViewHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+public class StringUI extends AbstractUI {
+  @Override
+  public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
     String ret = null;
 
-    if (_value != null) {
-      ret = _value.toString();
+    if (_fieldValue.getValue() != null) {
+      ret = _fieldValue.getValue().toString();
       if (ret != null) {
         ret =
             ret.replaceAll("\\n", "<br/>").replaceAll("<", "&lt;").replaceAll(
@@ -50,68 +48,70 @@ public class StringUI implements UIInterface {
     return ret;
   }
 
-  public String getEditHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+  @Override
+  public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
     String ret;
-    if (_field.getRows() > 1) {
+    Field field = _fieldValue.getFieldDef().getField();
+    Object value = _fieldValue.getValue();
+    if (field.getRows() > 1) {
       ret =
-          "<textarea " + "type=\"text\" " + "cols=\"" + _field.getCols()
-              + "\" " + "rows=\"" + _field.getRows() + "\" " + "name=\""
-              + _field.getName() + "\"" + ">";
-      if (_value != null) {
-        ret += _value;
+          "<textarea " + "type=\"text\" " + "cols=\"" + field.getCols() + "\" "
+              + "rows=\"" + field.getRows() + "\" " + "name=\""
+              + field.getName() + "\"" + ">";
+      if (value != null) {
+        ret += value;
       }
       ret += "</textarea>";
     } else {
       ret =
-          "<input type=\"text\" " + "size=\"" + _field.getCols() + "\" "
-              + "name=\"" + _field.getName() + "\" " + "value=\""
-              + (_value != null ? _value : "") + "\"" + "/>";
+          "<input type=\"text\" " + "size=\"" + field.getCols() + "\" "
+              + "name=\"" + field.getName() + "\" " + "value=\""
+              + (value != null ? value : "") + "\"" + "/>";
     }
     return ret;
   }
 
-  public String getCreateHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+  @Override
+  public String getCreateHtml(final FieldValue _fieldValue)
+      throws EFapsException {
     StringBuffer ret = new StringBuffer();
-    if (_field.getRows() > 1) {
+    Field field = _fieldValue.getFieldDef().getField();
+    Object value = _fieldValue.getValue();
+
+    if (field.getRows() > 1) {
       ret.append("<textarea " + "type=\"text\" " + "cols=\"").append(
-          _field.getCols()).append("\" " + "rows=\"").append(_field.getRows())
-          .append("\" " + "name=\"").append(_field.getName()).append("\" ");
-      /*
-       * if (_field.getAttribute()!=null &&
-       * _field.getAttribute().getUniqueKeys()!=null) {
-       * ret.append("onChange=\"eFapsUniqueKeyValueChange(this);\" "); }
-       */
+          field.getCols()).append("\" " + "rows=\"").append(field.getRows())
+          .append("\" " + "name=\"").append(field.getName()).append("\" ");
+
       ret.append(">");
-      if (_value != null) {
-        ret.append(_value);
+      if (value != null) {
+        ret.append(value);
       }
       ret.append("</textarea>");
     } else {
-      ret.append("<input type=\"text\" " + "size=\"").append(_field.getCols())
-          .append("\" " + "name=\"").append(_field.getName()).append(
-              "\" " + "value=\"").append((_value != null ? _value : ""))
-          .append("\" ");
-      /*
-       * if (_field.getAttribute()!=null &&
-       * _field.getAttribute().getUniqueKeys()!=null) {
-       * ret.append("onChange=\"eFapsUniqueKeyValueChange(this);\" "); }
-       */
+      ret.append("<input type=\"text\" " + "size=\"").append(field.getCols())
+          .append("\" " + "name=\"").append(field.getName()).append(
+              "\" " + "value=\"").append((value != null ? value : "")).append(
+              "\" ");
+
       ret.append(">");
     }
     return ret.toString();
   }
 
-  public String getSearchHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
-    return "<input type=\"text\" " + "size=\"" + _field.getCols() + "\" "
-        + "name=\"" + _field.getName() + "\" " + "value=\"*\"" + "/>";
+  @Override
+  public String getSearchHtml(final FieldValue _fieldValue)
+      throws EFapsException {
+    Field field = _fieldValue.getFieldDef().getField();
+    return "<input type=\"text\" " + "size=\"" + field.getCols() + "\" "
+        + "name=\"" + field.getName() + "\" " + "value=\"*\"" + "/>";
   }
 
-  public int compareTo(UIInterface _uiinterface, UIInterface __uiinterface2) {
-    // TODO Auto-generated method stub
-    return 0;
+  @Override
+  public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2) {
+    String value = _fieldValue.getValue().toString();
+    String value2 = _fieldValue2.getValue().toString();
+    return value.compareTo(value2);
   }
 
 }

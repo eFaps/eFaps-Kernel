@@ -20,24 +20,22 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.Field;
 import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
+ * @author jmo
  * @version $Id$
  */
-public class TypeUI implements UIInterface {
-
-  public String getViewHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+public class TypeUI extends AbstractUI {
+  @Override
+  public String getViewHtml(FieldValue _fieldValue) throws EFapsException {
     String ret = null;
 
-    if (_value instanceof Type) {
-      Type value = ((Type) _value);
+    if (_fieldValue.getValue() instanceof Type) {
+      Type value = ((Type) _fieldValue.getValue());
 
       String name = value.getName();
 
@@ -49,24 +47,19 @@ public class TypeUI implements UIInterface {
     return ret;
   }
 
-  public String getEditHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
-    return "edit";
-  }
+  @Override
+  public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2) {
+    String value = null;
+    String value2 = null;
+    if (_fieldValue.getValue() instanceof Type) {
+      Type type = ((Type) _fieldValue.getValue());
+      value = DBProperties.getProperty(type.getName() + ".Label");
+    }
+    if (_fieldValue2.getValue() instanceof Type) {
+      Type type = ((Type) _fieldValue2.getValue());
+      value2 = DBProperties.getProperty(type.getName() + ".Label");
+    }
 
-  public String getCreateHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
-    return "create";
+    return value.compareTo(value2);
   }
-
-  public String getSearchHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
-    return "search";
-  }
-
-  public int compareTo(UIInterface _uiinterface, UIInterface __uiinterface2) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
 }

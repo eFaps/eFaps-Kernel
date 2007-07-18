@@ -35,15 +35,17 @@ import org.efaps.util.EFapsException;
  * @todo description
  * @todo preseletect in create for default value
  */
-public class BooleanUI implements UIInterface {
-
-  public String getCreateHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+public class BooleanUI extends AbstractUI {
+  @Override
+  public String getCreateHtml(final FieldValue _fieldValue)
+      throws EFapsException {
     StringBuilder ret = new StringBuilder();
     Boolean bool = null;
-    if (_attribute.getDefaultValue() != null
-        && _attribute.getDefaultValue().length() > 0) {
-      if (_attribute.getDefaultValue().equalsIgnoreCase("TRUE")) {
+    Attribute attribute = _fieldValue.getAttribute();
+    Field field = _fieldValue.getFieldDef().getField();
+    if (attribute.getDefaultValue() != null
+        && attribute.getDefaultValue().length() > 0) {
+      if (attribute.getDefaultValue().equalsIgnoreCase("TRUE")) {
         bool = true;
       } else {
         bool = false;
@@ -51,48 +53,42 @@ public class BooleanUI implements UIInterface {
     }
     ret.append("<input type=\"radio\" ").append(
         (bool != null && bool) ? "checked=\"checked\" " : "").append("name=\"")
-        .append(_field.getName()).append("\" ");
+        .append(field.getName()).append("\" ");
     ret.append("value=\"").append("TRUE").append("\"/>");
-    ret.append(getTrue(_field)).append("<br/>");
+    ret.append(getTrue(field)).append("<br/>");
     ret.append("<input type=\"radio\" ").append(
         (bool != null && !bool) ? "checked=\"checked\" " : "")
-        .append("name=\"").append(_field.getName()).append("\" ").append(
-            "value=\"").append("FALSE").append("\"/>").append(getFalse(_field));
+        .append("name=\"").append(field.getName()).append("\" ").append(
+            "value=\"").append("FALSE").append("\"/>").append(getFalse(field));
     return ret.toString();
 
   }
 
-  public String getEditHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+  @Override
+  public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
     StringBuilder ret = new StringBuilder();
-
-    if (_value instanceof Boolean) {
-      boolean bool = (Boolean) _value;
+    Field field = _fieldValue.getFieldDef().getField();
+    if (_fieldValue.getValue() instanceof Boolean) {
+      boolean bool = (Boolean) _fieldValue.getValue();
 
       ret.append("<input type=\"radio\" ").append(
           bool ? "checked=\"checked\" " : "").append("name=\"").append(
-          _field.getName()).append("\" ").append("value=\"").append("TRUE")
-          .append("\"/>").append(getTrue(_field)).append("<br/>").append(
+          field.getName()).append("\" ").append("value=\"").append("TRUE")
+          .append("\"/>").append(getTrue(field)).append("<br/>").append(
               "<input type=\"radio\" ").append(
               bool ? "" : "checked=\"checked\" ").append("name=\"").append(
-              _field.getName()).append("\" ").append("value=\"")
-          .append("FALSE").append("\"/>").append(getFalse(_field));
+              field.getName()).append("\" ").append("value=\"").append("FALSE")
+          .append("\"/>").append(getFalse(field));
     }
     return ret.toString();
   }
 
-  public String getSearchHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  public String getViewHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+  @Override
+  public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
     String ret = null;
-
-    if (_value instanceof Boolean) {
-      boolean bool = (Boolean) _value;
+    Field _field = _fieldValue.getFieldDef().getField();
+    if (_fieldValue.getValue() instanceof Boolean) {
+      boolean bool = (Boolean) _fieldValue.getValue();
       if (bool) {
         ret = this.getTrue(_field);
       } else {
@@ -123,8 +119,27 @@ public class BooleanUI implements UIInterface {
     return ret;
   }
 
-  public int compareTo(UIInterface _uiinterface, UIInterface __uiinterface2) {
-    // TODO Auto-generated method stub
-    return 0;
+  @Override
+  public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2) {
+    String value = null;
+    String value2 = null;
+    if (_fieldValue.getValue() instanceof Boolean) {
+      boolean bool = (Boolean) _fieldValue.getValue();
+      if (bool) {
+        value = getTrue(_fieldValue.getFieldDef().getField());
+      } else {
+        value = getFalse(_fieldValue.getFieldDef().getField());
+      }
+    }
+    if (_fieldValue2.getValue() instanceof Boolean) {
+      boolean bool = (Boolean) _fieldValue2.getValue();
+      if (bool) {
+        value2 = getTrue(_fieldValue2.getFieldDef().getField());
+      } else {
+        value2 = getFalse(_fieldValue2.getFieldDef().getField());
+      }
+    }
+
+    return value.compareTo(value2);
   }
 }

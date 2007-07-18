@@ -20,65 +20,35 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.ui.Field;
 import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
+ * @author jmo
  * @version $Id$
  */
-public class FileUI implements UIInterface {
-
-  public String getViewHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
-
-    return "view";
-  }
-
-  public String getEditHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+public class FileUI extends AbstractUI {
+  @Override
+  public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
     StringBuffer ret = new StringBuffer();
-
-    ret.append("<input name=\"").append(_field.getName()).append("\" ").append(
-        "type=\"file\" ").append("size=\"").append(_field.getCols()).append(
+    Field field = _fieldValue.getFieldDef().getField();
+    ret.append("<input name=\"").append(field.getName()).append("\" ").append(
+        "type=\"file\" ").append("size=\"").append(field.getCols()).append(
         "\" ").append(">");
 
     return ret.toString();
   }
 
-  public String getCreateHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
+  @Override
+  public String getCreateHtml(final FieldValue _fieldValue)
+      throws EFapsException {
     StringBuffer ret = new StringBuffer();
-
-    ret.append("<input name=\"").append(_field.getName()).append("\" ").append(
-        "type=\"file\" ").append("size=\"").append(_field.getCols()).append(
+    Field field = _fieldValue.getFieldDef().getField();
+    ret.append("<input name=\"").append(field.getName()).append("\" ").append(
+        "type=\"file\" ").append("size=\"").append(field.getCols()).append(
         "\" ").append(">");
-    /*
-     * StringBuffer ret = new StringBuffer(); if (_field.getRows()>1) {
-     * ret.append( "<textarea "+ "type=\"text\" "+
-     * "cols=\"").append(_field.getCols()).append("\" "+
-     * "rows=\"").append(_field.getRows()).append("\" "+
-     * "name=\"").append(_field.getName()).append("\" " ); ret.append(">"); if
-     * (_value!=null) { ret.append(_value); } ret.append("</textarea>"); } else {
-     * ret.append("<input type=\"text\" "+
-     * "size=\"").append(_field.getCols()).append("\" "+
-     * "name=\"").append(_field.getName()).append("\" "+
-     * "value=\"").append((_value!=null ? _value : "")).append("\" " );
-     * ret.append(">"); } return ret.toString();
-     */
     return ret.toString();
   }
 
-  public String getSearchHtml(final Object _value, final Field _field,
-      final Attribute _attribute) throws EFapsException {
-    return "search";
-  }
-
-  public int compareTo(UIInterface _uiinterface, UIInterface __uiinterface2) {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
- 
 }

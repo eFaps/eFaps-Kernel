@@ -25,6 +25,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.ui.FieldDefinition;
+import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.db.SearchQuery;
 
 /**
@@ -74,8 +76,10 @@ public class ValueList {
           // buf.append(_query.get(_context, token.value));
           Attribute attr = _query.getAttribute(token.value);
           Object value = _query.get(token.value);
-          buf.append(attr.getAttributeType().getUI().getViewHtml(value, null,
-              attr));
+          buf.append((new FieldValue(new FieldDefinition(null, null), attr,
+              value, null)).getViewHtml());
+
+          ;
         break;
         case TEXT:
           buf.append(token.value);
