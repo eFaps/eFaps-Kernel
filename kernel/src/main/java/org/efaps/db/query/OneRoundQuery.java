@@ -409,7 +409,7 @@ public class OneRoundQuery {
       int i = 0;
       for (Instance instance : this.instances) {
         i++;
-        if (i > maxExpression - 1) {
+        if (i > maxExpression - 1 && maxExpression > 0) {
           instSQL.deleteCharAt(instSQL.length() - 1);
           instSQL = new StringBuilder();
           instSQLs.add(instSQL);
