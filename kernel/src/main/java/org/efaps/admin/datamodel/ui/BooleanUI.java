@@ -90,7 +90,26 @@ public class BooleanUI extends AbstractUI {
     }
     return ret.toString();
   }
+  public String getSearchHtml(final FieldValue _fieldValue) {
+    StringBuilder ret = new StringBuilder();
+    Field field = _fieldValue.getFieldDef().getField();
+    Attribute attribute = _fieldValue.getAttribute();
+    
+    ret.append("<input type=\"radio\" ")
+       .append("name=\"").append(field.getName()).append("\" ")
+       .append("value=\"").append("TRUE").append("\"/>")
+       .append(getTrue(attribute)).append("<br/>");
 
+    ret.append("<input type=\"radio\" ")
+       .append("name=\"").append(field.getName()).append("\" ")
+       .append("value=\"").append("FALSE").append("\"/>")
+       .append(getFalse(attribute));
+    
+    return ret.toString();
+  }
+  
+  
+  
   @Override
   public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
     String ret = null;
