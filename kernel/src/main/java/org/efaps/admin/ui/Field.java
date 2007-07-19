@@ -213,6 +213,13 @@ public class Field extends UserInterfaceObject {
   private UIInterface classUI = null;
 
   /**
+   * This field can bes sorted in a Webtable
+   * 
+   * @see #isSortAble()
+   */
+  private boolean sortAble = true;
+
+  /**
    * Standart-Constructor
    */
   public Field() {
@@ -390,6 +397,8 @@ public class Field extends UserInterfaceObject {
       setExpression(_value);
     } else if (_name.equals("GroupCount")) {
       setGroupCount(Integer.parseInt(_value));
+    } else if (_name.equals("SortAble")) {
+      setSortAble(!_value.equals("false"));
     } else if (_name.equals("Hidden")) {
       setHidden(_value.equals("true"));
     } else if (_name.equals("HRef")) {
@@ -767,6 +776,29 @@ public class Field extends UserInterfaceObject {
    */
   public boolean isRadioButton() {
     return this.radioButton;
+  }
+
+  /**
+   * This is the setter method for instance variable {@link #sortAble}.
+   * 
+   * @return the value of the instance variable {@link #sortAble}.
+   * @see #sortAble
+   * @see #setSortAble
+   */
+  public boolean isSortAble() {
+    return this.sortAble;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #sortAble}.
+   * 
+   * @param _sortable
+   *          the value of the instance variable {@link #sortAble}.
+   * @see #sortAble
+   * @see #isSortAble
+   */
+  public void setSortAble(final boolean _sortable) {
+    this.sortAble = _sortable;
   }
 
   /**

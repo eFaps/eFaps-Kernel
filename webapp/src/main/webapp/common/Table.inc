@@ -184,18 +184,22 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
       <c:forEach items="${uiObject.fieldDefs}" var="one">
         <%-- /** show only fields if they are not hidden! **/ --%>
         <c:if test="${one.field.hidden eq false}">
-          <div title="<c:out value="${one.label}"/>">
+          <div title="<c:out value="${one.label}"/>" 
             <%-- /** make href for the sort **/ --%>
-            <c:choose>
-              <%-- /** sort dir is down if key is equal current field and direction is up **/ --%>
-              <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
-                <a href="javascript:eFapsSortTable('<c:out value="${one.field.name}"/>','-')">
-              </c:when>
-              <%-- /** otherwise sort dir is down **/ --%>
-              <c:otherwise>
-                <a href="javascript:eFapsSortTable('<c:out value="${one.field.name}"/>','')">
-              </c:otherwise>
-            </c:choose>
+            <c:if test="${one.field.sortAble eq true}">
+              <c:choose>
+                <%-- /** sort dir is down if key is equal current field and direction is up **/ --%>
+                <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-' }">
+                  onclick="eFapsSortTable('<c:out value="${one.field.name}"/>','-')"
+                </c:when>
+                <%-- /** otherwise sort dir is down **/ --%>
+                <c:otherwise>
+                  onclick="eFapsSortTable('<c:out value="${one.field.name}"/>','')"
+                </c:otherwise>
+              </c:choose>
+             style="cursor:pointer"
+             </c:if>
+             >
             <%-- /** show label **/ --%>
             <c:out value="${one.label}"/>
             <%-- /** show the sort image **/ --%>
@@ -213,7 +217,6 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
                 <img src="../images/eFapsTableButtonSortDummy.gif"/>
               </c:otherwise>
             </c:choose>
-            </a>
           </div>
         </c:if>
       </c:forEach>
