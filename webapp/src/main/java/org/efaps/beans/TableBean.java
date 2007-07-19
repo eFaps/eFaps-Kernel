@@ -21,6 +21,8 @@
 package org.efaps.beans;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +31,6 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
@@ -47,27 +48,26 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public class TableBean extends AbstractCollectionBean  {
+public class TableBean extends AbstractCollectionBean {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * All field definitions for the table are defined in this list.
-   *
+   * 
    * @see #evalFieldDefs
    * @see #getFieldDefs
    */
-  private final List < FieldDefinition > fieldDefs
-          = new ArrayList < FieldDefinition > ();
+  private final List<FieldDefinition> fieldDefs =
+      new ArrayList<FieldDefinition>();
 
   /**
    * All evaluated rows of this table are stored in this list.
-   *
+   * 
    * @see #getValues
    */
-  private final List < Row > values
-          = new ArrayList < Row > ();
+  private final List<Row> values = new ArrayList<Row>();
 
   /**
    * The instance variable stores the table which must be shown.
@@ -83,7 +83,7 @@ public class TableBean extends AbstractCollectionBean  {
    * @see #getSortKey
    * @see #setSortKey
    */
-  private String sortKey        = null;
+  private String sortKey = null;
 
   /**
    * The instance variable stores the string of the sort direction.
@@ -91,7 +91,7 @@ public class TableBean extends AbstractCollectionBean  {
    * @see #getSortDirection
    * @see #setSortDirection
    */
-  private String sortDirection  = null;
+  private String sortDirection = null;
 
   /**
    * The instance variable stores the current selected filter of this web table
@@ -103,7 +103,7 @@ public class TableBean extends AbstractCollectionBean  {
    */
   int selectedFilter = 0;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   public TableBean() throws EFapsException {
     super();
@@ -118,12 +118,16 @@ public class TableBean extends AbstractCollectionBean  {
     evalFieldDefs();
 
     // first get list of object ids
-    List<Return> ret = getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-                                                 ParameterValues.INSTANCE, getInstance());
-    List<List<Instance>> lists = (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
+    List<Return> ret =
+        getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+            ParameterValues.INSTANCE, getInstance());
+
+    List<List<Instance>> lists =
+        (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
     List<Instance> instances = new ArrayList<Instance>();
-    Map<Instance,List<Instance>> instMapper = new HashMap<Instance,List<Instance>>();
-    for (List < Instance > oneList : lists)  {
+    Map<Instance, List<Instance>> instMapper =
+        new HashMap<Instance, List<Instance>>();
+    for (List<Instance> oneList : lists) {
       Instance inst = oneList.get(oneList.size() - 1);
       instances.add(inst);
       instMapper.put(inst, oneList);
@@ -132,7 +136,7 @@ public class TableBean extends AbstractCollectionBean  {
     // evaluate for all expressions in the table
     ListQuery query = new ListQuery(instances);
     for (FieldDefinition fieldDef : this.fieldDefs) {
-      if (fieldDef.getField().getExpression() != null)  {
+      if (fieldDef.getField().getExpression() != null) {
         query.addSelect(fieldDef.getField().getExpression());
       }
       if (fieldDef.getField().getAlternateOID() != null) {
@@ -147,42 +151,42 @@ public class TableBean extends AbstractCollectionBean  {
   }
 
   /**
-   * The field definitions for the current table in {@link #table} are set.
-   * Each existing label of a field column are translated.
-   *
+   * The field definitions for the current table in {@link #table} are set. Each
+   * existing label of a field column are translated.
+   * 
    * @see #fieldDefs
    * @todo depending on the access on a field the field definition is set
    */
-  protected void evalFieldDefs()  {
+  protected void evalFieldDefs() {
     this.fieldDefs.clear();
-    for (Field field : this.table.getFields())  {
+    for (Field field : this.table.getFields()) {
       String label = field.getLabel();
-      if (label != null)  {
+      if (label != null) {
         label = DBProperties.getProperty(label);
       }
       this.fieldDefs.add(new FieldDefinition(label, field));
     }
   }
 
-  void executeRowResult(final Map<Instance,List<Instance>> _instMapper,
-                        final ListQuery _query) throws Exception {
+  void executeRowResult(final Map<Instance, List<Instance>> _instMapper,
+      final ListQuery _query) throws Exception {
     while (_query.next()) {
 
       // get all found oids (typically more than one if it is an expand)
       Instance instance = _query.getInstance();
       StringBuilder oids = new StringBuilder();
       boolean first = true;
-      for (Instance oneInstance : _instMapper.get(instance))  {
-        if (first)  {
+      for (Instance oneInstance : _instMapper.get(instance)) {
+        if (first) {
           first = false;
-        } else  {
+        } else {
           oids.append("|");
         }
         oids.append(oneInstance.getOid());
       }
       Row row = new Row(oids.toString());
 
-//      boolean toAdd = false;
+      // boolean toAdd = false;
       for (FieldDefinition fieldDef : this.fieldDefs) {
         Object value = null;
         Attribute attr = null;
@@ -190,26 +194,29 @@ public class TableBean extends AbstractCollectionBean  {
         // attrValue = field.getProgramValue().evalAttributeValue(_context,
         // _query);
         // } else
-        if (fieldDef.getField().getExpression() != null)  {
+        if (fieldDef.getField().getExpression() != null) {
           value = _query.getValue(fieldDef.getField().getExpression());
           attr = _query.getAttribute(fieldDef.getField().getExpression());
         }
-//        Instance instance = _query.getInstance(fieldDef.getField().getExpression());
-        if (fieldDef.getField().getAlternateOID() != null)  {
-          instance = new Instance((String)_query.getValue(fieldDef.getField().getAlternateOID()));
+        // Instance instance =
+        // _query.getInstance(fieldDef.getField().getExpression());
+        if (fieldDef.getField().getAlternateOID() != null) {
+          instance =
+              new Instance((String) _query.getValue(fieldDef.getField()
+                  .getAlternateOID()));
         }
 
         // if (attrValue!=null) {
         // attrValue.setField(field);
         // }
-       
-//        toAdd = toAdd || (value != null) || (instance != null);
-//        row.add(fieldDef, classUI, value, instance);
-       row.add(fieldDef, attr, value, instance);
+
+        // toAdd = toAdd || (value != null) || (instance != null);
+        // row.add(fieldDef, classUI, value, instance);
+        row.add(fieldDef, attr, value, instance);
       }
-//      if (toAdd) {
-        getValues().add(row);
-//      }
+      // if (toAdd) {
+      getValues().add(row);
+      // }
     }
   }
 
@@ -218,26 +225,34 @@ public class TableBean extends AbstractCollectionBean  {
    * {@link #sortKey} and the sort direction in {@link #sortDirection}.
    */
   public boolean sort() {
-    /*
-     * if (getSortKey()!=null && getSortKey().length()>0) { int sortKey = 0; for
-     * (int i=0; i<getTable().getFields().size(); i++) { Field field =
-     * (Field)getTable().getFields().get(i); if
-     * (field.getName().equals(getSortKey())) { sortKey = i; break; } }
-     * 
-     * final int index = sortKey; Collections.sort(getValues(), new Comparator<Row>(){
-     * public int compare(Row _o1, Row _o2) { int ret; AttributeTypeInterface a1 =
-     * _o1.getValues().get(index).getAttrValue(); AttributeTypeInterface a2 =
-     * _o2.getValues().get(index).getAttrValue(); return
-     * a1.compareTo(getLocale(), a2); } } );
-     * 
-     * if (getSortDirection()!=null && getSortDirection().equals("-")) {
-     * Collections.reverse(getValues()); } }
-     */
+
+    if (getSortKey() != null && getSortKey().length() > 0) {
+      int sortKey = 0;
+      for (int i = 0; i < getTable().getFields().size(); i++) {
+        Field field = (Field) getTable().getFields().get(i);
+        if (field.getName().equals(getSortKey())) {
+          sortKey = i;
+          break;
+        }
+      }
+      final int index = sortKey;
+      Collections.sort(getValues(), new Comparator<Row>() {
+        public int compare(Row _o1, Row _o2) {
+          
+          FieldValue a1 = _o1.getValues().get(index);
+          FieldValue a2 = _o2.getValues().get(index);
+          return a1.compareTo( a2);
+        }
+      });
+      if (getSortDirection() != null && getSortDirection().equals("-")) {
+        Collections.reverse(getValues());
+      }
+    }
+
     return true;
   }
 
   /**
-   * 
    * @param _name
    *          name of the command object
    */
@@ -267,9 +282,9 @@ public class TableBean extends AbstractCollectionBean  {
     return getCommand().isTargetShowCheckBoxes();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the getter method for the instance variable {@link #fieldDefs}.
@@ -278,18 +293,18 @@ public class TableBean extends AbstractCollectionBean  {
    * @see #fieldDefs
    * @see #evalFieldDefs
    */
-  public List < FieldDefinition > getFieldDefs()  {
+  public List<FieldDefinition> getFieldDefs() {
     return this.fieldDefs;
   }
 
   /**
    * This is the getter method for the instance variable {@link #values}.
-   *
+   * 
    * @return value of instance variable {@link #values}
    * @see #values
    * @see #setValues
    */
-  public List < Row > getValues()  {
+  public List<Row> getValues() {
     return this.values;
   }
 
@@ -385,16 +400,16 @@ public class TableBean extends AbstractCollectionBean  {
     this.selectedFilter = _selectedFilter;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The inner class stores one row of the table.
    */
   public class Row {
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // instance variables
 
     /**
@@ -402,7 +417,7 @@ public class TableBean extends AbstractCollectionBean  {
      * 
      * @see #getValues
      */
-    private final List < FieldValue > values = new ArrayList < FieldValue >();
+    private final List<FieldValue> values = new ArrayList<FieldValue>();
 
     /**
      * The instance variable stores all oids in a string.
@@ -411,7 +426,7 @@ public class TableBean extends AbstractCollectionBean  {
      */
     private final String oids;
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // contructors / destructors
 
     /**
@@ -424,7 +439,7 @@ public class TableBean extends AbstractCollectionBean  {
       this.oids = _oids;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // instance methods
 
     /**
@@ -433,13 +448,10 @@ public class TableBean extends AbstractCollectionBean  {
      * 
      * @see #values
      */
-    public void add(final FieldDefinition _field,
-                    final Attribute _attribute,
-                    final Object _value,
-                    final Instance _instance) {
+    public void add(final FieldDefinition _field, final Attribute _attribute,
+        final Object _value, final Instance _instance) {
 
-      this.values.add(
-            new FieldValue(_field, _attribute, _value, _instance));
+      this.values.add(new FieldValue(_field, _attribute, _value, _instance));
     }
 
     /**
@@ -459,7 +471,7 @@ public class TableBean extends AbstractCollectionBean  {
      * @return value of values variable {@link #values}
      * @see #values
      */
-    public List < FieldValue > getValues() {
+    public List<FieldValue> getValues() {
       return this.values;
     }
 

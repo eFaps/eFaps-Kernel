@@ -281,30 +281,6 @@ function eFapsCommonRefresh()  {
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * The function calles current url with the cacheKey of the name of the map
- * in cache and the sort key with the column to sort.
- *
- * @param _cacheKey   (String)  name of the cache
- * @param _sortKey    (String)  column to sort
- * @param _sortDir    (String)  sort direction
- */
-function eFapsSortTable(_cacheKey, _sortKey, _sortDir)  {
-  var url = location.href;
-  var index = url.indexOf('?');
-  if (index>=0)  {
-    url = url.substring(0, index);
-  }
-  url = url + "?cacheKey=" + _cacheKey + "&sortKey=" + _sortKey;
-  if (location.href.indexOf('mode=print')>=0)  {
-    url = url + "&mode=print";
-  }
-  if (_sortDir)  {
-    url += "&sortDir=" + _sortDir;
-  }
-  location.href = url;
-}
-
-/**
  * The function selectes or deselects all checkboxes starting with the name
  * standing in the parameter <i>_name</i>. The function is used e.g. from the
  * table header to (de)select all rows of the table with one click.

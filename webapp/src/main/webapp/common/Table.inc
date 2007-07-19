@@ -51,6 +51,10 @@ System.out.println(".............................START:"+new java.util.Date());
     uiObject.setNodeId(context.getParameter("nodeId"));
     uiObject.execute();
 System.out.println("............................MIDDLE:"+new java.util.Date());
+  }else{
+    uiObject.setSortKey(context.getParameter("sortKey"));
+    uiObject.setSortDirection(context.getParameter("sortDir"));
+    uiObject.sort();
   }
 %>
 
@@ -64,7 +68,8 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
     <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
 
 <script type="text/javascript">
-
+	var cleanUp=true;
+    
     function eFapsTableProcessEnd() {
       eFapsPositionTable();
       window.onresize = function() { eFapsPositionTable();}
@@ -73,7 +78,6 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
     /**
      */
     function eFapsPositionTable() {
-
       <c:choose>
         <c:when test="${uiObject.searchMode}">
           var div = document.getElementById("eFapsTableContentWithFooter");
@@ -103,11 +107,35 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
         }
       }
     }
-</script>
+ 
+  function eFapsSortTable(_sortKey, _sortDir)  {
+     cleanUp=false;
+     var url = location.href;
+     var index = url.indexOf('?');
+     if (index>=0)  {
+       url = url.substring(0, index);
+     }
+     url = url + "?command=<c:out value="${uiObject.command.name}"/>&cacheKey=<%=cacheKey%>&sortKey=" + _sortKey;
+     if (location.href.indexOf('mode=print')>=0)  {
+       url = url + "&mode=print";
+     }
+     if (_sortDir)  {
+       url += "&sortDir=" + _sortDir;
+     }
+     location.href = url;
+   } 
+   
+  function geteFapsCleanUpSession(){
+    if(cleanUp){
+      eFapsCleanUpSession('<%=cacheKey%>')
+    }
+  } 
+    
+</script> 
 
   </head>  
 
-  <body onLoad="eFapsTableProcessEnd()" onUnLoad="eFapsCleanUpSession('<%=cacheKey%>')">
+  <body onLoad="eFapsTableProcessEnd()" onUnLoad="geteFapsCleanUpSession()">
   
 <c:choose>
   <c:when test="${uiObject.searchMode}">
@@ -161,11 +189,11 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
             <c:choose>
               <%-- /** sort dir is down if key is equal current field and direction is up **/ --%>
               <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection ne '-'}">
-                <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','-')">
+                <a href="javascript:eFapsSortTable('<c:out value="${one.field.name}"/>','-')">
               </c:when>
               <%-- /** otherwise sort dir is down **/ --%>
               <c:otherwise>
-                <a href="javascript:eFapsSortTable('<c:out value="${param.cacheKey}"/>','<c:out value="${one.field.name}"/>','')">
+                <a href="javascript:eFapsSortTable('<c:out value="${one.field.name}"/>','')">
               </c:otherwise>
             </c:choose>
             <%-- /** show label **/ --%>
@@ -210,7 +238,7 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
       <input type="hidden" name="command" value=""/>
       <input type="hidden" name="tableCommand" value="<c:out value="${uiObject.command.name}"/>"/>
       <input type="hidden" name="eFapsTableFilter" value=""/>
-      <input type="hidden" name="eFapsCacheKey" value="<c:out value="${param.cacheKey}"/>"/>
+      <input type="hidden" name="eFapsCacheKey" value="<%=cacheKey%>"/>
 
       <%-- /** show the hidden values for this user interface **/ --%>
       <c:forEach items="${uiObject.hiddenValues}" var="hiddenValue">

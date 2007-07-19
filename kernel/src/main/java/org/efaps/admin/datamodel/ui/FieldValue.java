@@ -20,6 +20,9 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
@@ -29,7 +32,11 @@ import org.efaps.util.EFapsException;
  * @todo description
  * @version $Id$
  */
-public class FieldValue implements Comparable{
+public class FieldValue implements Comparable {
+  /**
+   * Logger for this class
+   */
+  private static final Log LOG = LogFactory.getLog(FieldValue.class);
 
   // /////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -154,8 +161,25 @@ public class FieldValue implements Comparable{
     return this.attribute;
   }
 
-  public int compareTo(Object arg0) {
-    // TODO Auto-generated method stub
-    return 0;
+  public int compareTo(Object _target) {
+    FieldValue target = (FieldValue) _target;
+
+    int ret = 0;
+    if (this.value == null || target.getValue() == null) {
+      if (this.value == null && target.getValue() != null) {
+        ret = -1;
+      }
+      if (this.value != null && target.getValue() == null) {
+        ret = 1;
+      }
+    } else {
+      if (this.getClassUI().equals(target.getClassUI())) {
+        ret = this.getClassUI().compare(this, target);
+      } else {
+        LOG.error("can't compare this Objects because "
+            + "they don't have the same ClassUI");
+      }
+    }
+    return ret;
   }
 }
