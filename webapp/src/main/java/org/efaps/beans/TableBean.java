@@ -146,7 +146,11 @@ public class TableBean extends AbstractCollectionBean {
     query.execute();
 
     executeRowResult(instMapper, query);
-
+    
+    if (this.sortKey != null) {
+      this.sort();
+    }
+    
     setInitialised(true);
   }
 
@@ -238,10 +242,10 @@ public class TableBean extends AbstractCollectionBean {
       final int index = sortKey;
       Collections.sort(getValues(), new Comparator<Row>() {
         public int compare(Row _o1, Row _o2) {
-          
+
           FieldValue a1 = _o1.getValues().get(index);
           FieldValue a2 = _o2.getValues().get(index);
-          return a1.compareTo( a2);
+          return a1.compareTo(a2);
         }
       });
       if (getSortDirection() != null && getSortDirection().equals("-")) {
@@ -263,7 +267,7 @@ public class TableBean extends AbstractCollectionBean {
 
       if (getCommand().getTargetTableSortKey() != null) {
         setSortKey(getCommand().getTargetTableSortKey());
-        if (getCommand().getTargetTableSortDirection() == CommandAbstract.TABLE_SORT_DIRECTION_DOWN) {
+        if (getCommand().getTargetTableSortDirection() == CommandAbstract.TABLE_SORT_DIRECTION_DESC) {
           setSortDirection("-");
         }
       }

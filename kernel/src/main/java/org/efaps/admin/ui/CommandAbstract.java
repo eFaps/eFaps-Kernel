@@ -46,9 +46,9 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   static public final int ACTION_UNKNOWN = 0;
 
-  static public final int TABLE_SORT_DIRECTION_DOWN = 1;
+  static public final int TABLE_SORT_DIRECTION_DESC = 1;
 
-  static public final int TABLE_SORT_DIRECTION_UP = 0;
+  static public final int TABLE_SORT_DIRECTION_ASC = 0;
 
   /**
    * The target of the href is the content frame.
@@ -283,12 +283,12 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The instance variable stores for target user interface table object the
    * default sort direction. The default value is
-   * {@link #TABLE_SORT_DIRECTION_UP}.
+   * {@link #TABLE_SORT_DIRECTION_ASC}.
    * 
    * @see #getTargetTableSortDirection
    * @see #setTargetTableSortDirection
    */
-  private int targetTableSortDirection = TABLE_SORT_DIRECTION_UP;
+  private int targetTableSortDirection = TABLE_SORT_DIRECTION_ASC;
 
   /**
    * The instance variable stores for target user interface table object the
@@ -1171,10 +1171,10 @@ public abstract class CommandAbstract extends UserInterfaceObject {
     } else if (_name.equals("TargetTableSortKey")) {
       setTargetTableSortKey(_value);
     } else if (_name.equals("TargetTableSortDirection")) {
-      if (_value.equals("up")) {
-        setTargetTableSortDirection(TABLE_SORT_DIRECTION_UP);
-      } else if (_value.equals("down")) {
-        setTargetTableSortDirection(TABLE_SORT_DIRECTION_DOWN);
+      if (_value.equals("desc")) {
+        setTargetTableSortDirection(TABLE_SORT_DIRECTION_DESC);
+      } else {
+        setTargetTableSortDirection(TABLE_SORT_DIRECTION_ASC);
       }
     } else if (_name.equals("TargetTitle")) {
       setTargetTitle(_value);
