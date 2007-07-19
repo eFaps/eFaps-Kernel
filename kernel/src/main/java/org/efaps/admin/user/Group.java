@@ -38,9 +38,9 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  * @todo description
  */
-public class Group extends UserObject  {
+public class Group extends UserObject {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -51,111 +51,117 @@ public class Group extends UserObject  {
   /**
    * This is the sql select statement to select all groups from the database.
    */
-  private static final String SQL_SELECT  = "select "
-                                                + "ID,"
-                                                + "NAME "
-                                              + "from V_USERGROUP";
+  private static final String SQL_SELECT = "select " 
+                                            + "ID," 
+                                            + "NAME, " 
+                                            + "STATUS " 
+                                         + "from V_USERGROUP";
 
   /**
    * Stores all instances of class {@link Group}.
-   *
+   * 
    * @see #getCache
    */
-  private static final Cache <Group > cache = new Cache < Group > (
-    new CacheReloadInterface()  {
-        public int priority()  {
+  private static final Cache<Group> cache =
+      new Cache<Group>(new CacheReloadInterface() {
+        public int priority() {
           return CacheReloadInterface.Priority.AccessSet.number;
         };
-        public void reloadCache() throws CacheReloadException  {
+
+        public void reloadCache() throws CacheReloadException {
           Group.initialise();
         };
-    }
-  );
+      });
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
   /**
    * Create a new group instance. The method is used from the static method
    * {@link #initialise} to read all groups from the database.
-   *
+   * 
    * @param _id
    */
-  private Group(final long _id, final String _name)  {
-    super(_id, _name);
+  private Group(final long _id, final String _name, final boolean _status) {
+    super(_id, _name, _status);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
-   * Returns the viewable name of the group. The method {@link #getName} is
-   * used for the viewing name.
-   *
-   * @param _context context for this request
+   * Returns the viewable name of the group. The method {@link #getName} is used
+   * for the viewing name.
+   * 
+   * @param _context
+   *          context for this request
    * @see #getName
    */
-  public String getViewableName(final Context _context)  {
+  public String getViewableName(final Context _context) {
     return getName();
   }
 
   /**
    * Checks, if the given person is assigned to this group.
-   *
-   * @param _person person to test
+   * 
+   * @param _person
+   *          person to test
    * @return <i>true</i> if the person is assigned to this group, otherwise
    *         <i>false</i>
    * @see #persons
    * @see #getPersons
    */
   public boolean hasChildPerson(final Person _person) {
-// TODO: child groups
+    // TODO: child groups
     return _person.isAssigned(this);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Initialise the cache of JAAS systems.
-   *
-   * @param _context  eFaps context for this request
+   * 
+   * @param _context
+   *          eFaps context for this request
    */
-  public static void initialise() throws CacheReloadException  {
+  public static void initialise() throws CacheReloadException {
     ConnectionResource con = null;
-    try  {
+    try {
       con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
-      try  {
+      try {
 
         stmt = con.getConnection().createStatement();
 
         ResultSet rs = stmt.executeQuery(SQL_SELECT);
-        while (rs.next())  {
-          long id =             rs.getLong(1);
-          String name =         rs.getString(2).trim();
-
+        while (rs.next()) {
+          long id = rs.getLong(1);
+          String name = rs.getString(2).trim();
+          boolean status = rs.getBoolean(3);
           LOG.debug("read group '" + name + "' (id = " + id + ")");
-          cache.add(new Group(id, name));
+          cache.add(new Group(id, name,status));
         }
         rs.close();
 
-      } finally  {
-        if (stmt != null)  {
+      }
+      finally {
+        if (stmt != null) {
           stmt.close();
         }
       }
 
       con.commit();
-    } catch (SQLException e)  {
+    } catch (SQLException e) {
       throw new CacheReloadException("could not read groups", e);
-    } catch (EFapsException e)  {
+    } catch (EFapsException e) {
       throw new CacheReloadException("could not read groups", e);
-    } finally  {
-      if ((con != null) && con.isOpened())  {
-        try  {
+    }
+    finally {
+      if ((con != null) && con.isOpened()) {
+        try {
           con.abort();
-        } catch (EFapsException e)  {
+        } catch (EFapsException e) {
           throw new CacheReloadException("could not read groups", e);
         }
       }
@@ -164,36 +170,38 @@ public class Group extends UserObject  {
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Group}.
-   *
-   * @param _id id to search in the cache
+   * 
+   * @param _id
+   *          id to search in the cache
    * @return instance of class {@link Group}
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  public static Group get(final long _id)  {
+  public static Group get(final long _id) {
     return cache.get(_id);
   }
 
   /**
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Group}.
-   *
-   * @param _name name to search in the cache
+   * 
+   * @param _name
+   *          name to search in the cache
    * @return instance of class {@link Group}
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  public static Group get(final String _name)  {
+  public static Group get(final String _name) {
     return cache.get(_name);
   }
 
   /**
    * Static getter method for the group {@link #cache}.
-   *
+   * 
    * @return value of static variable {@link #cache}
    * @see #cache
    */
-  static public Cache < Group > getCache()  {
+  static public Cache<Group> getCache() {
     return cache;
   }
 
@@ -201,53 +209,55 @@ public class Group extends UserObject  {
    * Returns for given parameter <i>_jaasKey</i> the instance of class
    * {@link Group}. The parameter <i>_jaasKey</i> is the name of the group
    * used in the given JAAS system for the group.
-   *
-   * @param _jaasSystem JAAS system for which the JAAS key is named
-   * @param _jaasKey    key in the foreign JAAS system for which the group is
-   *                    searched
+   * 
+   * @param _jaasSystem
+   *          JAAS system for which the JAAS key is named
+   * @param _jaasKey
+   *          key in the foreign JAAS system for which the group is searched
    * @return instance of class {@link Group}, or <code>null</code> if group
    *         is not found
    * @see #get(long)
    */
-  static public Group getWithJAASKey(final JAASSystem _jaasSystem, final String _jaasKey) throws EFapsException  {
+  static public Group getWithJAASKey(final JAASSystem _jaasSystem,
+      final String _jaasKey) throws EFapsException {
     long groupId = 0;
     ConnectionResource rsrc = null;
-    try  {
+    try {
       rsrc = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
 
-      try  {
+      try {
         StringBuilder cmd = new StringBuilder();
-        cmd.append("select ")
-           .append(   "ID ")
-           .append(   "from V_USERGROUPJASSKEY ")
-           .append(   "where JAASKEY='").append(_jaasKey).append("' ")
-           .append(       "and JAASSYSID=").append(_jaasSystem.getId());
+        cmd.append("select ").append("ID ").append("from V_USERGROUPJASSKEY ")
+            .append("where JAASKEY='").append(_jaasKey).append("' ").append(
+                "and JAASSYSID=").append(_jaasSystem.getId());
 
         stmt = rsrc.getConnection().createStatement();
         ResultSet rs = stmt.executeQuery(cmd.toString());
-        if (rs.next())  {
+        if (rs.next()) {
           groupId = rs.getLong(1);
         }
         rs.close();
 
-      } catch (SQLException e)  {
-        LOG.error("search for group for JAAS system "
-            + "'" + _jaasSystem.getName() + "' "
-            + "with key '" + _jaasKey + "' is not possible", e);
-// TODO: exception in properties
-        throw new EFapsException(Group.class, "getWithJAASKey.SQLException",
-                              e, _jaasSystem.getName(), _jaasKey);
-      } finally  {
-        try  {
+      } catch (SQLException e) {
+        LOG.error("search for group for JAAS system " + "'"
+            + _jaasSystem.getName() + "' " + "with key '" + _jaasKey
+            + "' is not possible", e);
+        // TODO: exception in properties
+        throw new EFapsException(Group.class, "getWithJAASKey.SQLException", e,
+            _jaasSystem.getName(), _jaasKey);
+      }
+      finally {
+        try {
           stmt.close();
-        } catch (SQLException e)  {
+        } catch (SQLException e) {
         }
       }
       rsrc.commit();
-    } finally  {
-      if ((rsrc != null) && rsrc.isOpened())  {
+    }
+    finally {
+      if ((rsrc != null) && rsrc.isOpened()) {
         rsrc.abort();
       }
     }

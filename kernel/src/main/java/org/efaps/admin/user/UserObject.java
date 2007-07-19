@@ -50,6 +50,11 @@ public abstract class UserObject extends AdminObject {
   private final static Log LOG = LogFactory.getLog(UserObject.class);
 
   // ///////////////////////////////////////////////////////////////////////////
+  // instance variables
+
+  private boolean Status;
+
+  // ///////////////////////////////////////////////////////////////////////////
   // contruktors
 
   /**
@@ -60,8 +65,10 @@ public abstract class UserObject extends AdminObject {
    * @param _name
    *          name to set
    */
-  protected UserObject(final long _id, final String _name) {
+  protected UserObject(final long _id, final String _name, final boolean _status) {
     super(_id, null, _name);
+    this.Status = _status;
+
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -96,16 +103,13 @@ public abstract class UserObject extends AdminObject {
     }
     return false;
   }
-  
-  
-  
-  /**
-   * @param _context
-   * @return
-   * @deprecated
-   */
-  public boolean isAssigned(final Context _context) {
-    return hasChildPerson(_context.getPerson());
+
+  public boolean getStatus() {
+    return this.Status;
+  }
+
+  protected void setStatus(final boolean _status) {
+    this.Status = _status;
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -122,7 +126,7 @@ public abstract class UserObject extends AdminObject {
    *           if the assignment could not be made
    */
   public void assignToJAASSystem(final JAASSystem _jaasSystem,
-                                 final String _jaasKey) throws EFapsException {
+      final String _jaasKey) throws EFapsException {
 
     ConnectionResource rsrc = null;
     try {
@@ -135,8 +139,9 @@ public abstract class UserObject extends AdminObject {
       try {
         long keyId = 0;
         if (!Context.getDbType().supportsGetGeneratedKeys()) {
-          keyId = Context.getDbType().getNewId(rsrc.getConnection(),
-              keyType.getMainTable().getSqlTable(), "ID");
+          keyId =
+              Context.getDbType().getNewId(rsrc.getConnection(),
+                  keyType.getMainTable().getSqlTable(), "ID");
           cmd.append("insert into ").append(
               keyType.getMainTable().getSqlTable()).append(
               "(ID,KEY,CREATOR,CREATED,MODIFIER,MODIFIED,").append(
@@ -207,9 +212,8 @@ public abstract class UserObject extends AdminObject {
    *           if assignment could not be done
    */
   protected void assignToUserObjectInDb(final Type _assignType,
-                                        final JAASSystem _jaasSystem,
-                                        final UserObject _object)
-                                                                 throws EFapsException {
+      final JAASSystem _jaasSystem, final UserObject _object)
+      throws EFapsException {
 
     ConnectionResource rsrc = null;
     try {
@@ -224,8 +228,9 @@ public abstract class UserObject extends AdminObject {
             _assignType.getMainTable().getSqlTable()).append("(");
         long keyId = 0;
         if (!Context.getDbType().supportsGetGeneratedKeys()) {
-          keyId = Context.getDbType().getNewId(rsrc.getConnection(),
-              _assignType.getMainTable().getSqlTable(), "ID");
+          keyId =
+              Context.getDbType().getNewId(rsrc.getConnection(),
+                  _assignType.getMainTable().getSqlTable(), "ID");
           cmd.append("ID,");
         }
         cmd.append("TYPEID,CREATOR,CREATED,MODIFIER,MODIFIED,").append(
@@ -294,9 +299,8 @@ public abstract class UserObject extends AdminObject {
    *           if unassignment could not be done
    */
   protected void unassignFromUserObjectInDb(final Type _unassignType,
-                                            final JAASSystem _jaasSystem,
-                                            final UserObject _object)
-                                                                     throws EFapsException {
+      final JAASSystem _jaasSystem, final UserObject _object)
+      throws EFapsException {
 
     ConnectionResource rsrc = null;
     try {

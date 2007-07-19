@@ -53,7 +53,8 @@ public class Role extends UserObject  {
    */
   private static final String SQL_SELECT  = "select "
                                                 + "ID,"
-                                                + "NAME "
+                                                + "NAME, "
+                                                + "STATUS "
                                               + "from V_USERROLE";
 
   /**
@@ -81,8 +82,8 @@ public class Role extends UserObject  {
    *
    * @param _id
    */
-  private Role(final long _id, final String _name)  {
-    super(_id, _name);
+  private Role(final long _id, final String _name, final boolean _status)  {
+    super(_id, _name,_status);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -134,9 +135,9 @@ public class Role extends UserObject  {
         while (rs.next())  {
           long id =             rs.getLong(1);
           String name =         rs.getString(2).trim();
-
+          boolean status =         rs.getBoolean(3);
           LOG.debug("read role '" + name + "' (id = " + id + ")");
-          cache.add(new Role(id, name));
+          cache.add(new Role(id, name, status));
         }
         rs.close();
 

@@ -541,7 +541,8 @@ function _eFapsCreateUserTablesStep2()  {
       "create view V_USERROLE as "
         + "select "
         +       "T_USERABSTRACT.ID,"
-        +       "T_USERABSTRACT.NAME "
+        +       "T_USERABSTRACT.NAME, "
+        +       "T_USERABSTRACT.STATUS "
         +   "from T_USERABSTRACT "
         +   "where T_USERABSTRACT.TYPEID=" + typeIdRole
     );
@@ -562,7 +563,8 @@ function _eFapsCreateUserTablesStep2()  {
       "create view V_USERGROUP as "+
         "select "+
             "T_USERABSTRACT.ID,"+
-            "T_USERABSTRACT.NAME "+
+            "T_USERABSTRACT.NAME, "+
+            "T_USERABSTRACT.STATUS "+
           "from T_USERABSTRACT "+
           "where T_USERABSTRACT.TYPEID="+typeIdGroup
     );

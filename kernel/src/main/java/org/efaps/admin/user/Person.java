@@ -152,8 +152,8 @@ public class Person extends UserObject {
    * @param _name
    *          name of the person to set
    */
-  private Person(final long _id, final String _name) {
-    super(_id, _name);
+  private Person(final long _id, final String _name, final boolean _status) {
+    super(_id, _name, _status);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -930,8 +930,9 @@ public class Person extends UserObject {
     if (ret == null) {
       System.out.println(" read person '" + _id + "' from db");
       ret =
-          getFromDB("select " + "V_USERPERSON.ID," + "V_USERPERSON.NAME "
-              + "from V_USERPERSON " + "where V_USERPERSON.ID=" + _id);
+          getFromDB("select " + "V_USERPERSON.ID," + "V_USERPERSON.NAME, "
+              + "STATUS " + "from V_USERPERSON " + "where V_USERPERSON.ID="
+              + _id);
     }
     return ret;
   }
@@ -950,9 +951,9 @@ public class Person extends UserObject {
     Person ret = getCache().get(_name);
     if (ret == null) {
       ret =
-          getFromDB("select " + "V_USERPERSON.ID," + "V_USERPERSON.NAME "
-              + "from V_USERPERSON " + "where V_USERPERSON.NAME='" + _name
-              + "'");
+          getFromDB("select " + "V_USERPERSON.ID," + "V_USERPERSON.NAME, "
+              + "STATUS " + "from V_USERPERSON " + "where V_USERPERSON.NAME='"
+              + _name + "'");
     }
     return ret;
   }
@@ -984,7 +985,8 @@ public class Person extends UserObject {
         if (rs.next()) {
           long id = rs.getLong(1);
           String name = rs.getString(2);
-          ret = new Person(id, name.trim());
+          boolean status = rs.getBoolean(3);
+          ret = new Person(id, name.trim(), status);
           getCache().add(ret);
         }
         rs.close();
