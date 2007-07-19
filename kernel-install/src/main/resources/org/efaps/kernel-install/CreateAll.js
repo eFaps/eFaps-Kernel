@@ -636,8 +636,7 @@ function _eFapsCreateDataModelTablesStep1()  {
   _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'ModifierLink',   '447a7c87-8395-48c4-b2ed-d4e96d46332c', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.ModifierLinkType', 'org.efaps.admin.datamodel.ui.UserUI',    1,    null");
   _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'OwnerLink',      'a5367e5a-78b7-47b4-be7f-abf5423171f0', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OwnerLinkType',    'org.efaps.admin.datamodel.ui.UserUI',    null, 1   ");
   _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'PolicyLink',     'c9c98b47-d5da-4665-939c-9686c82914ac', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'StatusLink',     '33b086bf-c993-4ae1-8b83-6d0eea5f41e9', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StatusLinkType',   'org.efaps.admin.datamodel.ui.StringUI',  null, null");
-
+ 
   conRsrc.commit();
 }
 

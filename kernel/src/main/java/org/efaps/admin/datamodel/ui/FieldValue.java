@@ -29,7 +29,7 @@ import org.efaps.util.EFapsException;
  * @todo description
  * @version $Id$
  */
-public class FieldValue {
+public class FieldValue implements Comparable{
 
   // /////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -152,5 +152,10 @@ public class FieldValue {
 
   public Attribute getAttribute() {
     return this.attribute;
+  }
+
+  public int compareTo(Object arg0) {
+    // TODO Auto-generated method stub
+    return 0;
   }
 }

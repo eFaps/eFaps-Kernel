@@ -76,7 +76,7 @@ public abstract class AbstractLinkType extends AbstractType {
    * @see #getValue
    * @see #setValue
    */
-  private Object value = 0;
+  private Object value = null;
 
   // ///////////////////////////////////////////////////////////////////////////
 
