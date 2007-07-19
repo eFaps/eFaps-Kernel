@@ -412,13 +412,16 @@ public class Person extends UserObject {
       try {
         stmt =
             context.getConnection().prepareStatement(
-                "select count(*) " + "from V_USERPERSON "
+                "select STATUS " + "from V_USERPERSON "
                     + "where NAME=? and PASSWORD=?");
         stmt.setString(1, getName());
         stmt.setString(2, encrPass);
         ResultSet rs = stmt.executeQuery();
-        if (rs.next() && (rs.getLong(1) == 1)) {
-          ret = true;
+        if (rs.next()) {
+          ret = rs.getBoolean(1);
+          if (rs.next()) {
+            ret = false;
+          }
         }
         rs.close();
       } catch (SQLException e) {
