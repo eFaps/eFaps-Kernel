@@ -28,12 +28,14 @@ import org.efaps.util.EFapsException;
 /**
  * A boolean value is shown in create mode with radio boxen which are only
  * preselected if a defaultvalue for the attribute was defined. In edit mode,
- * the user could select a value.
+ * the user could select a value. The value is recived from the DBProperties
+ * using the AttributeName and a parameter.<br>
+ * e.g. <br>
+ * Key = TypeName/AttributeName.false <br>
+ * Value = inactive
  * 
  * @author jmo
  * @version $Id$
- * @todo description
- * @todo preseletect in create for default value
  */
 public class BooleanUI extends AbstractUI {
   @Override
@@ -51,15 +53,17 @@ public class BooleanUI extends AbstractUI {
         bool = false;
       }
     }
-    ret.append("<input type=\"radio\" ").append(
-        (bool != null && bool) ? "checked=\"checked\" " : "").append("name=\"")
-        .append(field.getName()).append("\" ");
-    ret.append("value=\"").append("TRUE").append("\"/>");
-    ret.append(getTrue(field)).append("<br/>");
-    ret.append("<input type=\"radio\" ").append(
-        (bool != null && !bool) ? "checked=\"checked\" " : "")
-        .append("name=\"").append(field.getName()).append("\" ").append(
-            "value=\"").append("FALSE").append("\"/>").append(getFalse(field));
+    ret.append("<input type=\"radio\" ")
+       .append((bool != null && bool) ? "checked=\"checked\" " : "")
+       .append("name=\"").append(field.getName()).append("\" ")
+       .append("value=\"").append("TRUE").append("\"/>")
+       .append(getTrue(attribute)).append("<br/>");
+    
+    ret.append("<input type=\"radio\" ")
+       .append((bool != null && !bool) ? "checked=\"checked\" " : "")
+       .append("name=\"").append(field.getName()).append("\" ")
+       .append("value=\"").append("FALSE").append("\"/>")
+       .append(getFalse(attribute));
     return ret.toString();
 
   }
@@ -68,17 +72,21 @@ public class BooleanUI extends AbstractUI {
   public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
     StringBuilder ret = new StringBuilder();
     Field field = _fieldValue.getFieldDef().getField();
+    Attribute attribute = _fieldValue.getAttribute();
     if (_fieldValue.getValue() instanceof Boolean) {
       boolean bool = (Boolean) _fieldValue.getValue();
 
-      ret.append("<input type=\"radio\" ").append(
-          bool ? "checked=\"checked\" " : "").append("name=\"").append(
-          field.getName()).append("\" ").append("value=\"").append("TRUE")
-          .append("\"/>").append(getTrue(field)).append("<br/>").append(
-              "<input type=\"radio\" ").append(
-              bool ? "" : "checked=\"checked\" ").append("name=\"").append(
-              field.getName()).append("\" ").append("value=\"").append("FALSE")
-          .append("\"/>").append(getFalse(field));
+      ret.append("<input type=\"radio\" ")
+         .append(bool ? "checked=\"checked\" " : "")
+         .append("name=\"").append(field.getName()).append("\" ")
+         .append("value=\"").append("TRUE").append("\"/>")
+         .append(getTrue(attribute)).append("<br/>");
+      
+      ret.append("<input type=\"radio\" ")
+         .append(bool ? "" : "checked=\"checked\" ")
+         .append("name=\"").append(field.getName()).append("\" ")
+         .append("value=\"").append("FALSE").append("\"/>")
+         .append(getFalse(attribute));
     }
     return ret.toString();
   }
@@ -86,33 +94,39 @@ public class BooleanUI extends AbstractUI {
   @Override
   public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
     String ret = null;
-    Field _field = _fieldValue.getFieldDef().getField();
+    Attribute attribute = _fieldValue.getAttribute();
     if (_fieldValue.getValue() instanceof Boolean) {
       boolean bool = (Boolean) _fieldValue.getValue();
       if (bool) {
-        ret = this.getTrue(_field);
+        ret = this.getTrue(attribute);
       } else {
-        ret = this.getFalse(_field);
+        ret = this.getFalse(attribute);
       }
     }
     return ret;
   }
 
-  private String getFalse(final Field _field) {
+  private String getFalse(final Attribute _attribute) {
     String ret;
 
-    if (DBProperties.hasProperty(_field.getLabel() + ".false")) {
-      ret = DBProperties.getProperty(_field.getLabel() + ".false");
+    if (DBProperties.hasProperty(_attribute.getParent().getName() + "/"
+        + _attribute.getName() + ".false")) {
+      ret =
+          DBProperties.getProperty(_attribute.getParent().getName() + "/"
+              + _attribute.getName() + ".false");
     } else {
       ret = "FALSE";
     }
     return ret;
   }
 
-  private String getTrue(final Field _field) {
+  private String getTrue(final Attribute _attribute) {
     String ret;
-    if (DBProperties.hasProperty(_field.getLabel() + ".true")) {
-      ret = DBProperties.getProperty(_field.getLabel() + ".true");
+    if (DBProperties.hasProperty(_attribute.getParent().getName() + "/"
+        + _attribute.getName() + ".true")) {
+      ret =
+          DBProperties.getProperty(_attribute.getParent().getName() + "/"
+              + _attribute.getName() + ".true");
     } else {
       ret = "TRUE";
     }
@@ -126,17 +140,17 @@ public class BooleanUI extends AbstractUI {
     if (_fieldValue.getValue() instanceof Boolean) {
       boolean bool = (Boolean) _fieldValue.getValue();
       if (bool) {
-        value = getTrue(_fieldValue.getFieldDef().getField());
+        value = getTrue(_fieldValue.getAttribute());
       } else {
-        value = getFalse(_fieldValue.getFieldDef().getField());
+        value = getFalse(_fieldValue.getAttribute());
       }
     }
     if (_fieldValue2.getValue() instanceof Boolean) {
       boolean bool = (Boolean) _fieldValue2.getValue();
       if (bool) {
-        value2 = getTrue(_fieldValue2.getFieldDef().getField());
+        value2 = getTrue(_fieldValue.getAttribute());
       } else {
-        value2 = getFalse(_fieldValue2.getFieldDef().getField());
+        value2 = getFalse(_fieldValue.getAttribute());
       }
     }
 
