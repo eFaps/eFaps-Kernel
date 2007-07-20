@@ -30,7 +30,7 @@ import org.xml.sax.Attributes;
  * 1. e.g. < trigger name="TeamWork_MemberRights_DeleteOverride"
  * event="DELETE_OVERRIDE" program="org.efaps.teamwork.Member"
  * method="removeMember" index="1"/> with a call of the default Construtor<br>
- * 2. e.g. < evaluate program="org.efaps.events.ui.table.QueryEvaluate"> with a
+ * 2. e.g. < evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate"> with a
  * call of the Contructor setting the event<br>
  * If for the parameter method no value is given, it will be sett to the default
  * "execute"

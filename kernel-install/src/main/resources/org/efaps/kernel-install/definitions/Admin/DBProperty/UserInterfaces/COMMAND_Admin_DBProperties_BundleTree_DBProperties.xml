@@ -56,7 +56,7 @@
     <target>
       <table>Admin_DBPropertiesTable</table>
       <menu>Admin_DBProperties_Menu</menu>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_DBProperties\BundleID</property>
       </evaluate>
     </target>

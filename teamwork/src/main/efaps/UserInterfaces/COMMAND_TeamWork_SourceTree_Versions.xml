@@ -56,7 +56,7 @@
     <target>
       <menu>TeamWork_SourceTree_Versions_Menu</menu>
       <table>TeamWork_SourceVersionTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">TeamWork_SourceVersion\ParentSourceLink</property>
       </evaluate>
     </target>

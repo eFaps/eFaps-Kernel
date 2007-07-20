@@ -56,7 +56,7 @@
     <!-- target definitions -->
     <target>
       <table>Admin_DataModel_SQLTableTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_DataModel_SQLTable\DMTableMain</property>
       </evaluate>
       

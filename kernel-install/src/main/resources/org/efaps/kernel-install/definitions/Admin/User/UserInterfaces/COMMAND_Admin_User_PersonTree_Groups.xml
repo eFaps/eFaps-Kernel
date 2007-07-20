@@ -57,7 +57,7 @@
     <target>
       <menu>Admin_User_PersonTree_Groups_Menu</menu>
       <table>Admin_User_AbstractTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_User_Person2Group\UserFromLink.UserToLink</property>
       </evaluate>
     </target>

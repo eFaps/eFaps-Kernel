@@ -57,7 +57,7 @@
     <target>
       <form>Admin_User_AbstractForm</form>
       <table>Admin_User_AbstractTable</table>
-      <evaluate program="org.efaps.events.ui.search.QuerySearch">
+      <evaluate program="org.efaps.esjp.common.uisearch.QuerySearch">
         <property name="Types">Admin_User_Group</property>
       </evaluate>
     </target>

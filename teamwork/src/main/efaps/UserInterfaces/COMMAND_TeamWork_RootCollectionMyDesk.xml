@@ -61,7 +61,7 @@
     <target>
       <table>TeamWork_CollectionTable</table>
       <menu>TeamWork_RootCollectionMyDesk_Menu</menu>
-      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">TeamWork_RootCollection</property>
       </evaluate>
     </target>

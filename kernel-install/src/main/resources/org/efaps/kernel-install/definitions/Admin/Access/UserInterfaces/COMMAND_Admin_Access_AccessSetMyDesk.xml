@@ -61,7 +61,7 @@
     <target>
       <table>Admin_Access_AccessSetTable</table>
       <menu>Admin_Access_AccessSetMyDesk_Menu</menu>
-      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">Admin_Access_AccessSet</property>
       </evaluate>
     </target>

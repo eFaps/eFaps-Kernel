@@ -56,7 +56,7 @@
     <target>
       <table>Admin_UI_LinkList4Links</table>
       <menu>Admin_UI_CommandTree_Links_Menu</menu>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_UI_Link\From</property>
       </evaluate>
     </target>

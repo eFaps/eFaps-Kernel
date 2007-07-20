@@ -55,7 +55,7 @@
     <!-- targets -->
     <target>
       <table>Common_History_AttributesTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Common_History_Attributes\HistoryID</property>
       </evaluate>
     </target>

@@ -60,7 +60,7 @@
     <!-- target definitions -->
     <target>
       <table>Admin_Common_VersionTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">Admin_Common_Version</property>
       </evaluate>
     </target>

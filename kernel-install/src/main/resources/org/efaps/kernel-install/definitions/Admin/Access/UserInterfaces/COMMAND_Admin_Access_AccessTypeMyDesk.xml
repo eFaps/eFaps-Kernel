@@ -60,7 +60,7 @@
     <!-- target definitions -->
     <target>
       <table>Admin_Access_AccessTypeTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">Admin_Access_AccessType</property>
       </evaluate>       
     </target>

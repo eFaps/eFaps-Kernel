@@ -57,7 +57,7 @@
     <target>
       <menu>Admin_Access_AccessSetTree_AccessTypes_Menu</menu>
       <table>Admin_Access_AccessTypeTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_Access_AccessSet2Type\AccessSetLink.AccessTypeLink</property>
       </evaluate>
     </target>

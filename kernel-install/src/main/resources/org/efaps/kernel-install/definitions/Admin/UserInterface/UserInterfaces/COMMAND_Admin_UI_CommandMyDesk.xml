@@ -61,7 +61,7 @@
     <target>
       <table>Admin_UI_AbstractList</table>
       <menu>Admin_UI_CommandMyDesk_Menu</menu>
-      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">Admin_UI_Command</property>
       </evaluate>
     </target>

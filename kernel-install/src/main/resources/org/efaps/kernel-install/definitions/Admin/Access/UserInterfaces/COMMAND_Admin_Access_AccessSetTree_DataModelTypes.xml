@@ -57,7 +57,7 @@
     <target>
       <menu>Admin_Access_AccessSetTree_DataModelTypes_Menu</menu>
       <table>Admin_DataModel_TypeTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_Access_AccessSet2DataModelType\AccessSetLink.DataModelTypeLink</property>
       </evaluate>
     </target>

@@ -59,7 +59,7 @@
     <!-- target definitions -->
     <target>
       <table>Admin_DBProperties_BundleTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">Admin_DBProperties_Bundle</property>
       </evaluate>
     </target>

@@ -61,7 +61,7 @@
     <target>
       <table>Admin_Program_AbstractTable</table>
       <!--menu>TeamWork_RootCollectionMyDesk_Menu</menu-->
-      <evaluate program="org.efaps.events.ui.table.QueryEvaluate">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">Admin_Program_Java</property>
       </evaluate>
     </target>

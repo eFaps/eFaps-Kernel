@@ -55,7 +55,7 @@
     <!-- target definitions -->
     <target>
       <table>Admin_Program_JavaClassTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_Program_JavaClass\ProgramLink</property>
       </evaluate>
     </target>

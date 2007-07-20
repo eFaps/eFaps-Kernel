@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.events.ui.search;
+package org.efaps.esjp.common.uisearch;
 
 import java.util.ArrayList;
 import java.util.List;

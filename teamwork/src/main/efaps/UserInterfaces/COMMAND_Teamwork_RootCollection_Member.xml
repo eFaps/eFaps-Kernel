@@ -56,7 +56,7 @@
     <target>
       <menu>TeamWork_Member_RootMenu</menu>
       <table>TeamWork_MemberTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">TeamWork_MemberRights\AbstractLink</property>
       </evaluate>
     </target>

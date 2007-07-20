@@ -57,7 +57,7 @@
     <target>
       <table>Admin_UI_FieldList</table>
       <menu>Admin_UI_CollectionTree_Fields_Menu</menu>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_UI_Field\Collection</property>
       </evaluate>
     </target>

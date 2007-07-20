@@ -60,7 +60,7 @@
     
     <!-- trigger -->
     <trigger name="Admin_Access_AccessSetTree_Users_Menu_Action_Disconnect_COMMAND"
-     event="COMMAND" program="org.efaps.events.ui.table.CommonDelete" method="execute" index="1"/>
+     event="COMMAND" program="org.efaps.esjp.common.uitable.CommonDelete" method="execute" index="1"/>
   
   </definition>
 

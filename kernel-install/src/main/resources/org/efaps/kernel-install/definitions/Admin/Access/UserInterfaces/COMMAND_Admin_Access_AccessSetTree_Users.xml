@@ -57,7 +57,7 @@
     <target>
       <menu>Admin_Access_AccessSetTree_Users_Menu</menu>
       <table>Admin_User_AbstractTable</table>
-      <evaluate program="org.efaps.events.ui.table.QueryExpand">
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_Access_AccessSet2UserAbstract\AccessSetLink.UserAbstractLink</property>  
       </evaluate>
     </target>
