@@ -20,7 +20,6 @@
 
 package org.efaps.admin.datamodel.ui;
 
-import org.efaps.admin.ui.Field;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.util.EFapsException;
@@ -47,20 +46,7 @@ public class UserUI extends AbstractUI {
     return ret;
   }
 
-  @Override
-  public String getCreateHtml(final FieldValue _fieldValue)
-      throws EFapsException {
-    Field field = _fieldValue.getFieldDef().getField();
-    StringBuilder ret = new StringBuilder();
-    ret.append("<input type=\"hidden\" ").append("name=\"").append(
-        field.getName()).append("\" id=\"UserUI\">");
-
-    ret.append("<iframe frameborder=\"0\" name=\"").append(field.getName())
-        .append("\" src=\"UserUI.jsp?\"></iframe>");
-    return ret.toString();
-
-  }
-
+ 
   @Override
   public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2) {
     String value = null;
