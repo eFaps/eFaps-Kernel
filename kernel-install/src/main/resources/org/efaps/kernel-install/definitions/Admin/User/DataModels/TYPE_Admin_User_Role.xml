@@ -51,6 +51,6 @@
     <property name="Icon">${ROOTURL}/servlet/image/Admin_User_RoleImage</property>
     <property name="Tree">Admin_User_RoleTree</property>
     <!-- triggers -->
-    <trigger name="Admin_User_Role_AccessCheck" event="ACCESSCHECK" program="org.efaps.programs.SimpleAccessCheckOnType" method="execute" index="1"/>
+    <trigger name="Admin_User_Role_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.admin.datamodel.SimpleAccessCheckOnType" method="execute" index="1"/>
   </definition>
 </datamodel-type>

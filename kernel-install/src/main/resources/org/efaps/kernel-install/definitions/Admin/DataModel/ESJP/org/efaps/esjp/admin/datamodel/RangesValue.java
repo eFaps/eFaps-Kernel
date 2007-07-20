@@ -18,7 +18,7 @@
  * Last Changed By: $Author:jmo $
  */
 
-package org.efaps.webapp.programs;
+package org.efaps.esjp.admin.datamodel;
 
 import java.util.Comparator;
 import java.util.HashMap;

@@ -118,7 +118,7 @@
     <property name="Icon">${ROOTURL}/servlet/image/Admin_User_PersonImage</property>
     <property name="Tree">Admin_User_PersonTree</property>
      <!-- triggers -->
-    <trigger name="Admin_User_Person_ACCESSCHECK" event="ACCESSCHECK" program="org.efaps.programs.SimpleAccessCheckOnType"/>
+    <trigger name="Admin_User_Person_ACCESSCHECK" event="ACCESSCHECK" program="org.efaps.esjp.admin.datamodel.SimpleAccessCheckOnType"/>
     
     <trigger name="Admin_User_Person_INSERT_POST" event="INSERT_POST" program="org.efaps.esjp.admin.user.PersonJaaskey" />
   </definition>

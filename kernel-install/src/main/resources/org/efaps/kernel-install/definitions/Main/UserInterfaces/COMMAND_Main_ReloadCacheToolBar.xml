@@ -57,7 +57,8 @@
     <access>
       <role>Administration</role>
     </access>
-    <trigger name="Main_ReloadCacheToolBar_COMMAND" event="COMMAND" program="org.efaps.webapp.programs.ReloadCache" method="execute" index="1"/>
+    <trigger name="Main_ReloadCacheToolBar_COMMAND" event="COMMAND" 
+      program="org.efaps.esjp.common.main.ReloadCache" method="execute" index="1"/>
     <property name="NoUpdateAfterCOMMAND">true</property>
   </definition>
 

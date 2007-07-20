@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.programs;
+package org.efaps.esjp.admin.datamodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

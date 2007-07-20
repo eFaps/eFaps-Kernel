@@ -18,7 +18,7 @@
  * Last Changed By: $Author:jmo $
  */
 
-package org.efaps.webapp.programs;
+package org.efaps.esjp.common.main;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

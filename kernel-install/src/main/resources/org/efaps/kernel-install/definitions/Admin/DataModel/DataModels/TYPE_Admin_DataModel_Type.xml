@@ -68,7 +68,8 @@
     <property name="Tree">Admin_DataModel_TypeTree</property>
     
      <!-- triggers -->
-    <trigger name="Admin_DataModel_Type_AccessCheck" event="ACCESSCHECK" program="org.efaps.programs.SimpleAccessCheckOnType" method="execute" index="1"/>
+    <trigger name="Admin_DataModel_Type_AccessCheck" event="ACCESSCHECK" 
+      program="org.efaps.esjp.admin.datamodel.SimpleAccessCheckOnType" method="execute" index="1"/>
   </definition>
 
 </datamodel-type>
