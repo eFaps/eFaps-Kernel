@@ -24,7 +24,7 @@
 -->
 
 <ui-menu>
-  <uuid>6236f862-a9bb-4888-9d8a-c86e40555b47</uuid>
+  <uuid>891cdbc8-4e1a-4a29-9676-a80cf964e78d</uuid>
 
   <!-- ************************************************************************
     version definition used to create the menu 
@@ -60,6 +60,7 @@
     <!-- childs -->
     <childs>
       <child>Admin_DataModel_AbstractTree_Properties</child>
+      <child>Admin_AbstractTree_Events</child>
     </childs>
     <!-- properties -->
     <property name="Target">content</property>
