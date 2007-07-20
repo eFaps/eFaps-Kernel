@@ -49,7 +49,7 @@ import org.efaps.util.EFapsException;
  * has the access defined in the list of access types.
  * 
  * @author tmo
- * @version $Id: $
+ * @version $Id$
  */
 public class SimpleAccessCheckOnType implements EventExecution {
 
