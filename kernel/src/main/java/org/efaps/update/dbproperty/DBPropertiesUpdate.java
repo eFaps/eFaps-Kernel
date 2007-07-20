@@ -20,7 +20,6 @@
 
 package org.efaps.update.dbproperty;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -28,18 +27,19 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Map.Entry;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.xml.sax.SAXException;
+
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
-import org.xml.sax.SAXException;
 
 /**
  * Class for importing or updating of Properties from a properties-file into the
@@ -507,27 +507,6 @@ public class DBPropertiesUpdate {
 
   }
 
-  /**
-   * Import the Properties defined in a "eFaps-Properties" XML-File
-   * 
-   * @param _XMLName  Path to the XML-File
-   * @return DBPropertiesUpdate
-   * @deprecated
-   */
-  public static DBPropertiesUpdate readXMLFile(final String _XMLName) throws MalformedURLException  {
-    return readXMLFile(new File(_XMLName));
-  }
-
-  /**
-   * Import the Properties defined in a "eFaps-Properties" XML-File
-   * 
-   * @param _xmlfile  XML-Files
-   * @return DBPropertiesUpdate
-   * @deprecated
-   */
-  public static DBPropertiesUpdate readXMLFile(final File _xmlfile) throws MalformedURLException  {
-    return readXMLFile(_xmlfile.toURL());
-  }
 
   public static DBPropertiesUpdate readXMLFile(final URL _url) {
     DBPropertiesUpdate propimport = null;

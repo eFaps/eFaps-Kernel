@@ -20,10 +20,13 @@
 
 package org.efaps.maven.install;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
@@ -31,17 +34,18 @@ import org.apache.commons.logging.LogFactory;
 
 import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
+import org.efaps.importer.DataImport;
 import org.efaps.update.Install;
+import org.efaps.update.dbproperty.DBPropertiesUpdate;
 import org.efaps.util.EFapsException;
 
 /**
- * 
  * @author tmo
  * @version $Id$
  */
 public class Application {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -49,7 +53,7 @@ public class Application {
    */
   private final static Log LOG = LogFactory.getLog(Application.class);
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -64,7 +68,7 @@ public class Application {
    * 
    * @see #getVersions
    */
-  private Set<ApplicationVersion> versions    = new TreeSet<ApplicationVersion>();
+  private Set<ApplicationVersion> versions = new TreeSet<ApplicationVersion>();
 
   /**
    * Stores all alread installed version numbers.
@@ -78,7 +82,7 @@ public class Application {
    */
   private final Install install = new Install();
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -93,7 +97,7 @@ public class Application {
    */
   public void install() throws EFapsException, Exception {
     loadInstalledVersions();
-    
+
     LOG.info("Install application '" + this.application + "'");
     for (ApplicationVersion version : versions) {
       if (LOG.isInfoEnabled()) {
@@ -116,7 +120,6 @@ public class Application {
       }
     }
 
-    
   }
 
   /**
@@ -189,7 +192,7 @@ public class Application {
     return (ApplicationVersion) this.versions.toArray()[this.versions.size() - 1];
   }
 
-  public void addURL(final URL _url)  {
+  public void addURL(final URL _url) {
     this.install.addURL(_url);
   }
 
@@ -218,6 +221,34 @@ public class Application {
   }
 
   /**
+   * imports Data from XML-Files and Properties
+   */
+  public void importData() {
+
+    Map<String, URL> map = this.install.getURLs();
+
+    for (Entry entry : map.entrySet()) {
+      DataImport dimport = new DataImport();
+      dimport.initialise();
+      dimport.readXMLFile((URL) entry.getValue());
+      if (dimport.hasData()) {
+        dimport.updateInDB();
+      }
+
+      DBPropertiesUpdate prop =
+          DBPropertiesUpdate.readXMLFile((URL) entry.getValue());
+      if (prop != null) {
+        try {
+          prop.updateInDB();
+        } catch (MalformedURLException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    }
+  }
+
+  /**
    * Returns a string representation with values of all instance variables.
    * 
    * @return string representation of this Application
@@ -226,4 +257,5 @@ public class Application {
     return new ToStringBuilder(this).append("application", this.application)
         .append("versions", this.versions).toString();
   }
+
 }

@@ -20,15 +20,11 @@
 
 package org.efaps.maven.install;
 
-import java.io.File;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import org.efaps.admin.program.esjp.Compiler;
-import org.efaps.importer.DataImport;
 import org.efaps.update.Install;
 import org.efaps.util.EFapsException;
 
@@ -107,29 +103,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
         .compareTo(((ApplicationVersion) _compareTo).number);
   }
 
-  /**
-   * imports Data from XML-Files and Properties
-   */
-  public void importData() {
-/*    Set<File> files = getFiles();
-
-    for (File file : files) {
-      DataImport dimport = new DataImport();
-      dimport.initialise();
-      dimport.readXMLFile(file);
-      if (dimport.hasData()) {
-        dimport.updateInDB();
-      }
-    }
-
-    for (File file : files) {
-      DBPropertiesUpdate prop = DBPropertiesUpdate.readXMLFile(file);
-      if (prop != null) {
-        prop.updateInDB();
-      }
-    }
-*/
-  }
+  
 
   /////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods

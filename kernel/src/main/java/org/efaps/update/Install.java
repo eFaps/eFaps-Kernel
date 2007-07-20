@@ -50,24 +50,24 @@ import org.efaps.update.user.RoleUpdate;
 import org.efaps.util.EFapsException;
 
 /**
- * 
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class Install  {
+public class Install {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * List of all update classes. The order is also used for the install order.
-   *
+   * 
    * @see #install
    */
-  private List<Class<? extends AbstractUpdate>> UPDATE_CLASSES
-                    = new ArrayList<Class<? extends AbstractUpdate>>();  {
-    if (UPDATE_CLASSES.size() == 0)  {
+  private List<Class<? extends AbstractUpdate>> UPDATE_CLASSES =
+      new ArrayList<Class<? extends AbstractUpdate>>();
+  {
+    if (UPDATE_CLASSES.size() == 0) {
       UPDATE_CLASSES.add(RoleUpdate.class);
       UPDATE_CLASSES.add(SQLTableUpdate.class);
       UPDATE_CLASSES.add(TypeUpdate.class);
@@ -85,7 +85,7 @@ public class Install  {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -93,11 +93,11 @@ public class Install  {
    * 
    * @see #addURL
    */
-  private final Map<String,URL> urls = new TreeMap<String,URL>();
+  private final Map<String, URL> urls = new TreeMap<String, URL>();
 
   /**
    * Flag to store that the cache is initialised.
-   *
+   * 
    * @see #initialise
    * @see #addURL
    */
@@ -105,14 +105,14 @@ public class Install  {
 
   /**
    * Cache with all update instances (loaded from the list of {@link #urls}).
-   *
+   * 
    * @see #initialise
    * @see #install
    */
-  private Map<Class<? extends AbstractUpdate>,List<AbstractUpdate>> cache
-          = new HashMap<Class<? extends AbstractUpdate>,List<AbstractUpdate>>();
+  private Map<Class<? extends AbstractUpdate>, List<AbstractUpdate>> cache =
+      new HashMap<Class<? extends AbstractUpdate>, List<AbstractUpdate>>();
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -126,13 +126,13 @@ public class Install  {
 
     // initiliase JexlContext (used to evalute version)
     JexlContext jexlContext = JexlHelper.createContext();
-    if (_number != null)  {
+    if (_number != null) {
       jexlContext.getVars().put("version", _number);
     }
 
     // make update
-    for (Class<? extends AbstractUpdate> updateClass : UPDATE_CLASSES)  {
-      for (AbstractUpdate update : this.cache.get(updateClass))  {
+    for (Class<? extends AbstractUpdate> updateClass : UPDATE_CLASSES) {
+      for (AbstractUpdate update : this.cache.get(updateClass)) {
         update.updateInDB(jexlContext);
       }
     }
@@ -141,19 +141,19 @@ public class Install  {
   /**
    * @see #initialised
    */
-  public void initialise() throws Exception  {
-    if (!this.initialised)  {
+  public void initialise() throws Exception {
+    if (!this.initialised) {
       this.initialised = true;
       this.cache.clear();
 
-      for (Class<? extends AbstractUpdate> updateClass : UPDATE_CLASSES)  {
+      for (Class<? extends AbstractUpdate> updateClass : UPDATE_CLASSES) {
         List<AbstractUpdate> list = new ArrayList<AbstractUpdate>();
         this.cache.put(updateClass, list);
         Method method = updateClass.getMethod("readXMLFile", URL.class);
         for (URL url : this.urls.values()) {
           Object obj = method.invoke(null, url);
-          if (obj != null)  {
-            list.add((AbstractUpdate)obj);
+          if (obj != null) {
+            list.add((AbstractUpdate) obj);
           }
         }
       }
@@ -164,16 +164,27 @@ public class Install  {
    * Appends a new file defined through an url. The initialised flag is
    * automatically reseted.
    * 
-   * @param _url  file to append
+   * @param _url
+   *          file to append
    * @see #urls
    * @see #initialised
    */
-  public void addURL(final URL _url)  {
+  public void addURL(final URL _url) {
     this.urls.put(_url.toString(), _url);
     this.initialised = false;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  /**
+   * this is the getter method for instance variable {@link #urls}
+   * 
+   * @return instancevarable {@link #urls}
+   * @see #urls
+   */
+  public Map<String, URL> getURLs() {
+    return this.urls;
+  }
+
+  // ///////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
 
   /**
@@ -182,7 +193,6 @@ public class Install  {
    * @return string representation of this Application
    */
   public String toString() {
-    return new ToStringBuilder(this)
-            .append("urls", this.urls).toString();
+    return new ToStringBuilder(this).append("urls", this.urls).toString();
   }
 }

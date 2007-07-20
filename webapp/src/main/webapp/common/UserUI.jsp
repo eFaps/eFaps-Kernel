@@ -22,6 +22,7 @@
 --%> 
 
 <%@page import="org.efaps.db.SearchQuery"%>
+<%@page import="org.efaps.db.Context"%>
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;"/>
@@ -34,10 +35,7 @@
 		<input name="Name" type="text" size="30" maxlength="30" value="*">
 		<button type="submit"> Suchen</button>	</td></tr><tr><td>
 	<%	
-		  if (getParameter("Name")!=null){
-
-  	
-  	
+		  if (Context.getThreadContext().getParameter("Name")!=null){
   			SearchQuery query = new SearchQuery();
   			query.setQueryTypes("Admin_User_Person");
       		query.addSelect("ID");
@@ -54,10 +52,6 @@
       }
   	}
   			%>
-		
-		
-		
-		
 	</form>	</td></tr>	
 	</table>
 	</body>

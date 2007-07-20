@@ -20,11 +20,9 @@
 
 package org.efaps.maven;
 
-import org.apache.commons.logging.Log;
 import org.apache.maven.plugin.MojoExecutionException;
 
 import org.efaps.maven.install.Application;
-import org.efaps.maven.install.ApplicationVersion;
 import org.efaps.util.EFapsException;
 
 /**
@@ -59,8 +57,7 @@ public final class InstallMojo extends EFapsAbstractMojo {
       commitTransaction();
       if (appl != null) {
         startTransaction();
-        ApplicationVersion version = appl.getLastVersion();
-        version.importData();
+        appl.importData();
         commitTransaction();
       }
 
