@@ -37,7 +37,7 @@
     </version>
     <database>
       <table-name>T_PRGABSTRACT</table-name>
-      <parent-table>T_ABSTRACT</parent-table>
+      <parent-table>T_CMABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
@@ -56,7 +56,7 @@
     </version>
 
     <name>Admin_Program_AbstractSQLTable</name>
-    <parent>Admin_AbstractSQLTable</parent>
+    <parent>Admin_Common_AbstractSQLTable</parent>
     <database>
       <table-name>T_PRGABSTRACT</table-name>
     </database>

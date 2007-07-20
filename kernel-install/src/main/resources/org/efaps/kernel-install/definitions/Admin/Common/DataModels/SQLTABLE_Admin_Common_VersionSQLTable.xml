@@ -40,7 +40,7 @@
     <database>
       <create>true</create>
       <update>true</update>
-      <table-name>T_COMMONVERSION</table-name>
+      <table-name>T_CMVERSION</table-name>
       <!-- columns -->
       <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
       <column name="REVISION"   type="INTEGER"                    not-null="true"/>
@@ -68,7 +68,7 @@
            select
                    NAME,
                    max(REVISION) as VERSION
-               from T_COMMONVERSION
+               from T_CMVERSION
                group by NAME
       </sql>
     </database>
@@ -84,7 +84,7 @@
     </version>
     <name>Admin_Common_VersionSQLTable</name>
     <database>
-      <table-name>T_COMMONVERSION</table-name>
+      <table-name>T_CMVERSION</table-name>
     </database>
   </definition>
 

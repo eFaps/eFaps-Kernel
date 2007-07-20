@@ -23,11 +23,11 @@
 
 -->
 
-<ui-form>
-  <uuid>bd0ae80f-8a68-4669-84f8-1aa50840b5ad</uuid>
+<ui-menu>
+  <uuid>b9f64a17-7dad-46f2-a28b-bd87566fbddf</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the table 
+    version definition used to create the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_PropertyForm</name>
+    <name>Admin_Common_PropertyTree_Menu_Action</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the table 
+    version definition used to define the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,24 +51,10 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_PropertyForm</name>
-    <!-- fields -->
-    <field name="Name">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">Name</property>
-      <property name="Required">true</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="Value">
-      <property name="Columns">80</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">Value</property>
-      <property name="Required">true</property>
-      <property name="Searchable">true</property>
-    </field>
+    <name>Admin_Common_PropertyTree_Menu_Action</name>
+    <childs>
+      <child>Admin_Common_PropertyTree_Menu_Action_Edit</child>
+    </childs>
   </definition>
 
-</ui-form>
+</ui-menu>

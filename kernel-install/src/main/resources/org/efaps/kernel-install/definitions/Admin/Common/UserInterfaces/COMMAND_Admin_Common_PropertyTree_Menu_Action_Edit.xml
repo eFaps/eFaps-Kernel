@@ -23,11 +23,11 @@
 
 -->
 
-<ui-table>
-  <uuid>50557530-d130-4eac-89ab-1e295c188050</uuid>
+<ui-command>
+  <uuid>01685e45-cf05-46b1-8ee9-de68508afbc1</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the table 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_PropertyTable</name>
+    <name>Admin_Common_PropertyTree_Menu_Action_Edit</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the table 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,23 +51,14 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_PropertyTable</name>
-    <!-- fields -->
-    <field name="Name">
-      <property name="Expression">Name</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Label">Admin_Property/Name.Label</property>
-      <property name="ShowTypeIcon">true</property>
-    </field>
-    <field name="Value">
-      <property name="Expression">Value</property>
-      <property name="Label">Admin_Property/Value.Label</property>
-    </field>
-    <field name="buttonOpenInNewWindow">
-      <icon>eFapsActionNewWindow</icon>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Target">popup</property>
-    </field>
+    <name>Admin_Common_PropertyTree_Menu_Action_Edit</name>
+    <!-- target definitions -->
+    <target>
+      <form>Admin_Common_PropertyForm</form>
+    </target>
+    <!-- properties -->
+    <property name="Target">popup</property>
+    <property name="TargetMode">edit</property>
   </definition>
 
-</ui-table>
+</ui-command>

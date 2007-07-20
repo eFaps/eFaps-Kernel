@@ -37,7 +37,7 @@
 
     <database>
       <table-name>T_DMATTRIBUTE</table-name>
-      <parent-table>T_ABSTRACT</parent-table>
+      <parent-table>T_CMABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
@@ -63,16 +63,16 @@
       <sql>
         create view V_ADMINATTRIBUTE as
           select
-                T_ABSTRACT.ID,
-                T_ABSTRACT.NAME,
+                T_CMABSTRACT.ID,
+                T_CMABSTRACT.NAME,
                 T_DMATTRIBUTE.DMTABLE,
                 T_DMATTRIBUTE.DMTYPE,
                 T_DMATTRIBUTE.DMATTRIBUTETYPE,
                 T_DMATTRIBUTE.DMTYPELINK,
                 T_DMATTRIBUTE.SQLCOLUMN,
                 T_DMATTRIBUTE.DEFAULTVAL
-            from T_DMATTRIBUTE,T_ABSTRACT
-            where T_ABSTRACT.ID=T_DMATTRIBUTE.ID
+            from T_DMATTRIBUTE,T_CMABSTRACT
+            where T_CMABSTRACT.ID=T_DMATTRIBUTE.ID
       </sql>
       <!-- update of the sql table -->
       <table-name>T_DMATTRIBUTE</table-name>
@@ -94,7 +94,7 @@
       <mode>(version==4)</mode>
     </version>
     <name>Admin_DataModel_AttributeSQLTable</name>
-    <parent>Admin_AbstractSQLTable</parent>
+    <parent>Admin_Common_AbstractSQLTable</parent>
     <database>
       <table-name>T_DMATTRIBUTE</table-name>
     </database>

@@ -331,7 +331,7 @@ function _eFpasCreateAllReadProperties(_files)  {
 function _eFapsCreateInsertSQLTable(_stmt, _text, _uuid, _name, _sqlTable, _sqlColId, _sqlColType, _tableMain)  {
   var sqlColType = (_sqlColType==null ? "null" : "'"+_sqlColType+"'");
 
-  var rs = _stmt.executeQuery("select ID from T_ABSTRACT where NAME='Admin_DataModel_SQLTable'");
+  var rs = _stmt.executeQuery("select ID from T_CMABSTRACT where NAME='Admin_DataModel_SQLTable'");
   var typeIdSQLTable = "-20000";
   if (rs.next())  {
     typeIdSQLTable = rs.getString(1);
@@ -341,14 +341,14 @@ function _eFapsCreateInsertSQLTable(_stmt, _text, _uuid, _name, _sqlTable, _sqlC
   // get id for SQL Table defined in _tableMain
   var tableMainId = "null";
   if (_tableMain != null)  {
-    var rs = _stmt.executeQuery("select ID from T_ABSTRACT where NAME='" + _tableMain + "'");
+    var rs = _stmt.executeQuery("select ID from T_CMABSTRACT where NAME='" + _tableMain + "'");
     rs.next();
     tableMainId = rs.getString(1);
     rs.close();
   }
 
   var ret = _insert(_stmt, _text, null,
-                    "T_ABSTRACT",
+                    "T_CMABSTRACT",
                     "TYPEID,UUID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
                     typeIdSQLTable 
                         + ", '" + _uuid + "'"
@@ -364,7 +364,7 @@ function _eFapsCreateInsertSQLTable(_stmt, _text, _uuid, _name, _sqlTable, _sqlC
 
 function _eFapsCreateInsertType(_stmt, _text, _uuid, _name, _parentType)  {
   // get id for type 'Admin_DataModel_Type'
-  var rs = _stmt.executeQuery("select ID from T_ABSTRACT where NAME='Admin_DataModel_Type'");
+  var rs = _stmt.executeQuery("select ID from T_CMABSTRACT where NAME='Admin_DataModel_Type'");
   var typeIdType = "-21000";
   if (rs.next())  {
     typeIdType = rs.getString(1);
@@ -374,14 +374,14 @@ function _eFapsCreateInsertType(_stmt, _text, _uuid, _name, _parentType)  {
   // get id for given type name in _parentType
   var parentTypeId = "null";
   if (_parentType != null)  {
-    rs = _stmt.executeQuery("select ID from T_ABSTRACT where NAME='" + _parentType + "'");
+    rs = _stmt.executeQuery("select ID from T_CMABSTRACT where NAME='" + _parentType + "'");
     rs.next();
     parentTypeId = rs.getString(1);
     rs.close();
   }
 
   var ret = _insert(_stmt, _text, null, 
-                    "T_ABSTRACT",
+                    "T_CMABSTRACT",
                     "TYPEID,NAME,UUID,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
                     typeIdType + ", '" + _name + "','" + _uuid + "','',1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP);
   _exec(_stmt, null, null, "insert into T_DMTYPE values  (" + ret + ", " + parentTypeId + ", null)");
@@ -390,7 +390,7 @@ function _eFapsCreateInsertType(_stmt, _text, _uuid, _name, _parentType)  {
 
 function _eFapsCreateInsertAttr(_stmt, _tableId, _typeId, _name, _sqlColumn, _attrType, _typeLink)  {
   // get if for type 'Admin_DataModel_Attribute'
-  var rs = _stmt.executeQuery("select ID from T_ABSTRACT where NAME='Admin_DataModel_Attribute'");
+  var rs = _stmt.executeQuery("select ID from T_CMABSTRACT where NAME='Admin_DataModel_Attribute'");
   var typeIdAttr = "-22000";
   if (rs.next())  {
     typeIdAttr = rs.getString(1);
@@ -400,7 +400,7 @@ function _eFapsCreateInsertAttr(_stmt, _tableId, _typeId, _name, _sqlColumn, _at
   // get id for given type name in _typeLink
   var typeLinkId = "null";
   if (_typeLink != null)  {
-    rs = _stmt.executeQuery("select ID from T_ABSTRACT where NAME='" + _typeLink + "'");
+    rs = _stmt.executeQuery("select ID from T_CMABSTRACT where NAME='" + _typeLink + "'");
     rs.next();
     typeLinkId = rs.getString(1);
     rs.close();
@@ -413,7 +413,7 @@ function _eFapsCreateInsertAttr(_stmt, _tableId, _typeId, _name, _sqlColumn, _at
   rs.close();
 
   var ret = _insert(_stmt, null, null, 
-                    "T_ABSTRACT",
+                    "T_CMABSTRACT",
                     "TYPEID,NAME,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
                     typeIdAttr + ", '" + _name + "', '', 1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP);
   _exec(_stmt, null, null, "insert into T_DMATTRIBUTE (ID, DMTABLE, DMTYPE, DMATTRIBUTETYPE, DMTYPELINK, SQLCOLUMN ) values  (" + ret + ", " + _tableId + ", " + _typeId + ",  " + attrTypeId + ", " + typeLinkId + ", '" + _sqlColumn + "')");
@@ -422,7 +422,7 @@ function _eFapsCreateInsertAttr(_stmt, _tableId, _typeId, _name, _sqlColumn, _at
 
 function _eFapsCreateInsertProp(_stmt, _abstractId, _key, _value)  {
   _insert(_stmt, null, null, 
-          "T_PROPERTY",
+          "T_CMPROPERTY",
           "ABSTRACT,NAME,VALUE",
           _abstractId + ",'" + _key + "','" + _value + "'");
 }
@@ -652,7 +652,7 @@ function _eFapsCreateDataModelTablesStep2()  {
   var stmt = conRsrc.getConnection().createStatement();
 
   text = "Insert Table for 'Admin_DataModel_SQLTable'";
-  var sqlTableIdSQLTable = _eFapsCreateInsertSQLTable(stmt, text, "5ffb40ef-3518-46c8-a78f-da3ffbfea4c0", "Admin_DataModel_SQLTableSQLTable", "T_DMTABLE", "ID", null, "Admin_AbstractSQLTable");
+  var sqlTableIdSQLTable = _eFapsCreateInsertSQLTable(stmt, text, "5ffb40ef-3518-46c8-a78f-da3ffbfea4c0", "Admin_DataModel_SQLTableSQLTable", "T_DMTABLE", "ID", null, "Admin_Common_AbstractSQLTable");
 
   text = "Insert Type for 'Admin_DataModel_SQLTable'";
   var typeIdSQLTable = _eFapsCreateInsertType(stmt, text, "ebf29cc2-cf42-4cd0-9b6e-92d9b644062b", "Admin_DataModel_SQLTable", "Admin_Abstract");
@@ -665,7 +665,7 @@ function _eFapsCreateDataModelTablesStep2()  {
   // insert 'type' 
 
   text = "Insert Table for 'Admin_DataModel_Type'";
-  var sqlTableIdType = _eFapsCreateInsertSQLTable(stmt, text, "8f4df2db-8fda-4f00-9144-9a3e344d0abc", "Admin_DataModel_TypeSQLTable", "T_DMTYPE", "ID", null, "Admin_AbstractSQLTable");
+  var sqlTableIdType = _eFapsCreateInsertSQLTable(stmt, text, "8f4df2db-8fda-4f00-9144-9a3e344d0abc", "Admin_DataModel_TypeSQLTable", "T_DMTYPE", "ID", null, "Admin_Common_AbstractSQLTable");
 
   text = "Insert Type for 'Admin_DataModel_Type'";
   var typeIdType = _eFapsCreateInsertType(stmt, text, "8770839d-60fd-4bb4-81fd-3903d4c916ec", "Admin_DataModel_Type", "Admin_Abstract");
@@ -692,7 +692,7 @@ function _eFapsCreateDataModelTablesStep2()  {
   // insert 'attribute' 
 
   text = "Insert Table for 'Admin_DataModel_Attribute'";
-  var sqlTableIdAttr = _eFapsCreateInsertSQLTable(stmt, text, "d3a64746-3666-4678-9603-f304bf16bb92", "Admin_DataModel_AttributeSQLTable", "T_DMATTRIBUTE", "ID", null, "Admin_AbstractSQLTable");
+  var sqlTableIdAttr = _eFapsCreateInsertSQLTable(stmt, text, "d3a64746-3666-4678-9603-f304bf16bb92", "Admin_DataModel_AttributeSQLTable", "T_DMATTRIBUTE", "ID", null, "Admin_Common_AbstractSQLTable");
 
   text = "Insert Type for 'Admin_DataModel_Attribute'";
   var typeIdAttr = _eFapsCreateInsertType(stmt, text, "518a9802-cf0e-4359-9b3c-880f71e1387f", "Admin_DataModel_Attribute", "Admin_Abstract");
@@ -707,7 +707,7 @@ function _eFapsCreateDataModelTablesStep2()  {
   // insert 'admin property' 
 
   text = "Insert Table for 'Admin_Property'";
-  var sqlTableIdProp = _eFapsCreateInsertSQLTable(stmt, text, "5cf99cd6-06d6-4322-a344-55d206666c9c", "Admin_PropertyTable", "T_PROPERTY", "ID", null, null);
+  var sqlTableIdProp = _eFapsCreateInsertSQLTable(stmt, text, "5cf99cd6-06d6-4322-a344-55d206666c9c", "Admin_Common_PropertySQLTable", "T_CMPROPERTY", "ID", null, null);
 
   text = "Insert Type for 'Admin_Property'";
   var typeIdProp = _eFapsCreateInsertType(stmt, text, "f3d54a86-c323-43d8-9c78-284d61d955b3", "Admin_Property", null);
@@ -716,7 +716,7 @@ function _eFapsCreateDataModelTablesStep2()  {
   _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'Name',             'NAME',             'String',   null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'Value',            'VALUE',            'String',   null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'Abstract',         'ABSTRACT',         'Link',     "Admin_Abstract");
-  _eFapsCreateInsertProp(stmt, typeIdProp, "Tree", "Admin_PropertyTree");
+  _eFapsCreateInsertProp(stmt, typeIdProp, "Tree", "Admin_Common_PropertyTree");
   _eFapsCreateInsertProp(stmt, typeIdProp, "Icon", "${ROOTURL}/servlet/image/Admin_PropertyImage");
 
   conRsrc.commit();
@@ -731,7 +731,7 @@ function _eFapsCreateCommonTablesStep2()  {
   var stmt = conRsrc.getConnection().createStatement();
 
   text = "Insert Table for 'Admin_Abstract'";
-  var sqlTableIdAbstract = _eFapsCreateInsertSQLTable(stmt, text, "e76ff99d-0d3d-4154-b2ef-d65633d357c3", "Admin_AbstractSQLTable", "T_ABSTRACT", "ID", "TYPEID", null);
+  var sqlTableIdAbstract = _eFapsCreateInsertSQLTable(stmt, text, "e76ff99d-0d3d-4154-b2ef-d65633d357c3", "Admin_Common_AbstractSQLTable", "T_CMABSTRACT", "ID", "TYPEID", null);
 
   text = "Insert Type for 'Admin_Abstract'";
   var typeIdAbstract = _eFapsCreateInsertType(stmt, text, "2a869f46-0ec7-4afb-98e7-8b1125e1c43c", "Admin_Abstract",        null);

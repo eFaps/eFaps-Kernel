@@ -36,7 +36,7 @@
     </version>
     <database>
       <table-name>T_DMTABLE</table-name>
-      <parent-table>T_ABSTRACT</parent-table>
+      <parent-table>T_CMABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
@@ -61,14 +61,14 @@
       <sql>
         create view V_ADMINSQLTABLE as
           select
-                T_ABSTRACT.ID,
-                T_ABSTRACT.NAME,
+                T_CMABSTRACT.ID,
+                T_CMABSTRACT.NAME,
                 T_DMTABLE.SQLTABLE,
                 T_DMTABLE.SQLCOLUMNID,
                 T_DMTABLE.SQLCOLUMNTYPE,
                 T_DMTABLE.DMTABLEMAIN
-            from T_DMTABLE,T_ABSTRACT
-            where T_ABSTRACT.ID=T_DMTABLE.ID
+            from T_DMTABLE,T_CMABSTRACT
+            where T_CMABSTRACT.ID=T_DMTABLE.ID
       </sql>
       <!-- update of the sql table -->
       <table-name>T_DMTABLE</table-name>
@@ -87,7 +87,7 @@
       <mode>(version==4)</mode>
     </version>
     <name>Admin_DataModel_SQLTableSQLTable</name>
-    <parent>Admin_AbstractSQLTable</parent>
+    <parent>Admin_Common_AbstractSQLTable</parent>
     <database>
       <table-name>T_DMTABLE</table-name>
     </database>

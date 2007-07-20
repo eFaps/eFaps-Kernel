@@ -61,7 +61,7 @@
       <table-name>T_UIACCESS</table-name>
       <update>true</update>
       <foreign name="UIACS_FK_USRABSTR"     key="USERABSTRACT"  reference="T_USERABSTRACT(ID)"/>
-      <foreign name="UIACS_FK_UIABSTR"      key="UIABSTRACT"    reference="T_ABSTRACT(ID)"/>
+      <foreign name="UIACS_FK_UIABSTR"      key="UIABSTRACT"    reference="T_CMABSTRACT(ID)"/>
       <foreign name="UIACS_FK_CRTR"         key="CREATOR"       reference="T_USERPERSON(ID)"/>
       <foreign name="UIACS_FK_MDFR"         key="MODIFIER"      reference="T_USERPERSON(ID)"/>
      </database>

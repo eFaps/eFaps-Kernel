@@ -23,11 +23,11 @@
 
 -->
 
-<ui-command>
-  <uuid>01685e45-cf05-46b1-8ee9-de68508afbc1</uuid>
+<ui-form>
+  <uuid>bd0ae80f-8a68-4669-84f8-1aa50840b5ad</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the command 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_PropertyTree_Menu_Action_Edit</name>
+    <name>Admin_Common_PropertyForm</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the command 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,14 +51,24 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_PropertyTree_Menu_Action_Edit</name>
-    <!-- target definitions -->
-    <target>
-      <form>Admin_PropertyForm</form>
-    </target>
-    <!-- properties -->
-    <property name="Target">popup</property>
-    <property name="TargetMode">edit</property>
+    <name>Admin_Common_PropertyForm</name>
+    <!-- fields -->
+    <field name="Name">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Name</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
+    </field>
+    <field name="Value">
+      <property name="Columns">80</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Value</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
+    </field>
   </definition>
 
-</ui-command>
+</ui-form>

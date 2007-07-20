@@ -133,10 +133,10 @@ public abstract class UserInterfaceObject extends AdminObject {
       stmt = Context.getThreadContext().getConnection().createStatement();
       ResultSet rs =
           stmt.executeQuery("select " + "T_UIABSTRACT2UIABSTRACT.TYPEID,"
-              + "T_UIABSTRACT2UIABSTRACT.TOID," + "T_ABSTRACT.TYPEID,"
-              + "T_ABSTRACT.NAME " + "from T_UIABSTRACT2UIABSTRACT, T_ABSTRACT "
+              + "T_UIABSTRACT2UIABSTRACT.TOID," + "T_CMABSTRACT.TYPEID,"
+              + "T_CMABSTRACT.NAME " + "from T_UIABSTRACT2UIABSTRACT, T_CMABSTRACT "
               + "where T_UIABSTRACT2UIABSTRACT.FROMID=" + getId()
-              + " and T_UIABSTRACT2UIABSTRACT.TOID=T_ABSTRACT.ID");
+              + " and T_UIABSTRACT2UIABSTRACT.TOID=T_CMABSTRACT.ID");
       while (rs.next()) {
         long conTypeId = rs.getLong(1);
         long toId = rs.getLong(2);
@@ -179,8 +179,8 @@ public abstract class UserInterfaceObject extends AdminObject {
     try {
       stmt = Context.getThreadContext().getConnection().createStatement();
       ResultSet rs =
-          stmt.executeQuery("select " + "T_PROPERTY.NAME," + "T_PROPERTY.VALUE "
-              + "from T_PROPERTY " + "where T_PROPERTY.ABSTRACT=" + getId());
+          stmt.executeQuery("select " + "T_CMPROPERTY.NAME," + "T_CMPROPERTY.VALUE "
+              + "from T_CMPROPERTY " + "where T_CMPROPERTY.ABSTRACT=" + getId());
       while (rs.next()) {
         String name = rs.getString(1).trim();
         String value = rs.getString(2).trim();

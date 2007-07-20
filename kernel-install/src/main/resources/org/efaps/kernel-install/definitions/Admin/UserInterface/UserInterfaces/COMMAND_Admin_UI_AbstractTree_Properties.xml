@@ -55,7 +55,7 @@
     <icon>Admin_PropertyListImage</icon>
     <!-- target definitions -->
     <target>
-      <table>Admin_PropertyTable</table>
+      <table>Admin_Common_PropertyTable</table>
       <menu>Admin_UI_AbstractTree_Properties_Menu</menu>
       <evaluate program="org.efaps.events.ui.table.QueryExpand">
         <property name="Expand">Admin_Property\Abstract</property>

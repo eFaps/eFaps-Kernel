@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>ff583ed7-1fca-43b4-a494-3d84967d72f6</uuid>
+<ui-table>
+  <uuid>50557530-d130-4eac-89ab-1e295c188050</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_PropertyTree</name>
+    <name>Admin_Common_PropertyTable</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,15 +51,23 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_PropertyTree</name>
-    <!-- targets -->
-    <target>
-      <form>Admin_PropertyForm</form>
-      <menu>Admin_PropertyTree_Menu</menu>
-    </target>
-    <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
+    <name>Admin_Common_PropertyTable</name>
+    <!-- fields -->
+    <field name="Name">
+      <property name="Expression">Name</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">Admin_Property/Name.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="Value">
+      <property name="Expression">Value</property>
+      <property name="Label">Admin_Property/Value.Label</property>
+    </field>
+    <field name="buttonOpenInNewWindow">
+      <icon>eFapsActionNewWindow</icon>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Target">popup</property>
+    </field>
   </definition>
 
-</ui-menu>
+</ui-table>

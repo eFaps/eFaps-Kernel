@@ -54,7 +54,7 @@
     <name>Admin_UI_AbstractTree_Properties_Menu_Action_Create</name>
     <!-- target definitions -->
     <target>
-      <form>Admin_PropertyForm</form>
+      <form>Admin_Common_PropertyForm</form>
     </target>
     <!-- properties -->
     <property name="Target">popup</property>

@@ -24,7 +24,7 @@
 -->
 
 <ui-menu>
-  <uuid>7a422756-42b3-42e5-8609-811e75675f87</uuid>
+  <uuid>ff583ed7-1fca-43b4-a494-3d84967d72f6</uuid>
 
   <!-- ************************************************************************
     version definition used to create the menu 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_PropertyTree_Menu</name>
+    <name>Admin_Common_PropertyTree</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,11 +51,15 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_PropertyTree_Menu</name>
-    <!-- childs -->
-    <childs>
-      <child>Admin_PropertyTree_Menu_Action</child>
-    </childs>
+    <name>Admin_Common_PropertyTree</name>
+    <!-- targets -->
+    <target>
+      <form>Admin_Common_PropertyForm</form>
+      <menu>Admin_Common_PropertyTree_Menu</menu>
+    </target>
+    <!-- properties -->
+    <property name="Target">content</property>
+    <property name="TargetMode">view</property>
   </definition>
 
 </ui-menu>

@@ -56,7 +56,7 @@
     <!-- target definitions -->
     <target>
       <menu>Admin_DataModel_AbstractTree_Properties_Menu</menu>
-      <table>Admin_PropertyTable</table>
+      <table>Admin_Common_PropertyTable</table>
       <evaluate program="org.efaps.events.ui.table.QueryExpand">
         <property name="Expand">Admin_Property\Abstract</property>
       </evaluate>
