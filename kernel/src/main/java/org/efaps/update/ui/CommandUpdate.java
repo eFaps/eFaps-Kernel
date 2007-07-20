@@ -176,6 +176,12 @@ public class CommandUpdate extends AbstractUpdate {
       digester.addCallParam("ui-command/definition/target/evaluate/property", 1);
       digester.addSetNext("ui-command/definition/target/evaluate", "addEvent", "org.efaps.update.event.Event");
 
+      digester.addFactoryCreate("ui-command/definition/target/execute", new EventFactory("Admin_UI_CommandExecuteEvent"), false);
+      digester.addCallMethod("ui-command/definition/target/execute/property", "addProperty", 2);
+      digester.addCallParam("ui-command/definition/target/execute/property", 0, "name");
+      digester.addCallParam("ui-command/definition/target/execute/property", 1);
+      digester.addSetNext("ui-command/definition/target/execute", "addEvent", "org.efaps.update.event.Event");
+      
       // properties
       digester
           .addCallMethod("ui-command/definition/property", "addProperty", 2);

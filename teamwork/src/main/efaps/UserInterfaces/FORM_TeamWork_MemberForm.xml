@@ -69,6 +69,9 @@
       <property name="Label">TeamWork_Member/UserAbstractLink.Label</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>
+      <trigger name="TeamWork_MemberForm/user" event="UI_FIELD_VALUE" 
+        program="org.efaps.teamwork.MemberFieldValue"/>
+
     </field>
   
     <field name="accesset">     

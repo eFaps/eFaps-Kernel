@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
+ Author:          tmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>5676c7cd-72fe-473c-a95f-63875b3dd7cd</uuid>
+  <uuid>f2118146-3d89-4cbb-8665-af10f3a1158b</uuid>
 
   <!-- create type -->
   <definition>
@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_Event_Trigger_Command</name>
+    <name>Admin_DataModel_Type_Trigger_InsertPre</name>
   </definition>
 
   <!-- define type -->
@@ -45,8 +45,8 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Event_Trigger_Command</name>
-    <parent>Admin_Event_Trigger</parent>
+    <name>Admin_DataModel_Type_Trigger_InsertPre</name>
+    <parent>Admin_DataModel_Type_Trigger</parent>
     <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 

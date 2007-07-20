@@ -34,25 +34,25 @@ package org.efaps.admin.event;
 public enum EventType  {
 
   ACCESSCHECK        ("Admin_Event_AccessCheck"),
-  CHECKIN_OVERRIDE   ("Admin_Event_Trigger_CheckinOverride"),
-  CHECKIN_POST       ("Admin_Event_Trigger_CheckinPost"),
-  CHECKIN_PRE        ("Admin_Event_Trigger_CheckinPre"),
-  CHECKOUT_OVERRIDE  ("Admin_Event_Trigger_CheckoutOverride"),
-  CHECKOUT_POST      ("Admin_Event_Trigger_CheckoutPost"),
-  CHECKOUT_PRE       ("Admin_Event_Trigger_CheckoutPre"),
-  COMMAND            ("Admin_Event_Trigger_Command"),
-  DELETE_OVERRIDE    ("Admin_Event_Trigger_DeleteOverride"),
-  DELETE_POST        ("Admin_Event_Trigger_DeletePost"),
-  DELETE_PRE         ("Admin_Event_Trigger_DeletePre"),
-  INSERT_OVERRIDE    ("Admin_Event_Trigger_InsertOverride"),
-  INSERT_POST        ("Admin_Event_Trigger_InsertPost"),
-  INSERT_PRE         ("Admin_Event_Trigger_InsertPre"),
-  RANGE_VALUE        ("Admin_Event_RangeValue"),
-  UPDATE_OVERRIDE    ("Admin_Event_Trigger_UpdateOverride"),
-  UPDATE_POST        ("Admin_Event_Trigger_UpdatePost"),
-  UPDATE_PRE         ("Admin_Event_Trigger_UpdatePre"),
-  UI_TABLE_EVALUATE  ("Admin_UI_TableEvaluateEvent");
-  
+  CHECKIN_OVERRIDE   ("Admin_DataModel_Type_Trigger_CheckinOverride"),
+  CHECKIN_POST       ("Admin_DataModel_Type_Trigger_CheckinPost"),
+  CHECKIN_PRE        ("Admin_DataModel_Type_Trigger_CheckinPre"),
+  CHECKOUT_OVERRIDE  ("Admin_DataModel_Type_Trigger_CheckoutOverride"),
+  CHECKOUT_POST      ("Admin_DataModel_Type_Trigger_CheckoutPost"),
+  CHECKOUT_PRE       ("Admin_DataModel_Type_Trigger_CheckoutPre"),
+  DELETE_OVERRIDE    ("Admin_DataModel_Type_Trigger_DeleteOverride"),
+  DELETE_POST        ("Admin_DataModel_Type_Trigger_DeletePost"),
+  DELETE_PRE         ("Admin_DataModel_Type_Trigger_DeletePre"),
+  INSERT_OVERRIDE    ("Admin_DataModel_Type_Trigger_InsertOverride"),
+  INSERT_POST        ("Admin_DataModel_Type_Trigger_InsertPost"),
+  INSERT_PRE         ("Admin_DataModel_Type_Trigger_InsertPre"),
+  UPDATE_OVERRIDE    ("Admin_DataModel_Type_Trigger_UpdateOverride"),
+  UPDATE_POST        ("Admin_DataModel_Type_Trigger_UpdatePost"),
+  UPDATE_PRE         ("Admin_DataModel_Type_Trigger_UpdatePre"),
+  RANGE_VALUE        ("Admin_DataModel_AttributeRangeEvent"),
+  UI_TABLE_EVALUATE  ("Admin_UI_TableEvaluateEvent"),
+  UI_FIELD_VALUE     ("Admin_UI_FieldValueEvent"),
+  COMMAND            ("Admin_UI_CommandExecuteEvent");
   
   public final String name;
 

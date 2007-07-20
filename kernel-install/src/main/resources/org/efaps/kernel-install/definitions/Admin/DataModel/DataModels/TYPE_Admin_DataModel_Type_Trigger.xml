@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>8ea88782-95f9-4745-bc76-7a4036649da9</uuid>
+  <uuid>96a6cfac-9bc5-47af-9a7d-42abbc466ba6</uuid>
 
   <!-- create type -->
   <definition>
@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_Event_Trigger_UpdatePost</name>
+    <name>Admin_DataModel_Type_Trigger</name>
   </definition>
 
   <!-- define type -->
@@ -45,8 +45,8 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Event_Trigger_UpdatePost</name>
-    <parent>Admin_Event_Trigger</parent>
+    <name>Admin_DataModel_Type_Trigger</name>
+    <parent>Admin_Event_Definition</parent>
     <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 

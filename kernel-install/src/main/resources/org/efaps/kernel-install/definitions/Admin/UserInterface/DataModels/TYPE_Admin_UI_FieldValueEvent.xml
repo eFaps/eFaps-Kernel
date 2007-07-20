@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>f57f7783-ac0f-4f0e-8b6d-bf4232dcc01b</uuid>
+  <uuid>0c3c3541-d9a3-433b-ae56-0c7b0a198f88</uuid>
 
   <!-- create type -->
   <definition>
@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_Event_Trigger_CheckinOverride</name>
+    <name>Admin_UI_FieldValueEvent</name>
   </definition>
 
   <!-- define type -->
@@ -45,9 +45,10 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Event_Trigger_CheckinOverride</name>
-    <parent>Admin_Event_Trigger</parent>
+    <name>Admin_UI_FieldValueEvent</name>
+    <parent>Admin_Event_Definition</parent>
+    <!-- properties -->
     <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
-
+  
 </datamodel-type>

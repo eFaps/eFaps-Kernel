@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>901f5ff1-51c0-47e4-9efe-c4a8d8fc2b06</uuid>
+  <uuid>5676c7cd-72fe-473c-a95f-63875b3dd7cd</uuid>
 
   <!-- create type -->
   <definition>
@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_Event_Trigger_UpdateOverride</name>
+    <name>Admin_UI_CommandExecuteEvent</name>
   </definition>
 
   <!-- define type -->
@@ -45,8 +45,8 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Event_Trigger_UpdateOverride</name>
-    <parent>Admin_Event_Trigger</parent>
+    <name>Admin_UI_CommandExecuteEvent</name>
+    <parent>Admin_Event_Definition</parent>
     <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 

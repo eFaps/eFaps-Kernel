@@ -16,38 +16,28 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Author:          jmo
+ Revision:        $Rev:851 $
+ Last Changed:    $Date:2007-06-02 12:36:03 -0500 (Sat, 02 Jun 2007) $
+ Last Changed By: $Author:jmo $
 
 -->
 
-<datamodel-type>
-  <uuid>96a6cfac-9bc5-47af-9a7d-42abbc466ba6</uuid>
-
-  <!-- create type -->
+<esjp>
+  
+  <!-- ************************************************************************
+    version definition used to create / update the Program 
+  ************************************************************************* -->
   <definition>
     <version>
-      <application>eFaps</application>
+      <application>teamwork</application>
       <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==5)</mode>
+      <local>$Rev:851 $</local>
+      <mode>true</mode>
+      <mode>(version==1)</mode>
     </version>
-    <name>Admin_Event_Trigger</name>
+    
+    <file>MemberFieldValue.java</file>
   </definition>
 
-  <!-- define type -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==6)</mode>
-    </version>
-    <name>Admin_Event_Trigger</name>
-    <parent>Admin_Event_Definition</parent>
-    <property name="Tree">Admin_Event_DefinitionTree</property>
-  </definition>
-
-</datamodel-type>
+</esjp>

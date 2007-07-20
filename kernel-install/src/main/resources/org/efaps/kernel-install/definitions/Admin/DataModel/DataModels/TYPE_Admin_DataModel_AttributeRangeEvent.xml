@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>f2118146-3d89-4cbb-8665-af10f3a1158b</uuid>
+  <uuid>031e3816-d9f3-4535-9bb4-05b25a4db61f</uuid>
 
   <!-- create type -->
   <definition>
@@ -34,7 +34,7 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_Event_Trigger_InsertPre</name>
+    <name>Admin_DataModel_AttributeRangeEvent</name>
   </definition>
 
   <!-- define type -->
@@ -45,8 +45,8 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Event_Trigger_InsertPre</name>
-    <parent>Admin_Event_Trigger</parent>
+    <name>Admin_DataModel_AttributeRangeEvent</name>
+    <parent>Admin_Event_Definition</parent>
     <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 

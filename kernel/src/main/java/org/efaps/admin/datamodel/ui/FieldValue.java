@@ -20,10 +20,18 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.event.EventDefinition;
+import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
@@ -90,28 +98,81 @@ public class FieldValue implements Comparable {
    *
    */
   public String getCreateHtml() throws EFapsException {
-    return getClassUI().getCreateHtml(this);
+    String ret = null;
+    if (hasEvents()) {
+      ret = executeEvents("createHtml");
+    } else {
+      ret = getClassUI().getCreateHtml(this);
+    }
+    return ret;
+  }
+
+  private boolean hasEvents() {
+    boolean ret = false;
+    if (this.fieldDef.getField() != null
+        && this.fieldDef.getField().hasEvents(EventType.UI_FIELD_VALUE)) {
+      ret = true;
+    }
+
+    return ret;
+  }
+
+  protected String executeEvents(final String _html) {
+    List<EventDefinition> triggers =
+        this.fieldDef.getField().getEvents(EventType.UI_FIELD_VALUE);
+    StringBuilder strbld = new StringBuilder();
+    if (triggers != null) {
+
+      Parameter parameter = new Parameter();
+      parameter.put(ParameterValues.OTHERS, _html);
+      parameter.put(ParameterValues.UIOBJECT, this);
+      for (EventDefinition evenDef : triggers) {
+        Return ret = evenDef.execute(parameter);
+        strbld.append(ret.get(ReturnValues.VALUES));
+      }
+
+    }
+    return strbld.toString();
+
   }
 
   /**
    *
    */
   public String getViewHtml() throws EFapsException {
-    return getClassUI().getViewHtml(this);
+    String ret = null;
+    if (hasEvents()) {
+      ret = executeEvents("viewHtml");
+    } else {
+      ret = getClassUI().getViewHtml(this);
+    }
+    return ret;
   }
 
   /**
    *
    */
   public String getEditHtml() throws EFapsException {
-    return getClassUI().getEditHtml(this);
+    String ret = null;
+    if (hasEvents()) {
+      ret = executeEvents("editHtml");
+    } else {
+      ret = getClassUI().getEditHtml(this);
+    }
+    return ret;
   }
 
   /**
    *
    */
   public String getSearchHtml() throws EFapsException {
-    return getClassUI().getSearchHtml(this);
+    String ret = null;
+    if (hasEvents()) {
+      ret = executeEvents("searchHtml");
+    } else {
+      ret = getClassUI().getSearchHtml(this);
+    }
+    return ret;
   }
 
   // /////////////////////////////////////////////////////////////////////////
