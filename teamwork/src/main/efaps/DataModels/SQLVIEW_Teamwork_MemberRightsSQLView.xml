@@ -38,53 +38,7 @@
 
     <database>
       <sql>
-     <!--    create view V_TWMEMBER as
-          select
-                T_TWMEMBER.ID, 
-                T_TWMEMBER.PARENT,
-                T_TWMEMBER.ANCESTOR,
-                T_TWMEMBER.ACCESSSET,
-                T_TWMEMBER.USERID,
-                T_TWMEMBER.CREATOR,
-                T_TWMEMBER.CREATED,
-                T_TWMEMBER.MODIFIER,
-                T_TWMEMBER.MODIFIED
-           from T_TWMEMBER
-           where T_TWMEMBER.parent = T_TWMEMBER.ancestor
-      
-      create view V_TWMEMBER as
-          select 
-          	t_twmember.id, 
-          	t_twmember.ABSTRACT, 
-          	T_TWABSTRACT2ABSTRACT.ancestor, 
-          	tt.accessset, 
-          	tt.userid, 
-          	tt.creator, 
-          	tt.created, 
-          	tt.modifier, 
-          	tt.modified
-   		FROM t_twmember 
-   		inner join  T_TWABSTRACT2ABSTRACT on t_twmember.ABSTRACT=T_TWABSTRACT2ABSTRACT.ABSTRACT
-		inner join t_twmember tt on T_TWABSTRACT2ABSTRACT.ancestor=tt.ABSTRACT
 
-  
-      create view V_TWMEMBER as
-        select 
-          step1.abstract as id, 
-          step1.abstract, 
-          t_twmember.accessset, 
-          step1.userid 
-        from 
-          (select 
-             t_twabstract2abstract.abstract,  
-             max(t_twabstract2abstract.ancestor)as memberabstract, 
-             userid
-           from t_twmember 
-             inner join t_twabstract2abstract on t_twmember.abstract= t_twabstract2abstract.ancestor
-            group by t_twabstract2abstract.abstract, userid
-           ) as step1 
-         inner join t_twmember on t_twmember.abstract = step1.memberabstract and  t_twmember.userid = step1.userid
---> 
    create view V_TWMEMBER as 
      select 
        STEP2.ABSTRACT + STEP2.USERABSTRACT as ID,
@@ -108,10 +62,10 @@
            group by 
              T_TWABSTRACT2ABSTRACT.ABSTRACT, 
              T_TWMEMBER.USERABSTRACT
-          ) as STEP1
+          ) STEP1
            inner join T_TWABSTRACT2ABSTRACT on T_TWABSTRACT2ABSTRACT.ABSTRACT = STEP1.ABSTRACT 
              and T_TWABSTRACT2ABSTRACT.RANK = STEP1.RANK
-        ) as STEP2 
+        ) STEP2 
           inner join T_TWMEMBER on STEP2.ancestor= T_TWMEMBER.ABSTRACT 
             and STEP2.USERABSTRACT = T_TWMEMBER.USERABSTRACT
   
