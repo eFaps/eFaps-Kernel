@@ -46,49 +46,7 @@
       <mode>(version==6)</mode>
     </version>
     <name>Admin_UI_Abstract2Abstract</name>
-    <!-- attributes -->
-    <attribute>
-      <name>Type</name>
-      <type>Type</type>
-      <sqltable>Admin_UI_Abstract2AbstractTable</sqltable>
-      <sqlcolumn>TYPEID</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>OID</name>
-      <type>OID</type>
-      <sqltable>Admin_UI_Abstract2AbstractTable</sqltable>
-      <sqlcolumn>TYPEID,ID</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>ID</name>
-      <type>Integer</type>
-      <sqltable>Admin_UI_Abstract2AbstractTable</sqltable>
-      <sqlcolumn>ID</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Creator</name>
-      <type>CreatorLink</type>
-      <sqltable>Admin_UI_Abstract2AbstractTable</sqltable>
-      <sqlcolumn>CREATOR</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Created</name>
-      <type>Created</type>
-      <sqltable>Admin_UI_Abstract2AbstractTable</sqltable>
-      <sqlcolumn>CREATED</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Modifier</name>
-      <type>ModifierLink</type>
-      <sqltable>Admin_UI_Abstract2AbstractTable</sqltable>
-      <sqlcolumn>MODIFIER</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Modified</name>
-      <type>Modified</type>
-      <sqltable>Admin_UI_Abstract2AbstractTable</sqltable>
-      <sqlcolumn>MODIFIED</sqlcolumn>
-    </attribute>
+    <parent>Admin_Common_Abstract2Abstract</parent>
   </definition>
 
 </datamodel-type>
