@@ -122,6 +122,10 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
      if (_sortDir)  {
        url += "&sortDir=" + _sortDir;
      }
+     <c:if test="${uiObject.instance ne null}">
+       url += "&oid=<c:out value="${uiObject.instance.oid}"/>";
+     </c:if>
+     
      location.href = url;
    } 
    
