@@ -46,8 +46,18 @@ public class FieldValue implements Comparable {
    */
   private static final Log LOG = LogFactory.getLog(FieldValue.class);
 
+  public static int CREATEHTML = 1;
+
+  public static int VIEWHTML = 2;
+
+  public static int EDITHTML = 3;
+
+  public static int SEARCHHTML = 4;
+
   // /////////////////////////////////////////////////////////////////////////
   // instance variables
+
+  private int htmlType = 0;
 
   /**
    * The instance variable stores the class to represent this form value.
@@ -93,20 +103,6 @@ public class FieldValue implements Comparable {
 
   // /////////////////////////////////////////////////////////////////////////
   // instance methods
-
-  /**
-   *
-   */
-  public String getCreateHtml() throws EFapsException {
-    String ret = null;
-    if (hasEvents()) {
-      ret = executeEvents("createHtml");
-    } else {
-      ret = getClassUI().getCreateHtml(this);
-    }
-    return ret;
-  }
-
   private boolean hasEvents() {
     boolean ret = false;
     if (this.fieldDef.getField() != null
@@ -117,14 +113,14 @@ public class FieldValue implements Comparable {
     return ret;
   }
 
-  protected String executeEvents(final String _html) {
+  protected String executeEvents(final int _htmlType) {
+    this.htmlType = _htmlType;
     List<EventDefinition> triggers =
         this.fieldDef.getField().getEvents(EventType.UI_FIELD_VALUE);
     StringBuilder strbld = new StringBuilder();
     if (triggers != null) {
 
       Parameter parameter = new Parameter();
-      parameter.put(ParameterValues.OTHERS, _html);
       parameter.put(ParameterValues.UIOBJECT, this);
       for (EventDefinition evenDef : triggers) {
         Return ret = evenDef.execute(parameter);
@@ -139,10 +135,23 @@ public class FieldValue implements Comparable {
   /**
    *
    */
+  public String getCreateHtml() throws EFapsException {
+    String ret = null;
+    if (hasEvents()) {
+      ret = executeEvents(CREATEHTML);
+    } else {
+      ret = getClassUI().getCreateHtml(this);
+    }
+    return ret;
+  }
+
+  /**
+   *
+   */
   public String getViewHtml() throws EFapsException {
     String ret = null;
     if (hasEvents()) {
-      ret = executeEvents("viewHtml");
+      ret = executeEvents(VIEWHTML);
     } else {
       ret = getClassUI().getViewHtml(this);
     }
@@ -155,7 +164,7 @@ public class FieldValue implements Comparable {
   public String getEditHtml() throws EFapsException {
     String ret = null;
     if (hasEvents()) {
-      ret = executeEvents("editHtml");
+      ret = executeEvents(EDITHTML);
     } else {
       ret = getClassUI().getEditHtml(this);
     }
@@ -168,7 +177,7 @@ public class FieldValue implements Comparable {
   public String getSearchHtml() throws EFapsException {
     String ret = null;
     if (hasEvents()) {
-      ret = executeEvents("searchHtml");
+      ret = executeEvents(SEARCHHTML);
     } else {
       ret = getClassUI().getSearchHtml(this);
     }
@@ -220,6 +229,10 @@ public class FieldValue implements Comparable {
 
   public Attribute getAttribute() {
     return this.attribute;
+  }
+
+  public int getHtmlType() {
+    return this.htmlType;
   }
 
   public int compareTo(Object _target) {
