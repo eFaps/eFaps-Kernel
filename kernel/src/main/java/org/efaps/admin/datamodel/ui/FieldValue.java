@@ -46,18 +46,21 @@ public class FieldValue implements Comparable {
    */
   private static final Log LOG = LogFactory.getLog(FieldValue.class);
 
-  public static final int CREATEHTML = 1;
+  public enum HtmlType {
+    CREATEHTML,
 
-  public static final int VIEWHTML = 2;
+    VIEWHTML,
 
-  public static final int EDITHTML = 3;
+    EDITHTML,
 
-  public static final int SEARCHHTML = 4;
+    SEARCHHTML;
+
+  }
 
   // /////////////////////////////////////////////////////////////////////////
   // instance variables
 
-  private int htmlType = 0;
+  private HtmlType htmlType;
 
   /**
    * The instance variable stores the class to represent this form value.
@@ -103,32 +106,33 @@ public class FieldValue implements Comparable {
 
   // /////////////////////////////////////////////////////////////////////////
   // instance methods
-  private boolean hasEvents() {
-    boolean ret = false;
+
+  protected String executeEvents(final HtmlType _htmlType) {
+    this.htmlType = _htmlType;
+    StringBuilder ret = new StringBuilder();
     if (this.fieldDef.getField() != null
         && this.fieldDef.getField().hasEvents(EventType.UI_FIELD_VALUE)) {
-      ret = true;
-    }
 
-    return ret;
-  }
+      List<EventDefinition> events =
+          this.fieldDef.getField().getEvents(EventType.UI_FIELD_VALUE);
 
-  protected String executeEvents(final int _htmlType) {
-    this.htmlType = _htmlType;
-    List<EventDefinition> triggers =
-        this.fieldDef.getField().getEvents(EventType.UI_FIELD_VALUE);
-    StringBuilder strbld = new StringBuilder();
-    if (triggers != null) {
+      if (events != null) {
 
-      Parameter parameter = new Parameter();
-      parameter.put(ParameterValues.UIOBJECT, this);
-      for (EventDefinition evenDef : triggers) {
-        Return ret = evenDef.execute(parameter);
-        strbld.append(ret.get(ReturnValues.VALUES));
+        Parameter parameter = new Parameter();
+        parameter.put(ParameterValues.UIOBJECT, this);
+        for (EventDefinition evenDef : events) {
+          Return retu = evenDef.execute(parameter);
+          if (retu.get(ReturnValues.VALUES) != null) {
+            ret.append(retu.get(ReturnValues.VALUES));
+          }
+        }
+
       }
-
     }
-    return strbld.toString();
+    if (ret.length() > 0) {
+      return ret.toString();
+    }
+    return null;
 
   }
 
@@ -137,9 +141,9 @@ public class FieldValue implements Comparable {
    */
   public String getCreateHtml() throws EFapsException {
     String ret = null;
-    if (hasEvents()) {
-      ret = executeEvents(CREATEHTML);
-    } else {
+
+    ret = executeEvents(HtmlType.CREATEHTML);
+    if (ret == null) {
       ret = getClassUI().getCreateHtml(this);
     }
     return ret;
@@ -150,9 +154,9 @@ public class FieldValue implements Comparable {
    */
   public String getViewHtml() throws EFapsException {
     String ret = null;
-    if (hasEvents()) {
-      ret = executeEvents(VIEWHTML);
-    } else {
+
+    ret = executeEvents(HtmlType.VIEWHTML);
+    if (ret == null) {
       ret = getClassUI().getViewHtml(this);
     }
     return ret;
@@ -163,9 +167,9 @@ public class FieldValue implements Comparable {
    */
   public String getEditHtml() throws EFapsException {
     String ret = null;
-    if (hasEvents()) {
-      ret = executeEvents(EDITHTML);
-    } else {
+
+    ret = executeEvents(HtmlType.EDITHTML);
+    if (ret == null) {
       ret = getClassUI().getEditHtml(this);
     }
     return ret;
@@ -176,9 +180,9 @@ public class FieldValue implements Comparable {
    */
   public String getSearchHtml() throws EFapsException {
     String ret = null;
-    if (hasEvents()) {
-      ret = executeEvents(SEARCHHTML);
-    } else {
+
+    ret = executeEvents(HtmlType.SEARCHHTML);
+    if (ret == null) {
       ret = getClassUI().getSearchHtml(this);
     }
     return ret;
@@ -231,7 +235,7 @@ public class FieldValue implements Comparable {
     return this.attribute;
   }
 
-  public int getHtmlType() {
+  public HtmlType getHtmlType() {
     return this.htmlType;
   }
 

@@ -20,16 +20,41 @@
 
 package org.efaps.teamwork;
 
+import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.datamodel.ui.FieldValue.HtmlType;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 
+/**
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class MemberFieldValue implements EventExecution {
 
+  private FieldValue fieldvalue;
+
   public Return execute(Parameter _parameter) {
-   Return ret = new Return();
-   ret.put(ReturnValues.VALUES, "Hallo");
-    return ret ;
+
+    this.fieldvalue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
+    String ret = null;
+    HtmlType htmltype = this.fieldvalue.getHtmlType();
+    Return retVal = new Return();
+
+    if (htmltype == HtmlType.CREATEHTML) {
+      ret = getCreateHtml();
+    }
+    if (ret != null) {
+      retVal.put(ReturnValues.VALUES, ret);
+    }
+    return retVal;
+  }
+
+  private String getCreateHtml() {
+    return "q.e.d";
+
   }
 }
