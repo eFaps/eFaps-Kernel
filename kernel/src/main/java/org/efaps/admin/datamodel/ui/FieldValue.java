@@ -46,13 +46,13 @@ public class FieldValue implements Comparable {
    */
   private static final Log LOG = LogFactory.getLog(FieldValue.class);
 
-  public static int CREATEHTML = 1;
+  public static final int CREATEHTML = 1;
 
-  public static int VIEWHTML = 2;
+  public static final int VIEWHTML = 2;
 
-  public static int EDITHTML = 3;
+  public static final int EDITHTML = 3;
 
-  public static int SEARCHHTML = 4;
+  public static final int SEARCHHTML = 4;
 
   // /////////////////////////////////////////////////////////////////////////
   // instance variables
