@@ -256,9 +256,9 @@ public class Field extends UserInterfaceObject {
       query.executeWithoutAccessCheck();
 
       if (query.next()) {
-        col = Form.get((Long) query.get("Collection"));
+        col = Form.get(((Number) query.get("Collection")).longValue());
         if (col == null) {
-          col = Table.get((Long) query.get("Collection"));
+          col = Table.get(((Number) query.get("Collection")).longValue());
         }
         query.close();
       }

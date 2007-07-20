@@ -23,6 +23,7 @@ package org.efaps.admin.datamodel.ui;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
@@ -43,12 +44,12 @@ public class LinkWithRangesUI extends AbstractUI {
   @Override
   public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
     StringBuilder ret = new StringBuilder();
+    Attribute attribute = _fieldValue.getAttribute();
 
-    Field _field = _fieldValue.getFieldDef().getField();
     if (_fieldValue.getValue() != null) {
-      if (_field.hasEvents()) {
+      if (attribute.hasEvents()) {
 
-        for (Return values : _field.executeEvents(EventType.RANGE_VALUE)) {
+        for (Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
           ret.append((String) ((Map) values.get(ReturnValues.VALUES))
               .get(_fieldValue.getValue().toString()));
         }
@@ -63,12 +64,13 @@ public class LinkWithRangesUI extends AbstractUI {
   @Override
   public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
     StringBuilder ret = new StringBuilder();
-    Field field = _fieldValue.getFieldDef().getField();
+    Attribute attribute = _fieldValue.getAttribute();
     if (_fieldValue.getValue() != null) {
-      if (field.hasEvents()) {
-        for (Return values : field.executeEvents(EventType.RANGE_VALUE)) {
+      if (attribute.hasEvents()) {
+        for (Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
 
-          ret.append("<select name=\"").append(field.getName()).append(
+          ret.append("<select name=\"").append(
+              _fieldValue.getFieldDef().getField().getName()).append(
               "\" size=\"1\">");
 
           Iterator iter =
@@ -97,11 +99,12 @@ public class LinkWithRangesUI extends AbstractUI {
   public String getCreateHtml(final FieldValue _fieldValue)
       throws EFapsException {
     StringBuilder ret = new StringBuilder();
-    Field field = _fieldValue.getFieldDef().getField();
-    if (field.hasEvents()) {
-      for (Return values : field.executeEvents(EventType.RANGE_VALUE)) {
+    Attribute attribute = _fieldValue.getAttribute();
+    if (attribute.hasEvents()) {
+      for (Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
 
-        ret.append("<select name=\"").append(field.getName()).append(
+        ret.append("<select name=\"").append(
+            _fieldValue.getFieldDef().getField().getName()).append(
             "\" size=\"1\">");
 
         Iterator iter =
