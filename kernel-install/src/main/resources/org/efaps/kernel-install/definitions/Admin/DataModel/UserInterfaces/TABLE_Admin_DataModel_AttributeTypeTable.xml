@@ -53,7 +53,7 @@
     </version>
     <name>Admin_DataModel_AttributeTypeTable</name>
     <!-- fields -->
-    <field name="Name">
+    <field name="name">
       <property name="Expression">Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DataModel_AttributeType/Name.Label</property>
@@ -63,15 +63,15 @@
       <property name="Expression">UUID</property>
       <property name="Label">Admin_DataModel_AttributeType/UUID.Label</property>
     </field>
-    <field name="Revision">
+    <field name="revision">
       <property name="Expression">Revision</property>
       <property name="Label">Admin_DataModel_AttributeType/Revision.Label</property>
     </field>
-    <field name="Classname">
+    <field name="classname">
       <property name="Expression">Classname</property>
       <property name="Label">Admin_DataModel_AttributeType/Classname.Label</property>
     </field>
-    <field name="Classname">
+    <field name="classnameui">
       <property name="Expression">ClassnameUI</property>
       <property name="Label">Admin_DataModel_AttributeType/ClassnameUI.Label</property>
     </field>
@@ -87,6 +87,7 @@
       <icon>eFapsActionNewWindow</icon>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Target">popup</property>
+      <property name="SortAble">false</property>
     </field>
   </definition>
 
