@@ -33,7 +33,7 @@ package org.efaps.admin.event;
  */
 public enum EventType  {
 
-  ACCESSCHECK        ("Admin_Event_AccessCheck"),
+  ACCESSCHECK        ("Admin_DataModel_TypeAccessCheckEvent"),
   CHECKIN_OVERRIDE   ("Admin_DataModel_Type_Trigger_CheckinOverride"),
   CHECKIN_POST       ("Admin_DataModel_Type_Trigger_CheckinPost"),
   CHECKIN_PRE        ("Admin_DataModel_Type_Trigger_CheckinPre"),
@@ -52,6 +52,7 @@ public enum EventType  {
   RANGE_VALUE        ("Admin_DataModel_AttributeRangeEvent"),
   UI_TABLE_EVALUATE  ("Admin_UI_TableEvaluateEvent"),
   UI_FIELD_VALUE     ("Admin_UI_FieldValueEvent"),
+  UI_ACCESSCHECK     ("Admin_UI_AbstractAccessCheckEvent"),
   COMMAND            ("Admin_UI_CommandExecuteEvent");
   
   public final String name;

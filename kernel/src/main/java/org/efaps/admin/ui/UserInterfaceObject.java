@@ -267,9 +267,9 @@ public abstract class UserInterfaceObject extends AdminObject {
         }
       }
     }
-    if (ret && super.hasEvents(EventType.ACCESSCHECK)) {
+    if (ret && super.hasEvents(EventType.UI_ACCESSCHECK)) {
       ret = false;
-      List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
+      List<EventDefinition> events = super.getEvents(EventType.UI_ACCESSCHECK);
 
       Parameter parameter = new Parameter();
       parameter.put(ParameterValues.UIOBJECT, this);

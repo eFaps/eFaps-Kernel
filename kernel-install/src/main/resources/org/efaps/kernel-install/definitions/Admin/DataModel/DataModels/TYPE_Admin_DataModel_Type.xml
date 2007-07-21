@@ -69,7 +69,7 @@
     
      <!-- triggers -->
     <trigger name="Admin_DataModel_Type_AccessCheck" event="ACCESSCHECK" 
-      program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" method="execute" index="1"/>
+      program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType"/>
   </definition>
 
 </datamodel-type>

@@ -63,7 +63,7 @@
     <property name="TargetCreateType">TeamWork_MemberRights</property>
     <property name="TargetMode">create</property>
   
-    <trigger name="TeamWork_Member_Menu_Action_Create_ACCESSCHECK" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
+    <trigger name="TeamWork_Member_Menu_Action_Create_UI_ACCESSCHECK" event="UI_ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
       <property name="AccessType">create</property>
       <property name="Type">TeamWork_Member</property>
     </trigger>
