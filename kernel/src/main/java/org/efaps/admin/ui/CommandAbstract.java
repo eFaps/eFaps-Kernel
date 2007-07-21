@@ -212,15 +212,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   private Form targetForm = null;
 
   /**
-   * The instance variable stores the table bean for commands calling a form.
-   * The form bean overwrites the original form bean class.
-   * 
-   * @see #getTargetFormBean
-   * @see #setTargetFormBean
-   */
-  private Class targetFormBean = null;
-
-  /**
    * The instance method stores the complete menu. Default value is a null and
    * no menu is shown.
    * 
@@ -262,15 +253,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #setTargetTable
    */
   private Table targetTable = null;
-
-  /**
-   * The instance variable stores the table bean for commands calling a table.
-   * The table bean overwrites the original table bean class.
-   * 
-   * @see #getTargetTableBean
-   * @see #setTargetTableBean
-   */
-  private Class targetTableBean = null;
 
   /**
    * The instance variable store the filters for the targer table.
@@ -605,29 +587,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   }
 
   /**
-   * This is the setter method for the instance variable {@link #targetFormBean}.
-   * 
-   * @return value of instance variable {@link #targetFormBean}
-   * @see #targetFormBean
-   * @see #setTargetFormBean
-   */
-  public Class getTargetFormBean() {
-    return this.targetFormBean;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #targetFormBean}.
-   * 
-   * @param _targetFormBean
-   *          new value for instance variable {@link #targetFormBean}
-   * @see #targetFormBean
-   * @see #getTargetFormBean
-   */
-  public void setTargetFormBean(final Class _targetFormBean) {
-    this.targetFormBean = _targetFormBean;
-  }
-
-  /**
    * This is the setter method for the instance variable {@link #targetMenu}.
    * 
    * @return value of instance variable {@link #targetMenu}
@@ -717,31 +676,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    */
   public void setTargetTable(Table _targetTable) {
     this.targetTable = _targetTable;
-  }
-
-  /**
-   * This is the setter method for the instance variable
-   * {@link #targetTableBean}.
-   * 
-   * @return value of instance variable {@link #targetTableBean}
-   * @see #targetTableBean
-   * @see #setTargetTableBean
-   */
-  public Class getTargetTableBean() {
-    return this.targetTableBean;
-  }
-
-  /**
-   * This is the setter method for the instance variable
-   * {@link #targetTableBean}.
-   * 
-   * @param _targetTableBean
-   *          new value for instance variable {@link #targetTableBean}
-   * @see #targetTableBean
-   * @see #getTargetTableBean
-   */
-  public void setTargetTableBean(final Class _targetTableBean) {
-    this.targetTableBean = _targetTableBean;
   }
 
   /**
@@ -1131,13 +1065,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
       // "TargetConnectType"
     } else if (_name.equals("TargetCreateType")) {
       setTargetCreateType(Type.get(_value));
-    } else if (_name.equals("TargetFormBean")) {
-      try {
-        setTargetFormBean(Class.forName(_value));
-      } catch (ClassNotFoundException e) {
-        throw new CacheReloadException("could not found class '" + _value + "'"
-            + " used as target form bean for " + "'" + getName() + "'", e);
-      }
     } else if (_name.equals("TargetMode")) {
       if (_value.equals("create")) {
         setTargetMode(TARGET_MODE_CREATE);
@@ -1155,13 +1082,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
         setTargetShowCheckBoxes(true);
       } else {
         setTargetShowCheckBoxes(false);
-      }
-    } else if (_name.equals("TargetTableBean")) {
-      try {
-        setTargetTableBean(Class.forName(_value));
-      } catch (ClassNotFoundException e) {
-        throw new CacheReloadException("could not found class '" + _value + "'"
-            + " used as target table bean for " + "'" + getName() + "'", e);
       }
     } else if (_name.startsWith("TargetTableFilter")) {
       if (getTargetTableFilters() == null) {

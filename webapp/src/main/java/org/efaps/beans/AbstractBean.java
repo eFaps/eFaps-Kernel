@@ -23,6 +23,9 @@ package org.efaps.beans;
 import java.util.Locale;
 
 import org.apache.commons.fileupload.FileItem;
+import org.efaps.admin.ui.Command;
+import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.Menu;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
@@ -83,6 +86,23 @@ public abstract class AbstractBean  {
     }
     return fileItem;
   }
+
+
+  /**
+   * For given name of command / menu, the related command and menu Java
+   * instance is searched and, if found, returned.
+   *
+   * @param _name name of searched command object
+   * @return found command / menu instance, or <code>null</null> if not found
+   */
+  public CommandAbstract getCommand(final String _name) throws EFapsException  {
+    CommandAbstract cmd = Command.get(_name);
+    if (cmd == null)  {
+      cmd = Menu.get(_name);
+    }
+    return cmd;
+  }
+
 
   // ///////////////////////////////////////////////////////////////////////////
 

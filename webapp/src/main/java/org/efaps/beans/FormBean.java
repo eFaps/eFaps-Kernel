@@ -56,16 +56,15 @@ import org.efaps.util.EFapsException;
  */
 public class FormBean extends AbstractCollectionBean {
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * The instance variable stores the form which must be shown.
    * 
    * @see #getForm
-   * @see #setForm
    */
-  private Form form = null;
+  private final Form form;
 
   /**
    * The instance variable stores the result list of the execution of the
@@ -74,7 +73,7 @@ public class FormBean extends AbstractCollectionBean {
    * @see #getValues
    * @see #setValues
    */
-  private final List < FieldValue > values = new ArrayList < FieldValue > ();
+  private final List<FieldValue> values = new ArrayList<FieldValue>();
 
   /**
    * The instance variable stores the instance for the unique key.
@@ -108,7 +107,7 @@ public class FormBean extends AbstractCollectionBean {
    */
   private boolean  ukMode     = false;
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // constructors / descructors
 
   /**
@@ -116,22 +115,21 @@ public class FormBean extends AbstractCollectionBean {
    */
   public FormBean() throws EFapsException {
     super();
-    if (getInstance() != null)  {
-      addHiddenValue("oid", getInstance().getOid());
+System.out.println("FormBean.constructor");
+
+    // set target form
+    if (getCommand() != null) {
+      this.form = getCommand().getTargetForm();
+    } else  {
+      this.form = null;
     }
-    System.out.println("FormBean.constructor");
-    String cmdName = getParameter("command");
-    if (cmdName == null || cmdName.length() == 0 || "undefined".equals(cmdName)) {
-      cmdName = getParameter("formCommand");
-    }
-    setCommandName(cmdName);
   }
 
   public void finalize() {
     System.out.println("FormBean.destructor");
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -221,8 +219,6 @@ addFieldValue(null, null, null, null, new Instance((String)query.get("OID")));
       query.close();
     }
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The instance method is called to process the modifcation of a form.
@@ -406,19 +402,6 @@ addFieldValue(null, null, null, null, new Instance((String)query.get("OID")));
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * 
-   * @param _name
-   *          name of the command object
-   */
-  public void setCommandName(String _name) throws EFapsException {
-    super.setCommandName(_name);
-    if (getCommand() != null) {
-      addHiddenValue("formCommand", _name);
-      setForm(getCommand().getTargetForm());
-    }
-  }
-
-  /**
    * Sets the parameters values for file and form. Also the command name is
    * extracted from the form values.
    * 
@@ -522,22 +505,9 @@ addFieldValue(null, null, null, null, new Instance((String)query.get("OID")));
    * 
    * @return value of instance variable {@link #form}
    * @see #form
-   * @see #setForm
    */
   public Form getForm() {
     return this.form;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #form}.
-   * 
-   * @param _form
-   *          new value for instance variable {@link #form}
-   * @see #form
-   * @see #getForm
-   */
-  public void setForm(Form _form) {
-    this.form = _form;
   }
 
   /**

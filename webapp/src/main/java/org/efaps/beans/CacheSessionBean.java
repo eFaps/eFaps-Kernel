@@ -51,21 +51,11 @@ public class CacheSessionBean  {
    * name the table bean.
    *
    * @param _key          key for which the table bean must be returned
-   * @param _commandName  name of the command for which the bean must be
-   *                      created
-   * @see #getCommand
    */
-  public TableBean getTableBean(final String _key, 
-                                final String _commandName) throws Exception  {
-    TableBean tableBean = (TableBean)get(_key);
-    if (tableBean==null)  {
-
-      CommandAbstract command = getCommand(_commandName);
-      if (command!=null && command.getTargetTableBean()!=null)  {
-        tableBean = (TableBean)command.getTargetTableBean().newInstance();
-      } else  {
-        tableBean = new TableBean();
-      }
+  public TableBean getTableBean(final String _key) throws Exception  {
+    TableBean tableBean = (TableBean) get(_key);
+    if (tableBean == null)  {
+      tableBean = new TableBean();
       getCache().put(_key, tableBean);
     }
     return tableBean;
@@ -76,38 +66,11 @@ public class CacheSessionBean  {
    * name the form bean.
    *
    * @param _key          key for which the form bean must be returned
-   * @param _commandName  name of the command for which the bean must be
-   *                      created
-   * @see #getCommand
+   * @todo caching!
    */
-  public FormBean getFormBean(final String _commandName) throws Exception  {
-    FormBean formBean = null;
-    CommandAbstract command = getCommand(_commandName);
-    if (command!=null && command.getTargetFormBean()!=null)  {
-      formBean = (FormBean)command.getTargetFormBean().newInstance();
-    } else  {
-      formBean = new FormBean();
-    }
-    return formBean;
+  public FormBean getFormBean(final String _key) throws Exception  {
+    return new FormBean();
   }
-
-  /**
-   * The method returns for the given command name the command or menu java
-   * instance.
-   *
-   * @param _commandName  name of the command
-   * @see #getTableBean
-   */
-  private CommandAbstract getCommand(final String _commandName)  {
-    CommandAbstract ret = null;
-
-    ret = Command.get(_commandName);
-    if (ret == null)  {
-      ret = Menu.get(_commandName);
-    }
-    return ret;
-  }
-
 
   public void remove(final String _key)  {
     getCache().remove(_key);

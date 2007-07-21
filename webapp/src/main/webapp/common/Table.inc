@@ -39,22 +39,19 @@ System.out.println("create new cacheKey = "+cacheKey);
 
   TableBean uiObject = (TableBean) request.getAttribute("uiObject");
   if (uiObject==null)  {
-    uiObject = (TableBean) cache.getTableBean(cacheKey, context.getParameter("command"));
+    uiObject = (TableBean) cache.getTableBean(cacheKey);
     request.setAttribute("uiObject", uiObject);
   }
 
   // initialise the user interface object (if needed)
-  if (!uiObject.isInitialised())  {
-System.out.println(".............................START:"+new java.util.Date());
-    uiObject.setCommandName(context.getParameter("command"));
-    uiObject.setOid(context.getParameter("oid"));
-    uiObject.setNodeId(context.getParameter("nodeId"));
-    uiObject.execute();
-System.out.println("............................MIDDLE:"+new java.util.Date());
-  }else{
+  if (uiObject.isInitialised())  {
     uiObject.setSortKey(context.getParameter("sortKey"));
     uiObject.setSortDirection(context.getParameter("sortDir"));
     uiObject.sort();
+  } else  {
+System.out.println(".............................START:"+new java.util.Date());
+    uiObject.execute();
+System.out.println("............................MIDDLE:"+new java.util.Date());
   }
 %>
 

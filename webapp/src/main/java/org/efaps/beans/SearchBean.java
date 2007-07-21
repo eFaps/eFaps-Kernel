@@ -436,7 +436,7 @@ Type type = Type.get(getCommand().getProperty("SearchType"));
    * @see #getTable
    */
   public void setTable(Table _table) {
-    getTableBean().setTable(_table);
+//    getTableBean().setTable(_table);
   }
 
   /**

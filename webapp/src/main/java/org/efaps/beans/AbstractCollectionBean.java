@@ -23,9 +23,7 @@ package org.efaps.beans;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.admin.ui.Menu;
 import org.efaps.util.EFapsException;
 
 /**
@@ -36,15 +34,28 @@ import org.efaps.util.EFapsException;
 public abstract class AbstractCollectionBean extends AbstractBean  {
 
   /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   *
+   */
+  private static String PARAM_ORIG_CMD_NAME = "eFapsOriginalCommand";
+
+
+  /**
+   *
+   */
+  private static String PARAM_CALL_CMD_NAME = "eFapsCallingCommand";
+
+  /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * The instance variable stores the command instance for this form request.
    *
    * @see #getCommand
-   * @see #setCommand
    */
-  private CommandAbstract command = null;
+  private final CommandAbstract command;
 
   /**
    * The instance variable stores the mode of the form.
@@ -61,14 +72,14 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
    * @see #getNodeId
    * @see #setNodeId
    */
-  private String nodeId = null;
+  private final String nodeId;
 
   /**
    * The instance variable stores the hidden values printed as form value.
    *
    * @see #getHiddenValues
    */
-  private List < HiddenValue > hiddenValues = new ArrayList < HiddenValue >();
+  private List<HiddenValue> hiddenValues = new ArrayList<HiddenValue>();
 
   /**
    * Stores the maximal group count for a row.
@@ -83,6 +94,29 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
   
   public AbstractCollectionBean() throws EFapsException  {
     super();
+    this.nodeId = getParameter("nodeId");
+
+    // add oid as hidden parameter
+    if (getInstance() != null)  {
+      addHiddenValue("oid", getInstance().getOid());
+    }
+
+    // initialise command
+    String cmdName = getParameter("command");
+    if ((cmdName == null) || (cmdName.length() == 0) || ("undefined".equals(cmdName))) {
+      cmdName = getParameter(PARAM_ORIG_CMD_NAME);
+    }
+    this.command = getCommand(cmdName);
+    if (this.command != null)  {
+      setMode(this.command.getTargetMode());
+      addHiddenValue(PARAM_ORIG_CMD_NAME, cmdName);
+    }
+
+    // store original calling command (e.g. the command calling the search)
+    String cldName = getParameter(PARAM_CALL_CMD_NAME);
+    if ((cldName != null) && (cldName.length() > 0)) {
+      addHiddenValue(PARAM_CALL_CMD_NAME, cldName);
+    }
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -95,28 +129,6 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
   abstract public void execute() throws Exception;
 
   /**
-   * The instance method sets the command to the parameter name. Depending on
-   * this command, the header menu, footer menu, mode and the target frame is
-   * set.
-   *
-   * @param _name name of the command object
-   * @see #menuFooter
-   * @see #menuHeader
-   * @see #mode
-   */
-  public void setCommandName(String _name) throws EFapsException  {
-      setCommand(Command.get(_name));
-      if (getCommand() == null)  {
-        setCommand(Menu.get(_name));
-      }
-      if (getCommand()!=null)  {
-        setMode(getCommand().getTargetMode());
-      }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
    * The instance method adds one hidden value to the list of hidden values in
    * variable {@link #hiddenValues}.
    *
@@ -124,7 +136,7 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
    * @param _value  value of the hidden value
    * @see #hiddenValues
    */
-  protected void addHiddenValue(String _name, String _value)  {
+  protected void addHiddenValue(final String _name, final String _value)  {
     getHiddenValues().add(new HiddenValue(_name, _value));
   }
 
@@ -172,21 +184,9 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
    *
    * @return value of instance variable {@link #command}
    * @see #command
-   * @see #setCommand
    */
   public CommandAbstract getCommand()  {
     return this.command;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #command}.
-   *
-   * @param _command  new value for instance variable {@link #command}
-   * @see #command
-   * @see #getCommand
-   */
-  public void setCommand(CommandAbstract _command)  {
-    this.command = _command;
   }
 
   /**
@@ -216,21 +216,9 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
    *
    * @return value of instance variable {@link #nodeId}
    * @see #nodeId
-   * @see #setNodeId
    */
   public String getNodeId()  {
     return this.nodeId;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #nodeId}.
-   *
-   * @param _nodeId  new value for instance variable {@link #nodeId}
-   * @see #nodeId
-   * @see #getNodeId
-   */
-  public void setNodeId(String _nodeId)  {
-    this.nodeId = _nodeId;
   }
 
   /**
@@ -279,57 +267,48 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
    */
   public class HiddenValue  {
 
+    ///////////////////////////////////////////////////////////////////////////
+    // instance variables
+
+    /**
+     * The instance variable stores the name of the hidden value.
+     *
+     * @see #setName
+     */
+    private final String name;
+
+    /**
+     * The instance variable stores the value of the hidden value.
+     *
+     * @see #getValue
+     */
+    private final String value;
+
+    ///////////////////////////////////////////////////////////////////////////
+    // constructors / destructors
+
     /**
      * The constructor creates a new hidden value.
      *
      * @param _name   name of the hidden value
      * @param _value  value of the hidden value
      */
-    private HiddenValue(String _name, String _value)  {
-      setName(_name);
-      setValue(_value);
+    private HiddenValue(final String _name, final String _value)  {
+      this.name = _name;
+      this.value = _value;
     }
 
     ///////////////////////////////////////////////////////////////////////////
-
-    /**
-     * The instance variable stores the name of the hidden value.
-     *
-     * @see #getName
-     * @see #setName
-     */
-    private String name = null;
-
-    /**
-     * The instance variable stores the value of the hidden value.
-     *
-     * @see #setValue
-     * @see #getValue
-     */
-    private String value = null;
-
-    ///////////////////////////////////////////////////////////////////////////
+    // instance getter / setter methods
 
     /**
      * This is the getter method for the instance variable {@link #name}.
      *
      * @return value of instance variable {@link #name}
      * @see #name
-     * @see #setName
      */
     public String getName()  {
       return this.name;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #name}.
-     *
-     * @param _name  new value for instance variable {@link #name}
-     * @see #name
-     * @see #getName
-     */
-    private void setName(String _name)  {
-      this.name = _name;
     }
 
     /**
@@ -337,21 +316,9 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
      *
      * @return value of instance variable {@link #value}
      * @see #value
-     * @see #setValue
      */
     public String getValue()  {
       return this.value;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #value}.
-     *
-     * @param _value  new value for instance variable {@link #value}
-     * @see #value
-     * @see #getValue
-     */
-    private void setValue(String _value)  {
-      this.value = _value;
     }
   }
 }

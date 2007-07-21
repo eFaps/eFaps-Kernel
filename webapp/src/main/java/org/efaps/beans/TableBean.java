@@ -50,7 +50,7 @@ import org.efaps.util.EFapsException;
  */
 public class TableBean extends AbstractCollectionBean {
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -73,9 +73,8 @@ public class TableBean extends AbstractCollectionBean {
    * The instance variable stores the table which must be shown.
    * 
    * @see #getTable
-   * @see #setTable
    */
-  private Table table = null;
+  private final Table table;
 
   /**
    * The instance variable stores the string of the sort key.
@@ -103,16 +102,33 @@ public class TableBean extends AbstractCollectionBean {
    */
   int selectedFilter = 0;
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
 
   public TableBean() throws EFapsException {
     super();
-    System.out.println("TableBean.constructor");
+System.out.println("TableBean.constructor");
+
+    // set target table, default sort
+    if (getCommand() != null) {
+      this.table = getCommand().getTargetTable();
+      if (getCommand().getTargetTableSortKey() != null) {
+        setSortKey(getCommand().getTargetTableSortKey());
+        if (getCommand().getTargetTableSortDirection() == CommandAbstract.TABLE_SORT_DIRECTION_DESC) {
+          setSortDirection("-");
+        }
+      }
+    } else  {
+      this.table = null;
+    }
   }
 
   public void finalize() {
     System.out.println("TableBean.destructor");
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   public void execute() throws Exception {
     evalFieldDefs();
@@ -257,24 +273,6 @@ public class TableBean extends AbstractCollectionBean {
   }
 
   /**
-   * @param _name
-   *          name of the command object
-   */
-  public void setCommandName(String _name) throws EFapsException {
-    super.setCommandName(_name);
-    if (getCommand() != null) {
-      setTable(getCommand().getTargetTable());
-
-      if (getCommand().getTargetTableSortKey() != null) {
-        setSortKey(getCommand().getTargetTableSortKey());
-        if (getCommand().getTargetTableSortDirection() == CommandAbstract.TABLE_SORT_DIRECTION_DESC) {
-          setSortDirection("-");
-        }
-      }
-    }
-  }
-
-  /**
    * With this instance method the checkboxes for the web table is controlled.
    * The value is get from the calling command which owns a property
    * <i>targetShowCheckBoxes</i> if the value <i>true</i>.
@@ -286,9 +284,8 @@ public class TableBean extends AbstractCollectionBean {
     return getCommand().isTargetShowCheckBoxes();
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  // instance getter / setter methods
 
   /**
    * This is the getter method for the instance variable {@link #fieldDefs}.
@@ -317,22 +314,9 @@ public class TableBean extends AbstractCollectionBean {
    * 
    * @return value of instance variable {@link #table}
    * @see #table
-   * @see #setTable
    */
   public Table getTable() {
     return this.table;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #table}.
-   * 
-   * @param _table
-   *          new value for instance variable {@link #table}
-   * @see #table
-   * @see #getTable
-   */
-  public void setTable(Table _table) {
-    this.table = _table;
   }
 
   /**
@@ -404,16 +388,16 @@ public class TableBean extends AbstractCollectionBean {
     this.selectedFilter = _selectedFilter;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * The inner class stores one row of the table.
    */
   public class Row {
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     // instance variables
 
     /**
@@ -430,7 +414,7 @@ public class TableBean extends AbstractCollectionBean {
      */
     private final String oids;
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     // contructors / destructors
 
     /**
@@ -467,7 +451,7 @@ public class TableBean extends AbstractCollectionBean {
       return getValues().size();
     }
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
     /**
      * This is the getter method for the values variable {@link #values}.

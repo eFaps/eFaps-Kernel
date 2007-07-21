@@ -30,7 +30,7 @@
 <%
   org.efaps.beans.FormBean uiObject = (org.efaps.beans.FormBean)request.getAttribute("uiObject");
   if (uiObject==null)  {
-    uiObject = cache.getFormBean(request.getParameter("command"));
+    uiObject = cache.getFormBean(null);
     request.setAttribute("uiObject", uiObject);
 
     %><%-- /** execute method **/ --%><%
@@ -41,8 +41,6 @@ uiObject.setUkTitle("");
     uiObject.execute();
   }
 %>
-<jsp:setProperty name="uiObject" property="nodeId" param="nodeId"/>
-
   <%
     String timeStamp  = request.getParameter("timeStamp");
 
@@ -214,11 +212,9 @@ function eFapsSubmit()  {
 
 
       <form id="eFapsFormForm" method="post" enctype="multipart/form-data" target="<c:out value="${targetProcess}"/>">
-        <input type="hidden" name="command" value=""/>
 
 <c:if test="${uiObject.searchMode}">
   <input type="hidden" name="eFapsShowSearchResult" value="true"/>
-  <input type="hidden" name="command" value="<%=request.getParameter("command")%>"/>
 </c:if>
 
         <%-- /** show the hidden values for this user interface **/ --%>

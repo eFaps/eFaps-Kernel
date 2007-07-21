@@ -127,7 +127,7 @@ public class ToolbarBean {
     return ret;
   }
 
-  protected String getTargetURL(final CommandAbstract _command) {
+  protected String getTargetURL(final CommandAbstract _command) throws Exception  {
     StringBuilder url = new StringBuilder();
 
     // always javascript (needed for faces..)
@@ -164,8 +164,9 @@ public class ToolbarBean {
 
     // append target
     if (this.search) {
-      url.append("&search=").append(this.originalCommand.getName()).append(
-          "\",\"Replace\"");
+      url.append("&eFapsCallingCommand=").append(Context.getThreadContext().getParameter("eFapsCallingCommand"))
+         .append("&search=").append(this.originalCommand.getName())
+         .append("\",\"Replace\"");
     } else {
       url.append("\",\"");
       switch (_command.getTarget()) {

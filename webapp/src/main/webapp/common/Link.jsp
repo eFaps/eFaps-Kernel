@@ -35,15 +35,22 @@
 
 <%
   Context context = Context.getThreadContext();
-  CommandAbstract command = Command.get(context.getParameter("command"));
-  if (command==null)  {
-    command = Menu.get(context.getParameter("command"));
+
+  String cmdName = context.getParameter("command");
+  if ((cmdName == null) || (cmdName.length() == 0) || ("undefined".equals(cmdName))) {
+    cmdName = context.getParameter("eFapsOriginalCommand");
+  }
+  CommandAbstract command = Command.get(cmdName);
+  if (command == null)  {
+    command = Menu.get(cmdName);
   }
 
 
   // if a target search is defined, use other command!
   if (command.getTargetSearch() != null)  {
     Search search = command.getTargetSearch();
+
+    context.getParameters().put("eFapsCallingCommand", new String[]{command.getName()});
     context.getParameters().put("search", new String[]{search.getName()});
     context.getParameters().put("command", new String[]{search.getDefaultCommand().getName()});
     command = search.getDefaultCommand();
