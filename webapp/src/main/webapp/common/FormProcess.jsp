@@ -39,8 +39,6 @@ uiObject.setUkTitle("");
     uiObject.process();
   }
 %>
-<jsp:setProperty name="uiObject" property="nodeId" param="nodeId"/>
-
 
 <html>
   <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
