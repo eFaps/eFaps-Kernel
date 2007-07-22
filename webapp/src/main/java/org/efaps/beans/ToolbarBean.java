@@ -27,6 +27,7 @@ import java.util.Vector;
 import org.apache.myfaces.custom.navmenu.NavigationMenuItem;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
@@ -145,7 +146,7 @@ public class ToolbarBean {
       url.append(_command.getReference());
     } else if ((_command.getTargetTable() != null)
         || (_command.getTargetForm() != null)
-        || (_command.getTargetSearch() != null) || (_command.hasEvents())) {
+        || (_command.getTargetSearch() != null) || (_command.hasEvents(EventType.UI_COMMAND_EXECUTE))) {
       url.append("Link.jsf?");
       // hack (no url found!)
     } else {
@@ -185,7 +186,7 @@ public class ToolbarBean {
           }
         break;
         default:
-          if (_command.hasEvents()) {
+          if (_command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
             url.append("eFapsFrameHidden");
           } else {
             url.append("Content");

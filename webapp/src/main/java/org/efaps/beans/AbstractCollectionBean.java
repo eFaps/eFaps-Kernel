@@ -45,7 +45,7 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
   /**
    *
    */
-  private static String PARAM_CALL_CMD_NAME = "eFapsCallingCommand";
+  protected static String PARAM_CALL_CMD_NAME = "eFapsCallingCommand";
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables

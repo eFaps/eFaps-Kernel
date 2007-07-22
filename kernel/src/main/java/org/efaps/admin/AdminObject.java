@@ -145,7 +145,7 @@ public abstract class AdminObject implements CacheObjectInterface {
   private final Map<EventType, List<EventDefinition>> events =
       new HashMap<EventType, List<EventDefinition>>();
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -168,7 +168,7 @@ public abstract class AdminObject implements CacheObjectInterface {
     setName(_name);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -216,18 +216,91 @@ public abstract class AdminObject implements CacheObjectInterface {
   }
 
   /**
-   * The method overrides the original method 'toString' and returns the name of
-   * the user interface object.
+   * Adds a new event to this AdminObject.
    * 
-   * @return name of the user interface object
+   * @see #events
+   * @param _eventtype
+   *          Eventtype class name to add
+   * @param _eventdef
+   *          EventDefinition to add
    */
-  public String toString() {
-    return new ToStringBuilder(this).append("name", getName()).append("uuid",
-        getUUID()).append("id", getId()).append("properties", getProperties())
-        .toString();
+  public void addEvent(final EventType _eventtype,
+      final EventDefinition _eventdef) {
+    List<EventDefinition> events = this.events.get(_eventtype);
+    if (events == null) {
+      events = new ArrayList<EventDefinition>();
+      this.events.put(_eventtype, events);
+    }
+    int pos = 0;
+    for (EventDefinition cur : events) {
+      if (_eventdef.getIndexPos() > cur.getIndexPos()) {
+        break;
+      }
+      pos++;
+    }
+    events.add(pos, _eventdef);
+
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * Returns the list of events defined for given event type.
+   * 
+   * @param _eventType
+   *          event type
+   * @return list of events for the given event type
+   */
+  public List<EventDefinition> getEvents(final EventType _eventType) {
+    return this.events.get(_eventType);
+  }
+
+  /**
+   * Does this instance have Event, for the specified EventType ?
+   * 
+   * @return <i>true</i>, if this instance has a trigger, otherwise
+   *         <i>false</i>.
+   */
+  public boolean hasEvents(final EventType _eventtype) {
+    return (this.events.get(_eventtype) != null);
+  }
+
+  /**
+   * The method gets all events for the given event type and executes them in
+   * the given order. If no events are defined, nothing is done.
+   * 
+   * @param _eventtype  type of event to execute
+   * @param _args       arguments used as parameter (doubles with first
+   *                    parameters defining the key, second parameter the value
+   *                    itself)
+   * @return List with Returns
+   */
+  public List<Return> executeEvents(final EventType _eventtype,
+      final Object... _args) {
+
+    List<Return> ret = new ArrayList<Return>();
+    if (hasEvents(_eventtype)) {
+      Parameter param = new Parameter();
+
+      if (_args != null) {
+        // add all parameters
+        for (int i = 0; i < _args.length; i += 2) {
+          if (((i + 1) < _args.length) && (_args[i] instanceof ParameterValues)) {
+            param.put((ParameterValues) _args[i], _args[i + 1]);
+          }
+        }
+      }
+      if (this instanceof UserInterfaceObject) {
+        // add ui object to parameter
+        param.put(ParameterValues.UIOBJECT, this);
+      }
+      // execute all triggers
+      for (EventDefinition evenDef : this.events.get(_eventtype)) {
+        ret.add(evenDef.execute(param));
+      }
+    }
+    return ret;
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
   // getter and setter instance methods
 
   /**
@@ -265,7 +338,7 @@ public abstract class AdminObject implements CacheObjectInterface {
   /**
    * This is the getter method for instance variable {@link #name}.
    * 
-   * @return value of instance variable {@name}
+   * @return value of instance variable {@link #name}
    * @see #name
    * @see #setName
    */
@@ -276,7 +349,7 @@ public abstract class AdminObject implements CacheObjectInterface {
   /**
    * This is the getter method for instance variable {@link #properties}.
    * 
-   * @return value of instance variable {@properties}
+   * @return value of instance variable {@link #properties}
    * @see #properties
    */
   protected Map<String, String> getProperties() {
@@ -284,111 +357,28 @@ public abstract class AdminObject implements CacheObjectInterface {
   }
 
   /**
-   * Adds a new event to this AdminObject.
+   * This is the getter method for instance variable {@link #events}.
    * 
+   * @return value of instance variable {@link #events}
    * @see #events
-   * @param _eventtype
-   *          Eventtype class name to add
-   * @param _eventdef
-   *          EventDefinition to add
-   */
-  public void addEvent(final EventType _eventtype,
-      final EventDefinition _eventdef) {
-    List<EventDefinition> events = this.events.get(_eventtype);
-    if (events == null) {
-      events = new ArrayList<EventDefinition>();
-      this.events.put(_eventtype, events);
-    }
-    int pos = 0;
-    for (EventDefinition cur : events) {
-      if (_eventdef.getIndexPos() > cur.getIndexPos()) {
-        break;
-      }
-      pos++;
-    }
-    events.add(pos, _eventdef);
-
-  }
-
-  /**
-   * returns the Map with all events for this instance
-   * 
-   * @see #events
-   * @return
    */
   protected Map<EventType, List<EventDefinition>> getEvents() {
     return this.events;
   }
 
   /**
-   * Returns the list of events defined for given event type.
+   * The method overrides the original method 'toString' and returns the name of
+   * the user interface object.
    * 
-   * @param _eventType
-   *          event type
-   * @return list of events for the given event type
+   * @return name of the user interface object
    */
-  public List<EventDefinition> getEvents(final EventType _eventType) {
-    return this.events.get(_eventType);
-  }
-
-  /**
-   * does this instance have Events?
-   * 
-   * @see #events
-   * @return true, if this instance has a event, otherwise false
-   */
-  public boolean hasEvents() {
-    return !this.events.isEmpty();
-  }
-
-  /**
-   * does this instance have Event, for the specified EventType ?
-   * 
-   * @return true, if this instance has a trigger, otherwise false
-   */
-  public boolean hasEvents(final EventType _eventtype) {
-    boolean has = false;
-    if (!this.events.isEmpty()) {
-      has = this.events.get(_eventtype) != null;
-    }
-    return has;
-  }
-
-  /**
-   * The method gets all events for the given event type and executes them in
-   * the given order. If no events are defined, nothing is done.
-   * 
-   * @param _eventtype
-   *          type of event to execute
-   * @param _args
-   *          arguments used as parameter (doubles with first parameters
-   *          defining the key, second parameter the value itself)
-   * @return List with Returns
-   */
-  public List<Return> executeEvents(final EventType _eventtype,
-      final Object... _args) {
-
-    List<Return> ret = new ArrayList<Return>();
-    if (hasEvents(_eventtype)) {
-      Parameter param = new Parameter();
-
-      if (_args != null) {
-        // add all parameters
-        for (int i = 0; i < _args.length; i += 2) {
-          if (((i + 1) < _args.length) && (_args[i] instanceof ParameterValues)) {
-            param.put((ParameterValues) _args[i], _args[i + 1]);
-          }
-        }
-      }
-      if (this instanceof UserInterfaceObject) {
-        // add ui object to parameter
-        param.put(ParameterValues.UIOBJECT, this);
-      }
-      // execute all triggers
-      for (EventDefinition evenDef : this.events.get(_eventtype)) {
-        ret.add(evenDef.execute(param));
-      }
-    }
-    return ret;
+  public String toString() {
+    return new ToStringBuilder(this)
+            .append("name", getName())
+            .append("uuid", getUUID())
+            .append("id", getId())
+            .append("properties", getProperties())
+            .append("events", this.events)
+            .toString();
   }
 }

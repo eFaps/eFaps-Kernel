@@ -53,7 +53,7 @@ public enum EventType  {
   UI_TABLE_EVALUATE  ("Admin_UI_TableEvaluateEvent"),
   UI_FIELD_VALUE     ("Admin_UI_FieldValueEvent"),
   UI_ACCESSCHECK     ("Admin_UI_AbstractAccessCheckEvent"),
-  COMMAND            ("Admin_UI_CommandExecuteEvent");
+  UI_COMMAND_EXECUTE ("Admin_UI_CommandExecuteEvent");
   
   public final String name;
 
