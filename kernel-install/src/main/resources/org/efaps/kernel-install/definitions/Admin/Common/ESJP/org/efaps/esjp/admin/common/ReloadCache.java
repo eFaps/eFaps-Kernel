@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:851 $
- * Last Changed:    $Date:2007-06-02 12:36:03 -0500 (Sat, 02 Jun 2007) $
- * Last Changed By: $Author:jmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
-package org.efaps.esjp.common.main;
+package org.efaps.esjp.admin.common;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
