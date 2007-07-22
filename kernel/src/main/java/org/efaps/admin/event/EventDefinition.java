@@ -80,7 +80,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
   /**
    * holds the instance of this
    */
-  private EventExecution progInstance = null;
+  private Object progInstance = null;
 
   /**
    * constructor
@@ -153,7 +153,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
               .getClass().getClassLoader()));
       this.method =
           cls.getMethod(this.methodName, new Class[] { Parameter.class });
-      this.progInstance = ((EventExecution) cls.newInstance());
+      this.progInstance = cls.newInstance();
     } catch (ClassNotFoundException e) {
       LOG.error("could not find Class: '" + this.resourceName + "'", e);
     } catch (InstantiationException e) {
