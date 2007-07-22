@@ -23,8 +23,8 @@
 
 -->
 
-<ui-command>
-  <uuid>1c90ae80-1d55-4593-a402-45d4526a4bcf</uuid>
+<ui-menu>
+  <uuid>cc2ef7ef-0c7e-403e-b7f2-5eadd7b15f52</uuid>
 
   <!-- ************************************************************************
     version definition used to create the command 
@@ -37,9 +37,9 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Access_AccessSetTree_Users_Menu_Action_AddExisting_Search_Action_UserRoles</name>
+    <name>Admin_Access_AbstractSearch</name>
   </definition>
-
+    
   <!-- ************************************************************************
     version definition used to define the command 
   ************************************************************************* -->
@@ -51,15 +51,11 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Access_AccessSetTree_Users_Menu_Action_AddExisting_Search_Action_UserRoles</name>
-    <!-- properties -->
-    <property name="ConnectChildAttribute">UserAbstractLink</property>
-    <property name="ConnectParentAttribute">AccessSetLink</property>
-    <property name="ConnectType">Admin_Access_AccessSet2UserAbstract</property>
-    <property name="ResultTable">Admin_User_AbstractTable</property>
-    <property name="SearchForm">Admin_User_AbstractForm</property>
-    <property name="SearchType">Admin_User_Role</property>
-    <property name="TargetMode">connect</property>
+    <name>Admin_Access_AbstractSearch</name>
+    <!-- childs -->
+    <childs>
+      <child>Admin_Access_AccessTypeSearch</child>
+    </childs>
   </definition>
 
-</ui-command>
+</ui-menu>

@@ -24,7 +24,7 @@
 -->
 
 <ui-command>
-  <uuid>dee71cf3-7e4f-469a-9b62-7847368d45fe</uuid>
+  <uuid>308426be-9519-4e39-a2c1-0c58ce1cf1ea</uuid>
 
   <!-- ************************************************************************
     version definition used to create the command 
@@ -37,9 +37,9 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Access_AccessSetTree_DataModelTypes_Menu_Action_AddExisting_Search_Action</name>
+    <name>Admin_Access_AccessTypeSearch</name>
   </definition>
-    
+
   <!-- ************************************************************************
     version definition used to define the command 
   ************************************************************************* -->
@@ -51,12 +51,18 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Access_AccessSetTree_DataModelTypes_Menu_Action_AddExisting_Search_Action</name>
-    <!-- childs -->
-    <childs>
-      <child>Admin_Access_AccessSetTree_DataModelTypes_Menu_Action_AddExisting_Search_Action_DataModelTypes</child>
-    </childs>
+    <name>Admin_Access_AccessTypeSearch</name>
+    <icon>Admin_Access_AccessTypeImage</icon>
+    <!-- target definitions -->
+    <target>
+      <form>Admin_Access_AccessTypeForm</form>
+      <table>Admin_Access_AccessTypeTable</table>
+      <evaluate program="org.efaps.esjp.common.uisearch.QuerySearch">
+        <property name="Types">Admin_Access_AccessType</property>
+      </evaluate>
+    </target>
+    <!-- properties -->
+    <property name="TargetMode">search</property>
   </definition>
 
 </ui-command>
-

@@ -23,8 +23,8 @@
 
 -->
 
-<ui-command>
-  <uuid>75c3f5b6-1472-45d5-bc86-377d30c522f6</uuid>
+<ui-menu>
+  <uuid>dee71cf3-7e4f-469a-9b62-7847368d45fe</uuid>
 
   <!-- ************************************************************************
     version definition used to create the command 
@@ -37,9 +37,9 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Access_AccessSetTree_Users_Menu_Action_AddExisting_Search_Action_UserPersons</name>
+    <name>Admin_DataModel_AbstractSearch</name>
   </definition>
-
+    
   <!-- ************************************************************************
     version definition used to define the command 
   ************************************************************************* -->
@@ -51,15 +51,12 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Access_AccessSetTree_Users_Menu_Action_AddExisting_Search_Action_UserPersons</name>
-    <!-- properties -->
-    <property name="ConnectChildAttribute">UserAbstractLink</property>
-    <property name="ConnectParentAttribute">AccessSetLink</property>
-    <property name="ConnectType">Admin_Access_AccessSet2UserAbstract</property>
-    <property name="ResultTable">Admin_User_PersonTable</property>
-    <property name="SearchForm">Admin_User_PersonForm</property>
-    <property name="SearchType">Admin_User_Person</property>
-    <property name="TargetMode">connect</property>
+    <name>Admin_DataModel_AbstractSearch</name>
+    <!-- childs -->
+    <childs>
+      <child>Admin_DataModel_TypeSearch</child>
+    </childs>
   </definition>
 
-</ui-command>
+</ui-menu>
+

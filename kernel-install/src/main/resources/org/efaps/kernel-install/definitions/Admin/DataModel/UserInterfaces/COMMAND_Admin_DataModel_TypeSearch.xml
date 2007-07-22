@@ -24,7 +24,7 @@
 -->
 
 <ui-command>
-  <uuid>308426be-9519-4e39-a2c1-0c58ce1cf1ea</uuid>
+  <uuid>f20c9a93-2a5f-4ac6-80d3-ee7482e294eb</uuid>
 
   <!-- ************************************************************************
     version definition used to create the command 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Access_AccessSetTree_AccessTypes_Menu_Action_AddExisting_Search_Action_AccessTypes</name>
+    <name>Admin_DataModel_TypeSearch</name>
   </definition>
 
   <!-- ************************************************************************
@@ -51,15 +51,18 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Access_AccessSetTree_AccessTypes_Menu_Action_AddExisting_Search_Action_AccessTypes</name>
+    <name>Admin_DataModel_TypeSearch</name>
+    <icon>Admin_DataModel_TypeImage</icon>
+    <!-- target definitions -->
+    <target>
+      <form>Admin_DataModel_TypeForm</form>
+      <table>Admin_DataModel_TypeTable</table>
+      <evaluate program="org.efaps.esjp.common.uisearch.QuerySearch">
+        <property name="Types">Admin_DataModel_Type</property>
+      </evaluate>
+    </target>
     <!-- properties -->
-    <property name="ConnectChildAttribute">AccessTypeLink</property>
-    <property name="ConnectParentAttribute">AccessSetLink</property>
-    <property name="ConnectType">Admin_Access_AccessSet2Type</property>
-    <property name="ResultTable">Admin_Access_AccessTypeTable</property>
-    <property name="SearchForm">Admin_Access_AccessTypeForm</property>
-    <property name="SearchType">Admin_Access_AccessType</property>
-    <property name="TargetMode">connect</property>
+    <property name="TargetMode">search</property>
   </definition>
 
 </ui-command>

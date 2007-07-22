@@ -55,6 +55,11 @@
     <!-- target definitions -->
     <target>
       <search>Admin_Access_AccessSetTree_Users_Menu_Action_AddExisting_Search</search>
+      <execute program="org.efaps.esjp.common.uisearch.Connect">
+        <property name="ConnectChildAttribute">UserAbstractLink</property>
+        <property name="ConnectParentAttribute">AccessSetLink</property>
+        <property name="ConnectType">Admin_Access_AccessSet2UserAbstract</property>
+      </execute>
     </target>
     <!-- properties -->
     <property name="Target">popup</property>

@@ -52,9 +52,15 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Access_AccessSetTree_Users_Menu_Action_AddExisting_Search</name>
+    <!-- defaults -->
+    <default>
+      <command>Admin_User_PersonSearch</command>
+    </default>
     <!-- childs -->
     <childs>
-      <child>Admin_Access_AccessSetTree_Users_Menu_Action_AddExisting_Search_Action</child>
+      <child>Admin_User_PersonSearch</child>
+      <child>Admin_User_RoleSearch</child>
+      <child>Admin_User_GroupSearch</child>
     </childs>
   </definition>
 

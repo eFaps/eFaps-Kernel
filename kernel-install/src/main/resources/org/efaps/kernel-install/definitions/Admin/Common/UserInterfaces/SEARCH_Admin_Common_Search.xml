@@ -59,6 +59,8 @@
     <!-- childs -->
     <childs>
       <child>Admin_User_AbstractSearch</child>
+      <child>Admin_DataModel_AbstractSearch</child>
+      <child>Admin_Access_AbstractSearch</child>
       <child>Admin_UI_AbstractSearch</child>
     </childs>
   </definition>
