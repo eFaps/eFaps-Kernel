@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:465 $
- * Last Changed:    $Date:2006-10-20 12:16:08 +0200 (Fr, 20 Okt 2006) $
- * Last Changed By: $Author:tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.util.cache;
@@ -23,8 +23,9 @@ package org.efaps.util.cache;
 import java.util.UUID;
 
 /**
+ *
  * @author tmo
- * @version $Id:CacheObjectInterface.java 465 2006-10-20 12:16:08 +0200 (Fr, 20 Okt 2006) tmo $
+ * @version $Id$
  * @todo description
  */
 public interface CacheObjectInterface  {

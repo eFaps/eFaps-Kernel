@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,9 @@ import org.efaps.db.transaction.StoreResource;
 
 /**
  * The class is used to checkin a file to a given attribute of an object.
- * 
+ *
  * @author tmo
- * @version $Id: Checkin.java 416 2006-09-16 18:31:00 +0000 (Sat, 16 Sep 2006)
- *          tmo $
+ * @version $Id$
  */
 public class Checkin extends AbstractAction {
 

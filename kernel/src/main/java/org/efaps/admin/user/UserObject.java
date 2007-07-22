@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 
 /**
+ *
  * @author tmo
- * @version $Id: UserObject.java 523 2006-11-03 22:36:48 +0000 (Fri, 03 Nov
- *          2006) tmo $
+ * @version $Id$
  * @todo description
  */
 public abstract class UserObject extends AdminObject {

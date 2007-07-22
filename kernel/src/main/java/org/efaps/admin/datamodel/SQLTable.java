@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,10 +38,9 @@ import org.efaps.util.cache.CacheReloadException;
 /**
  * This is the class for the table description. The table description holds
  * information in which table attributes are stored.
- * 
+ *
  * @author tmo
- * @version $Id: SQLTable.java 734 2007-03-20 22:29:04 +0000 (Tue, 20 Mar 2007)
- *          tmo $
+ * @version $Id$
  */
 public class SQLTable extends DataModelObject {
 

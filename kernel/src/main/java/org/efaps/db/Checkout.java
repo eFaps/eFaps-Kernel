@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +34,9 @@ import org.efaps.util.EFapsException;
 
 /**
  * The class is used to checkout a file from a given attribute of an object.
- * 
+ *
  * @author tmo
- * @version $Id: Checkout.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb 2007)
- *          jmo $
+ * @version $Id$
  */
 public class Checkout extends AbstractAction {
 

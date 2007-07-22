@@ -1,5 +1,5 @@
 /*
- * Copyright 2005 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
@@ -26,6 +29,9 @@ import org.efaps.db.SearchQuery;
 /**
  * The interface is used for fields to create values which can not directly
  * evaluate from the database.
+ *
+ * @author tmo
+ * @version $Id$
  */
 public interface FieldProgramValueInterface  {
 

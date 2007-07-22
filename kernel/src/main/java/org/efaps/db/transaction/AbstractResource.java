@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,9 @@ import org.efaps.util.EFapsException;
  * {@link #open}. To free a resource of using, methods {@link #commit} (if all
  * work was OK) or {@link #abort} (if the transaction must be rolled back) must
  * be called.
+ *
+ * @author tmo
+ * @version $Id$
  */
 abstract class AbstractResource implements XAResource {
 
