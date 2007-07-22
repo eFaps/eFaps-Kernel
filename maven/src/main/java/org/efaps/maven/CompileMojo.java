@@ -47,7 +47,6 @@ public final class CompileMojo extends EFapsAbstractMojo {
     init();
 
     try {
-      login("Administrator", "");
       reloadCache();
       startTransaction();
       (new Compiler(getClasspathElements())).compile();

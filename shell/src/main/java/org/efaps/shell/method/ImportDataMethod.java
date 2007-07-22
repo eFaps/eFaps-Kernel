@@ -49,7 +49,6 @@ public class ImportDataMethod extends AbstractMethod {
 
   @Override
   protected void doMethod() throws EFapsException, Exception {
-    super.login("Administrator", "");
     super.reloadCache();
     super.startTransaction();
     String basename = getCommandLine().getOptionValue("basename");

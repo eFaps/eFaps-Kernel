@@ -56,6 +56,8 @@ public final class KernelInstallMojo extends AbstractJavaScriptMojo  {
       evaluate(in, "CreateAll.js");
       in.close();
       putPropertyInJS("classPathElements", getClasspathElements());
+      putPropertyInJS("eFapsUserName", getUserName());
+      putPropertyInJS("eFapsPassWord", getPassWord());
 
       evaluate(new StringReader("eFapsCreateAll();"), "eFapsCreateAll()");
     } catch (IOException e)  {

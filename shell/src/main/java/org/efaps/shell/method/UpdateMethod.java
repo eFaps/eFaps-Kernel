@@ -64,7 +64,6 @@ public final class UpdateMethod extends AbstractMethod  {
    * @todo remove Exception
    */
   public void doMethod() throws EFapsException,Exception {
-    login("Administrator", "");
     reloadCache();
     startTransaction();
 

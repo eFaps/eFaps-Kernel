@@ -174,6 +174,12 @@ public abstract class AbstractMethod  {
       LOG.error("could not read file '" + bootstrap + "'", e);
     }
 
+    // configure eFaps user name
+    this.userName = (String) props.get("eFapsUserName");
+    if (this.userName == null)  {
+      this.userName = "Administrator";
+    }
+
     // configure database type
     String dbClass   = null;
     try  {
@@ -208,7 +214,8 @@ public abstract class AbstractMethod  {
     }
     Reference ref = new Reference(dsClass, factory, null);
     for (Object key : props.keySet())  {
-      if (!"dbType".equals(key) && !"factory".equals(key) &&  !"dsClass".equals(key))  {
+      if (!"dbType".equals(key) && !"factory".equals(key) 
+            &&  !"dsClass".equals(key) && !"eFapsUserName".equals(key))  {
         Object value = props.get(key);
         ref.add(new StringRefAddr(key.toString(), 
                                   (value == null) ? null : value.toString()));
@@ -304,20 +311,6 @@ public abstract class AbstractMethod  {
    */
   protected void commitTransaction() throws EFapsException,Exception  {
     Context.commit();
-  }
-
-  /**
-   * The user with given user name and password makes a login.
-   *
-   * @param _userName   name of user who wants to make a login
-   * @param _password   password of the user used to check
-   * @throws EFapsException if the user could not login
-   * @see #userName
-   * @todo real login with check of password
-   */
-  protected void login(final String _userName, 
-                       final String _password) throws EFapsException {
-    this.userName = _userName;
   }
 
   /////////////////////////////////////////////////////////////////////////////

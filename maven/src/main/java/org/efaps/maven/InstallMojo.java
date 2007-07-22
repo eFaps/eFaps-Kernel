@@ -45,7 +45,6 @@ public final class InstallMojo extends EFapsAbstractMojo {
     init();
 
     try {
-      login("Administrator", "");
       reloadCache();
       startTransaction();
 

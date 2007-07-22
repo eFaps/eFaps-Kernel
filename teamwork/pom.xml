@@ -64,6 +64,8 @@
         <artifactId>maven-efaps-plugin</artifactId>
         <version>1.0-SNAPSHOT</version>
         <configuration>
+          <userName>Administrator</userName>
+          <passWord>Administrator</passWord>
           <connection>
             <property>
               <name>username</name>

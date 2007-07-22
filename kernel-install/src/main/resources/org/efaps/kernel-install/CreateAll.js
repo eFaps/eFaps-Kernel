@@ -137,8 +137,8 @@ function _eFapsCreateAllUpdatePassword()  {
   _eFapsPrint("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
 
   try  {
-    var c = Context.begin("Administrator");
-    c.getPerson().setPassword(c, "Administrator");
+    var c = Context.begin(eFapsUserName);
+    c.getPerson().setPassword(c, eFapsPassWord);
     
     var update = new Update(Type.get("Admin_User_Abstract"),"1");
     update.add("Status","true");
@@ -233,7 +233,7 @@ function eFapsCreateAll()  {
   _eFapsReloadCache("shell");
 
   _eFapsPrint("############ Install Version 4");
-  Context.begin("Administrator");
+  Context.begin(eFapsUserName);
   install.install(4);
   Context.commit();
 
@@ -241,12 +241,12 @@ function eFapsCreateAll()  {
   _eFapsReloadCache("shell");
 
   _eFapsPrint("############ Install Version 5");
-  Context.begin("Administrator");
+  Context.begin(eFapsUserName);
   install.install(5);
   Context.commit();
 
   _eFapsPrint("############ Install Version 6");
-  Context.begin("Administrator");
+  Context.begin(eFapsUserName);
   install.install(6);
   Context.commit();
 
@@ -254,22 +254,22 @@ function eFapsCreateAll()  {
   _eFapsReloadCache("shell");
 
   _eFapsPrint("############ Install Version 7");
-  Context.begin("Administrator");
+  Context.begin(eFapsUserName);
   install.install(7);
   Context.commit();
 
   _eFapsPrint("############ Install Version 8");
-  Context.begin("Administrator");
+  Context.begin(eFapsUserName);
   install.install(8);
   Context.commit();
 
   _eFapsPrint("############ Install Version 9");
-  Context.begin("Administrator");
+  Context.begin(eFapsUserName);
   install.install(9);
   Context.commit();
 
   _eFapsPrint("############ Install Version 10");
-  Context.begin("Administrator");
+  Context.begin(eFapsUserName);
   install.install(10);
   Context.commit();
 
@@ -277,7 +277,7 @@ function eFapsCreateAll()  {
   _eFapsReloadCache("shell");
 
   _eFapsPrint("############ Install Version 11");
-  Context.begin("Administrator");
+  Context.begin(eFapsUserName);
   install.install(11);
   Context.commit();
 
@@ -285,12 +285,12 @@ function eFapsCreateAll()  {
   _eFapsReloadCache("shell");
 
   _eFapsPrint("############ Compiling Programs");
-  Context.begin("Administrator");
+  Context.begin(eFapsUserName);
   (new Compiler(classPathElements)).compile();
   Context.commit();
 
   _eFapsPrint("############ Importing Data");
-  Context.begin("Administrator");
+  Context.begin(eFapsUserName);
   _eFapsCreateAllImportData(files);
   _eFpasCreateAllReadProperties(files);
   Context.commit();
@@ -460,7 +460,7 @@ function _eFapsCreateUserTablesStep1()  {
   _insert(stmt, "Insert Administrator Person", null,
           "T_USERABSTRACT",
           "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED",
-          "-10000, 'Administrator', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP
+          "-10000, '" + eFapsUserName + "', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP
   );
   _exec(stmt, null, null,
     "insert into T_USERPERSON(ID, FIRSTNAME, LASTNAME, EMAIL, URL, PASSWORD) "+

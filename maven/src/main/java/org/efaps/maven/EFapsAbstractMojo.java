@@ -78,8 +78,17 @@ abstract class EFapsAbstractMojo implements Mojo {
    * Stores the name of the logged in user.
    * 
    * @see #login
+   * @parameter
    */
   private String userName;
+
+  /**
+   * Stores the name of the logged in user.
+   * 
+   * @see #login
+   * @parameter
+   */
+  private String passWord;
 
   /**
    * @parameter expression="${org.efaps.db.type}"
@@ -251,21 +260,6 @@ abstract class EFapsAbstractMojo implements Mojo {
   }
 
   /**
-   * The user with given user name and password makes a login.
-   * 
-   * @param _userName   name of user who wants to make a login
-   * @param _password   password of the user used to check
-   * @throws EFapsException
-   *           if the user could not login
-   * @see #userName
-   * @todo real login with check of password
-   */
-  protected void login(final String _userName,
-                       final String _password) throws EFapsException {
-    this.userName = _userName;
-  }
-
-  /**
    * Reloads the internal eFaps cache.
    * 
    * @todo remove Exception
@@ -327,6 +321,26 @@ abstract class EFapsAbstractMojo implements Mojo {
    */
   public Log getLog() {
     return this.log;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #userName}.
+   * 
+   * @return value of instance variable {@link #userName}
+   * @see #userName
+   */
+  protected String getUserName() {
+    return this.userName;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #passWord}.
+   * 
+   * @return value of instance variable {@link #passWord}
+   * @see #passWord
+   */
+  protected String getPassWord() {
+    return this.passWord;
   }
 
   /**
