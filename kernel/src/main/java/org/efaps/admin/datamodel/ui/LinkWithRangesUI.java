@@ -47,7 +47,7 @@ public class LinkWithRangesUI extends AbstractUI {
     Attribute attribute = _fieldValue.getAttribute();
 
     if (_fieldValue.getValue() != null) {
-      if (attribute.hasEvents()) {
+      if (attribute.hasEvents(EventType.RANGE_VALUE)) {
 
         for (Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
           ret.append((String) ((Map) values.get(ReturnValues.VALUES))
@@ -66,7 +66,7 @@ public class LinkWithRangesUI extends AbstractUI {
     StringBuilder ret = new StringBuilder();
     Attribute attribute = _fieldValue.getAttribute();
     if (_fieldValue.getValue() != null) {
-      if (attribute.hasEvents()) {
+      if (attribute.hasEvents(EventType.RANGE_VALUE)) {
         for (Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
 
           ret.append("<select name=\"").append(
@@ -100,7 +100,7 @@ public class LinkWithRangesUI extends AbstractUI {
       throws EFapsException {
     StringBuilder ret = new StringBuilder();
     Attribute attribute = _fieldValue.getAttribute();
-    if (attribute.hasEvents()) {
+    if (attribute.hasEvents(EventType.RANGE_VALUE)) {
       for (Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
 
         ret.append("<select name=\"").append(
