@@ -65,6 +65,14 @@ public class FormBasedAuthenticationFilter extends AbstractAuthenticationFilter 
   final public static String INIT_PARAM_URL_LOGIN_PAGE = "urlLoginPage";
 
   /**
+   * The string is name of the parameter used to define the url where
+   * unprotected content lies.
+   *
+   * @see #init
+   */
+  final public static String INIT_PARAM_URL_IGNORE = "urlIgnore";
+
+  /**
    * The string is name of the parameter used to define the url login used
    * to authenticate.
    *
@@ -161,6 +169,12 @@ public class FormBasedAuthenticationFilter extends AbstractAuthenticationFilter 
     super.init(_filterConfig);
     String root = "/" + _filterConfig.getServletContext().getServletContextName() + "/";
 
+    this.urlNotLoggedInForward = _filterConfig.getInitParameter(INIT_PARAM_URL_IGNORE);
+    if ((this.urlNotLoggedInForward != null) && (this.urlNotLoggedInForward.length() > 0)) {
+        this.exludeUris.add((root + this.urlNotLoggedInForward)
+                                                    .replaceAll("//+", "/"));
+    }
+
     // define URL if the user is not logged in
     this.urlNotLoggedInForward = _filterConfig.getInitParameter(INIT_PARAM_URL_LOGIN_PAGE);
     if ((this.urlNotLoggedInForward == null) || (this.urlNotLoggedInForward.length() == 0))  {
@@ -242,7 +256,13 @@ for (java.util.Enumeration e = session.getAttributeNames() ; e.hasMoreElements()
                                 final FilterChain _chain)
                                 throws IOException, ServletException  {
     String uri = _request.getRequestURI().replaceAll("//+", "/");
-    if (this.exludeUris.contains(uri))  {
+    boolean exclude = false;
+    for (String excludeUri : this.exludeUris)
+    {
+        exclude = exclude || uri.startsWith(excludeUri);
+    }
+    
+    if (exclude) {
       _chain.doFilter(_request, _response);
     } else if (this.urlLogin.equals(uri))  {
       String name = _request.getParameter(this.paramLoginName);

@@ -127,6 +127,16 @@
       </description>
     </init-param>
     <init-param>
+      <param-name>urlIgnore</param-name>
+      <param-value>/open</param-value>
+      <description>
+        URL that contains unprotected Content (e.g. image and css files
+        for the login page)
+        There is no default value, meanig that there is no unprotected
+        content by default.
+      </description>
+    </init-param>
+    <init-param>
       <param-name>urlLogin</param-name>
       <param-value>/login</param-value>
       <description>
