@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:586 $
- Last Changed:    $Date:2007-01-04 14:59:51 +0100 (Do, 04 Jan 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -33,7 +33,7 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
@@ -47,11 +47,23 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonTree_Groups_Menu_Action_AddExisting</name>
+    <!-- target definitions -->
+    <target>
+      <search>Admin_User_PersonTree_Groups_Menu_Action_AddExisting_Search</search>
+      <execute program="org.efaps.esjp.common.uisearch.Connect">
+        <property name="ConnectChildAttribute">UserToLink</property>
+        <property name="ConnectParentAttribute">UserFromLink</property>
+        <property name="ConnectType">Admin_User_Person2Group</property>
+      </execute>
+    </target>
+    <!-- properties -->
+    <property name="Target">popup</property>
+
     <!-- target definitions -->
     <target>
       <search>Admin_User_PersonTree_Groups_Menu_Action_AddExisting_Search</search>

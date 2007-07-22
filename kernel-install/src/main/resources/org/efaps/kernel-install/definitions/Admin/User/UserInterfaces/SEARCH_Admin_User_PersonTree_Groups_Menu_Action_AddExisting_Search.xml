@@ -52,9 +52,13 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonTree_Groups_Menu_Action_AddExisting_Search</name>
+    <!-- defaults -->
+    <default>
+      <command>Admin_User_GroupSearch</command>
+    </default>
     <!-- childs -->
     <childs>
-      <child>Admin_User_PersonTree_Groups_Menu_Action_AddExisting_Search_Action</child>
+      <child>Admin_User_GroupSearch</child>
     </childs>
   </definition>
 

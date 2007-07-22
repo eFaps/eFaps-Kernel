@@ -52,9 +52,13 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonTree_Roles_Menu_Action_AddExisting_Search</name>
+    <!-- defaults -->
+    <default>
+      <command>Admin_User_RoleSearch</command>
+    </default>
     <!-- childs -->
     <childs>
-      <child>Admin_User_PersonTree_Roles_Menu_Action_AddExisting_Search_Action</child>
+      <child>Admin_User_RoleSearch</child>
     </childs>
   </definition>
 

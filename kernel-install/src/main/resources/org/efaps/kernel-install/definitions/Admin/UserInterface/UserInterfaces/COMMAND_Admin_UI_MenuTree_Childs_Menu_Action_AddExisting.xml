@@ -55,6 +55,11 @@
     <!-- target definitions -->
     <target>
       <search>Admin_UI_MenuTree_Childs_Menu_Action_AddExisting_Search</search>
+      <execute program="org.efaps.esjp.common.uisearch.Connect">
+        <property name="ConnectChildAttribute">ToCommand</property>
+        <property name="ConnectParentAttribute">FromMenu</property>
+        <property name="ConnectType">Admin_UI_Menu2Command</property>
+      </execute>
     </target>
     <!-- properties -->
     <property name="Target">popup</property>

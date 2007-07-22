@@ -52,9 +52,14 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_UI_MenuTree_Childs_Menu_Action_AddExisting_Search</name>
+    <!-- defaults -->
+    <default>
+      <command>Admin_UI_CommandSearch</command>
+    </default>
     <!-- childs -->
     <childs>
-      <child>Admin_UI_MenuTree_Childs_Menu_Action_AddExisting_Search_Action</child>
+      <child>Admin_UI_CommandSearch</child>
+      <child>Admin_UI_MenuSearch</child>
     </childs>
   </definition>
 
