@@ -40,7 +40,7 @@
     <name>MainToolBar</name>
     <childs>
       <child>Admin_Common_MyDesk</child>
-      <child>Common_Main_ReloadCacheToolBar</child>
+      <child>Admin_Common_ReloadCacheToolBar</child>
       <child>Common_Main_LogoutToolBar</child>
       <child>Common_Main_PwdChange</child>
     </childs>
