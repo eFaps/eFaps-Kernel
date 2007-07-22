@@ -22,14 +22,15 @@
 --%>  
 <%@page errorPage="Exception.jsp"%>
 
+<%@page import="org.efaps.admin.event.EventType"%>
+<%@page import="org.efaps.admin.event.Parameter"%>
+<%@page import="org.efaps.admin.event.Parameter.ParameterValues"%>
 <%@page import="org.efaps.admin.ui.Command"%>
 <%@page import="org.efaps.admin.ui.CommandAbstract"%>
 <%@page import="org.efaps.admin.ui.Menu"%>
 <%@page import="org.efaps.admin.ui.Search"%>
-<%@page import="org.efaps.admin.event.EventType"%>
-<%@page import="org.efaps.admin.event.Parameter"%>
-<%@page import="org.efaps.admin.event.Parameter.ParameterValues"%>
 <%@page import="org.efaps.db.Context"%>
+<%@page import="org.efaps.db.Instance"%>
 
 <jsp:useBean id="cache" class="org.efaps.beans.CacheSessionBean" scope="session"/>
 
@@ -59,7 +60,24 @@
   if (command==null)  {
 System.out.println("command == NULL!!!!!!!");
   } else if (command.getTargetMode() == CommandAbstract.TARGET_MODE_SEARCH)  {
-    if ("true".equalsIgnoreCase(context.getParameter("eFapsShowSearchResult")))  {
+    if ("true".equalsIgnoreCase(context.getParameter("eFapsExecuteSearchResult")))  {
+      String[] oids = (String[])request.getParameterValues("selectedRow");
+      CommandAbstract cmdExe = Command.get(context.getParameter("eFapsCallingCommand"));
+      cmdExe.executeEvents(EventType.UI_COMMAND_EXECUTE,
+                           ParameterValues.INSTANCE, new Instance(context.getParameter("oid")),
+                           ParameterValues.OTHERS, oids);
+      %>
+        <html>
+          <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
+          <body>
+            <script language="Javascript">
+              top.opener.eFapsCommonRefresh();
+              top.close();
+            </script>
+          </body>
+        </html>  
+      <%
+    } else if ("true".equalsIgnoreCase(context.getParameter("eFapsShowSearchResult")))  {
       %><%@include file="Table.inc"%><%
     } else  {
       %><%@include file="Form.inc"%><%
@@ -68,13 +86,12 @@ System.out.println("command == NULL!!!!!!!");
     %><%@include file="Form.inc"%><%
   } else if (command.getTargetTable() != null)  {
     %><%@include file="Table.inc"%><%
-  } else if (command.hasEvents()){
+  } else if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)){
     String[] oids = (String[])request.getParameterValues("selectedRow");
-    
     if(oids!=null){
-      command.executeEvents(EventType.COMMAND, ParameterValues.OTHERS, oids);
+      command.executeEvents(EventType.UI_COMMAND_EXECUTE, ParameterValues.OTHERS, oids);
     }else {
-      command.executeEvents(EventType.COMMAND);
+      command.executeEvents(EventType.UI_COMMAND_EXECUTE);
     }
    //after a commandtrigger is executet the page is updatet                   
     if (!"true".equals(command.getProperty("NoUpdateAfterCOMMAND"))){
@@ -88,6 +105,6 @@ System.out.println("command == NULL!!!!!!!");
         </body>
       </html>  
     <%
-    }               
+    }
   }
 %>

@@ -105,38 +105,57 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
       }
     }
  
+  /**
+   * Calls the table web page used to sort the result.
+   *
+   * @param _sortKey  sort key
+   * @param _sortDir  sort direction
+   */
   function eFapsSortTable(_sortKey, _sortDir)  {
-     cleanUp=false;
-     var url = location.href;
-     var index = url.indexOf('?');
-     if (index>=0)  {
-       url = url.substring(0, index);
-     }
-     url = url + "?command=<c:out value="${uiObject.command.name}"/>&cacheKey=<%=cacheKey%>&sortKey=" + _sortKey;
-     if (location.href.indexOf('mode=print')>=0)  {
-       url = url + "&mode=print";
-     }
-     if (_sortDir)  {
-       url += "&sortDir=" + _sortDir;
-     }
-     <c:if test="${uiObject.instance ne null}">
-       url += "&oid=<c:out value="${uiObject.instance.oid}"/>";
-     </c:if>
-     
-     location.href = url;
-   } 
+    cleanUp=false;
+    var url = location.href;
+    var index = url.indexOf('?');
+    if (index>=0)  {
+      url = url.substring(0, index);
+    }
+    url = url + "?command=<c:out value="${uiObject.command.name}"/>&cacheKey=<%=cacheKey%>&sortKey=" + _sortKey;
+    if (location.href.indexOf('mode=print')>=0)  {
+      url = url + "&mode=print";
+    }
+    if (_sortDir)  {
+      url += "&sortDir=" + _sortDir;
+    }
+    <c:if test="${uiObject.instance ne null}">
+      url += "&oid=<c:out value="${uiObject.instance.oid}"/>";
+    </c:if>
+
+    location.href = url;
+  } 
    
-  function geteFapsCleanUpSession(){
-    if(cleanUp){
+  /**
+   * Cleanup of the table bean (if not sort table is selected).
+   */
+  function eFapsTableCleanUpSession(){
+    if (cleanUp)  {
       eFapsCleanUpSession('<%=cacheKey%>')
     }
-  } 
-    
+  }
+
+  /**
+   * The current tale form is submitted to the link href.
+   */
+  function eFapsTableSubmit()  {
+    var form = document.getElementById("eFapsTableForm");
+
+    form.action = "../common/Link.jsf";
+    form.submit();
+  }
+
 </script> 
 
   </head>  
 
-  <body onLoad="eFapsTableProcessEnd()" onUnLoad="geteFapsCleanUpSession()">
+  <body onLoad="eFapsTableProcessEnd()" onUnLoad="eFapsTableCleanUpSession()">
   
 <c:choose>
   <c:when test="${uiObject.searchMode}">
@@ -238,11 +257,14 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
 
 
 
-    <form id="eFapsSubmitForm" name="eFapsSubmitForm" method="post" target="" >
-      <input type="hidden" name="command" value=""/>
+    <form id="eFapsTableForm" name="eFapsSubmitForm" method="post" target="" >
       <input type="hidden" name="tableCommand" value="<c:out value="${uiObject.command.name}"/>"/>
       <input type="hidden" name="eFapsTableFilter" value=""/>
       <input type="hidden" name="eFapsCacheKey" value="<%=cacheKey%>"/>
+
+<c:if test="${uiObject.searchMode}">
+  <input type="hidden" name="eFapsExecuteSearchResult" value="true"/>
+</c:if>
 
       <%-- /** show the hidden values for this user interface **/ --%>
       <c:forEach items="${uiObject.hiddenValues}" var="hiddenValue">
@@ -265,7 +287,7 @@ boolean printMode = (mode!=null && mode.equals("print") ? true : false);
 boolean odd = true;
 for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNext(); odd=!odd)  {
 
-  org.efaps.beans.TableBean.Row row = (org.efaps.beans.TableBean.Row)rowIter.next();
+  TableBean.Row row = (TableBean.Row)rowIter.next();
 
   // show the tr tag depending on the odd attribute
   if (odd)  {
@@ -356,7 +378,13 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
     <c:if test="${uiObject.searchMode}">
       <div id="eFapsFooter">
         <h:form>
-          <h:commandLink id="Close" onclick="eFapsCommonCloseWindow();return false;" title="Create">
+          <c:if test="${uiObject.showCheckBoxes}">
+            <h:commandLink id="eFapsTableExecute" onclick="eFapsTableSubmit();return false;" title="Create">
+              <h:graphicImage value="../images/eFapsButtonDone.gif"/>
+              <h:outputText value="Connect"/>
+            </h:commandLink>
+          </c:if>
+          <h:commandLink id="eFapsTableClose" onclick="eFapsCommonCloseWindow();return false;" title="Create">
             <h:graphicImage value="../images/eFapsButtonCancel.gif"/>
             <h:outputText value="Close"/>
           </h:commandLink>
