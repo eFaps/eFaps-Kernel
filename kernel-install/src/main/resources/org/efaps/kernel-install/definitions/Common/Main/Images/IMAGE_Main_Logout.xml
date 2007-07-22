@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev: 807 $
- Last Changed:    $Date: 2007-05-01 09:49:46 -0500 (Tue, 01 May 2007) $
- Last Changed By: $Author: tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
  Original Author: Mark James (mjames@gmail.com)
  Original Name:   door_out.png
  Original Web:    Silk icon set 1.3
@@ -39,7 +39,7 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev: 807 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==7)</mode>
     </version>
