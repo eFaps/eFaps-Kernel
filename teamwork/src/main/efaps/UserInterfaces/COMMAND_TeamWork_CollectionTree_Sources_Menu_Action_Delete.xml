@@ -52,12 +52,13 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_CollectionTree_Sources_Menu_Action_Delete</name>
+    <!-- target definitions -->
+    <target>
+      <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>
+    </target>
     <!-- property definitions -->
     <property name="AskUser">true</property>
     <property name="Submit">true</property>
-  
-    <trigger name="TeamWork_CollectionTree_Sources_Menu_Action_Delete_COMMAND" event="COMMAND" program="org.efaps.esjp.common.uitable.CommonDelete" method="execute" index="1"/>
-  
   </definition>
 
 </ui-command>

@@ -53,6 +53,10 @@
     </version>
     <name>TeamWork_Member_Menu_Action_Delete</name>
     <icon>TeamWork_MemberRemoveImage</icon>
+    <!-- target definitions -->
+    <target>
+      <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>
+    </target>
     <!-- property definitions -->
     <property name="AskUser">true</property>
     <property name="Submit">true</property>
@@ -61,8 +65,6 @@
       <property name="AccessType">delete</property>
       <property name="Type">TeamWork_Member</property>
     </trigger>
-    <trigger name="TeamWork_Member_Menu_Action_Delete_COMMAND" event="COMMAND" program="org.efaps.esjp.common.uitable.CommonDelete" method="execute" index="1"/>
-  
   </definition>
 
 </ui-command>

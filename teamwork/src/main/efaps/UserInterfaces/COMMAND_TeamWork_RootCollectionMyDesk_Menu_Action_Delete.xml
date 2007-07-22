@@ -53,6 +53,10 @@
     </version>
     <name>TeamWork_RootCollectionMyDesk_Menu_Action_Delete</name>
     <icon>TeamWork_RootCollectionRemoveImage</icon>
+    <!-- target definitions -->
+    <target>
+      <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>
+    </target>
      <!-- access -->
     <access>
       <role>TeamWorkAdmin</role>
@@ -60,9 +64,6 @@
     <!-- property definitions -->
     <property name="AskUser">true</property>
     <property name="Submit">true</property>
-    
-    <trigger name="TeamWork_RootCollectionMyDesk_Menu_Action_Delete_COMMAND" event="COMMAND" program="org.efaps.esjp.common.uitable.CommonDelete" method="execute" index="1"/>
-  
   </definition>
 
 </ui-command>
