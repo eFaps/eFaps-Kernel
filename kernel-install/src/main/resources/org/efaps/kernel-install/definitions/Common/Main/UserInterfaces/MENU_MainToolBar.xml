@@ -17,30 +17,32 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev: 815 $
+ Last Changed:    $Date: 2007-05-01 12:28:56 -0500 (Tue, 01 May 2007) $
+ Last Changed By: $Author: tmo $
 
 -->
 
 <ui-menu>
   <uuid>87001cc3-c45c-44de-b8f1-776df507f268</uuid>
 
+  <!-- ************************************************************************
+    version definition used to create / update the menu 
+  ************************************************************************* -->
   <definition>
-    <!-- add the teamwork mydesk menu to the main toolbar menu -->
     <version>
-      <application>teamwork</application>
+      <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev: 815 $</local>
       <mode>true</mode>
-      <mode>(version>=3)</mode>
+      <mode>(version==11)</mode>
     </version>
     <name>MainToolBar</name>
     <childs>
       <child>Admin_Common_MyDesk</child>
-      <child>TeamWork_MyDesk</child>
       <child>Common_Main_ReloadCacheToolBar</child>
       <child>Common_Main_LogoutToolBar</child>
+      <child>Common_Main_PwdChange</child>
     </childs>
   </definition>
     
