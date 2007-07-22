@@ -52,13 +52,14 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonTree_Groups_Menu_Action_Disconnect</name>
+    <!-- target definitions -->
+    <target>
+      <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>
+    </target>
     <!-- properties -->
     <property name="AskUser">true</property>
     <property name="DeleteIndex">1</property>
     <property name="Submit">true</property>
-    <!-- trigger -->
-    <trigger name="Admin_User_PersonTree_Groups_Menu_Action_Disconnect_COMMAND" event="COMMAND" program="org.efaps.esjp.common.uitable.CommonDelete" method="execute" index="1"/>
-  
   </definition>
 
 </ui-command>

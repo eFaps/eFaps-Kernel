@@ -52,12 +52,13 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonMyDesk_Menu_Action_Delete</name>
+    <!-- target definitions -->
+    <target>
+      <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>
+    </target>
     <!-- properties -->
     <property name="AskUser">true</property>
     <property name="Submit">true</property>
-    
-    <trigger name="Admin_User_PersonMyDesk_Menu_Action_Delete_COMMAND" event="COMMAND" program="org.efaps.esjp.common.uitable.CommonDelete" method="execute" index="1"/>
-  
   </definition>
 
 </ui-command>
