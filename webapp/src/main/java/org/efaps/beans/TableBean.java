@@ -77,6 +77,11 @@ public class TableBean extends AbstractCollectionBean {
   private final Table table;
 
   /**
+   *
+   */
+  private final boolean showCheckBoxes;
+
+  /**
    * The instance variable stores the string of the sort key.
    * 
    * @see #getSortKey
@@ -105,21 +110,43 @@ public class TableBean extends AbstractCollectionBean {
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
+  /**
+   * With this instance method the checkboxes for the web table is controlled.
+   * The value is get from the calling command which owns a property
+   * <i>targetShowCheckBoxes</i> if the value <i>true</i>.
+   *
+   * @todo description
+   */
   public TableBean() throws EFapsException {
     super();
 System.out.println("TableBean.constructor");
 
-    // set target table, default sort
     if (getCommand() != null) {
+      // set target table
       this.table = getCommand().getTargetTable();
+
+      // set default sort
       if (getCommand().getTargetTableSortKey() != null) {
         setSortKey(getCommand().getTargetTableSortKey());
         if (getCommand().getTargetTableSortDirection() == CommandAbstract.TABLE_SORT_DIRECTION_DESC) {
           setSortDirection("-");
         }
       }
+
+      // set show check boxes
+      boolean showCheckBoxes = getCommand().isTargetShowCheckBoxes();
+      if (!showCheckBoxes)  {
+        String cldName = getParameter(PARAM_CALL_CMD_NAME);
+        if (cldName != null)  {
+          CommandAbstract cmd = getCommand(cldName);
+          showCheckBoxes = (cmd != null) && cmd.hasEvents(EventType.UI_COMMAND_EXECUTE);
+        }
+      }
+      this.showCheckBoxes = showCheckBoxes;
+
     } else  {
       this.table = null;
+      this.showCheckBoxes  = false;
     }
   }
 
@@ -273,15 +300,13 @@ System.out.println("TableBean.constructor");
   }
 
   /**
-   * With this instance method the checkboxes for the web table is controlled.
-   * The value is get from the calling command which owns a property
-   * <i>targetShowCheckBoxes</i> if the value <i>true</i>.
    * 
    * @return <i>true</i> if the check boxes must be shown, other <i>false</i>
    *         is returned.
+   * @see #showCheckBoxes
    */
   public boolean isShowCheckBoxes() {
-    return getCommand().isTargetShowCheckBoxes();
+    return this.showCheckBoxes;
   }
 
   /////////////////////////////////////////////////////////////////////////////
