@@ -33,13 +33,13 @@
     <version>
       <application>teamwork</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
     <name>TeamWork_Member_Menu_Action_Edit</name>
   </definition>
-    
+
   <!-- ************************************************************************
     version definition used to define the command 
   ************************************************************************* -->
@@ -47,7 +47,7 @@
     <version>
       <application>teamwork</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
@@ -60,19 +60,20 @@
         <property name="Expand">TeamWork_MemberRights\AbstractLink</property>
       </evaluate>
     </target>
+    <!-- target definitions -->
+    <target>
+      <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>
+    </target>
     <!-- property definitions -->
     <property name="DefaultSelected">false</property>
     <property name="Target">popup</property>
     <property name="TargetMode">edit</property>
     <property name="TargetShowCheckBoxes">true</property>
     <!-- trigger -->
-   	<trigger name="TeamWork_Member_Menu_Action_Edit_COMMAND" event="COMMAND" program="org.efaps.teamwork.Member" method="execute" index="1"/>
     <trigger name="TeamWork_Member_Menu_Action_Edit_UI_ACCESSCHECK" event="UI_ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
       <property name="AccessType">modify</property>
       <property name="Type">TeamWork_Member</property>
     </trigger>
-  
-  
   </definition>
 
 </ui-command>
