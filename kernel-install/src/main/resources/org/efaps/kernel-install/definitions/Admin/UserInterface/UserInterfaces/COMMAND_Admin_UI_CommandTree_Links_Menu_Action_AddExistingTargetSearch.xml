@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:586 $
- Last Changed:    $Date:2007-01-04 14:59:51 +0100 (Do, 04 Jan 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -33,11 +33,11 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_UI_CommandTree_Links_Menu_Action_AddExisting_Search_Action_TargetSearch</name>
+    <name>Admin_UI_CommandTree_Links_Menu_Action_AddExistingTargetSearch</name>
   </definition>
     
   <!-- ************************************************************************
@@ -47,20 +47,22 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_UI_CommandTree_Links_Menu_Action_AddExisting_Search_Action_TargetSearch</name>
+    <name>Admin_UI_CommandTree_Links_Menu_Action_AddExistingTargetSearch</name>
+    <!-- target definition -->
+    <target>
+      <search>Admin_UI_CommandTree_Links_Menu_Action_AddExistingTargetSearch_Search</search>
+      <execute program="org.efaps.esjp.common.uisearch.Connect">
+        <property name="ConnectChildAttribute">To</property>
+        <property name="ConnectParentAttribute">From</property>
+        <property name="ConnectType">Admin_UI_LinkTargetSearch</property>
+      </execute>
+    </target>
     <!-- properties -->
-    <property name="ConnectChildAttribute">To</property>
-    <property name="ConnectParentAttribute">From</property>
-    <property name="ConnectType">Admin_UI_LinkTargetSearch</property>
-    <property name="Label">Admin_UI_LinkTargetSearch.Label</property>
-    <property name="ResultTable">Admin_UI_AbstractList</property>
-    <property name="SearchForm">Admin_UI_AbstractForm</property>
-    <property name="SearchType">Admin_UI_Search</property>
-    <property name="TargetMode">connect</property>
+    <property name="Target">popup</property>
   </definition>
 
 </ui-command>

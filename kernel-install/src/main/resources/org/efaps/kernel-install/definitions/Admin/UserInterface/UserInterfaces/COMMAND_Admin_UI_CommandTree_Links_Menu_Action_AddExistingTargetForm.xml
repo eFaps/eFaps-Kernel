@@ -17,14 +17,14 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:586 $
- Last Changed:    $Date:2007-01-04 14:59:51 +0100 (Do, 04 Jan 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
 <ui-command>
-  <uuid>b90137f2-283f-4b1f-8e8e-89013c2cd0ff</uuid>
+  <uuid>bf43b09a-4270-47b8-8568-d224d6be37e9</uuid>
 
   <!-- ************************************************************************
     version definition used to create the command 
@@ -33,11 +33,11 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_UI_CommandTree_Links_Menu_Action_AddExisting_Search_Action_TargetTable</name>
+    <name>Admin_UI_CommandTree_Links_Menu_Action_AddExistingTargetForm</name>
   </definition>
     
   <!-- ************************************************************************
@@ -47,20 +47,22 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:586 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_UI_CommandTree_Links_Menu_Action_AddExisting_Search_Action_TargetTable</name>
+    <name>Admin_UI_CommandTree_Links_Menu_Action_AddExistingTargetForm</name>
+    <!-- target definition -->
+    <target>
+      <search>Admin_UI_CommandTree_Links_Menu_Action_AddExistingTargetForm_Search</search>
+      <execute program="org.efaps.esjp.common.uisearch.Connect">
+        <property name="ConnectChildAttribute">To</property>
+        <property name="ConnectParentAttribute">From</property>
+        <property name="ConnectType">Admin_UI_LinkTargetForm</property>
+      </execute>
+    </target>
     <!-- properties -->
-    <property name="ConnectChildAttribute">To</property>
-    <property name="ConnectParentAttribute">From</property>
-    <property name="ConnectType">Admin_UI_LinkTargetTable</property>
-    <property name="Label">Admin_UI_LinkTargetTable.Label</property>
-    <property name="ResultTable">Admin_UI_AbstractList</property>
-    <property name="SearchForm">Admin_UI_AbstractForm</property>
-    <property name="SearchType">Admin_UI_Table</property>
-    <property name="TargetMode">connect</property>
+    <property name="Target">popup</property>
   </definition>
 
 </ui-command>

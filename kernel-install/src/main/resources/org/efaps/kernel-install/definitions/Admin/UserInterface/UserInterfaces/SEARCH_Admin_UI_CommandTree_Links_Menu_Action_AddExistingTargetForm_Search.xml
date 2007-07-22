@@ -23,8 +23,8 @@
 
 -->
 
-<ui-menu>
-  <uuid>13bfcf7e-9d8a-46ec-a414-5ef5bd63eccd</uuid>
+<ui-search>
+  <uuid>ed84573a-13c0-428c-8d71-3990a54991d1</uuid>
 
   <!-- ************************************************************************
     version definition used to create the menu 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_UI_FieldTree_Links_Menu_Action</name>
+    <name>Admin_UI_CommandTree_Links_Menu_Action_AddExistingTargetForm_Search</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,11 +51,15 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_UI_FieldTree_Links_Menu_Action</name>
+    <name>Admin_UI_CommandTree_Links_Menu_Action_AddExistingTargetForm_Search</name>
+    <!-- defaults -->
+    <default>
+      <command>Admin_UI_FormSearch</command>
+    </default>
+    <!-- childs -->
     <childs>
-      <child>Admin_UI_FieldTree_Links_Menu_Action_AddExisting</child>
-      <child>Admin_UI_CommandTree_Links_Menu_Action_Disconnect</child>
+      <child>Admin_UI_FormSearch</child>
     </childs>
   </definition>
 
-</ui-menu>
+</ui-search>
