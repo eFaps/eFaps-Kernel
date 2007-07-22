@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Common_ReloadCacheToolBar</name>
+    <name>Admin_Common_ReloadCache</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,8 +51,8 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Common_ReloadCacheToolBar</name>
-    <icon>Main_ReloadCache</icon>
+    <name>Admin_Common_ReloadCache</name>
+    <icon>Admin_Common_ReloadCache</icon>
     <!-- access -->
     <access>
       <role>Administration</role>

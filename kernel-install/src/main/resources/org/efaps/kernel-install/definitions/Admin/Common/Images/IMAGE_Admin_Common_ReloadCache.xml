@@ -43,8 +43,8 @@
       <mode>true</mode>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_Common_ReloadCacheToolBar</name>
-    <file>IMAGE_Admin_Common_ReloadCacheToolBar.gif</file>
+    <name>Admin_Common_ReloadCache</name>
+    <file>IMAGE_Admin_Common_ReloadCache.gif</file>
   </definition>
 
 </ui-image>
