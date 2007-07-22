@@ -43,8 +43,6 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.lifecycle.Policy;
-import org.efaps.admin.lifecycle.Status;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.user.Person;
@@ -144,14 +142,6 @@ public class Type extends DataModelObject {
    * @see #setCache
    */
   private Cache cache = null;
-
-  /**
-   * Instance of a HashSet to store all possible policies for this type.
-   * 
-   * @see #addPolicy
-   * @see #getPolicies
-   */
-  private Set<Policy> policies = new HashSet<Policy>();
 
   /**
    * Instance of a HashSet to store all needed tables for this type. The tables
@@ -365,18 +355,6 @@ public class Type extends DataModelObject {
    */
   public CacheObjectInterface getCacheObject(final long _id) {
     return getCache().get(_id);
-  }
-
-  /**
-   * Add a policy to this type.
-   * 
-   * @see #policies
-   * @see #getPolicies
-   */
-  public void addPolicy(final Policy _policy) {
-    synchronized (getPolicies()) {
-      getPolicies().add(_policy);
-    }
   }
 
   /**
@@ -656,21 +634,9 @@ public class Type extends DataModelObject {
   }
 
   /**
-   * This is the getter method for instance variable {@link #policies}.
-   * 
-   * @return value of instance variable {@link #policies}
-   * @see #addPolicy
-   * @see #policies
-   */
-  public Set<Policy> getPolicies() {
-    return this.policies;
-  }
-
-  /**
    * This is the getter method for instance variable {@link #tables}.
    * 
    * @return value of instance variable {@link #tables}
-   * @see #addPolicy
    * @see #tables
    */
   public Set<SQLTable> getTables() {
