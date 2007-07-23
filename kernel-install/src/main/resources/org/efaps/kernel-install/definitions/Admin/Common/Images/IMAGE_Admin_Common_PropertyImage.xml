@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev:1146 $
+ Last Changed:    $Date:2007-07-22 21:24:20 +0200 (So, 22 Jul 2007) $
+ Last Changed By: $Author:tmo $
 
 -->
 
@@ -33,12 +33,12 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:1146 $</local>
       <mode>true</mode>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_PropertyImage</name>
-    <file>IMAGE_Admin_PropertyImage.gif</file>
+    <name>Admin_Common_PropertyImage</name>
+    <file>IMAGE_Admin_Common_PropertyImage.gif</file>
   </definition>
 
 </ui-image>

@@ -52,13 +52,13 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_DataModel_AbstractTree_Properties</name>
-    <icon>Admin_PropertyListImage</icon>
+    <icon>Admin_Common_PropertyListImage</icon>
     <!-- target definitions -->
     <target>
       <menu>Admin_DataModel_AbstractTree_Properties_Menu</menu>
       <table>Admin_Common_PropertyTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">Admin_Property\Abstract</property>
+        <property name="Expand">Admin_Common_Property\Abstract</property>
       </evaluate>
     </target>
     <!-- properties -->

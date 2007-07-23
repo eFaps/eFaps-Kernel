@@ -56,12 +56,12 @@
     <field name="Name">
       <property name="Expression">Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Label">Admin_Property/Name.Label</property>
+      <property name="Label">Admin_Common_Property/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
     </field>
     <field name="Value">
       <property name="Expression">Value</property>
-      <property name="Label">Admin_Property/Value.Label</property>
+      <property name="Label">Admin_Common_Property/Value.Label</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>

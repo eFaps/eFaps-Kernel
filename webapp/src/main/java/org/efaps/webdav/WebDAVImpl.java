@@ -147,7 +147,7 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
     
     try  {
       SearchQuery query = new SearchQuery();
-      query.setExpand(_instance, "Admin_Property\\Abstract");
+      query.setExpand(_instance, "Admin_Common_Property\\Abstract");
       query.addSelect("Name");
       query.addSelect("Value");
       query.executeWithoutAccessCheck();

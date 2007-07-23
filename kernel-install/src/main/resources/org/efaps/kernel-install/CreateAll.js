@@ -420,13 +420,6 @@ function _eFapsCreateInsertAttr(_stmt, _tableId, _typeId, _name, _sqlColumn, _at
   return ret;
 }
 
-function _eFapsCreateInsertProp(_stmt, _abstractId, _key, _value)  {
-  _insert(_stmt, null, null, 
-          "T_CMPROPERTY",
-          "ABSTRACT,NAME,VALUE",
-          _abstractId + ",'" + _key + "','" + _value + "'");
-}
-
 /**
  * The private function creates all user tables.
  */
@@ -710,14 +703,12 @@ function _eFapsCreateDataModelTablesStep2()  {
   var sqlTableIdProp = _eFapsCreateInsertSQLTable(stmt, text, "5cf99cd6-06d6-4322-a344-55d206666c9c", "Admin_Common_PropertySQLTable", "T_CMPROPERTY", "ID", null, null);
 
   text = "Insert Type for 'Admin_Property'";
-  var typeIdProp = _eFapsCreateInsertType(stmt, text, "f3d54a86-c323-43d8-9c78-284d61d955b3", "Admin_Property", null);
+  var typeIdProp = _eFapsCreateInsertType(stmt, text, "f3d54a86-c323-43d8-9c78-284d61d955b3", "Admin_Common_Property", null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'OID',              'ID',               'OID',      null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'ID',               'ID',               'Integer',  null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'Name',             'NAME',             'String',   null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'Value',            'VALUE',            'String',   null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'Abstract',         'ABSTRACT',         'Link',     "Admin_Abstract");
-  _eFapsCreateInsertProp(stmt, typeIdProp, "Tree", "Admin_Common_PropertyTree");
-  _eFapsCreateInsertProp(stmt, typeIdProp, "Icon", "${ROOTURL}/servlet/image/Admin_PropertyImage");
 
   conRsrc.commit();
 }

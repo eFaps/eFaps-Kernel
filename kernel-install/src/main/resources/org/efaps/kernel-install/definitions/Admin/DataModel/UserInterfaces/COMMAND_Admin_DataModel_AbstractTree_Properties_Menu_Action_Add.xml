@@ -58,8 +58,8 @@
     </target>
     <!-- properties -->
     <property name="Target">popup</property>
-    <property name="TargetConnectAttribute">Admin_Property/Abstract</property>
-    <property name="TargetCreateType">Admin_Property</property>
+    <property name="TargetConnectAttribute">Admin_Common_Property/Abstract</property>
+    <property name="TargetCreateType">Admin_Common_Property</property>
     <property name="TargetMode">create</property>
   </definition>
 

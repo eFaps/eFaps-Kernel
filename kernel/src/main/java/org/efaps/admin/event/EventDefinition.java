@@ -105,7 +105,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
   private void setProperties(final String _oid) {
     SearchQuery query = new SearchQuery();
     try {
-      query.setExpand(_oid, "Admin_Property\\Abstract");
+      query.setExpand(_oid, "Admin_Common_Property\\Abstract");
       query.addSelect("Name");
       query.addSelect("Value");
       query.executeWithoutAccessCheck();

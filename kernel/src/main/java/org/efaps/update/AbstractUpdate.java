@@ -584,7 +584,7 @@ public abstract class AbstractUpdate {
       if (_instance.getType().isKindOf(Type.get("Admin_Abstract"))) {
         // remove old properties
         SearchQuery query = new SearchQuery();
-        query.setExpand(_instance, "Admin_Property\\Abstract");
+        query.setExpand(_instance, "Admin_Common_Property\\Abstract");
         query.addSelect("OID");
         query.executeWithoutAccessCheck();
         while (query.next()) {
@@ -597,7 +597,7 @@ public abstract class AbstractUpdate {
         // add current properites
         if (_properties != null) {
           for (Map.Entry<String, String> entry : _properties.entrySet()) {
-            Insert insert = new Insert("Admin_Property");
+            Insert insert = new Insert("Admin_Common_Property");
             insert.add("Name", entry.getKey());
             insert.add("Value", entry.getValue());
             insert.add("Abstract", "" + _instance.getId());
