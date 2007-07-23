@@ -196,8 +196,10 @@ function eFapsSubmit()  {
 <f:view>
 
   <h:panelGrid id="eFapsFrameTitle">
-    <h:outputText value="#{titleBean.title}"/>
+    <f:verbatim><c:out value="${uiObject.title}"/></f:verbatim>
   </h:panelGrid>
+
+  <%-- menu bar --%>
   <%@include file="ToolBarMenu.inc"%>
 
 <c:choose>

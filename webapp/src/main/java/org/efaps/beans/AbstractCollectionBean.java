@@ -20,10 +20,14 @@
 
 package org.efaps.beans;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.beans.valueparser.ValueParser;
+import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
@@ -127,6 +131,37 @@ public abstract class AbstractCollectionBean extends AbstractBean  {
    * method must be overwritten by individual implementations.
    */
   abstract public void execute() throws Exception;
+
+  /**
+   * Translate depending from the command name in {@link #commandName} and the
+   * extension <code>.Title</code> the text and returns them (used as title).
+   * <br/>
+   * If an object id in {@link oid} is given, the expressions in the title are
+   * evaluated and replaced.
+   *
+   * @return translated text
+   * @see #commandName
+   */
+   public String getTitle() throws Exception  {
+     String title = DBProperties.getProperty(this.command.getName() + ".Title");
+
+     if ((title != null) && (getInstance() != null))  {
+      SearchQuery query = new SearchQuery();
+      query.setObject(getInstance());
+      ValueParser parser = new ValueParser(new StringReader(title));
+      ValueList list = parser.ExpressionString();
+      list.makeSelect(query);
+      if (query.selectSize() > 0) {
+        query.execute();
+        if (query.next()) {
+          title = list.makeString(query);
+        }
+        query.close();
+      }
+    }
+
+    return title;
+   }
 
   /**
    * The instance method adds one hidden value to the list of hidden values in

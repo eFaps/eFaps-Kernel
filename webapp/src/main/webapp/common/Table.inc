@@ -181,7 +181,7 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
 
 <f:view>
   <h:panelGrid id="eFapsFrameTitle">
-    <h:outputText value="#{titleBean.title}"/>
+    <f:verbatim><c:out value="${uiObject.title}"/></f:verbatim>
   </h:panelGrid>
 
   <%-- menu bar --%>
