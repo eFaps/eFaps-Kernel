@@ -79,6 +79,7 @@ abstract class EFapsAbstractMojo implements Mojo {
    * 
    * @see #login
    * @parameter
+   * @required
    */
   private String userName;
 
@@ -87,6 +88,7 @@ abstract class EFapsAbstractMojo implements Mojo {
    * 
    * @see #login
    * @parameter
+   * @required
    */
   private String passWord;
 
