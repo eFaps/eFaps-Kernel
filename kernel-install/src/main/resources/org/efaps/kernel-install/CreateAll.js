@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  * Author:          tmo
- * Revision:        $Rev:1072 $
- * Last Changed:    $Date:2007-07-17 21:00:42 +0200 (Di, 17 Jul 2007) $
- * Last Changed By: $Author:tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 importClass(Packages.java.io.InputStreamReader);
