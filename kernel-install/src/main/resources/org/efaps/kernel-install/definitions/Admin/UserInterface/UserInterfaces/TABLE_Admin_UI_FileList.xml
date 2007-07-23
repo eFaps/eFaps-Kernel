@@ -57,6 +57,7 @@
       <property name="Expression">Type</property>
       <property name="Label">Admin_UI_Abstract/Type.Label</property>
       <property name="ShowTypeIcon">true</property>
+      <property name="SortAble">false</property>
     </field>
     <field name="name">
       <property name="Expression">Name</property>
@@ -83,11 +84,13 @@
       <icon>Action_View</icon>
       <property name="HRef">${ROOTURL}/servlet/checkout</property>
       <property name="Target">popup</property>
+      <property name="SortAble">false</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Target">popup</property>
+      <property name="SortAble">false</property>
     </field>
   </definition>
 

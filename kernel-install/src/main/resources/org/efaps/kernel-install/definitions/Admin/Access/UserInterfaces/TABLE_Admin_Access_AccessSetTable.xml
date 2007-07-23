@@ -71,6 +71,7 @@
       <icon>eFapsActionNewWindow</icon>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Target">popup</property>
+      <property name="SortAble">false</property>
     </field>
   </definition>
 
