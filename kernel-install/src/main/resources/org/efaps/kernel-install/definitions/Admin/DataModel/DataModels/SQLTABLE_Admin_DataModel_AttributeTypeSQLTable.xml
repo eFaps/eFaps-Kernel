@@ -36,6 +36,7 @@
     </version>
     <database>
       <table-name>T_DMATTRIBUTETYPE</table-name>
+      <parent-table>T_CMABSTRACT</parent-table>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
