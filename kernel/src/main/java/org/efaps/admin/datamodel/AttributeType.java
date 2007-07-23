@@ -61,7 +61,7 @@ public class AttributeType extends DataModelObject  {
                                                 "CLASSNAMEUI,"+
                                                 "ALWAYSUPDATE,"+
                                                 "CREATEUPDATE "+
-                                              "from T_DMATTRIBUTETYPE";
+                                              "from V_DMATTRIBUTETYPE";
 
   /**
    * This is the constructor for class {@link Attribute}. Every instance of

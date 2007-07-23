@@ -23,9 +23,6 @@ importClass(Packages.java.io.InputStreamReader);
 importClass(Packages.java.io.LineNumberReader);
 importClass(Packages.java.util.ArrayList);
 
-importClass(Packages.org.apache.commons.jexl.JexlHelper);
-importClass(Packages.org.apache.commons.jexl.JexlContext);
-
 importClass(Packages.org.efaps.admin.program.esjp.Compiler);
 importClass(Packages.org.efaps.admin.runlevel.RunLevel);
 importClass(Packages.org.efaps.admin.user.Person);
@@ -353,7 +350,7 @@ function _eFapsCreateInsertSQLTable(_stmt, _text, _uuid, _name, _sqlTable, _sqlC
                     typeIdSQLTable 
                         + ", '" + _uuid + "'"
                         + ",'" + _name + "'"
-                        + ",''"
+                        + ",''"     
                         + ", 1"
                         + "," + CURRENT_TIMESTAMP 
                         + ",1"
@@ -373,7 +370,7 @@ function _eFapsCreateInsertType(_stmt, _text, _uuid, _name, _parentType)  {
 
   // get id for given type name in _parentType
   var parentTypeId = "null";
-  if (_parentType != null)  {
+  if (_parentType != null)  {                                                                                                               
     rs = _stmt.executeQuery("select ID from T_CMABSTRACT where NAME='" + _parentType + "'");
     rs.next();
     parentTypeId = rs.getString(1);
@@ -407,7 +404,7 @@ function _eFapsCreateInsertAttr(_stmt, _tableId, _typeId, _name, _sqlColumn, _at
   }
 
   // get id for given type name in _parentType
-  rs = _stmt.executeQuery("select ID from T_DMATTRIBUTETYPE where NAME='" + _attrType + "'");
+  rs = _stmt.executeQuery("select ID from V_DMATTRIBUTETYPE where NAME='" + _attrType + "'");
   rs.next();
   var attrTypeId = rs.getString(1);
   rs.close();
@@ -599,6 +596,26 @@ function _eFapsCreateUserTablesStep2()  {
     conRsrc.commit();
 }
 
+
+function _eFapsCreateAttrType(_stmt, _text, _uuid, _name, _classDM, _classUI, _alUpd, _crUp)  {
+  // get id for type 'Admin_DataModel_Type'
+  var rs = _stmt.executeQuery("select ID from T_CMABSTRACT where NAME='Admin_DataModel_AttributeType'");
+  rs.next();
+  var typeIdType = rs.getString(1);
+  rs.close();
+
+  var ret = _insert(_stmt, _text, null, 
+                    "T_CMABSTRACT",
+                    "TYPEID,NAME,UUID,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED",
+                    typeIdType + ", '" + _name + "','" + _uuid + "','',1," + CURRENT_TIMESTAMP + ",1," + CURRENT_TIMESTAMP);
+  _exec(_stmt, null, null, "insert into T_DMATTRIBUTETYPE(ID,CLASSNAME,CLASSNAMEUI,ALWAYSUPDATE,CREATEUPDATE)"
+                           + " values  (" + ret + ", '" + _classDM + "', '" + _classUI + "', " + _alUpd + ", " + _crUp + ")");
+  return ret;
+}
+
+var ATTRTYPESQLTABLEID;
+var ATTRTYPETYPEID;
+
 /**
  * The private functions creates all data model tables
  */
@@ -607,31 +624,42 @@ function _eFapsCreateDataModelTablesStep1()  {
   var conRsrc = Context.getThreadContext().getConnectionResource();
   var stmt = conRsrc.getConnection().createStatement();
 
- 
-  var text = "Insert Attribute Types";
-  var cols = "NAME,UUID,REVISION,CREATOR,CREATED,MODIFIER,MODIFIED,CLASSNAME,CLASSNAMEUI,ALWAYSUPDATE,CREATEUPDATE";
+  /////////////////////////////////////////
+  // insert 'attribute type' 
 
-  _insert(stmt, text, "",   "T_DMATTRIBUTETYPE", cols, "'Type',           'acfb7dd8-71e9-43c0-9f22-8d98190f7290', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.TypeType',         'org.efaps.admin.datamodel.ui.TypeUI',    null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'String',         '72221a59-df5d-4c56-9bec-c9167de80f2b', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'Password',       '87a372f0-9e71-45ed-be32-f2a95480a7ee', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.PasswordType',     'org.efaps.admin.datamodel.ui.StringUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'OID',            'bb1d4c0b-4fee-4607-94b9-7c742949c099', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OIDType',          'org.efaps.admin.datamodel.ui.StringUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'Long',           'b9d0e298-f96b-4b78-aa6c-ae8c71952f6c', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LongType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'Integer',        '41451b64-cb24-4e77-8d9e-5b6eb58df56f', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.IntegerType',      'org.efaps.admin.datamodel.ui.StringUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'Real',           'd4a96228-1af9-448b-8f0b-7fe2790835af', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.RealType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'Boolean',        '7fb3799d-4e31-45a3-8c5e-4fbf445ec3c1', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.BooleanType',      'org.efaps.admin.datamodel.ui.BooleanUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'Date',           '68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'Time',           'd8ddc848-115e-4abf-be66-0856ac64b21a', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'DateTime',       'e764db0f-70f2-4cd4-b2fe-d23d3da72f78', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.DateTimeType',     'org.efaps.admin.datamodel.ui.DateTimeUI',null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'Created',        '513d35f5-58e2-4243-acd2-5fec5359778a', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.CreatedType',      'org.efaps.admin.datamodel.ui.DateTimeUI',null, 1   ");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'Modified',       'a8556408-a15d-4f4f-b740-6824f774dc1d', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.ModifiedType',     'org.efaps.admin.datamodel.ui.DateTimeUI',1,    null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'Link',           '440f472f-7be2-41d3-baec-4a2f0e4e5b31', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LinkType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'LinkWithRanges', '9d6b2e3e-68ce-4509-a5f0-eae42323a696', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.LinkWithRanges',   'org.efaps.admin.datamodel.ui.LinkWithRangesUI',  null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'PersonLink',     '7b8f98de-1967-44e0-b174-027349868a61', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.PersonLinkType',   'org.efaps.admin.datamodel.ui.UserUI',    null, null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'CreatorLink',    '76122fe9-8fde-4dd4-a229-e48af0fb4083', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.CreatorLinkType',  'org.efaps.admin.datamodel.ui.UserUI',    null, 1   ");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'ModifierLink',   '447a7c87-8395-48c4-b2ed-d4e96d46332c', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.ModifierLinkType', 'org.efaps.admin.datamodel.ui.UserUI',    1,    null");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'OwnerLink',      'a5367e5a-78b7-47b4-be7f-abf5423171f0', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.OwnerLinkType',    'org.efaps.admin.datamodel.ui.UserUI',    null, 1   ");
-  _insert(stmt, null, null, "T_DMATTRIBUTETYPE", cols, "'PolicyLink',     'c9c98b47-d5da-4665-939c-9686c82914ac', null, 1,"+CURRENT_TIMESTAMP+",1,"+CURRENT_TIMESTAMP+",'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null");
- 
+  var text = "Insert Table for 'Admin_DataModel_AttributeType'";
+  ATTRTYPESQLTABLEID = _eFapsCreateInsertSQLTable(stmt, text, "30152cda-e5a3-418d-ad1e-ad44be1307c2", "Admin_DataModel_AttributeTypeSQLTable", "T_DMATTRIBUTETYPE", "ID", null, null);
+
+  var text = "Insert Type for Type for 'Admin_DataModel_AttributeType'";
+  ATTRTYPETYPEID = _eFapsCreateInsertType(stmt, text, "c482e3d3-8387-4406-a1c2-b0e708af78f3", "Admin_DataModel_AttributeType", null);
+
+  var text = "Insert Attribute Types";
+  _eFapsCreateAttrType(stmt, text, 'acfb7dd8-71e9-43c0-9f22-8d98190f7290', 'Type',           'org.efaps.admin.datamodel.attributetype.TypeType',         'org.efaps.admin.datamodel.ui.TypeUI',    null, null);
+  _eFapsCreateAttrType(stmt, null, '72221a59-df5d-4c56-9bec-c9167de80f2b', 'String',         'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, '87a372f0-9e71-45ed-be32-f2a95480a7ee', 'Password',       'org.efaps.admin.datamodel.attributetype.PasswordType',     'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, 'bb1d4c0b-4fee-4607-94b9-7c742949c099', 'OID',            'org.efaps.admin.datamodel.attributetype.OIDType',          'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, 'b9d0e298-f96b-4b78-aa6c-ae8c71952f6c', 'Long',           'org.efaps.admin.datamodel.attributetype.LongType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, '41451b64-cb24-4e77-8d9e-5b6eb58df56f', 'Integer',        'org.efaps.admin.datamodel.attributetype.IntegerType',      'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, 'd4a96228-1af9-448b-8f0b-7fe2790835af', 'Real',           'org.efaps.admin.datamodel.attributetype.RealType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, '7fb3799d-4e31-45a3-8c5e-4fbf445ec3c1', 'Boolean',        'org.efaps.admin.datamodel.attributetype.BooleanType',      'org.efaps.admin.datamodel.ui.BooleanUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, '68ce3aa6-e3e8-40bb-b48f-2a67948c2e7e', 'Date',           'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, 'd8ddc848-115e-4abf-be66-0856ac64b21a', 'Time',           'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, 'e764db0f-70f2-4cd4-b2fe-d23d3da72f78', 'DateTime',       'org.efaps.admin.datamodel.attributetype.DateTimeType',     'org.efaps.admin.datamodel.ui.DateTimeUI',null, null);
+  _eFapsCreateAttrType(stmt, null, '513d35f5-58e2-4243-acd2-5fec5359778a', 'Created',        'org.efaps.admin.datamodel.attributetype.CreatedType',      'org.efaps.admin.datamodel.ui.DateTimeUI',null, 1   );
+  _eFapsCreateAttrType(stmt, null, 'a8556408-a15d-4f4f-b740-6824f774dc1d', 'Modified',       'org.efaps.admin.datamodel.attributetype.ModifiedType',     'org.efaps.admin.datamodel.ui.DateTimeUI',1,    null);
+  _eFapsCreateAttrType(stmt, null, '440f472f-7be2-41d3-baec-4a2f0e4e5b31', 'Link',           'org.efaps.admin.datamodel.attributetype.LinkType',         'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, '9d6b2e3e-68ce-4509-a5f0-eae42323a696', 'LinkWithRanges', 'org.efaps.admin.datamodel.attributetype.LinkWithRanges',   'org.efaps.admin.datamodel.ui.LinkWithRangesUI',  null, null);
+  _eFapsCreateAttrType(stmt, null, '7b8f98de-1967-44e0-b174-027349868a61', 'PersonLink',     'org.efaps.admin.datamodel.attributetype.PersonLinkType',   'org.efaps.admin.datamodel.ui.UserUI',    null, null);
+  _eFapsCreateAttrType(stmt, null, '76122fe9-8fde-4dd4-a229-e48af0fb4083', 'CreatorLink',    'org.efaps.admin.datamodel.attributetype.CreatorLinkType',  'org.efaps.admin.datamodel.ui.UserUI',    null, 1   );
+  _eFapsCreateAttrType(stmt, null, '447a7c87-8395-48c4-b2ed-d4e96d46332c', 'ModifierLink',   'org.efaps.admin.datamodel.attributetype.ModifierLinkType', 'org.efaps.admin.datamodel.ui.UserUI',    1,    null);
+  _eFapsCreateAttrType(stmt, null, 'a5367e5a-78b7-47b4-be7f-abf5423171f0', 'OwnerLink',      'org.efaps.admin.datamodel.attributetype.OwnerLinkType',    'org.efaps.admin.datamodel.ui.UserUI',    null, 1   );
+  _eFapsCreateAttrType(stmt, null, 'c9c98b47-d5da-4665-939c-9686c82914ac', 'PolicyLink',     'org.efaps.admin.datamodel.attributetype.StringType',       'org.efaps.admin.datamodel.ui.StringUI',  null, null);
+
+  _eFapsCreateInsertAttr(stmt, ATTRTYPESQLTABLEID, ATTRTYPETYPEID, 'Classname',     'CLASSNAME',    'String', null);
+  _eFapsCreateInsertAttr(stmt, ATTRTYPESQLTABLEID, ATTRTYPETYPEID, 'ClassnameUI',   'CLASSNAMEUI',  'String', null);
+  _eFapsCreateInsertAttr(stmt, ATTRTYPESQLTABLEID, ATTRTYPETYPEID, 'AlwaysUpdate',  'ALWAYSUPDATE', 'Boolean', null);
+  _eFapsCreateInsertAttr(stmt, ATTRTYPESQLTABLEID, ATTRTYPETYPEID, 'CreateUpdate',  'CREATEUPDATE', 'Boolean', null);
+
   conRsrc.commit();
 }
 
@@ -666,22 +694,6 @@ function _eFapsCreateDataModelTablesStep2()  {
   _eFapsCreateInsertAttr(stmt, sqlTableIdType, typeIdType, 'ParentType',       'PARENTDMTYPE',     'Link', "Admin_DataModel_Type");
 
   /////////////////////////////////////////
-  // insert 'attribute type' 
-
-  text = "Insert Table for 'Admin_DataModel_AttributeType'";
-  var sqlTableIdAttrType = _eFapsCreateInsertSQLTable(stmt, text, "30152cda-e5a3-418d-ad1e-ad44be1307c2", "Admin_DataModel_AttributeTypeSQLTable", "T_DMATTRIBUTETYPE", "ID", null, null);
-
-  text = "Insert Type for 'Admin_DataModel_AttributeType'";
-  var typeIdAttrType = _eFapsCreateInsertType(stmt, text, "c482e3d3-8387-4406-a1c2-b0e708af78f3", "Admin_DataModel_AttributeType", null);
-  _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'OID',              'ID',               'OID',      null);
-  _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'ID',               'ID',               'Integer',  null);
-  _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Name',             'NAME',             'String',   null);
-  _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'Classname',        'CLASSNAME',        'String',   null);
-  _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'ClassnameUI',      'CLASSNAMEUI',      'String',   null);
-  _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'AlwaysUpdate',     'ALWAYSUPDATE',     'Boolean',  null);
-  _eFapsCreateInsertAttr(stmt, sqlTableIdAttrType, typeIdAttrType, 'CreateUpdate',     'CREATEUPDATE',     'Boolean',  null);
-
-  /////////////////////////////////////////
   // insert 'attribute' 
 
   text = "Insert Table for 'Admin_DataModel_Attribute'";
@@ -699,10 +711,10 @@ function _eFapsCreateDataModelTablesStep2()  {
   /////////////////////////////////////////
   // insert 'admin property' 
 
-  text = "Insert Table for 'Admin_Property'";
+  text = "Insert Table for 'Admin_Common_Property'";
   var sqlTableIdProp = _eFapsCreateInsertSQLTable(stmt, text, "5cf99cd6-06d6-4322-a344-55d206666c9c", "Admin_Common_PropertySQLTable", "T_CMPROPERTY", "ID", null, null);
 
-  text = "Insert Type for 'Admin_Property'";
+  text = "Insert Type for 'Admin_Common_Property'";
   var typeIdProp = _eFapsCreateInsertType(stmt, text, "f3d54a86-c323-43d8-9c78-284d61d955b3", "Admin_Common_Property", null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'OID',              'ID',               'OID',      null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdProp, typeIdProp, 'ID',               'ID',               'Integer',  null);
@@ -736,6 +748,14 @@ function _eFapsCreateCommonTablesStep2()  {
   _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Name',             'NAME',             'String',       null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'UUID',             'UUID',             'String',       null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdAbstract, typeIdAbstract, 'Revision',         'REVISION',         'String',       null);
+
+  /////////////////////////////////////////
+  // update attribute types
+
+  _exec(stmt, "Udpate SQL Table for 'Admin_DataModel_AtributeTypeSQLTable'",
+              null, "update T_DMTABLE set DMTABLEMAIN=" + sqlTableIdAbstract + " where ID=" + ATTRTYPESQLTABLEID);
+  _exec(stmt, "Udpate Type for 'Admin_DataModel_AtributeType'",
+              null, "update T_DMTYPE set PARENTDMTYPE=" + typeIdAbstract + " where ID=" + ATTRTYPETYPEID);
 
   conRsrc.commit();
 }
