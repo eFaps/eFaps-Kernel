@@ -17,51 +17,43 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:1145 $
- Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
-<ui-command>
-  <uuid>7c60d8b2-3ace-40e9-b285-f6fa13bd52f7</uuid>
+<ui-menu>
+  <uuid>f84814f4-1bc5-481e-b37c-6ae782b25a00</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the command 
+    version definition used to create the menu 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_DataModel_AbstractTree_Properties_Menu_Action_Add</name>
+    <name>Common_Main_Preferences</name>
   </definition>
-    
+
   <!-- ************************************************************************
-    version definition used to define the command 
+    version definition used to update the menu 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DataModel_AbstractTree_Properties_Menu_Action_Add</name>
-    <!-- target definitions -->
-    <target>
-      <form>Admin_Common_PropertyForm</form>
-      <execute program="org.efaps.esjp.common.uiform.Create"/>
-    </target>
-    <!-- properties -->
-    <property name="Target">popup</property>
-    <property name="TargetConnectAttribute">Admin_Common_Property/Abstract</property>
-    <property name="TargetCreateType">Admin_Common_Property</property>
-    <property name="TargetMode">create</property>
+    <name>Common_Main_Preferences</name>
+    <childs>
+      <child>Common_Main_PwdChg</child>
+    </childs>
   </definition>
-
-</ui-command>
+</ui-menu>

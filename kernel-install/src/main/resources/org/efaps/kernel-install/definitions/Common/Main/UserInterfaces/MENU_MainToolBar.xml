@@ -41,8 +41,8 @@
     <childs>
       <child>Admin_Common_MyDesk</child>
       <child>Admin_Common_ReloadCache</child>
+      <child>Common_Main_Preferences</child>
       <child>Common_Main_LogoutToolBar</child>
-      <child>Common_Main_PwdChange</child>
     </childs>
   </definition>
     

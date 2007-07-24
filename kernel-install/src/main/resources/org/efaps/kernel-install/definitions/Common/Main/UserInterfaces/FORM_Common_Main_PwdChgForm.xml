@@ -23,11 +23,11 @@
 
 -->
 
-<ui-command>
-  <uuid>7c60d8b2-3ace-40e9-b285-f6fa13bd52f7</uuid>
+<ui-form>
+  <uuid>94254c8b-a371-4d62-b939-793688cefc2c</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the command 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_DataModel_AbstractTree_Properties_Menu_Action_Add</name>
+    <name>Common_Main_PwdChgForm</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the command 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,17 +51,15 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DataModel_AbstractTree_Properties_Menu_Action_Add</name>
-    <!-- target definitions -->
-    <target>
-      <form>Admin_Common_PropertyForm</form>
-      <execute program="org.efaps.esjp.common.uiform.Create"/>
-    </target>
-    <!-- properties -->
-    <property name="Target">popup</property>
-    <property name="TargetConnectAttribute">Admin_Common_Property/Abstract</property>
-    <property name="TargetCreateType">Admin_Common_Property</property>
-    <property name="TargetMode">create</property>
+    <name>Common_Main_PwdChgForm</name>
+    <!-- fields -->
+    <field name="password">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Expression">Password</property>
+      <property name="Required">true</property>
+      <property name="Label">Common_Main_PwdChgForm/password.Label</property>
+    </field>
   </definition>
 
-</ui-command>
+</ui-form>

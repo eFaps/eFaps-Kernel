@@ -23,7 +23,6 @@
 <%@page errorPage="Exception.jsp"%>
 
 <%@page import="org.efaps.admin.event.EventType"%>
-<%@page import="org.efaps.admin.event.Parameter"%>
 <%@page import="org.efaps.admin.event.Parameter.ParameterValues"%>
 <%@page import="org.efaps.admin.ui.Command"%>
 <%@page import="org.efaps.admin.ui.CommandAbstract"%>

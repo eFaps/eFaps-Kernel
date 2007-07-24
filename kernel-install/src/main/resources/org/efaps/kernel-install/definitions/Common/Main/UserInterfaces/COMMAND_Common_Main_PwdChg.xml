@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  
+  Copyright 2003-2007 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          tmo
+  Revision:        $Rev:1145 $
+  Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
+  Last Changed By: $Author:tmo $
+  
+-->
+
+<ui-command>
+  <uuid>0d0dfd3b-8097-4434-960b-dd350636d56b</uuid>
+
+  <!-- ************************************************************************
+    version definition used to create the command 
+    ************************************************************************* -->
+  <definition>
+    <version>
+      <application>efaps</application>
+      <global>1</global>
+      <local>$Rev:1145 $</local>
+      <mode>true</mode>
+      <mode>(version==10)</mode>
+    </version>
+    <name>Common_Main_PwdChg</name>
+  </definition>
+
+  <!-- ************************************************************************
+    version definition used to define the command 
+    ************************************************************************* -->
+  <definition>
+    <version>
+      <application>efaps</application>
+      <global>1</global>
+      <local>$Rev:1145 $</local>
+      <mode>true</mode>
+      <mode>(version==11)</mode>
+    </version>
+    <name>Common_Main_PwdChg</name>
+    <target>
+      <form>Common_Main_PwdChgForm</form>
+      <execute program="org.efaps.esjp.common.main.PwdChgExecute"/>
+    </target>
+    <!-- properties -->
+    <property name="Target">popup</property>
+    <property name="TargetCreateType">Admin_User_Person</property>
+    <property name="TargetMode">create</property>
+  </definition>
+
+</ui-command>

@@ -63,13 +63,7 @@
     </target>
     <!-- properties -->
     <property name="Target">popup</property>
-
-    <!-- target definitions -->
-    <target>
-      <search>Admin_User_PersonTree_Groups_Menu_Action_AddExisting_Search</search>
-    </target>
-    <!-- properties -->
-    <property name="Target">popup</property>
+    
   </definition>
 
 </ui-command>

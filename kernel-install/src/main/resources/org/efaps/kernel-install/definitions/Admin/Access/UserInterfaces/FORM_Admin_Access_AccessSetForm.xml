@@ -69,10 +69,10 @@
       <property name="Searchable">true</property>
     </field>
     <field name="uuid">
-      <property name="Creatable">false</property>
+      <property name="Creatable">true</property>
       <property name="Editable">false</property>
       <property name="Expression">UUID</property>
-      <property name="Required">false</property>
+      <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
     <field name="revision">

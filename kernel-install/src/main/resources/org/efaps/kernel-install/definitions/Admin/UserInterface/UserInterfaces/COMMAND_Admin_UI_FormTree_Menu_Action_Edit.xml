@@ -55,6 +55,7 @@
     <!-- target definitions -->
     <target>
       <form>Admin_UI_AbstractForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Edit"/>
     </target>
     <!-- properties -->
     <property name="Target">popup</property>

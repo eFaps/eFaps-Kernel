@@ -23,12 +23,9 @@ package org.efaps.beans;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.fileupload.FileItem;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.attributetype.AbstractFileType;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.UIInterface;
@@ -38,13 +35,8 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
-import org.efaps.beans.form.FormFieldUpdateInterface;
-import org.efaps.db.Checkin;
-import org.efaps.db.Context;
-import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 /**
@@ -226,18 +218,18 @@ addFieldValue(null, null, null, null, new Instance((String)query.get("OID")));
    * @see #processCreate
    * @see #processUpdate
    */
-  public void process() throws Exception {
-    try {
-      if (isCreateMode()) {
-        processCreate(Context.getThreadContext());
-      } else {
-        processUpdate(Context.getThreadContext());
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw e;
-    }
-  }
+//  public void process() throws Exception {
+//    try {
+//      if (isCreateMode()) {
+//        processCreate(Context.getThreadContext());
+//      } else {
+//        processUpdate(Context.getThreadContext());
+//      }
+//    } catch (Exception e) {
+//      e.printStackTrace();
+//      throw e;
+//    }
+//  }
 
   /**
    * The instance method process the create of a new object.
@@ -246,63 +238,63 @@ addFieldValue(null, null, null, null, new Instance((String)query.get("OID")));
    *          context for this request
    * @todo maybe an axception must be thrown? see TODO comment
    */
-  protected void processCreate(Context _context) throws Exception {
-    Insert insert = new Insert(getCommand().getTargetCreateType());
-    for (Field field : getForm().getFields()) {
-      if (field.getExpression() != null
-          && (field.isCreatable() || field.isHidden())) {
-        Attribute attr = getCommand().getTargetCreateType().getAttribute(
-            field.getExpression());
-        if (attr != null
-            && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
-                .getClassRepr())) {
-          String value = getParameter(field.getName());
-          insert.add(attr, value);
-        }
-      }
-    }
-    if (getCommand().getTargetConnectAttribute() != null) {
-      Instance instance = new Instance(getParameter("oid"));
-      insert.add(getCommand().getTargetConnectAttribute(), ""
-          + instance.getId());
-    }
-    insert.execute();
-    setInstance(new Instance(getCommand().getTargetCreateType(), insert.getId()));
-
-    // "TargetConnectChildAttribute"
-    // "TargetConnectParentAttribute"
-    // "TargetConnectType"
-    if (getCommand().getProperty("TargetConnectType") != null) {
-      Instance parent = new Instance(getParameter("oid"));
-
-      Insert connect = new Insert(getCommand().getProperty("TargetConnectType"));
-      connect.add(getCommand().getProperty("TargetConnectParentAttribute"), ""
-          + parent.getId());
-      connect.add(getCommand().getProperty("TargetConnectChildAttribute"), ""
-          + insert.getId());
-      connect.execute();
-    }
-
-    for (Field field : getForm().getFields()) {
-      if (field.getExpression() == null && field.isCreatable()) {
-        FileItem fileItem = getFileParameter(field.getName());
-        String updateClassName = field.getProperty("ClassNameUpdate");
-
-        if (updateClassName != null) {
-          Class<FormFieldUpdateInterface> updateClass = (Class<FormFieldUpdateInterface>) Class
-              .forName(updateClassName);
-          FormFieldUpdateInterface fieldUpdate = updateClass.newInstance();
-          fieldUpdate.update(_context, this, field);
-        } else if (fileItem != null) {
-          System.out.println("-----------checkin ------" + fileItem);
-          Checkin checkin = new Checkin(getInstance());
-          checkin.execute(fileItem.getName(), fileItem.getInputStream(),
-              (int) fileItem.getSize());
-        }
-        // TODO: ev. exception?
-      }
-    }
-  }
+//  protected void processCreate(Context _context) throws Exception {
+//    Insert insert = new Insert(getCommand().getTargetCreateType());
+//    for (Field field : getForm().getFields()) {
+//      if (field.getExpression() != null
+//          && (field.isCreatable() || field.isHidden())) {
+//        Attribute attr = getCommand().getTargetCreateType().getAttribute(
+//            field.getExpression());
+//        if (attr != null
+//            && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
+//                .getClassRepr())) {
+//          String value = getParameter(field.getName());
+//          insert.add(attr, value);
+//        }
+//      }
+//    }
+//    if (getCommand().getTargetConnectAttribute() != null) {
+//      Instance instance = new Instance(getParameter("oid"));
+//      insert.add(getCommand().getTargetConnectAttribute(), ""
+//          + instance.getId());
+//    }
+//    insert.execute();
+//    setInstance(new Instance(getCommand().getTargetCreateType(), insert.getId()));
+//
+//    // "TargetConnectChildAttribute"
+//    // "TargetConnectParentAttribute"
+//    // "TargetConnectType"
+//    if (getCommand().getProperty("TargetConnectType") != null) {
+//      Instance parent = new Instance(getParameter("oid"));
+//
+//      Insert connect = new Insert(getCommand().getProperty("TargetConnectType"));
+//      connect.add(getCommand().getProperty("TargetConnectParentAttribute"), ""
+//          + parent.getId());
+//      connect.add(getCommand().getProperty("TargetConnectChildAttribute"), ""
+//          + insert.getId());
+//      connect.execute();
+//    }
+//
+//    for (Field field : getForm().getFields()) {
+//      if (field.getExpression() == null && field.isCreatable()) {
+//        FileItem fileItem = getFileParameter(field.getName());
+//        String updateClassName = field.getProperty("ClassNameUpdate");
+//
+//        if (updateClassName != null) {
+//          Class<FormFieldUpdateInterface> updateClass = (Class<FormFieldUpdateInterface>) Class
+//              .forName(updateClassName);
+//          FormFieldUpdateInterface fieldUpdate = updateClass.newInstance();
+//          fieldUpdate.update(_context, this, field);
+//        } else if (fileItem != null) {
+//          System.out.println("-----------checkin ------" + fileItem);
+//          Checkin checkin = new Checkin(getInstance());
+//          checkin.execute(fileItem.getName(), fileItem.getInputStream(),
+//              (int) fileItem.getSize());
+//        }
+//        // TODO: ev. exception?
+//      }
+//    }
+//  }
 
   /**
    * The instance method process the update of current selected object.
@@ -311,42 +303,42 @@ addFieldValue(null, null, null, null, new Instance((String)query.get("OID")));
    *          context for this request
    * @todo maybe an axception must be thrown? see TODO comment
    */
-  protected void processUpdate(Context _context) throws Exception {
-    Update update = new Update(getInstance());
-    for (Field field : getForm().getFields()) {
-      if (field.getExpression() != null && field.isEditable()) {
-        Attribute attr = getInstance().getType().getAttribute(
-            field.getExpression());
-        if (attr != null
-            && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
-                .getClassRepr())) {
-          System.out.println("field.getName()=" + field.getName());
-          update.add(attr, getParameter(field.getName()).replace(',', '.'));
-        }
-      }
-    }
-
-    for (Field field : getForm().getFields()) {
-      if (field.getExpression() == null && field.isEditable()) {
-        FileItem fileItem = getFileParameter(field.getName());
-        String updateClassName = field.getProperty("ClassNameUpdate");
-
-        if (updateClassName != null) {
-          Class<FormFieldUpdateInterface> updateClass = (Class<FormFieldUpdateInterface>) Class
-              .forName(updateClassName);
-          FormFieldUpdateInterface fieldUpdate = updateClass.newInstance();
-          fieldUpdate.update(_context, this, field);
-        } else if (fileItem != null) {
-          Checkin checkin = new Checkin(getInstance());
-          checkin.execute(fileItem.getName(), fileItem.getInputStream(),
-              (int) fileItem.getSize());
-        }
-        // TODO: ev. exception?
-      }
-    }
-
-    update.execute();
-  }
+//  protected void processUpdate(Context _context) throws Exception {
+//    Update update = new Update(getInstance());
+//    for (Field field : getForm().getFields()) {
+//      if (field.getExpression() != null && field.isEditable()) {
+//        Attribute attr = getInstance().getType().getAttribute(
+//            field.getExpression());
+//        if (attr != null
+//            && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
+//                .getClassRepr())) {
+//          System.out.println("field.getName()=" + field.getName());
+//          update.add(attr, getParameter(field.getName()).replace(',', '.'));
+//        }
+//      }
+//    }
+//
+//    for (Field field : getForm().getFields()) {
+//      if (field.getExpression() == null && field.isEditable()) {
+//        FileItem fileItem = getFileParameter(field.getName());
+//        String updateClassName = field.getProperty("ClassNameUpdate");
+//
+//        if (updateClassName != null) {
+//          Class<FormFieldUpdateInterface> updateClass = (Class<FormFieldUpdateInterface>) Class
+//              .forName(updateClassName);
+//          FormFieldUpdateInterface fieldUpdate = updateClass.newInstance();
+//          fieldUpdate.update(_context, this, field);
+//        } else if (fileItem != null) {
+//          Checkin checkin = new Checkin(getInstance());
+//          checkin.execute(fileItem.getName(), fileItem.getInputStream(),
+//              (int) fileItem.getSize());
+//        }
+//        // TODO: ev. exception?
+//      }
+//    }
+//
+//    update.execute();
+//  }
 
   // ///////////////////////////////////////////////////////////////////////////
 
