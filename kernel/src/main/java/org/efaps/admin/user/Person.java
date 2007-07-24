@@ -148,9 +148,9 @@ public class Person extends UserObject {
    * {@link #name} and {@link #id}.
    * 
    * @param _id
-   *          id of the person to set
+   *                id of the person to set
    * @param _name
-   *          name of the person to set
+   *                name of the person to set
    */
   private Person(final long _id, final String _name, final boolean _status) {
     super(_id, _name, _status);
@@ -164,7 +164,7 @@ public class Person extends UserObject {
    * only test if the person is the same as the user of the parameter.
    * 
    * @param _person
-   *          person to test
+   *                person to test
    * @return <i>true</i> if the person is the same person as this person,
    *         otherwise <i>false</i>
    */
@@ -180,7 +180,7 @@ public class Person extends UserObject {
    * Add a role to this person.
    * 
    * @param _role
-   *          role to add to this person
+   *                role to add to this person
    * @see #roles
    */
   private void add(final Role _role) {
@@ -191,7 +191,7 @@ public class Person extends UserObject {
    * Tests, if the given role is assigned to this person.
    * 
    * @param _role
-   *          role to test
+   *                role to test
    * @return <i>true</i> if role is assigned to this person, otherwise <i>false</i>
    */
   public boolean isAssigned(final Role _role) {
@@ -202,7 +202,7 @@ public class Person extends UserObject {
    * Add a role to this person.
    * 
    * @param _group
-   *          group to add to this person
+   *                group to add to this person
    * @see #groups
    */
   private void add(final Group _group) {
@@ -213,7 +213,7 @@ public class Person extends UserObject {
    * Tests, if the given group is assigned to this person.
    * 
    * @param _group
-   *          group to test
+   *                group to test
    * @return <i>true</i> if group is assigned to this person, otherwise
    *         <i>false</i>
    */
@@ -236,9 +236,9 @@ public class Person extends UserObject {
    * to given new attribute value.
    * 
    * @param _attrName
-   *          name of attribute to set
+   *                name of attribute to set
    * @param _value
-   *          new value to set
+   *                new value to set
    * @see #attrValues
    */
   private void setAttrValue(final AttrName _attrName, final String _value) {
@@ -251,7 +251,7 @@ public class Person extends UserObject {
    * Returns for given attribute name the value in the cache.
    * 
    * @param _attrName
-   *          name of attribute for which the value must returned
+   *                name of attribute for which the value must returned
    * @return attribute value of given attribute name
    */
   public String getAttrValue(final AttrName _attrName) {
@@ -285,9 +285,9 @@ public class Person extends UserObject {
    * attribute value is stored in the database!
    * 
    * @param _attrName
-   *          name of attribute to update
+   *                name of attribute to update
    * @param _value
-   *          new value to set
+   *                new value to set
    * @see #attrUpdated
    * @see #attrValues
    */
@@ -388,9 +388,9 @@ public class Person extends UserObject {
    * the password in the database.
    * 
    * @param _context
-   *          context for this request
+   *                context for this request
    * @param _passwd
-   *          password to check for this person
+   *                password to check for this person
    * @return <i>true</i> if password is correct, otherwise <i>false</i>
    */
   public boolean checkPassword(final String _passwd) throws EFapsException {
@@ -454,12 +454,33 @@ public class Person extends UserObject {
    * Before the new password is set, some checks are made.
    * 
    * @param _context
-   *          context for this request
+   *                context for this request
    * @param _newPasswd
-   *          new password to set for this user
+   *                new password to set for this user
+   * @deprecated
    */
   public void setPassword(final Context _context, final String _newPasswd)
       throws Exception {
+    Type type = Type.get(EFapsClassName.USER_PERSON.name);
+
+    if (_newPasswd.length() == 0) {
+      throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd
+          .length());
+    }
+    Attribute attrPass = type.getAttribute("Password");
+    Update update = new Update(type, "" + getId());
+    update.add(attrPass, _newPasswd);
+    update.executeWithoutAccessCheck();
+  }
+
+  /**
+   * The instance method sets the new password for the current context user.
+   * Before the new password is set, some checks are made.
+   * 
+   * @param _newPasswd
+   * @throws Exception
+   */
+  public void setPassword(final String _newPasswd) throws Exception {
     Type type = Type.get(EFapsClassName.USER_PERSON.name);
 
     if (_newPasswd.length() == 0) {
@@ -491,7 +512,7 @@ public class Person extends UserObject {
    * All attributes from this person are read from the database.
    * 
    * @throws EFapsException
-   *           if the attributes for this person could not be read
+   *                 if the attributes for this person could not be read
    */
   private void readFromDBAttributes() throws EFapsException {
     ConnectionResource rsrc = null;
@@ -557,9 +578,9 @@ public class Person extends UserObject {
    * person. The found roles are returned as instance of {@link java.util.Set}.
    * 
    * @param _jaasSystem
-   *          JAAS system for which the roles must get from database (if value
-   *          is null, all roles independed from the related JAAS system are
-   *          returned)
+   *                JAAS system for which the roles must get from database (if
+   *                value is null, all roles independed from the related JAAS
+   *                system are returned)
    * @return set of all found roles for given JAAS system
    */
   public Set<Role> getRolesFromDB(final JAASSystem _jaasSystem)
@@ -617,13 +638,13 @@ public class Person extends UserObject {
    * roles are added to the loaded roles in the cache of this person.
    * 
    * @param _jaasSystem
-   *          JAAS system for which the roles are set
+   *                JAAS system for which the roles are set
    * @param _roles
-   *          set of roles to set for the JAAS system
+   *                set of roles to set for the JAAS system
    * @see #assignRoleInDb
    * @see #unassignRoleInDb
    * @throws EFapsException
-   *           from calling methods
+   *                 from calling methods
    */
   public void setRoles(final JAASSystem _jaasSystem, final Set<Role> _roles)
       throws EFapsException {
@@ -661,9 +682,9 @@ public class Person extends UserObject {
    * For this person, a role is assigned for the given JAAS system.
    * 
    * @param _jaasSystem
-   *          JAAS system for which the role is assigned
+   *                JAAS system for which the role is assigned
    * @param _role
-   *          role to assign
+   *                role to assign
    * @see UserObject#assignToUserObjectInDb
    */
   public void assignRoleInDb(final JAASSystem _jaasSystem, final Role _role)
@@ -677,9 +698,9 @@ public class Person extends UserObject {
    * The given role is unassigned for the given JAAS system from this person.
    * 
    * @param _jaasSystem
-   *          JAAS system for which the role is assigned
+   *                JAAS system for which the role is assigned
    * @param _role
-   *          role to unassign
+   *                role to unassign
    * @see UserObject#unassignFromUserObjectInDb
    */
   public void unassignRoleInDb(final JAASSystem _jaasSystem, final Role _role)
@@ -694,9 +715,9 @@ public class Person extends UserObject {
    * person. The found groups are returned as instance of {@link java.util.Set}.
    * 
    * @param _jaasSystem
-   *          JAAS system for which the groups must get from database (if value
-   *          is null, all groups independed from the related JAAS system are
-   *          returned)
+   *                JAAS system for which the groups must get from database (if
+   *                value is null, all groups independed from the related JAAS
+   *                system are returned)
    * @return set of all found groups for given JAAS system
    */
   public Set<Group> getGroupsFromDB(final JAASSystem _jaasSystem)
@@ -755,13 +776,13 @@ public class Person extends UserObject {
    * groups are added to the loaded groups in the cache of this person.
    * 
    * @param _jaasSystem
-   *          JAAS system for which the roles are set
+   *                JAAS system for which the roles are set
    * @param _groups
-   *          set of groups to set for the JAAS system
+   *                set of groups to set for the JAAS system
    * @see #assignGroupInDb
    * @see #unassignGroupInDb
    * @throws EFapsException
-   *           from calling methods
+   *                 from calling methods
    */
   public void setGroups(final JAASSystem _jaasSystem, final Set<Group> _groups)
       throws EFapsException {
@@ -799,9 +820,9 @@ public class Person extends UserObject {
    * For this person, a group is assigned for the given JAAS system.
    * 
    * @param _jaasSystem
-   *          JAAS system for which the role is assigned
+   *                JAAS system for which the role is assigned
    * @param _group
-   *          group to assign
+   *                group to assign
    * @see UserObject#assignToUserObjectInDb
    */
   public void assignGroupInDb(final JAASSystem _jaasSystem, final Group _group)
@@ -815,9 +836,9 @@ public class Person extends UserObject {
    * The given group is unassigned for the given JAAS system from this person.
    * 
    * @param _jaasSystem
-   *          JAAS system for which the role is assigned
+   *                JAAS system for which the role is assigned
    * @param _group
-   *          group to unassign
+   *                group to unassign
    * @see UserObject#unassignFromUserObjectInDb
    */
   public void unassignGroupInDb(final JAASSystem _jaasSystem, final Group _group)
@@ -831,7 +852,7 @@ public class Person extends UserObject {
    * Update the last login date of this person to current timestamp.
    * 
    * @throws EFapsException
-   *           if the last login information could not be updated
+   *                 if the last login information could not be updated
    */
   public void updateLastLogin() throws EFapsException {
     ConnectionResource rsrc = null;
@@ -923,7 +944,7 @@ public class Person extends UserObject {
    * {@link Person}.
    * 
    * @param _id
-   *          id to search in the cache
+   *                id to search in the cache
    * @return instance of class {@link Person}
    * @see #cache
    * @see #getFromDB
@@ -945,7 +966,7 @@ public class Person extends UserObject {
    * {@link Person}.
    * 
    * @param _name
-   *          name to search in the cache
+   *                name to search in the cache
    * @return instance of class {@link Person}
    * @see #cache
    * @see #getFromDB
@@ -968,7 +989,7 @@ public class Person extends UserObject {
    * {@link #readFromDB}.
    * 
    * @param _sql
-   *          sql statement used to get the person from database
+   *                sql statement used to get the person from database
    * @return person instance with the found values from database
    * @see #get(long)
    * @see #get(String)
@@ -1028,9 +1049,10 @@ public class Person extends UserObject {
    * used in the given JAAS system for the person.
    * 
    * @param _jaasSystem
-   *          JAAS system for which the JAAS key is named
+   *                JAAS system for which the JAAS key is named
    * @param _jaasKey
-   *          key in the foreign JAAS system for which the person is searched
+   *                key in the foreign JAAS system for which the person is
+   *                searched
    * @return instance of class {@link Person}, or <code>null</code> if person
    *         is not found
    * @see #get(long)
@@ -1086,15 +1108,15 @@ public class Person extends UserObject {
   // TODO: Description
   /**
    * @param _jaasSystem
-   *          JAAS system which want to creaet a new person in eFaps
+   *                JAAS system which want to creaet a new person in eFaps
    * @param _jaasKey
-   *          key of the person in the JAAS system
+   *                key of the person in the JAAS system
    * @param _userName
-   *          name in the eFaps system (used as proposal, it's tested for
-   *          uniqueness and changed if needed!)
+   *                name in the eFaps system (used as proposal, it's tested for
+   *                uniqueness and changed if needed!)
    * @return new created person
    * @throws EFapsException
-   *           if person not creatable
+   *                 if person not creatable
    * @see #assignToJAASSystem
    */
   public static Person createPerson(final JAASSystem _jaasSystem,
