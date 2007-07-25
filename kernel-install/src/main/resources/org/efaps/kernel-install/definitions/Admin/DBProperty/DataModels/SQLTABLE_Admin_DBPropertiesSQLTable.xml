@@ -32,7 +32,7 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev: $</local>
+      <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
 
@@ -45,14 +45,14 @@
       <!-- columns -->
       <column name="BUNDLEID"   type="INTEGER"      not-null="true" />
       <column name="PROPKEY"    type="STRING_SHORT" not-null="true" length="254"/>
-      <column name="DEFAULTV"   type="STRING_LONG"  not-null="true" length="255"/>
+      <column name="DEFAULTV"   type="STRING_LONG"  not-null="true" length="2048"/>
       </database>
   </definition>
   <definition>
 	<version>
       <application>lucene</application>
       <global>1</global>
-      <local>$Rev: $</local>
+      <local>$Rev$</local>
       <mode>(version==4)</mode>
     </version>
 
