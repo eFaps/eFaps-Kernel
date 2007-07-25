@@ -377,7 +377,7 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
     <%-- footer frame (if needed) --%>
     <c:if test="${uiObject.searchMode}">
       <div id="eFapsFooter">
-        <h:form>
+        <h:form id="eFapsTableFooter">
           <c:if test="${uiObject.showCheckBoxes}">
             <h:commandLink id="eFapsTableExecute" onclick="eFapsTableSubmit();return false;" title="Create">
               <h:graphicImage value="../images/eFapsButtonDone.gif"/>

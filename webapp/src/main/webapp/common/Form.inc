@@ -379,38 +379,39 @@
 	</div>
 
 
-	<c:if
-		test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
-		<div id="eFapsFooter"><h:form>
-			<c:choose>
-				<c:when test="${uiObject.createMode}">
-					<h:commandLink id="eFapsCreate"
-						onclick="eFapsSubmit();return false;" title="Create">
-						<h:graphicImage value="../images/eFapsButtonDone.gif" />
-						<h:outputText value="Create" />
-					</h:commandLink>
-				</c:when>
-				<c:when test="${uiObject.editMode}">
-					<h:commandLink id="eFapsEdit" onclick="eFapsSubmit();return false;"
-						title="Edit">
-						<h:graphicImage value="../images/eFapsButtonDone.gif" />
-						<h:outputText value="Edit" />
-					</h:commandLink>
-				</c:when>
-				<c:when test="${uiObject.searchMode}">
-					<h:commandLink id="eFapsSearch"
-						onclick="eFapsSubmit();return false;" title="Search">
-						<h:graphicImage value="../images/eFapsButtonNext.gif" />
-						<h:outputText value="Search" />
-					</h:commandLink>
-				</c:when>
-			</c:choose>
-			<h:commandLink onclick="eFapsCommonCloseWindow();return false;"
-				title="Create">
-				<h:graphicImage value="../images/eFapsButtonCancel.gif" />
-				<h:outputText value="Close" />
-			</h:commandLink>
-		</h:form></div>
+	<c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
+		<div id="eFapsFooter">
+      <h:form id="eFapsFormFooter">
+        <c:choose>
+          <c:when test="${uiObject.createMode}">
+            <h:commandLink id="eFapsCreate"
+              onclick="eFapsSubmit();return false;" title="Create">
+              <h:graphicImage value="../images/eFapsButtonDone.gif" />
+              <h:outputText value="Create" />
+            </h:commandLink>
+          </c:when>
+          <c:when test="${uiObject.editMode}">
+            <h:commandLink id="eFapsEdit" onclick="eFapsSubmit();return false;"
+              title="Edit">
+              <h:graphicImage value="../images/eFapsButtonDone.gif" />
+              <h:outputText value="Edit" />
+            </h:commandLink>
+          </c:when>
+          <c:when test="${uiObject.searchMode}">
+            <h:commandLink id="eFapsSearch"
+              onclick="eFapsSubmit();return false;" title="Search">
+              <h:graphicImage value="../images/eFapsButtonNext.gif" />
+              <h:outputText value="Search" />
+            </h:commandLink>
+          </c:when>
+        </c:choose>
+        <h:commandLink onclick="eFapsCommonCloseWindow();return false;"
+          title="Create">
+          <h:graphicImage value="../images/eFapsButtonCancel.gif" />
+          <h:outputText value="Close" />
+        </h:commandLink>
+      </h:form>
+    </div>
 	</c:if>
 
 </f:view>
