@@ -25,6 +25,7 @@
 <%@taglib prefix="h" uri="http://java.sun.com/jsf/html"%>
 <%@taglib prefix="f" uri="http://java.sun.com/jsf/core"%>
 <%@taglib prefix="t" uri="http://myfaces.apache.org/tomahawk"%>
+<%@taglib prefix="s" uri="http://myfaces.apache.org/sandbox"%>
 
 <%-- /** constructor for the form bean with some initialise code **/ --%>
 <%
@@ -65,97 +66,115 @@
 <html>
 <head>
 
-<script type="text/javascript">
+<c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
 
-var submitLock = false;
+  <script type="text/javascript">
+
+  var submitLock = false;
 
 /**
  * The current form is submitted to the given href.
  *
  * @see #execute
  */
-function eFapsSubmit()  {
-  var form = document.getElementById("eFapsFormForm");
+  function eFapsSubmit()  {
+    var form = document.getElementById("eFapsFormForm");
 
-  <c:choose>
-    <c:when test="${uiObject.searchMode}">
-      form.action = "../common/Link.jsf";
-    </c:when>
-    <c:otherwise>
-      form.action = "../common/FormProcess.jsp";
-    </c:otherwise>
-  </c:choose>
-  
-  if (!submitLock && checkForRequirements()){
-    form.submit();
+    <c:choose>
+      <c:when test="${uiObject.searchMode}">
+        form.action = "../common/Link.jsf";
+      </c:when>
+      <c:otherwise>
+        form.action = "../common/FormProcess.jsp";
+      </c:otherwise>
+    </c:choose>
+    if(!checkForRequirements()){
+      dojoDialogWarn.show();
+    }
+    if (!submitLock && checkForRequirements()){
+      dojoDialogBlank.show();
+      form.submit();
+    }
   }
-}
 
 
-function checkForRequirements(){
-  var ret= true;
-  var formTable = document.getElementById("eFapsFormTabel");
+  function checkForRequirements(){
+    var ret= true;
+    var formTable = document.getElementById("eFapsFormTabel");
   
-  var tableRows = formTable.getElementsByTagName("tr");
-  var rowFields = new Array();
-  var fieldInputs = new Array();
+    var tableRows = formTable.getElementsByTagName("tr");
+    var rowFields = new Array();
+    var fieldInputs = new Array();
 
-  for (i = tableRows.length-1; i >= 0; i--)  {
-    rowFields = tableRows[i].getElementsByTagName("td");
+    for (i = tableRows.length-1; i >= 0; i--)  {
+      rowFields = tableRows[i].getElementsByTagName("td");
     
-    if (rowFields.length > 1)  {
-      if (rowFields[0].className == "eFapsFormLabelRequiredForce"){
-        rowFields[0].className="eFapsFormLabelRequired";
-      }
+      if (rowFields.length > 1)  {
+        if (rowFields[0].className == "eFapsFormLabelRequiredForce"){
+          rowFields[0].className="eFapsFormLabelRequired";
+        }
       
-      if (rowFields[0].className == "eFapsFormLabelRequired")  {
-        //checke 'input' felder die einen text enthalten können
-        fieldInputs = rowFields[1].getElementsByTagName("input");
+        if (rowFields[0].className == "eFapsFormLabelRequired")  {
+          //checke 'input' felder die einen text enthalten können
+          fieldInputs = rowFields[1].getElementsByTagName("input");
         
-        if (fieldInputs.length > 0 &&
-            (fieldInputs[0].type == null || fieldInputs[0].type == "" || 
-            fieldInputs[0].type == "text" || fieldInputs[0].type == "file" || 
-            fieldInputs[0].type == "password" || fieldInputs[0].type == "hidden") && 
-            (fieldInputs[0].value == null || fieldInputs[0].value == ""))
-          {
+          if (fieldInputs.length > 0 &&
+              (fieldInputs[0].type == null || fieldInputs[0].type == "" || 
+              fieldInputs[0].type == "text" || fieldInputs[0].type == "file" || 
+              fieldInputs[0].type == "password" || fieldInputs[0].type == "hidden") && 
+              (fieldInputs[0].value == null || fieldInputs[0].value == ""))
+            {
           
-          rowFields[0].className="eFapsFormLabelRequiredForce";
+            rowFields[0].className="eFapsFormLabelRequiredForce";
          
-          ret=false;
-          if (fieldInputs[0].type != "hidden"){
-            fieldInputs[0].focus();
-          }
-        }
-        // check fields of type 'textarea'
-        fieldInputs = rowFields[1].getElementsByTagName("textarea");
-        if (fieldInputs.length > 0 &&
-          (fieldInputs[0].value == null || fieldInputs[0].value == "")){
-          rowFields[0].className="eFapsFormLabelRequiredForce";
-          ret=false;
-          fieldInputs[0].focus();
-        }
-        // check fields of type 'select'
-        fieldInputs = rowFields[1].getElementsByTagName("select");
-        if (fieldInputs.length > 0)  {
-          var selectionOptions = fieldInputs[0].options;
-          var hasQualifiedSelection = false;
-          for (var j = 0; j < selectionOptions.length && !hasQualifiedSelection; j++){
-            if (selectionOptions[j].selected && selectionOptions[j].text != ""){
-              hasQualifiedSelection = true;
+            ret=false;
+            if (fieldInputs[0].type != "hidden"){
+              fieldInputs[0].focus();
             }
           }
-          if (!hasQualifiedSelection){
+          // check fields of type 'textarea'
+          fieldInputs = rowFields[1].getElementsByTagName("textarea");
+          if (fieldInputs.length > 0 &&
+            (fieldInputs[0].value == null || fieldInputs[0].value == "")){
+            rowFields[0].className="eFapsFormLabelRequiredForce";
+            ret=false;
             fieldInputs[0].focus();
+          }
+          // check fields of type 'select'
+          fieldInputs = rowFields[1].getElementsByTagName("select");
+          if (fieldInputs.length > 0)  {
+            var selectionOptions = fieldInputs[0].options;
+            var hasQualifiedSelection = false;
+            for (var j = 0; j < selectionOptions.length && !hasQualifiedSelection; j++){
+              if (selectionOptions[j].selected && selectionOptions[j].text != ""){
+                hasQualifiedSelection = true;
+              }
+            }
+            if (!hasQualifiedSelection){
+              fieldInputs[0].focus();
+            }
           }
         }
       }
     }
+    return ret;
   }
-  return ret;
-}
 
-</script>
-</head>
+  </script>
+
+  <style type="text/css">
+       .dojoDialogBlank {
+           background: #eee;
+           border: 0px ;
+           -moz-border-radius: 5px;
+           padding: 0px; 
+           position: absolute;
+           left: -800px;
+           top: -800px;
+       }
+  </style>
+</c:if>
+
 <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css" />
 <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
 
@@ -164,6 +183,10 @@ function checkForRequirements(){
         </script>
 <script type="text/javascript" src="../javascripts/eFapsTree.js"></script>
 
+
+
+
+</head>
 <body onUnLoad="eFapsCleanUpSession('<%=timeStamp%>')"
 	class="<c:out value="${bodyClass}"/>">
 
@@ -177,11 +200,7 @@ function checkForRequirements(){
 	</c:otherwise>
 </c:choose>
 
-
-<%-- /** menu bar **/ --%>
-
 <f:view>
-
 	<h:panelGrid id="eFapsFrameTitle">
 		<f:verbatim>
 			<c:out value="${uiObject.title}" />
@@ -190,11 +209,24 @@ function checkForRequirements(){
 
 	<%-- menu bar --%>
 	<%@include file="ToolBarMenu.inc"%>
-
 	<c:choose>
 		<c:when
 			test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
 			<div id="eFapsFormContentWithFooter">
+			<s:modalDialog styleClass="dojoDialogBlank" hiderIds="dd" dialogVar="dojoDialogBlank" dialogId="dojoDialogBlank" dialogAttr="bgColor='black' bgOpacity='0.3' toggle='fade' toggleDuration='250'">
+             </s:modalDialog>
+             <s:modalDialog styleClass="dojoDialog" hiderIds="canceldojoDialogWarn" dialogVar="dojoDialogWarn" dialogId="dojoDialogWarn" dialogAttr="bgColor='red' bgOpacity='0.3' toggle='fade' toggleDuration='250'">
+               <h:panelGrid columns="1">
+               
+               <t:outputText id="msg" forceId="true"
+                     value="All mandatory fields must be filled!"/>
+               <t:htmlTag value="center">
+               <t:commandButton  id="canceldojoDialogWarn" forceId="true"
+                            value="OK" onclick="dojo.widget.byId('dojoDialogWarn').hide();"/>
+               
+               </t:htmlTag> 
+               </h:panelGrid>
+             </s:modalDialog>
 		</c:when>
 		<c:otherwise>
 			<div id="eFapsFormContent">

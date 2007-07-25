@@ -20,8 +20,6 @@
   Last Changed By: $Author$
  
 --%>
-<%@page import="org.efaps.admin.ui.Command"%>
-
 
 <%@taglib prefix="c"    uri="http://java.sun.com/jstl/core"%>
 <%@taglib prefix="h"    uri="http://java.sun.com/jsf/html"%>
