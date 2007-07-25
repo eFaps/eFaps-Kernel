@@ -20,7 +20,7 @@
   Last Changed By: $Author$
  
 --%>
-
+<%@page import="org.efaps.admin.dbproperty.DBProperties"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core"%>
 <%@taglib prefix="h" uri="http://java.sun.com/jsf/html"%>
 <%@taglib prefix="f" uri="http://java.sun.com/jsf/core"%>
@@ -79,7 +79,6 @@
  */
   function eFapsSubmit()  {
     var form = document.getElementById("eFapsFormForm");
-
     <c:choose>
       <c:when test="${uiObject.searchMode}">
         form.action = "../common/Link.jsf";
@@ -88,14 +87,15 @@
         form.action = "../common/FormProcess.jsp";
       </c:otherwise>
     </c:choose>
+    
     if(!checkForRequirements()){
+      document.getElementById("eFapsWarnMsg").firstChild.data="<%= DBProperties.getProperty("Common_UIForm_Mandotory.Message") %>";
       dojoDialogWarn.show();
     }
     if (!submitLock && checkForRequirements()){
       dojoDialogBlank.show();
       form.submit();
     }
-    return false;
   }
 
 
@@ -215,12 +215,13 @@
 			test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
 			<div id="eFapsFormContentWithFooter">
 			<s:modalDialog styleClass="dojoDialogBlank" hiderIds="dd" dialogVar="dojoDialogBlank" dialogId="dojoDialogBlank" dialogAttr="bgColor='black' bgOpacity='0.3' toggle='fade' toggleDuration='250'">
+              <t:outputText id="msg" value="processing..."/>
              </s:modalDialog>
              <s:modalDialog styleClass="dojoDialog" hiderIds="canceldojoDialogWarn" dialogVar="dojoDialogWarn" dialogId="dojoDialogWarn" dialogAttr="bgColor='red' bgOpacity='0.3' toggle='fade' toggleDuration='250'">
                <h:panelGrid columns="1">
                
-               <t:outputText id="msg" forceId="true"
-                     value="All mandatory fields must be filled!"/>
+               <t:outputText id="eFapsWarnMsg" forceId="true"
+                     value="eFaps"/>
                <t:htmlTag value="center">
                <t:commandButton  id="canceldojoDialogWarn" forceId="true"
                             value="OK" onclick="dojo.widget.byId('dojoDialogWarn').hide();"/>
@@ -236,26 +237,17 @@
 
 
 
-  <form id="eFapsFormForm"
-        method="post"
-        enctype="multipart/form-data"
-        target="<c:out value="${targetProcess}"/>"
-        action=""
-        onsubmit="return eFapsSubmit()">
+	<form id="eFapsFormForm" method="post" enctype="multipart/form-data"
+		target="<c:out value="${targetProcess}"/>"><c:if
+		test="${uiObject.searchMode}">
+		<input type="hidden" name="eFapsShowSearchResult" value="true" />
+	</c:if> <%-- /** show the hidden values for this user interface **/ --%> <c:forEach
+		items="${uiObject.hiddenValues}" var="hiddenValue">
+		<input type="hidden" name="<c:out value="${hiddenValue.name}"/>"
+			value="<c:out value="${hiddenValue.value}"/>" />
+	</c:forEach>
 
-    <%-- submit button is needed that the user could press enter --%>
-    <input type="submit" style="display: none">
-    
-    <c:if test="${uiObject.searchMode}">
-        <input type="hidden" name="eFapsShowSearchResult" value="true"/>
-    </c:if>
-          
-    <%-- show the hidden values for this user interface --%>
-    <c:forEach items="${uiObject.hiddenValues}" var="hiddenValue">
-        <input type="hidden" name="<c:out value="${hiddenValue.name}"/>" value="<c:out value="${hiddenValue.value}"/>"/>
-    </c:forEach>
-
-  <table id="eFapsFormTabel">
+	<table id="eFapsFormTabel">
 		<c:if test="${uiObject.values ne null}">
 
 			<%-- /** group count and row group count is default equal 1,
@@ -379,39 +371,38 @@
 	</div>
 
 
-	<c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
-		<div id="eFapsFooter">
-      <h:form id="eFapsFormFooter">
-        <c:choose>
-          <c:when test="${uiObject.createMode}">
-            <h:commandLink id="eFapsCreate"
-              onclick="eFapsSubmit();return false;" title="Create">
-              <h:graphicImage value="../images/eFapsButtonDone.gif" />
-              <h:outputText value="Create" />
-            </h:commandLink>
-          </c:when>
-          <c:when test="${uiObject.editMode}">
-            <h:commandLink id="eFapsEdit" onclick="eFapsSubmit();return false;"
-              title="Edit">
-              <h:graphicImage value="../images/eFapsButtonDone.gif" />
-              <h:outputText value="Edit" />
-            </h:commandLink>
-          </c:when>
-          <c:when test="${uiObject.searchMode}">
-            <h:commandLink id="eFapsSearch"
-              onclick="eFapsSubmit();return false;" title="Search">
-              <h:graphicImage value="../images/eFapsButtonNext.gif" />
-              <h:outputText value="Search" />
-            </h:commandLink>
-          </c:when>
-        </c:choose>
-        <h:commandLink onclick="eFapsCommonCloseWindow();return false;"
-          title="Create">
-          <h:graphicImage value="../images/eFapsButtonCancel.gif" />
-          <h:outputText value="Close" />
-        </h:commandLink>
-      </h:form>
-    </div>
+	<c:if
+		test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
+		<div id="eFapsFooter"><h:form>
+			<c:choose>
+				<c:when test="${uiObject.createMode}">
+					<h:commandLink id="eFapsCreate"
+						onclick="eFapsSubmit();return false;" title="Create">
+						<h:graphicImage value="../images/eFapsButtonDone.gif" />
+						<h:outputText value="Create" />
+					</h:commandLink>
+				</c:when>
+				<c:when test="${uiObject.editMode}">
+					<h:commandLink id="eFapsEdit" onclick="eFapsSubmit();return false;"
+						title="Edit">
+						<h:graphicImage value="../images/eFapsButtonDone.gif" />
+						<h:outputText value="Edit" />
+					</h:commandLink>
+				</c:when>
+				<c:when test="${uiObject.searchMode}">
+					<h:commandLink id="eFapsSearch"
+						onclick="eFapsSubmit();return false;" title="Search">
+						<h:graphicImage value="../images/eFapsButtonNext.gif" />
+						<h:outputText value="Search" />
+					</h:commandLink>
+				</c:when>
+			</c:choose>
+			<h:commandLink onclick="eFapsCommonCloseWindow();return false;"
+				title="Create">
+				<h:graphicImage value="../images/eFapsButtonCancel.gif" />
+				<h:outputText value="Close" />
+			</h:commandLink>
+		</h:form></div>
 	</c:if>
 
 </f:view>
