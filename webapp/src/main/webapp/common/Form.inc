@@ -95,6 +95,7 @@
       dojoDialogBlank.show();
       form.submit();
     }
+    return false;
   }
 
 
@@ -235,17 +236,26 @@
 
 
 
-	<form id="eFapsFormForm" method="post" enctype="multipart/form-data"
-		target="<c:out value="${targetProcess}"/>"><c:if
-		test="${uiObject.searchMode}">
-		<input type="hidden" name="eFapsShowSearchResult" value="true" />
-	</c:if> <%-- /** show the hidden values for this user interface **/ --%> <c:forEach
-		items="${uiObject.hiddenValues}" var="hiddenValue">
-		<input type="hidden" name="<c:out value="${hiddenValue.name}"/>"
-			value="<c:out value="${hiddenValue.value}"/>" />
-	</c:forEach>
+  <form id="eFapsFormForm"
+        method="post"
+        enctype="multipart/form-data"
+        target="<c:out value="${targetProcess}"/>"
+        action=""
+        onsubmit="return eFapsSubmit()">
 
-	<table id="eFapsFormTabel">
+    <%-- submit button is needed that the user could press enter --%>
+    <input type="submit" style="display: none">
+    
+    <c:if test="${uiObject.searchMode}">
+        <input type="hidden" name="eFapsShowSearchResult" value="true"/>
+    </c:if>
+          
+    <%-- show the hidden values for this user interface --%>
+    <c:forEach items="${uiObject.hiddenValues}" var="hiddenValue">
+        <input type="hidden" name="<c:out value="${hiddenValue.name}"/>" value="<c:out value="${hiddenValue.value}"/>"/>
+    </c:forEach>
+
+  <table id="eFapsFormTabel">
 		<c:if test="${uiObject.values ne null}">
 
 			<%-- /** group count and row group count is default equal 1,
