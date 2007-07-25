@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1149 $
+ * Last Changed:    $Date:2007-07-22 21:36:16 +0200 (So, 22 Jul 2007) $
+ * Last Changed By: $Author:tmo $
  */
 
 package org.efaps.esjp.admin.common;
@@ -34,7 +34,7 @@ import org.efaps.admin.runlevel.RunLevel;
  * It is executed on Userinteraction through a trigger on a Command.
  * 
  * @author jmo
- * @version $Id$
+ * @version $Id:ReloadCache.java 1149 2007-07-22 19:36:16Z tmo $
  */
 public class ReloadCache implements EventExecution {
   /**

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 961 $
- * Last Changed:    $Date: 2007-07-08 15:49:39 -0500 (Sun, 08 Jul 2007) $
- * Last Changed By: $Author: tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel.ui;

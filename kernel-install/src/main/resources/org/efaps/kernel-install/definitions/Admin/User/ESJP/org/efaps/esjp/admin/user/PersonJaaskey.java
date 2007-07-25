@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1072 $
+ * Last Changed:    $Date:2007-07-17 21:00:42 +0200 (Di, 17 Jul 2007) $
+ * Last Changed By: $Author:tmo $
  */
 
 package org.efaps.esjp.admin.user;
@@ -39,7 +39,7 @@ import org.efaps.util.EFapsException;
  * It is executed on a INSERT_POST Trigger on the Type User_Person.
  * 
  * @author jmo
- * @version $Id$
+ * @version $Id:PersonJaaskey.java 1072 2007-07-17 19:00:42Z tmo $
  */
 public class PersonJaaskey implements EventExecution {
   /**
