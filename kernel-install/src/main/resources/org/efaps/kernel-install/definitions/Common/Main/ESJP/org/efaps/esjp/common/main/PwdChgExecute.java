@@ -23,27 +23,31 @@ package org.efaps.esjp.common.main;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
-public class PwdChgExecute implements EventExecution {
+public class PwdChgExecute {
   /**
    * Logger for this class
    */
   private static final Log LOG = LogFactory.getLog(PwdChgExecute.class);
 
-  public Return execute(Parameter _parameter) {
+  public Return execute(Parameter _parameter) throws EFapsException {
 
-    try {
-      Context context = Context.getThreadContext();
-      context.getPerson().setPassword(context.getParameter("password"));
-    } catch (EFapsException e) {
-      LOG.error("execute(Parameter)", e);
-    } catch (Exception e) {
-      LOG.error("execute(Parameter)", e);
+    Context context = Context.getThreadContext();
+    String passwordold = context.getParameter("passwordold");
+    String passwordnew = context.getParameter("passwordnew");
+
+    if (context.getPerson().checkPassword(passwordold)) {
+      try {
+        context.getPerson().setPassword(passwordnew);
+      } catch (Exception e) {
+        LOG.error("execute(Parameter)", e);
+      }
+    } else {
+      throw new EFapsException(this.getClass(), "22", "Wrong password");
     }
 
     return null;

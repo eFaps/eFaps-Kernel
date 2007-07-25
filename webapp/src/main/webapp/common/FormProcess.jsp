@@ -23,7 +23,6 @@
 
 <%@page errorPage="Exception.jsp"%>
 
-
 <%@page import="org.efaps.admin.ui.Command"%>
 <%@page import="org.efaps.admin.ui.CommandAbstract"%>
 <%@page import="org.efaps.admin.ui.Menu"%>

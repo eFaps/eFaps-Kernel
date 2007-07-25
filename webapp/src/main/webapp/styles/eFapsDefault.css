@@ -336,6 +336,14 @@ td.eFapsFormLabelRequired {
         font-style: italic
 }
 
+td.eFapsFormLabelRequiredForce {
+        background-color: red;
+        color: black;
+        font-weight: bold;
+        height: 24px;
+        font-style: italic
+}
+
 /* Input Field Appearance */
 td.eFapsFormInputField {
         background-color: #eeeeee;
