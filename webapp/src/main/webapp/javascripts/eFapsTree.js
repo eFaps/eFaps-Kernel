@@ -1,17 +1,23 @@
-/**************************************************************************
-  Copyright (c) 2001 Geir Landrö (drop@destroydrop.com)
-  JavaScript Tree - www.destroydrop.com/hugi/javascript/tree/
-  Version 0.96
-
-  This script can be used freely as long as all copyright messages are
-  intact.
-
-  Description
-  ~~~~~~~~~~~
-  The url of
- ${NODEID} wird ersetzt
-
-**************************************************************************/
+/*
+ * Copyright 2003-2007 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Author:          tmo
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
+ */
 
 /**
  * Constructor which creates a new tree node.
