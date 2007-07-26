@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.AbstractFileType;
+import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -40,7 +41,7 @@ import org.efaps.util.EFapsException;
  * @version $Id: Connect.java 1137 2007-07-22 11:53:17Z tmo $
  * @todo description
  */
-public class Edit {
+public class Edit implements EventExecution {
   /**
    * Logger for this class
    */
@@ -53,26 +54,27 @@ public class Edit {
         (CommandAbstract) _parameter.get(ParameterValues.UIOBJECT);
 
     Context context = Context.getThreadContext();
-    try {
-      Update update = new Update(instance);
 
-      for (Field field : command.getTargetForm().getFields()) {
-        if (field.getExpression() != null && field.isEditable()) {
-          Attribute attr =
-              instance.getType().getAttribute(field.getExpression());
-          if (attr != null
-              && !AbstractFileType.class.isAssignableFrom(attr
-                  .getAttributeType().getClassRepr())) {
-            if (LOG.isDebugEnabled()) {
-              LOG.debug("execute(Parameter) - field.getName()="
-                  + field.getName());
-            }
-            update.add(attr, context.getParameter(field.getName()).replace(',',
-                '.'));
+    Update update = new Update(instance);
+
+    for (Field field : command.getTargetForm().getFields()) {
+      if (field.getExpression() != null && field.isEditable()) {
+        Attribute attr = instance.getType().getAttribute(field.getExpression());
+        if (attr != null
+            && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
+                .getClassRepr())) {
+          if (LOG.isDebugEnabled()) {
+            LOG
+                .debug("execute(Parameter) - field.getName()="
+                    + field.getName());
           }
+          update.add(attr, context.getParameter(field.getName()).replace(',',
+              '.'));
         }
       }
+    }
 
+    try {
       update.execute();
     } catch (Exception e) {
       LOG.error("execute(Parameter)", e);

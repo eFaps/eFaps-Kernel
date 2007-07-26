@@ -70,6 +70,7 @@
     <field name="name">
       <property name="Expression">Name</property>
       <property name="Label">Admin_Event_Definition/Name.Label</property>
+      <property name="AlternateOID">OID</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
     </field>
     

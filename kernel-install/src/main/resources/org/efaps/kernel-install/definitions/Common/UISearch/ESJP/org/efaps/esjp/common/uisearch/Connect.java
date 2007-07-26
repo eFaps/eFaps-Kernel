@@ -20,21 +20,14 @@
 
 package org.efaps.esjp.common.uisearch;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
-import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.event.Return;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
@@ -42,17 +35,13 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public class Connect  {
-  /**
-   * Logger for this class
-   */
-  private static final Log LOG = LogFactory.getLog(Connect.class);
+public class Connect implements EventExecution {
 
   public Return execute(final Parameter _parameter) throws EFapsException {
     Return ret = new Return();
 
-    CommandAbstract command = (CommandAbstract) _parameter.get(ParameterValues.UIOBJECT);
-    Map properties = (Map) _parameter.get(ParameterValues.PROPERTIES);
+    Map<?, ?> properties =
+        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
     Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
     String childOids[] = (String[]) _parameter.get(ParameterValues.OTHERS);
 
@@ -60,18 +49,15 @@ public class Connect  {
     String childAttr = (String) properties.get("ConnectChildAttribute");
     String parentAttr = (String) properties.get("ConnectParentAttribute");
 
-/*      if (childAttr == null) {
-        throw new Exception("Could not found child attribute '"
-            + command.getConnectChildAttribute() + "' for type '"
-            + type.getName() + "'");
-      }
-      if (parentAttr == null) {
-        throw new Exception("Could not found parent attribute '"
-            + command.getConnectParentAttribute() + "' for type '"
-            + type.getName() + "'");
-      }
-*/
-    for (String childOid : childOids)  {
+    /*
+     * if (childAttr == null) { throw new Exception("Could not found child
+     * attribute '" + command.getConnectChildAttribute() + "' for type '" +
+     * type.getName() + "'"); } if (parentAttr == null) { throw new
+     * Exception("Could not found parent attribute '" +
+     * command.getConnectParentAttribute() + "' for type '" + type.getName() +
+     * "'"); }
+     */
+    for (String childOid : childOids) {
       Instance child = new Instance(childOid);
       Insert insert = new Insert(type);
       insert.add(parentAttr, "" + parent.getId());

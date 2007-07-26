@@ -20,9 +20,6 @@
 
 package org.efaps.esjp.common.uiform;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.AbstractFileType;
 import org.efaps.admin.event.EventExecution;
@@ -37,46 +34,39 @@ import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
+ * This esjp is used from the UI_COMMAND_EXECUTE from the Form on Create.
+ * 
  * @author jmo
  * @version $Id$
- * @todo description
  */
 public class Create implements EventExecution {
-  /**
-   * Logger for this class
-   */
-  private static final Log LOG = LogFactory.getLog(Create.class);
 
-  public Return execute(final Parameter _parameter) {
+  public Return execute(final Parameter _parameter) throws EFapsException {
     Return ret = new Return();
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     CommandAbstract command =
         (CommandAbstract) _parameter.get(ParameterValues.UIOBJECT);
-    try {
-      Context context = Context.getThreadContext();
 
-      Insert insert = new Insert(command.getTargetCreateType());
-      for (Field field : command.getTargetForm().getFields()) {
-        if (field.getExpression() != null
-            && (field.isCreatable() || field.isHidden())) {
-          Attribute attr =
-              command.getTargetCreateType().getAttribute(field.getExpression());
-          if (attr != null
-              && !AbstractFileType.class.isAssignableFrom(attr
-                  .getAttributeType().getClassRepr())) {
-            String value = context.getParameter(field.getName());
-            insert.add(attr, value);
-          }
+    Context context = Context.getThreadContext();
+
+    Insert insert = new Insert(command.getTargetCreateType());
+    for (Field field : command.getTargetForm().getFields()) {
+      if (field.getExpression() != null
+          && (field.isCreatable() || field.isHidden())) {
+        Attribute attr =
+            command.getTargetCreateType().getAttribute(field.getExpression());
+        if (attr != null
+            && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
+                .getClassRepr())) {
+          String value = context.getParameter(field.getName());
+          insert.add(attr, value);
         }
       }
-      if (command.getTargetConnectAttribute() != null) {
-
-        insert.add(command.getTargetConnectAttribute(), "" + instance.getId());
-      }
-      insert.execute();
-    } catch (EFapsException e) {
-      LOG.error("execute(Parameter)", e);
     }
+    if (command.getTargetConnectAttribute() != null) {
+      insert.add(command.getTargetConnectAttribute(), "" + instance.getId());
+    }
+    insert.execute();
     return ret;
   }
 }

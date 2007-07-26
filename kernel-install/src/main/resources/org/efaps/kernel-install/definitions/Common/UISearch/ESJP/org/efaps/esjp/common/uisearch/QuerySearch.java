@@ -32,12 +32,12 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
-import org.efaps.db.Context;
-import org.efaps.util.EFapsException;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
+import org.efaps.db.Context;
+import org.efaps.db.Instance;
+import org.efaps.db.SearchQuery;
+import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
@@ -50,46 +50,45 @@ public class QuerySearch implements EventExecution {
    */
   private static final Log LOG = LogFactory.getLog(QuerySearch.class);
 
-  public Return execute(final Parameter _parameter) {
+  public Return execute(final Parameter _parameter) throws EFapsException {
     Return ret = new Return();
-    try {
-Context context = Context.getThreadContext();
-      CommandAbstract command = (CommandAbstract) _parameter.get(ParameterValues.UIOBJECT);
-      Map properties = (Map) _parameter.get(ParameterValues.PROPERTIES);
 
-      String types = (String) properties.get("Types");
+    Context context = Context.getThreadContext();
+    CommandAbstract command =
+        (CommandAbstract) _parameter.get(ParameterValues.UIOBJECT);
+    Map<?, ?> properties =
+        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
-      boolean expandChildTypes =
-          "true".equals((String) properties.get("ExpandChildTypes"));
+    String types = (String) properties.get("Types");
 
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("types=" + types);
-      }
+    boolean expandChildTypes =
+        "true".equals((String) properties.get("ExpandChildTypes"));
 
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes(types);
-      query.setExpandChildTypes(expandChildTypes);
-      for (Field field : command.getTargetForm().getFields())  {
-        String value = context.getParameter(field.getName());
-        if ((value != null) && (value.length() > 0) && (!value.equals("*"))) {
-          query.addWhereExprMatchValue(field.getExpression(), value);
-        }
-      }
-      
-      query.addSelect("OID");
-      query.execute();
-
-      List<List<Instance>> list = new ArrayList<List<Instance>>();
-      while (query.next()) {
-        List<Instance> instances = new ArrayList<Instance>(1);
-        instances.add(new Instance((String) query.get("OID")));
-        list.add(instances);
-      }
-
-      ret.put(ReturnValues.VALUES, list);
-    } catch (EFapsException e) {
-      LOG.error("execute(Parameter)", e);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("types=" + types);
     }
+
+    SearchQuery query = new SearchQuery();
+    query.setQueryTypes(types);
+    query.setExpandChildTypes(expandChildTypes);
+    for (Field field : command.getTargetForm().getFields()) {
+      String value = context.getParameter(field.getName());
+      if ((value != null) && (value.length() > 0) && (!value.equals("*"))) {
+        query.addWhereExprMatchValue(field.getExpression(), value);
+      }
+    }
+
+    query.addSelect("OID");
+    query.execute();
+
+    List<List<Instance>> list = new ArrayList<List<Instance>>();
+    while (query.next()) {
+      List<Instance> instances = new ArrayList<Instance>(1);
+      instances.add(new Instance((String) query.get("OID")));
+      list.add(instances);
+    }
+
+    ret.put(ReturnValues.VALUES, list);
 
     return ret;
   }

@@ -13,15 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1072 $
- * Last Changed:    $Date:2007-07-17 21:00:42 +0200 (Di, 17 Jul 2007) $
- * Last Changed By: $Author:tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.esjp.admin.user;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.Map;
 
@@ -42,30 +39,22 @@ import org.efaps.util.EFapsException;
  * @version $Id:PersonJaaskey.java 1072 2007-07-17 19:00:42Z tmo $
  */
 public class PersonJaaskey implements EventExecution {
-  /**
-   * Logger for this class
-   */
-  private static final Log LOG = LogFactory.getLog(PersonJaaskey.class);
 
-  public Return execute(Parameter _parameter) {
+  public Return execute(Parameter _parameter) throws EFapsException {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    Map values = (Map) _parameter.get(ParameterValues.NEW_VALUES);
+    Map<?, ?> values = (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
 
-    try {
-      String jaassystemid = getJAASSystemID();
-      if (jaassystemid != null) {
-        Insert insert = new Insert("Admin_User_JAASKey");
+    String jaassystemid = getJAASSystemID();
+    if (jaassystemid != null) {
+      Insert insert = new Insert("Admin_User_JAASKey");
 
-        insert.add("Key", values.get(instance.getType().getAttribute("Name"))
-            .toString());
-        insert.add("JAASSystemLink", getJAASSystemID());
-        insert.add("UserLink", ((Long) instance.getId()).toString());
-        insert.execute();
-      }
-    } catch (EFapsException e) {
-
-      LOG.error("execute(Parameter)", e);
+      insert.add("Key", values.get(instance.getType().getAttribute("Name"))
+          .toString());
+      insert.add("JAASSystemLink", getJAASSystemID());
+      insert.add("UserLink", ((Long) instance.getId()).toString());
+      insert.execute();
     }
+
     return null;
   }
 
@@ -73,24 +62,20 @@ public class PersonJaaskey implements EventExecution {
    * get the ID of the JAASSYstem for eFaps
    * 
    * @return ID of the JAASSYSTEM, NULL if not found
+   * @throws EFapsException
    */
-  private String getJAASSystemID() {
+  private String getJAASSystemID() throws EFapsException {
     String ID = null;
 
-    try {
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes("Admin_User_JAASSystem");
-      query.addWhereExprEqValue("Name", "eFaps");
-      query.addSelect("ID");
-      query.execute();
-      if (query.next()) {
-        ID = query.get("ID").toString();
-      }
-      query.close();
-    } catch (EFapsException e) {
-
-      LOG.error("getJAASSystemID()", e);
+    SearchQuery query = new SearchQuery();
+    query.setQueryTypes("Admin_User_JAASSystem");
+    query.addWhereExprEqValue("Name", "eFaps");
+    query.addSelect("ID");
+    query.execute();
+    if (query.next()) {
+      ID = query.get("ID").toString();
     }
+    query.close();
 
     return ID;
   }

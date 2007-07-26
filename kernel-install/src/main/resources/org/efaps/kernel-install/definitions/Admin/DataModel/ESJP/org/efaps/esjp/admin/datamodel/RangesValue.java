@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:851 $
- * Last Changed:    $Date:2007-06-02 12:36:03 -0500 (Sat, 02 Jun 2007) $
- * Last Changed By: $Author:jmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.esjp.admin.datamodel;
@@ -28,8 +28,6 @@ import java.util.Vector;
 
 import org.apache.commons.collections.map.AbstractLinkedMap;
 import org.apache.commons.collections.map.LinkedMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
@@ -48,61 +46,54 @@ import org.efaps.util.EFapsException;
  * 
  * @author jmo
  * @version $Id$
- * 
  */
 public class RangesValue implements EventExecution {
-  /**
-   * Logger for this class
-   */
-  private static final Log LOG = LogFactory.getLog(RangesValue.class);
 
-  public Return execute(Parameter _parameter) {
+  public Return execute(Parameter _parameter) throws EFapsException {
     Return ret = new Return();
-    try {
 
-      String type = (String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
-          .get("Type");
+    String type =
+        (String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
+            .get("Type");
 
-      String value = (String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
-          .get("Value");
-      SearchQuery query = new SearchQuery();
+    String value =
+        (String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
+            .get("Value");
+    SearchQuery query = new SearchQuery();
 
-      Map<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = new HashMap<String, String>();
 
-      query.setQueryTypes(type);
-      query.addSelect("ID");
-      query.addSelect(value);
-      query.execute();
+    query.setQueryTypes(type);
+    query.addSelect("ID");
+    query.addSelect(value);
+    query.execute();
 
-      while (query.next()) {
-        map.put(query.get("ID").toString(), query.get(value).toString());
-      }
-      // sort by Value
-      List<Map.Entry<String, String>> list = new Vector<Map.Entry<String, String>>(
-          map.entrySet());
-
-      java.util.Collections.sort(list,
-          new Comparator<Map.Entry<String, String>>() {
-            public int compare(Map.Entry<String, String> entry,
-                               Map.Entry<String, String> entry1) {
-              String r = entry.getValue().toString();
-              String r1 = entry1.getValue().toString();
-
-              return r.compareTo(r1);
-            }
-
-          });
-
-      AbstractLinkedMap map2 = new LinkedMap();
-
-      for (Map.Entry<String, String> entry : list) {
-        map2.put(entry.getKey(), entry.getValue());
-      }
-
-      ret.put(ReturnValues.VALUES, map2);
-    } catch (EFapsException e) {
-      LOG.error("execute(ParameterInterface)", e);
+    while (query.next()) {
+      map.put(query.get("ID").toString(), query.get(value).toString());
     }
+    // sort by Value
+    List<Map.Entry<String, String>> list =
+        new Vector<Map.Entry<String, String>>(map.entrySet());
+
+    java.util.Collections.sort(list,
+        new Comparator<Map.Entry<String, String>>() {
+          public int compare(Map.Entry<String, String> entry,
+              Map.Entry<String, String> entry1) {
+            String r = entry.getValue().toString();
+            String r1 = entry1.getValue().toString();
+
+            return r.compareTo(r1);
+          }
+
+        });
+
+    AbstractLinkedMap map2 = new LinkedMap();
+
+    for (Map.Entry<String, String> entry : list) {
+      map2.put(entry.getKey(), entry.getValue());
+    }
+
+    ret.put(ReturnValues.VALUES, map2);
 
     return ret;
   }

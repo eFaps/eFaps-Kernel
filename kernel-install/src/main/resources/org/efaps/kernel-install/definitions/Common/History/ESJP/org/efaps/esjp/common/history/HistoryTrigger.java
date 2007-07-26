@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1072 $
- * Last Changed:    $Date:2007-07-17 21:00:42 +0200 (Di, 17 Jul 2007) $
- * Last Changed By: $Author:tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.esjp.common.history;
@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventExecution;
@@ -42,14 +43,13 @@ public class HistoryTrigger implements EventExecution {
    */
   private static final Log LOG = LogFactory.getLog(HistoryTrigger.class);
 
-  public Return execute(Parameter _parameter) {
+  public Return execute(Parameter _parameter) throws EFapsException {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    Map values = (Map) _parameter.get(ParameterValues.NEW_VALUES);
-    Map properties = (Map) _parameter.get(ParameterValues.PROPERTIES);
+    Map<?, ?> values = (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
+    Map<?, ?> properties =
+        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
     String type = (String) properties.get("Type");
-
     try {
-
       Insert insert = new Insert(type);
       insert.add("ForID", ((Long) instance.getId()).toString());
       insert.add("ForType", ((Long) instance.getType().getId()).toString());
@@ -65,13 +65,14 @@ public class HistoryTrigger implements EventExecution {
 
       insert.execute();
       String ID = insert.getId();
+
       insert.close();
 
       if (values != null) {
-        Iterator iter = values.entrySet().iterator();
+        Iterator<?> iter = values.entrySet().iterator();
 
         while (iter.hasNext()) {
-          Map.Entry entry = (Map.Entry) iter.next();
+          Entry<?, ?> entry = (Entry<?, ?>) iter.next();
           Attribute attr = (Attribute) entry.getKey();
           String value = (String) entry.getValue().toString();
 
@@ -83,11 +84,9 @@ public class HistoryTrigger implements EventExecution {
           insert.close();
 
         }
-
       }
-    } catch (EFapsException e) {
-      LOG.error("execute(Parameter)", e);
     } catch (Exception e) {
+
       LOG.error("execute(Parameter)", e);
     }
 
