@@ -85,7 +85,6 @@ public class MenuTreeBean extends AbstractBean {
    *          eFaps context for this request
    */
   public void execute() throws Exception {
-    Context context = Context.getThreadContext();
     Menu menu = getInstance().getType().getTreeMenu();
     if (menu == null) {
       throw new Exception("no tree menu defined for type "
@@ -274,11 +273,12 @@ public class MenuTreeBean extends AbstractBean {
      *
      * @param _context  context for this request
      * @param _menu     menu instance object
+     * @throws EFapsException 
      * @see #execute(Context)
      */
-    public MenuHolder(MenuAbstract _menu)  {
+    public MenuHolder(MenuAbstract _menu) throws EFapsException  {
       super(_menu);
-      Iterator iter = _menu.getCommands().iterator();
+      Iterator<?> iter = _menu.getCommands().iterator();
       while (iter.hasNext())  {
         UserInterfaceObject obj = (UserInterfaceObject)iter.next();
         if (obj.hasAccess())  {

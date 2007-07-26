@@ -148,7 +148,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
 
   private void setInstance() {
     try {
-      Class cls =
+      Class<?> cls =
           Class.forName(this.resourceName, true, new EFapsClassLoader(this
               .getClass().getClassLoader()));
       this.method =
@@ -170,7 +170,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
 
   }
 
-  public Return execute(final Parameter _parameter) {
+  public Return execute(final Parameter _parameter) throws EFapsException {
     Return ret = null;
     _parameter.put(ParameterValues.PROPERTIES, super.getProperties());
     try {
@@ -186,6 +186,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
     } catch (InvocationTargetException e) {
       LOG.error("could not invoke method: '" + this.methodName
           + "' in class: '" + this.resourceName, e);
+     throw (EFapsException) e.getCause();
     }
     return ret;
 

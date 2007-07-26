@@ -34,6 +34,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.UserInterfaceObject;
+import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -272,9 +273,10 @@ public abstract class AdminObject implements CacheObjectInterface {
    *                    parameters defining the key, second parameter the value
    *                    itself)
    * @return List with Returns
+   * @throws EFapsException 
    */
   public List<Return> executeEvents(final EventType _eventtype,
-      final Object... _args) {
+      final Object... _args) throws EFapsException {
 
     List<Return> ret = new ArrayList<Return>();
     if (hasEvents(_eventtype)) {

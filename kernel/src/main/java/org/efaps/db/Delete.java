@@ -237,8 +237,9 @@ public class Delete {
    * @param _eventtype
    *          EventType to execute
    * @return true if a trigger was found and executed, otherwise false
+   * @throws EFapsException 
    */
-  private boolean executeEvents(final EventType _eventtype) {
+  private boolean executeEvents(final EventType _eventtype) throws EFapsException {
     List<EventDefinition> triggers =
         getInstance().getType().getEvents(_eventtype);
     if (triggers != null) {

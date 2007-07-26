@@ -23,12 +23,13 @@ package org.efaps.esjp.common.main;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
-public class PwdChgExecute {
+public class PwdChgExecute implements EventExecution{
   /**
    * Logger for this class
    */
@@ -47,7 +48,7 @@ public class PwdChgExecute {
         LOG.error("execute(Parameter)", e);
       }
     } else {
-      throw new EFapsException(this.getClass(), "22", "Wrong password");
+      throw new EFapsException(this.getClass(), "wrongPassword", new Object());
     }
 
     return null;

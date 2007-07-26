@@ -141,7 +141,7 @@ public class Update {
    *          data model type
    */
   protected void addAlwaysUpdateAttributes() throws EFapsException {
-    Iterator iter =
+    Iterator<?> iter =
         getInstance().getType().getAttributes().entrySet().iterator();
     while (iter.hasNext()) {
       Map.Entry entry = (Map.Entry) iter.next();
@@ -175,8 +175,9 @@ public class Update {
    * @param eventtype
    *          trigger events to execute
    * @return true if a trigger was found and executed, otherwise false
+   * @throws EFapsException 
    */
-  protected boolean executeEvents(final EventType eventtype) {
+  protected boolean executeEvents(final EventType eventtype) throws EFapsException {
     List<EventDefinition> triggers =
         getInstance().getType().getEvents(eventtype);
     if (triggers != null) {
@@ -373,7 +374,7 @@ public class Update {
         for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
             .entrySet()) {
           SQLTable table = entry.getKey();
-          Map expressions = (Map) entry.getValue();
+          Map<?, ?> expressions = (Map<?, ?>) entry.getValue();
 
           PreparedStatement stmt = null;
           try {
@@ -405,11 +406,11 @@ public class Update {
 
   private PreparedStatement createOneStatement(final Context _context,
       final ConnectionResource _con, final SQLTable _table,
-      final Map _expressions) throws SQLException, EFapsException {
+      final Map<?, ?> _expressions) throws SQLException, EFapsException {
     List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
     StringBuilder cmd = new StringBuilder();
     cmd.append("update ").append(_table.getSqlTable()).append(" set ");
-    Iterator iter = _expressions.entrySet().iterator();
+    Iterator<?> iter = _expressions.entrySet().iterator();
     boolean command = false;
     while (iter.hasNext()) {
       Map.Entry entry = (Map.Entry) iter.next();
@@ -440,7 +441,7 @@ public class Update {
       if (LOG.isTraceEnabled()) {
         LOG.trace(attr.toString());
       }
-      //TODO remove List
+      
       List<Integer> x = new ArrayList<Integer>();
       x.add(j);
       attr.update(null, stmt, x);

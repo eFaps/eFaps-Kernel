@@ -254,8 +254,9 @@ public abstract class UserInterfaceObject extends AdminObject {
    * 
    * @return <i>true</i> if context user has access, otherwise <i>false</i> is
    *         returned
+   * @throws EFapsException 
    */
-  public boolean hasAccess() {
+  public boolean hasAccess() throws EFapsException {
     boolean ret = false;
     if (getAccess().isEmpty()) {
       ret = true;

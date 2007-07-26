@@ -26,6 +26,7 @@ import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.util.EFapsException;
 
 /**
  * Abstract class where all eFaps database actions are derived.
@@ -69,8 +70,9 @@ abstract class AbstractAction {
    * @param eventtype
    *          trigger events to execute
    * @return true if a trigger was found and executed, otherwise false
+   * @throws EFapsException 
    */
-  protected boolean executeEvents(final EventType eventtype) {
+  protected boolean executeEvents(final EventType eventtype) throws EFapsException {
     List<EventDefinition> triggers =
         getInstance().getType().getEvents(eventtype);
     if (triggers != null) {

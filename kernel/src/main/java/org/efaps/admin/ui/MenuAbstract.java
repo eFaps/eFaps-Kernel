@@ -21,14 +21,13 @@
 package org.efaps.admin.ui;
 
 import java.util.ArrayList;
-import java.util.TreeMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -108,8 +107,9 @@ abstract public class MenuAbstract extends CommandAbstract {
    * 
    * @return <i>true</i>if context user has access, otherwise <i>false</i> is
    *         returned
+   * @throws EFapsException 
    */
-  public boolean hasAccess() {
+  public boolean hasAccess() throws EFapsException {
     boolean ret = super.hasAccess();
 
     if (ret && getCommands().size() > 0) {
@@ -124,23 +124,7 @@ abstract public class MenuAbstract extends CommandAbstract {
     return ret;
   }
   
-  /** 
-   * @deprecated
-   */
-  public boolean hasAccess(final Context _context) {
-    boolean ret = super.hasAccess();
-
-    if (ret && getCommands().size() > 0) {
-      ret = false;
-      for (CommandAbstract cmd : getCommands()) {
-        if (cmd.hasAccess()) {
-          ret = true;
-          break;
-        }
-      }
-    }
-    return ret;
-  }
+ 
   /**
    * Returns all information from the menu as string.
    */

@@ -20,6 +20,8 @@
 
 package org.efaps.admin.event;
 
+import org.efaps.util.EFapsException;
+
 /**
  * This interface is for the Programs loaded dynamically from the efapsdatabase
  * with the efapsClassLoader. To be invoked the Classes loaded with the
@@ -39,6 +41,7 @@ public interface EventExecution {
    * @param _instance
    * @param _map
    *          Map with values from the trigger
+   * @throws EFapsException 
    */
-  public Return execute(final Parameter _parameter);
+  public Return execute(final Parameter _parameter) throws EFapsException;
 }

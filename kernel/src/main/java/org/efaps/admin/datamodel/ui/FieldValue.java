@@ -40,7 +40,7 @@ import org.efaps.util.EFapsException;
  * @todo description
  * @version $Id$
  */
-public class FieldValue implements Comparable {
+public class FieldValue implements Comparable<Object> {
   /**
    * Logger for this class
    */
@@ -107,7 +107,7 @@ public class FieldValue implements Comparable {
   // /////////////////////////////////////////////////////////////////////////
   // instance methods
 
-  protected String executeEvents(final HtmlType _htmlType) {
+  protected String executeEvents(final HtmlType _htmlType) throws EFapsException {
     this.htmlType = _htmlType;
     StringBuilder ret = new StringBuilder();
     if (this.fieldDef.getField() != null
