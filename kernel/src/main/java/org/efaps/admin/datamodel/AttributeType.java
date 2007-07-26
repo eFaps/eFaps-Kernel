@@ -28,14 +28,13 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
-import org.efaps.util.cache.CacheReloadInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * @author tmo
@@ -167,7 +166,7 @@ return getName();
    * @see #setClassRepr(Class)
    * @see #setClassRepr(String)
    */
-  private Class classRepr = null;
+  private Class<?> classRepr = null;
 
   /**
    * The instance variable stores the instance for the ui interface.
@@ -201,7 +200,7 @@ return getName();
    * @see #classRepr
    * @see #setClassRepr(Class)
    */
-  public Class getClassRepr()  {
+  public Class<?> getClassRepr()  {
     return this.classRepr;
   }
 
@@ -212,7 +211,7 @@ return getName();
    * @see #classRepr
    * @see #getClassRepr
    */
-  private void setClassRepr(Class _classRepr)  {
+  private void setClassRepr(Class<?> _classRepr)  {
     this.classRepr = _classRepr;
   }
 

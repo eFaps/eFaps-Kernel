@@ -409,7 +409,7 @@ public class Field extends UserInterfaceObject {
       setLabel(_value);
     } else if (_name.equals("ProgramValue")) {
       try {
-        Class programValueClass = Class.forName(_value);
+        Class<?> programValueClass = Class.forName(_value);
         setProgramValue((FieldProgramValueInterface) programValueClass
             .newInstance());
       } catch (ClassNotFoundException e) {

@@ -73,7 +73,7 @@ public class DBProperties {
    * It is only checked in the default.
    * 
    * @param _key
-   *          Key to search for
+   *                Key to search for
    * @return true if the key exists
    */
   public static boolean hasProperty(String _key) {
@@ -92,7 +92,7 @@ public class DBProperties {
    * found for a Default. If no value can be found, the key will be returned.
    * 
    * @param _key
-   *          Key to Search for
+   *                Key to Search for
    * @return if key exists, the value for the key, otherwise the key
    */
   public static String getProperty(final String _key) {
@@ -118,9 +118,9 @@ public class DBProperties {
    * found for a Default. If no value can be found, the key will be returned.
    * 
    * @param _key
-   *          Key to Search for
+   *                Key to Search for
    * @param _language
-   *          language to use
+   *                language to use
    * @return if key exists, the value for the key, otherwise the key
    */
   public static String getProperty(final String _key, final String _language) {
@@ -130,14 +130,14 @@ public class DBProperties {
 
     String value = null;
 
-    Map map = PROPERTIESCACHE.get(_language);
+    Map<String, String> map = PROPERTIESCACHE.get(_language);
     if (map != null) {
       value = (String) map.get(_key);
     }
 
     if (value == null) {
-      Map<String,String> defaultProps = PROPERTIESCACHE.get(DEFAULT);
-      if (defaultProps != null)  {
+      Map<String, String> defaultProps = PROPERTIESCACHE.get(DEFAULT);
+      if (defaultProps != null) {
         value = PROPERTIESCACHE.get(DEFAULT).get(_key);
       }
     }
@@ -151,7 +151,7 @@ public class DBProperties {
    * 
    * @return Map with all Properties
    */
-  public Map getProperties() {
+  public Map<String, Map<String, String>> getProperties() {
     return PROPERTIESCACHE;
   }
 
@@ -165,8 +165,8 @@ public class DBProperties {
     }
 
     final String sqlStmt =
-        " select distinct PROPKEY, DEFAULTV,'" + DEFAULT + "' as LANG, SEQUENCE "
-            + " from T_ADPROP "
+        " select distinct PROPKEY, DEFAULTV,'" + DEFAULT
+            + "' as LANG, SEQUENCE " + " from T_ADPROP "
             + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
             + " order by SEQUENCE";
 
@@ -196,7 +196,7 @@ public class DBProperties {
    * This method is initialising the cache
    * 
    * @param _SQLStmt
-   *          SQl-Statment to access the database
+   *                SQl-Statment to access the database
    */
   private static void initialiseCache(final String _sqlstmt) {
 

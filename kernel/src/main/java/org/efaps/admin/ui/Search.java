@@ -20,16 +20,7 @@
 
 package org.efaps.admin.ui;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.efaps.admin.datamodel.Type;
-import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
  *
@@ -47,11 +38,7 @@ public class Search extends MenuAbstract  {
    */
   public static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.SEARCH;
 
-  /**
-   * Logging instance used in this class.
-   */
-  private static final Log LOG = LogFactory.getLog(Type.class);
-
+  
   /**
    * Stores all instances of class {@link Search}.
    *

@@ -23,10 +23,6 @@ package org.efaps.beans;
 import java.util.Hashtable;
 import java.util.Map;
 
-import org.efaps.admin.ui.Command;
-import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.admin.ui.Menu;
-
 /**
  * @author tmo
  * @version $Id$

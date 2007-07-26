@@ -66,7 +66,7 @@ public class Parameter  {
     return map.get(_key);
   }
 
-  public Set entrySet() {
+  public Set<?> entrySet() {
     return this.map.entrySet();
   }
 

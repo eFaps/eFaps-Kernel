@@ -268,7 +268,7 @@ public class RunLevel {
      */
     public void callMethod() throws EFapsException {
       try {
-        Class cls = Class.forName(this.className);
+        Class<?> cls = Class.forName(this.className);
         if (this.parameter != null) {
           Method m = cls.getMethod(this.methodName, String.class);
           m.invoke(cls, (String) this.parameter);

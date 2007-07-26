@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1031 $
- * Last Changed:    $Date:2007-07-14 12:36:33 +0200 (Sa, 14 Jul 2007) $
- * Last Changed By: $Author:tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.beans;
 
-import java.util.Locale;
-
 import org.apache.commons.fileupload.FileItem;
+
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;

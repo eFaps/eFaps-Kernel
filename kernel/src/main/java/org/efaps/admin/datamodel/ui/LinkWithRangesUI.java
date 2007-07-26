@@ -22,6 +22,7 @@ package org.efaps.admin.datamodel.ui;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventType;
@@ -50,13 +51,13 @@ public class LinkWithRangesUI extends AbstractUI {
       if (attribute.hasEvents(EventType.RANGE_VALUE)) {
 
         for (Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
-          ret.append((String) ((Map) values.get(ReturnValues.VALUES))
+          ret.append((String) ((Map<?, ?>) values.get(ReturnValues.VALUES))
               .get(_fieldValue.getValue().toString()));
         }
       }
 
     } else {
-      // throw new EFapsException();
+//      throw new EFapsException();
     }
     return ret.toString();
   }
@@ -73,11 +74,12 @@ public class LinkWithRangesUI extends AbstractUI {
               _fieldValue.getFieldDef().getField().getName()).append(
               "\" size=\"1\">");
 
-          Iterator iter =
-              ((Map) values.get(ReturnValues.VALUES)).entrySet().iterator();
+          Iterator<?> iter =
+              ((Map<?, ?>) values.get(ReturnValues.VALUES)).entrySet()
+                  .iterator();
 
           while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry) iter.next();
+            Entry<?, ?> entry = (Entry<?, ?>) iter.next();
             ret.append("<option value=\"").append(entry.getKey());
             if (_fieldValue.getValue().toString().equals(entry.getKey())) {
               ret.append("\" selected=\"selected");
@@ -107,11 +109,11 @@ public class LinkWithRangesUI extends AbstractUI {
             _fieldValue.getFieldDef().getField().getName()).append(
             "\" size=\"1\">");
 
-        Iterator iter =
-            ((Map) values.get(ReturnValues.VALUES)).entrySet().iterator();
+        Iterator<?> iter =
+            ((Map<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
 
         while (iter.hasNext()) {
-          Map.Entry entry = (Map.Entry) iter.next();
+          Entry<?, ?> entry = (Entry<?, ?>) iter.next();
           ret.append("<option value=\"").append(entry.getKey()).append("\">")
               .append(entry.getValue()).append("</option>");
         }

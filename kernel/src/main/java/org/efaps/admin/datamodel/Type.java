@@ -141,7 +141,7 @@ public class Type extends DataModelObject {
    * @see #getCache
    * @see #setCache
    */
-  private Cache cache = null;
+  private Cache<?> cache = null;
 
   /**
    * Instance of a HashSet to store all needed tables for this type. The tables
@@ -321,7 +321,7 @@ public class Type extends DataModelObject {
    *          searched attribute type
    * @return all attributes assigned from parameter <i>_class</i>
    */
-  public final Set<Attribute> getAttributes(final Class _class) {
+  public final Set<Attribute> getAttributes(final Class<?> _class) {
     Set<Attribute> ret = new HashSet<Attribute>();
     for (Attribute attr : getAttributes().values()) {
       if (attr.getAttributeType().getClassRepr().isAssignableFrom(_class)) {
@@ -617,7 +617,7 @@ public class Type extends DataModelObject {
    * @see #setCache
    * @see #cache
    */
-  public Cache getCache() {
+  public Cache<?> getCache() {
     return this.cache;
   }
 
@@ -629,7 +629,7 @@ public class Type extends DataModelObject {
    * @see #getCache
    * @see #cache
    */
-  private void setCache(final Cache _cache) {
+  private void setCache(final Cache<?> _cache) {
     this.cache = _cache;
   }
 
