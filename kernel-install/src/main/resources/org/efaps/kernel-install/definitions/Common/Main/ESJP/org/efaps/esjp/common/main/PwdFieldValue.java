@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.FieldValue.HtmlType;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
@@ -50,14 +51,19 @@ public class PwdFieldValue implements EventExecution {
             .append("<script type=\"text/javascript\">")
             .append("function testForEqual()")
             .append(
-                "{var old=document.getElementById(\"eFapsPasswordOld\").value;")
+                "{var warn=document.getElementById(\"eFapsWarnMsg\").firstChild; ")
             .append(
-                "var A=document.getElementById(\"eFapsPasswordNew\").value;")
+                "var old=document.getElementById(\"eFapsPasswordOld\").value; ")
+            .append(
+                "var A=document.getElementById(\"eFapsPasswordNew\").value; ")
             .append(
                 "var B=document.getElementById(\"eFapsPasswordNew2\").value;")
             .append("if((A.length>0) && (B.length>0) && (old.length>0)){")
-            .append(
-                "if((A!=B)){document.getElementById(\"eFapsPasswordNew2\").value='';}")
+            .append("if((A!=B)){warn.data=\"").append(
+                DBProperties.getProperty("Common_Main_PwdChgForm/WarnMessage"))
+            .append("\";").append(" dojoDialogWarn.show();").append(
+                "document.getElementById(\"eFapsPasswordNew2\").value=\"\";}")
+
             .append("if((A==B)){submitLock=false;}")
 
             .append("}}</script>").append(
