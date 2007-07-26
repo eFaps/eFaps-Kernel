@@ -79,6 +79,11 @@
       <name>Admin_User_ModifyUsers</name>
       <key>Admin_User_ModifyUsers</key>
     </assigned-role>
+    
+    <assigned-role>
+      <name>Common_Main_PwdChg</name>
+      <key>Common_Main_PwdChg</key>
+    </assigned-role>
   </definition>
 
 </user-jaassystem>

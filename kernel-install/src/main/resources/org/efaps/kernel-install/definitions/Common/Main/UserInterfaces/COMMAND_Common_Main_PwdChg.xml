@@ -52,6 +52,10 @@
       <mode>(version==11)</mode>
     </version>
     <name>Common_Main_PwdChg</name>
+    <access>
+      <role>Common_Main_PwdChg</role>
+    </access>
+    
     <target>
       <form>Common_Main_PwdChgForm</form>
       <execute program="org.efaps.esjp.common.main.PwdChgExecute"/>
