@@ -78,7 +78,7 @@ public class ListQuery {
 
   public void execute() throws Exception {
 
-    System.out.println("this=" + toString());
+//    System.out.println("this=" + toString());
 
     if (this.instances.size() > 0) {
 
@@ -116,7 +116,7 @@ public class ListQuery {
    * @see #selects
    */
   public void addSelect(final String _select) {
-    System.out.println("_select=" + _select);
+//    System.out.println("_select=" + _select);
     final int idx = _select.indexOf(".");
     if (idx > 0) {
       // differ select expression from sub expression

@@ -952,7 +952,6 @@ public class Person extends UserObject {
   public static Person get(final long _id) throws EFapsException {
     Person ret = getCache().get(_id);
     if (ret == null) {
-      System.out.println(" read person '" + _id + "' from db");
       ret =
           getFromDB("select " + "V_USERPERSON.ID," + "V_USERPERSON.NAME, "
               + "STATUS " + "from V_USERPERSON " + "where V_USERPERSON.ID="
