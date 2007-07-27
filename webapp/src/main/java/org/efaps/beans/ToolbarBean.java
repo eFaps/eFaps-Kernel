@@ -110,8 +110,7 @@ public class ToolbarBean {
     // initalise the NavigationMenuItem instance with mapped Label and raw
     // action
     NavigationMenuItem ret =
-        new NavigationMenuItem(DBProperties.getProperty(_command.getLabel()),
-            String.valueOf(_command.getAction()));
+        new NavigationMenuItem(DBProperties.getProperty(_command.getLabel()), "0");
     // map the icon path
     if (_command.getIcon() != null) {
       ret.setIcon("/.." + _command.getIcon());
