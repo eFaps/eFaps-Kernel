@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,12 +39,8 @@ import org.efaps.util.cache.CacheReloadException;
  */
 public abstract class CommandAbstract extends UserInterfaceObject {
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static Variables
-
-  static public final int ACTION_DELETE = 1;
-
-  static public final int ACTION_UNKNOWN = 0;
 
   static public final int TABLE_SORT_DIRECTION_DESC = 1;
 
@@ -95,15 +91,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   // instance Variables
 
   /**
-   * The instance variable stores the predefined actions which can be executed
-   * e.g. from the footer menu of a web table.
-   * 
-   * @see #getAction
-   * @see #setAction
-   */
-  private int action = ACTION_UNKNOWN;
-
-  /**
    * The instance variable stores if the execution of the command needs a
    * confirmation of the user. The default value is <i>false</i>.
    * 
@@ -120,15 +107,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @see #setDefaultSelected
    */
   private boolean defaultSelected = false;
-
-  /**
-   * The instance variable stores the index of the delete object id in the
-   * string of all oids of the checkbox.
-   * 
-   * @see #getDeleteIndex
-   * @see #setDeleteIndex
-   */
-  private int deleteIndex = 0;
 
   /**
    * Instance variable to hold the reference to the icon file.
@@ -307,7 +285,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    */
   private int windowWidth = 600;
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // Constructors
   /**
    * Constructor to set the id and name of the command object. The constructor
@@ -325,7 +303,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
     setTargetTitle(_name + ".Title");
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance Methods
 
   /**
@@ -339,53 +317,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
     getAccess().add(_role);
   }
 
-  /**
-   * This is the setter method for the instance variable {@link #action}.
-   * 
-   * @return value of instance variable {@link #action}
-   * @see #action
-   * @see #setAction
-   */
-  public int getAction() {
-    return this.action;
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the setter method for the instance variable {@link #action}.
-   * 
-   * @param _action
-   *          new value for instance variable {@link #action}
-   * @see #action
-   * @see #getAction
-   */
-  public void setAction(final int _action) {
-    this.action = _action;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #deleteIndex}.
-   * 
-   * @return value of instance variable {@link #deleteIndex}
-   * @see #deleteIndex
-   * @see #setDeleteIndex
-   */
-  public int getDeleteIndex() {
-    return this.deleteIndex;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #deleteIndex}.
-   * 
-   * @param _deleteIndex
-   *          new value for instance variable {@link #deleteIndex}
-   * @see #deleteIndex
-   * @see #getDeleteIndex
-   */
-  public void setDeleteIndex(final int _deleteIndex) {
-    this.deleteIndex = _deleteIndex;
-  }
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * Get the current icon reference value.
@@ -1020,11 +952,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    */
   protected void setProperty(final String _name, final String _value)
       throws CacheReloadException {
-    if (_name.equals("Action")) {
-      if (_value.equals("delete")) {
-        setAction(ACTION_DELETE);
-      }
-    } else if (_name.equals("AskUser")) {
+    if (_name.equals("AskUser")) {
       if ("true".equalsIgnoreCase(_value)) {
         setAskUser(true);
       } else {
@@ -1036,8 +964,6 @@ public abstract class CommandAbstract extends UserInterfaceObject {
       } else {
         setDefaultSelected(false);
       }
-    } else if (_name.equals("DeleteIndex")) {
-      setDeleteIndex(Integer.parseInt(_value));
     } else if (_name.equals("HRef")) {
       setReference(RequestHandler.replaceMacrosInUrl(_value));
     } else if (_name.equals("Icon")) {
@@ -1120,7 +1046,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
      */
     private String clause = null;
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
     /**
      * Constructor to create a new target table filter instance.
@@ -1132,7 +1058,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
       setClause(_clause);
     }
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
     /**
      * This is the setter method for the instance variable {@link #clause}.
