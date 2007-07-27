@@ -29,7 +29,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.efaps</groupId>
-  <packaging>jar</packaging><!-- must be war file to get all jar files! -->
+  <packaging>jar</packaging>
   <artifactId>eFaps-Kernel-Install</artifactId>
   <version>1.0-SNAPSHOT</version>
 
@@ -46,23 +46,10 @@
 
     <plugins>
       <!--
-        Compiler Settings:
-        - Java 1.5 is needed!
-      -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
-        </configuration>
-      </plugin>
-
-      <!--
         plugin used to create the index.txt of all xml files
       -->
       <plugin>
-          <groupId>org.codehaus.mojo</groupId>
+          <groupId>org.codehaus.mojo.groovy</groupId>
           <artifactId>groovy-maven-plugin</artifactId>
           <executions>
               <execution>
@@ -78,187 +65,34 @@
                       </properties>
 
                       <source>
-                          <body>
-                            import java.io.FileOutputStream;
-                            import java.io.OutputStreamWriter;
-                            import java.io.Writer;
+                        import java.io.FileOutputStream;
+                        import java.io.OutputStreamWriter;
+                        import java.io.Writer;
 
-                            log.info("Generating index for kernel install files...");
+                        log.info("Generating index for kernel install files...");
 
-                            def ant = new AntBuilder();
+                        def ant = new AntBuilder();
 
-                            ant.mkdir(dir:project.properties['targetdir']);
+                        ant.mkdir(dir:project.properties['targetdir']);
 
-                            def fileSet = ant.fileset(dir:project.properties['sourcedir'],includes:"**/*.xml");
-                            def ds = fileSet.getDirectoryScanner(fileSet.getProject());
+                        def fileSet = ant.fileset(dir:project.properties['sourcedir'],includes:"**/*.xml");
+                        def ds = fileSet.getDirectoryScanner(fileSet.getProject());
 
-                            String[] files = ds.getIncludedFiles();
+                        String[] files = ds.getIncludedFiles();
 
-                            Writer writer = new OutputStreamWriter(new FileOutputStream(project.properties['targetdir'] + "/index.txt"),
-                                                                   "UTF-8");
-                            for (Object file : files)  {
-                              writer.write(file.replaceAll("\\\\", "/"));
-                              writer.write("\n");
-                            }
-                            writer.close();
-                          </body>
+                        Writer writer = new OutputStreamWriter(new FileOutputStream(project.properties['targetdir'] + "/index.txt"),
+                                                               "UTF-8");
+                        for (Object file : files)  {
+                          writer.write(file.replaceAll("\\\\", "/"));
+                          writer.write("\n");
+                        }
+                        writer.close();
                       </source>
                   </configuration>
               </execution>
           </executions>
       </plugin>
-
-      <!--
-        eFaps plugin used to compile
-      -->
-      <plugin>
-        <groupId>org.efaps</groupId>
-        <artifactId>maven-efaps-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <configuration>
-          <connection>
-            <property>
-              <name>username</name>
-              <value>${org.efaps.db.username}</value>
-            </property>
-            <property>
-              <name>password</name>
-              <value>${org.efaps.db.password}</value>
-            </property>
-            <property>
-              <name>driverClassName</name>
-              <value>${org.efaps.db.driverClassName}</value>
-            </property>
-            <property>
-              <name>url</name>
-              <value>${org.efaps.db.url}</value>
-            </property>
-            <property>
-              <name>factory</name>
-              <value>${org.efaps.db.factory}</value>
-            </property>
-            <property>
-              <name>maxActive</name>
-              <value>${org.efaps.db.maxActive}</value>
-            </property>
-            <property>
-              <name>maxIdle</name>
-              <value>${org.efaps.db.maxIdle}</value>
-            </property>
-            <property>
-              <name>maxWait</name>
-              <value>${org.efaps.db.maxWait}</value>
-            </property>
-            <property>
-              <name>removeAbandoned</name>
-              <value>${org.efaps.db.removeAbandoned}</value>
-            </property>
-            <property>
-              <name>logAbandoned</name>
-              <value>${org.efaps.db.logAbandoned}</value>
-            </property>
-          </connection>
-          <!-- used from the generateUUID goal -->
-          <count>${count}</count>
-        </configuration>
-        <dependencies>
-          <!-- Connection Pooling -->
-          <dependency>
-            <groupId>commons-dbcp</groupId>
-            <artifactId>commons-dbcp</artifactId>
-            <version>1.2.1</version>
-          </dependency>
-          <!-- Derby Client Database Driver -->
-          <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derbyclient</artifactId>
-            <version>10.2.2.0</version>
-          </dependency>
-        </dependencies>
-      </plugin>
     </plugins>
   </build>
-
-  <!-- ************************************************************************
-  * Depencies
-  ************************************************************************+ -->
-  <dependencies>
-    <!-- eFaps kernel -->
-    <dependency>
-      <groupId>org.efaps</groupId>
-      <artifactId>eFaps-Kernel</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-
-    <!-- For Logging with Log4J -->
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.14</version>
-    </dependency>
-
-    <!-- For reading parameters -->
-    <dependency>
-      <groupId>commons-cli</groupId>
-      <artifactId>commons-cli</artifactId>
-      <version>1.0</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- HTTP Servlet Api -->
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>package</scope>
-    </dependency>
-
-    <!-- Transaction Manager -->
-    <dependency>
-      <groupId>geronimo-spec</groupId>
-      <artifactId>geronimo-spec-jta</artifactId>
-      <version>1.0-M1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>slide</groupId>
-      <artifactId>slide-kernel</artifactId>
-      <version>2.1</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- Connection Pooling -->
-    <dependency>
-      <groupId>commons-dbcp</groupId>
-      <artifactId>commons-dbcp</artifactId>
-      <version>1.2.2</version>
-      <scope>package</scope>
-    </dependency>
-
-    <!-- Derby Client Database Driver -->
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyclient</artifactId>
-      <version>10.2.2.0</version>
-      <scope>package</scope>
-    </dependency>
-
-    <!-- PostgreSQL Client Database Driver -->
-    <dependency>
-      <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>8.2-504.jdbc3</version>
-      <scope>package</scope>
-    </dependency>
-
-    <!-- needed to compile Programs (Dependencies inside the Programs)-->
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.1</version>
-      <scope>compile</scope>
-    </dependency>
-
-  </dependencies>
 
 </project>
