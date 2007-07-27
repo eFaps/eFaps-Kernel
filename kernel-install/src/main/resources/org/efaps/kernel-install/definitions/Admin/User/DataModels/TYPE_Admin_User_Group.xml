@@ -41,7 +41,10 @@
     <property name="Tree">Admin_User_GroupTree</property>
     <!-- triggers -->
     <trigger name="Admin_User_Group_AccessCheck" event="ACCESSCHECK" 
-      program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" method="execute" index="1"/>
+      program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" />
+      
+    <trigger name="Admin_User_Group_INSERT_POST" event="INSERT_POST" 
+      program="org.efaps.esjp.admin.user.PersonJaaskey" />  
   </definition>
 
 </datamodel-type>

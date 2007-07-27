@@ -32,30 +32,31 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * This esjp inserts the JAASSystem for a User into the eFaps-Database.<br>
- * It is executed on a INSERT_POST Trigger on the Type User_Person.
- * 
  * @author jmo
- * @version $Id:PersonJaaskey.java 1072 2007-07-17 19:00:42Z tmo $
+ * @version $Id$
  */
-public class PersonJaaskey implements EventExecution {
+public class ConnectPersonToRoleGroup implements EventExecution {
 
-  public Return execute(Parameter _parameter) throws EFapsException {
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    Map<?, ?> values = (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
+  public Return execute(final Parameter _parameter) throws EFapsException {
+    Return ret = new Return();
 
-    String jaassystemid = getJAASSystemID();
-    if (jaassystemid != null) {
-      Insert insert = new Insert("Admin_User_JAASKey");
+    Map<?, ?> properties =
+        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+    Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    String childOids[] = (String[]) _parameter.get(ParameterValues.OTHERS);
 
-      insert.add("Key", values.get(instance.getType().getAttribute("Name"))
-          .toString());
-      insert.add("JAASSystemLink", getJAASSystemID());
-      insert.add("UserLink", ((Long) instance.getId()).toString());
+    String type = (String) properties.get("ConnectType");
+
+    for (String childOid : childOids) {
+      Instance child = new Instance(childOid);
+      Insert insert = new Insert(type);
+      insert.add("UserFromLink", "" + parent.getId());
+      insert.add("UserToLink", "" + child.getId());
+      insert.add("UserJAASSystem", "" + getJAASSystemID());
       insert.execute();
     }
 
-    return null;
+    return ret;
   }
 
   /**

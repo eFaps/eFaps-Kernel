@@ -55,9 +55,7 @@
     <!-- target definitions -->
     <target>
       <search>Admin_User_PersonTree_Groups_Menu_Action_AddExisting_Search</search>
-      <execute program="org.efaps.esjp.common.uisearch.Connect">
-        <property name="ConnectChildAttribute">UserToLink</property>
-        <property name="ConnectParentAttribute">UserFromLink</property>
+      <execute program="org.efaps.esjp.admin.user.ConnectPersonToRoleGroup">
         <property name="ConnectType">Admin_User_Person2Group</property>
       </execute>
     </target>
