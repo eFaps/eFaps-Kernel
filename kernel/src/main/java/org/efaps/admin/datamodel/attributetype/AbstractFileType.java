@@ -23,7 +23,7 @@ package org.efaps.admin.datamodel.attributetype;
 /**
  * @author tmo
  * @version $Id$
- * 
+ * @todo description
  */
 abstract public class AbstractFileType extends AbstractType {
 

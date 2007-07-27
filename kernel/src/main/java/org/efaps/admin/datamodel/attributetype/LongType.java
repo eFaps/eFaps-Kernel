@@ -27,7 +27,9 @@ import java.util.List;
 import org.efaps.db.query.CachedResult;
 
 /**
- * 
+ * @author tmo
+ * @version $Id$
+ * @todo description
  */
 public class LongType extends AbstractType {
 
