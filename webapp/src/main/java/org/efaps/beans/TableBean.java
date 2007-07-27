@@ -119,7 +119,7 @@ public class TableBean extends AbstractCollectionBean {
    */
   public TableBean() throws EFapsException {
     super();
-System.out.println("TableBean.constructor");
+//System.out.println("TableBean.constructor");
 
     if (getCommand() != null) {
       // set target table
@@ -151,7 +151,7 @@ System.out.println("TableBean.constructor");
   }
 
   public void finalize() {
-    System.out.println("TableBean.destructor");
+//    System.out.println("TableBean.destructor");
   }
 
   /////////////////////////////////////////////////////////////////////////////

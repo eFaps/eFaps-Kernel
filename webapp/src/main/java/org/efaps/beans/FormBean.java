@@ -42,8 +42,7 @@ import org.efaps.util.EFapsException;
 /**
  * 
  * @author tmo
- * @version $Id: FormBean.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb 2007)
- *          jmo $
+ * @version $Id$
  * @todo description
  */
 public class FormBean extends AbstractCollectionBean {
@@ -107,7 +106,7 @@ public class FormBean extends AbstractCollectionBean {
    */
   public FormBean() throws EFapsException {
     super();
-System.out.println("FormBean.constructor");
+//System.out.println("FormBean.constructor");
 
     // set target form
     if (getCommand() != null) {
@@ -118,7 +117,7 @@ System.out.println("FormBean.constructor");
   }
 
   public void finalize() {
-    System.out.println("FormBean.destructor");
+//System.out.println("FormBean.destructor");
   }
 
   /////////////////////////////////////////////////////////////////////////////

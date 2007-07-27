@@ -210,7 +210,7 @@ public abstract class AbstractMethod  {
    * @param text Text to append
    */
   public void writeText(Writer _writer, String text) throws IOException  {
-System.out.println(text);
+//System.out.println(text);
     _writer.write(text);
   }
 
