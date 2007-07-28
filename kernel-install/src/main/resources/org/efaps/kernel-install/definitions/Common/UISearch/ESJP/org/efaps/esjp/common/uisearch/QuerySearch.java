@@ -50,6 +50,9 @@ public class QuerySearch implements EventExecution {
    */
   private static final Log LOG = LogFactory.getLog(QuerySearch.class);
 
+  /**
+   * @param _parameter
+   */
   public Return execute(final Parameter _parameter) throws EFapsException {
     Return ret = new Return();
 

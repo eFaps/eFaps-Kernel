@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,39 +70,35 @@ public class SimpleAccessCheckOnType implements EventExecution {
    * defined in the list of access types.
    */
   private boolean checkAccess(final Instance _instance,
-      final AccessType _accessType) {
+                              final AccessType _accessType)
+      throws EFapsException {
 
-    Context context;
-    try {
-      context = Context.getThreadContext();
+    Context context = Context.getThreadContext();
 
-      Type type = _instance.getType();
-      StringBuilder toTests = new StringBuilder();
-      toTests.append(0);
-      for (AccessSet accessSet : type.getAccessSets()) {
-        if (accessSet.getAccessTypes().contains(_accessType)) {
-          toTests.append(",").append(accessSet.getId());
-        }
+    Type type = _instance.getType();
+    StringBuilder toTests = new StringBuilder();
+    toTests.append(0);
+    for (AccessSet accessSet : type.getAccessSets()) {
+      if (accessSet.getAccessTypes().contains(_accessType)) {
+        toTests.append(",").append(accessSet.getId());
       }
-
-      StringBuilder users = new StringBuilder();
-      users.append(context.getPersonId());
-      for (Role role : context.getPerson().getRoles()) {
-        users.append(",").append(role.getId());
-      }
-      for (Group group : context.getPerson().getGroups()) {
-        users.append(",").append(group.getId());
-      }
-
-      return executeStatement(context, toTests, users);
-    } catch (EFapsException e) {
-      LOG.error("checkAccess(Instance, AccessType)", e);
     }
-    return false;
+
+    StringBuilder users = new StringBuilder();
+    users.append(context.getPersonId());
+    for (Role role : context.getPerson().getRoles()) {
+      users.append(",").append(role.getId());
+    }
+    for (Group group : context.getPerson().getGroups()) {
+      users.append(",").append(group.getId());
+    }
+
+    return executeStatement(context, toTests, users);
   }
 
   private boolean executeStatement(final Context _context,
-      final StringBuilder _accessSets, final StringBuilder _users)
+                                   final StringBuilder _accessSets,
+                                   final StringBuilder _users)
       throws EFapsException {
     boolean hasAccess = false;
 
@@ -146,7 +142,7 @@ public class SimpleAccessCheckOnType implements EventExecution {
     return hasAccess;
   }
 
-  public Return execute(Parameter _parameter) {
+  public Return execute(final Parameter _parameter) throws EFapsException  {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     AccessType accessType =
         (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);

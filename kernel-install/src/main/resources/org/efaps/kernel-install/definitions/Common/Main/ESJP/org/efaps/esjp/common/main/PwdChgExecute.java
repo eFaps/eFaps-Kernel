@@ -29,13 +29,21 @@ import org.efaps.admin.event.Return;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
+/**
+ * @author jmo
+ * @version $Id$
+ * @todo description
+ */
 public class PwdChgExecute implements EventExecution{
   /**
    * Logger for this class
    */
   private static final Log LOG = LogFactory.getLog(PwdChgExecute.class);
 
-  public Return execute(Parameter _parameter) throws EFapsException {
+  /**
+   * @param _parameter
+   */
+  public Return execute(final Parameter _parameter) throws EFapsException {
 
     Context context = Context.getThreadContext();
     String passwordold = context.getParameter("passwordold");

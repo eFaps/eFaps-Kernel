@@ -36,11 +36,11 @@ import org.efaps.util.EFapsException;
  * It is executed on a INSERT_POST Trigger on the Type User_Person.
  * 
  * @author jmo
- * @version $Id:PersonJaaskey.java 1072 2007-07-17 19:00:42Z tmo $
+ * @version $Id$
  */
 public class PersonJaaskey implements EventExecution {
 
-  public Return execute(Parameter _parameter) throws EFapsException {
+  public Return execute(final Parameter _parameter) throws EFapsException {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     Map<?, ?> values = (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
 

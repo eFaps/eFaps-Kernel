@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.runlevel.RunLevel;
+import org.efaps.util.EFapsException;
 
 /**
  * Class to relaod the Cache.<br>
@@ -34,20 +35,26 @@ import org.efaps.admin.runlevel.RunLevel;
  * It is executed on Userinteraction through a trigger on a Command.
  * 
  * @author jmo
- * @version $Id:ReloadCache.java 1149 2007-07-22 19:36:16Z tmo $
+ * @version $Id$
+ * @todo use EFapsException
  */
 public class ReloadCache implements EventExecution {
+
   /**
    * Logger for this class
    */
   private static final Log LOG = LogFactory.getLog(ReloadCache.class);
 
-  public Return execute(Parameter _parameter) {
-    try {
+  /**
+   * @param _parameter
+   */
+  public Return execute(final Parameter _parameter) throws EFapsException  {
+    try  {
       RunLevel.init("webapp");
       RunLevel.execute();
-    } catch (Exception e) {
-      LOG.error("execute(ParameterInterface)", e);
+    } catch (Exception e)  {
+      LOG.error("execute\nparameter:\n" + _parameter 
+                  + "\nException is:\n" + e);
     }
     return null;
   }

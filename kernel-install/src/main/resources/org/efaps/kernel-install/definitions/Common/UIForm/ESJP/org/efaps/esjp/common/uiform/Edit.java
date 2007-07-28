@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 1137 $
- * Last Changed:    $Date: 2007-07-22 06:53:17 -0500 (Sun, 22 Jul 2007) $
- * Last Changed By: $Author: tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.esjp.common.uiform;
@@ -38,7 +38,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author jmo
- * @version $Id: Connect.java 1137 2007-07-22 11:53:17Z tmo $
+ * @version $Id$
  * @todo description
  */
 public class Edit implements EventExecution {
@@ -47,6 +47,9 @@ public class Edit implements EventExecution {
    */
   private static final Log LOG = LogFactory.getLog(Edit.class);
 
+  /**
+   * @param _parameter
+   */
   public Return execute(final Parameter _parameter) throws EFapsException {
     Return ret = new Return();
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
@@ -74,11 +77,7 @@ public class Edit implements EventExecution {
       }
     }
 
-    try {
-      update.execute();
-    } catch (Exception e) {
-      LOG.error("execute(Parameter)", e);
-    }
+    update.execute();
 
     return ret;
   }

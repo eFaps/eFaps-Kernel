@@ -47,32 +47,31 @@ public class QueryExpand implements EventExecution {
    */
   private static final Log LOG = LogFactory.getLog(QueryEvaluate.class);
 
-  public Return execute(final Parameter _parameter) {
+  /**
+   * @param _parameter
+   */
+  public Return execute(final Parameter _parameter) throws EFapsException  {
     Return ret = new Return();
-    try {
-      Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
 
-      Map properties = (Map) _parameter.get(ParameterValues.PROPERTIES);
+    Map properties = (Map) _parameter.get(ParameterValues.PROPERTIES);
 
-      String expand = (String) properties.get("Expand");
+    String expand = (String) properties.get("Expand");
 
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("Expand=" + expand);
-      }
-
-      SearchQuery query = new SearchQuery();
-      query.setExpand(instance, expand);
-      query.execute();
-
-      List<List<Instance>> list = new ArrayList<List<Instance>>();
-      while (query.next()) {
-        list.add(query.getExpandInstances());
-      }
-
-      ret.put(ReturnValues.VALUES, list);
-    } catch (EFapsException e) {
-      LOG.error("execute(Parameter)", e);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("Expand=" + expand);
     }
+
+    SearchQuery query = new SearchQuery();
+    query.setExpand(instance, expand);
+    query.execute();
+
+    List<List<Instance>> list = new ArrayList<List<Instance>>();
+    while (query.next()) {
+      list.add(query.getExpandInstances());
+    }
+
+    ret.put(ReturnValues.VALUES, list);
 
     return ret;
   }

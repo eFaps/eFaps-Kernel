@@ -55,7 +55,7 @@ public class CommonDelete implements EventExecution {
    * @param _parameter  parameters from the submitted web table
    * @throws EFapsException if a delete of the selected oids is not possible
    */
-  public Return execute(Parameter _parameter) throws EFapsException  {
+  public Return execute(final Parameter _parameter) throws EFapsException  {
     String[] allOids = (String[]) _parameter.get(ParameterValues.OTHERS);
     Map properties = (Map) _parameter.get(ParameterValues.PROPERTIES);
 

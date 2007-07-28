@@ -37,6 +37,9 @@ import org.efaps.util.EFapsException;
  */
 public class Connect implements EventExecution {
 
+  /**
+   * @param _parameter
+   */
   public Return execute(final Parameter _parameter) throws EFapsException {
     Return ret = new Return();
 

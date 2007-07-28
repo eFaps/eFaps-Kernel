@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,16 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+/**
+ * @author jmo
+ * @version $Id$
+ * @todo description
+ */
 public class HistoryQuery implements EventExecution {
 
+  /**
+   * @param _parameter
+   */
   public Return execute(final Parameter _parameter) throws EFapsException {
     Return ret = new Return();
 

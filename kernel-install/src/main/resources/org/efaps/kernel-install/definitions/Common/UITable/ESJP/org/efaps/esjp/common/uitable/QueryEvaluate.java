@@ -47,38 +47,36 @@ public class QueryEvaluate implements EventExecution {
    */
   private static final Log LOG = LogFactory.getLog(QueryEvaluate.class);
 
-  public Return execute(final Parameter _parameter) {
+  /**
+   * @param _parameter
+   */
+  public Return execute(final Parameter _parameter) throws EFapsException  {
     Return ret = new Return();
-    try {
+    Map properties = (Map) _parameter.get(ParameterValues.PROPERTIES);
 
-      Map properties = (Map) _parameter.get(ParameterValues.PROPERTIES);
+    String types = (String) properties.get("Types");
 
-      String types = (String) properties.get("Types");
+    boolean expandChildTypes =
+        "true".equals((String) properties.get("ExpandChildTypes"));
 
-      boolean expandChildTypes =
-          "true".equals((String) properties.get("ExpandChildTypes"));
-
-      if (LOG.isDebugEnabled()) {
-        LOG.debug("types=" + types);
-      }
-
-      SearchQuery query = new SearchQuery();
-      query.setQueryTypes(types);
-      query.setExpandChildTypes(expandChildTypes);
-      query.addSelect("OID");
-      query.execute();
-
-      List<List<Instance>> list = new ArrayList<List<Instance>>();
-      while (query.next()) {
-        List<Instance> instances = new ArrayList<Instance>(1);
-        instances.add(new Instance((String) query.get("OID")));
-        list.add(instances);
-      }
-
-      ret.put(ReturnValues.VALUES, list);
-    } catch (EFapsException e) {
-      LOG.error("execute(Parameter)", e);
+    if (LOG.isDebugEnabled()) {
+      LOG.debug("types=" + types);
     }
+
+    SearchQuery query = new SearchQuery();
+    query.setQueryTypes(types);
+    query.setExpandChildTypes(expandChildTypes);
+    query.addSelect("OID");
+    query.execute();
+
+    List<List<Instance>> list = new ArrayList<List<Instance>>();
+    while (query.next()) {
+      List<Instance> instances = new ArrayList<Instance>(1);
+      instances.add(new Instance((String) query.get("OID")));
+      list.add(instances);
+    }
+
+    ret.put(ReturnValues.VALUES, list);
 
     return ret;
   }

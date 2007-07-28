@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,16 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 
+/**
+ * @author jmo
+ * @version $Id$
+ * @todo description
+ */
 public class PwdFieldValue implements EventExecution {
 
+  /**
+   * @param _parameter
+   */
   public Return execute(final Parameter _parameter) {
     StringBuilder ret = new StringBuilder();
     FieldValue fieldvalue =
