@@ -165,11 +165,19 @@ body.eFapsTopHeader  {
         margin: 0px;
 }
 
-#eFapsFrameToolbarMenu>table  {
+#eFapsFrameToolbarMenu>table  {         /* non IE */
         border-width: 1px;
         border-style: solid;
         padding: 0px;
         margin: 0px;
+        background-color: #dadada;
+        width: 100%;
+        height: 25px;
+}
+
+* html #eFapsFrameToolbarMenu  {        /* IE */
+        border-width: 1px;
+        border-style: solid;
         background-color: #dadada;
         width: 100%;
         height: 25px;
@@ -284,7 +292,7 @@ div.eFapsFrameFilter  {
         width: 100%;
         bottom: 70px;
         border-left: 5px solid white;
-        border-top: 40px solid white;
+        border-top: 30px solid white;
         border-bottom: 70px solid white;
 }
 
@@ -307,7 +315,7 @@ div.eFapsFrameFilter  {
         height: 100%;
         width: 100%;
         border-left: 0 solid #DDDECB;
-        border-top: 40px solid #DDDECB;
+        border-top: 30px solid #DDDECB;
         border-bottom: 115px solid #DDDECB;
 }
 
