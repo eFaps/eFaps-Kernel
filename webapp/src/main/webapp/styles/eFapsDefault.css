@@ -201,7 +201,7 @@ div.eFapsFrameFilter  {
 }
 * html #eFapsFooter { /* IE */
         height: 60px;
-        border-bottom: 50px solid #DDDECB;
+        border-bottom: 80px solid #DDDECB;
 }
 
 /* complete css class for the header menu bar */
@@ -282,10 +282,10 @@ div.eFapsFrameFilter  {
         position: static;
         height: 100%;
         width: 100%;
-        bottom: 45px;
+        bottom: 70px;
         border-left: 5px solid white;
         border-top: 40px solid white;
-        border-bottom: 45px solid white;
+        border-bottom: 70px solid white;
 }
 
 /* web form content with footer */
@@ -303,11 +303,12 @@ div.eFapsFrameFilter  {
 }
 * html #eFapsFormContentWithFooter { /* IE */
         position: static;
+        bottom: 115px;
         height: 100%;
         width: 100%;
         border-left: 0 solid #DDDECB;
         border-top: 40px solid #DDDECB;
-        border-bottom: 90px solid #DDDECB;
+        border-bottom: 115px solid #DDDECB;
 }
 
 /* web form itself */
@@ -390,7 +391,7 @@ td.eFapsFormInputField {
 
 /* Table Header Appearance */
 #eFapsTableHeader {
-        position:absolute;
+        position: absolute;
         top: 60px;
         height: 20px;
         left: 0;
@@ -434,7 +435,7 @@ td.eFapsFormInputField {
         top: 80px;
         right: 0;
         bottom: 0;
-        left: 5px;
+        left: 0;
         margin-left: 0;
         padding-left: 5px;
         border-width: 0; 
@@ -444,10 +445,10 @@ td.eFapsFormInputField {
         position: static;
         height: 100%;
         width: 100%;
-        bottom: 45px;
-        border-left: 5px solid white;
-        border-top: 60px solid white;
-        border-bottom: 45px solid white;
+        bottom: 70px;
+        border-left: 0px solid white;
+        border-top: 50px solid white;
+        border-bottom: 70px solid white;
 }
 
 /* table content with footer */
@@ -465,11 +466,12 @@ td.eFapsFormInputField {
 }
 * html #eFapsTableContentWithFooter { /* IE */
         position: static;
+        bottom: 115px;
         height: 100%;
         width: 100%;
-        border-left: 0px solid white;
-        border-top: 60px solid white;
-        border-bottom: 90px solid white;
+        border-left: 0 solid #DDDECB;
+        border-top: 50px solid #DDDECB;
+        border-bottom: 115px solid #DDDECB;
 }
 
 /* web table itself */
