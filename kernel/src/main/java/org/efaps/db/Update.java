@@ -297,11 +297,11 @@ public class Update {
     }
   }
 
-  protected boolean test4Unique(Context _context) throws Exception {
+  protected boolean test4Unique(Context _context) throws EFapsException {
     return test4Unique(_context, getType());
   }
 
-  private boolean test4Unique(Context _context, Type _type) throws Exception {
+  private boolean test4Unique(Context _context, Type _type) throws EFapsException {
     boolean ret = false;
 
     if (_type.getUniqueKeys() != null) {
@@ -340,9 +340,10 @@ public class Update {
   }
 
   /**
-   * 
+   * @throws EFapsException thrown from {@link #executeWithoutAccessCheck}
+   * @see #executeWithoutAccessCheck
    */
-  public void execute() throws Exception {
+  public void execute() throws EFapsException {
     boolean hasAccess =
         getType().hasAccess(getInstance(),
             AccessTypeEnums.MODIFY.getAccessType());
@@ -354,54 +355,76 @@ public class Update {
   }
 
   /**
-   * 
+   * Executes the update without checking the access rights (but with
+   * triggers):
+   * <ol>
+   * <li>executes the pre update trigger (if exists)</li>
+   * <li>executes the override trigger (if exists)</li>
+   * <li>executes if no override trigger exists or the override trigger is not
+   *     executed the update ({@see #executeWithoutTrigger})</li>
+   * <li>executes the post update trigger (if exists)</li>
+   * </ol>
+   *
+   * @throws EFapsException thrown from {@link #executeWithoutTrigger}
+   * @see #executeWithoutTrigger
    */
-  public void executeWithoutAccessCheck() throws Exception {
+  public void executeWithoutAccessCheck() throws EFapsException {
+    executeEvents(EventType.UPDATE_PRE);
+
+    if (!executeEvents(EventType.UPDATE_OVERRIDE)) {
+      executeWithoutTrigger();
+    }
+
+    executeEvents(EventType.UPDATE_POST);
+  }
+
+  /**
+   * The update is done without calling triggers and check of access rights.
+   *
+   * @throws EFapsException if update not possible (unique key, object does not
+   *                        exists, etc...)
+   */
+  public void executeWithoutTrigger() throws EFapsException {
     Context context = Context.getThreadContext();
     ConnectionResource con = null;
     try {
-      executeEvents(EventType.UPDATE_PRE);
+      con = context.getConnectionResource();
 
-      if (!executeEvents(EventType.UPDATE_OVERRIDE)) {
-        con = context.getConnectionResource();
-
-        if (test4Unique(context)) {
-          throw new EFapsException(getClass(),
-              "executeWithoutAccessCheck.UniqueKeyError");
-        }
-
-        for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
-            .entrySet()) {
-          SQLTable table = entry.getKey();
-          Map<?, ?> expressions = (Map<?, ?>) entry.getValue();
-
-          PreparedStatement stmt = null;
-          try {
-            stmt = createOneStatement(context, con, table, expressions);
-            int rows = stmt.executeUpdate();
-            if (rows == 0) {
-              throw new Exception("Can not update! It exists not!");
-            }
-          } catch (Exception e) {
-            throw e;
-          }
-          finally {
-            stmt.close();
-          }
-        }
-        con.commit();
+      if (test4Unique(context)) {
+        throw new EFapsException(getClass(),
+            "executeWithoutAccessCheck.UniqueKeyError");
       }
-      executeEvents(EventType.UPDATE_POST);
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw e;
-    }
-    finally {
+
+      for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
+          .entrySet()) {
+        SQLTable table = entry.getKey();
+        Map expressions = (Map) entry.getValue();
+
+        PreparedStatement stmt = null;
+        try {
+          stmt = createOneStatement(context, con, table, expressions);
+          int rows = stmt.executeUpdate();
+          if (rows == 0) {
+            throw new EFapsException(getClass(), 
+                    "executeWithoutAccessCheck.ObjectDoesNotExists",
+                    this.instance);
+          }
+        } finally  {
+          stmt.close();
+        }
+      }
+      con.commit();
+    } catch (SQLException e)  {
+      LOG.error("Update of '" + this.instance + "' not possible", e);
+      throw new EFapsException(getClass(),
+          "executeWithoutAccessCheck.SQLException", e, this.instance);
+    } finally  {
       if ((con != null) && con.isOpened()) {
         con.abort();
       }
     }
   }
+
 
   private PreparedStatement createOneStatement(final Context _context,
       final ConnectionResource _con, final SQLTable _table,
