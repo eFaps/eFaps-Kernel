@@ -48,8 +48,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @version $Id: Update.java 726 2007-03-17 22:14:14 +0000 (Sat, 17 Mar 2007)
- *          tmo $
+ * @version $Id$
  */
 public class Update {
 
@@ -158,7 +157,7 @@ public class Update {
    * 
    * @see #statement
    */
-  public void close() throws Exception {
+  public void close() throws EFapsException {
     /*
      * if (getStatement()!=null) { try { getStatement().close(); } catch
      * (Exception e) { throw e; } finally { setStatement(null); } }
