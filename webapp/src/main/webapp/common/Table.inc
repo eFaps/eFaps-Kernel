@@ -49,9 +49,9 @@ System.out.println("create new cacheKey = "+cacheKey);
     uiObject.setSortDirection(context.getParameter("sortDir"));
     uiObject.sort();
   } else  {
-System.out.println(".............................START:"+new java.util.Date());
+//System.out.println(".............................START:"+new java.util.Date());
     uiObject.execute();
-System.out.println("............................MIDDLE:"+new java.util.Date());
+//System.out.println("............................MIDDLE:"+new java.util.Date());
   }
 %>
 
@@ -112,7 +112,8 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
    * @param _sortDir  sort direction
    */
   function eFapsSortTable(_sortKey, _sortDir)  {
-    cleanUp=false;
+    dojoDialogBlank.show();
+    cleanUp = false;
     var url = location.href;
     var index = url.indexOf('?');
     if (index>=0)  {
@@ -145,6 +146,7 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
    * The current tale form is submitted to the link href.
    */
   function eFapsTableSubmit()  {
+    dojoDialogBlank.show();
     var form = document.getElementById("eFapsTableForm");
 
     form.action = "../common/Link.jsf";
@@ -152,6 +154,18 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
   }
 
 </script> 
+
+  <style type="text/css">
+       .dojoDialogBlank {
+           background: #eee;
+           border: 0px ;
+           -moz-border-radius: 5px;
+           padding: 0px; 
+           position: absolute;
+           left: -800px;
+           top: -800px;
+       }
+  </style>
 
   </head>  
 
@@ -187,6 +201,10 @@ System.out.println("............................MIDDLE:"+new java.util.Date());
   <%-- menu bar --%>
   <%@include file="ToolBarMenu.inc"%>
 
+  <%-- modal dialog used for processing --%>
+  <s:modalDialog styleClass="dojoDialogBlank" hiderIds="dd" dialogVar="dojoDialogBlank" dialogId="dojoDialogBlank" dialogAttr="bgColor='black' bgOpacity='0.3' toggle='fade' toggleDuration='250'">
+    <t:outputText id="msg" value="processing..."/>
+  </s:modalDialog>
 
     <%-- /*******************************************************************/ --%>
     <%-- /** Table Header                                                  **/ --%>
@@ -394,7 +412,7 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
 
 </f:view>
 <%
-System.out.println("...............................END:"+new java.util.Date());
+//System.out.println("...............................END:"+new java.util.Date());
 %>
 
     <%-- /** hidden frame **/ --%>
