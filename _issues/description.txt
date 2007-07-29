@@ -1,0 +1,22 @@
+The idea is to use subversion to handle issues. The directory structure is
+defined like http://subissue.tigris.org/.
+
+The system of numbers used for issues are consectuive and self-explanatory:
+
+A : addon
+AD : addon/directory
+AL : addon/lucene
+AW : addon/webapp
+
+C : common (general / common issues)
+
+E : example
+ED : example/derby
+ES : example/shell
+
+F : framework
+
+M : module
+MA : module/addresswork
+MT : module/teamwork
+
