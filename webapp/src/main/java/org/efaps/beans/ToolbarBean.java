@@ -70,9 +70,10 @@ public class ToolbarBean {
    */
   private CommandAbstract originalCommand = null;
 
-  private List<EFapsModalDialog> modalDialogs = new ArrayList<EFapsModalDialog>();
+  private List<EFapsModalDialog> modalDialogs =
+      new ArrayList<EFapsModalDialog>();
 
-  public List getModalDialogs() {
+  public List<EFapsModalDialog> getModalDialogs() {
     return modalDialogs;
   }
 
@@ -110,7 +111,8 @@ public class ToolbarBean {
     // initalise the NavigationMenuItem instance with mapped Label and raw
     // action
     NavigationMenuItem ret =
-        new NavigationMenuItem(DBProperties.getProperty(_command.getLabel()), "0");
+        new NavigationMenuItem(DBProperties.getProperty(_command.getLabel()),
+            "0");
     // map the icon path
     if (_command.getIcon() != null) {
       ret.setIcon("/.." + _command.getIcon());
@@ -127,7 +129,8 @@ public class ToolbarBean {
     return ret;
   }
 
-  protected String getTargetURL(final CommandAbstract _command) throws Exception  {
+  protected String getTargetURL(final CommandAbstract _command)
+      throws Exception {
     StringBuilder url = new StringBuilder();
 
     // always javascript (needed for faces..)
@@ -145,7 +148,8 @@ public class ToolbarBean {
       url.append(_command.getReference());
     } else if ((_command.getTargetTable() != null)
         || (_command.getTargetForm() != null)
-        || (_command.getTargetSearch() != null) || (_command.hasEvents(EventType.UI_COMMAND_EXECUTE))) {
+        || (_command.getTargetSearch() != null)
+        || (_command.hasEvents(EventType.UI_COMMAND_EXECUTE))) {
       url.append("Link.jsf?");
       // hack (no url found!)
     } else {
@@ -164,9 +168,10 @@ public class ToolbarBean {
 
     // append target
     if (this.search) {
-      url.append("&eFapsCallingCommand=").append(Context.getThreadContext().getParameter("eFapsCallingCommand"))
-         .append("&search=").append(this.originalCommand.getName())
-         .append("\",\"Replace\"");
+      url.append("&eFapsCallingCommand=").append(
+          Context.getThreadContext().getParameter("eFapsCallingCommand"))
+          .append("&search=").append(this.originalCommand.getName()).append(
+              "\",\"Replace\"");
     } else {
       url.append("\",\"");
       switch (_command.getTarget()) {
@@ -184,6 +189,10 @@ public class ToolbarBean {
                 "\",\"").append(_command.getWindowHeight());
           }
         break;
+
+        case CommandAbstract.TARGET_MODAL:
+          url.append("eFapsFrameModal");
+        break;
         default:
           if (_command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
             url.append("eFapsFrameHidden");
@@ -197,9 +206,14 @@ public class ToolbarBean {
     url.append(")");
 
     if (_command.isAskUser()) {
-      EFapsModalDialog modaldialog = new EFapsModalDialog(_command, url.toString());
+      EFapsModalDialog modaldialog =
+          new EFapsModalDialog(_command, url.toString());
       modalDialogs.add(modaldialog);
       return ("javascript:" + modaldialog.getDialogVar() + ".show();");
+    }
+    if (_command.getTarget() == CommandAbstract.TARGET_MODAL) {
+      url.append(";frameModal(").append(_command.getWindowHeight()).append(",")
+          .append(_command.getWindowWidth()).append(");");
     }
 
     return "javascript:" + url.toString();
@@ -221,26 +235,26 @@ public class ToolbarBean {
    * @todo description
    */
   public void setCommandName(final String _commandName) throws EFapsException {
-    if (_commandName != null)  {
+    if (_commandName != null) {
       this.originalCommand = getCommand(_commandName);
-  
+
       if (this.originalCommand != null) {
-  
+
         if (this.originalCommand.getTargetMode() == CommandAbstract.TARGET_MODE_SEARCH) {
           String searchName = Context.getThreadContext().getParameter("search");
-          if (searchName != null)  {
+          if (searchName != null) {
             this.originalCommand = getCommand(searchName);
           }
         }
-  
+
         if (this.originalCommand != null) {
           if (this.originalCommand.getTargetMenu() != null) {
-  
+
             if (this.originalCommand.getTargetMenu().hasAccess()) {
               this.menu = this.originalCommand.getTargetMenu();
             }
           } else if (this.originalCommand.getTargetSearch() != null) {
-  
+
             if (this.originalCommand.getTargetSearch().hasAccess()) {
               this.menu = this.originalCommand.getTargetSearch();
               this.search = true;
@@ -268,7 +282,7 @@ public class ToolbarBean {
    * expression within the title.
    * 
    * @param _oid
-   *          new object id to set
+   *                new object id to set
    * @see #oid
    */
   public void setOid(final String _oid) {

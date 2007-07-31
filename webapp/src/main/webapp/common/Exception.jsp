@@ -138,32 +138,16 @@
     text = text.replaceAll("\n", " ");
     text = text.replaceAll("\r", " ");
 
+    
+    String errorID = decode(errorId);
+    String errorMsg = decode(errorMessage);
+    String errorAct = decode(errorAction);
   %>
   <html>
     <script type="text/javascript">
 
       function eFapsShowError()  {
-        var winleft = parseInt((screen.width - 500) / 2);
-        var wintop = parseInt((screen.height - 200) / 2);
-        var myWin = window.open("", "",
-            "dependent=no,"+
-            "location=no,"+
-            "menubar=no,"+
-            "titlebar=no,"+
-            "hotkeys=no,"+
-            "status=no,"+
-            "toolbar=no,"+
-            "scrollbars=yes,"+
-            "resizable=yes,"+
-            "height=200,"+
-            "width=500,"+
-            "left="+winleft+","+
-            "top="+wintop);
-        myWin.document.write(unescape('<%=text%>'));
-        myWin.focus();
-        if (parent && parent.eFapsProcessEnd)  {
-          parent.eFapsProcessEnd();
-        }
+        parent.errorPage('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>');
       }
     </script>
 

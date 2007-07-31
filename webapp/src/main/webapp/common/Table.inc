@@ -24,6 +24,7 @@
 <%@page import="org.efaps.admin.datamodel.ui.FieldValue"%>
 <%@page import="org.efaps.beans.TableBean"%>
 
+
 <%@taglib prefix="c"    uri="http://java.sun.com/jstl/core"%>
 <%@taglib prefix="h"    uri="http://java.sun.com/jsf/html"%>
 <%@taglib prefix="f"    uri="http://java.sun.com/jsf/core"%>
@@ -54,7 +55,7 @@ System.out.println("create new cacheKey = "+cacheKey);
 //System.out.println("............................MIDDLE:"+new java.util.Date());
   }
 %>
-
+<f:view>
 <html>
 
 
@@ -63,6 +64,8 @@ System.out.println("create new cacheKey = "+cacheKey);
     <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css"/>
     
     <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
+
+    <t:dojoInitializer require="dojo.widget.Dialog"></t:dojoInitializer>
 
 <script type="text/javascript">
 	var cleanUp=true;
@@ -112,7 +115,7 @@ System.out.println("create new cacheKey = "+cacheKey);
    * @param _sortDir  sort direction
    */
   function eFapsSortTable(_sortKey, _sortDir)  {
-    dojoDialogBlank.show();
+    dlgProcess.show();
     cleanUp = false;
     var url = location.href;
     var index = url.indexOf('?');
@@ -146,30 +149,47 @@ System.out.println("create new cacheKey = "+cacheKey);
    * The current tale form is submitted to the link href.
    */
   function eFapsTableSubmit()  {
-    dojoDialogBlank.show();
+    dlgProcess.show();
     var form = document.getElementById("eFapsTableForm");
 
     form.action = "../common/Link.jsf";
     form.submit();
   }
 
-</script> 
+  var dlgWarn, dlgProcess, dlgError
+  function init(e) {
+	dlgWarn = dojo.widget.byId("dialogWarn");
+	dlgProcess = dojo.widget.byId("dialogProcess");
+	dlgError = dojo.widget.byId("dialogError");
+	dlgFrMdl = dojo.widget.byId("dialogFrameModal");
+  }
+  
+  dojo.addOnLoad(init);
 
-  <style type="text/css">
-       .dojoDialogBlank {
-           background: #eee;
-           border: 0px ;
-           -moz-border-radius: 5px;
-           padding: 0px; 
-           position: absolute;
-           left: -800px;
-           top: -800px;
-       }
-  </style>
+  function frameModal(_height, _width){
+    var fm = document.getElementById("eFapsFrameModal");
+    fm.height=_height;
+    fm.width=_width;
+    dlgFrMdl.show()
+  }
+
+   function errorPage(_Id, _Msg, _Act){
+    document.getElementById("dialogErrorId").firstChild.data = _Id;
+    document.getElementById("dialogErrorMsg").firstChild.data = _Msg;
+    document.getElementById("dialogErrorAct").firstChild.data = _Act;
+    dlgError.show();
+  }
+  
+  function warn(_text){
+    document.getElementById("dialogWarnContent").firstChild.data = _text;
+    dlgWarn.show();
+  }
+</script> 
 
   </head>  
 
   <body onLoad="eFapsTableProcessEnd()" onUnLoad="eFapsTableCleanUpSession()">
+ 
   
 <c:choose>
   <c:when test="${uiObject.searchMode}">
@@ -180,31 +200,17 @@ System.out.println("create new cacheKey = "+cacheKey);
   </c:otherwise>
 </c:choose>
 
-
-
-
-    <%-- /** filter bar **/ --%>
-<%--
-    <div class="eFapsFrameFilter">
-      <form>
-        <select name="eFapsFrameFilter" size="1" onChange="eFapsGetFrameFilter().execute(this.options[this.selectedIndex].value);" style="display:none">
-        </select>
-      </form>
-    </div>
---%>
-
-<f:view>
+  
   <h:panelGrid id="eFapsFrameTitle">
     <f:verbatim><c:out value="${uiObject.title}"/></f:verbatim>
   </h:panelGrid>
 
+ <%@include file="Dialogs.inc"%>
+ 
   <%-- menu bar --%>
   <%@include file="ToolBarMenu.inc"%>
 
-  <%-- modal dialog used for processing --%>
-  <s:modalDialog styleClass="dojoDialogBlank" hiderIds="dd" dialogVar="dojoDialogBlank" dialogId="dojoDialogBlank" dialogAttr="bgColor='black' bgOpacity='0.3' toggle='fade' toggleDuration='250'">
-    <t:outputText id="msg" value="processing..."/>
-  </s:modalDialog>
+  
 
     <%-- /*******************************************************************/ --%>
     <%-- /** Table Header                                                  **/ --%>

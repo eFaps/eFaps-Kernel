@@ -62,6 +62,7 @@
     <field name="status">
       <property name="Expression">Status</property>
       <property name="Label">Admin_User_Abstract/Status.Label</property>
+      <property name="Filterable">true</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>

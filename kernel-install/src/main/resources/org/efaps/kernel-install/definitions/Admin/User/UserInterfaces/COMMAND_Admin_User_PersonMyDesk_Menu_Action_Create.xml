@@ -58,9 +58,11 @@
       <execute program="org.efaps.esjp.common.uiform.Create"/>
     </target>
     <!-- properties -->
-    <property name="Target">popup</property>
+    <property name="Target">modal</property>
     <property name="TargetCreateType">Admin_User_Person</property>
     <property name="TargetMode">create</property>
+    <property name="WindowHeight">460</property>
+    <property name="WindowWidth">515</property>
   </definition>
 
 </ui-command>

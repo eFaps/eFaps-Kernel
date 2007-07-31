@@ -64,10 +64,11 @@
 
 <%-- /** normal form **/ --%>
 <html>
+<f:subview id="Form.inc">
 <head>
-
+<t:dojoInitializer require="dojo.widget.Dialog"></t:dojoInitializer>
 <c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
-
+ 
   <script type="text/javascript">
 
   var submitLock = false;
@@ -89,12 +90,17 @@
     </c:choose>
     
     if(!checkForRequirements()){
-      document.getElementById("eFapsWarnMsg").firstChild.data="<%= DBProperties.getProperty("Common_UIForm_Mandotory.Message") %>";
-      dojoDialogWarn.show();
+      warn("<%= DBProperties.getProperty("Common_UIForm_Mandotory.Message") %>");
     }
     if (!submitLock && checkForRequirements()){
-      dojoDialogBlank.show();
+      dlgProcess.show();
       form.submit();
+      if(parent!=null){
+        parent.dlgProcess.show();
+        parent.location.href=parent.location.href;
+        parent.location.href=parent.location.href;
+        parent.dlgFrMdl.hide();
+      }
     }
     return false;
   }
@@ -161,21 +167,44 @@
     }
     return ret;
   }
-
-  </script>
-
-  <style type="text/css">
-       .dojoDialogBlank {
-           background: #eee;
-           border: 0px ;
-           -moz-border-radius: 5px;
-           padding: 0px; 
-           position: absolute;
-           left: -800px;
-           top: -800px;
-       }
-  </style>
+ 
+</script>
+  
 </c:if>
+
+<script type="text/javascript">
+  var dlgWarn, dlgProcess, dlgError
+  function init(e) {
+	dlgWarn = dojo.widget.byId("dialogWarn");
+	dlgProcess = dojo.widget.byId("dialogProcess");
+	dlgError = dojo.widget.byId("dialogError");
+	dlgFrMdl = dojo.widget.byId("dialogFrameModal");
+	
+  }
+  
+  dojo.addOnLoad(init);
+
+  function frameModal(_height, _width){
+    var fm = document.getElementById("eFapsFrameModal");
+    fm.height=_height;
+    fm.width=_width;
+    dlgFrMdl.show()
+  }
+
+  function errorPage(_Id, _Msg, _Act){
+    document.getElementById("dialogErrorId").firstChild.data = _Id;
+    document.getElementById("dialogErrorMsg").firstChild.data = _Msg;
+    document.getElementById("dialogErrorAct").firstChild.data = _Act;
+    dlgError.show();
+  }
+  
+  function warn(_text){
+    document.getElementById("dialogWarnContent").firstChild.data = _text;
+    dlgWarn.show();
+  }
+  
+  
+  </script>
 
 <link rel="stylesheet" type="text/css" href="../styles/eFapsDefault.css" />
 <script type="text/javascript" src="../javascripts/eFapsDefault.js"></script>
@@ -202,7 +231,8 @@
 	</c:otherwise>
 </c:choose>
 
-<f:view>
+  <%@include file="Dialogs.inc"%>
+
 	<h:panelGrid id="eFapsFrameTitle">
 		<f:verbatim>
 			<c:out value="${uiObject.title}" />
@@ -210,28 +240,14 @@
 	</h:panelGrid>
 
 	<%-- menu bar --%>
-	<%@include file="ToolBarMenu.inc"%>
+	 <%@include file="ToolBarMenu.inc"%>
 	<c:choose>
 		<c:when
 			test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
 			<div id="eFapsFormContentWithFooter">
-			<s:modalDialog styleClass="dojoDialogBlank" hiderIds="dd" dialogVar="dojoDialogBlank" dialogId="dojoDialogBlank" dialogAttr="bgColor='black' bgOpacity='0.3' toggle='fade' toggleDuration='250'">
-              <t:outputText id="msg" value="processing..."/>
-             </s:modalDialog>
-             <s:modalDialog styleClass="dojoDialog" hiderIds="canceldojoDialogWarn" dialogVar="dojoDialogWarn" dialogId="dojoDialogWarn" dialogAttr="bgColor='red' bgOpacity='0.3' toggle='fade' toggleDuration='250'">
-               <h:panelGrid columns="1">
-               
-               <t:outputText id="eFapsWarnMsg" forceId="true"
-                     value="eFaps"/>
-               <t:htmlTag value="center">
-               <t:commandButton  id="canceldojoDialogWarn" forceId="true"
-                            value="OK" onclick="dojo.widget.byId('dojoDialogWarn').hide();"/>
-               
-               </t:htmlTag> 
-               </h:panelGrid>
-             </s:modalDialog>
 		</c:when>
 		<c:otherwise>
+		 x
 			<div id="eFapsFormContent">
 		</c:otherwise>
 	</c:choose>
@@ -406,8 +422,8 @@
             </h:commandLink>
           </c:when>
         </c:choose>
-        <h:commandLink onclick="eFapsCommonCloseWindow();return false;"
-          title="Create">
+        <h:commandLink onclick="parent.dlgFrMdl.hide();eFapsCommonCloseWindow();return false;"
+          title="Close">
           <h:graphicImage value="../images/eFapsButtonCancel.gif" />
           <h:outputText value="Close" />
         </h:commandLink>
@@ -415,7 +431,7 @@
     </div>
 	</c:if>
 
-</f:view>
+</f:subview>
 
 <iframe name="eFapsFrameHidden" id="eFapsFrameHidden"
 	class="eFapsFrameHidden" src="Blank.jsp"> </iframe>
