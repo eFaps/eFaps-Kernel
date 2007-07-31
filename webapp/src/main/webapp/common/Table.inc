@@ -115,6 +115,10 @@ System.out.println("create new cacheKey = "+cacheKey);
    * @param _sortDir  sort direction
    */
   function eFapsSortTable(_sortKey, _sortDir)  {
+    if(filterOn){
+      filterOn=false;
+      return;
+    }
     dlgProcess.show();
     cleanUp = false;
     var url = location.href;
@@ -151,7 +155,6 @@ System.out.println("create new cacheKey = "+cacheKey);
   function eFapsTableSubmit()  {
     dlgProcess.show();
     var form = document.getElementById("eFapsTableForm");
-
     form.action = "../common/Link.jsf";
     form.submit();
   }
@@ -184,6 +187,23 @@ System.out.println("create new cacheKey = "+cacheKey);
     document.getElementById("dialogWarnContent").firstChild.data = _text;
     dlgWarn.show();
   }
+  var filterOn=false;
+  
+  function filter(_filterKey){
+    filterOn=true;
+    eFapsCommonOpenUrl("TableFilter.jsf?cacheKey=<%=cacheKey%>&filterKey=" + _filterKey,"eFapsFrameModal");
+    frameModal(400,300);
+  }
+  
+  function frameModal(_height, _width){
+    var fm = document.getElementById("eFapsFrameModal");
+    fm.height=_height;
+    fm.width=_width;
+    dlgFrMdl.show()
+  }
+  
+  
+  
 </script> 
 
   </head>  
@@ -228,7 +248,7 @@ System.out.println("create new cacheKey = "+cacheKey);
       <c:forEach items="${uiObject.fieldDefs}" var="one">
         <%-- /** show only fields if they are not hidden! **/ --%>
         <c:if test="${one.field.hidden eq false}">
-          <div title="<c:out value="${one.label}"/>" 
+          <div title="<c:out value="${one.label}"/>"
             <%-- /** make href for the sort **/ --%>
             <c:if test="${one.field.sortAble eq true}">
               <c:choose>
@@ -243,10 +263,11 @@ System.out.println("create new cacheKey = "+cacheKey);
               </c:choose>
              style="cursor:pointer"
              </c:if>
-             >
+            ><table><tr><td width="1%" > 
             <%-- /** show label **/ --%>
             <c:out value="${one.label}"/>
             <%-- /** show the sort image **/ --%>
+            </td><td>
             <c:choose>
               <%-- /** show sort up image **/ --%>
               <c:when test="${uiObject.sortKey eq one.field.name and uiObject.sortDirection eq '-'}">
@@ -261,6 +282,8 @@ System.out.println("create new cacheKey = "+cacheKey);
                 <img src="../images/eFapsTableButtonSortDummy.gif"/>
               </c:otherwise>
             </c:choose>
+           </td><td align="right" width="1%" onClick="filter('<c:out value="${one.field.name}"/>')">F</td></tr>
+           </table>
           </div>
         </c:if>
       </c:forEach>

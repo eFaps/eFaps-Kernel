@@ -408,10 +408,9 @@ td.eFapsFormInputField {
         padding-left: 0;
 }
 
-#eFapsTableHeader div {
+#eFapsTableHeader div, #eFapsTableHeader table {
         position: absolute;
         top: 0;
-        text-align: left;
         color: white;
         background-color: #00A000;
         border-style: none;
@@ -422,10 +421,12 @@ td.eFapsFormInputField {
 
 /* Table Header Link Appearance */
 #eFapsTableHeader div a {
-        text-align: left;
+        text-align: right;
         color: white;
         text-decoration: none;
 }
+
+
 #eFapsTableHeader div a:hover {
         text-decoration: underline;
         color: #ccffff;

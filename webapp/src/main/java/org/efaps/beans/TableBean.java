@@ -24,8 +24,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.faces.model.SelectItem;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
@@ -50,7 +54,7 @@ import org.efaps.util.EFapsException;
  */
 public class TableBean extends AbstractCollectionBean {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -101,25 +105,24 @@ public class TableBean extends AbstractCollectionBean {
    * The instance variable stores the current selected filter of this web table
    * representation.
    * 
-   * @see #getSelectedFilter
-   * @see #setSelectedFilter(int)
-   * @see #setSelectedFilter(String)
+   * @see #getFilterKey
+   * @see #setFilterKey(String)
    */
-  int selectedFilter = 0;
+  private String filterKey = null;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
   /**
    * With this instance method the checkboxes for the web table is controlled.
    * The value is get from the calling command which owns a property
    * <i>targetShowCheckBoxes</i> if the value <i>true</i>.
-   *
+   * 
    * @todo description
    */
   public TableBean() throws EFapsException {
     super();
-//System.out.println("TableBean.constructor");
+    // System.out.println("TableBean.constructor");
 
     if (getCommand() != null) {
       // set target table
@@ -135,26 +138,27 @@ public class TableBean extends AbstractCollectionBean {
 
       // set show check boxes
       boolean showCheckBoxes = getCommand().isTargetShowCheckBoxes();
-      if (!showCheckBoxes)  {
+      if (!showCheckBoxes) {
         String cldName = getParameter(PARAM_CALL_CMD_NAME);
-        if (cldName != null)  {
+        if (cldName != null) {
           CommandAbstract cmd = getCommand(cldName);
-          showCheckBoxes = (cmd != null) && cmd.hasEvents(EventType.UI_COMMAND_EXECUTE);
+          showCheckBoxes =
+              (cmd != null) && cmd.hasEvents(EventType.UI_COMMAND_EXECUTE);
         }
       }
       this.showCheckBoxes = showCheckBoxes;
 
-    } else  {
+    } else {
       this.table = null;
-      this.showCheckBoxes  = false;
+      this.showCheckBoxes = false;
     }
   }
 
   public void finalize() {
-//    System.out.println("TableBean.destructor");
+    // System.out.println("TableBean.destructor");
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   public void execute() throws Exception {
@@ -189,11 +193,11 @@ public class TableBean extends AbstractCollectionBean {
     query.execute();
 
     executeRowResult(instMapper, query);
-    
+
     if (this.sortKey != null) {
       this.sort();
     }
-    
+
     setInitialised(true);
   }
 
@@ -300,7 +304,6 @@ public class TableBean extends AbstractCollectionBean {
   }
 
   /**
-   * 
    * @return <i>true</i> if the check boxes must be shown, other <i>false</i>
    *         is returned.
    * @see #showCheckBoxes
@@ -309,7 +312,7 @@ public class TableBean extends AbstractCollectionBean {
     return this.showCheckBoxes;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance getter / setter methods
 
   /**
@@ -359,7 +362,7 @@ public class TableBean extends AbstractCollectionBean {
    * This is the setter method for the instance variable {@link #sortKey}.
    * 
    * @param _sortKey
-   *          new value for instance variable {@link #sortKey}
+   *                new value for instance variable {@link #sortKey}
    * @see #sortKey
    * @see #getSortKey
    */
@@ -382,7 +385,7 @@ public class TableBean extends AbstractCollectionBean {
    * This is the setter method for the instance variable {@link #sortDirection}.
    * 
    * @param _sortDirection
-   *          new value for instance variable {@link #sortDirection}
+   *                new value for instance variable {@link #sortDirection}
    * @see #sortDirection
    * @see #getSortDirection
    */
@@ -391,38 +394,61 @@ public class TableBean extends AbstractCollectionBean {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #selectedFilter}.
+   * This is the getter method for the instance variable {@link #filterKey}.
    * 
-   * @return value of instance variable {@link #selectedFilter}
-   * @see #selectedFilter
-   * @see #setSelectedFilter
+   * @return value of instance variable {@link #filterKey}
+   * @see #filterKey
+   * @see #setFilterKey
    */
-  public int getSelectedFilter() {
-    return this.selectedFilter;
+  public String getFilterKey() {
+    return this.filterKey;
   }
 
   /**
-   * This is the setter method for the instance variable {@link #selectedFilter}.
+   * This is the setter method for the instance variable {@link #filterKey}.
    * 
    * @param _selectedFilter
-   *          new value for instance variable {@link #selectedFilter}
-   * @see #selectedFilter
-   * @see #getSelectedFilter
+   *                new value for instance variable {@link #filterKey}
+   * @see #filterKey
+   * @see #getFilterKey
    */
-  public void setSelectedFilter(int _selectedFilter) {
-    this.selectedFilter = _selectedFilter;
+  public void setFilterKey(String _selectedFilter) {
+    this.filterKey = _selectedFilter;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  public List<SelectItem> getFilterList() throws EFapsException {
+    List<SelectItem> filterlist = new ArrayList<SelectItem>();
+    int filterKey = 0;
+    for (int i = 0; i < getTable().getFields().size(); i++) {
+      Field field = (Field) getTable().getFields().get(i);
+      if (field.getName().equals(this.getFilterKey())) {
+        filterKey = i;
+        break;
+      }
+    }
+    Set<String> controlSet = new HashSet<String>();
+    for (Row row : this.getValues()) {
+      FieldValue fieldvalue = row.getValues().get(filterKey);
+      String value = fieldvalue.getViewHtml();
+      if (!controlSet.contains(value)) {
+        controlSet.add(fieldvalue.getViewHtml());
+        filterlist.add(new SelectItem(fieldvalue.getViewHtml()));
+      }
+    }
+
+    return filterlist;
+  }
+
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The inner class stores one row of the table.
    */
   public class Row {
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // instance variables
 
     /**
@@ -439,14 +465,14 @@ public class TableBean extends AbstractCollectionBean {
      */
     private final String oids;
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // contructors / destructors
 
     /**
      * The constructor creates a new instance of class Row.
      * 
      * @param _oids
-     *          string with all oids for this row
+     *                string with all oids for this row
      */
     public Row(final String _oids) {
       this.oids = _oids;
@@ -476,7 +502,7 @@ public class TableBean extends AbstractCollectionBean {
       return getValues().size();
     }
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
 
     /**
      * This is the getter method for the values variable {@link #values}.
