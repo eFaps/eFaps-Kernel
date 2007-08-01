@@ -29,7 +29,6 @@ import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
-import javax.transaction.TransactionManager;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -45,7 +44,6 @@ import org.apache.commons.logging.LogFactory;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
-import org.efaps.js.Shell;
 import org.efaps.util.EFapsException;
 
 /**
@@ -223,7 +221,7 @@ public abstract class AbstractMethod  {
     }
     ObjectFactory of = null;
     try  {
-      Class factClass = Class.forName(ref.getFactoryClassName());
+      Class<?> factClass = Class.forName(ref.getFactoryClassName());
       of = (ObjectFactory) factClass.newInstance();
     } catch (ClassNotFoundException e)  {
       LOG.error("could not found data source class "

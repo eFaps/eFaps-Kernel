@@ -149,15 +149,15 @@ public class Cache<K extends CacheObjectInterface> {
   /**
    * 
    */
-  public static Set<Cache> caches = Collections
-                                      .synchronizedSet(new HashSet<Cache>());
+  public static Set<Cache<?>> caches = Collections
+                                      .synchronizedSet(new HashSet<Cache<?>>());
 
   /**
    * The static method removes all values in the caches.
    */
   public static void clearCaches() {
     synchronized (caches) {
-      for (Cache cache : caches) {
+      for (Cache<?> cache : caches) {
         cache.cache4Id.clear();
         cache.cache4Name.clear();
         cache.cache4UUID.clear();

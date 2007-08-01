@@ -30,40 +30,40 @@ import org.efaps.db.Delete;
 import org.efaps.util.EFapsException;
 
 /**
- * The ESJP is used to delete selected objects in a row of a web table.
- *
- * <b>Example:</b><br/>
- * <code>
+ * The ESJP is used to delete selected objects in a row of a web table.<br/>
+ * <b>Example:</b><br/> <code>
  *   &lt;execute program="org.efaps.esjp.common.uitable.CommonDelete"&gt;
  *     &lt;property name="DeleteIndex"&gt;1&lt;/property&gt;
  *   &lt;/execute&gt;
  * </code>
  * Because an expand is made to show the web table, the oid with the index 1 in
  * the list of oids is used to delete.
- *
+ * 
  * @author tmo
  * @version $Id$
- * @todo description
  */
 public class CommonDelete implements EventExecution {
 
   /**
-   * All selected oids are split by the pipe (<code>|</code> - meaning the oids
-   * on the way to the row oid, like an expand) and deletes - depending on the
-   * delete index - this oid.
-   *
-   * @param _parameter  parameters from the submitted web table
-   * @throws EFapsException if a delete of the selected oids is not possible
+   * All selected oids are split by the pipe (<code>|</code> - meaning the
+   * oids on the way to the row oid, like an expand) and deletes - depending on
+   * the delete index - this oid.
+   * 
+   * @param _parameter
+   *                parameters from the submitted web table
+   * @throws EFapsException
+   *                 if a delete of the selected oids is not possible
    */
-  public Return execute(final Parameter _parameter) throws EFapsException  {
+  public Return execute(final Parameter _parameter) throws EFapsException {
     String[] allOids = (String[]) _parameter.get(ParameterValues.OTHERS);
-    Map properties = (Map) _parameter.get(ParameterValues.PROPERTIES);
+    Map<?, ?> properties =
+        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
-    if (allOids != null)  {
+    if (allOids != null) {
 
       int delIdx = 0;
       String delIdxStr = (String) properties.get("DeleteIndex");
-      if ((delIdxStr != null) && (delIdxStr.length() > 0))  {
+      if ((delIdxStr != null) && (delIdxStr.length() > 0)) {
         delIdx = Integer.parseInt(delIdxStr);
       }
 

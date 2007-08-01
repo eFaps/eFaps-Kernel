@@ -20,9 +20,6 @@
 
 package org.efaps.esjp.common.history;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,11 +40,6 @@ import org.efaps.util.EFapsException;
  * @todo description
  */
 public class HistoryTrigger implements EventExecution {
-  /**
-   * Logger for this class
-   */
-  private static final Log LOG = LogFactory.getLog(HistoryTrigger.class);
-
   /**
    * @param _parameter
    */

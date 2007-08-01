@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,20 +40,19 @@ import org.efaps.util.EFapsException;
  * XML-File.
  * 
  * @author jmo
- * 
  */
 public class RootObject extends AbstractObject {
   /**
    * Logger for this class
    */
-  private static final Log              LOG        = LogFactory
-                                                       .getLog(RootObject.class);
+  private static final Log LOG = LogFactory.getLog(RootObject.class);
 
-  final List<AbstractObject>            CHILDS     = new ArrayList<AbstractObject>();
+  final List<AbstractObject> CHILDS = new ArrayList<AbstractObject>();
 
-  static String                         DATEFORMAT = null;
+  static String DATEFORMAT = null;
 
-  final static Map<String, OrderObject> ORDER      = new HashMap<String, OrderObject>();
+  final static Map<String, OrderObject> ORDER =
+      new HashMap<String, OrderObject>();
 
   public void setDateFormat(String _DateFormat) {
     DATEFORMAT = _DateFormat;
@@ -98,7 +97,7 @@ public class RootObject extends AbstractObject {
         }
         Insert insert = new Insert(object.getType());
 
-        for (Entry element : object.getAttributes().entrySet()) {
+        for (Entry<String, Object> element : object.getAttributes().entrySet()) {
           if (element.getValue() instanceof Timestamp) {
             insert.add(element.getKey().toString(), (Timestamp) element
                 .getValue());

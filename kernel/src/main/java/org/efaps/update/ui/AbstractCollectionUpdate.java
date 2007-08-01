@@ -21,7 +21,6 @@
 package org.efaps.update.ui;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,8 +30,6 @@ import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
-
-import org.xml.sax.SAXException;
 
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -75,7 +72,7 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
    *
    */
   protected static Digester createDigester(final String _xmlTagName,
-                                           final Class _createClass)
+                                           final Class<?> _createClass)
   throws IOException  {
     Digester digester = new Digester();
     digester.setValidating(false);

@@ -37,12 +37,17 @@ public class EFapsException extends Exception  {
   // instance variables
 
   /**
+   * 
+   */
+  private static final long serialVersionUID = 1906998311318776048L;
+
+  /**
    * The instance variable stores the class name where the exception occurs.
    *
    * @see #getClassName
    * @see #setClassName
    */
-  private final Class className;
+  private final Class<?> className;
 
   /**
    * The instance variable stores the id (key) of the exception.
@@ -63,7 +68,7 @@ public class EFapsException extends Exception  {
   /////////////////////////////////////////////////////////////////////////////
   // constructor / destructor
 
-  public EFapsException(Class _className, String _id, Object... _args)  {
+  public EFapsException(Class<?> _className, String _id, Object... _args)  {
     super("error in "+_className.getName()+"("+_id+","+_args+")");
     this.id = _id;
     this.className = _className;
@@ -95,7 +100,7 @@ public class EFapsException extends Exception  {
    * @see #className
    * @see #setClassName
    */
-  public Class getClassName()  {
+  public Class<?> getClassName()  {
     return this.className;
   }
 

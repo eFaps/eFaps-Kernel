@@ -37,9 +37,17 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
+ * The ESJP is used to launch a query against the eFaps-Database, wich is
+ * afterwards used to fill a webtable.<br/> <b>Example:</b><br/> <code>
+ *   &lt;target&gt;<br/>&nbsp;&nbsp;&lt;evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate"&gt;
+ * <br/>&nbsp;&nbsp;&nbsp;&nbsp;&lt;property name="Types"&gt;Admin_User_Person&lt;/property&gt;
+ * <br/>&nbsp;&nbsp;&lt;/evaluate&gt;<br/> &lt;/target&gt;
+ * </code><br/>
+ * 
+ * 
  * @author tmo
  * @version $Id$
- * @todo description
+ * 
  */
 public class QueryEvaluate implements EventExecution {
   /**
@@ -50,9 +58,10 @@ public class QueryEvaluate implements EventExecution {
   /**
    * @param _parameter
    */
-  public Return execute(final Parameter _parameter) throws EFapsException  {
+  public Return execute(final Parameter _parameter) throws EFapsException {
     Return ret = new Return();
-    Map properties = (Map) _parameter.get(ParameterValues.PROPERTIES);
+    Map<?, ?> properties =
+        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
     String types = (String) properties.get("Types");
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,11 +58,6 @@ public class WebDAVServlet extends HttpServlet {
   // private static final String METHOD_LOCK = "LOCK";
   // private static final String METHOD_UNLOCK = "UNLOCK";
 
-  /**
-   * The URL encoding used by this webDAV servlet is stored
-   */
-  private String                             urlEncoding      = null;
-
   private static Map<String, AbstractMethod> methods          = new HashMap<String, AbstractMethod>();
 
   static {
@@ -83,12 +78,6 @@ public class WebDAVServlet extends HttpServlet {
    */
   public void init(ServletConfig _config) throws ServletException {
     super.init(_config);
-
-    String defaultEncoding = new java.io.InputStreamReader(System.in)
-        .getEncoding();
-    this.urlEncoding = defaultEncoding;
-    // _urlEncoding = _default.getProperty(Property.UrlEncoding,
-    // defaultEncoding);
   }
 
   /**

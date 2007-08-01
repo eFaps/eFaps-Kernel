@@ -143,7 +143,7 @@ public class Update {
     Iterator<?> iter =
         getInstance().getType().getAttributes().entrySet().iterator();
     while (iter.hasNext()) {
-      Map.Entry entry = (Map.Entry) iter.next();
+      Map.Entry<?,?> entry = (Map.Entry<?,?>) iter.next();
       Attribute attr = (Attribute) entry.getValue();
       AttributeType attrType = attr.getAttributeType();
       if (attrType.isAlwaysUpdate()) {
@@ -398,7 +398,7 @@ public class Update {
       for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
           .entrySet()) {
         SQLTable table = entry.getKey();
-        Map expressions = (Map) entry.getValue();
+        Map<?,?> expressions = (Map<?,?>) entry.getValue();
 
         PreparedStatement stmt = null;
         try {
@@ -435,7 +435,7 @@ public class Update {
     Iterator<?> iter = _expressions.entrySet().iterator();
     boolean command = false;
     while (iter.hasNext()) {
-      Map.Entry entry = (Map.Entry) iter.next();
+      Map.Entry<?,?> entry = (Map.Entry<?,?>) iter.next();
 
       if (command) {
         cmd.append(",");

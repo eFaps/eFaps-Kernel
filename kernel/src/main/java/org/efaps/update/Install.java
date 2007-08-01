@@ -28,15 +28,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import org.efaps.update.access.AccessSetUpdate;
 import org.efaps.update.access.AccessTypeUpdate;
 import org.efaps.update.datamodel.SQLTableUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
-import org.efaps.update.dbproperty.DBPropertiesUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
 import org.efaps.update.program.JavaUpdate;
 import org.efaps.update.ui.CommandUpdate;

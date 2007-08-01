@@ -121,9 +121,9 @@ public class Insert extends Update {
    *           from called method
    */
   private void addCreateUpdateAttributes() throws EFapsException {
-    Iterator iter = getType().getAttributes().entrySet().iterator();
+    Iterator<?> iter = getType().getAttributes().entrySet().iterator();
     while (iter.hasNext()) {
-      Map.Entry entry = (Map.Entry) iter.next();
+      Map.Entry<?,?> entry = (Map.Entry<?,?>) iter.next();
       Attribute attr = (Attribute) entry.getValue();
       AttributeType attrType = attr.getAttributeType();
       if (attrType.isCreateUpdate()) {
@@ -216,7 +216,7 @@ public class Insert extends Update {
    */
   private long executeOneStatement(final Context _context,
       final ConnectionResource _con, final SQLTable _table,
-      final Map _expressions, final long _id) throws EFapsException {
+      final Map<?, ?> _expressions, final long _id) throws EFapsException {
 
     long ret = _id;
     PreparedStatement stmt = null;
@@ -265,7 +265,7 @@ public class Insert extends Update {
    */
   private PreparedStatement createOneStatement(final Context _context,
       final ConnectionResource _con, final SQLTable _table,
-      final Map _expressions, final long _id) throws SQLException {
+      final Map<?, ?> _expressions, final long _id) throws SQLException {
 
     List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
     StringBuilder cmd = new StringBuilder();
@@ -276,9 +276,9 @@ public class Insert extends Update {
       cmd.append(_table.getSqlColId());
       first = false;
     }
-    Iterator iter = _expressions.entrySet().iterator();
+    Iterator<?> iter = _expressions.entrySet().iterator();
     while (iter.hasNext()) {
-      Map.Entry entry = (Map.Entry) iter.next();
+      Map.Entry<?,?> entry = (Map.Entry<?,?>) iter.next();
 
       if (!first) {
         cmd.append(",");

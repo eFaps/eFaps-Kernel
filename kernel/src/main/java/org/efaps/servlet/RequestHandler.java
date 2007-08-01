@@ -43,6 +43,11 @@ import org.efaps.db.databases.AbstractDatabase;
 public class RequestHandler extends HttpServlet {
 
   /**
+   * 
+   */
+  private static final long serialVersionUID = 7212518317632161066L;
+
+  /**
    * The static variable holds the resource name for the JDBC database
    * connection.
    */

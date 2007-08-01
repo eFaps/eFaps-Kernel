@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,7 +115,7 @@ public class ForeignObject {
 
       query.setExpandChildTypes(true);
 
-      for (Entry element : this.attributes.entrySet()) {
+      for (Entry<String, String> element : this.attributes.entrySet()) {
         query.addWhereExprEqValue(element.getKey().toString(), element
             .getValue().toString());
       }

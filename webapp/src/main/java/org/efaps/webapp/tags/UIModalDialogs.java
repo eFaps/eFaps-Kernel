@@ -68,7 +68,7 @@ public class UIModalDialogs extends ModalDialog {
     return "cancel" + this.activemodaldialog.getDialogVar();
   }
 
-  public Iterator getIterator() {
+  public Iterator<?> getIterator() {
     if (iterator == null) {
       iterator = getDialogList().iterator();
     }
@@ -80,7 +80,7 @@ public class UIModalDialogs extends ModalDialog {
     this.activemodaldialog = _modaldialog;
   }
 
-  private List getDialogList() {
+  private List<?> getDialogList() {
     if (modaldialogs == null) {
       VariableResolver resolver =
           getFacesContext().getApplication().getVariableResolver();

@@ -22,13 +22,12 @@ package org.efaps.servlet;
 
 import java.io.IOException;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.ServletException;
 
 import org.efaps.db.Checkout;
-import org.efaps.db.Context;
 
 /**
  * The servlet checks out files from objects.
@@ -64,8 +63,6 @@ public class CheckoutServlet extends HttpServlet {
     String oid = _req.getParameter(PARAM_OID);
 
     try {
-      Context context = Context.getThreadContext();
-
       Checkout checkout = new Checkout(oid);
       checkout.preprocess();
 

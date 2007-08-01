@@ -20,8 +20,6 @@
 
 package org.efaps.db;
 
-import java.lang.IllegalStateException;
-import java.lang.SecurityException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -36,7 +34,6 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
