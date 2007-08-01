@@ -147,7 +147,7 @@
     <script type="text/javascript">
 
       function eFapsShowError()  {
-        parent.errorPage('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>');
+        parent.eFapsOpenErrorDialog('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>');
       }
     </script>
 

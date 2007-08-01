@@ -53,12 +53,12 @@
 %>
 
 <c:choose>
-	<c:when test="${uiObject.viewMode}">
-		<c:set var="bodyClass" value="eFapsFrameView" />
-	</c:when>
-	<c:otherwise>
-		<c:set var="bodyClass" value="eFapsFrameEdit" />
-	</c:otherwise>
+  <c:when test="${uiObject.viewMode}">
+    <c:set var="bodyClass" value="eFapsFrameView" />
+  </c:when>
+  <c:otherwise>
+    <c:set var="bodyClass" value="eFapsFrameEdit" />
+  </c:otherwise>
 </c:choose>
 
 
@@ -90,12 +90,12 @@
     </c:choose>
     
     if(!checkForRequirements()){
-      warn("<%= DBProperties.getProperty("Common_UIForm_Mandotory.Message") %>");
+      eFapsOpenWarnDialog("<%= DBProperties.getProperty("Common_UIForm_Mandotory.Message") %>");
     }
     if (!submitLock && checkForRequirements()){
       dlgProcess.show();
       form.submit();
-      if(parent!=null){
+      if(opener==null){
         parent.dlgProcess.show();
         parent.location.href=parent.location.href;
         parent.location.href=parent.location.href;
@@ -174,31 +174,31 @@
 
 <script type="text/javascript">
   var dlgWarn, dlgProcess, dlgError
+  
   function init(e) {
-	dlgWarn = dojo.widget.byId("dialogWarn");
-	dlgProcess = dojo.widget.byId("dialogProcess");
-	dlgError = dojo.widget.byId("dialogError");
-	dlgFrMdl = dojo.widget.byId("dialogFrameModal");
-	
+    dlgWarn = dojo.widget.byId("dialogWarn");
+    dlgProcess = dojo.widget.byId("dialogProcess");
+    dlgError = dojo.widget.byId("dialogError");
+    dlgFrMdl = dojo.widget.byId("dialogFrameModal");
   }
   
   dojo.addOnLoad(init);
 
-  function frameModal(_height, _width){
+  function eFapsOpenFrameModal(_height, _width){
     var fm = document.getElementById("eFapsFrameModal");
     fm.height=_height;
     fm.width=_width;
     dlgFrMdl.show()
   }
 
-  function errorPage(_Id, _Msg, _Act){
+  function eFapsOpenErrorDialog(_Id, _Msg, _Act){
     document.getElementById("dialogErrorId").firstChild.data = _Id;
     document.getElementById("dialogErrorMsg").firstChild.data = _Msg;
     document.getElementById("dialogErrorAct").firstChild.data = _Act;
     dlgError.show();
   }
   
-  function warn(_text){
+  function eFapsOpenWarnDialog(_text){
     document.getElementById("dialogWarnContent").firstChild.data = _text;
     dlgWarn.show();
   }
@@ -219,38 +219,38 @@
 
 </head>
 <body onUnLoad="eFapsCleanUpSession('<%=timeStamp%>')"
-	class="<c:out value="${bodyClass}"/>">
+  class="<c:out value="${bodyClass}"/>">
 
 <c:choose>
-	<c:when
-		test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
-		<div id="eFapsFormWithFooter">
-	</c:when>
-	<c:otherwise>
-		<div id="eFapsForm">
-	</c:otherwise>
+  <c:when
+    test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
+    <div id="eFapsFormWithFooter">
+  </c:when>
+  <c:otherwise>
+    <div id="eFapsForm">
+  </c:otherwise>
 </c:choose>
 
   <%@include file="Dialogs.inc"%>
 
-	<h:panelGrid id="eFapsFrameTitle">
-		<f:verbatim>
-			<c:out value="${uiObject.title}" />
-		</f:verbatim>
-	</h:panelGrid>
+  <h:panelGrid id="eFapsFrameTitle">
+    <f:verbatim>
+      <c:out value="${uiObject.title}" />
+    </f:verbatim>
+  </h:panelGrid>
 
-	<%-- menu bar --%>
-	 <%@include file="ToolBarMenu.inc"%>
-	<c:choose>
-		<c:when
-			test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
-			<div id="eFapsFormContentWithFooter">
-		</c:when>
-		<c:otherwise>
-		 x
-			<div id="eFapsFormContent">
-		</c:otherwise>
-	</c:choose>
+  <%-- menu bar --%>
+   <%@include file="ToolBarMenu.inc"%>
+  <c:choose>
+    <c:when
+      test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
+      <div id="eFapsFormContentWithFooter">
+    </c:when>
+    <c:otherwise>
+     x
+      <div id="eFapsFormContent">
+    </c:otherwise>
+  </c:choose>
 
 
   <form id="eFapsFormForm"
@@ -272,132 +272,132 @@
         <input type="hidden" name="<c:out value="${hiddenValue.name}"/>" value="<c:out value="${hiddenValue.value}"/>"/>
     </c:forEach>
 
-	<table id="eFapsFormTabel">
-		<c:if test="${uiObject.values ne null}">
+  <table id="eFapsFormTabel">
+    <c:if test="${uiObject.values ne null}">
 
-			<%-- /** group count and row group count is default equal 1,
+      <%-- /** group count and row group count is default equal 1,
                      because only one field should be shown per row **/ --%>
-			<c:set var="groupCount" value="1" />
-			<c:set var="rowGroupCount" value="1" />
+      <c:set var="groupCount" value="1" />
+      <c:set var="rowGroupCount" value="1" />
 
-			<c:forEach items="${uiObject.values}" var="value" begin="1">
+      <c:forEach items="${uiObject.values}" var="value" begin="1">
 
-				<c:choose>
+        <c:choose>
 
-					<%-- /** if the field is a group count field, store the value in the row group count variable,
+          <%-- /** if the field is a group count field, store the value in the row group count variable,
                          (only if not create node or field is creatable) **/ --%>
-					<c:when
-						test="${value.fieldDef.field.groupCount > 0 && (uiObject.createMode ne true or value.fieldDef.field.creatable)  && (uiObject.searchMode ne true or value.fieldDef.field.searchable)}">
-						<c:set var="rowGroupCount"
-							value="${value.fieldDef.field.groupCount}" />
-					</c:when>
+          <c:when
+            test="${value.fieldDef.field.groupCount > 0 && (uiObject.createMode ne true or value.fieldDef.field.creatable)  && (uiObject.searchMode ne true or value.fieldDef.field.searchable)}">
+            <c:set var="rowGroupCount"
+              value="${value.fieldDef.field.groupCount}" />
+          </c:when>
 
-					<%-- /* only if:
+          <%-- /* only if:
                         - in createmode field is createable
                         - in searchmode field is searchable
                         - otherwise show field */ --%>
-					<c:when
-						test="${(uiObject.createMode ne true or value.fieldDef.field.creatable) and (uiObject.searchMode ne true or value.fieldDef.field.searchable)}">
+          <c:when
+            test="${(uiObject.createMode ne true or value.fieldDef.field.creatable) and (uiObject.searchMode ne true or value.fieldDef.field.searchable)}">
 
-						<%-- /** start start row tag if first column **/ --%>
-						<c:if test="${groupCount == 1}">
-							<tr>
-						</c:if>
+            <%-- /** start start row tag if first column **/ --%>
+            <c:if test="${groupCount == 1}">
+              <tr>
+            </c:if>
 
-						<%-- /** use required style class only if defined and not in edit or create mode **/ --%>
-						<c:choose>
-							<c:when
-								test="${value.fieldDef.field.required and (uiObject.editMode or uiObject.createMode)}">
-								<td class="eFapsFormLabelRequired">
-							</c:when>
-							<c:otherwise>
-								<td class="eFapsFormLabel">
-							</c:otherwise>
-						</c:choose>
+            <%-- /** use required style class only if defined and not in edit or create mode **/ --%>
+            <c:choose>
+              <c:when
+                test="${value.fieldDef.field.required and (uiObject.editMode or uiObject.createMode)}">
+                <td class="eFapsFormLabelRequired">
+              </c:when>
+              <c:otherwise>
+                <td class="eFapsFormLabel">
+              </c:otherwise>
+            </c:choose>
 
-						<%-- /** show the label of the field **/ --%>
-						<c:out value="${value.fieldDef.label}" />
-						</td>
+            <%-- /** show the label of the field **/ --%>
+            <c:out value="${value.fieldDef.label}" />
+            </td>
 
-						<%-- /** make column with correct span **/ --%>
-						<td class="eFapsFormInputField"
-							colspan="<c:out value="${2 * (uiObject.maxGroupCount - rowGroupCount) + 1}"/>">
+            <%-- /** make column with correct span **/ --%>
+            <td class="eFapsFormInputField"
+              colspan="<c:out value="${2 * (uiObject.maxGroupCount - rowGroupCount) + 1}"/>">
 
-						<%-- /** show href START **/ --%> <c:if
-							test="${value.fieldDef.field.reference ne null and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
-							<c:set var="targetUrl"
-								value="${value.fieldDef.field.reference}&oid=${value.instance.oid}" />
+            <%-- /** show href START **/ --%> <c:if
+              test="${value.fieldDef.field.reference ne null and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
+              <c:set var="targetUrl"
+                value="${value.fieldDef.field.reference}&oid=${value.instance.oid}" />
 
-							<c:choose>
-								<c:when test="${value.fieldDef.field.targetPopup}">
-									<c:set var="targetWindow" value="Popup" />
-								</c:when>
-								<c:otherwise>
-									<c:set var="targetWindow" value="Content" />
-									<c:if test="${uiObject.nodeId ne null}">
-										<c:set var="targetUrl"
-											value="${targetUrl}&nodeId=${uiObject.nodeId}" />
-									</c:if>
-								</c:otherwise>
-							</c:choose>
+              <c:choose>
+                <c:when test="${value.fieldDef.field.targetPopup}">
+                  <c:set var="targetWindow" value="Popup" />
+                </c:when>
+                <c:otherwise>
+                  <c:set var="targetWindow" value="Content" />
+                  <c:if test="${uiObject.nodeId ne null}">
+                    <c:set var="targetUrl"
+                      value="${targetUrl}&nodeId=${uiObject.nodeId}" />
+                  </c:if>
+                </c:otherwise>
+              </c:choose>
 
-							<a
-								href="javascript:eFapsCommonOpenUrl('<c:out value="${targetUrl}" escapeXml="false"/>','<c:out value="${targetWindow}" escapeXml="false"/>')">
+              <a
+                href="javascript:eFapsCommonOpenUrl('<c:out value="${targetUrl}" escapeXml="false"/>','<c:out value="${targetWindow}" escapeXml="false"/>')">
 
-							<c:remove var="targetUrl" /> <c:remove var="targetWindow" />
-						</c:if> <%-- /** show type icon if needed **/ --%> <c:if
-							test="${value.fieldDef.field.showTypeIcon and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
-							<img src="<c:out value="${value.instance.type.icon}"/>" />&nbsp;
+              <c:remove var="targetUrl" /> <c:remove var="targetWindow" />
+            </c:if> <%-- /** show type icon if needed **/ --%> <c:if
+              test="${value.fieldDef.field.showTypeIcon and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
+              <img src="<c:out value="${value.instance.type.icon}"/>" />&nbsp;
                     </c:if> <%-- /** show value **/ --%> <c:choose>
-							<c:when
-								test="${uiObject.createMode and value.fieldDef.field.creatable}">
-								<c:out value="${value.createHtml}" escapeXml="false" />
-							</c:when>
-							<c:when
-								test="${uiObject.editMode and value.fieldDef.field.editable}">
-								<c:out value="${value.editHtml}" escapeXml="false" />
-							</c:when>
-							<c:when
-								test="${uiObject.searchMode and value.fieldDef.field.searchable}">
-								<c:out value="${value.searchHtml}" escapeXml="false" />
-							</c:when>
-							<c:otherwise>
-								<c:out value="${value.viewHtml}" escapeXml="false" />
-							</c:otherwise>
-						</c:choose> <%-- /** show href END **/ --%> <c:if
-							test="${value.fieldDef.field.reference ne null and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
-							</a>
-						</c:if></td>
+              <c:when
+                test="${uiObject.createMode and value.fieldDef.field.creatable}">
+                <c:out value="${value.createHtml}" escapeXml="false" />
+              </c:when>
+              <c:when
+                test="${uiObject.editMode and value.fieldDef.field.editable}">
+                <c:out value="${value.editHtml}" escapeXml="false" />
+              </c:when>
+              <c:when
+                test="${uiObject.searchMode and value.fieldDef.field.searchable}">
+                <c:out value="${value.searchHtml}" escapeXml="false" />
+              </c:when>
+              <c:otherwise>
+                <c:out value="${value.viewHtml}" escapeXml="false" />
+              </c:otherwise>
+            </c:choose> <%-- /** show href END **/ --%> <c:if
+              test="${value.fieldDef.field.reference ne null and !(empty value.instance.oid) and uiObject.createMode ne true and uiObject.searchMode ne true}">
+              </a>
+            </c:if></td>
 
-						<%-- /** show the end row tag only if last table column **/ --%>
-						<c:if test="${groupCount == rowGroupCount}">
-							</tr>
-						</c:if>
+            <%-- /** show the end row tag only if last table column **/ --%>
+            <c:if test="${groupCount == rowGroupCount}">
+              </tr>
+            </c:if>
 
-						<c:choose>
-							<%-- /** if group count less than row group count, increase by 1;
+            <c:choose>
+              <%-- /** if group count less than row group count, increase by 1;
                              meaning the row has more than one field! **/ --%>
-							<c:when test="${groupCount < rowGroupCount}">
-								<c:set var="groupCount" value="${groupCount + 1}" />
-							</c:when>
-							<%-- /** if last column, reset group counters **/ --%>
-							<c:when test="${groupCount == rowGroupCount}">
-								<c:set var="groupCount" value="1" />
-								<c:set var="rowGroupCount" value="1" />
-							</c:when>
-						</c:choose>
-					</c:when>
-				</c:choose>
-			</c:forEach>
+              <c:when test="${groupCount < rowGroupCount}">
+                <c:set var="groupCount" value="${groupCount + 1}" />
+              </c:when>
+              <%-- /** if last column, reset group counters **/ --%>
+              <c:when test="${groupCount == rowGroupCount}">
+                <c:set var="groupCount" value="1" />
+                <c:set var="rowGroupCount" value="1" />
+              </c:when>
+            </c:choose>
+          </c:when>
+        </c:choose>
+      </c:forEach>
 
-		</c:if>
-	</table>
-	</form>
-	</div>
+    </c:if>
+  </table>
+  </form>
+  </div>
 
 
-	<c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
-		<div id="eFapsFooter">
+  <c:if test="${uiObject.createMode or uiObject.editMode or uiObject.searchMode}">
+    <div id="eFapsFooter">
       <h:form id="eFapsFormFooter">
         <c:choose>
           <c:when test="${uiObject.createMode}">
@@ -429,12 +429,12 @@
         </h:commandLink>
       </h:form>
     </div>
-	</c:if>
+  </c:if>
 
 </f:subview>
 
 <iframe name="eFapsFrameHidden" id="eFapsFrameHidden"
-	class="eFapsFrameHidden" src="Blank.jsp"> </iframe>
+  class="eFapsFrameHidden" src="Blank.jsp"> </iframe>
 </div>
 </body>
 </html>

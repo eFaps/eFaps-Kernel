@@ -181,30 +181,31 @@ System.out.println("create new cacheKey = "+cacheKey);
   }
 
   var dlgWarn, dlgProcess, dlgError
+  
   function init(e) {
-  dlgWarn = dojo.widget.byId("dialogWarn");
-  dlgProcess = dojo.widget.byId("dialogProcess");
-  dlgError = dojo.widget.byId("dialogError");
-  dlgFrMdl = dojo.widget.byId("dialogFrameModal");
+    dlgWarn = dojo.widget.byId("dialogWarn");
+    dlgProcess = dojo.widget.byId("dialogProcess");
+    dlgError = dojo.widget.byId("dialogError");
+    dlgFrMdl = dojo.widget.byId("dialogFrameModal");
   }
   
   dojo.addOnLoad(init);
 
-  function frameModal(_height, _width){
+  function eFapsOpenFrameModal(_height, _width){
     var fm = document.getElementById("eFapsFrameModal");
     fm.height=_height;
     fm.width=_width;
     dlgFrMdl.show()
   }
 
-   function errorPage(_Id, _Msg, _Act){
+  function eFapsOpenErrorDialog(_Id, _Msg, _Act){
     document.getElementById("dialogErrorId").firstChild.data = _Id;
     document.getElementById("dialogErrorMsg").firstChild.data = _Msg;
     document.getElementById("dialogErrorAct").firstChild.data = _Act;
     dlgError.show();
   }
   
-  function warn(_text){
+  function eFapsOpenWarnDialog(_text){
     document.getElementById("dialogWarnContent").firstChild.data = _text;
     dlgWarn.show();
   }
@@ -213,16 +214,8 @@ System.out.println("create new cacheKey = "+cacheKey);
   function eFapsOpenFilterDialog(_filterKey){
     filterOn=true;
     eFapsCommonOpenUrl("TableFilter.jsf?eFapsCacheKey=<%=cacheKey%>&filterKey=" + _filterKey,"eFapsFrameModal");
-    frameModal(400,300);
+    eFapsOpenFrameModal(400,300);
   }
-  
-  function frameModal(_height, _width){
-    var fm = document.getElementById("eFapsFrameModal");
-    fm.height=_height;
-    fm.width=_width;
-    dlgFrMdl.show()
-  }
-  
   
   
 </script> 

@@ -212,7 +212,7 @@ public class ToolbarBean {
       return ("javascript:" + modaldialog.getDialogVar() + ".show();");
     }
     if (_command.getTarget() == CommandAbstract.TARGET_MODAL) {
-      url.append(";frameModal(").append(_command.getWindowHeight()).append(",")
+      url.append(";eFapsOpenFrameModal(").append(_command.getWindowHeight()).append(",")
           .append(_command.getWindowWidth()).append(");");
     }
 
