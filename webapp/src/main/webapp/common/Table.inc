@@ -49,6 +49,8 @@ System.out.println("create new cacheKey = "+cacheKey);
     uiObject.setSortKey(context.getParameter("sortKey"));
     uiObject.setSortDirection(context.getParameter("sortDir"));
     uiObject.sort();
+    uiObject.setFilter(context.getParameter("filter"));
+    uiObject.filter();
   } else  {
 //System.out.println(".............................START:"+new java.util.Date());
     uiObject.execute();
@@ -68,7 +70,7 @@ System.out.println("create new cacheKey = "+cacheKey);
     <t:dojoInitializer require="dojo.widget.Dialog"></t:dojoInitializer>
 
 <script type="text/javascript">
-	var cleanUp=true;
+  var cleanUp=true;
     
     function eFapsTableProcessEnd() {
       eFapsPositionTable();
@@ -107,6 +109,25 @@ System.out.println("create new cacheKey = "+cacheKey);
         }
       }
     }
+ 
+  function eFapsFilterTable(_filter){
+    dlgProcess.show();
+    cleanUp = false;
+    var url = location.href;
+    var index = url.indexOf('?');
+    if (index>=0)  {
+      url = url.substring(0, index);
+    }
+    url = url + "?command=<c:out value="${uiObject.command.name}"/>&cacheKey=<%=cacheKey%>&filter=" + _filter;
+    
+    <c:if test="${uiObject.instance ne null}">
+      url += "&oid=<c:out value="${uiObject.instance.oid}"/>";
+    </c:if>
+
+    location.href = url;
+    
+  }
+ 
  
   /**
    * Calls the table web page used to sort the result.
@@ -161,10 +182,10 @@ System.out.println("create new cacheKey = "+cacheKey);
 
   var dlgWarn, dlgProcess, dlgError
   function init(e) {
-	dlgWarn = dojo.widget.byId("dialogWarn");
-	dlgProcess = dojo.widget.byId("dialogProcess");
-	dlgError = dojo.widget.byId("dialogError");
-	dlgFrMdl = dojo.widget.byId("dialogFrameModal");
+  dlgWarn = dojo.widget.byId("dialogWarn");
+  dlgProcess = dojo.widget.byId("dialogProcess");
+  dlgError = dojo.widget.byId("dialogError");
+  dlgFrMdl = dojo.widget.byId("dialogFrameModal");
   }
   
   dojo.addOnLoad(init);
@@ -189,9 +210,9 @@ System.out.println("create new cacheKey = "+cacheKey);
   }
   var filterOn=false;
   
-  function filter(_filterKey){
+  function eFapsOpenFilterDialog(_filterKey){
     filterOn=true;
-    eFapsCommonOpenUrl("TableFilter.jsf?cacheKey=<%=cacheKey%>&filterKey=" + _filterKey,"eFapsFrameModal");
+    eFapsCommonOpenUrl("TableFilter.jsf?eFapsCacheKey=<%=cacheKey%>&filterKey=" + _filterKey,"eFapsFrameModal");
     frameModal(400,300);
   }
   
@@ -282,7 +303,13 @@ System.out.println("create new cacheKey = "+cacheKey);
                 <img src="../images/eFapsTableButtonSortDummy.gif"/>
               </c:otherwise>
             </c:choose>
-           </td><td align="right" width="1%" onClick="filter('<c:out value="${one.field.name}"/>')">F</td></tr>
+           </td>
+           <c:if test="${one.field.filterable eq true}">
+             <td align="right" width="1%" onClick="eFapsOpenFilterDialog('<c:out value="${one.field.name}"/>')">
+               <img src="../images/eFapsTableButtonNextPageDisabled.gif"/>
+             </td>
+           </c:if>
+           </tr>
            </table>
           </div>
         </c:if>

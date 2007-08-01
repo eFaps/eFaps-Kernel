@@ -24,12 +24,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
-import javax.faces.model.SelectItem;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
@@ -102,13 +101,17 @@ public class TableBean extends AbstractCollectionBean {
   private String sortDirection = null;
 
   /**
-   * The instance variable stores the current selected filter of this web table
-   * representation.
+   * The instance variable stores the current selected filterKey of this web
+   * table representation.
    * 
    * @see #getFilterKey
    * @see #setFilterKey(String)
    */
-  private String filterKey = null;
+  private int filterKey = 0;
+
+  private Map<String, String> filterValues = new TreeMap<String, String>();
+
+  private String filter;
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -274,8 +277,10 @@ public class TableBean extends AbstractCollectionBean {
   /**
    * The instance method sorts the table values depending on the sort key in
    * {@link #sortKey} and the sort direction in {@link #sortDirection}.
+   * 
+   * @throws EFapsException
    */
-  public boolean sort() {
+  public boolean sort() throws EFapsException {
 
     if (getSortKey() != null && getSortKey().length() > 0) {
       int sortKey = 0;
@@ -330,11 +335,31 @@ public class TableBean extends AbstractCollectionBean {
    * This is the getter method for the instance variable {@link #values}.
    * 
    * @return value of instance variable {@link #values}
+   * @throws EFapsException
    * @see #values
    * @see #setValues
    */
-  public List<Row> getValues() {
-    return this.values;
+  public List<Row> getValues() throws EFapsException {
+    List<Row> ret = new ArrayList<Row>();
+    if (!this.filterValues.isEmpty()) {
+      for (Row row : this.values) {
+        boolean filtered = false;
+        FieldValue fieldvalue = row.getValues().get(this.filterKey);
+        String value = fieldvalue.getViewHtml();
+        for (String key : this.filterValues.keySet()) {
+          if (value.equals(key)) {
+            filtered = true;
+          }
+        }
+        if (filtered) {
+          ret.add(row);
+        }
+      }
+    } else {
+      ret = this.values;
+    }
+
+    return ret;
   }
 
   /**
@@ -400,7 +425,7 @@ public class TableBean extends AbstractCollectionBean {
    * @see #filterKey
    * @see #setFilterKey
    */
-  public String getFilterKey() {
+  public int getFilterKey() {
     return this.filterKey;
   }
 
@@ -412,31 +437,53 @@ public class TableBean extends AbstractCollectionBean {
    * @see #filterKey
    * @see #getFilterKey
    */
-  public void setFilterKey(String _selectedFilter) {
-    this.filterKey = _selectedFilter;
-  }
-
-  public List<SelectItem> getFilterList() throws EFapsException {
-    List<SelectItem> filterlist = new ArrayList<SelectItem>();
-    int filterKey = 0;
+  public void setFilterKey(String _filterkey) {
     for (int i = 0; i < getTable().getFields().size(); i++) {
       Field field = (Field) getTable().getFields().get(i);
-      if (field.getName().equals(this.getFilterKey())) {
-        filterKey = i;
+      if (field.getName().equals(_filterkey)) {
+        this.filterKey = i;
         break;
       }
     }
-    Set<String> controlSet = new HashSet<String>();
+
+  }
+
+  public Map<String, String> getFilterList() throws EFapsException {
+    Map<String, String> filterMap = new TreeMap<String, String>();
+    this.filterValues = filterMap;
+
+    Integer i = 0;
     for (Row row : this.getValues()) {
-      FieldValue fieldvalue = row.getValues().get(filterKey);
+      FieldValue fieldvalue = row.getValues().get(this.filterKey);
       String value = fieldvalue.getViewHtml();
-      if (!controlSet.contains(value)) {
-        controlSet.add(fieldvalue.getViewHtml());
-        filterlist.add(new SelectItem(fieldvalue.getViewHtml()));
+      if (!filterMap.containsKey(value)) {
+        filterMap.put(fieldvalue.getViewHtml(), i.toString());
+        i++;
       }
     }
+    return filterMap;
+  }
 
-    return filterlist;
+  public void setFilter(String _filter) {
+    this.filter = _filter;
+  }
+
+  public void filter() {
+    if (this.filter != null && this.filter.length() > 0) {
+      StringTokenizer tokens = new StringTokenizer(this.filter, ",");
+      Map<String, String> filterMap = new TreeMap<String, String>();
+
+      while (tokens.hasMoreTokens()) {
+        String token = tokens.nextToken();
+        for (Entry<String, String> entry : this.filterValues.entrySet()) {
+          if (token.equals(entry.getValue())) {
+            filterMap.put(entry.getKey(), entry.getValue());
+          }
+
+        }
+      }
+      this.filterValues = filterMap;
+    }
   }
 
   // ///////////////////////////////////////////////////////////////////////////
