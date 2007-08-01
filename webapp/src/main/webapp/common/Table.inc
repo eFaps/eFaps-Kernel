@@ -242,7 +242,6 @@ System.out.println("create new cacheKey = "+cacheKey);
     </c:if>
   </h:panelGrid>
 
- <%@include file="Dialogs.inc"%>
  
   <%-- menu bar --%>
   <%@include file="ToolBarMenu.inc"%>
@@ -462,6 +461,8 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
       </div>
     </c:if>
 
+  <%@include file="Dialogs.inc"%>
+
 </f:view>
 <%
 //System.out.println("...............................END:"+new java.util.Date());
@@ -470,6 +471,8 @@ for (java.util.Iterator rowIter = uiObject.getValues().iterator(); rowIter.hasNe
     <%-- /** hidden frame **/ --%>
     <iframe name="eFapsFrameHidden" id="eFapsFrameHidden" class="eFapsFrameHidden" src="Blank.jsp">
     </iframe>
+
+
 
   </body>
     

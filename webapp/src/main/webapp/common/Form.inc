@@ -231,7 +231,7 @@
   </c:otherwise>
 </c:choose>
 
-  <%@include file="Dialogs.inc"%>
+ 
 
   <h:panelGrid id="eFapsFrameTitle">
     <f:verbatim>
@@ -430,6 +430,8 @@
       </h:form>
     </div>
   </c:if>
+ 
+ <%@include file="Dialogs.inc"%>
 
 </f:subview>
 
