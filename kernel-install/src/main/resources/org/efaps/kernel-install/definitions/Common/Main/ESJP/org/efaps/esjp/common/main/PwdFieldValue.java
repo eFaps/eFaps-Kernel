@@ -59,18 +59,17 @@ public class PwdFieldValue implements EventExecution {
             .append("<script type=\"text/javascript\">")
             .append("function testForEqual()")
             .append(
-                "{var warn=document.getElementById(\"eFapsWarnMsg\").firstChild; ")
-            .append(
-                "var old=document.getElementById(\"eFapsPasswordOld\").value; ")
+                "{ var old=document.getElementById(\"eFapsPasswordOld\").value; ")
             .append(
                 "var A=document.getElementById(\"eFapsPasswordNew\").value; ")
             .append(
                 "var B=document.getElementById(\"eFapsPasswordNew2\").value;")
             .append("if((A.length>0) && (B.length>0) && (old.length>0)){")
-            .append("if((A!=B)){warn.data=\"").append(
+            .append("if((A!=B)){ eFapsOpenWarnDialog(\"")
+            .append(
                 DBProperties.getProperty("Common_Main_PwdChgForm/WarnMessage"))
-            .append("\";").append(" dojoDialogWarn.show();").append(
-                "document.getElementById(\"eFapsPasswordNew2\").value=\"\";}")
+            .append(
+                "\"); document.getElementById(\"eFapsPasswordNew2\").value=\"\";}")
 
             .append("if((A==B)){submitLock=false;}")
 
