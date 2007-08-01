@@ -47,14 +47,15 @@
   
 <script type="text/javascript">
   function eFapsSubmit()  {
-    var selects=document.getElementsByName("eFapsFilterForm:eFapsSelectBox");
+    var selects = document.getElementsByName("eFapsFilterForm:eFapsSelectBox");
     var c_value = new Array();
     for (var i=0; i < selects.length; i++){
      if (selects[i].checked){
-      var NeuestesElement=c_value.push(selects[i].value);
+      var t = c_value.push(selects[i].value);
      }
     }
-    if(c_value.length>0){
+    
+    if(c_value.length > 0 && selects.length != c_value.length){
       parent.eFapsFilterTable(c_value);
     }
     window.parent.dlgFrMdl.hide();

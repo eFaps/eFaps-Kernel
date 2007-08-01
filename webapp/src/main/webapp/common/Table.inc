@@ -235,8 +235,11 @@ System.out.println("create new cacheKey = "+cacheKey);
 </c:choose>
 
   
-  <h:panelGrid id="eFapsFrameTitle">
+  <h:panelGrid id="eFapsFrameTitle" columns="2">
     <f:verbatim><c:out value="${uiObject.title}"/></f:verbatim>
+    <c:if test="${uiObject.filtered eq true}">
+    <t:commandButton id="filteroff" value="filter off" onclick="eFapsFilterTable()"></t:commandButton>
+    </c:if>
   </h:panelGrid>
 
  <%@include file="Dialogs.inc"%>

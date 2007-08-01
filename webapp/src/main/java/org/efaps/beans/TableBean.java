@@ -101,16 +101,22 @@ public class TableBean extends AbstractCollectionBean {
   private String sortDirection = null;
 
   /**
-   * The instance variable stores the current selected filterKey of this web
-   * table representation.
+   * The instance variable stores the current selected filterKey as the
+   * sequential number of the filed of this web table representation.
    * 
    * @see #getFilterKey
    * @see #setFilterKey(String)
    */
   private int filterKey = 0;
 
+  /**
+   * The instance Map contains the Values to be filtered
+   */
   private Map<String, String> filterValues = new TreeMap<String, String>();
 
+  /**
+   * contains the sequential numbers of the filter
+   */
   private String filter;
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -448,6 +454,14 @@ public class TableBean extends AbstractCollectionBean {
 
   }
 
+  /**
+   * This Map is used for contruction of the items in a myfaces "<h:selectManyCheckbox>".
+   * It produces Selectboxes with a sequential number as value and the
+   * Fieldvalue as the Label.
+   * 
+   * @return Map
+   * @throws EFapsException
+   */
   public Map<String, String> getFilterList() throws EFapsException {
     Map<String, String> filterMap = new TreeMap<String, String>();
     this.filterValues = filterMap;
@@ -464,10 +478,21 @@ public class TableBean extends AbstractCollectionBean {
     return filterMap;
   }
 
+  /**
+   * This is the setter method for the instance variable {@link #filter}.
+   * 
+   * @see #filter
+   * @param _filter
+   */
   public void setFilter(String _filter) {
     this.filter = _filter;
   }
 
+  /**
+   * prepares the filter to bes used in getValues
+   * 
+   * @see #getValues()
+   */
   public void filter() {
     if (this.filter != null && this.filter.length() > 0) {
       StringTokenizer tokens = new StringTokenizer(this.filter, ",");
@@ -484,6 +509,15 @@ public class TableBean extends AbstractCollectionBean {
       }
       this.filterValues = filterMap;
     }
+  }
+
+  /**
+   * are the values of the Rows filtered or not
+   * 
+   * @return true if filtered, else false
+   */
+  public boolean isFiltered() {
+    return !this.filterValues.isEmpty();
   }
 
   // ///////////////////////////////////////////////////////////////////////////
