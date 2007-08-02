@@ -24,7 +24,7 @@
 -->
 
 <ui-table>
-  <uuid>739b4596-0ccf-4fb7-ad0a-d2cb148b610f</uuid>
+  <uuid>ad0d1171-407b-4dd9-bb0b-e1a9fbe745d3</uuid>
 
   <!-- ************************************************************************
     version definition used to create the table 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>ContactWork_AbstractTable</name>
+    <name>ContactWork_EmailTable</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,15 +51,15 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>ContactWork_AbstractTable</name>
+    <name>ContactWork_EmailTable</name>
     <!-- fields -->
     <field name="type">
       <property name="Expression">Type</property>
-      <property name="Label">ContactWork_AbstractTable/Type.Label</property>
+      <property name="Label">ContactWork_EmailTable/Type.Label</property>
     </field>
-    <field name="name">
-      <property name="Expression">Name</property>
-      <property name="Label">ContactWork_AbstractTable/Name.Label</property>
+    <field name="email">
+      <property name="Expression">Email</property>
+      <property name="Label">ContactWork_EmailTable/Name.Label</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
     </field>
   </definition>

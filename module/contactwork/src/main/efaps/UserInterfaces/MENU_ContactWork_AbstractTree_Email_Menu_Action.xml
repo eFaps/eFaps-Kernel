@@ -23,44 +23,39 @@
 
 -->
 
-<datamodel-type>
-  <uuid>94d7b995-bdd6-41b4-9a46-efd3aafa2541</uuid>
+<ui-menu>
+  <uuid>737e530d-6712-4bbd-875d-da5b38fe485b</uuid>
 
+  <!-- ************************************************************************
+    version definition used to create the menu 
+  ************************************************************************* -->
   <definition>
     <version>
       <application>contactwork</application>
       <global>1</global>
       <local>$Rev$</local>
+      <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-
-    <name>ContactWork_Person</name>
+    <name>ContactWork_AbstractTree_Email_Menu_Action</name>
   </definition>
-
+    
+  <!-- ************************************************************************
+    version definition used to define the menu 
+  ************************************************************************* -->
   <definition>
     <version>
       <application>contactwork</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==3)</mode>
+      <mode>true</mode>
+      <mode>(version>=3)</mode>
     </version>
-
-    <name>ContactWork_Person</name>
-    <parent>ContactWork_Abstract</parent>
-   
-    <attribute>
-      <name>ForeName</name>
-      <type>String</type>
-      <sqltable>ContactWork_PersonSQLTable</sqltable>
-      <sqlcolumn>FORENAME</sqlcolumn>
-    </attribute>
-    
-    <attribute>
-      <name>SurName</name>
-      <type>String</type>
-      <sqltable>ContactWork_PersonSQLTable</sqltable>
-      <sqlcolumn>SURNAME</sqlcolumn>
-    </attribute>
-    <property name="Tree">ContactWork_PersonTree</property>
+    <name>ContactWork_AbstractTree_Email_Menu_Action</name>
+    <childs>
+      <child>ContactWork_AbstractTree_Email_Menu_Action_Create</child>
+     
+    </childs>
   </definition>
-</datamodel-type>
+
+</ui-menu>

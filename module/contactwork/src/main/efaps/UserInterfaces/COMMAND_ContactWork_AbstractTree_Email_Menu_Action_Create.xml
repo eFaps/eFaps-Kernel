@@ -16,18 +16,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-table>
-  <uuid>739b4596-0ccf-4fb7-ad0a-d2cb148b610f</uuid>
+<ui-command>
+  <uuid>f33b7330-e140-4923-ba25-5b278c8e8152</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the table 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>ContactWork_AbstractTable</name>
+    <name>ContactWork_AbstractTree_Email_Menu_Action_Create</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the table 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,17 +51,18 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>ContactWork_AbstractTable</name>
-    <!-- fields -->
-    <field name="type">
-      <property name="Expression">Type</property>
-      <property name="Label">ContactWork_AbstractTable/Type.Label</property>
-    </field>
-    <field name="name">
-      <property name="Expression">Name</property>
-      <property name="Label">ContactWork_AbstractTable/Name.Label</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-    </field>
+    <name>ContactWork_AbstractTree_Email_Menu_Action_Create</name>
+    
+    <!-- target definitions -->
+    <target>
+      <form>ContactWork_EmailForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Create"/>
+    </target>
+    <!-- property definitions -->
+    <property name="Target">modal</property>
+    <property name="TargetCreateType">ContactWork_Email</property>
+    <property name="TargetMode">create</property>
+    <property name="TargetConnectAttribute">ContactWork_ComAbstract/Abstract</property>
   </definition>
 
-</ui-table>
+</ui-command>

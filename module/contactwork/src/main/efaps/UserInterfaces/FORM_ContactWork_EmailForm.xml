@@ -23,8 +23,8 @@
 
 -->
 
-<ui-table>
-  <uuid>739b4596-0ccf-4fb7-ad0a-d2cb148b610f</uuid>
+<ui-form>
+  <uuid>067834a4-077c-4a0c-b7da-a7a056e1f2d8</uuid>
 
   <!-- ************************************************************************
     version definition used to create the table 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>ContactWork_AbstractTable</name>
+    <name>ContactWork_EmailForm</name>
   </definition>
     
   <!-- ************************************************************************
@@ -49,19 +49,26 @@
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version>=3)</mode>
+      <mode>(version==3)</mode>
     </version>
-    <name>ContactWork_AbstractTable</name>
+    <name>ContactWork_EmailForm</name>
     <!-- fields -->
     <field name="type">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
       <property name="Expression">Type</property>
-      <property name="Label">ContactWork_AbstractTable/Type.Label</property>
+      <property name="Searchable">false</property>
+      <property name="ShowTypeIcon">true</property>
     </field>
-    <field name="name">
-      <property name="Expression">Name</property>
-      <property name="Label">ContactWork_AbstractTable/Name.Label</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+    <field name="email">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Email</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
     </field>
+   
   </definition>
 
-</ui-table>
+</ui-form>

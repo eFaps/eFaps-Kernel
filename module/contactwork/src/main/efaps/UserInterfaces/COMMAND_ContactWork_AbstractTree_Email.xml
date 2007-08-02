@@ -16,18 +16,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-table>
-  <uuid>739b4596-0ccf-4fb7-ad0a-d2cb148b610f</uuid>
+<ui-command>
+  <uuid>aa0143ca-1bb9-429d-b488-f3bd5799870c</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the table 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>ContactWork_AbstractTable</name>
+    <name>ContactWork_AbstractTree_Email</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the table 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,17 +51,23 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>ContactWork_AbstractTable</name>
-    <!-- fields -->
-    <field name="type">
-      <property name="Expression">Type</property>
-      <property name="Label">ContactWork_AbstractTable/Type.Label</property>
-    </field>
-    <field name="name">
-      <property name="Expression">Name</property>
-      <property name="Label">ContactWork_AbstractTable/Name.Label</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-    </field>
+    <name>ContactWork_AbstractTree_Email</name>
+    
+    <!-- target definitions -->
+    <target>
+      <table>ContactWork_EmailTable</table>
+      <menu>ContactWork_AbstractTree_Email_Menu</menu>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
+        <property name="Types">ContactWork_Email</property>
+        <property name="ExpandChildTypes">true</property> 
+      </evaluate>
+    </target>
+    <!-- property definitions -->
+    <property name="Target">content</property>
+    <property name="TargetShowCheckBoxes">true</property>
+    
+    
+   
   </definition>
 
-</ui-table>
+</ui-command>
