@@ -27,8 +27,6 @@ import java.io.StringReader;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import org.efaps.util.EFapsException;
-
 /**
  *
  * @author tmo

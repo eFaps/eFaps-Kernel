@@ -28,8 +28,6 @@ import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-import org.efaps.util.EFapsException;
-
 /**
  *
  * @todo descriptionâ

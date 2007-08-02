@@ -20,8 +20,6 @@
 
 package org.efaps.maven;
 
-import java.util.List;
-
 import org.apache.maven.plugin.MojoExecutionException;
 
 import org.efaps.admin.program.esjp.Compiler;

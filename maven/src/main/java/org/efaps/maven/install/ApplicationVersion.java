@@ -34,7 +34,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public class ApplicationVersion implements Comparable /* < ApplicationVersion > */{
+public class ApplicationVersion implements Comparable /* < ApplicationVersion > */<Object>{
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables

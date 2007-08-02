@@ -227,7 +227,7 @@ public class Application {
 
     Map<String, URL> map = this.install.getURLs();
 
-    for (Entry entry : map.entrySet()) {
+    for (Entry<?, ?> entry : map.entrySet()) {
       DataImport dimport = new DataImport();
       dimport.initialise();
       dimport.readXMLFile((URL) entry.getValue());

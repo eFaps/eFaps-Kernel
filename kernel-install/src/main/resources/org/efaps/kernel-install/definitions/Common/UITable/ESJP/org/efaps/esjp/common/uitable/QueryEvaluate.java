@@ -42,12 +42,19 @@ import org.efaps.util.EFapsException;
  *   &lt;target&gt;<br/>&nbsp;&nbsp;&lt;evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate"&gt;
  * <br/>&nbsp;&nbsp;&nbsp;&nbsp;&lt;property name="Types"&gt;Admin_User_Person&lt;/property&gt;
  * <br/>&nbsp;&nbsp;&lt;/evaluate&gt;<br/> &lt;/target&gt;
- * </code><br/>
- * 
+ * </code><br/><br/>
+ * With the optional property "ExpandChildTypes" the query will expand for all
+ * childs. The default for this property is false. <br/> <b>Example:</b><br/><code>
+ * &lt;target&gt;<br/>&nbsp;&nbsp;&lt;evaluate
+ * program="org.efaps.esjp.common.uitable.QueryEvaluate"&gt;
+ * <br/>&nbsp;&nbsp;&nbsp;&nbsp;&lt;property
+ * name="Types"&gt;Admin_User_Person&lt;/property&gt;<br/>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&lt;property
+ * name="ExpandChildTypes"&gt;true&lt;/property&gt;
+ * <br/>&nbsp;&nbsp;&lt;/evaluate&gt;<br/> &lt;/target&gt;</code>
  * 
  * @author tmo
  * @version $Id$
- * 
  */
 public class QueryEvaluate implements EventExecution {
   /**
