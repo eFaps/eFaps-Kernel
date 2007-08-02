@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  
+  Copyright 2003-2007 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          jmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+  
+-->
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.efaps</groupId>
+  <packaging>jar</packaging>
+  <artifactId>ContactWork</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <build>
+
+    <plugins>
+      <!--
+        Compiler Settings:
+        - Java 1.5 is needed!
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+
+      <!--
+        eFaps plugin used to compile
+      -->
+      <plugin>
+        <groupId>org.efaps</groupId>
+        <artifactId>maven-efaps-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <configuration>
+          <userName>Administrator</userName>
+          <passWord>Administrator</passWord>
+          <connection>
+            <property>
+              <name>username</name>
+              <value>${org.efaps.db.username}</value>
+            </property>
+            <property>
+              <name>password</name>
+              <value>${org.efaps.db.password}</value>
+            </property>
+            <property>
+              <name>driverClassName</name>
+              <value>${org.efaps.db.driverClassName}</value>
+            </property>
+            <property>
+              <name>url</name>
+              <value>${org.efaps.db.url}</value>
+            </property>
+            <property>
+              <name>factory</name>
+              <value>${org.efaps.db.factory}</value>
+            </property>
+            <property>
+              <name>maxActive</name>
+              <value>${org.efaps.db.maxActive}</value>
+            </property>
+            <property>
+              <name>maxIdle</name>
+              <value>${org.efaps.db.maxIdle}</value>
+            </property>
+            <property>
+              <name>maxWait</name>
+              <value>${org.efaps.db.maxWait}</value>
+            </property>
+            <property>
+              <name>removeAbandoned</name>
+              <value>${org.efaps.db.removeAbandoned}</value>
+            </property>
+            <property>
+              <name>logAbandoned</name>
+              <value>${org.efaps.db.logAbandoned}</value>
+            </property>
+          </connection>
+          <!-- used from the generateUUID goal -->
+          <count>${count}</count>
+        </configuration>
+        <dependencies>
+          <!-- Connection Pooling -->
+          <dependency>
+            <groupId>commons-dbcp</groupId>
+            <artifactId>commons-dbcp</artifactId>
+            <version>1.2.1</version>
+          </dependency>
+          <!-- Derby Client Database Driver -->
+          <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbyclient</artifactId>
+            <version>10.2.2.0</version>
+          </dependency>
+          <!-- kernel install -->
+          <dependency>
+            <groupId>org.efaps</groupId>
+            <artifactId>eFaps-Kernel-Install</artifactId>
+            <version>1.0-SNAPSHOT</version>
+          </dependency>
+          <!-- Mozilla's JavaScript -->
+          <dependency>
+            <groupId>rhino</groupId>
+            <artifactId>js</artifactId>
+            <version>1.6R5</version>
+            <scope>compile</scope>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
+
+
+
+</project>

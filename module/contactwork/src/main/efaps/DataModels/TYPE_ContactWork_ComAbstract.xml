@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-type>
+  <uuid>5b978521-b69b-4b43-86d2-d6e75f70f31c</uuid>
+
+  <definition>
+    <version>
+      <application>contactwork</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==2)</mode>
+    </version>
+    <name>ContactWork_ComAbstract</name>
+    
+    <attribute>
+      <name>Type</name>
+      <type>Type</type>
+      <sqltable>ContactWork_ComAbstractSQLTable</sqltable>
+      <sqlcolumn>TYPEID</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>OID</name>
+      <type>OID</type>
+      <sqltable>ContactWork_ComAbstractSQLTable</sqltable>
+      <sqlcolumn>TYPEID,ID</sqlcolumn>
+    </attribute>
+  </definition>
+
+  <definition>
+    <version>
+      <application>contactwork</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==3)</mode>
+    </version>
+
+    <name>ContactWork_ComAbstract</name>
+    
+    <attribute>
+      <name>Abstract</name>
+      <type>Link</type>
+      <typelink>ContactWork_Abstract</typelink>
+      <sqltable>ContactWork_ComAbstractSQLTable</sqltable>
+      <sqlcolumn>ABSTRACTID</sqlcolumn>
+    </attribute>
+    
+  </definition>
+</datamodel-type>

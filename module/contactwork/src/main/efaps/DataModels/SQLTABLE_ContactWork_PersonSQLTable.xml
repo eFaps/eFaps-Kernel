@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-sqltable>
+  <uuid>abadf107-9896-47f6-89cb-0e9b05447ef3</uuid>
+
+  <definition>
+    <version>
+      <application>contactwork</application>
+      <global>1</global>
+      <local>$Rev:527 $</local>
+      <mode>(version==2)</mode>
+    </version>
+
+    <name>ContactWork_PersonSQLTable</name>
+
+    <database>
+      <table-name>T_CWPERSON</table-name>
+      <parent-table>T_CWABSTRACT</parent-table>
+      <create>true</create>
+      <update>true</update>
+      <!-- columns -->
+      <column name="FORENAME"       type="STRING_SHORT"   not-null="true"     length="128"/>
+      <column name="SURNAME"        type="STRING_SHORT"   not-null="true"     length="128"/>
+      
+     </database>
+  </definition>
+
+  <definition>
+    <version>
+      <application>teamwork</application>
+      <global>1</global>
+      <local>$Rev:527 $</local>
+      <mode>(version==3)</mode>
+    </version>
+
+    <name>ContactWork_PersonSQLTable</name>
+
+    <database>
+      <table-name>T_CWPERSON</table-name>
+      <update>true</update>
+      <!-- contraints -->
+     </database>
+  </definition>
+
+
+
+</datamodel-sqltable>
