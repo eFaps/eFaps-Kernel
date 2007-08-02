@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.teamwork;
+package org.efaps.esjp.teamwork;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -63,18 +63,18 @@ public class Member implements EventExecution {
    */
   public Return insertNewMember(Parameter _parameter) {
 
-    Iterator iter =
-        ((Map) _parameter.get(ParameterValues.NEW_VALUES)).entrySet()
+    Iterator<?> iter =
+        ((Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES)).entrySet()
             .iterator();
 
     String defaultaccessSet =
-        (String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
+        (String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
             .get("DefaultAccessSet");
 
     Map<String, String> newValues = new HashMap<String, String>();
 
     while (iter.hasNext()) {
-      Map.Entry entry = (Map.Entry) iter.next();
+      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
       Attribute attr = (Attribute) entry.getKey();
       String attrName = attr.getName();
       String value = (String) entry.getValue().toString();
@@ -130,7 +130,7 @@ public class Member implements EventExecution {
    * check if this TeamWork_Abstract is a Root
    * 
    * @param _abstractlink
-   *          Abstract to search for
+   *                Abstract to search for
    * @return true, if a Root, otherwise false
    */
   private boolean isRoot(final String _abstractlink) {
@@ -158,7 +158,7 @@ public class Member implements EventExecution {
    * get the ID of the Root, for a TeamWork_Abstract
    * 
    * @param _abstractlink
-   *          TeamWork_Abstract the Root is searched for
+   *                TeamWork_Abstract the Root is searched for
    * @return the ID of the Root of the TeamWork_Abstract
    */
   private String getRootID(final String _abstractlink) {
@@ -194,12 +194,12 @@ public class Member implements EventExecution {
 
   public Return execute(Parameter _parameter) {
 
-    Iterator iter =
-        ((Map) _parameter.get(ParameterValues.NEW_VALUES)).entrySet()
+    Iterator<?> iter =
+        ((Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES)).entrySet()
             .iterator();
     Map<String, String> newValues = new HashMap<String, String>();
     while (iter.hasNext()) {
-      Map.Entry entry = (Map.Entry) iter.next();
+      Map.Entry<?,?> entry = (Map.Entry<?,?>) iter.next();
       Attribute attr = (Attribute) entry.getKey();
       String attrName = attr.getName();
       String value = (String) entry.getValue().toString();
@@ -249,7 +249,7 @@ public class Member implements EventExecution {
     String abstractlink = ((Long) instance.getId()).toString();
 
     String accessSet =
-        (String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
+        (String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
             .get("AccessSet");
 
     try {
@@ -274,7 +274,7 @@ public class Member implements EventExecution {
    * Get the ID of a AccessSet
    * 
    * @param _accessset
-   *          AccessSet to Search for
+   *                AccessSet to Search for
    * @return ID of the AccessSet, Null if not found
    */
   private String getAccessSetID(final String _accessset) {

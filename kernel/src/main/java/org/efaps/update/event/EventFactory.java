@@ -28,7 +28,7 @@ import org.xml.sax.Attributes;
  * Factory for creating <code>org.efaps.update.event.Event</code>.<br>
  * There are two way to use the Factory:<br>
  * 1. e.g. < trigger name="TeamWork_MemberRights_DeleteOverride"
- * event="DELETE_OVERRIDE" program="org.efaps.teamwork.Member"
+ * event="DELETE_OVERRIDE" program="org.efaps.esjp.teamwork.Member"
  * method="removeMember" index="1"/> with a call of the default Construtor<br>
  * 2. e.g. < evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate"> with a
  * call of the Contructor setting the event<br>

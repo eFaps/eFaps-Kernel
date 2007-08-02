@@ -52,10 +52,10 @@
     <property name="Tree">TeamWork_RootCollectionTree</property>
     
     <!-- triggers -->
-    <trigger name="TeamWork_RootCollection_ACCESSCHECK" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnTypeInstance"/>
+    <trigger name="TeamWork_RootCollection_ACCESSCHECK" event="ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnTypeInstance"/>
 	
-    <trigger name="TeamWork_RootCollection_INSERT_POST_1" event="INSERT_POST" program="org.efaps.teamwork.Abstract2Abstract" method="insertNewRoot" index="1"/>
-	<trigger name="TeamWork_RootCollection_INSERT_POST_2" event="INSERT_POST" program="org.efaps.teamwork.Member" method="insertCollectionCreator" index="2">
+    <trigger name="TeamWork_RootCollection_INSERT_POST_1" event="INSERT_POST" program="org.efaps.esjp.teamwork.Abstract2Abstract" method="insertNewRoot" index="1"/>
+	<trigger name="TeamWork_RootCollection_INSERT_POST_2" event="INSERT_POST" program="org.efaps.esjp.teamwork.Member" method="insertCollectionCreator" index="2">
       <property name="AccessSet">CollectionHolder</property>
     </trigger>
     <trigger name="TeamWork_RootCollection_INSERT_POST_3" event="INSERT_POST" program="org.efaps.esjp.common.history.HistoryTrigger" index="3">
@@ -67,7 +67,7 @@
     </trigger>
     
     
-    <trigger name="TeamWork_RootCollection_DELETE_PRE" event="DELETE_PRE" program="org.efaps.teamwork.CascadeDelete"/>
+    <trigger name="TeamWork_RootCollection_DELETE_PRE" event="DELETE_PRE" program="org.efaps.esjp.teamwork.CascadeDelete"/>
     
     <trigger name="TeamWork_RootCollection_DELETE_POST" event="DELETE_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
       <property name="Type">Common_History_Delete</property>

@@ -61,9 +61,9 @@
     <property name="Icon">${ROOTURL}/servlet/image/TeamWork_CollectionImage</property>
     <property name="Tree">TeamWork_CollectionTree</property>
     <!-- triggers -->
-    <trigger name="TeamWork_Collection_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnTypeInstance"  index="1"/>
+    <trigger name="TeamWork_Collection_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnTypeInstance"  index="1"/>
 	
-    <trigger name="TeamWork_Collection_INSERT_POST_1" event="INSERT_POST" program="org.efaps.teamwork.Abstract2Abstract"  index="1">
+    <trigger name="TeamWork_Collection_INSERT_POST_1" event="INSERT_POST" program="org.efaps.esjp.teamwork.Abstract2Abstract"  index="1">
 		<property name="PropertyName">PropertyValue</property>
     </trigger>
     <trigger name="TeamWork_Collection_INSERT_POST_2" event="INSERT_POST" program="org.efaps.esjp.common.history.HistoryTrigger" index="2">
@@ -74,7 +74,7 @@
       <property name="Type">Common_History_Update</property>
     </trigger>
     
-    <trigger name="TeamWork_Collection_DELETE_PRE" event="DELETE_PRE" program="org.efaps.teamwork.CascadeDelete"  index="1"/>
+    <trigger name="TeamWork_Collection_DELETE_PRE" event="DELETE_PRE" program="org.efaps.esjp.teamwork.CascadeDelete"  index="1"/>
     
     <trigger name="TeamWork_Collection_DELETE_POST" event="DELETE_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
       <property name="Type">Common_History_RemoveChild</property>

@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.teamwork;
+package org.efaps.esjp.teamwork;
 
 import java.util.Map;
 
@@ -138,11 +138,11 @@ public class AccessCheckOnUserInterface implements EventExecution {
   public Return execute(Parameter _parameter) {
 
     AccessType accesstype =
-        AccessType.getAccessType((String) ((Map) _parameter
+        AccessType.getAccessType((String) ((Map<?, ?>) _parameter
             .get(ParameterValues.PROPERTIES)).get("AccessType"));
 
     Type type =
-        Type.get((String) ((Map) _parameter.get(ParameterValues.PROPERTIES))
+        Type.get((String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
             .get("Type"));
 
     Return ret = new Return();

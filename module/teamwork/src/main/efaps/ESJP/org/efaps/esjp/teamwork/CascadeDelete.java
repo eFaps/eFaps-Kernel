@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.teamwork;
+package org.efaps.esjp.teamwork;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

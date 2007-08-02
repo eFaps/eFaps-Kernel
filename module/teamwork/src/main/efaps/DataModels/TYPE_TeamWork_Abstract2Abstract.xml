@@ -85,7 +85,7 @@
       <sqlcolumn>RANK</sqlcolumn>
     </attribute>
     
-    <trigger name="TeamWork_Abstract2Abstract_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnTypeInstance" method="execute" index="1"/>
+    <trigger name="TeamWork_Abstract2Abstract_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnTypeInstance" method="execute" index="1"/>
   
   </definition>
 </datamodel-type>

@@ -70,7 +70,7 @@
     <property name="TargetMode">edit</property>
     <property name="TargetShowCheckBoxes">true</property>
     <!-- trigger -->
-    <trigger name="TeamWork_Member_Menu_Action_Edit_UI_ACCESSCHECK" event="UI_ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
+    <trigger name="TeamWork_Member_Menu_Action_Edit_UI_ACCESSCHECK" event="UI_ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
       <property name="AccessType">modify</property>
       <property name="Type">TeamWork_Member</property>
     </trigger>

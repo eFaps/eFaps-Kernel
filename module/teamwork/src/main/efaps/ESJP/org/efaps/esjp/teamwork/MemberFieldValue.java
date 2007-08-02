@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.teamwork;
+package org.efaps.esjp.teamwork;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.FieldValue.HtmlType;

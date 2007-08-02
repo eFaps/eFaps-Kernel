@@ -121,7 +121,7 @@
     <property name="StoreVFSName">eFaps/store/documents</property>
 
     <!-- triggers -->
-    <trigger name="TeamWork_SourceVersion_AccessCheck" event="ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnSourceVersion" method="execute" index="1"/>
+    <trigger name="TeamWork_SourceVersion_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnSourceVersion" method="execute" index="1"/>
     
     <trigger name="TeamWork_SourceVersion_INSERT_POST" event="INSERT_POST" program="org.efaps.esjp.common.history.HistoryTrigger" >
       <property name="Type">Common_History_AddChild</property>

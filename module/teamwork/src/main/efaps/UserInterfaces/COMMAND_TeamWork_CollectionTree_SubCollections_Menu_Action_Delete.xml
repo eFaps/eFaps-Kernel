@@ -61,7 +61,7 @@
     <property name="AskUser">true</property>
     <property name="Submit">true</property>
     <!-- trigger -->
-    <trigger name="TeamWork_CollectionTree_Delete_UI_ACCESSCHECK" event="UI_ACCESSCHECK" program="org.efaps.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
+    <trigger name="TeamWork_CollectionTree_Delete_UI_ACCESSCHECK" event="UI_ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
       <property name="AccessType">delete</property>
       <property name="Type">TeamWork_Collection</property>
     </trigger>
