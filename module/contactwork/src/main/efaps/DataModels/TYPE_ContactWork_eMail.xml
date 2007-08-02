@@ -33,10 +33,10 @@
       <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
-    <name>ContactWork_eMail</name>
+    <name>ContactWork_Email</name>
     
     <attribute>
-      <name>eMail</name>
+      <name>Email</name>
       <type>String</type>
       <sqltable>ContactWork_ComAbstractSQLTable</sqltable>
       <sqlcolumn>COM</sqlcolumn>
@@ -51,7 +51,7 @@
       <mode>(version==3)</mode>
     </version>
 
-    <name>ContactWork_eMail</name>
+    <name>ContactWork_Email</name>
     
     <parent>ContactWork_ComAbstract</parent>
   </definition>
