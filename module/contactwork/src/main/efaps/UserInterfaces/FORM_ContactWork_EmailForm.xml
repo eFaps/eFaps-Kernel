@@ -60,6 +60,14 @@
       <property name="Searchable">false</property>
       <property name="ShowTypeIcon">true</property>
     </field>
+    <field name="attribute">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Attribute</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
+    </field>
     <field name="email">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
@@ -68,7 +76,7 @@
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
-   
+    
   </definition>
 
 </ui-form>

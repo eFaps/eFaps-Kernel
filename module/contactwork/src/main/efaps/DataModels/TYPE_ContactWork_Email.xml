@@ -52,7 +52,20 @@
     </version>
 
     <name>ContactWork_Email</name>
-    
     <parent>ContactWork_ComAbstract</parent>
+    
+    <attribute>
+      <name>Attribute</name>
+      <type>LinkWithRanges</type>
+      <typelink>ContactWork_AttributeEmail</typelink>
+      <sqltable>ContactWork_ComAbstractSQLTable</sqltable>
+      <sqlcolumn>ATTRIBUTEID</sqlcolumn>
+      <trigger name="ContactWork_Email_RANGE_VALUE" event="RANGE_VALUE" 
+          program="org.efaps.esjp.admin.datamodel.RangesValue">
+        <property name="Value">Attribute</property>
+        <property name="Type">ContactWork_AttributeEmail</property>
+      </trigger>
+    </attribute>
+    
   </definition>
 </datamodel-type>

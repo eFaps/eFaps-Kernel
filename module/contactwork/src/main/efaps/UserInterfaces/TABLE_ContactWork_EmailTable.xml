@@ -57,6 +57,10 @@
       <property name="Expression">Type</property>
       <property name="Label">ContactWork_EmailTable/Type.Label</property>
     </field>
+    <field name="attribute">
+      <property name="Expression">Attribute</property>
+      <property name="Label">ContactWork_EmailTable/Attribute.Label</property>
+    </field>
     <field name="email">
       <property name="Expression">Email</property>
       <property name="Label">ContactWork_EmailTable/Name.Label</property>

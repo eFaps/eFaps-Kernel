@@ -24,7 +24,27 @@
 -->
 
 <datamodel-sqltable>
-  <uuid>abadf107-9896-47f6-89cb-0e9b05447ef3</uuid>
+  <uuid>1a5be94f-edf7-4735-bf34-a0192efa7951</uuid>
+
+  <definition>
+    <version>
+      <application>contactwork</application>
+      <global>1</global>
+      <local>$Rev:527 $</local>
+      <mode>(version==1)</mode>
+    </version>
+
+    <name>ContactWork_AttributeAbstractSQLTable</name>
+
+    <database>
+      <table-name>T_CWATTABSTRACT</table-name>
+      <create>true</create>
+      <update>true</update>
+      <!-- columns -->
+      <column name="TYPEID"      type="INTEGER"                          not-null="true"/>
+      <column name="ATTRIBUTE"   type="STRING_SHORT"      length="128"   not-null="true"/>
+     </database>
+  </definition>
 
   <definition>
     <version>
@@ -34,37 +54,16 @@
       <mode>(version==2)</mode>
     </version>
 
-    <name>ContactWork_PersonSQLTable</name>
+    <name>ContactWork_AttributeAbstractSQLTable</name>
 
     <database>
-      <table-name>T_CWPERSON</table-name>
-      <parent-table>T_CWABSTRACT</parent-table>
-      <create>true</create>
+      <table-name>T_CWATTABSTRACT</table-name>
       <update>true</update>
-      <!-- columns -->
-      <column name="FORENAME"       type="STRING_SHORT"   not-null="true"     length="128"/>
-      <column name="SURNAME"        type="STRING_SHORT"   not-null="true"     length="128"/>
-      
-     </database>
+    </database>
+     
+    <typeid-column>TYPEID</typeid-column>
   </definition>
 
-  <definition>
-    <version>
-      <application>contactwork</application>
-      <global>1</global>
-      <local>$Rev:527 $</local>
-      <mode>(version==3)</mode>
-    </version>
-
-    <name>ContactWork_PersonSQLTable</name>
-
-    <database>
-      <table-name>T_CWPERSON</table-name>
-      <update>true</update>
-      <!-- contraints -->
-     </database>
-  </definition>
-
-
+  
 
 </datamodel-sqltable>

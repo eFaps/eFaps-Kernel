@@ -118,6 +118,9 @@
 
       function eFapsShowError()  {
         if(parent.document.getElementById("dialogError")!=null){
+          parent.dlgFrMdl.hide();
+          parent.dlgProcess.hide();
+          parent.dlgWarn.hide();      
           parent.eFapsOpenErrorDialog('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>','<%=text%>');
         }else{
           top.eFapsOpenErrorDialog('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>','<%=text%>');

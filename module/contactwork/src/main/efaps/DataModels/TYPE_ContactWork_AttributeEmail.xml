@@ -16,34 +16,42 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-menu>
-  <uuid>87001cc3-c45c-44de-b8f1-776df507f268</uuid>
+<datamodel-type>
+  <uuid>ac6eb986-507e-4bec-b16b-e0f378b6d440</uuid>
 
   <definition>
-    <!-- add the teamwork mydesk menu to the main toolbar menu -->
     <version>
       <application>contactwork</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>true</mode>
+      <mode>(version==2)</mode>
+    </version>
+    <name>ContactWork_AttributeEmail</name>
+  </definition>  
+  
+  <definition>
+    <version>
+      <application>contactwork</application>
+      <global>1</global>
+      <local>$Rev$</local>
       <mode>(version==3)</mode>
     </version>
-    <name>MainToolBar</name>
-    <childs>
-      <child>Admin_Common_MyDesk</child>
-      <child>Admin_Common_ReloadCache</child>
-      <child>TeamWork_MyDesk</child>
-      <child>ContactWork_MyDesk</child>
-      <child>Common_Main_Preferences</child>
-      <child>Common_Main_LogoutToolBar</child>
-    </childs>
-  </definition>
+
+    <name>ContactWork_AttributeEmail</name>
+    <parent>ContactWork_AttributeAbstract</parent>
     
-</ui-menu>
+    <attribute>
+      <name>Attribute</name>
+      <type>String</type>
+      <sqltable>ContactWork_AttributeAbstractSQLTable</sqltable>
+      <sqlcolumn>ATTRIBUTE</sqlcolumn>
+    </attribute>
+  </definition>
+</datamodel-type>

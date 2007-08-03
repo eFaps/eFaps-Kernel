@@ -23,48 +23,50 @@
 
 -->
 
-<datamodel-sqltable>
-  <uuid>abadf107-9896-47f6-89cb-0e9b05447ef3</uuid>
+<datamodel-type>
+  <uuid>c8cf1448-b6fd-45fc-834b-f76e13e8ec89</uuid>
 
   <definition>
     <version>
       <application>contactwork</application>
       <global>1</global>
-      <local>$Rev:527 $</local>
+      <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
-
-    <name>ContactWork_PersonSQLTable</name>
-
-    <database>
-      <table-name>T_CWPERSON</table-name>
-      <parent-table>T_CWABSTRACT</parent-table>
-      <create>true</create>
-      <update>true</update>
-      <!-- columns -->
-      <column name="FORENAME"       type="STRING_SHORT"   not-null="true"     length="128"/>
-      <column name="SURNAME"        type="STRING_SHORT"   not-null="true"     length="128"/>
-      
-     </database>
+    <name>ContactWork_AttributeAbstract</name>
+    
+    <attribute>
+      <name>Type</name>
+      <type>Type</type>
+      <sqltable>ContactWork_AttributeAbstractSQLTable</sqltable>
+      <sqlcolumn>TYPEID</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>OID</name>
+      <type>OID</type>
+      <sqltable>ContactWork_AttributeAbstractSQLTable</sqltable>
+      <sqlcolumn>TYPEID,ID</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>ContactWork_AttributeAbstractSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    
   </definition>
 
   <definition>
     <version>
       <application>contactwork</application>
       <global>1</global>
-      <local>$Rev:527 $</local>
+      <local>$Rev$</local>
       <mode>(version==3)</mode>
     </version>
 
-    <name>ContactWork_PersonSQLTable</name>
-
-    <database>
-      <table-name>T_CWPERSON</table-name>
-      <update>true</update>
-      <!-- contraints -->
-     </database>
+    <name>ContactWork_AttributeAbstract</name>
+    
   </definition>
-
-
-
-</datamodel-sqltable>
+</datamodel-type>

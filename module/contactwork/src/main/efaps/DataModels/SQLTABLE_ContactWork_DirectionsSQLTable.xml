@@ -52,7 +52,7 @@
 
   <definition>
     <version>
-      <application>teamwork</application>
+      <application>contactwork</application>
       <global>1</global>
       <local>$Rev:527 $</local>
       <mode>(version==2)</mode>

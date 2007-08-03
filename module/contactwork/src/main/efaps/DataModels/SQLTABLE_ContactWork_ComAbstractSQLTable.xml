@@ -43,13 +43,14 @@
       <!-- columns -->
       <column name="ABSTRACTID"  type="INTEGER"                          not-null="true"/>
       <column name="TYPEID"      type="INTEGER"                          not-null="true"/>
+      <column name="ATTRIBUTEID" type="INTEGER"                          not-null="true"/>
       <column name="COM"         type="STRING_SHORT"      length="128"   not-null="true"/>
      </database>
   </definition>
 
   <definition>
     <version>
-      <application>teamwork</application>
+      <application>contactwork</application>
       <global>1</global>
       <local>$Rev:527 $</local>
       <mode>(version==2)</mode>
@@ -62,6 +63,7 @@
       <update>true</update>
       <!-- contraints -->
       <foreign name="T_CWCOMABSTRACT_FK_ABST"    key="ABSTRACTID"   reference="T_CWABSTRACT(ID)"/>
+      <foreign name="T_CWCOMABSTRACT_FK_ATTR"    key="ABSTRACTID"   reference="T_CWATTABSTRACT(ID)"/>
       
     </database>
      

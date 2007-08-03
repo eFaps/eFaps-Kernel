@@ -48,6 +48,13 @@
       <sqltable>ContactWork_ComAbstractSQLTable</sqltable>
       <sqlcolumn>TYPEID,ID</sqlcolumn>
     </attribute>
+    
+    <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>ContactWork_ComAbstractSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
   </definition>
 
   <definition>
