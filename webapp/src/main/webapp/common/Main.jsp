@@ -41,7 +41,7 @@
       <tr>
         <td class="eFapsMainTableRowMenu" id="eFapsMainTableRowMenu">
           <f:view>
-            <tiles:insert page="/Main.jsp" flush="false"/>
+            <t:dojoInitializer require="dojo.widget.Dialog"></t:dojoInitializer>
             <h:form>
               <t:jscookMenu layout="hbr" theme="ThemeOffice" styleLocation="../styles">
                 <t:navigationMenuItems value="#{menuMainToolbar.JSFMenu}"/>
@@ -77,6 +77,42 @@
     <script language="JavaScript">
       eFapsPositionContent();
       window.onresize = function() { eFapsPositionContent(); }
+   
+      function init(e) {
+        dlgErrorMain = dojo.widget.byId("dialogError");
+      }
+  
+      dojo.addOnLoad(init);
+      
+      function eFapsOpenErrorDialog(_Id, _Msg, _Act){
+        eFapsAddChildText(document.getElementById("dialogErrorId"), _Id);
+        eFapsAddChildText(document.getElementById("dialogErrorMsg"), _Msg);
+        eFapsAddChildText(document.getElementById("dialogErrorAct"), _Act);
+        dlgErrorMain.show();
+      }
+      
+      
     </script>
+  <%-- modal dialog used for errors --%>
+  <div dojoType="dialog" id="dialogError" bgColor="red" bgOpacity="0.8" toggle="fade" toggleDuration="250" >
+   <table id="errorTable" width="400" >
+   <tr valign="top">
+     <td><%=DBProperties.getProperty("JSPPage.Exception.TextId")%></td>
+     <td><p id="dialogErrorId">errorID</p></td> 
+   </tr>
+   <tr>
+     <td valign="top"><%=DBProperties.getProperty("JSPPage.Exception.TextMessage")%></td>
+     <td><p id="dialogErrorMsg">errorMsg</p></td>
+   </tr>
+   <tr>
+     <td valign="top"><%=DBProperties.getProperty("JSPPage.Exception.TextAction")%></td>
+     <td><p id="dialogErrorAct">errorAct</p></td>
+   </tr>
+   </table>
+   <center>
+     <Button onclick="dlgErrorMain.hide()">Close</Button>
+     <br/><br/>
+   </center>
+  </div>  
   </body>
 </html>

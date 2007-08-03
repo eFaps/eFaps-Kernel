@@ -487,3 +487,14 @@ function eFapsUniqueKeyValueChange(_self)  {
   formTag.target = target;
 }
 
+function eFapsAddChildText(_element, _txt){
+    while (_element.firstChild){
+     _element.removeChild(_element.firstChild);
+    }
+    var textar = _txt.split("<br/>");
+    for (var i=0; i<textar.length; i++)  {
+      _element.appendChild(document.createTextNode(textar[i]));
+      _element.appendChild(document.createElement("br"));
+    }
+  }
+

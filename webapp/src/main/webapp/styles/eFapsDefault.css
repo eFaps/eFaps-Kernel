@@ -595,26 +595,38 @@ img.eFapsTreeTypeImages  {
 }
 
 /******************************************************************************
-** Error Page Settings
+** Dilogs Settings
 ******************************************************************************/
 
-table.eFapsError  {
-        border-style: solid;
-        border-color: #FF0000;
+
+#dialogError.dojoDialog{
+           border: 4px solid black;
+           background: #C0C0C0;
+           padding: 0px;
+           -moz-border-radius: 5px;
+           position: absolute;
+           left: -800px;
+           top: -800px;
+}
+    
+#errorTable tbody tr td {
+           border-width:2px;
+           border-color: white; 
+           border-style:solid;
 }
 
-/* Error Label Appearance */
-td.eFapsErrorLabel {
-        background-color: #FFB0B0;
-        color: black;
-        font-weight: bold;
-        height: 24px;
-        width: 90px;
+#dialogFrameModal.dojoDialog {
+           background: #eee;
+           border: 2px solid #999;
+           -moz-border-radius: 5px;
+           padding: 5px; 
+           position: absolute;
+           left: -800px;
+           top: -800px;
 }
 
-/* Error Text Appearance */
-td.eFapsErrorText {
-        background-color: #FFD0D0;
-        font-size: 12px;
-}
-
+.dojoDialog {
+           position: absolute;
+           left: -800px;
+           top: -800px;
+       }

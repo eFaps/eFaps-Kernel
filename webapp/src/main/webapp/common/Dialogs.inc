@@ -26,30 +26,8 @@
 <%@taglib prefix="t"    uri="http://myfaces.apache.org/tomahawk"%>
 <%@taglib prefix="s"    uri="http://myfaces.apache.org/sandbox"  %>
 
-  <style type="text/css">
-    #dialogFrameModal.dojoDialog {
-           background: #eee;
-           border: 2px solid #999;
-           -moz-border-radius: 5px;
-           padding: 5px; 
-           position: absolute;
-           left: -800px;
-           top: -800px;
-       }
-       
-       .dojoDialog {
-           background: #eee;
-           border: 2px solid #999;
-           -moz-border-radius: 5px;
-           padding: 5px; 
-           position: absolute;
-           left: -800px;
-           top: -800px;
-       }
-       
-       
-   </style>
-
+ 
+  <%-- modal dialog used for warnings --%>
   <div dojoType="dialog" id="dialogWarn" bgColor="red" bgOpacity="0.1" toggle="fade" toggleDuration="250" >
    <table id="warnTable" >
    <tr>
@@ -60,29 +38,35 @@
    </tr>
    </table>
   </div>
+  
+  <%-- modal dialog used for errors --%>
   <div dojoType="dialog" id="dialogError" bgColor="red" bgOpacity="0.8" toggle="fade" toggleDuration="250" >
    <table id="errorTable" width="400" >
-   <tr class="eFapsErrorLabel">
+   <tr valign="top">
      <td><%=DBProperties.getProperty("JSPPage.Exception.TextId")%></td>
      <td><p id="dialogErrorId">errorID</p></td> 
    </tr>
    <tr>
-     <td><%=DBProperties.getProperty("JSPPage.Exception.TextMessage")%></td>
+     <td valign="top"><%=DBProperties.getProperty("JSPPage.Exception.TextMessage")%></td>
      <td><p id="dialogErrorMsg">errorMsg</p></td>
    </tr>
    <tr>
-     <td><%=DBProperties.getProperty("JSPPage.Exception.TextAction")%></td>
+     <td valign="top"><%=DBProperties.getProperty("JSPPage.Exception.TextAction")%></td>
      <td><p id="dialogErrorAct">errorAct</p></td>
    </tr>
-   <tr align="center">
-     <td colspan="2"><t:commandButton onclick="dlgError.hide()" value="close"></t:commandButton></td>
-   </tr>  
    </table>
+   <center>
+     <Button onclick="dlgError.hide()">Close</Button>
+     <br/><br/>
+   </center>
   </div>
+  
   <%-- modal dialog used for processing --%>
   <div dojoType="dialog" id="dialogProcess" bgColor="black" bgOpacity="0.3" toggle="fade" toggleDuration="250" >
     <t:outputText id="msg" value="processing..."/>
   </div>
+  
+  <%-- modal dialog used to show other pages --%>
   <div dojoType="dialog" id="dialogFrameModal" bgColor="white" bgOpacity="0.8" toggle="fade" toggleDuration="250" >
     <iframe frameborder="0" width="50" height="50" name="eFapsFrameModal" id="eFapsFrameModal" src="Blank.jsp"></iframe>
   </div> 

@@ -192,9 +192,9 @@
   }
 
   function eFapsOpenErrorDialog(_Id, _Msg, _Act){
-    document.getElementById("dialogErrorId").firstChild.data = _Id;
-    document.getElementById("dialogErrorMsg").firstChild.data = _Msg;
-    document.getElementById("dialogErrorAct").firstChild.data = _Act;
+    eFapsAddChildText(document.getElementById("dialogErrorId"), _Id);
+    eFapsAddChildText(document.getElementById("dialogErrorMsg"), _Msg);
+    eFapsAddChildText(document.getElementById("dialogErrorAct"), _Act);
     dlgError.show();
   }
   

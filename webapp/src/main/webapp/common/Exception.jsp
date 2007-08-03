@@ -139,15 +139,20 @@
     text = text.replaceAll("\r", " ");
 
     
-    String errorID = decode(errorId);
-    String errorMsg = decode(errorMessage);
-    String errorAct = decode(errorAction);
+    String errorID = decode(errorId).replaceAll("\'", " ");
+    String errorMsg = decode(errorMessage).replaceAll("\'", " ");
+    String errorAct = decode(errorAction).replaceAll("\'", " ");
+    System.out.println(errorMsg);
   %>
   <html>
     <script type="text/javascript">
 
       function eFapsShowError()  {
-        parent.eFapsOpenErrorDialog('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>');
+        if(parent.document.getElementById("dialogError")!=null){
+          parent.eFapsOpenErrorDialog('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>');
+        }else{
+          top.eFapsOpenErrorDialog('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>');
+        }
       }
     </script>
 
