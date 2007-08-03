@@ -55,6 +55,7 @@ public final class InstallMojo extends EFapsAbstractMojo {
 
       commitTransaction();
       if (appl != null) {
+        reloadCache();
         startTransaction();
         appl.importData();
         commitTransaction();
