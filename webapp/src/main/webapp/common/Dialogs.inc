@@ -56,6 +56,7 @@
    </tr>
    </table>
    <center>
+     <Button id = "eFpasButtonAdvanced" onclick="eFapsShowAdvancedError(eFapsErrorAdvanced);">more</Button>
      <Button onclick="dlgError.hide()">Close</Button>
      <br/><br/>
    </center>

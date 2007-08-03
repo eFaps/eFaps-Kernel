@@ -497,4 +497,26 @@ function eFapsAddChildText(_element, _txt){
       _element.appendChild(document.createElement("br"));
     }
   }
-
+ 
+ 
+ function eFapsShowAdvancedError(errorpage)  {
+       
+        var winleft = parseInt((screen.width - 700) / 2);
+        var wintop = parseInt((screen.height - 700) / 2);
+        var myWin = window.open("", "test",
+            "dependent=no,"+
+            "location=no,"+
+            "menubar=no,"+
+            "titlebar=no,"+
+            "hotkeys=no,"+
+            "status=no,"+
+            "toolbar=no,"+
+            "scrollbars=yes,"+
+            "resizable=yes,"+
+            "height=700,"+
+            "width=700,"+
+            "left="+winleft+","+
+            "top="+wintop);
+        myWin.document.write(unescape(errorpage));
+        myWin.focus();
+        }

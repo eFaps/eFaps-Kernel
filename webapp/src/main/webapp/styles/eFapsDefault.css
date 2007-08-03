@@ -601,7 +601,7 @@ img.eFapsTreeTypeImages  {
 
 #dialogError.dojoDialog{
            border: 4px solid black;
-           background: #C0C0C0;
+           background: #FFD0D0;
            padding: 0px;
            -moz-border-radius: 5px;
            position: absolute;
@@ -630,3 +630,23 @@ img.eFapsTreeTypeImages  {
            left: -800px;
            top: -800px;
        }
+
+table.eFapsError  {
+        border-style: solid;
+        border-color: #FF0000;
+}
+
+/* Error Label Appearance */
+td.eFapsErrorLabel {
+        background-color: #FFB0B0;
+        color: black;
+        font-weight: bold;
+        height: 24px;
+        width: 90px;
+}
+
+/* Error Text Appearance */
+td.eFapsErrorText {
+        background-color: #FFD0D0;
+        font-size: 12px;
+}

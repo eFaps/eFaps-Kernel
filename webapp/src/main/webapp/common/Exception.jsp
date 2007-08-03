@@ -27,135 +27,109 @@
 <%@page import="org.efaps.util.EFapsException"%>
 
 
-<%!
-  public String decode(Object _object)  {
-    if (_object!=null)  {
+<%!public String decode(Object _object) {
+    if (_object != null) {
       String text = _object.toString();
       text = text.replaceAll("\n", "<br/>");
-      text = text.replaceAll("\\\\","\\\\\\\\");
+      text = text.replaceAll("\\\\", "\\\\\\\\");
       return text;
-    } else  {
+    } else {
       return "";
     }
-  }
-%>
-<%  
-  String errorId = "";
-  String errorMessage = exception.getMessage();
-  String errorAdvanced = "";
-  String errorAction = "";
-  String errorKey = "";
-  if (exception instanceof EFapsException)  {
-    EFapsException eFapsException = (EFapsException)exception;
-    errorKey = eFapsException.getClassName().getName() + "." + eFapsException.getId();
-    errorId = DBProperties.getProperty(errorKey + ".Id");
-    errorMessage = DBProperties.getProperty(errorKey + ".Message");
-    errorAction = DBProperties.getProperty(errorKey + ".Action");
-    
+  }%>
+<%
+      String errorId = "";
+      String errorMessage = exception.getMessage();
+      String errorAdvanced = "";
+      String errorAction = "";
+      String errorKey = "";
+      if (exception instanceof EFapsException) {
+        EFapsException eFapsException = (EFapsException) exception;
+        errorKey =
+            eFapsException.getClassName().getName() + "."
+                + eFapsException.getId();
+        errorId = DBProperties.getProperty(errorKey + ".Id");
+        errorMessage = DBProperties.getProperty(errorKey + ".Message");
+        errorAction = DBProperties.getProperty(errorKey + ".Action");
 
-      if (eFapsException.getArgs()!=null)  {
-        errorMessage = MessageFormat.format(errorMessage, eFapsException.getArgs());
-//        for (int i=0, j=1; i<eFapsException.getArgs().length; i++, j++)  {
-//          errorMessage = errorMessage.replaceAll("<%s"+j+">", eFapsException.getArgs()[i]);
-//        }
-      }
+        if (eFapsException.getArgs() != null) {
+          errorMessage =
+              MessageFormat.format(errorMessage, eFapsException.getArgs());
+          //        for (int i=0, j=1; i<eFapsException.getArgs().length; i++, j++)  {
+          //          errorMessage = errorMessage.replaceAll("<%s"+j+">", eFapsException.getArgs()[i]);
+          //        }
+        }
 
-      if (eFapsException.getThrowable()!=null)  {
-        StackTraceElement[] traceElements = eFapsException.getThrowable().getStackTrace();
-        for (int i=0; i<traceElements.length; i++)  {
-          errorAdvanced += traceElements[i].toString()+"\n";
+        if (eFapsException.getThrowable() != null) {
+          StackTraceElement[] traceElements =
+              eFapsException.getThrowable().getStackTrace();
+          for (int i = 0; i < traceElements.length; i++) {
+            errorAdvanced += traceElements[i].toString() + "\n";
+          }
+        }
+
+      } else {
+        errorMessage = exception.getMessage();
+        if (errorMessage == null) {
+          errorMessage = exception.toString();
+        }
+        StackTraceElement[] traceElements = exception.getStackTrace();
+        for (int i = 0; i < traceElements.length; i++) {
+          errorAdvanced += traceElements[i].toString() + "\n";
         }
       }
+      String text = "";
+      if (errorAdvanced.length() > 0) {
+        StringBuffer buf = new StringBuffer();
+        buf.append("<html><head><title>");
+        buf.append(DBProperties.getProperty("JSPPage.Exception.TextTitle"));
+        buf.append("</title>");
+        buf.append("<link rel=\"StyleSheet\" href=\"../styles/eFapsDefault.css\" type=\"text/css\"/>");
+        buf.append("</head><body><center>");
+        buf.append("<table class=\"eFapsError\">");
+        buf.append("<tr id=\"advanced\">");
+        buf.append("<td class=\"eFapsErrorLabel\">");
+        buf.append(decode(DBProperties
+            .getProperty("JSPPage.Exception.TextAdvanced")));
+        buf.append("</td>");
+        buf.append("<td class=\"eFapsErrorText\">").append(
+            decode(errorAdvanced)).append("</td>");
+        buf.append("</tr>");
+        buf.append("</table>");
+        buf
+            .append("<div style=\"text-align:center\"><a href=\"javascript:window.close()\">Close</a></div>");
+        buf.append("</body></html>");
 
-    } else  {
-      errorMessage = exception.getMessage();
-      if (errorMessage==null)  {
-        errorMessage = exception.toString();
+        text = buf.toString();
+        text = text.replaceAll("<", "%3c");
+        text = text.replaceAll(">", "%3e");
+        text = text.replaceAll("\'", "%27");
+        text = text.replaceAll("\n", " ");
+        text = text.replaceAll("\r", " ");
+
       }
-      StackTraceElement[] traceElements = exception.getStackTrace();
-      for (int i=0; i<traceElements.length; i++)  {
-        errorAdvanced += traceElements[i].toString()+"\n";
-      }
-    }
+      String errorID = decode(errorId).replaceAll("\'", " ");
+      String errorMsg = decode(errorMessage).replaceAll("\'", " ");
 
-    StringBuffer buf = new StringBuffer();
-    buf.append("<html><title>");
-    buf.append(DBProperties.getProperty("JSPPage.Exception.TextTitle"));
-    buf.append("</title>");
-    buf.append("<link rel=\"StyleSheet\" href=\"../styles/eFapsDefault.css\" type=\"text/css\"/>");
-    buf.append("<script language=\"javascript\">");
-    buf.append("function advanced()  {");
-    buf.append("var obj = document.getElementById(\"advanced\");");
-    buf.append("if (obj.style.display==\"none\")  {");
-    buf.append("obj.style.display = \"\";");
-    buf.append("} else  {");
-    buf.append("obj.style.display = \"none\";");
-    buf.append("}}</script>");
-    buf.append("<body><center>");
-    buf.append("<table class=\"eFapsError\">");
-    buf.append("<tr>");
-    buf.append("<td class=\"eFapsErrorLabel\">");
-    buf.append(DBProperties.getProperty("JSPPage.Exception.TextId"));
-    buf.append("</td>");
-    buf.append("<td class=\"eFapsErrorText\">").append(decode(errorId)).append("</td>");
-    buf.append("</tr>");
-    buf.append("<tr>");
-    buf.append("<td class=\"eFapsErrorLabel\">");
-    if (errorAdvanced.length()>0)  {
-        buf.append("<a class=\"eFapsErrorLabel\" accesskey=\"a\" href=\"javascript:advanced()\">");
-    }
-    buf.append(decode(DBProperties.getProperty("JSPPage.Exception.TextMessage")));
-    if (errorAdvanced.length()>0)  {
-      buf.append("</a>");
-    }
-    buf.append("</td>");
-    buf.append("<td class=\"eFapsErrorText\">");
-    buf.append(decode(errorMessage));
-    buf.append("</td>");
-    buf.append("</tr>");
-    if (errorAdvanced.length()>0)  {
-      buf.append("<tr id=\"advanced\" style=\"display:none\">");
-      buf.append("<td class=\"eFapsErrorLabel\">");
-      buf.append(decode(DBProperties.getProperty("JSPPage.Exception.TextAdvanced")));
-      buf.append("</td>");
-      buf.append("<td class=\"eFapsErrorText\">").append(decode(errorAdvanced)).append("</td>");
-      buf.append("</tr>");
-    }
-    buf.append("<tr>");
-    buf.append("<td class=\"eFapsErrorLabel\">");
-    buf.append(decode(DBProperties.getProperty("JSPPage.Exception.TextAction")));
-    buf.append("</td>");
-    buf.append("<td class=\"eFapsErrorText\">").append(decode(errorAction)).append("</td>");
-    buf.append("</tr>");
-    buf.append("</table>");
-    buf.append("<div style=\"text-align:center\"><a href=\"javascript:window.close()\">Close</a></div>");
-    buf.append("</body></html>");
-
-    String text = buf.toString();
-    text = text.replaceAll("<", "%3c");
-    text = text.replaceAll(">", "%3e");
-    text = text.replaceAll("\'", "%27");
-    text = text.replaceAll("\n", " ");
-    text = text.replaceAll("\r", " ");
-
-    
-    String errorID = decode(errorId).replaceAll("\'", " ");
-    String errorMsg = decode(errorMessage).replaceAll("\'", " ");
-    String errorAct = decode(errorAction).replaceAll("\'", " ");
-    System.out.println(errorMsg);
-  %>
-  <html>
-    <script type="text/javascript">
+      String errorAct = decode(errorAction).replaceAll("\'", " ");
+%>
+<html>
+<script type="text/javascript">
 
       function eFapsShowError()  {
         if(parent.document.getElementById("dialogError")!=null){
-          parent.eFapsOpenErrorDialog('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>');
+          parent.eFapsOpenErrorDialog('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>','<%=text%>');
         }else{
-          top.eFapsOpenErrorDialog('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>');
+          top.eFapsOpenErrorDialog('<%=errorID%>','<%=errorMsg%>','<%=errorAct%>','<%=text%>');
         }
       }
+      
+      
     </script>
 
-    <body onLoad="eFapsShowError()">
-    </body>
-  </html>
+<body onLoad="eFapsShowError()">
+<script type="text/javascript">
+   
+    </script>
+</body>
+</html>

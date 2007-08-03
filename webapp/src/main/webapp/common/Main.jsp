@@ -84,7 +84,14 @@
   
       dojo.addOnLoad(init);
       
-      function eFapsOpenErrorDialog(_Id, _Msg, _Act){
+      var eFapsErrorAdvanced;
+  
+      function eFapsOpenErrorDialog(_Id, _Msg, _Act, _Adv){
+        if (_Adv.lenght<1){
+          document.getElementById("eFpasButtonAdvanced").style.visibility = "hidden";
+        }
+        eFapsErrorAdvanced=_Adv;
+        
         eFapsAddChildText(document.getElementById("dialogErrorId"), _Id);
         eFapsAddChildText(document.getElementById("dialogErrorMsg"), _Msg);
         eFapsAddChildText(document.getElementById("dialogErrorAct"), _Act);
@@ -110,6 +117,7 @@
    </tr>
    </table>
    <center>
+     <Button id = "eFpasButtonAdvanced" onclick="eFapsShowAdvancedError(eFapsErrorAdvanced);">more</Button>
      <Button onclick="dlgErrorMain.hide()">Close</Button>
      <br/><br/>
    </center>
