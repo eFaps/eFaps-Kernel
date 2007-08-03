@@ -16,55 +16,51 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
+ Author:          tmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-menu>
-  <uuid>695f8da8-2d21-4df9-a81a-4582ac3fac7a</uuid>
+<ui-command>
+  <uuid>f49867f2-525f-4687-a6dd-033d1ea98b8f</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>contactwork</application>
+      <application>teamwork</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>ContactWork_PersonTree</name>
+    <name>ContactWork_AbstractTree_Email_Menu_Action_Delete</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
-      <application>contactwork</application>
+      <application>teamwork</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>ContactWork_PersonTree</name>
+    <name>ContactWork_AbstractTree_Email_Menu_Action_Delete</name>
+    
+    <!-- target definitions -->
     <target>
-      <form>ContactWork_PersonForm</form>
-      <menu>TeamWork_CollectionTree_Menu</menu>
+      <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>
     </target>
     
-    <childs>
-      <child>ContactWork_AbstractTree_Email</child>
-      <child>ContactWork_AbstractTree_Phone</child>
-      <child>ContactWork_AbstractTree_Direction</child>
-    </childs>
-     <!--property definitions -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
+    <!-- property definitions -->
+    <property name="AskUser">true</property>
+    <property name="Submit">true</property>
   </definition>
 
-</ui-menu>
+</ui-command>

@@ -41,7 +41,8 @@
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="ABSTRACTID"  type="INTEGER"                    not-null="true"/>
+      <column name="ABSTRACTID"  type="INTEGER"                          not-null="true"/>
+      <column name="ATTRIBUTEID" type="INTEGER"                          not-null="true"/>
       <column name="STREET"      type="STRING_SHORT"      length="128"/>
       <column name="POSTALCODE"  type="STRING_SHORT"      length="10"/>
       <column name="CITY"        type="STRING_SHORT"      length="128"/>
@@ -65,7 +66,7 @@
       <update>true</update>
       <!-- contraints -->
       <foreign name="T_CWDIRECTIONS_FK_ABST"    key="ABSTRACTID"   reference="T_CWABSTRACT(ID)"/>
-      
+      <foreign name="T_CWDIRECTIONS_FK_ATTR"    key="ATTRIBUTEID"  reference="T_CWATTABSTRACT(ID)"/>
      </database>
   </definition>
 

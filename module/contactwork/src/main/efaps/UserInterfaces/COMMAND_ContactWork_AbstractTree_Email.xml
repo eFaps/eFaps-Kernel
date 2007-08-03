@@ -57,9 +57,8 @@
     <target>
       <table>ContactWork_EmailTable</table>
       <menu>ContactWork_AbstractTree_Email_Menu</menu>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
-        <property name="Types">ContactWork_Email</property>
-        <property name="ExpandChildTypes">true</property> 
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
+        <property name="Expand">ContactWork_Email\Abstract2Email</property>
       </evaluate>
     </target>
     <!-- property definitions -->

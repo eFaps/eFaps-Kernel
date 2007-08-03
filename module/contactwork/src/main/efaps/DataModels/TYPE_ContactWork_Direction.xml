@@ -33,7 +33,22 @@
       <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
+    
     <name>ContactWork_Direction</name>
+    
+    <attribute>
+      <name>OID</name>
+      <type>OID</type>
+      <sqltable>ContactWork_DirectionsSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>ContactWork_DirectionsSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
     
     <attribute>
       <name>Street</name>
@@ -90,5 +105,18 @@
       <sqlcolumn>ABSTRACTID</sqlcolumn>
     </attribute>
     
+    <attribute>
+      <name>Attribute</name>
+      <type>LinkWithRanges</type>
+      <typelink>ContactWork_AttributeEmail</typelink>
+      <sqltable>ContactWork_DirectionsSQLTable</sqltable>
+      <sqlcolumn>ATTRIBUTEID</sqlcolumn>
+      <trigger name="ContactWork_Direction_RANGE_VALUE" event="RANGE_VALUE" 
+          program="org.efaps.esjp.admin.datamodel.RangesValue">
+        <property name="Value">Attribute</property>
+        <property name="Type">ContactWork_AttributeDirection</property>
+      </trigger>
+      
+    </attribute>
   </definition>
 </datamodel-type>

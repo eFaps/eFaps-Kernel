@@ -54,5 +54,26 @@
     <name>ContactWork_Phone</name>
     <parent>ContactWork_ComAbstract</parent>
     
+    <attribute>
+      <name>Abstract2Phone</name>
+      <type>Link</type>
+      <typelink>ContactWork_Abstract</typelink>
+      <sqltable>ContactWork_ComAbstractSQLTable</sqltable>
+      <sqlcolumn>ABSTRACTID</sqlcolumn>
+    </attribute>
+    
+    <attribute>
+      <name>Attribute</name>
+      <type>LinkWithRanges</type>
+      <typelink>ContactWork_AttributePhone</typelink>
+      <sqltable>ContactWork_ComAbstractSQLTable</sqltable>
+      <sqlcolumn>ATTRIBUTEID</sqlcolumn>
+      <trigger name="ContactWork_Phone_RANGE_VALUE" event="RANGE_VALUE" 
+          program="org.efaps.esjp.admin.datamodel.RangesValue">
+        <property name="Value">Attribute</property>
+        <property name="Type">ContactWork_AttributePhone</property>
+      </trigger>
+    </attribute>
+    
   </definition>
 </datamodel-type>

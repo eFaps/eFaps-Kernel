@@ -55,6 +55,14 @@
     <parent>ContactWork_ComAbstract</parent>
     
     <attribute>
+      <name>Abstract2Email</name>
+      <type>Link</type>
+      <typelink>ContactWork_Abstract</typelink>
+      <sqltable>ContactWork_ComAbstractSQLTable</sqltable>
+      <sqlcolumn>ABSTRACTID</sqlcolumn>
+    </attribute>
+    
+    <attribute>
       <name>Attribute</name>
       <type>LinkWithRanges</type>
       <typelink>ContactWork_AttributeEmail</typelink>

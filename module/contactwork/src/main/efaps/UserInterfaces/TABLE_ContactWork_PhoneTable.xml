@@ -16,18 +16,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
+ Author:          tmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-menu>
-  <uuid>695f8da8-2d21-4df9-a81a-4582ac3fac7a</uuid>
+<ui-table>
+  <uuid>de3692cb-8b27-4ab6-9246-5c7bccae430f</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>ContactWork_PersonTree</name>
+    <name>ContactWork_PhoneTable</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,20 +51,21 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>ContactWork_PersonTree</name>
-    <target>
-      <form>ContactWork_PersonForm</form>
-      <menu>TeamWork_CollectionTree_Menu</menu>
-    </target>
-    
-    <childs>
-      <child>ContactWork_AbstractTree_Email</child>
-      <child>ContactWork_AbstractTree_Phone</child>
-      <child>ContactWork_AbstractTree_Direction</child>
-    </childs>
-     <!--property definitions -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
+    <name>ContactWork_PhoneTable</name>
+    <!-- fields -->
+    <field name="type">
+      <property name="Expression">Type</property>
+      <property name="Label">ContactWork_PhoneTable/Type.Label</property>
+    </field>
+    <field name="attribute">
+      <property name="Expression">Attribute</property>
+      <property name="Label">ContactWork_PhoneTable/Attribute.Label</property>
+    </field>
+    <field name="phone">
+      <property name="Expression">Phone</property>
+      <property name="Label">ContactWork_PhoneTable/Name.Label</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+    </field>
   </definition>
 
-</ui-menu>
+</ui-table>

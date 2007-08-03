@@ -38,11 +38,33 @@ import org.efaps.util.EFapsException;
 
 /**
  * The ESJP is used to launch an expand-query against the eFaps-Database, wich
- * is afterwards used to fill a webtable.<br/> <b>Example:</b><br/> <code>
- *   &lt;target&gt;<br/>&nbsp;&nbsp;&lt;evaluate program="org.efaps.esjp.common.uitable.QueryExpand"&gt;
- * <br/>&nbsp;&nbsp;&nbsp;&nbsp;&lt;property name="Expand"&gt;Admin_User_Person2Group\UserFromLink.UserToLink&lt;/property&gt;
- * <br/>&nbsp;&nbsp;&lt;/evaluate&gt;<br/> &lt;/target&gt;
- * </code><br/>
+ * is afterwards used to fill a webtable<br>
+ * <br>
+ * <b>Properties:</b><br>
+ * <table>
+ * <tr>
+ * <td><u>Name</u></td>
+ * <td><u>Value</u></td>
+ * <td><u>Default</u></td>
+ * <td><u>mandatory</u></td>
+ * <td><u>Description</u></td>
+ * </b></tr>
+ * <tr>
+ * <td>Expand</td>
+ * <td>-</td>
+ * <td>-</td>
+ * <td>yes</td>
+ * <td>Expand to be executed</td>
+ * </tr>
+ * </table><br>
+ * <b>Example:</b><br>
+ * <code>
+ * &lt;target&gt;<br>
+ * &nbsp;&nbsp;&lt;evaluate program="org.efaps.esjp.common.uitable.QueryExpand"&gt;<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&lt;property name="Expand"&gt;Admin_User_Person2Group\UserFromLink.UserToLink&lt;/property&gt;<br>
+ * &nbsp;&nbsp;&lt;/evaluate&gt;<br>
+ * &lt;/target&gt;
+ * </code>
  * 
  * @author tmo
  * @version $Id$
@@ -60,7 +82,8 @@ public class QueryExpand implements EventExecution {
     Return ret = new Return();
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
 
-    Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+    Map<?, ?> properties =
+        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
     String expand = (String) properties.get("Expand");
 

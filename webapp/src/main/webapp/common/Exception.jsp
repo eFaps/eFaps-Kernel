@@ -117,7 +117,9 @@
 <script type="text/javascript">
 
       function eFapsShowError()  {
-        if(parent.document.getElementById("dialogError")!=null){
+        
+        if(parent.document.getElementById("dialogError")!=null && parent.name!=""){
+        
           parent.dlgFrMdl.hide();
           parent.dlgProcess.hide();
           parent.dlgWarn.hide();      

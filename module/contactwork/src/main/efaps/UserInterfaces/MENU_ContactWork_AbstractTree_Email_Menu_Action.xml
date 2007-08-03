@@ -54,7 +54,7 @@
     <name>ContactWork_AbstractTree_Email_Menu_Action</name>
     <childs>
       <child>ContactWork_AbstractTree_Email_Menu_Action_Create</child>
-     
+      <child>ContactWork_AbstractTree_Email_Menu_Action_Delete</child>
     </childs>
   </definition>
 

@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>695f8da8-2d21-4df9-a81a-4582ac3fac7a</uuid>
+<ui-command>
+  <uuid>d7e74ee5-d47a-4090-a83b-6520c4530cf8</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>ContactWork_PersonTree</name>
+    <name>ContactWork_AbstractTree_Direction</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,20 +51,22 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>ContactWork_PersonTree</name>
-    <target>
-      <form>ContactWork_PersonForm</form>
-      <menu>TeamWork_CollectionTree_Menu</menu>
-    </target>
+    <name>ContactWork_AbstractTree_Direction</name>
     
-    <childs>
-      <child>ContactWork_AbstractTree_Email</child>
-      <child>ContactWork_AbstractTree_Phone</child>
-      <child>ContactWork_AbstractTree_Direction</child>
-    </childs>
-     <!--property definitions -->
+    <!-- target definitions -->
+    <target>
+      <table>ContactWork_DirectionTable</table>
+      <menu>ContactWork_AbstractTree_Direction_Menu</menu>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
+        <property name="Expand">ContactWork_Direction\Abstract</property>
+      </evaluate>
+    </target>
+    <!-- property definitions -->
     <property name="Target">content</property>
-    <property name="TargetMode">view</property>
+    <property name="TargetShowCheckBoxes">true</property>
+    
+    
+   
   </definition>
 
-</ui-menu>
+</ui-command>

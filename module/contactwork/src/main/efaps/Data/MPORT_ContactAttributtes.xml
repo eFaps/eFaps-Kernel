@@ -31,4 +31,16 @@
   <object type= "ContactWork_AttributeEmail" >
     <attribute name="Attribute">private</attribute>
   </object>
-</import>
+  <object type= "ContactWork_AttributePhone" >
+    <attribute name="Attribute">work</attribute>
+  </object>
+  <object type= "ContactWork_AttributePhone" >
+    <attribute name="Attribute">private</attribute>
+  </object>
+  <object type= "ContactWork_AttributeDirection" >
+    <attribute name="Attribute">work</attribute>
+  </object>
+  <object type= "ContactWork_AttributeDirection" >
+    <attribute name="Attribute">private</attribute>
+  </object>
+ </import>

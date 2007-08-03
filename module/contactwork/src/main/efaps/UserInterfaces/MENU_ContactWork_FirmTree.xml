@@ -24,7 +24,7 @@
 -->
 
 <ui-menu>
-  <uuid>695f8da8-2d21-4df9-a81a-4582ac3fac7a</uuid>
+  <uuid>518b17b5-73c1-4081-a750-90b654804aa4</uuid>
 
   <!-- ************************************************************************
     version definition used to create the menu 
@@ -37,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>ContactWork_PersonTree</name>
+    <name>ContactWork_FirmTree</name>
   </definition>
     
   <!-- ************************************************************************
@@ -51,10 +51,10 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>ContactWork_PersonTree</name>
+    <name>ContactWork_FirmTree</name>
     <target>
-      <form>ContactWork_PersonForm</form>
-      <menu>TeamWork_CollectionTree_Menu</menu>
+      <form>ContactWork_FirmForm</form>
+      <menu>ContactWork_FirmTree_Menu</menu>
     </target>
     
     <childs>

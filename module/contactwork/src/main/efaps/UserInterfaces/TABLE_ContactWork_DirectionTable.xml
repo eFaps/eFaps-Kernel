@@ -16,18 +16,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
+ Author:          tmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-menu>
-  <uuid>695f8da8-2d21-4df9-a81a-4582ac3fac7a</uuid>
+<ui-table>
+  <uuid>2614187f-1ad0-438f-a26f-cc6832ad3dc8</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>ContactWork_PersonTree</name>
+    <name>ContactWork_DirectionTable</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,20 +51,32 @@
       <mode>true</mode>
       <mode>(version>=3)</mode>
     </version>
-    <name>ContactWork_PersonTree</name>
-    <target>
-      <form>ContactWork_PersonForm</form>
-      <menu>TeamWork_CollectionTree_Menu</menu>
-    </target>
-    
-    <childs>
-      <child>ContactWork_AbstractTree_Email</child>
-      <child>ContactWork_AbstractTree_Phone</child>
-      <child>ContactWork_AbstractTree_Direction</child>
-    </childs>
-     <!--property definitions -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
+    <name>ContactWork_DirectionTable</name>
+    <!-- fields -->
+    <field name="attribute">
+      <property name="Expression">Attribute</property>
+      <property name="Label">ContactWork_DirectionTable/Attribute.Label</property>
+    </field>
+    <field name="street">
+      <property name="Expression">Street</property>
+      <property name="Label">ContactWork_DirectionTable/Street.Label</property>
+    </field>
+    <field name="postalcode">
+      <property name="Expression">PostalCode</property>
+      <property name="Label">ContactWork_DirectionTable/PostalCode.Label</property>
+    </field>
+    <field name="city">
+      <property name="Expression">City</property>
+      <property name="Label">ContactWork_DirectionTable/City.Label</property>
+    </field>
+    <field name="country">
+      <property name="Expression">Country</property>
+      <property name="Label">ContactWork_DirectionTable/Country.Label</property>
+    </field>
+    <field name="districtprovince">
+      <property name="Expression">DistrictProvince</property>
+      <property name="Label">ContactWork_DirectionTable/DistrictProvince.Label</property>
+    </field>
   </definition>
 
-</ui-menu>
+</ui-table>

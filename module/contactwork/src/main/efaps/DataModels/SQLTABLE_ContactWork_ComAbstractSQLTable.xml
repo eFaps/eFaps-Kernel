@@ -63,7 +63,7 @@
       <update>true</update>
       <!-- contraints -->
       <foreign name="T_CWCOMABSTRACT_FK_ABST"    key="ABSTRACTID"   reference="T_CWABSTRACT(ID)"/>
-      <foreign name="T_CWCOMABSTRACT_FK_ATTR"    key="ABSTRACTID"   reference="T_CWATTABSTRACT(ID)"/>
+      <foreign name="T_CWCOMABSTRACT_FK_ATTR"    key="ATTRIBUTEID"  reference="T_CWATTABSTRACT(ID)"/>
       
     </database>
      

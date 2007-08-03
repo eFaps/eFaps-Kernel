@@ -24,7 +24,7 @@
 -->
 
 <datamodel-type>
-  <uuid>b95cd91d-7ce8-4d9b-a9e5-32a5bbb39057</uuid>
+  <uuid>e3521546-4912-4670-bc76-5e8dd6a1cb50</uuid>
 
   <definition>
     <version>
@@ -33,10 +33,9 @@
       <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
-
-    <name>ContactWork_Firm</name>
-  </definition>
-
+    <name>ContactWork_AttributePhone</name>
+  </definition>  
+  
   <definition>
     <version>
       <application>contactwork</application>
@@ -45,8 +44,14 @@
       <mode>(version==3)</mode>
     </version>
 
-    <name>ContactWork_Firm</name>
-    <parent>ContactWork_Abstract</parent>
-    <property name="Tree">ContactWork_FirmTree</property>
+    <name>ContactWork_AttributePhone</name>
+    <parent>ContactWork_AttributeAbstract</parent>
+    
+    <attribute>
+      <name>Attribute</name>
+      <type>String</type>
+      <sqltable>ContactWork_AttributeAbstractSQLTable</sqltable>
+      <sqlcolumn>ATTRIBUTE</sqlcolumn>
+    </attribute>
   </definition>
 </datamodel-type>
