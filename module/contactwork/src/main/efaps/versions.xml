@@ -27,5 +27,5 @@
   <application>contactwork</application>
   <version number="1"/>
   <version number="2"/>
-  <version number="3"/>
+  <version number="3" compile="true"/>
 </install>

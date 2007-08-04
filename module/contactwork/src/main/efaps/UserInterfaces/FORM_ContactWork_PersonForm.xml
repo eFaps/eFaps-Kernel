@@ -62,8 +62,8 @@
     </field>
     <field name="name">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
       <property name="Expression">Name</property>
       <property name="Required">true</property>
       <property name="Searchable">true</property>

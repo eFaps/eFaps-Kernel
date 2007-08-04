@@ -56,6 +56,7 @@
     <field name="type">
       <property name="Expression">Type</property>
       <property name="Label">ContactWork_AbstractTable/Type.Label</property>
+      <property name="Filterable">true</property>
     </field>
     <field name="name">
       <property name="Expression">Name</property>

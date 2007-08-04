@@ -56,7 +56,7 @@
     <!-- target definitions -->
     <target>
       <form>ContactWork_PersonForm</form>
-      <execute program="org.efaps.esjp.common.uiform.Create"/>
+      <execute program="org.efaps.esjp.contactwork.CreatePerson"/>
     </target>
     <!-- property definitions -->
     <property name="Target">modal</property>
