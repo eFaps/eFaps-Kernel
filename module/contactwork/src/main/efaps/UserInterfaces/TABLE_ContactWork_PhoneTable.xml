@@ -63,7 +63,7 @@
     </field>
     <field name="phone">
       <property name="Expression">Phone</property>
-      <property name="Label">ContactWork_PhoneTable/Name.Label</property>
+      <property name="Label">ContactWork_PhoneTable/Phone.Label</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
     </field>
   </definition>
