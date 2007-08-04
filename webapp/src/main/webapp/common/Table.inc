@@ -308,7 +308,14 @@ System.out.println("create new cacheKey = "+cacheKey);
            </td>
            <c:if test="${one.field.filterable eq true}">
              <td align="right" width="1%" onClick="eFapsOpenFilterDialog('<c:out value="${one.field.name}"/>')">
-               <img src="../images/eFapsTableButtonNextPageDisabled.gif"/>
+               <c:choose>
+                 <c:when test="${one.field.name eq uiObject.filterKey and uiObject.filtered eq true}">
+                   <img src="../images/eFapsFilterActive.gif"/>
+                 </c:when>
+                 <c:otherwise>
+                   <img src="../images/eFapsFilter.gif"/>
+                 </c:otherwise>
+               </c:choose>
              </td>
            </c:if>
            </tr>

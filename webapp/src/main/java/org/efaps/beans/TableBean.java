@@ -102,13 +102,18 @@ public class TableBean extends AbstractCollectionBean {
 
   /**
    * The instance variable stores the current selected filterKey as the
-   * sequential number of the filed of this web table representation.
+   * sequential number of the field of this web table representation.
    * 
    * @see #getFilterKey
    * @see #setFilterKey(String)
    */
-  private int filterKey = 0;
+  private int filterKeyInt = 0;
 
+  /**
+   * The instance variable stores the current selected filterKey as the
+   * name of the field of this web table representation.
+   */
+  private String filterKey;
   /**
    * The instance Map contains the Values to be filtered
    */
@@ -275,7 +280,7 @@ public class TableBean extends AbstractCollectionBean {
         row.add(fieldDef, attr, value, instance);
       }
       // if (toAdd) {
-      getValues().add(row);
+      this.values.add(row);
       // }
     }
   }
@@ -298,7 +303,7 @@ public class TableBean extends AbstractCollectionBean {
         }
       }
       final int index = sortKey;
-      Collections.sort(getValues(), new Comparator<Row>() {
+      Collections.sort(this.values, new Comparator<Row>() {
         public int compare(Row _o1, Row _o2) {
 
           FieldValue a1 = _o1.getValues().get(index);
@@ -307,7 +312,7 @@ public class TableBean extends AbstractCollectionBean {
         }
       });
       if (getSortDirection() != null && getSortDirection().equals("-")) {
-        Collections.reverse(getValues());
+        Collections.reverse(this.values);
       }
     }
 
@@ -347,10 +352,10 @@ public class TableBean extends AbstractCollectionBean {
    */
   public List<Row> getValues() throws EFapsException {
     List<Row> ret = new ArrayList<Row>();
-    if (!this.filterValues.isEmpty()) {
+    if (isFiltered()) {
       for (Row row : this.values) {
         boolean filtered = false;
-        FieldValue fieldvalue = row.getValues().get(this.filterKey);
+        FieldValue fieldvalue = row.getValues().get(this.filterKeyInt);
         String value = fieldvalue.getViewHtml();
         for (String key : this.filterValues.keySet()) {
           if (value.equals(key)) {
@@ -425,35 +430,37 @@ public class TableBean extends AbstractCollectionBean {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #filterKey}.
+   * This is the getter method for the instance variable {@link #filterKeyInt}.
    * 
-   * @return value of instance variable {@link #filterKey}
+   * @return value of instance variable {@link #filterKeyInt}
    * @see #filterKey
    * @see #setFilterKey
    */
-  public int getFilterKey() {
+  public String getFilterKey() {
     return this.filterKey;
   }
 
   /**
-   * This is the setter method for the instance variable {@link #filterKey}.
+   * This is the setter method for the instance variable {@link #filterKeyInt}.
    * 
    * @param _selectedFilter
-   *                new value for instance variable {@link #filterKey}
-   * @see #filterKey
+   *                new value for instance variable {@link #filterKeyInt}
+   * @see #filterKeyInt
    * @see #getFilterKey
    */
   public void setFilterKey(String _filterkey) {
+    this.filterKey = _filterkey;
     for (int i = 0; i < getTable().getFields().size(); i++) {
       Field field = (Field) getTable().getFields().get(i);
       if (field.getName().equals(_filterkey)) {
-        this.filterKey = i;
+        this.filterKeyInt = i;
         break;
       }
     }
 
   }
 
+  
   /**
    * This Map is used for contruction of the items in a myfaces "<h:selectManyCheckbox>".
    * It produces Selectboxes with a sequential number as value and the
@@ -467,8 +474,8 @@ public class TableBean extends AbstractCollectionBean {
     this.filterValues = filterMap;
 
     Integer i = 0;
-    for (Row row : this.getValues()) {
-      FieldValue fieldvalue = row.getValues().get(this.filterKey);
+    for (Row row : this.values) {
+      FieldValue fieldvalue = row.getValues().get(this.filterKeyInt);
       String value = fieldvalue.getViewHtml();
       if (!filterMap.containsKey(value)) {
         filterMap.put(fieldvalue.getViewHtml(), i.toString());
