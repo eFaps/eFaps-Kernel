@@ -297,6 +297,22 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
+<servlet>
+    <servlet-name>eFapsWicket</servlet-name>
+    <servlet-class>org.apache.wicket.protocol.http.WicketServlet</servlet-class>
+    <init-param>
+      <param-name>applicationClassName</param-name>
+      <param-value>org.efaps.webapp.wicket.EFapsApplication</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>eFapsWicket</servlet-name>
+    <url-pattern>/wicket/*</url-pattern>
+  </servlet-mapping>
+
+
   <!-- -->
   <servlet-mapping>
     <servlet-name>eFapsServlet</servlet-name>
@@ -371,5 +387,10 @@
     <res-type>org.efaps.db.transaction.VFSStoreFactoryBean</res-type>
     <res-auth>Container</res-auth>
   </resource-ref>
+  
+  
+  
+  
+  
 </web-app>
 
