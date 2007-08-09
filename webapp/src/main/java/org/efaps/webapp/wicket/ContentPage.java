@@ -21,11 +21,16 @@ public abstract class ContentPage extends WebPage {
   }
 
   protected void addComponents() throws Exception {
-    add(new TitelPanel("eFapsTitel", ((IModelAbstract) super.getModel())
-        .getTitle()));
-    
-    add(new JavaScriptReference("eFapsDefaultScript", getClass(), "eFapsDefault.js"));
-    add(new StyleSheetReference("eFapsDefaultCSS", getClass(), "eFapsDefault.css"));
-  }
+    IModelAbstract model = (IModelAbstract) super.getModel();
+    add(new TitelPanel("eFapsTitel", model.getTitle()));
+    add(new JavaScriptReference("eFapsDefaultScript", getClass(),
+        "javascript/eFapsDefault.js"));
+    add(new StyleSheetReference("eFapsDefaultCSS", getClass(),
+        "css/eFapsDefault.css"));
+    FooterPanel footerpanel = new FooterPanel("eFapsFooter", model);
+    footerpanel.setVisible(model.isCreateMode() || model.isEditMode()
+        || model.isSearchMode());
+    add(footerpanel);
 
+  }
 }

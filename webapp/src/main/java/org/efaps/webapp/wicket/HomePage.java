@@ -16,6 +16,8 @@ public class HomePage extends WebPage {
     x = new BookmarkablePageLink("webtablelink", WebTable.class);
     x.setParameter("command", "Admin_DBProperties_MyDesk");
     add(x);
-
+    x = new BookmarkablePageLink("create", WebForm.class);
+    x.setParameter("command", "Admin_User_PersonMyDesk_Menu_Action_Create");
+    add(x);
   }
 }

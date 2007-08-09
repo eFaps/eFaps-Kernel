@@ -62,8 +62,9 @@ public class FormTable extends WebComponent {
     for (FieldValue value : model.getValues()) {
       // if the field is a group count field, store the value in the row group
       // count variable, (only if not create node or field is creatable)
-      Field field = value.getFieldDef().getField();
-      if (field != null) {
+     
+      if (value!=null && value.getFieldDef().getField() != null) {
+        Field field = value.getFieldDef().getField();
         if (field.getGroupCount() > 0
             && (!model.isCreateMode() || field.isCreatable())
             && (!model.isSearchMode() || field.isSearchable())) {
