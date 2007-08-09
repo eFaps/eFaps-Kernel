@@ -24,10 +24,9 @@ import org.apache.wicket.Request;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
 
-public class EFapsApplicationSession extends WebSession{
+import org.efaps.util.EFapsException;
 
-  
-  
+public class EFapsApplicationSession extends WebSession {
 
   public EFapsApplicationSession(WebApplication application, Request request) {
     super(application, request);
@@ -35,8 +34,13 @@ public class EFapsApplicationSession extends WebSession{
   }
 
   private static final long serialVersionUID = 1884548064760514909L;
-  
-  public IFormModel getIFormModel(final String _key) throws Exception  {
+
+  public IFormModel getIFormModel(final String _key) throws Exception {
     return new IFormModel();
+  }
+
+  public ITableModel getITableModel(final String _key) throws EFapsException {
+    return new ITableModel();
+
   }
 }

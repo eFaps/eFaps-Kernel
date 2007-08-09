@@ -2,26 +2,27 @@ package org.efaps.webapp.wicket;
 
 import org.apache.wicket.PageParameters;
 
-import org.efaps.webapp.components.FormTable;
+import org.efaps.webapp.components.Table;
 import org.efaps.webapp.models.EFapsApplicationSession;
 
-public class WebForm extends ContentPage {
+public class WebTable extends ContentPage {
 
-  private static final long serialVersionUID = -3554311414948286302L;
+  private static final long serialVersionUID = 7564911406648729094L;
 
-  public WebForm(PageParameters _parameters) throws Exception {
-    
+ 
+
+  public WebTable(PageParameters _parameters) throws Exception {
     EFapsApplicationSession session = (EFapsApplicationSession) getSession();
-    super.setModel(session.getIFormModel(null));
+    super.setModel(session.getITableModel(null));
     this.addComponents();
-   
+
   }
 
   @Override
   protected void addComponents() throws Exception {
 
     super.addComponents();
-    add(new FormTable("eFapsFormTable", super.getModel()));
+    add(new Table("eFapsWebTable", super.getModel()));
   }
 
 }

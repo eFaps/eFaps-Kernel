@@ -2,13 +2,76 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<link rel="stylesheet" type="text/css" href="./styles/eFapsDefault.css"/>
-</head>
+<wicket:head>
+  <script type="text/javascript">
+  function checkForRequirements(){
+    var ret= true;
+    var formTable = document.getElementById("eFapsFormTabel");
+  
+    var tableRows = formTable.getElementsByTagName("tr");
+    var rowFields = new Array();
+    var fieldInputs = new Array();
+
+    for (i = tableRows.length-1; i >= 0; i--)  {
+      rowFields = tableRows[i].getElementsByTagName("td");
+    
+      if (rowFields.length > 1)  {
+        if (rowFields[0].className == "eFapsFormLabelRequiredForce"){
+          rowFields[0].className="eFapsFormLabelRequired";
+        }
+      
+        if (rowFields[0].className == "eFapsFormLabelRequired")  {
+          //checke 'input' felder die einen text enthalten kšnnen
+          fieldInputs = rowFields[1].getElementsByTagName("input");
+        
+          if (fieldInputs.length > 0 &&
+              (fieldInputs[0].type == null || fieldInputs[0].type == "" || 
+              fieldInputs[0].type == "text" || fieldInputs[0].type == "file" || 
+              fieldInputs[0].type == "password" || fieldInputs[0].type == "hidden") && 
+              (fieldInputs[0].value == null || fieldInputs[0].value == ""))
+            {
+          
+            rowFields[0].className="eFapsFormLabelRequiredForce";
+         
+            ret=false;
+            if (fieldInputs[0].type != "hidden"){
+              fieldInputs[0].focus();
+            }
+          }
+          // check fields of type 'textarea'
+          fieldInputs = rowFields[1].getElementsByTagName("textarea");
+          if (fieldInputs.length > 0 &&
+            (fieldInputs[0].value == null || fieldInputs[0].value == "")){
+            rowFields[0].className="eFapsFormLabelRequiredForce";
+            ret=false;
+            fieldInputs[0].focus();
+          }
+          // check fields of type 'select'
+          fieldInputs = rowFields[1].getElementsByTagName("select");
+          if (fieldInputs.length > 0)  {
+            var selectionOptions = fieldInputs[0].options;
+            var hasQualifiedSelection = false;
+            for (var j = 0; j < selectionOptions.length && !hasQualifiedSelection; j++){
+              if (selectionOptions[j].selected && selectionOptions[j].text != ""){
+                hasQualifiedSelection = true;
+              }
+            }
+            if (!hasQualifiedSelection){
+              fieldInputs[0].focus();
+            }
+          }
+        }
+      }
+    }
+    return ret;
+  }
+ 
+  </script>
+</wicket:head>
 <body>
-  <span wicket:id="eFapsTitel">titel here</span>
-  <br/>
-  <span wicket:id="eFapsFormTable">form here</span>
+  <wicket:extend>
+    <span wicket:id="eFapsFormTable">form here</span>
+  </wicket:extend>
 </body>
 </html>
 

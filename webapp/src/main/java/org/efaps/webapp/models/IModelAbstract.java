@@ -97,6 +97,15 @@ public abstract class IModelAbstract implements IModel {
    */
   private final String nodeId;
 
+  /**
+   * The instance variable is the flag if this class instance is already
+   * initialised.
+   * 
+   * @see #isInitialised
+   * @see #setInitialised
+   */
+  private boolean initialised = false;
+
   public IModelAbstract() throws EFapsException {
     String oid = getParameter("oid");
     this.nodeId = getParameter("nodeId");
@@ -120,6 +129,29 @@ public abstract class IModelAbstract implements IModel {
     if ((cldName != null) && (cldName.length() > 0)) {
       addHiddenValue(PARAM_CALL_CMD_NAME, cldName);
     }
+  }
+
+  /**
+   * This is the getter method for the initialised variable {@link #initialised}.
+   * 
+   * @return value of initialised variable {@link #initialised}
+   * @see #initialised
+   * @see #setInitialised
+   */
+  public boolean isInitialised() {
+    return this.initialised;
+  }
+
+  /**
+   * This is the setter method for the initialised variable {@link #initialised}.
+   * 
+   * @param _initialised
+   *                new value for initialised variable {@link #initialised}
+   * @see #initialised
+   * @see #isInitialised
+   */
+  public void setInitialised(boolean _initialised) {
+    this.initialised = _initialised;
   }
 
   public String getTitle() throws Exception {
