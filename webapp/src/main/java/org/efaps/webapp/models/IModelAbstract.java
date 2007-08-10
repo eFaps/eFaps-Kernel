@@ -24,6 +24,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
@@ -95,7 +96,7 @@ public abstract class IModelAbstract implements IModel {
    * @see #getNodeId
    * @see #setNodeId
    */
-  private final String nodeId;
+  private String nodeId = null;
 
   /**
    * The instance variable is the flag if this class instance is already
@@ -106,7 +107,23 @@ public abstract class IModelAbstract implements IModel {
    */
   private boolean initialised = false;
 
+  private PageParameters parameters;
+
   public IModelAbstract() throws EFapsException {
+    initialise();
+  }
+
+  public IModelAbstract(PageParameters _parameters) {
+    this.parameters = _parameters;
+    try {
+      initialise();
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  private void initialise() throws EFapsException {
     String oid = getParameter("oid");
     this.nodeId = getParameter("nodeId");
 
@@ -185,7 +202,10 @@ public abstract class IModelAbstract implements IModel {
     String[] values = Context.getThreadContext().getParameters().get(_name);
     if (values != null) {
       ret = values[0];
+    } else {
+      ret = (String) this.parameters.get(_name);
     }
+
     return ret;
   }
 

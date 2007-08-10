@@ -5,13 +5,13 @@ import org.apache.wicket.PageParameters;
 import org.efaps.webapp.components.Table;
 import org.efaps.webapp.models.EFapsApplicationSession;
 
-public class WebTable extends ContentPage {
+public class WebTablePage extends ContentPage {
 
   private static final long serialVersionUID = 7564911406648729094L;
 
  
 
-  public WebTable(PageParameters _parameters) throws Exception {
+  public WebTablePage(PageParameters _parameters) throws Exception {
     EFapsApplicationSession session = (EFapsApplicationSession) getSession();
     super.setModel(session.getITableModel(null));
     this.addComponents();

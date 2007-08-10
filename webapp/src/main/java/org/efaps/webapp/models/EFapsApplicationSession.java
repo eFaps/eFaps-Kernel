@@ -20,6 +20,7 @@
 
 package org.efaps.webapp.models;
 
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.Request;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
@@ -35,8 +36,8 @@ public class EFapsApplicationSession extends WebSession {
 
   private static final long serialVersionUID = 1884548064760514909L;
 
-  public IFormModel getIFormModel(final String _key) throws Exception {
-    return new IFormModel();
+  public IFormModel getIFormModel(PageParameters _parameters, final String _key) throws Exception {
+    return new IFormModel(_parameters);
   }
 
   public ITableModel getITableModel(final String _key) throws EFapsException {

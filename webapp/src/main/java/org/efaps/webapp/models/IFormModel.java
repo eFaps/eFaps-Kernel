@@ -23,6 +23,8 @@ package org.efaps.webapp.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.PageParameters;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
@@ -59,6 +61,15 @@ public class IFormModel extends IModelAbstract {
   public IFormModel() throws EFapsException {
     super();
     // set target form
+    if (getCommand() != null) {
+      this.form = getCommand().getTargetForm();
+    } else {
+      this.form = null;
+    }
+  }
+
+  public IFormModel(PageParameters _parameters) {
+    super(_parameters);
     if (getCommand() != null) {
       this.form = getCommand().getTargetForm();
     } else {

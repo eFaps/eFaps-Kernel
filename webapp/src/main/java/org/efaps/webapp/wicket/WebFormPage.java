@@ -5,16 +5,16 @@ import org.apache.wicket.PageParameters;
 import org.efaps.webapp.components.FormTable;
 import org.efaps.webapp.models.EFapsApplicationSession;
 
-public class WebForm extends ContentPage {
+public class WebFormPage extends ContentPage {
 
   private static final long serialVersionUID = -3554311414948286302L;
 
-  public WebForm(PageParameters _parameters) throws Exception {
+  public WebFormPage(PageParameters _parameters) throws Exception {
     
     EFapsApplicationSession session = (EFapsApplicationSession) getSession();
-    super.setModel(session.getIFormModel(null));
+    super.setModel(session.getIFormModel(_parameters, null));
     this.addComponents();
-   
+
   }
 
   @Override
@@ -22,6 +22,7 @@ public class WebForm extends ContentPage {
 
     super.addComponents();
     add(new FormTable("eFapsFormTable", super.getModel()));
+
   }
 
 }
