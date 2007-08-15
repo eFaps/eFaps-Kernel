@@ -27,6 +27,6 @@ public class HomePage extends WebPage {
    
    
     
-    add (new SideMenuPanel("side","Admin_User_PersonTree"));
+    add (new BookmarkablePageLink("side",ContentContainerPage.class));
   }
 }

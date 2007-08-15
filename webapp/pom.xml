@@ -24,7 +24,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-
+<repositories>
+    <repository>
+      <id>central</id>
+      <name>Maven Repository Switchboard</name>
+      <layout>default</layout>
+      <url>http://repo1.maven.org/maven2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>wicket-stuff</id>
+      <name>wicket-stuff</name>
+      <layout>default</layout>
+      <url>http://www.wicketstuff.org/maven/repository</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.efaps</groupId>
   <packaging>war</packaging>
@@ -334,6 +353,11 @@
       <groupId>org.apache.wicket</groupId>
       <artifactId>wicket</artifactId>
       <version>1.3.0-beta2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.wicketstuff</groupId>
+      <artifactId>wicketstuff-dojo</artifactId>
+      <version>1.3.0-beta</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

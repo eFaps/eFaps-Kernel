@@ -2,41 +2,48 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-</head>
-<body>
-<table class="eFapsMainTable">
-  <tr>
-    <td class="eFapsLogo">
-      <div class="eFapsLogoWelcome">
-        <span wicket:id="eFapsWelcomeLabel"></span>
-        <span wicket:id="eFapsWelcomePersonFirstNameLabel"></span>
-        <span wicket:id="eFapsWelcomePersonLastNameLabel"></span>
+  <head>
+    <wicket:head>
+        <link wicket:id="eFapsMainPageCSS" rel="stylesheet" type="text/css" href="mainpage/MainPage.css"/>
+    </wicket:head>
+  </head>
+  <body>
+
+    <div class="eFapsLogo">
+
+      <div class="eFapsLogoUser">
+        <span wicket:id="eFapsWelcomeLabel">Welcome</span>
+        <span wicket:id="eFapsWelcomePersonFirstNameLabel">The</span>
+        <span wicket:id="eFapsWelcomePersonLastNameLabel">Administrator</span>
       </div>
       <div class="eFapsLogoVersion">
-        <span wicket:id="eFapsLogoVersionLabel"></span>
-      </div>
-    </td>
-  </tr>
-  <tr>
-    <td class="eFapsMainTableRowMenu" id="eFapsMainTableRowMenu">
-      <a wicket:id="testwebform">test Webform</a>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <iframe wicket:id="eFapsContentFrame" src="wird gemacht"
-              name="Content" 
-              width="100%" 
-              height="800px"
-              style="eFapsFrameContent"
-              id="eFapsFrameContent"
-              scrolling="no"
-              frameborder="0"/>
-    </td>
-  </tr>    
-</table>
+        <span wicket:id="eFapsLogoVersionLabel">eFaps 1.0</span>
 
-</body>
+      </div>
+      <a href="#" wicket:id="eFapsMainMenu">this link is clicked</a>
+    </div>
+<div class="eFapsMainMenu" id="eFapsMainTableRowMenu">
+
+</div>
+    
+
+    <iframe wicket:id="eFapsContentFrame"
+            id="eFapsFrameContent"
+            src="EmptyPage.html"
+            name="Content"
+            frameborder="0">
+    </iframe>
+
+    <iframe wicket:id="eFapsFrameHidden"
+            id="eFapsFrameHidden"
+            src="EmptyPage.html"
+            name="eFapsFrameHidden"
+            class="eFapsFrameHidden"
+            scrolling="no"
+            frameborder="0">
+    </iframe>
+
+  </body>
+
 </html>
 

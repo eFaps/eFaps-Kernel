@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.wicket.PageParameters;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
@@ -64,7 +66,7 @@ public class ITableModel extends IModelAbstract {
    * 
    * @see #getValues
    */
-  private final List<Row> values = new ArrayList<Row>();
+  private final List<IRowModel> values = new ArrayList<IRowModel>();
 
   /**
    * The instance variable stores the string of the sort key.
@@ -87,12 +89,12 @@ public class ITableModel extends IModelAbstract {
    * 
    * @see #getTable
    */
-  private final Table table;
+  private Table table;
 
   /**
    *
    */
-  private final boolean showCheckBoxes;
+  private boolean showCheckBoxes;
 
   /**
    * The instance variable stores the current selected filterKey as the
@@ -119,8 +121,13 @@ public class ITableModel extends IModelAbstract {
    */
   private String filter;
 
-  public ITableModel() throws EFapsException {
-    super();
+  public ITableModel(PageParameters _parameters) throws EFapsException {
+    super(_parameters);
+    initialise();
+
+  }
+
+  private void initialise() throws EFapsException {
     if (getCommand() != null) {
       // set target table
       this.table = getCommand().getTargetTable();
@@ -149,6 +156,11 @@ public class ITableModel extends IModelAbstract {
       this.table = null;
       this.showCheckBoxes = false;
     }
+  }
+
+  public ITableModel() throws EFapsException {
+    super();
+    initialise();
   }
 
   public Object getObject() {
@@ -241,7 +253,7 @@ public class ITableModel extends IModelAbstract {
         }
         oids.append(oneInstance.getOid());
       }
-      Row row = new Row(oids.toString());
+      IRowModel row = new IRowModel(oids.toString());
 
       // boolean toAdd = false;
       for (FieldDefinition fieldDef : this.fieldDefs) {
@@ -295,8 +307,8 @@ public class ITableModel extends IModelAbstract {
         }
       }
       final int index = sortKey;
-      Collections.sort(this.values, new Comparator<Row>() {
-        public int compare(Row _o1, Row _o2) {
+      Collections.sort(this.values, new Comparator<IRowModel>() {
+        public int compare(IRowModel _o1, IRowModel _o2) {
 
           FieldValue a1 = _o1.getValues().get(index);
           FieldValue a2 = _o2.getValues().get(index);
@@ -381,10 +393,10 @@ public class ITableModel extends IModelAbstract {
    * @see #values
    * @see #setValues
    */
-  public List<Row> getValues() throws EFapsException {
-    List<Row> ret = new ArrayList<Row>();
+  public List<IRowModel> getValues() throws EFapsException {
+    List<IRowModel> ret = new ArrayList<IRowModel>();
     if (isFiltered()) {
-      for (Row row : this.values) {
+      for (IRowModel row : this.values) {
         boolean filtered = false;
         FieldValue fieldvalue = row.getValues().get(this.filterKeyInt);
         String value = fieldvalue.getViewHtml();
@@ -438,7 +450,7 @@ public class ITableModel extends IModelAbstract {
   /**
    * The inner class stores one row of the table.
    */
-  public class Row {
+  public class IRowModel {
 
     // /////////////////////////////////////////////////////////////////////////
     // instance variables
@@ -466,7 +478,7 @@ public class ITableModel extends IModelAbstract {
      * @param _oids
      *                string with all oids for this row
      */
-    public Row(final String _oids) {
+    public IRowModel(final String _oids) {
       this.oids = _oids;
     }
 

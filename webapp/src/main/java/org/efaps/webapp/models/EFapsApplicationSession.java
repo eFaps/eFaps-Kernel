@@ -23,6 +23,7 @@ package org.efaps.webapp.models;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.Request;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -32,8 +33,8 @@ import org.efaps.util.EFapsException;
 
 public class EFapsApplicationSession extends WebSession {
 
-  private final Map<IMenuItemModel, String> iMenuItem2Path =
-      new HashMap<IMenuItemModel, String>();
+  private final Map<IMenuItemModel, Component> iMenuItem2Path =
+      new HashMap<IMenuItemModel, Component>();
 
   public EFapsApplicationSession(WebApplication application, Request request) {
     super(application, request);
@@ -47,16 +48,16 @@ public class EFapsApplicationSession extends WebSession {
     return new IFormModel(_parameters);
   }
 
-  public ITableModel getITableModel(final String _key) throws EFapsException {
-    return new ITableModel();
+  public ITableModel getITableModel(PageParameters _parameters,final String _key) throws EFapsException {
+    return new ITableModel(_parameters);
 
   }
 
-  public String getIMenuItem2Path(IMenuItemModel _imenuitem) {
+  public Component getIMenuItem2Path(IMenuItemModel _imenuitem) {
     return (iMenuItem2Path.get(_imenuitem));
   }
 
-  public void cacheIMenuItem2Path(IMenuItemModel _imenuitem, String _path) {
+  public void cacheIMenuItem2Path(IMenuItemModel _imenuitem, Component _path) {
     iMenuItem2Path.put(_imenuitem, _path);
   }
 }

@@ -2,11 +2,17 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
-
+<wicket:head>
+  <link wicket:id="WebTablePageCSS" rel="stylesheet" type="text/css" href="webtablepage/WebTablePage.css"/>
+</wicket:head>
 <body>
   <wicket:extend>
-	  <span wicket:id="eFapsWebTable">table here</span>
-  </wicket:extend>
+    <form>
+    <table id="eFapsTableBody">
+      <span wicket:id="eFapsTable"></span>
+    </table>
+    </form>  
+	</wicket:extend>
 </body>
 
 </html>

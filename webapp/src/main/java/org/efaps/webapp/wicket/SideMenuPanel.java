@@ -6,7 +6,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 
@@ -29,8 +28,9 @@ public class SideMenuPanel extends Panel {
   public SideMenuPanel(final String id, final String _command) {
     super(id);
     this.repeater = new RepeatingView(REPEATER_WICKETID);
+
     super.add(this.repeater);
-    
+
     add(HeaderContributor.forCss(super.getClass(), "css/SideMenuPanel.css"));
     try {
       super.setModel(new IMenuItemModel(_command));
@@ -43,6 +43,7 @@ public class SideMenuPanel extends Panel {
     MenuItem x = new MenuItem(ITEM_WICKETID, getIMenuItemModel());
     x.add(new CloseEvent());
     x.setOutputMarkupId(true);
+
     item.add(x);
 
     if (getIMenuItemModel().hasChilds()) {
@@ -66,7 +67,10 @@ public class SideMenuPanel extends Panel {
     setIMenuItemModel(_parent);
     for (IMenuItemModel child : getIMenuItemModel().getChilds()) {
       WebMarkupContainer item = getNewNestedItem();
-      item.add(new Label(ITEM_WICKETID, child.getLabel()));
+      MenuItem menuitem = new MenuItem(ITEM_WICKETID, child);
+      menuitem.add(new OpenTargetEvent());
+      item.add(menuitem);
+
       item.add(new Empty(CHILD_WICKETID));
       cache(child, item);
     }
@@ -79,7 +83,7 @@ public class SideMenuPanel extends Panel {
   private void cache(IMenuItemModel _model, WebMarkupContainer _container) {
     EFapsApplicationSession session =
         (EFapsApplicationSession) super.getSession();
-    session.cacheIMenuItem2Path(_model, _container.getPath());
+    session.cacheIMenuItem2Path(_model, _container);
   }
 
   private WebMarkupContainer getNewNestedItem() {
@@ -109,14 +113,13 @@ public class SideMenuPanel extends Panel {
 
     @Override
     protected void onEvent(AjaxRequestTarget _target) {
-     
-      IMenuItemModel model =
-          (IMenuItemModel) this.getComponent().getModel();
+
+      IMenuItemModel model = (IMenuItemModel) this.getComponent().getModel();
       EFapsApplicationSession session =
           (EFapsApplicationSession) this.getComponent().getSession();
-      String javascript = "";
+
       for (IMenuItemModel child : model.getChilds()) {
-        Component comp = getPage().get(session.getIMenuItem2Path(child));
+        Component comp = session.getIMenuItem2Path(child);
         comp.setVisible(true);
 
       }
@@ -167,13 +170,12 @@ public class SideMenuPanel extends Panel {
     @Override
     protected void onEvent(AjaxRequestTarget _target) {
 
-     
-      IMenuItemModel model =
-          (IMenuItemModel) this.getComponent().getModel();
+      IMenuItemModel model = (IMenuItemModel) this.getComponent().getModel();
       EFapsApplicationSession session =
           (EFapsApplicationSession) this.getComponent().getSession();
       for (IMenuItemModel child : model.getChilds()) {
-        Component comp = getPage().get(session.getIMenuItem2Path(child));
+        Component comp = session.getIMenuItem2Path(child);
+
         comp.setVisible(false);
         _target.addComponent(comp);
       }
@@ -195,5 +197,20 @@ public class SideMenuPanel extends Panel {
 
   }
 
-  
+  public class OpenTargetEvent extends AjaxEventBehavior{
+
+    public OpenTargetEvent() {
+      super("onclick");
+      
+    }
+
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    protected void onEvent(AjaxRequestTarget target) {
+      // TODO Auto-generated method stub
+    System.out.print("test")  ;
+    }
+    
+  }
 }
