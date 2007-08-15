@@ -28,8 +28,8 @@ public class MainPage extends WebPage {
       @Override
       public void onClick() {
         PageParameters u =
-            new PageParameters("command=Admin_User_PersonMyDesk");
-
+            new PageParameters("command=Admin_UI_CommandMyDesk");
+//        Admin_User_PersonMyDesk 
         InlineFrame c =
             new InlineFrame("eFapsContentFrame", PageMap
                 .forName(INLINEFRAMENAME), WebTablePage.class, u);
