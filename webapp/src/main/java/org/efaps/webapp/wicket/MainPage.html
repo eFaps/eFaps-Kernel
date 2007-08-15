@@ -10,7 +10,6 @@
   <body>
 
     <div class="eFapsLogo">
-
       <div class="eFapsLogoUser">
         <span wicket:id="eFapsWelcomeLabel">Welcome</span>
         <span wicket:id="eFapsWelcomePersonFirstNameLabel">The</span>
@@ -18,19 +17,18 @@
       </div>
       <div class="eFapsLogoVersion">
         <span wicket:id="eFapsLogoVersionLabel">eFaps 1.0</span>
-
       </div>
-      <a href="#" wicket:id="eFapsMainMenu">this link is clicked</a>
     </div>
-<div class="eFapsMainMenu" id="eFapsMainTableRowMenu">
 
-</div>
+    <div wicket:id="eFapsMainMenu" id="eFapsMainMenu" class="eFapsMenu">
+    </div>
     
 
     <iframe wicket:id="eFapsContentFrame"
             id="eFapsFrameContent"
             src="EmptyPage.html"
             name="Content"
+            scrolling="no"
             frameborder="0">
     </iframe>
 
@@ -44,6 +42,5 @@
     </iframe>
 
   </body>
-
 </html>
 

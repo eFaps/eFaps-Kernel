@@ -13,14 +13,18 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 
+import org.efaps.webapp.components.menu.MenuComponent;
+import org.efaps.webapp.models.IMenuItemModel;
+
 public class MainPage extends WebPage {
 
   private static final long serialVersionUID = -4231606613730698766L;
 
   private static String INLINEFRAMENAME = "ILFP";
 
-  public MainPage() {
+  public MainPage() throws Exception {
 
+/*
     Link x = new Link("eFapsMainMenu") {
 
       private static final long serialVersionUID = 1L;
@@ -41,9 +45,10 @@ public class MainPage extends WebPage {
       }
 
     };
-
     add(x);
-
+*/
+    add(new MenuComponent("eFapsMainMenu", new IMenuItemModel("MainToolBar"), 40l));
+    
     add(new InlineFrame("eFapsContentFrame", getPageMap(), EmptyPage.class));
 
     add(new InlineFrame("eFapsFrameHidden", getPageMap(), EmptyPage.class));
