@@ -49,7 +49,7 @@ public class ContentLink extends AjaxLink {
   @Override
   public void onClick(AjaxRequestTarget target) {
     initialise();
-    PageParameters u = new PageParameters("command=Admin_User_PersonMyDesk");
+    PageParameters u = new PageParameters("command=Admin_User_PersonTree,oid=64.1 ");
     this.setResponsePage(ContentContainerPage.class, u);
   }
 

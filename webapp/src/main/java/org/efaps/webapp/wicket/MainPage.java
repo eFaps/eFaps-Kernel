@@ -28,14 +28,14 @@ public class MainPage extends WebPage {
       @Override
       public void onClick() {
         PageParameters u =
-            new PageParameters("command=Admin_User_PersonTree,oid=64.1");
+            new PageParameters("command=Admin_User_PersonMyDesk");
 //        Admin_User_PersonMyDesk 
 //        Admin_UI_CommandMyDesk     
-      
+//        command=Admin_User_PersonTree,oid=64.1    
         
         InlineFrame c =
             new InlineFrame("eFapsContentFrame", PageMap
-                .forName(INLINEFRAMENAME), WebFormPage.class, u);
+                .forName(INLINEFRAMENAME), WebTablePage.class, u);
 
         this.getPage().addOrReplace(c);
       }

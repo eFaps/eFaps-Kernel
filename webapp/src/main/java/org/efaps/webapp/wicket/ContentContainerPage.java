@@ -27,7 +27,7 @@ public class ContentContainerPage extends WebPage {
     parentcontainer.add(leftcontainer);
 
     EFapsContainer page =
-        new EFapsContainer("containerrechts", WebTablePage.class, _parameters);
+        new EFapsContainer("containerrechts", WebFormPage.class, _parameters);
     parentcontainer.add(page);
 
   }
