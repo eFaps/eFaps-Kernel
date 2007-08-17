@@ -36,9 +36,8 @@ import org.efaps.webapp.models.ITableModel.IRowModel;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
-public class WebTable extends WebMarkupContainer {
+public class WebTableContainer extends WebMarkupContainer {
   private static final long serialVersionUID = 4336311424526370681L;
 
   private static String ROWID = "eFapsRow";
@@ -47,7 +46,7 @@ public class WebTable extends WebMarkupContainer {
 
   private static String CELLVALUEID = "eFapsCellValue";
 
-  public WebTable(String id, IModel model) {
+  public WebTableContainer(String id, IModel model) {
     super(id, model);
     initialise();
   }
@@ -64,7 +63,7 @@ public class WebTable extends WebMarkupContainer {
           .hasNext(); odd = !odd) {
         IRowModel modelrow = rowIter.next();
 
-        Row row = new Row(ROWID + "_" + i);
+        RowContainer row = new RowContainer(ROWID + "_" + i);
         if (odd) {
           row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
         } else {
@@ -75,10 +74,10 @@ public class WebTable extends WebMarkupContainer {
         this.add(row);
         int j = 0;
         if (model.isShowCheckBoxes()) {
-          Cell cell = new Cell(CELLID + "_" + i + "_" + j);
+          CellContainer cell = new CellContainer(CELLID + "_" + i + "_" + j);
           row.add(cell);
-          CheckBoxCell checkbox =
-              new CheckBoxCell("box" + i, modelrow.getOids());
+          CellCheckBoxComponent checkbox =
+              new CellCheckBoxComponent("box" + i, modelrow.getOids());
           cell.add(new SimpleAttributeModifier("width", "1%"));
           cell.add(checkbox);
 
@@ -88,17 +87,17 @@ public class WebTable extends WebMarkupContainer {
 
         for (FieldValue value : modelrow.getValues()) {
 
-          Cell cell = new Cell(CELLID + "_" + i + "_" + j);
+          CellContainer cell = new CellContainer(CELLID + "_" + i + "_" + j);
           cell.setOutputMarkupId(true);
           row.add(cell);
 
           if (value.getFieldDef().getField().getReference() != null) {
 
-            cell.add(new CellLink(CELLVALUEID + "_" + i + "_" + j, value
+            cell.add(new CellLinkComponent(CELLVALUEID + "_" + i + "_" + j, value
                 .getInstance().getOid(), getValueString(value)));
           } else {
 
-            cell.add(new CellValue(CELLVALUEID + "_" + i + "_" + j,
+            cell.add(new CellValueComponent(CELLVALUEID + "_" + i + "_" + j,
                 getValueString(value)));
           }
           j++;
@@ -137,10 +136,10 @@ public class WebTable extends WebMarkupContainer {
 
   protected final void onRender(final MarkupStream markupStream) {
     final int markupStart = markupStream.getCurrentIndex();
-    Iterator<Component> childs = this.iterator();
+    Iterator<?> childs = this.iterator();
     while (childs.hasNext()) {
       markupStream.setCurrentIndex(markupStart);
-      Component child = childs.next();
+      Component child = (Component) childs.next();
       child.render(getMarkupStream());
     }
 

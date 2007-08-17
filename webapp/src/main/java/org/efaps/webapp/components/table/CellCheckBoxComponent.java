@@ -28,12 +28,12 @@ import org.apache.wicket.markup.html.WebComponent;
  * @version $Id$
  * 
  */
-public class CheckBoxCell extends WebComponent {
+public class CellCheckBoxComponent extends WebComponent {
   private static final long serialVersionUID = 1L;
 
   private final String oid;
 
-  public CheckBoxCell(String id, String _oid) {
+  public CellCheckBoxComponent(String id, String _oid) {
     super(id);
     oid = _oid;
   }

@@ -30,17 +30,17 @@ import org.efaps.webapp.components.ContentLink;
  * @version $Id$
  * 
  */
-public class CellLink extends ContentLink {
+public class CellLinkComponent extends ContentLink {
   private static final long serialVersionUID = 1L;
 
   private final String label;
 
-  public CellLink(String id) {
+  public CellLinkComponent(String id) {
     super(id);
     this.label = null;
   }
 
-  public CellLink(String id, String _oid, String _label) {
+  public CellLinkComponent(String id, String _oid, String _label) {
     super(id, _oid);
     this.label = _label;
 

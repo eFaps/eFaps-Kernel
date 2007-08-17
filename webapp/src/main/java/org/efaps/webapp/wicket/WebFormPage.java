@@ -3,7 +3,7 @@ package org.efaps.webapp.wicket;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
-import org.efaps.webapp.components.table.FormTable;
+import org.efaps.webapp.components.table.WebFormContainer;
 import org.efaps.webapp.models.EFapsApplicationSession;
 
 public class WebFormPage extends ContentPage {
@@ -25,7 +25,7 @@ public class WebFormPage extends ContentPage {
     add(new StyleSheetReference("WebFormPageCSS", getClass(),
     "webformpage/WebFormPage.css"));
     
-    add(new FormTable("eFapsFormTable", super.getModel()));
+    add(new WebFormContainer("eFapsFormTable", super.getModel()));
 
   }
 

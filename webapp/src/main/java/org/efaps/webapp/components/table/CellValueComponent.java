@@ -29,17 +29,17 @@ import org.apache.wicket.markup.html.WebComponent;
  * @version $Id$
  * 
  */
-public class CellValue extends WebComponent {
+public class CellValueComponent extends WebComponent {
   private static final long serialVersionUID = 1L;
 
   private final String label;
 
-  public CellValue(String id) {
+  public CellValueComponent(String id) {
     super(id);
     this.label = null;
   }
 
-  public CellValue(String id, String _label) {
+  public CellValueComponent(String id, String _label) {
     super(id);
     this.label = _label;
 

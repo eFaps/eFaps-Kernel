@@ -3,7 +3,7 @@ package org.efaps.webapp.wicket;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
-import org.efaps.webapp.components.table.WebTable;
+import org.efaps.webapp.components.table.WebTableContainer;
 import org.efaps.webapp.models.EFapsApplicationSession;
 
 public class WebTablePage extends ContentPage {
@@ -22,7 +22,7 @@ public class WebTablePage extends ContentPage {
     super.addComponents();
     add(new StyleSheetReference("WebTablePageCSS", getClass(),
     "webtablepage/WebTablePage.css"));
-    add(new WebTable("eFapsTable", super.getModel()));
+    add(new WebTableContainer("eFapsTable", super.getModel()));
   }
 
 }

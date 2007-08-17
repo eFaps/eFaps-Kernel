@@ -27,11 +27,11 @@ import org.apache.wicket.markup.ComponentTag;
  * @version $Id$
  * 
  */
-public class Cell extends AbstractParentMarkupContainer {
+public class CellContainer extends AbstractParentMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
-  public Cell(String id) {
+  public CellContainer(String id) {
     super(id);
   }
 

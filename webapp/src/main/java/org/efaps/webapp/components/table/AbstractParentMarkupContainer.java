@@ -70,10 +70,10 @@ public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
     }
     markupStream.setCurrentIndex(markupStart);
 
-    Iterator<Component> childs = this.iterator();
+    Iterator<?> childs = this.iterator();
     while (childs.hasNext()) {
       markupStream.setCurrentIndex(markupStart);
-      Component child = childs.next();
+      Component child = (Component) childs.next();
       child.render(getMarkupStream());
 
     }
