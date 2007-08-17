@@ -52,12 +52,13 @@ public class IMenuItemModel implements IModel {
   public final String description;
 
   /** Url of this menu item. */
-  public final String url;
+  public String url;
 
   /** All childs of this menu item. */
   public final List<IMenuItemModel> childs = new ArrayList<IMenuItemModel>();
 
- 
+  private CommandAbstract command;
+
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
@@ -69,7 +70,7 @@ public class IMenuItemModel implements IModel {
     this.image = _command.getIcon();
     this.label = DBProperties.getProperty(_command.getLabel());
     this.description = "";
-
+    this.command = _command;
     if (_command instanceof MenuAbstract) {
       for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
         if (subCmd.hasAccess()) {
@@ -77,11 +78,17 @@ public class IMenuItemModel implements IModel {
         }
       }
     }
-    this.url = getTargetURL(_command);
+    // this.url = getTargetURL(_command);
   }
 
   
-  
+  public CommandAbstract getCommand(){
+    return this.command;
+  }
+  public void setURL(String _url) {
+    this.url = _url;
+  }
+
   public List<IMenuItemModel> getChilds() {
     return this.childs;
   }

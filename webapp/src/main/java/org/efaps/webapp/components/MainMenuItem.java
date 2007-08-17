@@ -26,8 +26,8 @@ import org.apache.wicket.markup.html.WebComponent;
 
 import org.efaps.webapp.models.IMenuItemModel;
 
-public class MenuItem extends WebComponent {
-  public MenuItem(String id, IMenuItemModel model) {
+public class MainMenuItem extends WebComponent {
+  public MainMenuItem(String id, IMenuItemModel model) {
     super(id, model);
   }
 

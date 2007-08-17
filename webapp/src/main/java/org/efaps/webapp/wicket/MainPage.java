@@ -21,18 +21,15 @@
 package org.efaps.webapp.wicket;
 
 import org.apache.wicket.PageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.InlineFrame;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
-
 import org.efaps.webapp.components.menu.MenuComponent;
 import org.efaps.webapp.models.IMenuItemModel;
 
@@ -40,36 +37,17 @@ public class MainPage extends WebPage {
 
   private static final long serialVersionUID = -4231606613730698766L;
 
-  private static String INLINEFRAMENAME = "ILFP";
+  public static String INLINEFRAMENAME = "ILFP";
 
   public MainPage() throws Exception {
 
-/*
-    Link x = new Link("eFapsMainMenu") {
+    MenuComponent menu =
+        new MenuComponent("eFapsMainMenu", new IMenuItemModel("MainToolBar"),
+            40l);
+    add(menu);
 
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void onClick() {
-        PageParameters u =
-            new PageParameters("command=Admin_User_PersonMyDesk");
-//        Admin_User_PersonMyDesk 
-//        Admin_UI_CommandMyDesk     
-//        command=Admin_User_PersonTree,oid=64.1    
-        
-        InlineFrame c =
-            new InlineFrame("eFapsContentFrame", PageMap
-                .forName(INLINEFRAMENAME), WebTablePage.class, u);
-
-        this.getPage().addOrReplace(c);
-      }
-
-    };
-    add(x);
-*/
-    add(new MenuComponent("eFapsMainMenu", new IMenuItemModel("MainToolBar"), 40l));
-    
-    add(new InlineFrame("eFapsContentFrame", getPageMap(), EmptyPage.class));
+    add(new InlineFrame("eFapsContentFrame", PageMap.forName(INLINEFRAMENAME),
+        EmptyPage.class));
 
     add(new InlineFrame("eFapsFrameHidden", getPageMap(), EmptyPage.class));
     add(new Label("eFapsWelcomeLabel", DBProperties
@@ -93,5 +71,4 @@ public class MainPage extends WebPage {
     }
 
   }
-
 }

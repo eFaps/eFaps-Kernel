@@ -36,16 +36,12 @@ function cmItemMouseUp (obj, isMain, idSub, menuID, index)
     if (item.length > 2)  {
       var link = item[2];
 
-      if ((link != null) && (link.match(/^javascript:/) != null))  {
-        _cmClicked = false;
-        link = link.replace(/^javascript:/, "");
-        eval(link);
-
-        var menuInfo = _cmMenuList[menuID];
+window.location.href = link;
+//var wcall=wicketAjaxGet(link, function() { }.bind(this), function() { }.bind(this));return !wcall;
+     var menuInfo = _cmMenuList[menuID];
         var prefix = menuInfo.prefix;
         var thisMenu = cmGetThisMenu (obj, prefix);
         cmHideMenu (thisMenu, null, menuInfo);
-      }
     }
 	}
 }

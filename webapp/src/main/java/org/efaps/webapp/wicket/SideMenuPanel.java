@@ -9,7 +9,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 
-import org.efaps.webapp.components.MenuItem;
+import org.efaps.webapp.components.MainMenuItem;
 import org.efaps.webapp.models.EFapsApplicationSession;
 import org.efaps.webapp.models.IMenuItemModel;
 
@@ -40,7 +40,7 @@ public class SideMenuPanel extends Panel {
     }
     WebMarkupContainer item = getNewNestedItem();
     item.setOutputMarkupId(true);
-    MenuItem x = new MenuItem(ITEM_WICKETID, getIMenuItemModel());
+    MainMenuItem x = new MainMenuItem(ITEM_WICKETID, getIMenuItemModel());
     x.add(new CloseEvent());
     x.setOutputMarkupId(true);
 
@@ -67,7 +67,7 @@ public class SideMenuPanel extends Panel {
     setIMenuItemModel(_parent);
     for (IMenuItemModel child : getIMenuItemModel().getChilds()) {
       WebMarkupContainer item = getNewNestedItem();
-      MenuItem menuitem = new MenuItem(ITEM_WICKETID, child);
+      MainMenuItem menuitem = new MainMenuItem(ITEM_WICKETID, child);
       menuitem.add(new OpenTargetEvent());
       item.add(menuitem);
 

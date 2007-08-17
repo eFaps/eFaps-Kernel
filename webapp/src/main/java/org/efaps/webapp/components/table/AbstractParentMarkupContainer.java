@@ -26,6 +26,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.model.IModel;
 
 /**
  * @author jmo
@@ -38,6 +39,10 @@ public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
 
   public AbstractParentMarkupContainer(String id) {
     super(id);
+  }
+  
+  public AbstractParentMarkupContainer(String id, IModel _model) {
+    super(id,_model);
   }
 
   @Override

@@ -48,7 +48,8 @@ public class EFapsApplicationSession extends WebSession {
     return new IFormModel(_parameters);
   }
 
-  public ITableModel getITableModel(PageParameters _parameters,final String _key) throws EFapsException {
+  public ITableModel getITableModel(PageParameters _parameters,
+      final String _key) throws EFapsException {
     return new ITableModel(_parameters);
 
   }
