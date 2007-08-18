@@ -38,7 +38,6 @@ public class EFapsApplicationSession extends WebSession {
 
   public EFapsApplicationSession(WebApplication application, Request request) {
     super(application, request);
-    // TODO Auto-generated constructor stub
   }
 
   private static final long serialVersionUID = 1884548064760514909L;

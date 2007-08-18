@@ -21,14 +21,13 @@
 package org.efaps.webapp.components;
 
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.link.Link;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.wicket.ContentContainerPage;
 
-public class ContentLink extends AjaxLink {
+public class ContentLink extends Link {
 
   private static final long serialVersionUID = 1L;
 
@@ -44,30 +43,28 @@ public class ContentLink extends AjaxLink {
   public ContentLink(String id, String _oid) {
     super(id);
     oid = _oid;
+
   }
 
   @Override
-  public void onClick(AjaxRequestTarget target) {
-    initialise();
-    PageParameters u = new PageParameters("command=Admin_User_PersonTree,oid=64.1 ");
-    this.setResponsePage(ContentContainerPage.class, u);
-  }
-
-  private void initialise() {
-
+  public void onClick() {
     if (this.oid != null) {
       this.instance = new Instance(oid);
     }
-
+    Menu menu;
     try {
-      Menu menu = this.instance.getType().getTreeMenu();
-      String form = menu.getTargetForm().getName();
+      menu = this.instance.getType().getTreeMenu();
+      PageParameters u = new PageParameters();
+      u.add("command", menu.getName());
+      u.add("oid", this.oid);
 
+      ContentContainerPage page = new ContentContainerPage(u);
+      this.setResponsePage(page);
+     
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
   }
-
 }

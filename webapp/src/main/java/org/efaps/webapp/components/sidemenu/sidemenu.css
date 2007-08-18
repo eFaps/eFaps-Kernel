@@ -1,0 +1,47 @@
+ul.eFapsSideMenu {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	display: block;
+	color: #FFF;
+	background-color: #036;
+}
+
+li.eFapsSideMenu a:hover {
+	background-color: #369;
+	color: #FFF;
+}
+
+li.eFapsSideMenu a {
+	margin: 0;
+	padding: 3px;
+	display: block;
+	color: #FFF;
+	background-color: #036;
+	border-bottom: 1px solid #fff;
+	font-weight: bold;
+}
+
+ul.eFapsSideMenuNested {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	display: block;
+	color: #FFF;
+	background-color: #036;
+}
+
+li.eFapsSideMenuNested a {
+	display: block;
+	color: #FFF;
+	background-color: #69C;
+	padding: 3px 12px 3px 8px;
+	text-decoration: none;
+	border-bottom: 1px solid #fff;
+	font-weight: normal;
+}
+
+li.eFapsSideMenuNested a:hover {
+	background-color: #369;
+	color: #FFF;
+}

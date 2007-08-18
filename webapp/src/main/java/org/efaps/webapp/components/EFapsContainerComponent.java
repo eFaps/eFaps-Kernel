@@ -18,30 +18,34 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.components.table;
+package org.efaps.webapp.components;
 
+import org.apache.wicket.PageMap;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.ComponentTag;
+import org.wicketstuff.dojo.markup.html.container.page.DojoPageContainer;
 
-import org.efaps.webapp.components.AbstractParentMarkupContainer;
+public class EFapsContainerComponent extends DojoPageContainer {
+  private PageParameters parameters;
 
-/**
- * @author jmo
- * @version $Id$
- * 
- */
-public class RowContainer extends AbstractParentMarkupContainer {
   private static final long serialVersionUID = 1L;
+  public static String CONTENTPAGE = "CTPM";
 
-  public RowContainer(String id) {
-    super(id);
-
+  public EFapsContainerComponent(String id, Class<?> pageClass,
+                                 PageParameters _parameters) {
+    super(id, pageClass);
+    parameters = _parameters;
+    setRefresh(true);
   }
 
-  @Override
   protected void onComponentTag(ComponentTag tag) {
     super.onComponentTag(tag);
-    tag.setName("tr");
-    tag.setHasNoCloseTag(true);
+    if (parameters != null) {
+      tag.put("href", urlFor(PageMap.forName(CONTENTPAGE), getPageClass(),
+          parameters));
+    }
   }
+
+  
 
 }

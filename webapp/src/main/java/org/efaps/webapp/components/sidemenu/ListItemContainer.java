@@ -18,30 +18,24 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.components.table;
+package org.efaps.webapp.components.sidemenu;
 
 import org.apache.wicket.markup.ComponentTag;
 
 import org.efaps.webapp.components.AbstractParentMarkupContainer;
 
-/**
- * @author jmo
- * @version $Id$
- * 
- */
-public class RowContainer extends AbstractParentMarkupContainer {
-  private static final long serialVersionUID = 1L;
+public class ListItemContainer extends AbstractParentMarkupContainer {
 
-  public RowContainer(String id) {
+  public ListItemContainer(String id) {
     super(id);
-
   }
 
   @Override
   protected void onComponentTag(ComponentTag tag) {
     super.onComponentTag(tag);
-    tag.setName("tr");
-    tag.setHasNoCloseTag(true);
+    tag.setName("li");
   }
+  
+  private static final long serialVersionUID = 1L;
 
 }

@@ -22,6 +22,8 @@ package org.efaps.webapp.components.table;
 
 import org.apache.wicket.markup.ComponentTag;
 
+import org.efaps.webapp.components.AbstractParentMarkupContainer;
+
 /**
  * @author jmo
  * @version $Id$

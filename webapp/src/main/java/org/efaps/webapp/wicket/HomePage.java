@@ -1,5 +1,6 @@
 package org.efaps.webapp.wicket;
 
+import org.apache.wicket.PageMap;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 
@@ -19,14 +20,11 @@ public class HomePage extends WebPage {
     x = new BookmarkablePageLink("create", WebFormPage.class);
     x.setParameter("command", "Admin_User_PersonMyDesk_Menu_Action_Create");
     add(x);
-    
-    
+
     x = new BookmarkablePageLink("main", MainPage.class);
-   
+    x.setPageMap(PageMap.forName("main"));
     add(x);
-   
-   
-    
-    add (new BookmarkablePageLink("side",ContentContainerPage.class));
+
+    add(new BookmarkablePageLink("side", ContentContainerPage.class));
   }
 }

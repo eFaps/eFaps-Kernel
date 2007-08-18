@@ -1,11 +1,11 @@
 package org.efaps.webapp.wicket;
 
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebPage;
-import org.wicketstuff.dojo.markup.html.container.DojoSimpleContainer;
-import org.wicketstuff.dojo.markup.html.container.page.DojoPageContainer;
 import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
+
+import org.efaps.webapp.components.EFapsContainerComponent;
+import org.efaps.webapp.components.sidemenu.SideMenuPanel;
 
 public class ContentContainerPage extends WebPage {
 
@@ -21,38 +21,17 @@ public class ContentContainerPage extends WebPage {
     parentcontainer.setHeight("700px");
     add(parentcontainer);
     parentcontainer.setOrientation(DojoSplitContainer.ORIENTATION_HORIZONTAL);
-    DojoSimpleContainer leftcontainer =
-        new DojoSimpleContainer("containerlinks", "title1");
-//    leftcontainer.setVisible(false);
+
+    SideMenuPanel leftcontainer =
+        new SideMenuPanel("eFapsSideMenu", _parameters);
+
     parentcontainer.add(leftcontainer);
 
-    EFapsContainer page =
-        new EFapsContainer("containerrechts", WebFormPage.class, _parameters);
+    EFapsContainerComponent page =
+        new EFapsContainerComponent("containerrechts", WebFormPage.class,
+            _parameters);
     parentcontainer.add(page);
 
   }
 
-  public class EFapsContainer extends DojoPageContainer {
-    private PageParameters parameters;
-
-    public EFapsContainer(String id, Class<?> pageClass) {
-      super(id, pageClass);
-    }
-
-    public EFapsContainer(String id, Class<?> pageClass,
-                          PageParameters _parameters) {
-      super(id, pageClass);
-      parameters = _parameters;
-    }
-
-    protected void onComponentTag(ComponentTag tag) {
-      super.onComponentTag(tag);
-      if (parameters != null) {
-        tag.put("href", urlFor(getPageClass(), parameters));
-      }
-    }
-
-    private static final long serialVersionUID = 1L;
-
-  }
 }

@@ -70,7 +70,9 @@ div.eFapsLogoUser {
         font-weight: bold; 
         top: 5px; 
 }
-
+div.eFapsLogoUser span {
+        font-size: 12pt; 
+}
 /**
  * Version Text
  */
@@ -81,6 +83,9 @@ div.eFapsLogoVersion {
         font-family: arial, verdana, helvetica, sans-serif;
         font-size: 8pt; 
         top: 5px; 
+}
+div.eFapsLogoVersion span {
+        font-size: 8pt; 
 }
 
 /**

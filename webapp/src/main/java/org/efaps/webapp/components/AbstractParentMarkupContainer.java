@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.components.table;
+package org.efaps.webapp.components;
 
 import java.util.Iterator;
 

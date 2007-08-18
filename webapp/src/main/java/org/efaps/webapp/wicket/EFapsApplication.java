@@ -34,6 +34,13 @@ public class EFapsApplication extends WebApplication {
   public Class<HomePage> getHomePage() {
     // TODO muss gegen echte Homepgae getauscht werden
     return HomePage.class;
+   
+  }
+
+  @Override
+  protected void init() {
+    super.init();
+    getMarkupSettings().setStripWicketTags(true);
   }
 
   public Session newSession(Request _request, Response _response){
