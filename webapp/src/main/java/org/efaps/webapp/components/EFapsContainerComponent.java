@@ -29,6 +29,7 @@ public class EFapsContainerComponent extends DojoPageContainer {
   private PageParameters parameters;
 
   private static final long serialVersionUID = 1L;
+
   public static String CONTENTPAGE = "CTPM";
 
   public EFapsContainerComponent(String id, Class<?> pageClass,
@@ -45,7 +46,5 @@ public class EFapsContainerComponent extends DojoPageContainer {
           parameters));
     }
   }
-
-  
 
 }

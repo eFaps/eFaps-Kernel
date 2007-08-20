@@ -13,7 +13,7 @@ import org.efaps.webapp.components.MainMenuItem;
 import org.efaps.webapp.models.EFapsApplicationSession;
 import org.efaps.webapp.models.IMenuItemModel;
 
-public class SideMenuPanel extends Panel {
+public class SideMenuPanelxx extends Panel {
 
   private static final String REPEATER_WICKETID = "eFapsMenuItems";
 
@@ -25,7 +25,7 @@ public class SideMenuPanel extends Panel {
 
   private final RepeatingView repeater;
 
-  public SideMenuPanel(final String id, final String _command) {
+  public SideMenuPanelxx(final String id, final String _command) {
     super(id);
     this.repeater = new RepeatingView(REPEATER_WICKETID);
 
@@ -47,7 +47,7 @@ public class SideMenuPanel extends Panel {
     item.add(x);
 
     if (getIMenuItemModel().hasChilds()) {
-      SideMenuPanel parent = new SideMenuPanel(CHILD_WICKETID);
+      SideMenuPanelxx parent = new SideMenuPanelxx(CHILD_WICKETID);
       parent.setOutputMarkupId(true);
       item.add(parent);
       parent.expandChilds(getIMenuItemModel());
@@ -57,7 +57,7 @@ public class SideMenuPanel extends Panel {
     cache(item);
   }
 
-  public SideMenuPanel(final String _id) {
+  public SideMenuPanelxx(final String _id) {
     super(_id);
     this.repeater = new RepeatingView(REPEATER_WICKETID);
     super.add(this.repeater);

@@ -36,6 +36,10 @@ public class EFapsApplicationSession extends WebSession {
   private final Map<IMenuItemModel, Component> iMenuItem2Path =
       new HashMap<IMenuItemModel, Component>();
 
+  private int contentcontainerid;
+
+  private int contentcontainerversion;
+
   public EFapsApplicationSession(WebApplication application, Request request) {
     super(application, request);
   }
@@ -51,6 +55,19 @@ public class EFapsApplicationSession extends WebSession {
       final String _key) throws EFapsException {
     return new ITableModel(_parameters);
 
+  }
+
+  public void setContentContainer(int _id, int _version) {
+    this.contentcontainerid = _id;
+    this.contentcontainerversion = _version;
+  }
+
+  public int getContentContainerId() {
+    return this.contentcontainerid;
+  }
+
+  public int getContentContainerVersion(){
+    return this.contentcontainerversion;
   }
 
   public Component getIMenuItem2Path(IMenuItemModel _imenuitem) {

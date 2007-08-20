@@ -6,8 +6,16 @@ import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
 
 import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.components.sidemenu.SideMenuPanel;
+import org.efaps.webapp.models.EFapsApplicationSession;
 
 public class ContentContainerPage extends WebPage {
+
+  @Override
+  protected void onBeforeRender() {
+    
+    super.onBeforeRender();
+    ((EFapsApplicationSession) this.getSession()).setContentContainer( this.getNumericId(),this.getCurrentVersionNumber() );
+  }
 
   private static final long serialVersionUID = 3169723830151134904L;
 
@@ -17,8 +25,10 @@ public class ContentContainerPage extends WebPage {
     parameters = _parameters;
 
     DojoSplitContainer parentcontainer =
-        new DojoSplitContainer("splitContainer");
+        new DojoSplitContainer("eFapsSplitContainer");
     parentcontainer.setHeight("700px");
+//    parentcontainer.setActiveSizing(true);
+    
     add(parentcontainer);
     parentcontainer.setOrientation(DojoSplitContainer.ORIENTATION_HORIZONTAL);
 
@@ -27,6 +37,8 @@ public class ContentContainerPage extends WebPage {
 
     parentcontainer.add(leftcontainer);
 
+    
+    
     EFapsContainerComponent page =
         new EFapsContainerComponent("containerrechts", WebFormPage.class,
             _parameters);

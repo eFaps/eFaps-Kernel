@@ -20,29 +20,30 @@
 
 package org.efaps.webapp.components.table;
 
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.html.link.Link;
 
-import org.efaps.webapp.components.ContentLink;
+import org.efaps.admin.ui.Menu;
+import org.efaps.db.Instance;
+import org.efaps.webapp.wicket.ContentContainerPage;
 
 /**
  * @author jmo
  * @version $Id$
- * 
  */
-public class CellLinkComponent extends ContentLink {
+public class CellLinkComponent extends Link {
   private static final long serialVersionUID = 1L;
 
   private final String label;
 
-  public CellLinkComponent(String id) {
-    super(id);
-    this.label = null;
-  }
+  private final String oid;
 
   public CellLinkComponent(String id, String _oid, String _label) {
-    super(id, _oid);
+    super(id);
     this.label = _label;
+    this.oid = _oid;
 
   }
 
@@ -57,4 +58,30 @@ public class CellLinkComponent extends ContentLink {
       ComponentTag _openTag) {
     super.replaceComponentTagBody(_markupStream, _openTag, this.label);
   }
+
+  @Override
+  public void onClick() {
+
+    Instance instance = null;
+
+    if (this.oid != null) {
+      instance = new Instance(oid);
+    }
+    Menu menu;
+    try {
+      menu = instance.getType().getTreeMenu();
+      PageParameters u = new PageParameters();
+      u.add("command", menu.getName());
+      u.add("oid", this.oid);
+
+      ContentContainerPage page = new ContentContainerPage(u);
+      this.setResponsePage(page);
+
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+  }
+
 }

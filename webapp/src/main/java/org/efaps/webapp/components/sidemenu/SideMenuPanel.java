@@ -32,9 +32,11 @@ public class SideMenuPanel extends DojoPanelContainer {
 
   private Integer childId = 0;
 
+  private final PageParameters parameters;
+
   public SideMenuPanel(String _id, PageParameters _parameters) {
     super(_id, "SideMenu");
-
+    parameters = _parameters;
     try {
       super.setModel(new IMenuItemModel(_parameters.getString("command")));
     } catch (Exception e) {
@@ -59,7 +61,8 @@ public class SideMenuPanel extends DojoPanelContainer {
 
     ListItemContainer rootitem = new ListItemContainer(getNewChildID());
     root.add(rootitem);
-    rootitem.add(new ListItemComponent(getNewChildID(), model.getLabel()));
+    rootitem.add(new ListItemLinkComponent(getNewChildID(), model, parameters
+        .getString("oid")));
     rootitem.add(new SimpleAttributeModifier("class", "eFapsSideMenu"));
 
     if (model.hasChilds()) {
@@ -71,7 +74,8 @@ public class SideMenuPanel extends DojoPanelContainer {
         sub.add(subitem);
         subitem
             .add(new SimpleAttributeModifier("class", "eFapsSideMenuNested"));
-        subitem.add(new ListItemComponent(getNewChildID(), child.getLabel()));
+        subitem.add(new ListItemLinkComponent(getNewChildID(), child,
+            parameters.getString("oid")));
       }
     }
   }
