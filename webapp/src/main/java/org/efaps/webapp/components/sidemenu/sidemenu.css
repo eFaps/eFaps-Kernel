@@ -1,4 +1,4 @@
-ul.eFapsSideMenu {
+#eFapsSideMenu ul {
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
@@ -7,12 +7,12 @@ ul.eFapsSideMenu {
 	background-color: #036;
 }
 
-li.eFapsSideMenu a:hover {
+#eFapsSideMenu a:hover {
 	background-color: #369;
 	color: #FFF;
 }
 
-li.eFapsSideMenu a {
+#eFapsSideMenu li a {
 	margin: 0;
 	padding: 3px;
 	display: block;
@@ -22,7 +22,7 @@ li.eFapsSideMenu a {
 	font-weight: bold;
 }
 
-ul.eFapsSideMenuNested {
+#eFapsSideMenu ul ul {
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
@@ -31,7 +31,7 @@ ul.eFapsSideMenuNested {
 	background-color: #036;
 }
 
-li.eFapsSideMenuNested a {
+#eFapsSideMenu ul ul li a {
 	display: block;
 	color: #FFF;
 	background-color: #69C;
@@ -39,9 +39,4 @@ li.eFapsSideMenuNested a {
 	text-decoration: none;
 	border-bottom: 1px solid #fff;
 	font-weight: normal;
-}
-
-li.eFapsSideMenuNested a:hover {
-	background-color: #369;
-	color: #FFF;
 }

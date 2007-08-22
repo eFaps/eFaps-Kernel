@@ -21,63 +21,65 @@
 package org.efaps.webapp.components.sidemenu;
 
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
-import org.wicketstuff.dojo.markup.html.container.DojoPanelContainer;
+import org.apache.wicket.markup.html.WebComponent;
 
 import org.efaps.webapp.models.IMenuItemModel;
 
-public class SideMenuPanel extends DojoPanelContainer {
+public class SubMenuComponent extends WebComponent {
   private static final long serialVersionUID = 1L;
 
-  private Integer childId = 0;
+  private ListItemLinkComponent link;
 
-  private final PageParameters parameters;
-
-  public SideMenuPanel(String _id, PageParameters _parameters) {
-    super(_id, "SideMenu");
-    parameters = _parameters;
+  public SubMenuComponent(ListItemLinkComponent _link,
+                          PageParameters _parameters) {
+    super("new");
+    this.link = _link;
     try {
       super.setModel(new IMenuItemModel(_parameters.getString("command")));
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    initialise();
-  }
 
-  public String getNewChildID() {
-    return (childId++).toString();
-  }
+    SideMenuPanel menu = (SideMenuPanel) _link.findParent(SideMenuPanel.class);
 
-  private void initialise() {
     IMenuItemModel model = (IMenuItemModel) super.getModel();
 
-    add(HeaderContributor.forCss(getClass(), "sidemenu.css"));
+    ListContainer root = new ListContainer(menu.getNewChildID());
 
-    ListContainer root = new ListContainer("baseSideMenu");
-    root.add(new SimpleAttributeModifier("class", "eFapsSideMenu"));
-    this.add(root);
+    this.link.getParent().add(root);
 
-    ListItemContainer rootitem = new ListItemContainer(getNewChildID());
+    ListItemContainer rootitem = new ListItemContainer(menu.getNewChildID());
     root.add(rootitem);
-    rootitem.add(new ListItemLinkComponent(getNewChildID(), model, parameters
-        .getString("oid")));
+    ListItemLinkComponent xitem =
+        new ListItemLinkComponent(menu.getNewChildID(), model, _parameters
+            .getString("oid"));
+    rootitem.add(xitem);
+    xitem.add(new SimpleAttributeModifier("style", "padding-left: 15px;"
+        + " background-color: #036;  " + " font-weight: bold;"));
+
     rootitem.add(new SimpleAttributeModifier("class", "eFapsSideMenu"));
+    rootitem.setOutputMarkupId(true);
 
     if (model.hasChilds()) {
-      ListContainer sub = new ListContainer("SubMenu" + getNewChildID());
-      sub.add(new SimpleAttributeModifier("class", "eFapsSideMenuNested"));
+      ListContainer sub = new ListContainer("SubMenu" + menu.getNewChildID());
+
       rootitem.add(sub);
+      sub.setOutputMarkupId(true);
       for (IMenuItemModel child : model.getChilds()) {
-        ListItemContainer subitem = new ListItemContainer(getNewChildID());
+        ListItemContainer subitem = new ListItemContainer(menu.getNewChildID());
         sub.add(subitem);
-        subitem
-            .add(new SimpleAttributeModifier("class", "eFapsSideMenuNested"));
-        subitem.add(new ListItemLinkComponent(getNewChildID(), child,
-            parameters.getString("oid")));
+
+        ListItemLinkComponent yitem =
+            new ListItemLinkComponent(menu.getNewChildID(), child, _parameters
+                .getString("oid"));
+        subitem.add(yitem);
+        yitem.add(new SimpleAttributeModifier("style", " padding-left:  20px;"
+            + " font-weight: normal;"));
+        subitem.setOutputMarkupId(true);
       }
     }
-  }
 
+  }
 }

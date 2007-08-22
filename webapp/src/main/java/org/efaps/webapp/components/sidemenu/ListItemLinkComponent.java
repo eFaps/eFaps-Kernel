@@ -20,14 +20,13 @@
 
 package org.efaps.webapp.components.sidemenu;
 
-import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.model.IModel;
-import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
 
 import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.models.IMenuItemModel;
@@ -73,42 +72,16 @@ public class ListItemLinkComponent extends AjaxLink {
     if (model.getCommand().getTargetTable() != null) {
 
       page =
-          new EFapsContainerComponent("containerrechts", WebTablePage.class, u);
+          new EFapsContainerComponent("eFapsContentContainer", WebTablePage.class, u);
     } else {
       page =
-          new EFapsContainerComponent("containerrechts", WebFormPage.class, u);
+          new EFapsContainerComponent("eFapsContentContainer", WebFormPage.class, u);
     }
-    MarkupContainer x = this.findParent(DojoSplitContainer.class);
-    x.replace(page);
+    
+    Component x = getPage().get("eFapsSplitContainer:containerrechts:eFapsContentContainer");
+    x.replaceWith(page);
     target.addComponent(page);
-    target
-        .appendJavascript("dojo.widget.getWidgetById(\"eFapsSplitContainer0\").removeChild(dojo.widget.getWidgetById(\"eFapsSplitContainer0\").children[1]);"
-            + " dojo.widget.getWidgetById(\"eFapsSplitContainer0\").addChild(dojo.widget.getWidgetById(\"containerrechts2\"));");
-
-    // dojo.widget.getWidgetById(\"eFapsSplitContainer0\").removeChild(dojo.widget.getWidgetById(\"eFapsSplitContainer0\").children[1]);
-    // target
-    // .appendJavascript("" +
-    // "" +
-    // "dojo.widget.getWidgetById(\"eFapsSplitContainer0\").removeChild(dojo.widget.getWidgetById(\"eFapsSplitContainer0\").children[1]);"
-    // +
-    // "dojo.widget.getWidgetById(\"eFapsSplitContainer0\").addChild(dojo.widget.getWidgetById(\"containerrechts2\"));"
-    // +
-    // "document.getElementById('eFapsSideMenu').style.width = 133;" +
-    // "document.getElementById('containerrechts2').style.width = 766");
-
-    //    		
-    // " document.getElementById('eFapsSideMenu').style.width = jan;" +
-    // " " +
-    // " document.getElementById('containerrechts2').style.left=leftpos;" +
-    // "
-    // dojo.widget.getWidgetById(\"eFapsSplitContainer0\").sizers[0].style.left
-    // = jan;" +
-    // " " +
-    // " ");
-    // target.prependJavascript("" +
-    // " jan = document.getElementById('eFapsSideMenu').style.width;" +
-    // " leftpos=document.getElementById('containerrechts2').style.left");
-    //    
+  
 
   }
 }

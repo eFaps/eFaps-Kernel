@@ -26,6 +26,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
@@ -120,6 +121,12 @@ public class WebTableContainer extends WebMarkupContainer {
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
+    }
+
+    if (i == 0) {
+      this
+          .add(new Label("test",
+              "keine Daten; muss noch gegen eine vernueftige meldung getauscht werden"));
     }
   }
 

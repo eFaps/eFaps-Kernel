@@ -41,6 +41,7 @@ public class EFapsApplication extends WebApplication {
   protected void init() {
     super.init();
     getMarkupSettings().setStripWicketTags(true);
+    getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
   }
 
   public Session newSession(Request _request, Response _response){

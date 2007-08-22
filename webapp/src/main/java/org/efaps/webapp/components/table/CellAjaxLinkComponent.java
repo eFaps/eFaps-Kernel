@@ -20,8 +20,6 @@
 
 package org.efaps.webapp.components.table;
 
-import java.util.Iterator;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
@@ -30,7 +28,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
-import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
@@ -90,34 +87,40 @@ public class CellAjaxLinkComponent extends AjaxLink {
       if (menu.getTargetTable() != null) {
 
         page =
-            new EFapsContainerComponent("containerrechts", WebTablePage.class,
+            new EFapsContainerComponent("eFapsContentContainer", WebTablePage.class,
                 u);
       } else {
         page =
-            new EFapsContainerComponent("containerrechts", WebFormPage.class, u);
+            new EFapsContainerComponent("eFapsContentContainer", WebFormPage.class, u);
       }
 
+      
       EFapsApplicationSession session =
           (EFapsApplicationSession) this.getSession();
       Page parentpage =
           PageMap.forName(MainPage.INLINEFRAMENAME).get(
               session.getContentContainerId(),
               session.getContentContainerVersion());
-      DojoSplitContainer split = null;
-      Iterator<?> iterator = parentpage.iterator();
-      while (iterator.hasNext()) {
-        Component comp = (Component) iterator.next();
-        if(comp instanceof DojoSplitContainer){
-          split = (DojoSplitContainer) comp;
-          break;
-        }
-      }
-     
-      split.replace(page);
+      Component x = parentpage.get("eFapsSplitContainer:containerrechts:eFapsContentContainer");
+      x.replaceWith(page);
       target.addComponent(page);
-      target
-      .appendJavascript("dojo.widget.getWidgetById(\"eFapsSplitContainer0\").removeChild(dojo.widget.getWidgetById(\"eFapsSplitContainer0\").children[1]);"
-          + " dojo.widget.getWidgetById(\"eFapsSplitContainer0\").addChild(dojo.widget.getWidgetById(\"containerrechts2\"));");
+      
+      
+//      DojoSplitContainer split = null;
+//      Iterator<?> iterator = parentpage.iterator();
+//      while (iterator.hasNext()) {
+//        Component comp = (Component) iterator.next();
+//        if(comp instanceof DojoSplitContainer){
+//          split = (DojoSplitContainer) comp;
+//          break;
+//        }
+//      }
+//     
+//      split.replace(page);
+//      target.addComponent(page);
+//      target
+//      .appendJavascript("dojo.widget.getWidgetById(\"eFapsSplitContainer0\").removeChild(dojo.widget.getWidgetById(\"eFapsSplitContainer0\").children[1]);"
+//          + " dojo.widget.getWidgetById(\"eFapsSplitContainer0\").addChild(dojo.widget.getWidgetById(\"containerrechts2\"));");
 
     } catch (Exception e) {
       // TODO Auto-generated catch block

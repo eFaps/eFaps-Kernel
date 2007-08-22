@@ -2,19 +2,15 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
+<wicket:head>
+  <link wicket:id="ContentContainerPageCSS" rel="stylesheet" type="text/css" href="contentcontainerpage/ContentContainerPage.css"/>
+</wicket:head>
 <body>
-    <style type="text/css">
-      body{
-         margin:0;
-       }
-    </style>
-    <script type="text/javascript">
-      var jan ;
-      var leftpos;
-    </script>
   <div wicket:id="eFapsSplitContainer" class="split">
-      <div wicket:id="eFapsSideMenu" style="overflow:auto" sizeMin="20" sizeShare="20" id="eFapsSideMenu"></div>
-      <div wicket:id="containerrechts" style="overflow:auto" sizeMin="20" sizeShare="80" ></div>
+      <div wicket:id="eFapsSideMenu" sizeMin="20" sizeShare="20" id="eFapsSideMenu"></div>
+      <div wicket:id="containerrechts" style="overflow:auto" sizeMin="20" sizeShare="80" >
+          <div wicket:id="eFapsContentContainer"></div>
+      </div>
     </div>
 </body>
 </html>
