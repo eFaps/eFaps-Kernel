@@ -1,5 +1,6 @@
 package org.efaps.webapp.wicket;
 
+import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
@@ -17,7 +18,7 @@ public class ContentContainerPage extends WebPage {
   private static final long serialVersionUID = 3169723830151134904L;
 
   public ContentContainerPage(PageParameters _parameters) {
-
+    super(PageMap.forName(MainPage.INLINEFRAMENAME));
     final ClientProperties properties =
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties();
 

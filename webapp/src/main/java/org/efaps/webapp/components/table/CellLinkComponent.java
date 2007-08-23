@@ -73,7 +73,8 @@ public class CellLinkComponent extends Link {
       PageParameters u = new PageParameters();
       u.add("command", menu.getName());
       u.add("oid", this.oid);
-
+      
+      
       this.setResponsePage(ContentContainerPage.class, u);
 
     } catch (Exception e) {
