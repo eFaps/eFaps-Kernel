@@ -22,11 +22,13 @@ package org.efaps.webapp.components.sidemenu;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.EFapsContainerComponent;
+import org.efaps.webapp.models.EFapsApplicationSession;
 import org.efaps.webapp.models.IMenuItemModel;
 import org.efaps.webapp.wicket.WebFormPage;
 import org.efaps.webapp.wicket.WebTablePage;
@@ -65,6 +67,7 @@ public class ListMenuLinkComponent extends AjaxLink {
             "eFapsSplitContainer:containerrechts:eFapsContentContainer");
     component.replaceWith(page);
     target.addComponent(page);
+    ((EFapsApplicationSession) (Session.get())).setSideMenuSelected(this);
   }
 
 }

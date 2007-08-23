@@ -26,7 +26,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
 
 import org.efaps.util.EFapsException;
-import org.efaps.webapp.components.sidemenu.ListItemLinkComponent;
+import org.efaps.webapp.components.sidemenu.ListMenuLinkComponent;
 
 public class EFapsApplicationSession extends WebSession {
 
@@ -34,7 +34,7 @@ public class EFapsApplicationSession extends WebSession {
 
   private int contentcontainerversion;
 
-  private ListItemLinkComponent sidemenuselected;
+  private ListMenuLinkComponent sidemenuselected;
 
   public EFapsApplicationSession(WebApplication application, Request request) {
     super(application, request);
@@ -66,11 +66,11 @@ public class EFapsApplicationSession extends WebSession {
     return this.contentcontainerversion;
   }
 
-  public void setSideMenuSelected(ListItemLinkComponent _selected) {
+  public void setSideMenuSelected(ListMenuLinkComponent _selected) {
     this.sidemenuselected = _selected;
   }
 
-  public ListItemLinkComponent getSideMenuSelected() {
+  public ListMenuLinkComponent getSideMenuSelected() {
     return this.sidemenuselected;
   }
 

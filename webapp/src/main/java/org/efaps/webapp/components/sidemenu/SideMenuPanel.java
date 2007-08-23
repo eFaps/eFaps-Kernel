@@ -76,7 +76,7 @@ public class SideMenuPanel extends DojoPanelContainer {
 
     EFapsApplicationSession session =
         (EFapsApplicationSession) this.getSession();
-    ListItemLinkComponent link = session.getSideMenuSelected();
+    ListItemLinkComponent link = null;
     IMenuItemModel imenu;
    
     try {

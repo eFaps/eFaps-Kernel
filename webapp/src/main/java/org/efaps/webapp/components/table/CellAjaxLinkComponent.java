@@ -21,18 +21,22 @@
 package org.efaps.webapp.components.table;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.html.list.ListItem;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.components.EFapsContainerComponent;
-import org.efaps.webapp.components.sidemenu.SideMenuPanel;
+import org.efaps.webapp.components.sidemenu.ListMenuLinkComponent;
+import org.efaps.webapp.components.sidemenu.ListMenuPanel;
 import org.efaps.webapp.models.EFapsApplicationSession;
 import org.efaps.webapp.wicket.MainPage;
 import org.efaps.webapp.wicket.WebFormPage;
@@ -110,9 +114,14 @@ public class CellAjaxLinkComponent extends AjaxLink {
       x.replaceWith(page);
       target.addComponent(page);
 
-      SideMenuPanel sidemenu =
-          (SideMenuPanel) parentpage.get("eFapsSplitContainer:eFapsSideMenu");
-      sidemenu.insertSubMenu(u,target);
+      ListMenuPanel sidemenu =
+          (ListMenuPanel) parentpage.get("eFapsSplitContainer:eFapsSideMenu");
+
+      ListMenuLinkComponent comp = ((EFapsApplicationSession)(Session.get())).getSideMenuSelected();
+      MarkupContainer y = comp.findParent(ListItem.class);
+      ListMenuPanel newmenu =new ListMenuPanel("nested",u);
+y.addOrReplace(newmenu) ;   
+target.addComponent(newmenu);
       
       
     } catch (Exception e) {
