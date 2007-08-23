@@ -26,7 +26,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
 
 import org.efaps.util.EFapsException;
-import org.efaps.webapp.components.sidemenu.ListMenuLinkComponent;
+import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
 
 public class EFapsApplicationSession extends WebSession {
 

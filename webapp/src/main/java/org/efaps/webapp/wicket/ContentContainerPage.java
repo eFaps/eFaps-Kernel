@@ -10,7 +10,7 @@ import org.wicketstuff.dojo.markup.html.container.DojoSimpleContainer;
 import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
 
 import org.efaps.webapp.components.EFapsContainerComponent;
-import org.efaps.webapp.components.sidemenu.ListMenuPanel;
+import org.efaps.webapp.components.listmenu.ListMenuPanel;
 import org.efaps.webapp.models.EFapsApplicationSession;
 
 public class ContentContainerPage extends WebPage {
