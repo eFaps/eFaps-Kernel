@@ -33,40 +33,45 @@ import org.efaps.webapp.models.IMenuItemModel;
 import org.efaps.webapp.wicket.WebFormPage;
 import org.efaps.webapp.wicket.WebTablePage;
 
+/**
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class ListMenuLinkComponent extends AjaxLink {
 
   private static final long serialVersionUID = 1L;
 
-  public ListMenuLinkComponent(String id, IModel model) {
-    super(id, model);
+  public ListMenuLinkComponent(final String _id, final IModel _model) {
+    super(_id, _model);
 
   }
 
   @Override
-  public void onClick(AjaxRequestTarget target) {
+  public void onClick(final AjaxRequestTarget _target) {
 
     IMenuItemModel model = (IMenuItemModel) super.getModel();
-    PageParameters u = new PageParameters();
-    u.add("oid", model.getOid());
-    u.add("command", model.getCommand().getName());
+    PageParameters para = new PageParameters();
+    para.add("oid", model.getOid());
+    para.add("command", model.getCommand().getName());
 
     EFapsContainerComponent page;
     if (model.getCommand().getTargetTable() != null) {
 
       page =
           new EFapsContainerComponent("eFapsContentContainer",
-              WebTablePage.class, u);
+              WebTablePage.class, para);
     } else {
       page =
           new EFapsContainerComponent("eFapsContentContainer",
-              WebFormPage.class, u);
+              WebFormPage.class, para);
     }
 
     Component component =
         getPage().get(
             "eFapsSplitContainer:containerrechts:eFapsContentContainer");
     component.replaceWith(page);
-    target.addComponent(page);
+    _target.addComponent(page);
     ((EFapsApplicationSession) (Session.get())).setSideMenuSelected(this);
   }
 

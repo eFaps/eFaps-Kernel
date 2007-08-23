@@ -32,12 +32,17 @@ import org.wicketstuff.dojo.markup.html.container.DojoPanelContainer;
 
 import org.efaps.webapp.models.IMenuItemModel;
 
+/**
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class ListMenuPanel extends DojoPanelContainer {
 
   private static final long serialVersionUID = 1L;
 
-  public ListMenuPanel(final String id, final PageParameters _parameters) {
-    super(id, "noTitel");
+  public ListMenuPanel(final String _id, final PageParameters _parameters) {
+    super(_id, "noTitel");
     setVersioned(false);
    
     try {
@@ -58,11 +63,11 @@ public class ListMenuPanel extends DojoPanelContainer {
 
   }
 
-  public ListMenuPanel(final String id, List<?> modelObject) {
-    super(id, "noTitel");
+  public ListMenuPanel(final String _id, final List<?> _modelObject) {
+    super(_id, "noTitel");
     setVersioned(false);
 
-    add(new Rows("rows", modelObject));
+    add(new Rows("rows", _modelObject));
 
   }
 
@@ -81,14 +86,14 @@ public class ListMenuPanel extends DojoPanelContainer {
       super(id, childs);
     }
 
-    protected void populateItem(ListItem listItem) {
-      Object modelObject = listItem.getModelObject();
+    protected void populateItem(final ListItem _listItem) {
+      Object modelObject = _listItem.getModelObject();
 
       if (modelObject instanceof List) {
         // create a panel that renders the sub lis
         ListMenuPanel nested =
             new ListMenuPanel("nested", (List<?>) modelObject);
-        listItem.add(nested);
+        _listItem.add(nested);
         // if the current element is a list, we create a dummy row/
         // label element
         // as we have to confirm to our HTML definition, and set it's
@@ -98,7 +103,7 @@ public class ListMenuPanel extends DojoPanelContainer {
         row.setVisible(false);
         row.setOutputMarkupPlaceholderTag(true);
         row.add(new WebMarkupContainer("link"));
-        listItem.add(row);
+        _listItem.add(row);
       } else {
         // if the current element is not a list, we create a dummy panel
         // element
@@ -108,7 +113,7 @@ public class ListMenuPanel extends DojoPanelContainer {
         ListMenuPanel nested = new ListMenuPanel("nested");
         nested.setVisible(false);
         nested.setOutputMarkupPlaceholderTag(true);
-        listItem.add(nested);
+        _listItem.add(nested);
         // add the row (with the LI element attached, and the label with
         // the
         // row's actual value to display
@@ -119,7 +124,7 @@ public class ListMenuPanel extends DojoPanelContainer {
         x.add(new Label("label", model.getLabel()));
         row.add(x);
         x.setOutputMarkupId(true);
-        listItem.add(row);
+        _listItem.add(row);
       }
     }
   }
