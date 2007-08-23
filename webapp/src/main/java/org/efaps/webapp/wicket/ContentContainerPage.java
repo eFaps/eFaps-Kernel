@@ -9,7 +9,7 @@ import org.wicketstuff.dojo.markup.html.container.DojoSimpleContainer;
 import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
 
 import org.efaps.webapp.components.EFapsContainerComponent;
-import org.efaps.webapp.components.sidemenu.SideMenuPanel;
+import org.efaps.webapp.components.sidemenu.ListMenuPanel;
 import org.efaps.webapp.models.EFapsApplicationSession;
 
 public class ContentContainerPage extends WebPage {
@@ -31,10 +31,7 @@ public class ContentContainerPage extends WebPage {
     add(parentcontainer);
     parentcontainer.setOrientation(DojoSplitContainer.ORIENTATION_HORIZONTAL);
 
-    SideMenuPanel leftcontainer =
-        new SideMenuPanel("eFapsSideMenu", _parameters);
-
-    parentcontainer.add(leftcontainer);
+    parentcontainer.add(new ListMenuPanel("eFapsSideMenu", _parameters));
 
     DojoSimpleContainer container =
         new DojoSimpleContainer("containerrechts", "Content");

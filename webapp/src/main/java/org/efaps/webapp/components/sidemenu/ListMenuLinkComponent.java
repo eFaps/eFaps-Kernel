@@ -22,69 +22,49 @@ package org.efaps.webapp.components.sidemenu;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.EFapsContainerComponent;
-import org.efaps.webapp.models.EFapsApplicationSession;
 import org.efaps.webapp.models.IMenuItemModel;
 import org.efaps.webapp.wicket.WebFormPage;
 import org.efaps.webapp.wicket.WebTablePage;
 
-/**
- * @author jmo
- * @version $Id$
- */
-public class ListItemLinkComponent extends AjaxLink {
+public class ListMenuLinkComponent extends AjaxLink {
 
   private static final long serialVersionUID = 1L;
 
-  private final String oid;
+  public ListMenuLinkComponent(String id, IModel model) {
+    super(id, model);
 
-  public ListItemLinkComponent(String _id, IModel _model, String _oid) {
-    super(_id, _model);
-    this.oid = _oid;
-  }
-
-  @Override
-  protected void onComponentTag(final ComponentTag tag) {
-    tag.setName("a");
-    super.onComponentTag(tag);
-  }
-
-  @Override
-  protected void onComponentTagBody(MarkupStream _markupStream,
-      ComponentTag _openTag) {
-    IMenuItemModel model = (IMenuItemModel) super.getModel();
-    super.replaceComponentTagBody(_markupStream, _openTag, model.getLabel());
   }
 
   @Override
   public void onClick(AjaxRequestTarget target) {
-    IMenuItemModel model = (IMenuItemModel) super.getModel();
 
+    IMenuItemModel model = (IMenuItemModel) super.getModel();
     PageParameters u = new PageParameters();
-    u.add("oid", this.oid);
+    u.add("oid", model.getOid());
     u.add("command", model.getCommand().getName());
 
     EFapsContainerComponent page;
     if (model.getCommand().getTargetTable() != null) {
 
       page =
-          new EFapsContainerComponent("eFapsContentContainer", WebTablePage.class, u);
+          new EFapsContainerComponent("eFapsContentContainer",
+              WebTablePage.class, u);
     } else {
       page =
-          new EFapsContainerComponent("eFapsContentContainer", WebFormPage.class, u);
+          new EFapsContainerComponent("eFapsContentContainer",
+              WebFormPage.class, u);
     }
- 
-    Component x = getPage().get("eFapsSplitContainer:containerrechts:eFapsContentContainer");
-    x.replaceWith(page);
+
+    Component component =
+        getPage().get(
+            "eFapsSplitContainer:containerrechts:eFapsContentContainer");
+    component.replaceWith(page);
     target.addComponent(page);
-  
-    ((EFapsApplicationSession) (Session.get())).setSideMenuSelected(this);
   }
+
 }

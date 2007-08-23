@@ -32,6 +32,7 @@ import org.apache.wicket.markup.MarkupStream;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.components.EFapsContainerComponent;
+import org.efaps.webapp.components.sidemenu.SideMenuPanel;
 import org.efaps.webapp.models.EFapsApplicationSession;
 import org.efaps.webapp.wicket.MainPage;
 import org.efaps.webapp.wicket.WebFormPage;
@@ -87,41 +88,33 @@ public class CellAjaxLinkComponent extends AjaxLink {
       if (menu.getTargetTable() != null) {
 
         page =
-            new EFapsContainerComponent("eFapsContentContainer", WebTablePage.class,
-                u);
+            new EFapsContainerComponent("eFapsContentContainer",
+                WebTablePage.class, u);
       } else {
         page =
-            new EFapsContainerComponent("eFapsContentContainer", WebFormPage.class, u);
+            new EFapsContainerComponent("eFapsContentContainer",
+                WebFormPage.class, u);
       }
 
-      
       EFapsApplicationSession session =
           (EFapsApplicationSession) this.getSession();
+
       Page parentpage =
           PageMap.forName(MainPage.INLINEFRAMENAME).get(
               session.getContentContainerId(),
               session.getContentContainerVersion());
-      Component x = parentpage.get("eFapsSplitContainer:containerrechts:eFapsContentContainer");
+
+      Component x =
+          parentpage
+              .get("eFapsSplitContainer:containerrechts:eFapsContentContainer");
       x.replaceWith(page);
       target.addComponent(page);
-      
-      
-//      DojoSplitContainer split = null;
-//      Iterator<?> iterator = parentpage.iterator();
-//      while (iterator.hasNext()) {
-//        Component comp = (Component) iterator.next();
-//        if(comp instanceof DojoSplitContainer){
-//          split = (DojoSplitContainer) comp;
-//          break;
-//        }
-//      }
-//     
-//      split.replace(page);
-//      target.addComponent(page);
-//      target
-//      .appendJavascript("dojo.widget.getWidgetById(\"eFapsSplitContainer0\").removeChild(dojo.widget.getWidgetById(\"eFapsSplitContainer0\").children[1]);"
-//          + " dojo.widget.getWidgetById(\"eFapsSplitContainer0\").addChild(dojo.widget.getWidgetById(\"containerrechts2\"));");
 
+      SideMenuPanel sidemenu =
+          (SideMenuPanel) parentpage.get("eFapsSplitContainer:eFapsSideMenu");
+      sidemenu.insertSubMenu(u,target);
+      
+      
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

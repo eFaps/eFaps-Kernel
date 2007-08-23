@@ -59,6 +59,8 @@ public class IMenuItemModel implements IModel {
 
   private CommandAbstract command;
 
+  private final String oid;
+
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
@@ -66,11 +68,19 @@ public class IMenuItemModel implements IModel {
     this(Menu.get(_name));
   }
 
+  // ///////////////////////////////////////////////////////////////////////////
+  // constructors / destructors
+
+  public IMenuItemModel(final String _name, final String _oid) throws Exception {
+    this(Menu.get(_name), _oid);
+  }
+
   private IMenuItemModel(final CommandAbstract _command) throws Exception {
     this.image = _command.getIcon();
     this.label = DBProperties.getProperty(_command.getLabel());
     this.description = "";
     this.command = _command;
+    this.oid = null;
     if (_command instanceof MenuAbstract) {
       for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
         if (subCmd.hasAccess()) {
@@ -81,10 +91,30 @@ public class IMenuItemModel implements IModel {
     // this.url = getTargetURL(_command);
   }
 
-  
-  public CommandAbstract getCommand(){
+  private IMenuItemModel(final CommandAbstract _command, String _oid)
+                                                                     throws Exception {
+    this.image = _command.getIcon();
+    this.label = DBProperties.getProperty(_command.getLabel());
+    this.description = "";
+    this.command = _command;
+    this.oid = _oid;
+    if (_command instanceof MenuAbstract) {
+      for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
+        if (subCmd.hasAccess()) {
+          this.childs.add(new IMenuItemModel(subCmd, _oid));
+        }
+      }
+    }
+  }
+
+  public String getOid() {
+    return this.oid;
+  }
+
+  public CommandAbstract getCommand() {
     return this.command;
   }
+
   public void setURL(String _url) {
     this.url = _url;
   }

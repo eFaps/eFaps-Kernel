@@ -74,8 +74,7 @@ public class CellLinkComponent extends Link {
       u.add("command", menu.getName());
       u.add("oid", this.oid);
 
-      ContentContainerPage page = new ContentContainerPage(u);
-      this.setResponsePage(page);
+      this.setResponsePage(ContentContainerPage.class, u);
 
     } catch (Exception e) {
       // TODO Auto-generated catch block

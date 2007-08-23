@@ -30,8 +30,8 @@ import org.apache.wicket.model.IModel;
 
 /**
  * @author jmo
- * @version $Id$
- * 
+ * @version $Id: AbstractParentMarkupContainer.java 1270 2007-08-18 02:24:34Z
+ *          jmo $
  */
 public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
 
@@ -40,9 +40,15 @@ public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
   public AbstractParentMarkupContainer(String id) {
     super(id);
   }
-  
+
   public AbstractParentMarkupContainer(String id, IModel _model) {
-    super(id,_model);
+    super(id, _model);
+  }
+  
+
+  @Override
+  public String getMarkupId() {
+    return getId();
   }
 
   @Override
@@ -73,7 +79,9 @@ public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
     Iterator<?> childs = this.iterator();
     while (childs.hasNext()) {
       markupStream.setCurrentIndex(markupStart);
+      
       Component child = (Component) childs.next();
+      
       child.render(getMarkupStream());
 
     }

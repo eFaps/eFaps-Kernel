@@ -24,7 +24,12 @@ import org.apache.wicket.markup.ComponentTag;
 
 import org.efaps.webapp.components.AbstractParentMarkupContainer;
 
+/**
+ * @author jmo
+ * @version $Id$
+ */
 public class ListContainer extends AbstractParentMarkupContainer {
+  
   private static final long serialVersionUID = 1L;
 
   public ListContainer(String id) {

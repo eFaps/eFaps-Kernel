@@ -21,16 +21,15 @@
 package org.efaps.webapp.components.sidemenu;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.HeaderContributor;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.wicketstuff.dojo.markup.html.container.DojoPanelContainer;
 
+import org.efaps.webapp.models.EFapsApplicationSession;
 import org.efaps.webapp.models.IMenuItemModel;
 
 public class SideMenuPanel extends DojoPanelContainer {
   private static final long serialVersionUID = 1L;
-
-  private Integer childId = 0;
 
   private final PageParameters parameters;
 
@@ -43,41 +42,55 @@ public class SideMenuPanel extends DojoPanelContainer {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    
+  }
+
+  
+  
+  
+  @Override
+  protected void onBeforeRender() {
+    super.onBeforeRender();
     initialise();
   }
 
-  public String getNewChildID() {
-    return (childId++).toString();
-  }
+
+
 
   private void initialise() {
-    IMenuItemModel model = (IMenuItemModel) super.getModel();
-
     add(HeaderContributor.forCss(getClass(), "sidemenu.css"));
 
-    ListContainer root = new ListContainer("baseSideMenu");
-    root.add(new SimpleAttributeModifier("class", "eFapsSideMenu"));
-    this.add(root);
-
-    ListItemContainer rootitem = new ListItemContainer(getNewChildID());
-    root.add(rootitem);
-    rootitem.add(new ListItemLinkComponent(getNewChildID(), model, parameters
-        .getString("oid")));
-    rootitem.add(new SimpleAttributeModifier("class", "eFapsSideMenu"));
-
-    if (model.hasChilds()) {
-      ListContainer sub = new ListContainer("SubMenu" + getNewChildID());
-      sub.add(new SimpleAttributeModifier("class", "eFapsSideMenuNested"));
-      rootitem.add(sub);
-      for (IMenuItemModel child : model.getChilds()) {
-        ListItemContainer subitem = new ListItemContainer(getNewChildID());
-        sub.add(subitem);
-        subitem
-            .add(new SimpleAttributeModifier("class", "eFapsSideMenuNested"));
-        subitem.add(new ListItemLinkComponent(getNewChildID(), child,
-            parameters.getString("oid")));
-      }
-    }
+    SideMenuContainer menu =
+        new SideMenuContainer("baseSideMenu",
+            (IMenuItemModel) super.getModel(), parameters.getString("oid"));
+    this.add(menu);
   }
 
+  private Integer childId = 0;
+
+  private String getNewChildID() {
+    return "Sub_" + (childId++).toString();
+  }
+
+  public void insertSubMenu(PageParameters _parameters, AjaxRequestTarget target) {
+
+    EFapsApplicationSession session =
+        (EFapsApplicationSession) this.getSession();
+    ListItemLinkComponent link = session.getSideMenuSelected();
+    IMenuItemModel imenu;
+   
+    try {
+      imenu = new IMenuItemModel(_parameters.getString("command"));
+      link.getParent().add(
+          new SideMenuContainer(getNewChildID(), imenu, _parameters
+              .getString("oid")));
+      target.addComponent(link.getParent().getParent().getParent());
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+  }
+
+  
 }
