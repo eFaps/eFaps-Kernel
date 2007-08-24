@@ -1,4 +1,4 @@
-package org.efaps.webapp.wicket;
+package org.efaps.webapp.pages;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
@@ -9,9 +9,9 @@ import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.wicketstuff.dojo.markup.html.container.DojoSimpleContainer;
 import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
 
+import org.efaps.webapp.EFapsApplicationSession;
 import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.components.listmenu.ListMenuPanel;
-import org.efaps.webapp.models.EFapsApplicationSession;
 
 public class ContentContainerPage extends WebPage {
 

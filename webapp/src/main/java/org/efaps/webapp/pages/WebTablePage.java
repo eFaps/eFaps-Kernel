@@ -1,11 +1,11 @@
-package org.efaps.webapp.wicket;
+package org.efaps.webapp.pages;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
+import org.efaps.webapp.EFapsApplicationSession;
 import org.efaps.webapp.components.table.WebTableContainer;
 import org.efaps.webapp.components.table.header.TableHeaderPanel;
-import org.efaps.webapp.models.EFapsApplicationSession;
 import org.efaps.webapp.models.TableModel;
 
 public class WebTablePage extends ContentPage {

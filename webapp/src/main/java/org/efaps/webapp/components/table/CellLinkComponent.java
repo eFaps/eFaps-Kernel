@@ -27,7 +27,7 @@ import org.apache.wicket.markup.html.link.Link;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.webapp.wicket.ContentContainerPage;
+import org.efaps.webapp.pages.ContentContainerPage;
 
 /**
  * @author jmo

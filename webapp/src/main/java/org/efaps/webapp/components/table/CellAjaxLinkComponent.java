@@ -38,14 +38,14 @@ import org.apache.wicket.markup.html.list.ListView;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
+import org.efaps.webapp.EFapsApplicationSession;
 import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
 import org.efaps.webapp.components.listmenu.ListMenuPanel;
-import org.efaps.webapp.models.EFapsApplicationSession;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.wicket.MainPage;
-import org.efaps.webapp.wicket.WebFormPage;
-import org.efaps.webapp.wicket.WebTablePage;
+import org.efaps.webapp.pages.MainPage;
+import org.efaps.webapp.pages.WebFormPage;
+import org.efaps.webapp.pages.WebTablePage;
 
 /**
  * @author jmo

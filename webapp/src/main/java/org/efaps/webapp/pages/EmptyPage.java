@@ -1,4 +1,4 @@
-package org.efaps.webapp.wicket;
+package org.efaps.webapp.pages;
 
 import org.apache.wicket.markup.html.WebPage;
 

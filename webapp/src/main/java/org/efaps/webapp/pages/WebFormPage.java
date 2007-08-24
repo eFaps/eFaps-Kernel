@@ -1,10 +1,10 @@
-package org.efaps.webapp.wicket;
+package org.efaps.webapp.pages;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
+import org.efaps.webapp.EFapsApplicationSession;
 import org.efaps.webapp.components.table.WebFormContainer;
-import org.efaps.webapp.models.EFapsApplicationSession;
 
 public class WebFormPage extends ContentPage {
 

@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.models;
+package org.efaps.webapp;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.Request;
@@ -27,6 +27,8 @@ import org.apache.wicket.protocol.http.WebSession;
 
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
+import org.efaps.webapp.models.FormModel;
+import org.efaps.webapp.models.TableModel;
 
 public class EFapsApplicationSession extends WebSession {
 

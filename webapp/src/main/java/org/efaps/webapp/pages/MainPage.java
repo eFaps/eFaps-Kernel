@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.wicket;
+package org.efaps.webapp.pages;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.behavior.HeaderContributor;

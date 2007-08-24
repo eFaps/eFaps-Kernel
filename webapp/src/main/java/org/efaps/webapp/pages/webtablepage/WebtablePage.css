@@ -1,0 +1,57 @@
+@CHARSET "UTF-8";
+
+/* Odd Table Row Appearance */
+tr.eFapsTableRowOdd {
+	background-color: #ffffff;
+}
+
+/* Even Table Row Appearance */
+tr.eFapsTableRowEven {
+	background-color: #d0ffd0;
+}
+
+/* image of buttons in a row of a web table */
+tr.eFapsTableRowOdd td a img,tr.eFapsTableRowEven td a img {
+	border-width: 0;
+	border-style: none;
+}
+
+/* Table Header Appearance */
+#eFapsTableHeader {
+	position: fixed;
+	width:100%;
+	top: 30px;
+	margin-left: 0;
+	padding-left: 0;
+	padding-bottom: 5px;
+	z-index: 1;
+}
+
+#eFapsTableHeader div,#eFapsTableHeader table {
+	position: absolute;
+	top: 0;
+	color: white;
+	background-color: #00A000;
+	border-style: none;
+	white-space: nowrap;
+	overflow: hidden;
+	height: 20px;
+}
+
+/* Table Header Link Appearance */
+#eFapsTableHeader div a {
+	text-align: right;
+	color: white;
+	text-decoration: none;
+}
+
+#eFapsTableHeader div a:hover {
+	text-decoration: underline;
+	color: #ccffff;
+}
+
+#eFapsTableBody {
+	position: absolute;
+	top: 50px;
+	z-index: 0;
+}

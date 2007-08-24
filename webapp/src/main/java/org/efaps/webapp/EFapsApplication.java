@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.wicket;
+package org.efaps.webapp;
 
 
 import org.apache.wicket.Request;
@@ -26,7 +26,7 @@ import org.apache.wicket.Response;
 import org.apache.wicket.Session;
 import org.apache.wicket.protocol.http.WebApplication;
 
-import org.efaps.webapp.models.EFapsApplicationSession;
+import org.efaps.webapp.pages.HomePage;
 
 public class EFapsApplication extends WebApplication {
 

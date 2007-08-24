@@ -27,11 +27,11 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.webapp.EFapsApplicationSession;
 import org.efaps.webapp.components.EFapsContainerComponent;
-import org.efaps.webapp.models.EFapsApplicationSession;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.wicket.WebFormPage;
-import org.efaps.webapp.wicket.WebTablePage;
+import org.efaps.webapp.pages.WebFormPage;
+import org.efaps.webapp.pages.WebTablePage;
 
 /**
  * @author jmo

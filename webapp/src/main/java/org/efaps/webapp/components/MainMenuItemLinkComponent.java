@@ -31,9 +31,9 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.wicket.MainPage;
-import org.efaps.webapp.wicket.WebFormPage;
-import org.efaps.webapp.wicket.WebTablePage;
+import org.efaps.webapp.pages.MainPage;
+import org.efaps.webapp.pages.WebFormPage;
+import org.efaps.webapp.pages.WebTablePage;
 
 /**
  * @author jmo
