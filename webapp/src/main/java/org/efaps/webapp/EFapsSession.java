@@ -30,7 +30,7 @@ import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
 import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.TableModel;
 
-public class EFapsApplicationSession extends WebSession {
+public class EFapsSession extends WebSession {
 
   private int contentcontainerid;
 
@@ -38,7 +38,7 @@ public class EFapsApplicationSession extends WebSession {
 
   private ListMenuLinkComponent sidemenuselected;
 
-  public EFapsApplicationSession(WebApplication application, Request request) {
+  public EFapsSession(WebApplication application, Request request) {
     super(application, request);
   }
 

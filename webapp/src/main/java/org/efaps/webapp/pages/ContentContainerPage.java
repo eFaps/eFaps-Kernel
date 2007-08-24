@@ -9,7 +9,7 @@ import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.wicketstuff.dojo.markup.html.container.DojoSimpleContainer;
 import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
 
-import org.efaps.webapp.EFapsApplicationSession;
+import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.components.listmenu.ListMenuPanel;
 
@@ -49,7 +49,7 @@ public class ContentContainerPage extends WebPage {
   protected void onBeforeRender() {
 
     super.onBeforeRender();
-    ((EFapsApplicationSession) this.getSession()).setContentContainer(this
+    ((EFapsSession) this.getSession()).setContentContainer(this
         .getNumericId(), this.getCurrentVersionNumber());
   }
 }

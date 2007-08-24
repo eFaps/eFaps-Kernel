@@ -3,7 +3,7 @@ package org.efaps.webapp.pages;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
-import org.efaps.webapp.EFapsApplicationSession;
+import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.table.WebFormContainer;
 
 public class WebFormPage extends ContentPage {
@@ -12,7 +12,7 @@ public class WebFormPage extends ContentPage {
 
   public WebFormPage(PageParameters _parameters) throws Exception {
     
-    EFapsApplicationSession session = (EFapsApplicationSession) getSession();
+    EFapsSession session = (EFapsSession) getSession();
     super.setModel(session.getIFormModel(_parameters, null));
     this.addComponents();
 

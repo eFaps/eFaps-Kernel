@@ -38,7 +38,7 @@ import org.apache.wicket.markup.html.list.ListView;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.webapp.EFapsApplicationSession;
+import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
 import org.efaps.webapp.components.listmenu.ListMenuPanel;
@@ -105,8 +105,8 @@ public class CellAjaxLinkComponent extends AjaxLink {
                 WebFormPage.class, para);
       }
 
-      EFapsApplicationSession session =
-          (EFapsApplicationSession) this.getSession();
+      EFapsSession session =
+          (EFapsSession) this.getSession();
 
       Page parentpage =
           PageMap.forName(MainPage.INLINEFRAMENAME).get(
@@ -120,7 +120,7 @@ public class CellAjaxLinkComponent extends AjaxLink {
       target.addComponent(page);
 
       ListMenuLinkComponent comp =
-          ((EFapsApplicationSession) (Session.get())).getSideMenuSelected();
+          ((EFapsSession) (Session.get())).getSideMenuSelected();
       MarkupContainer listitem = comp.findParent(ListItem.class);
 
       Iterator<?> childs = listitem.iterator();

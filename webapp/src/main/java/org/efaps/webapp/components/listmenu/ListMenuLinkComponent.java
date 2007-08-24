@@ -27,7 +27,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.webapp.EFapsApplicationSession;
+import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.WebFormPage;
@@ -72,7 +72,7 @@ public class ListMenuLinkComponent extends AjaxLink {
             "eFapsSplitContainer:containerrechts:eFapsContentContainer");
     component.replaceWith(page);
     _target.addComponent(page);
-    ((EFapsApplicationSession) (Session.get())).setSideMenuSelected(this);
+    ((EFapsSession) (Session.get())).setSideMenuSelected(this);
   }
 
 }

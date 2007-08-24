@@ -46,7 +46,7 @@ public class EFapsApplication extends WebApplication {
   }
 
   public Session newSession(Request _request, Response _response){
-    return new EFapsApplicationSession(this, _request);
+    return new EFapsSession(this, _request);
     
   }
 
