@@ -20,6 +20,7 @@
 
 package org.efaps.webapp.models;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +31,9 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.MenuAbstract;
+import org.efaps.beans.ValueList;
+import org.efaps.beans.valueparser.ValueParser;
+import org.efaps.db.SearchQuery;
 
 /**
  * @author tmo
@@ -94,7 +98,23 @@ public class IMenuItemModel implements IModel {
   private IMenuItemModel(final CommandAbstract _command, String _oid)
                                                                      throws Exception {
     this.image = _command.getIcon();
-    this.label = DBProperties.getProperty(_command.getLabel());
+
+    String label = DBProperties.getProperty(_command.getLabel());
+
+    SearchQuery query = new SearchQuery();
+    query.setObject(_oid);
+    ValueParser parser = new ValueParser(new StringReader(label));
+    ValueList list = parser.ExpressionString();
+    list.makeSelect(query);
+    if (query.selectSize() > 0) {
+      query.execute();
+      if (query.next()) {
+        label = list.makeString(query);
+      }
+      query.close();
+    }
+
+    this.label = label;
     this.description = "";
     this.command = _command;
     this.oid = _oid;

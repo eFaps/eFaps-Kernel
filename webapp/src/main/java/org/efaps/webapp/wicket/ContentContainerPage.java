@@ -32,7 +32,7 @@ public class ContentContainerPage extends WebPage {
     add(parentcontainer);
     parentcontainer.setOrientation(DojoSplitContainer.ORIENTATION_HORIZONTAL);
 
-    parentcontainer.add(new ListMenuPanel("eFapsSideMenu", _parameters));
+    parentcontainer.add(new ListMenuPanel("eFapsListMenu", _parameters));
 
     DojoSimpleContainer container =
         new DojoSimpleContainer("containerrechts", "Content");

@@ -20,6 +20,9 @@
 
 package org.efaps.webapp.components.table;
 
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.Page;
@@ -31,6 +34,7 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
@@ -38,6 +42,7 @@ import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
 import org.efaps.webapp.components.listmenu.ListMenuPanel;
 import org.efaps.webapp.models.EFapsApplicationSession;
+import org.efaps.webapp.models.IMenuItemModel;
 import org.efaps.webapp.wicket.MainPage;
 import org.efaps.webapp.wicket.WebFormPage;
 import org.efaps.webapp.wicket.WebTablePage;
@@ -84,20 +89,20 @@ public class CellAjaxLinkComponent extends AjaxLink {
     try {
       menu = instance.getType().getTreeMenu();
 
-      PageParameters u = new PageParameters();
-      u.add("command", menu.getName());
-      u.add("oid", this.oid);
+      PageParameters para = new PageParameters();
+      para.add("command", menu.getName());
+      para.add("oid", this.oid);
 
       EFapsContainerComponent page;
       if (menu.getTargetTable() != null) {
 
         page =
             new EFapsContainerComponent("eFapsContentContainer",
-                WebTablePage.class, u);
+                WebTablePage.class, para);
       } else {
         page =
             new EFapsContainerComponent("eFapsContentContainer",
-                WebFormPage.class, u);
+                WebFormPage.class, para);
       }
 
       EFapsApplicationSession session =
@@ -108,22 +113,67 @@ public class CellAjaxLinkComponent extends AjaxLink {
               session.getContentContainerId(),
               session.getContentContainerVersion());
 
-      Component x =
+      Component container =
           parentpage
               .get("eFapsSplitContainer:containerrechts:eFapsContentContainer");
-      x.replaceWith(page);
+      container.replaceWith(page);
       target.addComponent(page);
 
-      ListMenuPanel sidemenu =
-          (ListMenuPanel) parentpage.get("eFapsSplitContainer:eFapsSideMenu");
+      ListMenuLinkComponent comp =
+          ((EFapsApplicationSession) (Session.get())).getSideMenuSelected();
+      MarkupContainer listitem = comp.findParent(ListItem.class);
 
-      ListMenuLinkComponent comp = ((EFapsApplicationSession)(Session.get())).getSideMenuSelected();
-      MarkupContainer y = comp.findParent(ListItem.class);
-      ListMenuPanel newmenu =new ListMenuPanel("nested",u);
-y.addOrReplace(newmenu) ;   
-target.addComponent(newmenu);
-      
-      
+      Iterator<?> childs = listitem.iterator();
+      ListMenuPanel newmenu = null;
+      ListView view = null;
+
+      while (childs.hasNext()) {
+
+        Object child = childs.next();
+        if (child instanceof ListMenuPanel) {
+          newmenu = (ListMenuPanel) child;
+          break;
+        }
+      }
+
+      childs = newmenu.iterator();
+      while (childs.hasNext()) {
+        Object child = childs.next();
+        if (child instanceof ListView) {
+          view = (ListView) child;
+          break;
+        }
+      }
+      boolean old = false;
+      if (view != null) {
+        List<Object> list = view.getList();
+
+        for (Object item : view.getList()) {
+          if (item instanceof IMenuItemModel) {
+            item = (IMenuItemModel) item;
+
+            if (((IMenuItemModel) item).getOid().equals(this.oid)
+                && ((IMenuItemModel) item).getCommand().getName().equals(
+                    menu.getName())) {
+              old = true;
+              break;
+            }
+
+          }
+
+        }
+        if (!old) {
+          IMenuItemModel model = new IMenuItemModel(menu.getName(), this.oid);
+          list.add(model);
+          list.add(model.getChilds());
+        }
+      } else {
+        newmenu = new ListMenuPanel("nested", para);
+        listitem.replace(newmenu);
+      }
+
+      target.addComponent(newmenu);
+
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

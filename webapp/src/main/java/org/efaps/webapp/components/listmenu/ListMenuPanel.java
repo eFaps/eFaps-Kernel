@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.components.sidemenu;
+package org.efaps.webapp.components.listmenu;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,6 @@ import org.efaps.webapp.models.IMenuItemModel;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class ListMenuPanel extends DojoPanelContainer {
 
@@ -44,7 +43,7 @@ public class ListMenuPanel extends DojoPanelContainer {
   public ListMenuPanel(final String _id, final PageParameters _parameters) {
     super(_id, "noTitel");
     setVersioned(false);
-   
+    // add(HeaderContributor.forCss(getClass(), "listmenu.css"));
     try {
 
       IMenuItemModel model =
@@ -56,6 +55,7 @@ public class ListMenuPanel extends DojoPanelContainer {
       menu.add(model);
       menu.add(model.getChilds());
       add(new Rows("rows", menu));
+      
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -66,9 +66,8 @@ public class ListMenuPanel extends DojoPanelContainer {
   public ListMenuPanel(final String _id, final List<?> _modelObject) {
     super(_id, "noTitel");
     setVersioned(false);
-
     add(new Rows("rows", _modelObject));
-
+   
   }
 
   public ListMenuPanel(String _id) {
@@ -126,6 +125,7 @@ public class ListMenuPanel extends DojoPanelContainer {
         x.setOutputMarkupId(true);
         _listItem.add(row);
       }
+
     }
   }
 
