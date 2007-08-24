@@ -3,6 +3,8 @@ package org.efaps.webapp.wicket;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
+import org.efaps.webapp.components.footer.FooterPanel;
+import org.efaps.webapp.components.titel.TitelPanel;
 import org.efaps.webapp.models.IModelAbstract;
 
 public  abstract class ContentPage extends WebPage {

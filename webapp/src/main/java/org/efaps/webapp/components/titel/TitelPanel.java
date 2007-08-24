@@ -1,4 +1,4 @@
-package org.efaps.webapp.wicket;
+package org.efaps.webapp.components.titel;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
