@@ -46,7 +46,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.util.EFapsException;
 
-public class ITableModel extends IModelAbstract {
+public class TableModel extends ModelAbstract {
   private static final long serialVersionUID = -8528420513681480048L;
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ public class ITableModel extends IModelAbstract {
    */
   private String filter;
 
-  public ITableModel(PageParameters _parameters) throws EFapsException {
+  public TableModel(PageParameters _parameters) throws EFapsException {
     super(_parameters);
     initialise();
 
@@ -158,7 +158,7 @@ public class ITableModel extends IModelAbstract {
     }
   }
 
-  public ITableModel() throws EFapsException {
+  public TableModel() throws EFapsException {
     super();
     initialise();
   }

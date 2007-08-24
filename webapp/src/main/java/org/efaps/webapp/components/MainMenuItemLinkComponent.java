@@ -28,7 +28,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.webapp.models.IMenuItemModel;
+import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.wicket.MainPage;
 import org.efaps.webapp.wicket.WebTablePage;
 
@@ -48,7 +48,7 @@ public class MainMenuItemLinkComponent extends Link {
 
   @Override
   public void onClick() {
-    IMenuItemModel model = (IMenuItemModel) super.getModel();
+    MenuItemModel model = (MenuItemModel) super.getModel();
     CommandAbstract command = model.getCommand();
     if (command.getTargetTable() != null) {
 

@@ -40,7 +40,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
-public class IFormModel extends IModelAbstract {
+public class FormModel extends ModelAbstract {
   private static final long serialVersionUID = 3026168649146801622L;
 
   /**
@@ -58,7 +58,7 @@ public class IFormModel extends IModelAbstract {
    */
   private final Form form;
 
-  public IFormModel() throws EFapsException {
+  public FormModel() throws EFapsException {
     super();
     // set target form
     if (getCommand() != null) {
@@ -68,7 +68,7 @@ public class IFormModel extends IModelAbstract {
     }
   }
 
-  public IFormModel(PageParameters _parameters) {
+  public FormModel(PageParameters _parameters) {
     super(_parameters);
     if (getCommand() != null) {
       this.form = getCommand().getTargetForm();

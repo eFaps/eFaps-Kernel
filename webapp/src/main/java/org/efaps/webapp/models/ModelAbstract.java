@@ -38,7 +38,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
-public abstract class IModelAbstract implements IModel {
+public abstract class ModelAbstract implements IModel {
 
   /**
    *
@@ -109,11 +109,11 @@ public abstract class IModelAbstract implements IModel {
 
   private PageParameters parameters;
 
-  public IModelAbstract() throws EFapsException {
+  public ModelAbstract() throws EFapsException {
     initialise();
   }
 
-  public IModelAbstract(PageParameters _parameters) {
+  public ModelAbstract(PageParameters _parameters) {
     this.parameters = _parameters;
     try {
       initialise();

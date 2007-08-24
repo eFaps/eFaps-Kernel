@@ -42,14 +42,14 @@ public class EFapsApplicationSession extends WebSession {
 
   private static final long serialVersionUID = 1884548064760514909L;
 
-  public IFormModel getIFormModel(PageParameters _parameters, final String _key)
+  public FormModel getIFormModel(PageParameters _parameters, final String _key)
       throws Exception {
-    return new IFormModel(_parameters);
+    return new FormModel(_parameters);
   }
 
-  public ITableModel getITableModel(PageParameters _parameters,
+  public TableModel getITableModel(PageParameters _parameters,
       final String _key) throws EFapsException {
-    return new ITableModel(_parameters);
+    return new TableModel(_parameters);
 
   }
 

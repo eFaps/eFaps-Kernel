@@ -29,7 +29,7 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.models.EFapsApplicationSession;
-import org.efaps.webapp.models.IMenuItemModel;
+import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.wicket.WebFormPage;
 import org.efaps.webapp.wicket.WebTablePage;
 
@@ -50,7 +50,7 @@ public class ListMenuLinkComponent extends AjaxLink {
   @Override
   public void onClick(final AjaxRequestTarget _target) {
 
-    IMenuItemModel model = (IMenuItemModel) super.getModel();
+    MenuItemModel model = (MenuItemModel) super.getModel();
     PageParameters para = new PageParameters();
     para.add("oid", model.getOid());
     para.add("command", model.getCommand().getName());

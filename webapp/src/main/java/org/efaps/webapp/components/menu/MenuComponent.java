@@ -33,7 +33,7 @@ import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.webapp.components.AbstractParentMarkupContainer;
 import org.efaps.webapp.components.MainMenuItemLinkComponent;
-import org.efaps.webapp.models.IMenuItemModel;
+import org.efaps.webapp.models.MenuItemModel;
 
 /**
  * @author tmo
@@ -93,9 +93,9 @@ public class MenuComponent extends AbstractParentMarkupContainer {
   }
 
   private void initialise() {
-    IMenuItemModel model = (IMenuItemModel) super.getModel();
+    MenuItemModel model = (MenuItemModel) super.getModel();
 
-    for (IMenuItemModel menuItem : model.childs) {
+    for (MenuItemModel menuItem : model.childs) {
       addLink(menuItem);
     }
   }
@@ -106,11 +106,11 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     return "ItemLink" + (childID++).toString();
   }
 
-  private void addLink(IMenuItemModel menuItem) {
+  private void addLink(MenuItemModel menuItem) {
     MainMenuItemLinkComponent item =
         new MainMenuItemLinkComponent(getNewChildId(), menuItem);
     this.add(item);
-    for (IMenuItemModel childs : menuItem.childs) {
+    for (MenuItemModel childs : menuItem.childs) {
       addLink(childs);
     }
   }
@@ -122,7 +122,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     while (childs.hasNext()) {
       MainMenuItemLinkComponent child =
           (MainMenuItemLinkComponent) childs.next();
-      IMenuItemModel childModel = (IMenuItemModel) child.getModel();
+      MenuItemModel childModel = (MenuItemModel) child.getModel();
 
 //      childModel.setURL((String) child.urlFor(((IBehavior) child.getBehaviors()
 //          .get(0)), AjaxEventBehavior.INTERFACE));
@@ -147,7 +147,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
   public String convertToHtml(final ComponentTag _openTag) {
     CharSequence id = _openTag.getString("id");
 
-    IMenuItemModel model = (IMenuItemModel) super.getModel();
+    MenuItemModel model = (MenuItemModel) super.getModel();
 
     StringBuilder html = new StringBuilder();
 
@@ -156,7 +156,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     html.append(JavascriptUtils.SCRIPT_OPEN_TAG).append("var ").append(id)
         .append("=[");
 
-    for (IMenuItemModel menuItem : model.childs) {
+    for (MenuItemModel menuItem : model.childs) {
       convertToHtml(menuItem, html, true, new StringBuilder());
       html.append(",\n");
     }
@@ -194,7 +194,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
         .append(CssUtils.INLINE_CLOSE_TAG);
   }
 
-  public void convertToHtml(final IMenuItemModel _menuItem,
+  public void convertToHtml(final MenuItemModel _menuItem,
       final StringBuilder _html, final boolean _isMain,
       final StringBuilder _prefix) {
 
@@ -225,7 +225,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
       _html.append(_menuItem.description);
     }
     _html.append("'");
-    for (IMenuItemModel menuItem : _menuItem.childs) {
+    for (MenuItemModel menuItem : _menuItem.childs) {
       _html.append("\n").append(_prefix).append("  ,");
       convertToHtml(menuItem, _html, false, new StringBuilder(_prefix)
           .append("  "));

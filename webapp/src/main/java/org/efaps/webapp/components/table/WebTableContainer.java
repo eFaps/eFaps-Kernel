@@ -32,8 +32,8 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.components.EFapsContainerComponent;
-import org.efaps.webapp.models.ITableModel;
-import org.efaps.webapp.models.ITableModel.IRowModel;
+import org.efaps.webapp.models.TableModel;
+import org.efaps.webapp.models.TableModel.IRowModel;
 
 /**
  * @author jmo
@@ -61,7 +61,7 @@ public class WebTableContainer extends WebMarkupContainer {
   private void initialise() {
     int i = 0;
     try {
-      ITableModel model = (ITableModel) super.getModel();
+      TableModel model = (TableModel) super.getModel();
       if (!model.isInitialised()) {
         model.execute();
       }
@@ -164,8 +164,8 @@ public class WebTableContainer extends WebMarkupContainer {
 
   }
 
-  public ITableModel getITableModel() {
-    return (ITableModel) super.getModel();
+  public TableModel getITableModel() {
+    return (TableModel) super.getModel();
   }
 
 }

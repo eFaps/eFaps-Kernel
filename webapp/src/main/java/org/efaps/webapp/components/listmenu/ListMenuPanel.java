@@ -30,7 +30,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.wicketstuff.dojo.markup.html.container.DojoPanelContainer;
 
-import org.efaps.webapp.models.IMenuItemModel;
+import org.efaps.webapp.models.MenuItemModel;
 
 /**
  * @author jmo
@@ -46,8 +46,8 @@ public class ListMenuPanel extends DojoPanelContainer {
     // add(HeaderContributor.forCss(getClass(), "listmenu.css"));
     try {
 
-      IMenuItemModel model =
-          new IMenuItemModel(_parameters.getString("command"), _parameters
+      MenuItemModel model =
+          new MenuItemModel(_parameters.getString("command"), _parameters
               .getString("oid"));
       this.setModel(model);
 
@@ -117,7 +117,7 @@ public class ListMenuPanel extends DojoPanelContainer {
         // the
         // row's actual value to display
         WebMarkupContainer row = new WebMarkupContainer("row");
-        IMenuItemModel model = (IMenuItemModel) modelObject;
+        MenuItemModel model = (MenuItemModel) modelObject;
 
         ListMenuLinkComponent x = new ListMenuLinkComponent("link", model);
         x.add(new Label("label", model.getLabel()));

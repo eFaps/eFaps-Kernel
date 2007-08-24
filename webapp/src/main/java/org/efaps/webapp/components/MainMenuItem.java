@@ -24,10 +24,10 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 
-import org.efaps.webapp.models.IMenuItemModel;
+import org.efaps.webapp.models.MenuItemModel;
 
 public class MainMenuItem extends WebComponent {
-  public MainMenuItem(String id, IMenuItemModel model) {
+  public MainMenuItem(String id, MenuItemModel model) {
     super(id, model);
   }
 
@@ -38,7 +38,7 @@ public class MainMenuItem extends WebComponent {
       ComponentTag _openTag) {
 
     super.replaceComponentTagBody(_markupStream, _openTag,
-        ((IMenuItemModel) super.getModel()).getLabel());
+        ((MenuItemModel) super.getModel()).getLabel());
    
   }
 

@@ -27,7 +27,7 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.datamodel.ui.FieldDefinition;
-import org.efaps.webapp.models.ITableModel;
+import org.efaps.webapp.models.TableModel;
 
 /**
  * @author jmo
@@ -39,7 +39,7 @@ public class TableHeaderPanel extends Panel {
 
   public TableHeaderPanel(final String _id, final IModel _model) {
     super(_id, _model);
-    ITableModel model = (ITableModel) super.getModel();
+    TableModel model = (TableModel) super.getModel();
     if (!model.isInitialised()) {
       try {
         model.execute();

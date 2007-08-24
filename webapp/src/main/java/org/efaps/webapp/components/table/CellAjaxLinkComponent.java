@@ -42,7 +42,7 @@ import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
 import org.efaps.webapp.components.listmenu.ListMenuPanel;
 import org.efaps.webapp.models.EFapsApplicationSession;
-import org.efaps.webapp.models.IMenuItemModel;
+import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.wicket.MainPage;
 import org.efaps.webapp.wicket.WebFormPage;
 import org.efaps.webapp.wicket.WebTablePage;
@@ -149,11 +149,11 @@ public class CellAjaxLinkComponent extends AjaxLink {
         List<Object> list = view.getList();
 
         for (Object item : view.getList()) {
-          if (item instanceof IMenuItemModel) {
-            item = (IMenuItemModel) item;
+          if (item instanceof MenuItemModel) {
+            item = (MenuItemModel) item;
 
-            if (((IMenuItemModel) item).getOid().equals(this.oid)
-                && ((IMenuItemModel) item).getCommand().getName().equals(
+            if (((MenuItemModel) item).getOid().equals(this.oid)
+                && ((MenuItemModel) item).getCommand().getName().equals(
                     menu.getName())) {
               old = true;
               break;
@@ -163,7 +163,7 @@ public class CellAjaxLinkComponent extends AjaxLink {
 
         }
         if (!old) {
-          IMenuItemModel model = new IMenuItemModel(menu.getName(), this.oid);
+          MenuItemModel model = new MenuItemModel(menu.getName(), this.oid);
           list.add(model);
           list.add(model.getChilds());
         }

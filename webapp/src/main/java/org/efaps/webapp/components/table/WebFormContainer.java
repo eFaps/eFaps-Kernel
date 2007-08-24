@@ -31,7 +31,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.ui.Field;
 import org.efaps.util.EFapsException;
-import org.efaps.webapp.models.IFormModel;
+import org.efaps.webapp.models.FormModel;
 
 public class WebFormContainer extends WebMarkupContainer {
   private static final long serialVersionUID = 1550111712776698728L;
@@ -51,7 +51,7 @@ public class WebFormContainer extends WebMarkupContainer {
     int i = 0;
     int j = 0;
     try {
-      IFormModel model = (IFormModel) super.getModel();
+      FormModel model = (FormModel) super.getModel();
       model.execute();
       int groupCount = 1;
       int rowGroupCount = 1;
@@ -122,7 +122,7 @@ public class WebFormContainer extends WebMarkupContainer {
   }
 
   private String getValueString(FieldValue _value) {
-    IFormModel model = (IFormModel) super.getModel();
+    FormModel model = (FormModel) super.getModel();
     String ret = null;
     if (_value.getValue() != null) {
       try {

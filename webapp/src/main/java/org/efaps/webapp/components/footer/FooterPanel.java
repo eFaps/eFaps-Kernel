@@ -6,7 +6,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.Link;
 
-import org.efaps.webapp.models.IModelAbstract;
+import org.efaps.webapp.models.ModelAbstract;
 
 public class FooterPanel extends Panel {
 
@@ -14,7 +14,7 @@ public class FooterPanel extends Panel {
 
   public FooterPanel(String _id, IModel _model) {
     super(_id, _model);
-    IModelAbstract model= (IModelAbstract) super.getModel();
+    ModelAbstract model= (ModelAbstract) super.getModel();
     String label = null;
     if(model.isCreateMode()){
      label = "Create";

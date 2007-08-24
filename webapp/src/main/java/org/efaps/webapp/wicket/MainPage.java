@@ -31,7 +31,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.components.menu.MenuComponent;
-import org.efaps.webapp.models.IMenuItemModel;
+import org.efaps.webapp.models.MenuItemModel;
 
 public class MainPage extends WebPage {
 
@@ -42,7 +42,7 @@ public class MainPage extends WebPage {
   public MainPage() throws Exception {
 
     MenuComponent menu =
-        new MenuComponent("eFapsMainMenu", new IMenuItemModel("MainToolBar"),
+        new MenuComponent("eFapsMainMenu", new MenuItemModel("MainToolBar"),
             40l);
     add(menu);
 

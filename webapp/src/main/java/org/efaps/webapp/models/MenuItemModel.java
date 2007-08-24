@@ -39,7 +39,7 @@ import org.efaps.db.SearchQuery;
  * @author tmo
  * @version $Id$
  */
-public class IMenuItemModel implements IModel {
+public class MenuItemModel implements IModel {
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -59,7 +59,7 @@ public class IMenuItemModel implements IModel {
   public String url;
 
   /** All childs of this menu item. */
-  public final List<IMenuItemModel> childs = new ArrayList<IMenuItemModel>();
+  public final List<MenuItemModel> childs = new ArrayList<MenuItemModel>();
 
   private CommandAbstract command;
 
@@ -68,18 +68,18 @@ public class IMenuItemModel implements IModel {
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
-  public IMenuItemModel(final String _name) throws Exception {
+  public MenuItemModel(final String _name) throws Exception {
     this(Menu.get(_name));
   }
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
-  public IMenuItemModel(final String _name, final String _oid) throws Exception {
+  public MenuItemModel(final String _name, final String _oid) throws Exception {
     this(Menu.get(_name), _oid);
   }
 
-  private IMenuItemModel(final CommandAbstract _command) throws Exception {
+  private MenuItemModel(final CommandAbstract _command) throws Exception {
     this.image = _command.getIcon();
     this.label = DBProperties.getProperty(_command.getLabel());
     this.description = "";
@@ -88,14 +88,14 @@ public class IMenuItemModel implements IModel {
     if (_command instanceof MenuAbstract) {
       for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
         if (subCmd.hasAccess()) {
-          this.childs.add(new IMenuItemModel(subCmd));
+          this.childs.add(new MenuItemModel(subCmd));
         }
       }
     }
     // this.url = getTargetURL(_command);
   }
 
-  private IMenuItemModel(final CommandAbstract _command, String _oid)
+  private MenuItemModel(final CommandAbstract _command, String _oid)
                                                                      throws Exception {
     this.image = _command.getIcon();
 
@@ -121,7 +121,7 @@ public class IMenuItemModel implements IModel {
     if (_command instanceof MenuAbstract) {
       for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
         if (subCmd.hasAccess()) {
-          this.childs.add(new IMenuItemModel(subCmd, _oid));
+          this.childs.add(new MenuItemModel(subCmd, _oid));
         }
       }
     }
@@ -139,7 +139,7 @@ public class IMenuItemModel implements IModel {
     this.url = _url;
   }
 
-  public List<IMenuItemModel> getChilds() {
+  public List<MenuItemModel> getChilds() {
     return this.childs;
   }
 
