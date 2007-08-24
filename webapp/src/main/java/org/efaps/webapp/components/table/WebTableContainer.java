@@ -62,8 +62,9 @@ public class WebTableContainer extends WebMarkupContainer {
     int i = 0;
     try {
       ITableModel model = (ITableModel) super.getModel();
-      model.execute();
-
+      if (!model.isInitialised()) {
+        model.execute();
+      }
       boolean odd = true;
 
       for (Iterator<IRowModel> rowIter = model.getValues().iterator(); rowIter

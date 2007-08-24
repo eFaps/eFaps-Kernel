@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.components.sidemenu;
+package org.efaps.webapp.components.listmenu;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;

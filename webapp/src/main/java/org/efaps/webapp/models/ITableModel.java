@@ -289,6 +289,10 @@ public class ITableModel extends IModelAbstract {
     }
   }
 
+  
+  public final List<FieldDefinition> getFieldDefs(){
+    return this.fieldDefs;
+  }
   /**
    * The instance method sorts the table values depending on the sort key in
    * {@link #sortKey} and the sort direction in {@link #sortDirection}.

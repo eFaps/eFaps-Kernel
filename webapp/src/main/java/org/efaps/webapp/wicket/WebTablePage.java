@@ -4,7 +4,9 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
 import org.efaps.webapp.components.table.WebTableContainer;
+import org.efaps.webapp.components.table.header.TableHeaderPanel;
 import org.efaps.webapp.models.EFapsApplicationSession;
+import org.efaps.webapp.models.ITableModel;
 
 public class WebTablePage extends ContentPage {
 
@@ -21,8 +23,11 @@ public class WebTablePage extends ContentPage {
 
     super.addComponents();
     add(new StyleSheetReference("WebTablePageCSS", getClass(),
-    "webtablepage/WebTablePage.css"));
-    add(new WebTableContainer("eFapsTable", super.getModel()));
+        "webtablepage/WebTablePage.css"));
+    ITableModel model = (ITableModel) super.getModel();
+    model.execute();
+    add(new TableHeaderPanel("eFapsTableHeader", model));
+    add(new WebTableContainer("eFapsTable", model));
   }
 
 }
