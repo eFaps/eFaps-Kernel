@@ -124,8 +124,8 @@ public class MenuComponent extends AbstractParentMarkupContainer {
           (MainMenuItemLinkComponent) childs.next();
       MenuItemModel childModel = (MenuItemModel) child.getModel();
 
-//      childModel.setURL((String) child.urlFor(((IBehavior) child.getBehaviors()
-//          .get(0)), AjaxEventBehavior.INTERFACE));
+// childModel.setURL((String) child.urlFor(((IBehavior) child.getBehaviors()
+// .get(0)), AjaxEventBehavior.INTERFACE));
 //      
       
       childModel.setURL((String)child.urlFor(ILinkListener.INTERFACE));
@@ -220,7 +220,13 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     if (_menuItem.url != null) {
       _html.append(_menuItem.url);
     }
-    _html.append("', '_self', '");
+    if ("true".equals(_menuItem.getCommand()
+        .getProperty("NoUpdateAfterCOMMAND"))) {
+      _html.append("', 'eFapsFrameHidden', '");
+    } else {
+      _html.append("', '_self', '");
+    }
+
     if (_menuItem.description != null) {
       _html.append(_menuItem.description);
     }

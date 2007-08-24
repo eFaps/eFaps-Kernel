@@ -28,20 +28,21 @@
 //
 function cmItemMouseUp (obj, isMain, idSub, menuID, index)
 {
-//_cmItemMouseUp(_obj, _isMain, _idSub, _menuID, _index);
+
   if (!_cmItemList[index].isDisabled)  {
 
     var item = _cmItemList[index];
 
     if (item.length > 2)  {
       var link = item[2];
-
-window.location.href = link;
-//var wcall=wicketAjaxGet(link, function() { }.bind(this), function() { }.bind(this));return !wcall;
-     var menuInfo = _cmMenuList[menuID];
-        var prefix = menuInfo.prefix;
-        var thisMenu = cmGetThisMenu (obj, prefix);
-        cmHideMenu (thisMenu, null, menuInfo);
+      if (item.length > 3 && item[3]){
+        target = item[3];
+      }
+      window.open (link, target);
+      var menuInfo = _cmMenuList[menuID];
+      var prefix = menuInfo.prefix;
+      var thisMenu = cmGetThisMenu (obj, prefix);
+      cmHideMenu (thisMenu, null, menuInfo);
     }
 	}
 }
