@@ -55,7 +55,7 @@ public class ListMenuPanel extends DojoPanelContainer {
       menu.add(model);
       menu.add(model.getChilds());
       add(new Rows("rows", menu));
-      
+
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -67,11 +67,17 @@ public class ListMenuPanel extends DojoPanelContainer {
     super(_id, "noTitel");
     setVersioned(false);
     add(new Rows("rows", _modelObject));
-   
+
   }
 
   public ListMenuPanel(String _id) {
     super(_id, "noTitel");
+  }
+
+  @Override
+  protected void onBeforeRender() {
+    super.onBeforeRender();
+
   }
 
   /**
@@ -102,6 +108,7 @@ public class ListMenuPanel extends DojoPanelContainer {
         row.setVisible(false);
         row.setOutputMarkupPlaceholderTag(true);
         row.add(new WebMarkupContainer("link"));
+        row.add(new WebMarkupContainer("removelink"));
         _listItem.add(row);
       } else {
         // if the current element is not a list, we create a dummy panel
@@ -119,10 +126,19 @@ public class ListMenuPanel extends DojoPanelContainer {
         WebMarkupContainer row = new WebMarkupContainer("row");
         MenuItemModel model = (MenuItemModel) modelObject;
 
-        ListMenuLinkComponent x = new ListMenuLinkComponent("link", model);
-        x.add(new Label("label", model.getLabel()));
-        row.add(x);
-        x.setOutputMarkupId(true);
+        ListMenuLinkComponent link = new ListMenuLinkComponent("link", model);
+        link.add(new Label("label", model.getLabel()));
+        row.add(link);
+        link.setOutputMarkupId(true);
+
+        if (model.hasChilds()
+            && (this.findParent(ListItem.class)!=null)) {
+          row.add(new ListMenuRemoveLinkComponent("removelink", model));
+        } else {
+          WebMarkupContainer empty = new WebMarkupContainer("removelink");
+          empty.setVisible(false);
+          row.add(empty);
+        }
         _listItem.add(row);
       }
 
