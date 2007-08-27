@@ -1,5 +1,3 @@
-@CHARSET "UTF-8";
-
 /* Odd Table Row Appearance */
 tr.eFapsTableRowOdd {
 	background-color: #ffffff;
@@ -19,8 +17,8 @@ tr.eFapsTableRowOdd td a img,tr.eFapsTableRowEven td a img {
 /* Table Header Appearance */
 #eFapsTableHeader {
 	position: fixed;
-	width:100%;
-	top: 30px;
+	width: 100%;
+	top: 50px;
 	margin-left: 0;
 	padding-left: 0;
 	padding-bottom: 5px;
@@ -52,6 +50,6 @@ tr.eFapsTableRowOdd td a img,tr.eFapsTableRowEven td a img {
 
 #eFapsTableBody {
 	position: absolute;
-	top: 50px;
+	top: 70px;
 	z-index: 0;
 }

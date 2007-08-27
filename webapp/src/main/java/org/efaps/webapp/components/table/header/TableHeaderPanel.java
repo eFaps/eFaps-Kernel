@@ -39,6 +39,7 @@ public class TableHeaderPanel extends Panel {
 
   public TableHeaderPanel(final String _id, final IModel _model) {
     super(_id, _model);
+    
     TableModel model = (TableModel) super.getModel();
     if (!model.isInitialised()) {
       try {

@@ -203,7 +203,15 @@ public abstract class ModelAbstract implements IModel {
     if (values != null) {
       ret = values[0];
     } else {
-      ret = (String) this.parameters.get(_name);
+      if (this.parameters.get(_name) instanceof String[]) {
+        values = (String[]) this.parameters.get(_name);
+        if (values != null) {
+          ret = values[0];
+        }
+      } else {
+        ret = (String) this.parameters.get(_name);
+
+      }
     }
 
     return ret;

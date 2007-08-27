@@ -4,12 +4,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <wicket:head>
   <link wicket:id="ContentContainerPageCSS" rel="stylesheet" type="text/css" href="contentcontainerpage/ContentContainerPage.css"/>
+<script type="text/javascript">
+ function parentAjaxGet(url) {
+   var wcall=wicketAjaxGet(url, function() { }.bind(), function() { }.bind());
+   return !wcall;
+ }
+ </script>
 </wicket:head>
 <body>
   <div wicket:id="eFapsSplitContainer" class="split">
       <div wicket:id="eFapsListMenu" sizeMin="20" sizeShare="20" id="eFapsListMenu"></div>
-      <div wicket:id="containerrechts" style="overflow:auto" sizeMin="20" sizeShare="80" >
-          <div wicket:id="eFapsContentContainer"></div>
+      <div wicket:id="containerrechts"  sizeMin="20" sizeShare="80" >
+          <span wicket:id="aktParent">
+            <iframe wicket:id="eFapsContentContainerFrame" id="eFapsContentContainerFrame"></iframe>
+          </span>
       </div>
     </div>
 </body>

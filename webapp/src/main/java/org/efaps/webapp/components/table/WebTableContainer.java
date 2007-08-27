@@ -31,7 +31,6 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.util.EFapsException;
-import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.models.TableModel.IRowModel;
 
@@ -101,7 +100,7 @@ public class WebTableContainer extends WebMarkupContainer {
 
           if (value.getFieldDef().getField().getReference() != null) {
             if (getPage().getPageMapName().equals(
-                EFapsContainerComponent.CONTENTPAGE)) {
+                "content")) {
               cell.add(new CellAjaxLinkComponent(CELLVALUEID + "_" + i + "_"
                   + j, value.getInstance().getOid(), getValueString(value)));
             } else {

@@ -20,15 +20,15 @@
 
 package org.efaps.webapp.components.listmenu;
 
-import org.apache.wicket.Component;
+import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.EFapsSession;
-import org.efaps.webapp.components.EFapsContainerComponent;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
@@ -36,7 +36,6 @@ import org.efaps.webapp.pages.WebTablePage;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class ListMenuLinkComponent extends AjaxLink {
 
@@ -55,23 +54,36 @@ public class ListMenuLinkComponent extends AjaxLink {
     para.add("oid", model.getOid());
     para.add("command", model.getCommand().getName());
 
-    EFapsContainerComponent page;
+    // EFapsContainerComponent page;
+    // if (model.getCommand().getTargetTable() != null) {
+    //
+    // page =
+    // new EFapsContainerComponent("eFapsContentContainer",
+    // WebTablePage.class, para);
+    // } else {
+    // page =
+    // new EFapsContainerComponent("eFapsContentContainer",
+    // WebFormPage.class, para);
+    // }
+    //
+    InlineFrame page;
     if (model.getCommand().getTargetTable() != null) {
-
       page =
-          new EFapsContainerComponent("eFapsContentContainer",
-              WebTablePage.class, para);
+          new InlineFrame("eFapsContentContainerFrame", PageMap
+              .forName("content"), WebTablePage.class, para);
     } else {
       page =
-          new EFapsContainerComponent("eFapsContentContainer",
-              WebFormPage.class, para);
+          new InlineFrame("eFapsContentContainerFrame", PageMap
+              .forName("content"), WebFormPage.class, para);
     }
-
-    Component component =
-        getPage().get(
-            "eFapsSplitContainer:containerrechts:eFapsContentContainer");
+    InlineFrame component =
+        (InlineFrame) getPage().get(
+        "eFapsSplitContainer:containerrechts:aktParent:eFapsContentContainerFrame");
+    page.setOutputMarkupId(true);
+    
+    
     component.replaceWith(page);
-    _target.addComponent(page);
+    _target.addComponent(page.getParent());
     ((EFapsSession) (Session.get())).setSideMenuSelected(this);
   }
 

@@ -22,6 +22,34 @@
 -->
 
 <html xmlns:wicket>
+<wicket:head>
+<script type="text/javascript">
+ function eFapsPositionTable() {
+       
+      var headerTable = document.getElementById("eFapsTableHeader");
+      var bodyTable = document.getElementById("eFapsTableBody");
+
+      var row = bodyTable.rows[0];
+      var headers = headerTable.getElementsByTagName("div");
+
+      if (row)  {
+        for (var i=0; i<row.cells.length; i++)  {
+          if (row.cells[i].offsetWidth)  {
+            headers[i].style.width = row.cells[i].offsetWidth + "px";
+            headers[i].style.left = (row.cells[i].offsetLeft  + 5) + "px";
+          }
+        }
+      } else  {
+        var pos = 4;
+        for (var i=0; i<headers.length; i++)  {
+          headers[i].style.left = pos + "px";
+          pos = pos + 2 + headers[i].offsetWidth;
+        }
+      }
+    }
+</script>
+</wicket:head>
+<body onload="eFapsPositionTable()">
 <wicket:panel>
   <div width="1%" wicket:id="checkbox">
     <input type="checkbox" onClick="eFapsTableSelectDeselectAll(document,'selectedRow',this.checked)"/>
@@ -39,4 +67,5 @@
     </table>     
   </div>   
 </wicket:panel>
+</body>
 </html>

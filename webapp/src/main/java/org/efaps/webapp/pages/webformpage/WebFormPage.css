@@ -1,26 +1,30 @@
-@CHARSET "UTF-8";
+#eFapsFormTable {
+	position: absolute;
+	top: 50px;
+}
 
 /* Default Label Appearance */
 td.eFapsFormLabel {
-        background-color: #dadada;
-        color: black;
-        font-weight: bold;
-        height: 24px;
-        width: 200px;
-        padding-left: 4px;
+	background-color: #dadada;
+	color: black;
+	font-weight: bold;
+	height: 24px;
+	width: 200px;
+	padding-left: 4px;
 }
 
 /* Required Label Appearance */
 td.eFapsFormLabelRequired {
-        background-color: #dadada;
-        color: #990000;
-        font-weight: bold;
-        height: 24px;
-        font-style: italic
+	background-color: #dadada;
+	color: #990000;
+	font-weight: bold;
+	height: 24px;
+	font-style: italic
 }
 
 /* Input Field Appearance */
 td.eFapsFormInputField {
-        background-color: #eeeeee;
-        font-size: 12px;0
+	background-color: #eeeeee;
+	font-size: 12px;
+	0
 }

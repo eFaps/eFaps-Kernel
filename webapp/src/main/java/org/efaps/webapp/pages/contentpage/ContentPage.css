@@ -17,3 +17,18 @@ body,th,td,p,div {
 	background-color: white;
 	z-index: 1;
 }
+
+#eFapsMenu {
+	position: fixed;
+	width: 100%;
+	top: 30px;
+	height: 22px;
+	background-color: #EFEBDE;
+	border-style: solid;
+	border-width: 1px 0;
+	border-color: black;
+	margin: 0;
+	padding-top: 2px;
+	padding-left: 2px;
+	padding-bottom: 0px;
+}

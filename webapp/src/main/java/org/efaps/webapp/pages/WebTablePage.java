@@ -13,6 +13,7 @@ public class WebTablePage extends ContentPage {
   private static final long serialVersionUID = 7564911406648729094L;
 
   public WebTablePage(PageParameters _parameters) throws Exception {
+    super();
     EFapsSession session = (EFapsSession) getSession();
     super.setModel(session.getITableModel(_parameters, null));
     this.addComponents();
@@ -20,7 +21,6 @@ public class WebTablePage extends ContentPage {
 
   @Override
   protected void addComponents() throws Exception {
-
     super.addComponents();
     add(new StyleSheetReference("WebTablePageCSS", getClass(),
         "webtablepage/WebTablePage.css"));
@@ -28,6 +28,7 @@ public class WebTablePage extends ContentPage {
     model.execute();
     add(new TableHeaderPanel("eFapsTableHeader", model));
     add(new WebTableContainer("eFapsTable", model));
+    
   }
 
 }
