@@ -20,6 +20,8 @@
 
 package org.efaps.admin.ui;
 
+import java.util.UUID;
+
 
 /**
  *
@@ -40,8 +42,8 @@ public class Menu extends MenuAbstract  {
    * @param _id   id  of the command to set
    * @param _name name of the command to set
    */
-  public Menu(Long _id, String _name)  {
-    super(_id, _name);
+  public Menu(final Long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
   }
 
   /**
@@ -85,7 +87,20 @@ public class Menu extends MenuAbstract  {
   static public Menu get(final String _name)  {
     return getCache().get(_name);
   }
-
+  
+  /**
+   * Returns for given parameter <i>UUID</i> the instance of class
+   * {@link Menu}.
+   *
+   * @param _uuid UUID to search in the cache
+   * @return instance of class {@link Menu}
+   * @see #getCache
+   */
+  static public Menu get(final UUID _uuid){
+    return getCache().get(_uuid);
+  }
+  
+  
   /**
    * Static getter method for the type hashtable {@link #cache}.
    *
@@ -95,6 +110,8 @@ public class Menu extends MenuAbstract  {
     return cache;
   }
 
+  
+  
   /**
    * Stores all instances of class {@link Menu}.
    *

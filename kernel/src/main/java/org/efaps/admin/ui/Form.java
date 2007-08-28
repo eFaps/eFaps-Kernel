@@ -22,6 +22,7 @@ package org.efaps.admin.ui;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 import org.efaps.db.Context;
 
@@ -41,8 +42,8 @@ public class Form extends Collection  {
   /**
    *
    */
-  public Form(Long _id, String _name)  {
-    super(_id, _name);
+  public Form(final Long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
   }
 
   /**
@@ -86,6 +87,20 @@ public class Form extends Collection  {
     return getCache().get(_name);
   }
 
+  
+  /**
+   * Returns for given parameter <i>_uuid</i> the instance of class
+   * {@link Form}.
+   *
+   * @param _uuid UUID to search in the cache
+   * @return instance of class {@link Form}
+   * @see #getCache
+   */
+  static public Form get(final UUID _uuid)  {
+    return getCache().get(_uuid);
+  }
+  
+  
   /**
    * Static getter method for the type hashtable {@link #cache}.
    *

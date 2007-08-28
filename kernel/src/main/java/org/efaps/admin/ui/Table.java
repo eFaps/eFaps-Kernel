@@ -46,8 +46,8 @@ public class Table extends Collection implements Cloneable  {
    * @param _id     id of the new table
    * @param _name   name of the new table
    */
-  public Table(Long _id, String _name)  {
-    super(_id, _name);
+  public Table(final Long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
   }
 
   /**

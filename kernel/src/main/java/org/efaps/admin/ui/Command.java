@@ -20,6 +20,9 @@
 
 package org.efaps.admin.ui;
 
+import java.util.UUID;
+
+
 
 /**
  * @author tmo
@@ -39,8 +42,8 @@ public class Command extends CommandAbstract  {
    * @param _id   id  of the command to set
    * @param _name name of the command to set
    */
-  public Command(Long _id, String _name)  {
-    super(_id, _name);
+  public Command(final Long _id, final String _uuid, final String _name)  {
+    super(_id, _uuid, _name );
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -69,6 +72,17 @@ public class Command extends CommandAbstract  {
   }
 
   /**
+   * Returns for given parameter <i>UUID</i> the instance of class
+   * {@link Command}.
+   *
+   * @param _uuid UUID to search in the cache
+   * @return instance of class {@link Command}
+   * @see #getCache
+   */
+  static public Command get(final UUID _uuid){
+    return getCache().get(_uuid);
+  }
+  /**
    * Static getter method for the type hashtable {@link #cache}.
    *
    * @return value of static variable {@link #cache}
@@ -77,6 +91,9 @@ public class Command extends CommandAbstract  {
     return cache;
   }
 
+  
+  
+ 
   /**
    * Stores all instances of class {@link Command}.
    *

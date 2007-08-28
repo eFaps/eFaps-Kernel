@@ -43,10 +43,10 @@ public abstract class Collection extends UserInterfaceObject {
    * Constructor to set the id of the collection object.
    * 
    * @param _id
-   *          id to set
+   *                id to set
    */
-  protected Collection(long _id, String _name) {
-    super(_id, _name);
+  protected Collection(final long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
   }
 
   public void add(Field _field) {
@@ -73,7 +73,7 @@ public abstract class Collection extends UserInterfaceObject {
    * expression is only added once.
    * 
    * @param _expr
-   *          field expression to add
+   *                field expression to add
    * @return index of the field expression
    * @see #getFieldExprIndex
    * @see #getAllFieldExpr
@@ -101,7 +101,7 @@ public abstract class Collection extends UserInterfaceObject {
    * expressions is returned.
    * 
    * @param _expr
-   *          expression for which the index is searched
+   *                expression for which the index is searched
    * @return index of the field expression
    * @see #addFieldExpr
    * @see #getAllFieldExpr
@@ -136,11 +136,11 @@ public abstract class Collection extends UserInterfaceObject {
    * The instance method sets a new property value.
    * 
    * @param _name
-   *          name of the property
+   *                name of the property
    * @param _value
-   *          value of the property
+   *                value of the property
    * @param _toId
-   *          id of the to object
+   *                id of the to object
    */
   /*
    * protected void setProperty(String _name, String _value) throws
@@ -150,8 +150,7 @@ public abstract class Collection extends UserInterfaceObject {
    * getExpandAttributes().setSize(index); } getExpandAttributes().set(index-1,
    * Attribute.get(_context, _value)); } else if (_name.equals("FooterMenu")) {
    * setFooterMenu(Menu.get(_context, _value)); } else if
-   * (_name.equals("HeaderMenu")) { setHeaderMenu(Menu.get(_context, _value)); }
-   *  }
+   * (_name.equals("HeaderMenu")) { setHeaderMenu(Menu.get(_context, _value)); } }
    */
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -171,8 +170,8 @@ public abstract class Collection extends UserInterfaceObject {
    */
   private void readFromDB4Fields() throws CacheReloadException {
     try {
-      Instance instance = new Instance(
-          Type.get(EFapsClassName.COLLECTION.name), getId());
+      Instance instance =
+          new Instance(Type.get(EFapsClassName.COLLECTION.name), getId());
       SearchQuery query = new SearchQuery();
       query.setExpand(instance, EFapsClassName.FIELD.name + "\\Collection");
       query.addSelect("ID");
@@ -182,7 +181,7 @@ public abstract class Collection extends UserInterfaceObject {
       while (query.next()) {
         long id = (Long) query.get("ID");
         String name = (String) query.get("Name");
-        Field field = new Field(id, name);
+        Field field = new Field(id, null, name);
         field.readFromDB();
         add(field);
       }
@@ -212,7 +211,7 @@ public abstract class Collection extends UserInterfaceObject {
    * @see #getFields
    * @see #add(Field)
    */
-  private Map<Long, Field>           fields       = new TreeMap<Long, Field>();
+  private Map<Long, Field> fields = new TreeMap<Long, Field>();
 
   /**
    * Instance variable for all field expressions.
@@ -221,14 +220,15 @@ public abstract class Collection extends UserInterfaceObject {
    * @see #getFieldExprIndex
    * @see #getAllFieldExpr
    */
-  private Hashtable<String, Integer> allFieldExpr = new Hashtable<String, Integer>();
+  private Hashtable<String, Integer> allFieldExpr =
+      new Hashtable<String, Integer>();
 
   /**
    * Instance variable for the length of the field expression list.
    * 
    * @see #allFieldExpr
    */
-  private int                        selIndexLen  = 1;
+  private int selIndexLen = 1;
 
   /**
    * Select string for the statement.
@@ -236,14 +236,13 @@ public abstract class Collection extends UserInterfaceObject {
    * @see #setSelect
    * @see #getSelect
    */
-  private String                     select       = null;
+  private String select = null;
 
-  private String                     hRefBottom   = null;
+  private String hRefBottom = null;
 
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * 
    * @see #allFieldExpr
    * @return the hashtable which holds single field expression
    */
@@ -265,7 +264,7 @@ public abstract class Collection extends UserInterfaceObject {
    * This is the setter method for instance variable {@link #select}.
    * 
    * @param _select
-   *          new value for instance variable {@link #select}
+   *                new value for instance variable {@link #select}
    * @see #select
    * @see #getSelect
    */
@@ -299,7 +298,7 @@ public abstract class Collection extends UserInterfaceObject {
    * Set the new value for the {@link #hRefBottom}.
    * 
    * @param _select
-   *          new value for the {@link #hRefBottom}
+   *                new value for the {@link #hRefBottom}
    * @see #hRefBottom
    * @see #getHRefBottom
    */
@@ -307,7 +306,7 @@ public abstract class Collection extends UserInterfaceObject {
     this.hRefBottom = _hRefBottom;
   }
 
-  public Map<Long, Field>  getFieldsMap() {
+  public Map<Long, Field> getFieldsMap() {
 
     return this.fields;
   }

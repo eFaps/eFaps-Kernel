@@ -52,15 +52,15 @@ abstract public class MenuAbstract extends CommandAbstract {
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * Constructor to set the id and name of the menu object.
+   * Constructor to set the id,uuid and  name of the menu object.
    * 
    * @param _id
    *          id of the command to set
    * @param _name
    *          name of the command to set
    */
-  protected MenuAbstract(long _id, String _name) {
-    super(_id, _name);
+  protected MenuAbstract(final long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
   }
 
   /**

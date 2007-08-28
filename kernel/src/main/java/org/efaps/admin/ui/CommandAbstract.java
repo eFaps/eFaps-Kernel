@@ -297,10 +297,12 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    *                id of the command to set
    * @param _name
    *                name of the command to set
+   * @param _uuid
+   *                uuid of the command to set
    * @see #label
    */
-  protected CommandAbstract(long _id, String _name) {
-    super(_id, _name);
+  protected CommandAbstract(long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
     setLabel(_name + ".Label");
     setTargetTitle(_name + ".Title");
   }

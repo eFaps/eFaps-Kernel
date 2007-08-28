@@ -221,6 +221,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This field can be filtered in a Webtable
+   * 
    * @see #isFilterable()
    * @see #setFilterable(boolean)
    */
@@ -230,7 +231,7 @@ public class Field extends UserInterfaceObject {
    * Standart-Constructor
    */
   public Field() {
-    super(0, null);
+    super(0, null,null);
   }
 
   /**
@@ -241,8 +242,9 @@ public class Field extends UserInterfaceObject {
    * @param _name
    *                name of the field instance
    */
-  public Field(final long _id, final String _name) {
-    super(_id, _name);
+  public Field(final long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
+
   }
 
   /**

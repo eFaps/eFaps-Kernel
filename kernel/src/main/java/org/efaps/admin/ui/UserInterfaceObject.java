@@ -20,6 +20,7 @@
 
 package org.efaps.admin.ui;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -79,9 +80,10 @@ public abstract class UserInterfaceObject extends AdminObject {
    *          id to set
    * @param _name
    *          name to set
+   * @param _uuid 
    */
-  protected UserInterfaceObject(final long _id, final String _name) {
-    super(_id, null, _name);
+  protected UserInterfaceObject(final long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -373,19 +375,22 @@ public abstract class UserInterfaceObject extends AdminObject {
           query.setQueryTypes(getEFapsClassName().name);
           query.addSelect("ID");
           query.addSelect("Name");
+          query.addSelect("UUID");
           query.executeWithoutAccessCheck();
           while (query.next()) {
             long id = (Long) query.get("ID");
             String name = (String) query.get("Name");
-            UIObj uiObj =
-                uiObjClass.getConstructor(Long.class, String.class)
-                    .newInstance(id, name);
-            add(uiObj);
+            String uuid = (String) query.get("UUID");
+            Constructor<UIObj> uiObj =
+                uiObjClass.getConstructor(Long.class, String.class, String.class);
+            UIObj uiObj2=             
+              uiObj.newInstance(id, uuid, name);
+            add(uiObj2);
           }
         }
       } catch (NoSuchMethodException e) {
         throw new CacheReloadException("class '" + uiObjClass.getName() + "' "
-            + "does not implement contructor " + "(Long, String)", e);
+            + "does not implement contructor " + "(Long, String, String)", e);
       } catch (InstantiationException e) {
         throw new CacheReloadException("could not instantiate class " + "'"
             + uiObjClass.getName() + "'", e);

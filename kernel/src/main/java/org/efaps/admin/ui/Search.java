@@ -67,9 +67,8 @@ public class Search extends MenuAbstract  {
    * @param _id       search id
    * @param _name     search name
    */
-  public Search(final Long _id, final String _name) throws Exception  {
-    super(_id, _name);
-//    readFromDB(_context);
+  public Search(final Long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
   }
 
   /////////////////////////////////////////////////////////////////////////////
