@@ -22,18 +22,19 @@ package org.efaps.webapp.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
+import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
 import org.efaps.db.Instance;
@@ -49,32 +50,37 @@ public class FormModel extends ModelAbstract {
    * @see #getValues
    * @see #setValues
    */
-  private final List<FieldValue> values = new ArrayList<FieldValue>();
+  private final List<FormRowModel> values = new ArrayList<FormRowModel>();
 
   /**
    * The instance variable stores the form which must be shown.
    * 
    * @see #getForm
    */
-  private final Form form;
+  private final UUID formuuid;
 
   public FormModel() throws EFapsException {
     super();
-    // set target form
-    if (getCommand() != null) {
-      this.form = getCommand().getTargetForm();
+    CommandAbstract command = super.getCommand();
+    if (command != null) {
+      this.formuuid = command.getTargetForm().getUUID();
     } else {
-      this.form = null;
+      this.formuuid = null;
     }
   }
 
   public FormModel(PageParameters _parameters) {
     super(_parameters);
-    if (getCommand() != null) {
-      this.form = getCommand().getTargetForm();
+    CommandAbstract command = super.getCommand();
+    if (command != null) {
+      this.formuuid = command.getTargetForm().getUUID();
     } else {
-      this.form = null;
+      this.formuuid = null;
     }
+  }
+
+  public UUID getUUI() {
+    return this.formuuid;
   }
 
   public Object getObject() {
@@ -99,14 +105,15 @@ public class FormModel extends ModelAbstract {
    * @see #values
    * @see #setValues
    */
-  public List<FieldValue> getValues() {
+  public List<FormRowModel> getValues() {
     return this.values;
   }
 
   public void execute() throws Exception {
 
+    Form form = Form.get(this.formuuid);
+
     if (super.isCreateMode() || super.isSearchMode()) {
-      this.values.add(null);
 
       Type type = null;
       if (super.isCreateMode()) {
@@ -122,30 +129,30 @@ public class FormModel extends ModelAbstract {
         }
       }
 
-      for (int i = 0; i < this.form.getFields().size(); i++) {
-        Field field = (Field) this.form.getFields().get(i);
+      for (int i = 0; i < form.getFields().size(); i++) {
+        Field field = (Field) form.getFields().get(i);
 
-        if (field.getExpression() != null) {
-          Attribute attr = type.getAttribute(field.getExpression());
-          if (attr != null) {
-            addFieldValue(field, attr, null, null);
-          }
-        } else if (field.getClassUI() != null) {
-          addFieldValue(field, null);
-        } else if (field.getGroupCount() > 0) {
-          addFieldValue(field, null);
-          if (super.getMaxGroupCount() < field.getGroupCount()) {
-            super.setMaxGroupCount(field.getGroupCount());
-          }
-        }
+        // if (field.getExpression() != null) {
+        // Attribute attr = type.getAttribute(field.getExpression());
+        // if (attr != null) {
+        // addFieldValue(field, attr, null, null);
+        // }
+        // } else if (field.getClassUI() != null) {
+        // addFieldValue(field, null);
+        // } else if (field.getGroupCount() > 0) {
+        // addFieldValue(field, null);
+        // if (super.getMaxGroupCount() < field.getGroupCount()) {
+        // super.setMaxGroupCount(field.getGroupCount());
+        // }
+        // }
 
       }
     } else {
-      Instance instance = super.getInstance();
-      SearchQuery query = new SearchQuery();
-      query.setObject(instance);
 
-      for (Field field : this.form.getFields()) {
+      SearchQuery query = new SearchQuery();
+      query.setObject(super.getOid());
+
+      for (Field field : form.getFields()) {
         if (field.getExpression() != null) {
           query.addSelect(field.getExpression());
         }
@@ -154,30 +161,61 @@ public class FormModel extends ModelAbstract {
         }
       }
       query.execute();
+      String oid;
+      String strValue;
+      int rowgroupcount = 1;
+      FormRowModel row = new FormRowModel();
 
       if (query.next()) {
-        // getValues().add(query.getInstance(context, instance.getType()));
-        addFieldValue(null, null, null, null, new Instance((String) query
-            .get("OID")));
-
-        for (int i = 0; i < this.form.getFields().size(); i++) {
-          Field field = (Field) this.form.getFields().get(i);
+        for (int i = 0; i < form.getFields().size(); i++) {
+          Field field = (Field) form.getFields().get(i);
 
           if (field.getExpression() != null) {
-            Instance fldInstance;
             if (field.getAlternateOID() == null) {
-              fldInstance = new Instance((String) query.get("OID"));
+              oid = (String) query.get("OID");
             } else {
-              fldInstance =
-                  new Instance((String) query.get(field.getAlternateOID()));
+              oid = (String) query.get(field.getAlternateOID());
             }
-            addFieldValue(field, query.getAttribute(field.getExpression()),
-                query.get(field.getExpression()), fldInstance);
+            Object value = query.get(field.getExpression());
+            Attribute attr = query.getAttribute(field.getExpression());
+
+            FieldValue fieldvalue =
+                new FieldValue(new FieldDefinition("egal", field), attr, value,
+                    new Instance(oid));
+
+            if (value != null) {
+              if (this.isCreateMode() && field.isEditable()) {
+                strValue = fieldvalue.getCreateHtml();
+              } else if (this.isEditMode() && field.isEditable()) {
+                strValue = fieldvalue.getEditHtml();
+              } else {
+                strValue = fieldvalue.getViewHtml();
+              }
+            } else {
+              strValue = "";
+            }
+
+            String label;
+            if (field.getLabel() != null) {
+              label = field.getLabel();
+            } else {
+              label =
+                  attr.getParent().getName() + "/" + attr.getName() + ".Label";
+            }
+            FormCellModel cell = new FormCellModel(oid, strValue, false, label);
+            row.add(cell);
+            rowgroupcount--;
+            if (rowgroupcount < 1) {
+              rowgroupcount = 1;
+              this.values.add(row);
+              row = new FormRowModel();
+            }
+
           } else if (field.getGroupCount() > 0) {
-            addFieldValue(field, instance);
             if (getMaxGroupCount() < field.getGroupCount()) {
               setMaxGroupCount(field.getGroupCount());
             }
+            rowgroupcount = field.getGroupCount();
           }
         }
       }
@@ -186,43 +224,55 @@ public class FormModel extends ModelAbstract {
     }
   }
 
-  /**
-   * Adds a field value to the list of values.
-   * 
-   * @see #addFieldValue(String,Field,UIInterface,Object,Instance)
-   */
-  public void addFieldValue(Field _field, Attribute _attr, Object _value,
-      Instance _instance) {
-    String label = null;
-    if (_field.getLabel() != null) {
-      label = _field.getLabel();
-    } else {
-      label = _attr.getParent().getName() + "/" + _attr.getName() + ".Label";
+  public class FormRowModel implements IClusterable {
+
+    private static final long serialVersionUID = 1L;
+
+    private final List<FormCellModel> values = new ArrayList<FormCellModel>();
+
+    public void add(FormCellModel _cellmodel) {
+      this.values.add(_cellmodel);
     }
-    label = DBProperties.getProperty(label);
 
-    this.addFieldValue(label, _field, _attr, _value, _instance);
+    public List<FormCellModel> getValues() {
+      return this.values;
+    }
+
+    public int getGroupCount() {
+      return values.size();
+    }
   }
 
-  /**
-   * Adds a field value to the list of values.
-   * 
-   * @see #addFieldValue(String,Field,UIInterface,Object,Instance)
-   */
-  public void addFieldValue(Field _field, Instance _instance) {
-    this.addFieldValue(_field.getLabel(), _field, null, null, _instance);
-  }
+  public class FormCellModel implements IClusterable {
 
-  /**
-   * The instance method adds a new attribute value (from instance
-   * {@link AttributeTypeInterface}) to the values.
-   * 
-   * @see #values
-   */
-  public void addFieldValue(final String _label, final Field _field,
-      final Attribute _attribute, final Object _value, final Instance _instance) {
-    this.values.add(new FieldValue(new FieldDefinition(_label, _field),
-        _attribute, _value, _instance));
-  }
+    private static final long serialVersionUID = 1L;
 
+    private String cellLabel;
+
+    private String cellValue;
+
+    private String oid;
+
+    private boolean required;
+
+    public FormCellModel(final String _oid, final String _cellValue,
+                         final boolean _required, String _label) {
+      this.oid = _oid;
+      this.cellValue = _cellValue;
+      this.required = _required;
+      this.cellLabel = DBProperties.getProperty(_label);;
+    }
+
+    public boolean isRequired() {
+      return this.required;
+    }
+
+    public String getCellLabel() {
+      return this.cellLabel;
+    }
+
+    public String getCellValue() {
+      return this.cellValue;
+    }
+  }
 }

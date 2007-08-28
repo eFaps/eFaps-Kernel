@@ -36,7 +36,6 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
-import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
@@ -59,15 +58,6 @@ public abstract class ModelAbstract implements IModel {
    * @see #getCommand
    */
   private UUID commanduuid;
-
-  /**
-   * The instance variable stores the instance object for which this bean is
-   * created.
-   * 
-   * @see #getInstance
-   * @see #setInstance
-   */
-  private Instance instance = null;
 
   /**
    * The instance variable stores the mode of the form.
@@ -112,6 +102,8 @@ public abstract class ModelAbstract implements IModel {
 
   private PageParameters parameters;
 
+  private String oid;
+
   public ModelAbstract() throws EFapsException {
     initialise();
   }
@@ -127,12 +119,9 @@ public abstract class ModelAbstract implements IModel {
   }
 
   private void initialise() throws EFapsException {
-    String oid = getParameter("oid");
+    this.oid = getParameter("oid");
     this.nodeId = getParameter("nodeId");
 
-    if (oid != null) {
-      this.instance = new Instance(oid);
-    }
     String cmdName = getParameter("command");
     if ((cmdName == null) || (cmdName.length() == 0)
         || ("undefined".equals(cmdName))) {
@@ -179,9 +168,9 @@ public abstract class ModelAbstract implements IModel {
     String title =
         DBProperties.getProperty(this.getCommand().getName() + ".Title");
 
-    if ((title != null) && (getInstance() != null)) {
+    if ((title != null) && (this.getOid() != null)) {
       SearchQuery query = new SearchQuery();
-      query.setObject(getInstance());
+      query.setObject(this.getOid());
       ValueParser parser = new ValueParser(new StringReader(title));
       ValueList list = parser.ExpressionString();
       list.makeSelect(query);
@@ -222,15 +211,8 @@ public abstract class ModelAbstract implements IModel {
     return ret;
   }
 
-  /**
-   * This is the getter method for the instance variable {@link #instance}.
-   * 
-   * @return value of instance variable {@link #instance}
-   * @see #instance
-   * @see #setInstance
-   */
-  public Instance getInstance() {
-    return this.instance;
+  public String getOid() {
+    return this.oid;
   }
 
   /**

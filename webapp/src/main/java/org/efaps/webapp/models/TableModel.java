@@ -176,7 +176,7 @@ public class TableModel extends ModelAbstract {
     // first get list of object ids
     List<Return> ret =
         getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-            ParameterValues.INSTANCE, getInstance());
+            ParameterValues.INSTANCE, new Instance(super.getOid()));
 
     List<List<Instance>> lists =
         (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
@@ -213,7 +213,6 @@ public class TableModel extends ModelAbstract {
 
   private void addLabel(String _label) {
     if (_label != null) {
-
       this.columnLabels.add(DBProperties.getProperty(_label));
     } else {
       this.columnLabels.add("");

@@ -28,10 +28,9 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.ui.Field;
-import org.efaps.util.EFapsException;
 import org.efaps.webapp.models.FormModel;
+import org.efaps.webapp.models.FormModel.FormCellModel;
+import org.efaps.webapp.models.FormModel.FormRowModel;
 
 public class WebFormContainer extends WebMarkupContainer {
   private static final long serialVersionUID = 1550111712776698728L;
@@ -53,65 +52,37 @@ public class WebFormContainer extends WebMarkupContainer {
     try {
       FormModel model = (FormModel) super.getModel();
       model.execute();
-      int groupCount = 1;
-      int rowGroupCount = 1;
+
       RowContainer row = null;
-      for (FieldValue value : model.getValues()) {
-        if (value != null && value.getFieldDef().getField() != null) {
-          Field field = value.getFieldDef().getField();
-          if (field.getGroupCount() > 0
-              && (!model.isCreateMode() || field.isCreatable())
-              && (!model.isSearchMode() || field.isSearchable())) {
-            rowGroupCount = field.getGroupCount();
+      for (FormRowModel rowmodel : model.getValues()) {
+        row = new RowContainer(ROWID + "_" + i);
+        this.add(row);
+        i++;
+        for (FormCellModel cellmodel : rowmodel.getValues()) {
+          CellContainer cell = new CellContainer(CELLID + "_" + i + "_" + j);
+          row.add(cell);
+          if (cellmodel.isRequired()) {
+            cell.add(new SimpleAttributeModifier("class",
+                "eFapsFormLabelRequired"));
+          } else {
+            cell.add(new SimpleAttributeModifier("class", "eFapsFormLabel"));
           }
+          cell.add(new CellValueComponent(CELLVALUEID + "_" + i + "_" + j,
+              cellmodel.getCellLabel()));
+          j++;
+          cell = new CellContainer(CELLID + "_" + i + "_" + j);
+          row.add(cell);
+          cell.add(new SimpleAttributeModifier("class", "eFapsFormInputField"));
+          Integer colspan =
+              2 * (model.getMaxGroupCount() - rowmodel.getGroupCount()) + 1;
 
-          if (value.getAttribute() != null
-              && (!model.isCreateMode() || field.isCreatable())
-              && (!model.isSearchMode() || field.isSearchable())) {
+          cell.add(new SimpleAttributeModifier("colspan", colspan.toString()));
+          cell.add(new CellValueComponent(CELLVALUEID + "_" + i + "_" + j,
+              cellmodel.getCellValue()));
 
-            if (groupCount == 1) {
-              row = new RowContainer(ROWID + "_" + i);
-              this.add(row);
-              i++;
-            }
-            CellContainer cell = new CellContainer(CELLID + "_" + i + "_" + j);
-            row.add(cell);
-            if (field.isRequired()
-                && (model.isSearchMode() || model.isCreateMode())) {
-              cell.add(new SimpleAttributeModifier("class",
-                  "eFapsFormLabelRequired"));
-
-            } else {
-              cell.add(new SimpleAttributeModifier("class", "eFapsFormLabel"));
-            }
-
-            cell.add(new CellValueComponent(CELLVALUEID + "_" + i + "_" + j, value
-                .getFieldDef().getLabel()));
-            j++;
-            cell = new CellContainer(CELLID + "_" + i + "_" + j);
-            row.add(cell);
-            cell
-                .add(new SimpleAttributeModifier("class", "eFapsFormInputField"));
-            Integer colspan =
-                2 * (model.getMaxGroupCount() - rowGroupCount) + 1;
-
-            cell
-                .add(new SimpleAttributeModifier("colspan", colspan.toString()));
-
-            cell.add(new CellValueComponent(CELLVALUEID + "_" + i + "_" + j,
-                getValueString(value)));
-
-            if (groupCount < rowGroupCount) {
-              groupCount++;
-            } else if (groupCount == rowGroupCount) {
-              groupCount = 1;
-              rowGroupCount = 1;
-            }
-
-          }
-
+          j++;
         }
-        j++;
+
       }
 
     } catch (Exception e) {
@@ -119,29 +90,6 @@ public class WebFormContainer extends WebMarkupContainer {
       e.printStackTrace();
     }
 
-  }
-
-  private String getValueString(FieldValue _value) {
-    FormModel model = (FormModel) super.getModel();
-    String ret = null;
-    if (_value.getValue() != null) {
-      try {
-        if (model.isCreateMode()
-            && _value.getFieldDef().getField().isEditable()) {
-          ret = _value.getCreateHtml();
-        } else if (model.isEditMode()
-            && _value.getFieldDef().getField().isEditable()) {
-          ret = _value.getEditHtml();
-        } else {
-          ret = _value.getViewHtml();
-        }
-
-      } catch (EFapsException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }
-    return ret;
   }
 
   protected final void onRender(final MarkupStream markupStream) {
@@ -253,16 +201,16 @@ public class WebFormContainer extends WebMarkupContainer {
   // if (groupCount < rowGroupCount) {
   // groupCount++;
   // } else if (groupCount == rowGroupCount) {
-  //            groupCount = 1;
-  //            rowGroupCount = 1;
-  //          }
+  // groupCount = 1;
+  // rowGroupCount = 1;
+  // }
   //
-  //        }
-  //      }
+  // }
+  // }
   //
-  //    }
+  // }
   //
-  //    ret.append("</table>");
-  //    return ret.toString();
-  //  }
+  // ret.append("</table>");
+  // return ret.toString();
+  // }
 }
