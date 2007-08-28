@@ -28,7 +28,7 @@ import java.util.UUID;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.event.EventType;
+import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.MenuAbstract;
@@ -161,6 +161,14 @@ public class MenuItemModel implements IModel {
     return this.label;
   }
 
+  
+  public CommandAbstract getCommand(){
+    CommandAbstract cmd = Command.get(this.uuid);
+    if (cmd == null) {
+      cmd = Menu.get(this.uuid);
+    }
+    return cmd;
+  }
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
@@ -178,86 +186,6 @@ public class MenuItemModel implements IModel {
     // TODO Auto-generated method stub
   }
 
-  protected String getTargetURL(final CommandAbstract _command)
-      throws Exception {
-    StringBuilder url = new StringBuilder();
-
-    // always javascript (needed for faces..)
-
-    if (_command.isSubmit()) {
-      url.append("javascript:eFapsCommonSubmit(\"");
-    } else {
-      url.append("javascript:eFapsCommonOpenUrl(\"");
-    }
-
-    // add link
-    if ((_command.getReference() != null)
-        && (_command.getReference().length() > 0)) {
-      url.append(_command.getReference());
-    } else if ((_command.getTargetTable() != null)
-        || (_command.getTargetForm() != null)
-        || (_command.getTargetSearch() != null)
-        || (_command.hasEvents(EventType.UI_COMMAND_EXECUTE))) {
-      url.append("../common/Link.jsf?");
-      // hack (no url found!)
-    } else {
-      return null;
-    }
-
-    // append always the command name
-    url.append("command=").append(_command.getName());
-    /*
-     * // append oid if ((this.oid != null) && (this.oid.length() > 0)) {
-     * url.append("&oid=").append(this.oid); }
-     */
-    // TODO append nodeId
-    // append target
-    /*
-     * if (this.search) { url.append("&eFapsCallingCommand=").append(
-     * Context.getThreadContext().getParameter("eFapsCallingCommand"))
-     * .append("&search=").append(this.originalCommand.getName()).append(
-     * "\",\"Replace"); } else {
-     */url.append("\",\"");
-    switch (_command.getTarget()) {
-      case CommandAbstract.TARGET_CONTENT:
-        url.append("Content");
-      break;
-      case CommandAbstract.TARGET_HIDDEN:
-        url.append("eFapsFrameHidden");
-      break;
-      case CommandAbstract.TARGET_POPUP:
-        url.append("popup");
-        if ((_command.getWindowWidth() > 0) && (_command.getWindowHeight() > 0)) {
-          url.append("\",\"").append(_command.getWindowWidth()).append("\",\"")
-              .append(_command.getWindowHeight());
-        }
-      break;
-
-      case CommandAbstract.TARGET_MODAL:
-        url.append("eFapsFrameModal");
-      break;
-      default:
-        if (_command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-          url.append("eFapsFrameHidden");
-        } else {
-          url.append("Content");
-        }
-    }
-    // }
-
-    url.append("\");");
-
-    /*
-     * if (_command.isAskUser()) { EFapsModalDialog modaldialog = new
-     * EFapsModalDialog(_command, url.toString());
-     * modalDialogs.add(modaldialog); return ("javascript:" +
-     * modaldialog.getDialogVar() + ".show();"); } if (_command.getTarget() ==
-     * CommandAbstract.TARGET_MODAL) {
-     * url.append(";eFapsOpenFrameModal(").append(_command.getWindowHeight()).append(",")
-     * .append(_command.getWindowWidth()).append(");"); }
-     */
-
-    return url.toString();
-  }
+ 
 
 }

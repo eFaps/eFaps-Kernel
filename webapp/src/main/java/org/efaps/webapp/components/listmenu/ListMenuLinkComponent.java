@@ -28,7 +28,7 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.admin.ui.Command;
+import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.WebFormPage;
@@ -51,26 +51,14 @@ public class ListMenuLinkComponent extends AjaxLink {
   public void onClick(final AjaxRequestTarget _target) {
 
     MenuItemModel model = (MenuItemModel) super.getModel();
-    Command command = Command.get(model.getUUID());
-    
+    CommandAbstract cmd = model.getCommand();
     PageParameters para = new PageParameters();
     para.add("oid", model.getOid());
-    para.add("command",command.getName());
+    para.add("command", cmd.getName());
 
-    // EFapsContainerComponent page;
-    // if (model.getCommand().getTargetTable() != null) {
-    //
-    // page =
-    // new EFapsContainerComponent("eFapsContentContainer",
-    // WebTablePage.class, para);
-    // } else {
-    // page =
-    // new EFapsContainerComponent("eFapsContentContainer",
-    // WebFormPage.class, para);
-    // }
-    //
+  
     InlineFrame page;
-    if (command.getTargetTable() != null) {
+    if (cmd.getTargetTable() != null) {
       page =
           new InlineFrame("eFapsContentContainerFrame", PageMap
               .forName("content"), WebTablePage.class, para);
@@ -80,11 +68,11 @@ public class ListMenuLinkComponent extends AjaxLink {
               .forName("content"), WebFormPage.class, para);
     }
     InlineFrame component =
-        (InlineFrame) getPage().get(
-        "eFapsSplitContainer:containerrechts:aktParent:eFapsContentContainerFrame");
+        (InlineFrame) getPage()
+            .get(
+                "eFapsSplitContainer:containerrechts:aktParent:eFapsContentContainerFrame");
     page.setOutputMarkupId(true);
-    
-    
+
     component.replaceWith(page);
     _target.addComponent(page.getParent());
     ((EFapsSession) (Session.get())).setSideMenuSelected(this);
