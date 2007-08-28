@@ -113,9 +113,14 @@ public class FormModel extends ModelAbstract {
 
     Form form = Form.get(this.formuuid);
 
-    if (super.isCreateMode() || super.isSearchMode()) {
+    String strValue;
+    int rowgroupcount = 1;
+    FormRowModel row = new FormRowModel();
+    Type type = null;
+    SearchQuery query = null;
+    boolean queryhasresult = false;
 
-      Type type = null;
+    if (super.isCreateMode() || super.isSearchMode()) {
       if (super.isCreateMode()) {
         type = super.getCommand().getTargetCreateType();
       } else if (super.isSearchMode()) {
@@ -129,27 +134,8 @@ public class FormModel extends ModelAbstract {
         }
       }
 
-      for (int i = 0; i < form.getFields().size(); i++) {
-        Field field = (Field) form.getFields().get(i);
-
-        // if (field.getExpression() != null) {
-        // Attribute attr = type.getAttribute(field.getExpression());
-        // if (attr != null) {
-        // addFieldValue(field, attr, null, null);
-        // }
-        // } else if (field.getClassUI() != null) {
-        // addFieldValue(field, null);
-        // } else if (field.getGroupCount() > 0) {
-        // addFieldValue(field, null);
-        // if (super.getMaxGroupCount() < field.getGroupCount()) {
-        // super.setMaxGroupCount(field.getGroupCount());
-        // }
-        // }
-
-      }
     } else {
-
-      SearchQuery query = new SearchQuery();
+      query = new SearchQuery();
       query.setObject(super.getOid());
 
       for (Field field : form.getFields()) {
@@ -161,65 +147,81 @@ public class FormModel extends ModelAbstract {
         }
       }
       query.execute();
-      String oid;
-      String strValue;
-      int rowgroupcount = 1;
-      FormRowModel row = new FormRowModel();
-
       if (query.next()) {
-        for (int i = 0; i < form.getFields().size(); i++) {
-          Field field = (Field) form.getFields().get(i);
+        queryhasresult = true;
+      }
+    }
+    if (queryhasresult || type != null) {
+      for (int i = 0; i < form.getFields().size(); i++) {
+        Field field = (Field) form.getFields().get(i);
+        Object value = null;
+        Attribute attr;
+        Instance instance = null;
 
-          if (field.getExpression() != null) {
+        if (field.getExpression() != null) {
+          if (queryhasresult) {
             if (field.getAlternateOID() == null) {
-              oid = (String) query.get("OID");
+              instance = new Instance((String) query.get("OID"));
             } else {
-              oid = (String) query.get(field.getAlternateOID());
+              instance =
+                  new Instance((String) query.get(field.getAlternateOID()));
             }
-            Object value = query.get(field.getExpression());
-            Attribute attr = query.getAttribute(field.getExpression());
+            value = query.get(field.getExpression());
+            attr = query.getAttribute(field.getExpression());
 
-            FieldValue fieldvalue =
-                new FieldValue(new FieldDefinition("egal", field), attr, value,
-                    new Instance(oid));
+          } else {
+            attr = type.getAttribute(field.getExpression());
+          }
 
-            if (value != null) {
-              if (this.isCreateMode() && field.isEditable()) {
-                strValue = fieldvalue.getCreateHtml();
-              } else if (this.isEditMode() && field.isEditable()) {
-                strValue = fieldvalue.getEditHtml();
-              } else {
-                strValue = fieldvalue.getViewHtml();
-              }
-            } else {
-              strValue = "";
-            }
+          String label;
+          if (field.getLabel() != null) {
+            label = field.getLabel();
+          } else {
+            label =
+                attr.getParent().getName() + "/" + attr.getName() + ".Label";
+          }
 
-            String label;
-            if (field.getLabel() != null) {
-              label = field.getLabel();
-            } else {
-              label =
-                  attr.getParent().getName() + "/" + attr.getName() + ".Label";
-            }
-            FormCellModel cell = new FormCellModel(oid, strValue, false, label);
+          FieldValue fieldvalue =
+              new FieldValue(new FieldDefinition("egal", field), attr, value,
+                  instance);
+
+          if (super.isCreateMode() && field.isEditable()) {
+            strValue = fieldvalue.getCreateHtml();
+          } else if (super.isEditMode() && field.isEditable()) {
+            strValue = fieldvalue.getEditHtml();
+          } else if (super.isSearchMode() && field.isSearchable()) {
+            strValue = fieldvalue.getSearchHtml();
+          } else {
+            strValue = fieldvalue.getViewHtml();
+          }
+          if (queryhasresult) {
+            FormCellModel cell =
+                new FormCellModel(instance, strValue, false, label);
             row.add(cell);
-            rowgroupcount--;
-            if (rowgroupcount < 1) {
-              rowgroupcount = 1;
+          } else if (strValue != null && !strValue.equals("")) {
+            FormCellModel cell =
+                new FormCellModel(instance, strValue, field.isRequired(), label);
+            row.add(cell);
+          }
+
+          rowgroupcount--;
+          if (rowgroupcount < 1) {
+            rowgroupcount = 1;
+            if (row.getGroupCount() > 0) {
               this.values.add(row);
               row = new FormRowModel();
             }
-
-          } else if (field.getGroupCount() > 0) {
-            if (getMaxGroupCount() < field.getGroupCount()) {
-              setMaxGroupCount(field.getGroupCount());
-            }
-            rowgroupcount = field.getGroupCount();
           }
+
+        } else if (field.getGroupCount() > 0) {
+          if (getMaxGroupCount() < field.getGroupCount()) {
+            setMaxGroupCount(field.getGroupCount());
+          }
+          rowgroupcount = field.getGroupCount();
         }
       }
-
+    }
+    if (query != null) {
       query.close();
     }
   }
@@ -247,17 +249,21 @@ public class FormModel extends ModelAbstract {
 
     private static final long serialVersionUID = 1L;
 
-    private String cellLabel;
+    private final String cellLabel;
 
-    private String cellValue;
+    private final String cellValue;
 
-    private String oid;
+    private final String oid;
 
     private boolean required;
 
-    public FormCellModel(final String _oid, final String _cellValue,
+    public FormCellModel(final Instance _instance, final String _cellValue,
                          final boolean _required, String _label) {
-      this.oid = _oid;
+      if (_instance != null) {
+        this.oid = _instance.getOid();
+      } else {
+        this.oid = null;
+      }
       this.cellValue = _cellValue;
       this.required = _required;
       this.cellLabel = DBProperties.getProperty(_label);;

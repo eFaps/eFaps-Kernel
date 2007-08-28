@@ -28,7 +28,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.ui.Command;
+import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.MainPage;
@@ -55,10 +55,11 @@ public class MenuItemLinkComponent extends Link {
   public void onClick() {
     MenuItemModel model = (MenuItemModel) super.getModel();
 
-    Command command = Command.get(model.getUUID());
+    CommandAbstract command = model.getCommand();
 
     PageParameters para =
         new PageParameters("command=" + command.getName());
+    para.add("oid", model.getOid());
     if (command.getTargetTable() != null) {
       if (this.getPage() instanceof MainPage) {
         InlineFrame c =

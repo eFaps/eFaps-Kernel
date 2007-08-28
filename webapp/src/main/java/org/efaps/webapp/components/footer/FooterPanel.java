@@ -1,10 +1,11 @@
 package org.efaps.webapp.components.footer;
 
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.resources.StyleSheetReference;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.models.ModelAbstract;
 
@@ -14,16 +15,18 @@ public class FooterPanel extends Panel {
 
   public FooterPanel(String _id, IModel _model) {
     super(_id, _model);
-    ModelAbstract model= (ModelAbstract) super.getModel();
+    ModelAbstract model = (ModelAbstract) super.getModel();
     String label = null;
-    if(model.isCreateMode()){
-     label = "Create";
-    }else if(model.isEditMode()){
+    if (model.isCreateMode()) {
+      label = "Create";
+    } else if (model.isEditMode()) {
       label = "Update";
-    }else if (model.isSearchMode()){
+    } else if (model.isSearchMode()) {
       label = "Search";
     }
-    
+
+    add(new StyleSheetReference("eFapsFooterPanelCSS", getClass(),
+        "FooterPanel.css"));
     final Link CreateEditSearchLink = new Link("CreateEditSearch") {
       private static final long serialVersionUID = 1L;
 
@@ -34,9 +37,7 @@ public class FooterPanel extends Panel {
     CreateEditSearchLink.add(new Image("eFapsButtonDone"));
     CreateEditSearchLink.add(new Label("eFapsButtonDoneLabel", label));
     add(CreateEditSearchLink);
-    
-    
-    
+
     final Link CancelLink = new Link("Cancel") {
       private static final long serialVersionUID = 1L;
 
