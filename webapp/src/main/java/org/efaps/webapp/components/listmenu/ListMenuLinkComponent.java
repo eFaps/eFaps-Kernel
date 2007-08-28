@@ -28,6 +28,7 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.admin.ui.Command;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.WebFormPage;
@@ -50,9 +51,11 @@ public class ListMenuLinkComponent extends AjaxLink {
   public void onClick(final AjaxRequestTarget _target) {
 
     MenuItemModel model = (MenuItemModel) super.getModel();
+    Command command = Command.get(model.getUUID());
+    
     PageParameters para = new PageParameters();
     para.add("oid", model.getOid());
-    para.add("command", model.getCommand().getName());
+    para.add("command",command.getName());
 
     // EFapsContainerComponent page;
     // if (model.getCommand().getTargetTable() != null) {
@@ -67,7 +70,7 @@ public class ListMenuLinkComponent extends AjaxLink {
     // }
     //
     InlineFrame page;
-    if (model.getCommand().getTargetTable() != null) {
+    if (command.getTargetTable() != null) {
       page =
           new InlineFrame("eFapsContentContainerFrame", PageMap
               .forName("content"), WebTablePage.class, para);

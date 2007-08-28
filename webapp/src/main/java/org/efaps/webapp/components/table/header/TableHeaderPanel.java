@@ -26,7 +26,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.webapp.models.TableModel;
 
 /**
@@ -59,11 +58,11 @@ public class TableHeaderPanel extends Panel {
     RepeatingView repeating = new RepeatingView("repeating");
     add(repeating);
 
-    for (FieldDefinition fielddef : model.getFieldDefs()) {
+    for (String label : model.getColumnLables()) {
       WebMarkupContainer item = new WebMarkupContainer(repeating.newChildId());
       repeating.add(item);
 
-      item.add(new Label("label", fielddef.getLabel()));
+      item.add(new Label("label", label));
     }
   }
 }

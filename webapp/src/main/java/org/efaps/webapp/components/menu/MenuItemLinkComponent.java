@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.components;
+package org.efaps.webapp.components.menu;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
@@ -28,7 +28,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.Command;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.MainPage;
@@ -39,10 +39,10 @@ import org.efaps.webapp.pages.WebTablePage;
  * @author jmo
  * @version $Id$
  */
-public class MainMenuItemLinkComponent extends Link {
+public class MenuItemLinkComponent extends Link {
   private static final long serialVersionUID = 1L;
 
-  public MainMenuItemLinkComponent(String _id, IModel _menuItem) {
+  public MenuItemLinkComponent(String _id, IModel _menuItem) {
     super(_id, _menuItem);
   }
 
@@ -54,25 +54,34 @@ public class MainMenuItemLinkComponent extends Link {
   @Override
   public void onClick() {
     MenuItemModel model = (MenuItemModel) super.getModel();
-    CommandAbstract command = model.getCommand();
+
+    Command command = Command.get(model.getUUID());
+
+    PageParameters para =
+        new PageParameters("command=" + command.getName());
     if (command.getTargetTable() != null) {
+      if (this.getPage() instanceof MainPage) {
+        InlineFrame c =
+            new InlineFrame("eFapsContentFrame", PageMap
+                .forName(MainPage.INLINEFRAMENAME), WebTablePage.class, para);
 
-      PageParameters para = new PageParameters("command=" + command.getName());
-
-      InlineFrame c =
-          new InlineFrame("eFapsContentFrame", PageMap
-              .forName(MainPage.INLINEFRAMENAME), WebTablePage.class, para);
-
-      this.getPage().addOrReplace(c);
+        this.getPage().addOrReplace(c);
+      } else {
+        this.getRequestCycle().setResponsePage(WebTablePage.class, para);
+      }
     }
     if (command.getTargetForm() != null) {
-      PageParameters para = new PageParameters("command=" + command.getName());
+      if (this.getPage() instanceof MainPage) {
+        InlineFrame c =
+            new InlineFrame("eFapsContentFrame", PageMap
+                .forName(MainPage.INLINEFRAMENAME), WebFormPage.class, para);
 
-      InlineFrame c =
-          new InlineFrame("eFapsContentFrame", PageMap
-              .forName(MainPage.INLINEFRAMENAME), WebFormPage.class, para);
+        this.getPage().addOrReplace(c);
+      } else {
 
-      this.getPage().addOrReplace(c);
+        this.getRequestCycle().setResponsePage(WebFormPage.class, para);
+
+      }
 
     }
 

@@ -22,6 +22,7 @@ package org.efaps.admin.ui;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.UUID;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Context;
@@ -280,6 +281,18 @@ public int getSelectableColRefIndex()  {
     return getCache().get(_name);
   }
 
+  /**
+   * Returns for given parameter <i>UUID</i> the instance of class
+   * {@link Table}.
+   *
+   * @param _uuid UUID to search in the cache
+   * @return instance of class {@link Table}
+   * @see #getCache
+   */
+  static public Table get(UUID _uuid)  {
+    return getCache().get(_uuid);
+  }
+  
   /**
    * Static getter method for the type hashtable {@link #cache}.
    *

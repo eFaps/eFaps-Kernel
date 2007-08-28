@@ -29,10 +29,9 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.util.EFapsException;
 import org.efaps.webapp.models.TableModel;
-import org.efaps.webapp.models.TableModel.IRowModel;
+import org.efaps.webapp.models.TableModel.CellModel;
+import org.efaps.webapp.models.TableModel.RowModel;
 
 /**
  * @author jmo
@@ -66,9 +65,9 @@ public class WebTableContainer extends WebMarkupContainer {
       }
       boolean odd = true;
 
-      for (Iterator<IRowModel> rowIter = model.getValues().iterator(); rowIter
+      for (Iterator<RowModel> rowIter = model.getValues().iterator(); rowIter
           .hasNext(); odd = !odd) {
-        IRowModel modelrow = rowIter.next();
+        RowModel modelrow = rowIter.next();
 
         RowContainer row = new RowContainer(ROWID + "_" + i);
         if (odd) {
@@ -92,25 +91,24 @@ public class WebTableContainer extends WebMarkupContainer {
 
         j++;
 
-        for (FieldValue value : modelrow.getValues()) {
+        for (CellModel value : modelrow.getValues()) {
 
           CellContainer cell = new CellContainer(CELLID + "_" + i + "_" + j);
           cell.setOutputMarkupId(true);
           row.add(cell);
 
-          if (value.getFieldDef().getField().getReference() != null) {
-            if (getPage().getPageMapName().equals(
-                "content")) {
+          if (value.hasReference()) {
+            if (getPage().getPageMapName().equals("content")) {
               cell.add(new CellAjaxLinkComponent(CELLVALUEID + "_" + i + "_"
-                  + j, value.getInstance().getOid(), getValueString(value)));
+                  + j, value.getOid(), value.getCellValue()));
             } else {
               cell.add(new CellLinkComponent(CELLVALUEID + "_" + i + "_" + j,
-                  value.getInstance().getOid(), getValueString(value)));
+                  value.getOid(), value.getCellValue()));
             }
           } else {
 
             cell.add(new CellValueComponent(CELLVALUEID + "_" + i + "_" + j,
-                getValueString(value)));
+                value.getCellValue()));
           }
           j++;
         }
@@ -128,28 +126,6 @@ public class WebTableContainer extends WebMarkupContainer {
           .add(new Label("test",
               "keine Daten; muss noch gegen eine vernueftige meldung getauscht werden"));
     }
-  }
-
-  private String getValueString(FieldValue _value) {
-    String ret = null;
-    if (_value.getValue() != null) {
-      try {
-        if (getITableModel().isCreateMode()
-            && _value.getFieldDef().getField().isEditable()) {
-          ret = _value.getCreateHtml();
-        } else if (getITableModel().isEditMode()
-            && _value.getFieldDef().getField().isEditable()) {
-          ret = _value.getEditHtml();
-        } else {
-          ret = _value.getViewHtml();
-        }
-
-      } catch (EFapsException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }
-    return ret;
   }
 
   protected final void onRender(final MarkupStream markupStream) {

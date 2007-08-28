@@ -20,15 +20,11 @@
 
 package org.efaps.webapp;
 
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.Request;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
 
-import org.efaps.util.EFapsException;
 import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
-import org.efaps.webapp.models.FormModel;
-import org.efaps.webapp.models.TableModel;
 
 public class EFapsSession extends WebSession {
 
@@ -43,17 +39,7 @@ public class EFapsSession extends WebSession {
   }
 
   private static final long serialVersionUID = 1884548064760514909L;
-
-  public FormModel getIFormModel(PageParameters _parameters, final String _key)
-      throws Exception {
-    return new FormModel(_parameters);
-  }
-
-  public TableModel getITableModel(PageParameters _parameters,
-      final String _key) throws EFapsException {
-    return new TableModel(_parameters);
-
-  }
+  
 
   public void setContentContainer(int _id, int _version) {
     this.contentcontainerid = _id;

@@ -23,7 +23,9 @@ package org.efaps.webapp.models;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.IModel;
 
@@ -51,11 +53,12 @@ public abstract class ModelAbstract implements IModel {
   protected static String PARAM_CALL_CMD_NAME = "eFapsCallingCommand";
 
   /**
-   * The instance variable stores the command instance for this form request.
+   * The instance variable stores the commandUUID instance for this form
+   * request.
    * 
    * @see #getCommand
    */
-  private CommandAbstract command;
+  private UUID commanduuid;
 
   /**
    * The instance variable stores the instance object for which this bean is
@@ -135,9 +138,10 @@ public abstract class ModelAbstract implements IModel {
         || ("undefined".equals(cmdName))) {
       cmdName = getParameter(PARAM_ORIG_CMD_NAME);
     }
-    this.command = getCommand(cmdName);
-    if (this.command != null) {
-      setMode(this.command.getTargetMode());
+    CommandAbstract command = getCommand(cmdName);
+    this.commanduuid = command.getUUID();
+    if (command != null) {
+      setMode(command.getTargetMode());
       addHiddenValue(PARAM_ORIG_CMD_NAME, cmdName);
     }
 
@@ -172,7 +176,8 @@ public abstract class ModelAbstract implements IModel {
   }
 
   public String getTitle() throws Exception {
-    String title = DBProperties.getProperty(this.command.getName() + ".Title");
+    String title =
+        DBProperties.getProperty(this.getCommand().getName() + ".Title");
 
     if ((title != null) && (getInstance() != null)) {
       SearchQuery query = new SearchQuery();
@@ -235,7 +240,11 @@ public abstract class ModelAbstract implements IModel {
    * @see #command
    */
   public CommandAbstract getCommand() {
-    return this.command;
+    CommandAbstract cmd = Command.get(this.commanduuid);
+    if (cmd == null) {
+      cmd = Menu.get(this.commanduuid);
+    }
+    return cmd;
   }
 
   /**
@@ -367,10 +376,12 @@ public abstract class ModelAbstract implements IModel {
    * The class stores one hidden value in the instance variable
    * {@link #hiddenValues}.
    */
-  public class HiddenValue {
+  public class HiddenValue implements IClusterable {
 
     // /////////////////////////////////////////////////////////////////////////
     // instance variables
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * The instance variable stores the name of the hidden value.

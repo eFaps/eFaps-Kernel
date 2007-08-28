@@ -3,7 +3,6 @@ package org.efaps.webapp.pages;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
-import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.table.WebTableContainer;
 import org.efaps.webapp.components.table.header.TableHeaderPanel;
 import org.efaps.webapp.models.TableModel;
@@ -13,9 +12,7 @@ public class WebTablePage extends ContentPage {
   private static final long serialVersionUID = 7564911406648729094L;
 
   public WebTablePage(PageParameters _parameters) throws Exception {
-    super();
-    EFapsSession session = (EFapsSession) getSession();
-    super.setModel(session.getITableModel(_parameters, null));
+    super.setModel(new TableModel(_parameters));
     this.addComponents();
   }
 
@@ -28,7 +25,7 @@ public class WebTablePage extends ContentPage {
     model.execute();
     add(new TableHeaderPanel("eFapsTableHeader", model));
     add(new WebTableContainer("eFapsTable", model));
-    
+
   }
 
 }

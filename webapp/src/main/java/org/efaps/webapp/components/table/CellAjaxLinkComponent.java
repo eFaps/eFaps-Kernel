@@ -146,8 +146,8 @@ public class CellAjaxLinkComponent extends AbstractParentAjaxLink {
           item = (MenuItemModel) item;
 
           if (((MenuItemModel) item).getOid().equals(this.oid)
-              && ((MenuItemModel) item).getCommand().getName().equals(
-                  _menu.getName())) {
+              && ((MenuItemModel) item).getUUID().equals(
+                  _menu.getUUID())) {
             old = true;
             break;
           }

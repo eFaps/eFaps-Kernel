@@ -31,8 +31,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
 
+import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.components.AbstractParentMarkupContainer;
-import org.efaps.webapp.components.MainMenuItemLinkComponent;
 import org.efaps.webapp.models.MenuItemModel;
 
 /**
@@ -107,8 +107,8 @@ public class MenuComponent extends AbstractParentMarkupContainer {
   }
 
   private void addLink(MenuItemModel menuItem) {
-    MainMenuItemLinkComponent item =
-        new MainMenuItemLinkComponent(getNewChildId(), menuItem);
+    MenuItemLinkComponent item =
+        new MenuItemLinkComponent(getNewChildId(), menuItem);
     this.add(item);
     for (MenuItemModel childs : menuItem.childs) {
       addLink(childs);
@@ -120,8 +120,8 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     // this.getRequestCycle().urlFor(test, AjaxEventBehavior.INTERFACE);
     Iterator<?> childs = this.iterator();
     while (childs.hasNext()) {
-      MainMenuItemLinkComponent child =
-          (MainMenuItemLinkComponent) childs.next();
+      MenuItemLinkComponent child =
+          (MenuItemLinkComponent) childs.next();
       MenuItemModel childModel = (MenuItemModel) child.getModel();
 
 // childModel.setURL((String) child.urlFor(((IBehavior) child.getBehaviors()
@@ -220,8 +220,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     if (_menuItem.url != null) {
       _html.append(_menuItem.url);
     }
-    if ("true".equals(_menuItem.getCommand()
-        .getProperty("NoUpdateAfterCOMMAND"))) {
+    if (_menuItem.getTarget()==CommandAbstract.TARGET_HIDDEN){
       _html.append("', 'eFapsFrameHidden', '");
     } else {
       _html.append("', '_self', '");

@@ -27,7 +27,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 
+import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -53,20 +55,11 @@ public class TableModel extends ModelAbstract {
   // instance variables
 
   /**
-   * All field definitions for the table are defined in this list.
-   * 
-   * @see #evalFieldDefs
-   * @see #getFieldDefs
-   */
-  private final List<FieldDefinition> fieldDefs =
-      new ArrayList<FieldDefinition>();
-
-  /**
    * All evaluated rows of this table are stored in this list.
    * 
    * @see #getValues
    */
-  private final List<IRowModel> values = new ArrayList<IRowModel>();
+  private final List<RowModel> values = new ArrayList<RowModel>();
 
   /**
    * The instance variable stores the string of the sort key.
@@ -85,11 +78,11 @@ public class TableModel extends ModelAbstract {
   private String sortDirection = null;
 
   /**
-   * The instance variable stores the table which must be shown.
+   * The instance variable stores the UUID for the table which must be shown.
    * 
    * @see #getTable
    */
-  private Table table;
+  private UUID tableuuid;
 
   /**
    *
@@ -117,9 +110,14 @@ public class TableModel extends ModelAbstract {
   private Map<String, String> filterValues = new TreeMap<String, String>();
 
   /**
-   * contains the sequential numbers of the filter
+   * The instance Array holds the Label for the Columns
    */
-  private String filter;
+  private List<String> columnLabels = new ArrayList<String>();
+
+  public TableModel() throws EFapsException {
+    super();
+    initialise();
+  }
 
   public TableModel(PageParameters _parameters) throws EFapsException {
     super(_parameters);
@@ -128,14 +126,15 @@ public class TableModel extends ModelAbstract {
   }
 
   private void initialise() throws EFapsException {
-    if (getCommand() != null) {
+    CommandAbstract command = getCommand();
+    if (command != null) {
       // set target table
-      this.table = getCommand().getTargetTable();
+      this.tableuuid = command.getTargetTable().getUUID();
 
       // set default sort
-      if (getCommand().getTargetTableSortKey() != null) {
+      if (command.getTargetTableSortKey() != null) {
         setSortKey(getCommand().getTargetTableSortKey());
-        if (getCommand().getTargetTableSortDirection() == CommandAbstract.TABLE_SORT_DIRECTION_DESC) {
+        if (command.getTargetTableSortDirection() == CommandAbstract.TABLE_SORT_DIRECTION_DESC) {
           this.sortDirection = "-";
         }
       }
@@ -153,14 +152,8 @@ public class TableModel extends ModelAbstract {
       this.showCheckBoxes = showCheckBoxes;
 
     } else {
-      this.table = null;
       this.showCheckBoxes = false;
     }
-  }
-
-  public TableModel() throws EFapsException {
-    super();
-    initialise();
   }
 
   public Object getObject() {
@@ -179,7 +172,6 @@ public class TableModel extends ModelAbstract {
   }
 
   public void execute() throws Exception {
-    this.evalFieldDefs();
 
     // first get list of object ids
     List<Return> ret =
@@ -199,13 +191,14 @@ public class TableModel extends ModelAbstract {
 
     // evaluate for all expressions in the table
     ListQuery query = new ListQuery(instances);
-    for (FieldDefinition fieldDef : this.fieldDefs) {
-      if (fieldDef.getField().getExpression() != null) {
-        query.addSelect(fieldDef.getField().getExpression());
+    for (Field field : this.getTable().getFields()) {
+      if (field.getExpression() != null) {
+        query.addSelect(field.getExpression());
       }
-      if (fieldDef.getField().getAlternateOID() != null) {
-        query.addSelect(fieldDef.getField().getAlternateOID());
+      if (field.getAlternateOID() != null) {
+        query.addSelect(field.getAlternateOID());
       }
+      addLabel(field.getLabel());
     }
     query.execute();
 
@@ -218,22 +211,17 @@ public class TableModel extends ModelAbstract {
     super.setInitialised(true);
   }
 
-  /**
-   * The field definitions for the current table in {@link #table} are set. Each
-   * existing label of a field column are translated.
-   * 
-   * @see #fieldDefs
-   * @todo depending on the access on a field the field definition is set
-   */
-  protected void evalFieldDefs() {
-    this.fieldDefs.clear();
-    for (Field field : this.table.getFields()) {
-      String label = field.getLabel();
-      if (label != null) {
-        label = DBProperties.getProperty(label);
-      }
-      this.fieldDefs.add(new FieldDefinition(label, field));
+  private void addLabel(String _label) {
+    if (_label != null) {
+
+      this.columnLabels.add(DBProperties.getProperty(_label));
+    } else {
+      this.columnLabels.add("");
     }
+  }
+
+  public List<String> getColumnLables() {
+    return this.columnLabels;
   }
 
   private void executeRowResult(
@@ -253,46 +241,48 @@ public class TableModel extends ModelAbstract {
         }
         oids.append(oneInstance.getOid());
       }
-      IRowModel row = new IRowModel(oids.toString());
+      RowModel row = new RowModel(oids.toString());
+      Attribute attr = null;
 
-      // boolean toAdd = false;
-      for (FieldDefinition fieldDef : this.fieldDefs) {
+      String strValue = "";
+      String oid = "";
+      for (Field field : this.getTable().getFields()) {
         Object value = null;
-        Attribute attr = null;
-        // if (field.getProgramValue()!=null) {
-        // attrValue = field.getProgramValue().evalAttributeValue(_context,
-        // _query);
-        // } else
-        if (fieldDef.getField().getExpression() != null) {
-          value = _query.getValue(fieldDef.getField().getExpression());
-          attr = _query.getAttribute(fieldDef.getField().getExpression());
-        }
-        // Instance instance =
-        // _query.getInstance(fieldDef.getField().getExpression());
-        if (fieldDef.getField().getAlternateOID() != null) {
-          instance =
-              new Instance((String) _query.getValue(fieldDef.getField()
-                  .getAlternateOID()));
+
+        if (field.getExpression() != null) {
+          value = _query.getValue(field.getExpression());
+          attr = _query.getAttribute(field.getExpression());
         }
 
-        // if (attrValue!=null) {
-        // attrValue.setField(field);
-        // }
+        FieldValue fieldvalue =
+            new FieldValue(new FieldDefinition("egal", field), attr, value,
+                instance);
+        if (value != null) {
+          if (this.isCreateMode() && field.isEditable()) {
+            strValue = fieldvalue.getCreateHtml();
+          } else if (this.isEditMode() && field.isEditable()) {
+            strValue = fieldvalue.getEditHtml();
+          } else {
+            strValue = fieldvalue.getViewHtml();
+          }
+        } else {
+          strValue = "";
+        }
+        if (field.getAlternateOID() != null) {
+          oid = field.getAlternateOID();
+        } else {
+          oid = instance.getOid();
+        }
 
-        // toAdd = toAdd || (value != null) || (instance != null);
-        // row.add(fieldDef, classUI, value, instance);
-        row.add(fieldDef, attr, value, instance);
+        row.add(new CellModel(oid, field.getReference() != null, strValue));
+
       }
-      // if (toAdd) {
+
       this.values.add(row);
-      // }
+
     }
   }
 
-  
-  public final List<FieldDefinition> getFieldDefs(){
-    return this.fieldDefs;
-  }
   /**
    * The instance method sorts the table values depending on the sort key in
    * {@link #sortKey} and the sort direction in {@link #sortDirection}.
@@ -311,11 +301,11 @@ public class TableModel extends ModelAbstract {
         }
       }
       final int index = sortKey;
-      Collections.sort(this.values, new Comparator<IRowModel>() {
-        public int compare(IRowModel _o1, IRowModel _o2) {
+      Collections.sort(this.values, new Comparator<RowModel>() {
+        public int compare(RowModel _o1, RowModel _o2) {
 
-          FieldValue a1 = _o1.getValues().get(index);
-          FieldValue a2 = _o2.getValues().get(index);
+          String a1 = (_o1.getValues().get(index)).getCellValue();
+          String a2 = (_o2.getValues().get(index)).getCellValue();
           return a1.compareTo(a2);
         }
       });
@@ -368,7 +358,7 @@ public class TableModel extends ModelAbstract {
    * @see #table
    */
   public Table getTable() {
-    return this.table;
+    return Table.get(this.tableuuid);
   }
 
   /**
@@ -397,13 +387,12 @@ public class TableModel extends ModelAbstract {
    * @see #values
    * @see #setValues
    */
-  public List<IRowModel> getValues() throws EFapsException {
-    List<IRowModel> ret = new ArrayList<IRowModel>();
+  public List<RowModel> getValues() throws EFapsException {
+    List<RowModel> ret = new ArrayList<RowModel>();
     if (isFiltered()) {
-      for (IRowModel row : this.values) {
+      for (RowModel row : this.values) {
         boolean filtered = false;
-        FieldValue fieldvalue = row.getValues().get(this.filterKeyInt);
-        String value = fieldvalue.getViewHtml();
+        String value = (row.getValues().get(this.filterKeyInt)).getCellValue();
         for (String key : this.filterValues.keySet()) {
           if (value.equals(key)) {
             filtered = true;
@@ -454,17 +443,19 @@ public class TableModel extends ModelAbstract {
   /**
    * The inner class stores one row of the table.
    */
-  public class IRowModel {
+  public class RowModel implements IClusterable {
 
     // /////////////////////////////////////////////////////////////////////////
     // instance variables
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * The instance variable stores the values for the table.
      * 
      * @see #getValues
      */
-    private final List<FieldValue> values = new ArrayList<FieldValue>();
+    private final List<CellModel> values = new ArrayList<CellModel>();
 
     /**
      * The instance variable stores all oids in a string.
@@ -482,7 +473,7 @@ public class TableModel extends ModelAbstract {
      * @param _oids
      *                string with all oids for this row
      */
-    public IRowModel(final String _oids) {
+    public RowModel(final String _oids) {
       this.oids = _oids;
     }
 
@@ -495,10 +486,9 @@ public class TableModel extends ModelAbstract {
      * 
      * @see #values
      */
-    public void add(final FieldDefinition _field, final Attribute _attribute,
-        final Object _value, final Instance _instance) {
+    public void add(final CellModel _cellmodel) {
 
-      this.values.add(new FieldValue(_field, _attribute, _value, _instance));
+      this.values.add(_cellmodel);
     }
 
     /**
@@ -518,7 +508,7 @@ public class TableModel extends ModelAbstract {
      * @return value of values variable {@link #values}
      * @see #values
      */
-    public List<FieldValue> getValues() {
+    public List<CellModel> getValues() {
       return this.values;
     }
 
@@ -530,6 +520,36 @@ public class TableModel extends ModelAbstract {
      */
     public String getOids() {
       return this.oids;
+    }
+  }
+
+  public class CellModel implements IClusterable {
+
+    private static final long serialVersionUID = 1L;
+
+    private final String oid;
+
+    private final boolean hasReference;
+
+    private final String cellvalue;
+
+    public CellModel(final String _oid, final boolean _hasReference,
+                     final String _cellvalue) {
+      this.oid = _oid;
+      this.hasReference = _hasReference;
+      this.cellvalue = _cellvalue;
+    }
+
+    public String getOid() {
+      return this.oid;
+    }
+
+    public boolean hasReference() {
+      return this.hasReference;
+    }
+
+    public String getCellValue() {
+      return this.cellvalue;
     }
   }
 }

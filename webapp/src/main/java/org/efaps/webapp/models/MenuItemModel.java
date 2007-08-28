@@ -23,6 +23,7 @@ package org.efaps.webapp.models;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.wicket.model.IModel;
 
@@ -61,9 +62,11 @@ public class MenuItemModel implements IModel {
   /** All childs of this menu item. */
   public final List<MenuItemModel> childs = new ArrayList<MenuItemModel>();
 
-  private CommandAbstract command;
-
   private final String oid;
+
+  private final int target;
+
+  private final UUID uuid;
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -83,8 +86,9 @@ public class MenuItemModel implements IModel {
     this.image = _command.getIcon();
     this.label = DBProperties.getProperty(_command.getLabel());
     this.description = "";
-    this.command = _command;
     this.oid = null;
+    this.target = _command.getTarget();
+    this.uuid = _command.getUUID();
     if (_command instanceof MenuAbstract) {
       for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
         if (subCmd.hasAccess()) {
@@ -96,7 +100,7 @@ public class MenuItemModel implements IModel {
   }
 
   private MenuItemModel(final CommandAbstract _command, String _oid)
-                                                                     throws Exception {
+                                                                    throws Exception {
     this.image = _command.getIcon();
 
     String label = DBProperties.getProperty(_command.getLabel());
@@ -116,8 +120,9 @@ public class MenuItemModel implements IModel {
 
     this.label = label;
     this.description = "";
-    this.command = _command;
     this.oid = _oid;
+    this.target = _command.getTarget();
+    this.uuid = _command.getUUID();
     if (_command instanceof MenuAbstract) {
       for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
         if (subCmd.hasAccess()) {
@@ -127,12 +132,17 @@ public class MenuItemModel implements IModel {
     }
   }
 
+  public int getTarget() {
+    return target;
+  }
+
   public String getOid() {
     return this.oid;
   }
 
-  public CommandAbstract getCommand() {
-    return this.command;
+  public UUID getUUID() {
+    return uuid;
+
   }
 
   public void setURL(String _url) {
