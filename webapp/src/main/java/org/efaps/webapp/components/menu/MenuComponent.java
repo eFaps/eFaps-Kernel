@@ -22,12 +22,14 @@ package org.efaps.webapp.components.menu;
 
 import java.util.Iterator;
 
+import org.apache.wicket.PageMap;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.link.ILinkListener;
+import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
@@ -121,13 +123,32 @@ public class MenuComponent extends AbstractParentMarkupContainer {
       if (child instanceof MenuItemLinkComponent) {
         MenuItemLinkComponent item = (MenuItemLinkComponent) child;
         MenuItemModel childModel = (MenuItemModel) item.getModel();
-        childModel.setURL((String) item.urlFor(ILinkListener.INTERFACE));
+
+        String url = (String) item.urlFor(ILinkListener.INTERFACE);
+        if (childModel.getTarget() == CommandAbstract.TARGET_POPUP) {
+          CommandAbstract command = childModel.getCommand();
+
+          PopupSettings popup =
+              new PopupSettings(PageMap.forName("popup")).setHeight(
+                  command.getWindowHeight())
+                  .setWidth(command.getWindowWidth());
+
+          item.setPopupSettings(popup);
+          popup.setTarget("\"" + url + "\"");
+          url = popup.getPopupJavaScript();
+          String temp = url.replaceAll("'", "\"");
+          url = temp.substring(7, url.indexOf(";") + 1);
+        }
+
+        childModel.setURL(url);
+
       } else {
         MenuItemAjaxLinkComponent item = (MenuItemAjaxLinkComponent) child;
         MenuItemModel childModel = (MenuItemModel) item.getModel();
+
         String url = (String) item.urlFor(AjaxEventBehavior.INTERFACE);
-        url = url.substring(0, url.length()-1);
-        url+="0:";
+        url = url.substring(0, url.length() - 1);
+        url += "0:";
         childModel.setURL(url);
 
       }
@@ -219,6 +240,8 @@ public class MenuComponent extends AbstractParentMarkupContainer {
       _html.append("', 'eFapsFrameHidden', '");
     } else if (_menuItem.getTarget() == CommandAbstract.TARGET_MODAL) {
       _html.append("', 'modal', '");
+    } else if (_menuItem.getTarget() == CommandAbstract.TARGET_POPUP) {
+      _html.append("', 'popup', '");
     } else {
       _html.append("', '_self', '");
     }

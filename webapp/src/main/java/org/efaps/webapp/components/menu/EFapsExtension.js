@@ -40,6 +40,8 @@ function cmItemMouseUp (obj, isMain, idSub, menuID, index)
       }
       if(target==('modal')){
         var wcall=wicketAjaxGet(link, function() { }.bind(), function() { }.bind());
+      }else if (target==('popup')){
+        eval(link);
       }
       else{
         window.open (link, target);
