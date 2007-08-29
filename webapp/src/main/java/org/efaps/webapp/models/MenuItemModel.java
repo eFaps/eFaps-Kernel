@@ -72,7 +72,7 @@ public class MenuItemModel implements IModel {
   // constructors / destructors
 
   public MenuItemModel(final String _name) throws Exception {
-    this(Menu.get(_name));
+    this(Menu.get(_name), null);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -82,42 +82,25 @@ public class MenuItemModel implements IModel {
     this(Menu.get(_name), _oid);
   }
 
-  private MenuItemModel(final CommandAbstract _command) throws Exception {
-    this.image = _command.getIcon();
-    this.label = DBProperties.getProperty(_command.getLabel());
-    this.description = "";
-    this.oid = null;
-    this.target = _command.getTarget();
-    this.uuid = _command.getUUID();
-    if (_command instanceof MenuAbstract) {
-      for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
-        if (subCmd.hasAccess()) {
-          this.childs.add(new MenuItemModel(subCmd));
-        }
-      }
-    }
-    // this.url = getTargetURL(_command);
-  }
-
   private MenuItemModel(final CommandAbstract _command, String _oid)
                                                                     throws Exception {
     this.image = _command.getIcon();
 
     String label = DBProperties.getProperty(_command.getLabel());
-
-    SearchQuery query = new SearchQuery();
-    query.setObject(_oid);
-    ValueParser parser = new ValueParser(new StringReader(label));
-    ValueList list = parser.ExpressionString();
-    list.makeSelect(query);
-    if (query.selectSize() > 0) {
-      query.execute();
-      if (query.next()) {
-        label = list.makeString(query);
+    if (_oid != null) {
+      SearchQuery query = new SearchQuery();
+      query.setObject(_oid);
+      ValueParser parser = new ValueParser(new StringReader(label));
+      ValueList list = parser.ExpressionString();
+      list.makeSelect(query);
+      if (query.selectSize() > 0) {
+        query.execute();
+        if (query.next()) {
+          label = list.makeString(query);
+        }
+        query.close();
       }
-      query.close();
     }
-
     this.label = label;
     this.description = "";
     this.oid = _oid;
@@ -161,14 +144,14 @@ public class MenuItemModel implements IModel {
     return this.label;
   }
 
-  
-  public CommandAbstract getCommand(){
+  public CommandAbstract getCommand() {
     CommandAbstract cmd = Command.get(this.uuid);
     if (cmd == null) {
       cmd = Menu.get(this.uuid);
     }
     return cmd;
   }
+
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
@@ -185,7 +168,5 @@ public class MenuItemModel implements IModel {
   public void detach() {
     // TODO Auto-generated method stub
   }
-
- 
 
 }

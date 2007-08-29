@@ -57,8 +57,7 @@ public class MenuItemLinkComponent extends Link {
 
     CommandAbstract command = model.getCommand();
 
-    PageParameters para =
-        new PageParameters("command=" + command.getName());
+    PageParameters para = new PageParameters("command=" + command.getName());
     para.add("oid", model.getOid());
     if (command.getTargetTable() != null) {
       if (this.getPage() instanceof MainPage) {

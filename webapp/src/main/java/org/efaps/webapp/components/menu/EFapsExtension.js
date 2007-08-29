@@ -38,7 +38,12 @@ function cmItemMouseUp (obj, isMain, idSub, menuID, index)
       if (item.length > 3 && item[3]){
         target = item[3];
       }
-      window.open (link, target);
+      if(target==('modal')){
+        var wcall=wicketAjaxGet(link, function() { }.bind(), function() { }.bind());
+      }
+      else{
+        window.open (link, target);
+      }
       var menuInfo = _cmMenuList[menuID];
       var prefix = menuInfo.prefix;
       var thisMenu = cmGetThisMenu (obj, prefix);
