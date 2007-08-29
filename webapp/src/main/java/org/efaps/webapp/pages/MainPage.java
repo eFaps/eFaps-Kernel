@@ -33,6 +33,11 @@ import org.efaps.util.EFapsException;
 import org.efaps.webapp.components.menu.MenuComponent;
 import org.efaps.webapp.models.MenuItemModel;
 
+/**
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class MainPage extends WebPage {
 
   private static final long serialVersionUID = -4231606613730698766L;

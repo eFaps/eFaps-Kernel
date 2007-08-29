@@ -41,6 +41,10 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+/**
+ * @author jmo
+ * @version $Id$
+ */
 public class FormModel extends ModelAbstract {
   private static final long serialVersionUID = 3026168649146801622L;
 
@@ -84,18 +88,13 @@ public class FormModel extends ModelAbstract {
   }
 
   public Object getObject() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   public void setObject(Object object) {
-    // TODO Auto-generated method stub
-
   }
 
   public void detach() {
-    // TODO Auto-generated method stub
-
   }
 
   /**
@@ -279,6 +278,10 @@ public class FormModel extends ModelAbstract {
 
     public String getCellValue() {
       return this.cellValue;
+    }
+
+    public String getOid() {
+      return this.oid;
     }
   }
 }

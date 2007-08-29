@@ -32,6 +32,11 @@ import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.FormModel.FormCellModel;
 import org.efaps.webapp.models.FormModel.FormRowModel;
 
+/**
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class WebFormContainer extends WebMarkupContainer {
   private static final long serialVersionUID = 1550111712776698728L;
 

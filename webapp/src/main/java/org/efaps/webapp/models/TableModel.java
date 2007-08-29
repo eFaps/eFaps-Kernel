@@ -48,8 +48,13 @@ import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.util.EFapsException;
 
+/**
+ * @author jmo
+ * @version $Id$
+ */
 public class TableModel extends ModelAbstract {
-  private static final long serialVersionUID = -8528420513681480048L;
+
+  private static final long serialVersionUID = 1L;
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
