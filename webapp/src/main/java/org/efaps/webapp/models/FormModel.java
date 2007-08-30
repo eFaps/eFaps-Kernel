@@ -22,6 +22,7 @@ package org.efaps.webapp.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
@@ -37,8 +38,10 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
+import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 /**
@@ -62,6 +65,8 @@ public class FormModel extends ModelAbstract {
    * @see #getForm
    */
   private final UUID formuuid;
+
+  private UUID typeuuid;
 
   public FormModel() throws EFapsException {
     super();
@@ -108,6 +113,10 @@ public class FormModel extends ModelAbstract {
     return this.values;
   }
 
+  public Form getForm() {
+    return (Form.get(this.formuuid));
+  }
+
   public void execute() throws Exception {
 
     Form form = Form.get(this.formuuid);
@@ -132,7 +141,7 @@ public class FormModel extends ModelAbstract {
           }
         }
       }
-
+      this.typeuuid = type.getUUID();
     } else {
       query = new SearchQuery();
       query.setObject(super.getOid());
@@ -223,6 +232,38 @@ public class FormModel extends ModelAbstract {
     if (query != null) {
       query.close();
     }
+  }
+
+  public void update(Map<?, ?> _requestparameters) {
+    System.out.print("update");
+    Update update;
+    try {
+      if (super.isCreateMode()) {
+        update = new Insert(Type.get(this.typeuuid));
+      } else {
+        update = new Update(super.getOid());
+      }
+      for (Field field : this.getForm().getFields()) {
+        if (super.isCreateMode()) {
+          if (field.isCreatable()) {
+            String[] value = (String[]) _requestparameters.get(field.getName());
+            update.add(field.getExpression(), value[0]);
+
+          }
+
+        } else if (super.isEditMode()) {
+
+        }
+
+      }
+
+      update.execute();
+
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
   }
 
   public class FormRowModel implements IClusterable {

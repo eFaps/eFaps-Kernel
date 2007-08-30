@@ -30,7 +30,6 @@ import org.efaps.webapp.models.TableModel;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class WebTablePage extends ContentPage {
 
@@ -41,9 +40,8 @@ public class WebTablePage extends ContentPage {
     this.addComponents();
   }
 
-  @Override
   protected void addComponents() {
-    super.addComponents();
+    super.addComponents(null);
     try {
 
       add(new StyleSheetReference("WebTablePageCSS", getClass(),

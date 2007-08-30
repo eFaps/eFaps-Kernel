@@ -21,9 +21,11 @@
 package org.efaps.webapp.pages;
 
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
+import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.footer.FooterPanel;
 import org.efaps.webapp.components.menu.MenuPanel;
 import org.efaps.webapp.components.titel.TitelPanel;
@@ -32,7 +34,6 @@ import org.efaps.webapp.models.ModelAbstract;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public abstract class ContentPage extends WebPage {
 
@@ -47,7 +48,7 @@ public abstract class ContentPage extends WebPage {
     this.modalWindow = _modalWindow;
   }
 
-  protected void addComponents() {
+  protected void addComponents(FormContainer _form) {
     try {
 
       ModelAbstract model = (ModelAbstract) super.getModel();
@@ -57,10 +58,14 @@ public abstract class ContentPage extends WebPage {
           "contentpage/ContentPage.css"));
 
       add(new MenuPanel("eFapsMenu", model));
-      FooterPanel footerpanel =
-          new FooterPanel("eFapsFooter", model, modalWindow);
-      footerpanel.setVisible(model.isCreateMode() || model.isEditMode()
-          || model.isSearchMode());
+      WebMarkupContainer footerpanel;
+      if (model.isCreateMode() || model.isEditMode() || model.isSearchMode()) {
+        footerpanel = new FooterPanel("eFapsFooter", model, modalWindow, _form);
+      } else {
+        footerpanel = new WebMarkupContainer("eFapsFooter");
+        footerpanel.setVisible(false);
+      }
+
       add(footerpanel);
     } catch (Exception e) {
       // TODO Auto-generated catch block

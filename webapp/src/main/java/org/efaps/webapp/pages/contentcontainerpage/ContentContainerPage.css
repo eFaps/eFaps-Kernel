@@ -5,7 +5,7 @@ body {
 /**
  * Content iframe
  */
-#eFapsContentContainerFrame {
+.eFapsContentContainerFrame {
 	position: absolute;
 	top: 0px;
 	width: 100%;
@@ -20,7 +20,7 @@ body {
 	border:0;
 }
 
-* html #eFapsContentContainerFrame { /* IE */
+* html .eFapsContentContainerFrame { /* IE */
 	position: static;
 	height: 100%;
 	border-bottom: 63px solid white;

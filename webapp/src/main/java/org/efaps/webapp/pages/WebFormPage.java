@@ -24,13 +24,13 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
+import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.table.WebFormContainer;
 import org.efaps.webapp.models.FormModel;
 
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class WebFormPage extends ContentPage {
 
@@ -50,14 +50,14 @@ public class WebFormPage extends ContentPage {
     this.addComponents();
   }
 
-  @Override
   protected void addComponents() {
-
-    super.addComponents();
+    FormContainer form = new FormContainer("eFapsForm");
+    add(form);
+    super.addComponents(form);
     add(new StyleSheetReference("WebFormPageCSS", getClass(),
         "webformpage/WebFormPage.css"));
 
-    add(new WebFormContainer("eFapsFormTable", super.getModel()));
+    form.add(new WebFormContainer("eFapsFormTable", super.getModel()));
 
   }
 
