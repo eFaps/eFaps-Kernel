@@ -23,6 +23,7 @@ package org.efaps.webapp.components.table;
 import java.util.Iterator;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -46,17 +47,12 @@ public class WebTableContainer extends WebMarkupContainer {
 
   private static String CELLVALUEID = "eFapsCellValue";
 
-  public WebTableContainer(String id, IModel model) {
+  public WebTableContainer(String id, IModel model, Page _page) {
     super(id, model);
+    initialise(_page);
   }
 
-  @Override
-  protected void onBeforeRender() {
-    super.onBeforeRender();
-    initialise();
-  }
-
-  private void initialise() {
+  private void initialise(Page _page) {
     int i = 0;
     try {
       TableModel model = (TableModel) super.getModel();
@@ -98,7 +94,7 @@ public class WebTableContainer extends WebMarkupContainer {
           row.add(cell);
 
           if (value.hasReference()) {
-            if (getPage().getPageMapName().equals("content")) {
+            if (_page.getPageMapName().equals("content")) {
               cell.add(new CellAjaxLinkComponent(CELLVALUEID + "_" + i + "_"
                   + j, value.getOid(), value.getCellValue()));
             } else {

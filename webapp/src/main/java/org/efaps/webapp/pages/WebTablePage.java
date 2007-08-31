@@ -22,6 +22,7 @@ package org.efaps.webapp.pages;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.table.WebTableContainer;
 import org.efaps.webapp.components.table.header.TableHeaderPanel;
@@ -39,7 +40,10 @@ public class WebTablePage extends ContentPage {
     super.setModel(new TableModel(_parameters));
     this.addComponents();
   }
-
+  public WebTablePage(final IModel _model){
+    super.setModel(_model);
+    this.addComponents();
+  }
   protected void addComponents() {
     super.addComponents(null);
     try {
@@ -50,11 +54,23 @@ public class WebTablePage extends ContentPage {
       model.execute();
 
       add(new TableHeaderPanel("eFapsTableHeader", model));
-      add(new WebTableContainer("eFapsTable", model));
+      add(new WebTableContainer("eFapsTable", model,this));
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+  }
+
+  @Override
+  protected void onModelChanged() {
+    // TODO Auto-generated method stub
+    super.onModelChanged();
+  }
+
+  @Override
+  protected void onModelChanging() {
+    // TODO Auto-generated method stub
+    super.onModelChanging();
   }
 
 }

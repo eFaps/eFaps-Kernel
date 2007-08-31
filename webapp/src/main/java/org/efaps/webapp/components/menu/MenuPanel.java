@@ -20,6 +20,7 @@
 
 package org.efaps.webapp.components.menu;
 
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -27,11 +28,12 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.models.ModelAbstract;
+import org.efaps.webapp.models.TableModel;
+import org.efaps.webapp.pages.WebTablePage;
 
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class MenuPanel extends Panel {
 
@@ -65,9 +67,31 @@ public class MenuPanel extends Panel {
     modal.setPageMapName("modal");
     modal.setCssClassName(ModalWindow.CSS_CLASS_GRAY);
 
+    modal.setWindowClosedCallback(new WindowUpdate(this));
+
   }
 
   public final ModalWindow getModal() {
     return this.modal;
+  }
+
+  public class WindowUpdate implements ModalWindow.WindowClosedCallback {
+
+    private static final long serialVersionUID = 1L;
+
+    private final Panel panel;
+
+    public WindowUpdate(final Panel _panel) {
+      this.panel = _panel;
+    }
+
+    public void onClose(AjaxRequestTarget _target) {
+      if (panel.getPage().getModel() instanceof TableModel) {
+        panel.getPage().getModel().detach();
+        WebTablePage page = new WebTablePage(panel.getPage().getModel());
+        panel.setResponsePage(page);
+      }
+    }
+
   }
 }

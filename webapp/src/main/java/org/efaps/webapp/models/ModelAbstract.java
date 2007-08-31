@@ -42,7 +42,6 @@ import org.efaps.util.EFapsException;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public abstract class ModelAbstract implements IModel {
 
@@ -214,6 +213,10 @@ public abstract class ModelAbstract implements IModel {
     }
 
     return ret;
+  }
+
+  public PageParameters getPageParameters() {
+    return this.parameters;
   }
 
   public String getOid() {

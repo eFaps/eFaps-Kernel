@@ -20,11 +20,12 @@
 
 package org.efaps.webapp.components.footer;
 
+import org.apache.wicket.PageMap;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -37,8 +38,11 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.models.ModelAbstract;
+import org.efaps.webapp.pages.MainPage;
+import org.efaps.webapp.pages.WebTablePage;
 
 /**
  * @author jmo
@@ -47,8 +51,6 @@ import org.efaps.webapp.models.ModelAbstract;
 public class FooterPanel extends Panel {
 
   private static final long serialVersionUID = -1722339596237748160L;
-
-  private WebMarkupContainer closeLink;
 
   private final ModalWindow modalWindow;
 
@@ -75,7 +77,7 @@ public class FooterPanel extends Panel {
 
     if (_form != null) {
       createEditSearchLink =
-          new SubmitAndCloseLink("CreateEditSearch", _form, model);
+          new SubmitAndCloseLink("CreateEditSearch", model, _form);
     } else {
 
       createEditSearchLink = new Link("CreateEditSearch") {
@@ -103,44 +105,53 @@ public class FooterPanel extends Panel {
     cancelLink.add(new Image("eFapsButtonCancel"));
     cancelLink.add(new Label("eFapsButtonCancelLabel", "Cancel"));
     add(cancelLink);
-    this.closeLink = cancelLink;
+
   }
 
   public class SubmitAndCloseLink extends SubmitLink {
 
     private static final long serialVersionUID = 1L;
 
-    public SubmitAndCloseLink(final String id, final Form form,
-                              final IModel _model) {
+    public SubmitAndCloseLink(final String id, final IModel _model,
+                              final Form form) {
       super(id, form);
-      ModelAbstract model = (ModelAbstract) _model;
-      if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
-        this.add(new AjaxFormSubmitBehavior(form, "onclick") {
+      this.add(new SubmitandCloseBehavior(_model, form));
+    }
+  }
 
-          private static final long serialVersionUID = 1L;
+  public class SubmitandCloseBehavior extends AjaxFormSubmitBehavior {
 
-          @Override
-          protected void onSubmit(final AjaxRequestTarget _target) {
-            modalWindow.close(_target);
-          }
+    private static final long serialVersionUID = 1L;
 
-        });
-      }
+    private final IModel imodel;
+
+    private final Form form;
+
+    public SubmitandCloseBehavior(final IModel _model, final Form _form) {
+      super(_form, "onclick");
+      this.imodel = _model;
+      this.form = _form;
+
     }
 
     @Override
-    protected void onComponentTag(ComponentTag tag) {
-      super.onComponentTag(tag);
-      if (closeLink instanceof PopupCloseLink) {
-        String onclick = (String) tag.getAttributes().get("onclick");
-        String url =
-            onclick.substring(0, onclick.length() - 13)
-                + " window.self.close();";
-        tag.put("onclick", url);
+    protected void onSubmit(AjaxRequestTarget _target) {
+      ModelAbstract model = (ModelAbstract) this.imodel;
+      if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
+        modalWindow.close(_target);
+      }
+      if (model.getCommand().getTarget() == CommandAbstract.TARGET_POPUP) {
+        ModelAbstract openermodel =
+            (ModelAbstract) ((EFapsSession) Session.get()).getOpenerModel();
+        CharSequence url =
+            this.form.urlFor(PageMap.forName(MainPage.INLINEFRAMENAME),
+                WebTablePage.class, openermodel.getPageParameters());
+        _target
+            .appendJavascript("opener.location.href = '" + url + "'; self.close();");
 
       }
-    }
 
+    }
   }
 
   public class AjaxCancelLink extends AjaxLink {
@@ -154,4 +165,5 @@ public class FooterPanel extends Panel {
       modalWindow.close(target);
     }
   }
+
 }

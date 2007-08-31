@@ -21,12 +21,21 @@
 package org.efaps.webapp;
 
 import org.apache.wicket.Request;
-import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebSession;
 
 import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
 
+/**
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class EFapsSession extends WebSession {
+
+  public EFapsSession(Request request) {
+    super(request);
+  }
 
   private int contentcontainerid;
 
@@ -34,12 +43,9 @@ public class EFapsSession extends WebSession {
 
   private ListMenuLinkComponent sidemenuselected;
 
-  public EFapsSession(WebApplication application, Request request) {
-    super(application, request);
-  }
+  private IModel model;
 
   private static final long serialVersionUID = 1884548064760514909L;
-  
 
   public void setContentContainer(int _id, int _version) {
     this.contentcontainerid = _id;
@@ -62,4 +68,11 @@ public class EFapsSession extends WebSession {
     return this.sidemenuselected;
   }
 
+  public void setOpenerModel(final IModel _model) {
+    this.model = _model;
+  }
+
+  public IModel getOpenerModel() {
+    return this.model;
+  }
 }

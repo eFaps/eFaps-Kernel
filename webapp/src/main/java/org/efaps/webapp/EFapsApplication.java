@@ -20,7 +20,6 @@
 
 package org.efaps.webapp;
 
-
 import org.apache.wicket.Request;
 import org.apache.wicket.Response;
 import org.apache.wicket.Session;
@@ -28,26 +27,30 @@ import org.apache.wicket.protocol.http.WebApplication;
 
 import org.efaps.webapp.pages.HomePage;
 
+/**
+ * @author jmo
+ * @version $Id$
+ */
 public class EFapsApplication extends WebApplication {
 
   @Override
   public Class<HomePage> getHomePage() {
     // TODO muss gegen echte Homepgae getauscht werden
     return HomePage.class;
-   
+
   }
 
   @Override
   protected void init() {
     super.init();
     getMarkupSettings().setStripWicketTags(true);
+    getMarkupSettings().setStripComments(true);
     getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
-//    getDebugSettings().setAjaxDebugModeEnabled(false);
+    // getDebugSettings().setAjaxDebugModeEnabled(false);
   }
 
-  public Session newSession(Request _request, Response _response){
-    return new EFapsSession(this, _request);
-    
+  public Session newSession(Request _request, Response _response) {
+    return new EFapsSession(_request);
   }
 
 }

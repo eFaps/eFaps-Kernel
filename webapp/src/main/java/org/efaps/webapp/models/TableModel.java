@@ -172,8 +172,8 @@ public class TableModel extends ModelAbstract {
   }
 
   public void detach() {
-    // TODO Auto-generated method stub
-
+    super.setInitialised(false);
+    this.values.clear();
   }
 
   public void execute() throws Exception {

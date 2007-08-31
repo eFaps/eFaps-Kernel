@@ -51,15 +51,27 @@ public class MenuComponent extends AbstractParentMarkupContainer {
 
   private static String HEADER_RESOURCE =
       "" + JavascriptUtils.SCRIPT_OPEN_TAG + "var myThemeOfficeBase=\"" + URL
-          + "\";" + JavascriptUtils.SCRIPT_CLOSE_TAG + CssUtils.INLINE_OPEN_TAG
-          + "span.eFapsMenuLabel  {\n" + "  vertical-align: middle;\n" + "}\n"
-          + "img.eFapsMenuMainImage {\n" + "  padding-left: 2px;\n"
-          + "  vertical-align: bottom;\n" + "  width: 16px;\n"
-          + "  height: 16px;\n" + "}\n" + "img.eFapsMenuMainBlankImage  {\n"
-          + "  vertical-align: bottom;\n" + "  width: 2px;\n"
-          + "  height: 16px;\n" + "}\n" + "img.eFapsMenuSubImage {\n"
-          + "  vertical-align: bottom;\n" + "  width: 16px;\n"
-          + "  height: 16px;\n" + "}\n" + CssUtils.INLINE_CLOSE_TAG;
+          + "\";" 
+          + JavascriptUtils.SCRIPT_CLOSE_TAG 
+          + CssUtils.INLINE_OPEN_TAG
+          + "span.eFapsMenuLabel  {\n" 
+          + "  vertical-align: middle;\n" 
+          + "}\n"
+          + "img.eFapsMenuMainImage {\n" 
+          + "  padding-left: 2px;\n"
+          + "  vertical-align: bottom;\n" 
+          + "  width: 16px;\n"
+          + "  height: 16px;\n" 
+          + "}\n" + "img.eFapsMenuMainBlankImage  {\n"
+          + "  vertical-align: bottom;\n" 
+          + "  width: 2px;\n"
+          + "  height: 16px;\n" 
+          + "}\n" + "img.eFapsMenuSubImage {\n"
+          + "  vertical-align: bottom;\n" 
+          + "  width: 16px;\n"
+          + "  height: 16px;\n" 
+          + "}\n" 
+          + CssUtils.INLINE_CLOSE_TAG;
 
   private static String IMG_BLANK_SUB =
       "<img src=\"" + URL + "blank.gif\" class=\"eFapsMenuSubImage\"/>";
@@ -130,8 +142,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
 
           PopupSettings popup =
               new PopupSettings(PageMap.forName("popup")).setHeight(
-                  command.getWindowHeight())
-                  .setWidth(command.getWindowWidth());
+                  command.getWindowHeight()).setWidth(command.getWindowWidth());
 
           item.setPopupSettings(popup);
           popup.setTarget("\"" + url + "\"");
@@ -205,11 +216,19 @@ public class MenuComponent extends AbstractParentMarkupContainer {
         .append("  {\n" + "  position: absolute;\n" + "  top: ")
         .append(this.position)
         .append(
-            "px;\n" + "  height: 22px;\n" + "  left: 0;\n" + "  right: 0;\n"
-                + "  background-color: #EFEBDE;\n" + "  border-style: solid;\n"
-                + "  border-width: 1px 0;\n" + "  border-color: black;\n"
-                + "  margin: 0;\n" + "  padding-top: 2px;\n"
-                + "  padding-left: 2px;\n" + "  padding-bottom: 0px;\n" + "}\n")
+            "px;\n" 
+            + "  height: 22px;\n" 
+            + "  left: 0;\n" 
+            + "  right: 0;\n"
+            + "  background-color: #EFEBDE;\n" 
+            + "  border-style: solid;\n"
+            + "  border-width: 1px 0;\n" 
+            + "  border-color: black;\n"
+            + "  margin: 0;\n"
+            + "  padding-top: 2px;\n"
+            + "  padding-left: 2px;\n" 
+            + "  padding-bottom: 0px;\n" 
+            + "}\n")
         .append(CssUtils.INLINE_CLOSE_TAG);
   }
 

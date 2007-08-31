@@ -30,6 +30,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.util.EFapsException;
+import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.MainPage;
 import org.efaps.webapp.pages.WebFormPage;
@@ -56,7 +57,9 @@ public class MenuItemLinkComponent extends Link {
     MenuItemModel model = (MenuItemModel) super.getModel();
 
     CommandAbstract command = model.getCommand();
-
+    if (command.getTarget() == CommandAbstract.TARGET_POPUP) {
+      ((EFapsSession) this.getSession()).setOpenerModel(this.getPage().getModel());
+    }
     PageParameters para = new PageParameters("command=" + command.getName());
     para.add("oid", model.getOid());
     if (command.getTargetTable() != null) {
