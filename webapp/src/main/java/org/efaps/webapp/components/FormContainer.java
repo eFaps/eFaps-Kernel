@@ -20,11 +20,7 @@
 
 package org.efaps.webapp.components;
 
-import java.util.Map;
-
 import org.apache.wicket.markup.html.form.Form;
-
-import org.efaps.webapp.models.FormModel;
 
 /**
  * @author jmo
@@ -36,15 +32,6 @@ public class FormContainer extends Form {
 
   public FormContainer(String id) {
     super(id);
-  }
-
-  @Override
-  protected void onSubmit() {
-    super.onSubmit();
-    Map<?, ?> para = this.getRequest().getParameterMap();
-    if (this.getParent().getModel() instanceof FormModel) {
-      ((FormModel) this.getParent().getModel()).update(para);
-    }
   }
 
 }

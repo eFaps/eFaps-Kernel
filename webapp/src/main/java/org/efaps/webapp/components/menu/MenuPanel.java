@@ -24,6 +24,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.components.modalwindow.UpdateParentCallback;
 import org.efaps.webapp.models.MenuItemModel;
@@ -41,6 +42,10 @@ public class MenuPanel extends Panel {
       new ModalWindowContainer("eFapsModal");
 
   public MenuPanel(final String _id, IModel _model) {
+    this(_id, _model, null);
+  }
+
+  public MenuPanel(final String _id, IModel _model, FormContainer _form) {
     super(_id, _model);
 
     if (_model instanceof ModelAbstract) {
@@ -50,7 +55,8 @@ public class MenuPanel extends Panel {
         if (model.getCommand().getTargetMenu() != null) {
           MenuComponent menu =
               new MenuComponent("eFapsMenu", new MenuItemModel(model
-                  .getCommand().getTargetMenu().getName(), model.getOid()), 40l);
+                  .getCommand().getTargetMenu().getName(), model.getOid()),
+                  _form);
           add(menu);
         } else {
           add(new WebMarkupContainer("eFapsMenu"));

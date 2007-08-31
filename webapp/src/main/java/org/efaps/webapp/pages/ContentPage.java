@@ -57,7 +57,7 @@ public abstract class ContentPage extends WebPage {
       add(new StyleSheetReference("ContentPageCSS", getClass(),
           "contentpage/ContentPage.css"));
 
-      add(new MenuPanel("eFapsMenu", model));
+      add(new MenuPanel("eFapsMenu", model, _form));
       WebMarkupContainer footerpanel;
       if (model.isCreateMode() || model.isEditMode() || model.isSearchMode()) {
         footerpanel = new FooterPanel("eFapsFooter", model, modalWindow, _form);

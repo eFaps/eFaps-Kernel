@@ -206,7 +206,8 @@ public class FormModel extends ModelAbstract {
           }
           if (queryhasresult) {
             FormCellModel cell =
-                new FormCellModel(instance, strValue, false, label);
+                new FormCellModel(instance, strValue,
+                    super.isEditMode() ? field.isRequired() : false, label);
             row.add(cell);
           } else if (strValue != null && !strValue.equals("")) {
             FormCellModel cell =

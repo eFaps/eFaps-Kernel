@@ -39,9 +39,10 @@
 
 package org.efaps.webapp.components.menu;
 
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.modalwindow.ModalWindowAjaxPageCreator;
@@ -50,11 +51,12 @@ import org.efaps.webapp.components.modalwindow.ModalWindowAjaxPageCreator;
  * @author jmo
  * @version $Id$
  */
-public class MenuItemAjaxLinkComponent extends AjaxLink {
+public class MenuItemAjaxLinkComponent extends WebComponent {
   private static final long serialVersionUID = 1L;
 
   public MenuItemAjaxLinkComponent(final String _id, final IModel _menuItem) {
     super(_id, _menuItem);
+    this.add(new AjaxOpenModalBehaviour(this));
   }
 
   @Override
@@ -62,13 +64,35 @@ public class MenuItemAjaxLinkComponent extends AjaxLink {
     _markupStream.next();
   }
 
-  @Override
-  public void onClick(final AjaxRequestTarget _target) {
-    MenuPanel menupanel = (MenuPanel) this.findParent(MenuPanel.class);
-    ModalWindowAjaxPageCreator pageCreator =
-        new ModalWindowAjaxPageCreator(super.getModel(), menupanel.getModal());
-    menupanel.getModal().setPageCreator(pageCreator);
-    menupanel.getModal().show(_target);
+  public AjaxOpenModalBehaviour getAjaxOpenModalBehavior() {
+    return (AjaxOpenModalBehaviour) super.getBehaviors().get(0);
   }
 
+  public class AjaxOpenModalBehaviour extends AjaxEventBehavior {
+    private static final long serialVersionUID = 1L;
+
+    private WebComponent component;
+
+    public AjaxOpenModalBehaviour(WebComponent _component) {
+      super("onclick");
+      this.component = _component;
+    }
+
+    public String getJavaScript() {
+      String script = super.getCallbackScript().toString();
+      return "javascript:" + script.replace("'", "\"");
+    }
+
+    @Override
+    protected void onEvent(final AjaxRequestTarget _target) {
+      MenuPanel menupanel =
+          (MenuPanel) this.component.findParent(MenuPanel.class);
+      ModalWindowAjaxPageCreator pageCreator =
+          new ModalWindowAjaxPageCreator(this.component.getModel(), menupanel
+              .getModal());
+      menupanel.getModal().setPageCreator(pageCreator);
+      menupanel.getModal().show(_target);
+
+    }
+  }
 }

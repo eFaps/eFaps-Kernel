@@ -36,7 +36,6 @@ import org.efaps.webapp.models.MenuItemModel;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class MainPage extends WebPage {
 
@@ -47,8 +46,7 @@ public class MainPage extends WebPage {
   public MainPage() throws Exception {
 
     MenuComponent menu =
-        new MenuComponent("eFapsMainMenu", new MenuItemModel("MainToolBar"),
-            40l);
+        new MenuComponent("eFapsMainMenu", new MenuItemModel("MainToolBar"));
     add(menu);
 
     add(new InlineFrame("eFapsContentFrame", PageMap.forName(INLINEFRAMENAME),

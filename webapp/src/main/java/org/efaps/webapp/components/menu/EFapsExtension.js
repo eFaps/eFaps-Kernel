@@ -19,10 +19,6 @@
  * Last Changed By: $Author$
  */
 
-
-//function _cmItemMouseUp = cmItemMouseUp;
-
-
 //
 // action should be taken for mouse button up at a menu item
 //
@@ -38,14 +34,15 @@ function cmItemMouseUp (obj, isMain, idSub, menuID, index)
       if (item.length > 3 && item[3]){
         target = item[3];
       }
-      if(target==('modal')){
-        var wcall=wicketAjaxGet(link, function() { }.bind(), function() { }.bind());
-      }else if (target==('popup')){
+      
+      if ((link != null) && (link.match(/^javascript:/) != null))  {
+        _cmClicked = false;
+        link = link.replace(/^javascript:/, "");
         eval(link);
-      }
-      else{
+      }else{
         window.open (link, target);
       }
+      
       var menuInfo = _cmMenuList[menuID];
       var prefix = menuInfo.prefix;
       var thisMenu = cmGetThisMenu (obj, prefix);

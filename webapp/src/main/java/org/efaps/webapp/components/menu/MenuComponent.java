@@ -23,7 +23,6 @@ package org.efaps.webapp.components.menu;
 import java.util.Iterator;
 
 import org.apache.wicket.PageMap;
-import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.ComponentTag;
@@ -36,6 +35,7 @@ import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.components.AbstractParentMarkupContainer;
+import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.models.MenuItemModel;
 
 /**
@@ -51,27 +51,15 @@ public class MenuComponent extends AbstractParentMarkupContainer {
 
   private static String HEADER_RESOURCE =
       "" + JavascriptUtils.SCRIPT_OPEN_TAG + "var myThemeOfficeBase=\"" + URL
-          + "\";" 
-          + JavascriptUtils.SCRIPT_CLOSE_TAG 
-          + CssUtils.INLINE_OPEN_TAG
-          + "span.eFapsMenuLabel  {\n" 
-          + "  vertical-align: middle;\n" 
-          + "}\n"
-          + "img.eFapsMenuMainImage {\n" 
-          + "  padding-left: 2px;\n"
-          + "  vertical-align: bottom;\n" 
-          + "  width: 16px;\n"
-          + "  height: 16px;\n" 
-          + "}\n" + "img.eFapsMenuMainBlankImage  {\n"
-          + "  vertical-align: bottom;\n" 
-          + "  width: 2px;\n"
-          + "  height: 16px;\n" 
-          + "}\n" + "img.eFapsMenuSubImage {\n"
-          + "  vertical-align: bottom;\n" 
-          + "  width: 16px;\n"
-          + "  height: 16px;\n" 
-          + "}\n" 
-          + CssUtils.INLINE_CLOSE_TAG;
+          + "\";" + JavascriptUtils.SCRIPT_CLOSE_TAG + CssUtils.INLINE_OPEN_TAG
+          + "span.eFapsMenuLabel  {\n" + "  vertical-align: middle;\n" + "}\n"
+          + "img.eFapsMenuMainImage {\n" + "  padding-left: 2px;\n"
+          + "  vertical-align: bottom;\n" + "  width: 16px;\n"
+          + "  height: 16px;\n" + "}\n" + "img.eFapsMenuMainBlankImage  {\n"
+          + "  vertical-align: bottom;\n" + "  width: 2px;\n"
+          + "  height: 16px;\n" + "}\n" + "img.eFapsMenuSubImage {\n"
+          + "  vertical-align: bottom;\n" + "  width: 16px;\n"
+          + "  height: 16px;\n" + "}\n" + CssUtils.INLINE_CLOSE_TAG;
 
   private static String IMG_BLANK_SUB =
       "<img src=\"" + URL + "blank.gif\" class=\"eFapsMenuSubImage\"/>";
@@ -79,13 +67,16 @@ public class MenuComponent extends AbstractParentMarkupContainer {
   private static String IMG_BLANK_MAIN =
       "<img src=\"" + URL + "blank.gif\" class=\"eFapsMenuMainBlankImage\"/>";
 
-  private final long position;
+  private final FormContainer form;
+
+  public MenuComponent(final String _id, final IModel _model) {
+    this(_id, _model, null);
+  }
 
   public MenuComponent(final String _id, final IModel _model,
-                       final long _position) {
+                       final FormContainer _form) {
     super(_id, _model);
-    this.position = _position;
-
+    this.form = _form;
     add(HeaderContributor.forJavaScript(getClass(), "JSCookMenu.js"));
     add(HeaderContributor.forJavaScript(getClass(), "EFapsExtension.js"));
     add(HeaderContributor.forCss(getClass(), "theme.css"));
@@ -120,6 +111,13 @@ public class MenuComponent extends AbstractParentMarkupContainer {
             new MenuItemLinkComponent(getNewChildId(), menuItem);
         this.add(item);
       }
+    } else {
+      if (menuItem.getCommand().isSubmit()) {
+        MenuItemAjaxSubmitComponent item =
+            new MenuItemAjaxSubmitComponent(getNewChildId(), menuItem,
+                this.form);
+        this.add(item);
+      }
     }
     for (MenuItemModel childs : menuItem.childs) {
       addLink(childs);
@@ -143,25 +141,30 @@ public class MenuComponent extends AbstractParentMarkupContainer {
           PopupSettings popup =
               new PopupSettings(PageMap.forName("popup")).setHeight(
                   command.getWindowHeight()).setWidth(command.getWindowWidth());
-
           item.setPopupSettings(popup);
           popup.setTarget("\"" + url + "\"");
-          url = popup.getPopupJavaScript();
-          String temp = url.replaceAll("'", "\"");
-          url = temp.substring(7, url.indexOf(";") + 1);
+          String tmp = popup.getPopupJavaScript().replaceAll("'", "\"");
+          url = "javascript:" + tmp.replace("return false;", "");
+
         }
 
         childModel.setURL(url);
 
-      } else {
+      } else if (child instanceof MenuItemAjaxLinkComponent) {
         MenuItemAjaxLinkComponent item = (MenuItemAjaxLinkComponent) child;
         MenuItemModel childModel = (MenuItemModel) item.getModel();
 
-        String url = (String) item.urlFor(AjaxEventBehavior.INTERFACE);
-        url = url.substring(0, url.length() - 1);
-        url += "0:";
+        String url = item.getAjaxOpenModalBehavior().getJavaScript();
+
         childModel.setURL(url);
 
+      } else if (child instanceof MenuItemAjaxSubmitComponent) {
+        MenuItemAjaxSubmitComponent item = (MenuItemAjaxSubmitComponent) child;
+        MenuItemModel childModel = (MenuItemModel) item.getModel();
+
+        String url = item.getSubmitBehaviour().getJavaScript();
+
+        childModel.setURL(url);
       }
 
     }
@@ -205,33 +208,6 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     return html.toString();
   }
 
-  protected void appendCSS(final ComponentTag _openTag,
-      final StringBuilder _html) {
-    CharSequence id = _openTag.getString("id");
-
-    _html
-        .append(CssUtils.INLINE_OPEN_TAG)
-        .append("#")
-        .append(id)
-        .append("  {\n" + "  position: absolute;\n" + "  top: ")
-        .append(this.position)
-        .append(
-            "px;\n" 
-            + "  height: 22px;\n" 
-            + "  left: 0;\n" 
-            + "  right: 0;\n"
-            + "  background-color: #EFEBDE;\n" 
-            + "  border-style: solid;\n"
-            + "  border-width: 1px 0;\n" 
-            + "  border-color: black;\n"
-            + "  margin: 0;\n"
-            + "  padding-top: 2px;\n"
-            + "  padding-left: 2px;\n" 
-            + "  padding-bottom: 0px;\n" 
-            + "}\n")
-        .append(CssUtils.INLINE_CLOSE_TAG);
-  }
-
   public void convertToHtml(final MenuItemModel _menuItem,
       final StringBuilder _html, final boolean _isMain,
       final StringBuilder _prefix) {
@@ -257,10 +233,6 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     }
     if (_menuItem.getTarget() == CommandAbstract.TARGET_HIDDEN) {
       _html.append("', 'eFapsFrameHidden', '");
-    } else if (_menuItem.getTarget() == CommandAbstract.TARGET_MODAL) {
-      _html.append("', 'modal', '");
-    } else if (_menuItem.getTarget() == CommandAbstract.TARGET_POPUP) {
-      _html.append("', 'popup', '");
     } else {
       _html.append("', '_self', '");
     }

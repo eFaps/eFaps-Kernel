@@ -20,6 +20,8 @@
 
 package org.efaps.webapp.components.footer;
 
+import java.util.Map;
+
 import org.apache.wicket.PageMap;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -40,6 +42,7 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
+import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.ModelAbstract;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.pages.MainPage;
@@ -139,7 +142,14 @@ public class FooterPanel extends Panel {
 
     @Override
     protected void onSubmit(AjaxRequestTarget _target) {
+
+      Map<?, ?> para = this.form.getRequest().getParameterMap();
+      if (this.form.getParent().getModel() instanceof FormModel) {
+        ((FormModel) this.form.getParent().getModel()).update(para);
+      }
+
       ModelAbstract model = (ModelAbstract) this.imodel;
+
       if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
         modalWindow.setUpdateParent(true);
         modalWindow.close(_target);
