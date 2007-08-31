@@ -62,6 +62,7 @@
       <execute program="org.efaps.esjp.admin.common.ReloadCache"/>
     </target>
     <!-- properties -->
+    <property name="Target">hidden</property>
     <property name="NoUpdateAfterCOMMAND">true</property>
   </definition>
 

@@ -33,6 +33,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
 
+import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.components.AbstractParentMarkupContainer;
 import org.efaps.webapp.components.FormContainer;
@@ -116,6 +117,10 @@ public class MenuComponent extends AbstractParentMarkupContainer {
         MenuItemAjaxSubmitComponent item =
             new MenuItemAjaxSubmitComponent(getNewChildId(), menuItem,
                 this.form);
+        this.add(item);
+      } else if (menuItem.getCommand().hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+        MenuItemLinkComponent item =
+            new MenuItemLinkComponent(getNewChildId(), menuItem);
         this.add(item);
       }
     }
