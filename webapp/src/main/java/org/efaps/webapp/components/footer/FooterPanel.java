@@ -41,7 +41,9 @@ import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.ModelAbstract;
+import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.pages.MainPage;
+import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
 /**
@@ -145,9 +147,16 @@ public class FooterPanel extends Panel {
       if (model.getCommand().getTarget() == CommandAbstract.TARGET_POPUP) {
         ModelAbstract openermodel =
             (ModelAbstract) ((EFapsSession) Session.get()).getOpenerModel();
+        Class<?> clazz;
+        if (openermodel instanceof TableModel) {
+          clazz = WebTablePage.class;
+        } else {
+          clazz = WebFormPage.class;
+        }
+
         CharSequence url =
-            this.form.urlFor(PageMap.forName(MainPage.INLINEFRAMENAME),
-                WebTablePage.class, openermodel.getPageParameters());
+            this.form.urlFor(PageMap.forName(MainPage.INLINEFRAMENAME), clazz,
+                openermodel.getPageParameters());
         _target.appendJavascript("opener.location.href = '" + url
             + "'; self.close();");
 
