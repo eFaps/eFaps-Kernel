@@ -100,6 +100,8 @@ public class FormModel extends ModelAbstract {
   }
 
   public void detach() {
+    this.setInitialised(false);
+    this.values.clear();
   }
 
   /**
@@ -235,7 +237,7 @@ public class FormModel extends ModelAbstract {
   }
 
   public void update(Map<?, ?> _requestparameters) {
-   
+
     Update update;
     try {
       if (super.isCreateMode()) {
@@ -244,14 +246,12 @@ public class FormModel extends ModelAbstract {
         update = new Update(super.getOid());
       }
       for (Field field : this.getForm().getFields()) {
-        if (super.isCreateMode()) {
-          if (field.isCreatable()) {
-            String[] value = (String[]) _requestparameters.get(field.getName());
-            update.add(field.getExpression(), value[0]);
+        if (((super.isCreateMode() && field.isCreatable()) || (super
+            .isEditMode() && field.isEditable()))
+            && field.getExpression() != null) {
 
-          }
-
-        } else if (super.isEditMode()) {
+          String[] value = (String[]) _requestparameters.get(field.getName());
+          update.add(field.getExpression(), value[0]);
 
         }
 

@@ -21,10 +21,11 @@
 package org.efaps.webapp.pages;
 
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.FormContainer;
+import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.components.table.WebFormContainer;
 import org.efaps.webapp.models.FormModel;
 
@@ -44,9 +45,14 @@ public class WebFormPage extends ContentPage {
   }
 
   public WebFormPage(final PageParameters _parameters,
-                     final ModalWindow _modalWindow) {
+                     final ModalWindowContainer _modalWindow) {
     super(_modalWindow);
     super.setModel(new FormModel(_parameters));
+    this.addComponents();
+  }
+
+  public WebFormPage(final IModel _model) {
+    super.setModel(_model);
     this.addComponents();
   }
 

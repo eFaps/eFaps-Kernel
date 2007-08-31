@@ -25,7 +25,6 @@ import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -40,6 +39,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.FormContainer;
+import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.ModelAbstract;
 import org.efaps.webapp.pages.MainPage;
 import org.efaps.webapp.pages.WebTablePage;
@@ -52,10 +52,11 @@ public class FooterPanel extends Panel {
 
   private static final long serialVersionUID = -1722339596237748160L;
 
-  private final ModalWindow modalWindow;
+  private final ModalWindowContainer modalWindow;
 
   public FooterPanel(final String _id, final IModel _model,
-                     final ModalWindow _modalWindow, FormContainer _form) {
+                     final ModalWindowContainer _modalWindow,
+                     FormContainer _form) {
     super(_id, _model);
     this.modalWindow = _modalWindow;
     ModelAbstract model = (ModelAbstract) super.getModel();
@@ -138,6 +139,7 @@ public class FooterPanel extends Panel {
     protected void onSubmit(AjaxRequestTarget _target) {
       ModelAbstract model = (ModelAbstract) this.imodel;
       if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
+        modalWindow.setUpdateParent(true);
         modalWindow.close(_target);
       }
       if (model.getCommand().getTarget() == CommandAbstract.TARGET_POPUP) {
@@ -146,8 +148,8 @@ public class FooterPanel extends Panel {
         CharSequence url =
             this.form.urlFor(PageMap.forName(MainPage.INLINEFRAMENAME),
                 WebTablePage.class, openermodel.getPageParameters());
-        _target
-            .appendJavascript("opener.location.href = '" + url + "'; self.close();");
+        _target.appendJavascript("opener.location.href = '" + url
+            + "'; self.close();");
 
       }
 
@@ -162,6 +164,7 @@ public class FooterPanel extends Panel {
     private static final long serialVersionUID = 1L;
 
     public void onClick(AjaxRequestTarget target) {
+      modalWindow.setUpdateParent(false);
       modalWindow.close(target);
     }
   }

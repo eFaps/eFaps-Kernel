@@ -39,18 +39,12 @@
 
 package org.efaps.webapp.components.menu;
 
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.WebFormPage;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.components.modalwindow.ModalWindowAjaxPageCreator;
 
 /**
  * @author jmo
@@ -77,39 +71,4 @@ public class MenuItemAjaxLinkComponent extends AjaxLink {
     menupanel.getModal().show(_target);
   }
 
-  public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
-
-    private static final long serialVersionUID = 1L;
-
-    private final IModel imodel;
-
-    private final ModalWindow modalWindow;
-
-    public ModalWindowAjaxPageCreator(final IModel _model,
-                                      final ModalWindow _modalWindow) {
-      this.imodel = _model;
-      this.modalWindow = _modalWindow;
-    }
-
-    public Page createPage() {
-      Page ret = null;
-      MenuItemModel model = (MenuItemModel) this.imodel;
-      CommandAbstract command = model.getCommand();
-      PageParameters para = new PageParameters("command=" + command.getName());
-      para.add("oid", model.getOid());
-      try {
-
-        if (command.getTargetTable() != null) {
-          ret = new WebTablePage(para);
-
-        } else {
-          ret = new WebFormPage(para, this.modalWindow);
-        }
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      return ret;
-    }
-  }
 }

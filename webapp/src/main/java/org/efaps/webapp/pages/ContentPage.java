@@ -20,7 +20,6 @@
 
 package org.efaps.webapp.pages;
 
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
@@ -28,6 +27,7 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.footer.FooterPanel;
 import org.efaps.webapp.components.menu.MenuPanel;
+import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.components.titel.TitelPanel;
 import org.efaps.webapp.models.ModelAbstract;
 
@@ -39,12 +39,12 @@ public abstract class ContentPage extends WebPage {
 
   private static final long serialVersionUID = -2374207555009145191L;
 
-  private ModalWindow modalWindow;
+  private ModalWindowContainer modalWindow;
 
   public ContentPage() {
   }
 
-  public ContentPage(final ModalWindow _modalWindow) {
+  public ContentPage(final ModalWindowContainer _modalWindow) {
     this.modalWindow = _modalWindow;
   }
 

@@ -20,16 +20,14 @@
 
 package org.efaps.webapp.components.menu;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
+import org.efaps.webapp.components.modalwindow.UpdateParentCallback;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.models.ModelAbstract;
-import org.efaps.webapp.models.TableModel;
-import org.efaps.webapp.pages.WebTablePage;
 
 /**
  * @author jmo
@@ -39,7 +37,8 @@ public class MenuPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  private final ModalWindow modal = new ModalWindow("eFapsModal");
+  private final ModalWindowContainer modal =
+      new ModalWindowContainer("eFapsModal");
 
   public MenuPanel(final String _id, IModel _model) {
     super(_id, _model);
@@ -65,33 +64,13 @@ public class MenuPanel extends Panel {
 
     add(modal);
     modal.setPageMapName("modal");
-    modal.setCssClassName(ModalWindow.CSS_CLASS_GRAY);
 
-    modal.setWindowClosedCallback(new WindowUpdate(this));
+    modal.setWindowClosedCallback(new UpdateParentCallback(this, modal));
 
   }
 
-  public final ModalWindow getModal() {
+  public final ModalWindowContainer getModal() {
     return this.modal;
   }
 
-  public class WindowUpdate implements ModalWindow.WindowClosedCallback {
-
-    private static final long serialVersionUID = 1L;
-
-    private final Panel panel;
-
-    public WindowUpdate(final Panel _panel) {
-      this.panel = _panel;
-    }
-
-    public void onClose(AjaxRequestTarget _target) {
-      if (panel.getPage().getModel() instanceof TableModel) {
-        panel.getPage().getModel().detach();
-        WebTablePage page = new WebTablePage(panel.getPage().getModel());
-        panel.setResponsePage(page);
-      }
-    }
-
-  }
 }
