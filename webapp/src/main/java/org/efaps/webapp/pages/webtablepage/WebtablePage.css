@@ -18,19 +18,24 @@ tr.eFapsTableRowOdd td a img,tr.eFapsTableRowEven td a img {
 #eFapsTableHeader {
 	position: fixed;
 	width: 100%;
-	top: 50px;
+	top: 51px;
 	margin-left: 0;
-	padding-left: 0;
-	padding-bottom: 5px;
+	padding: 0;
 	z-index: 1;
+	font-weight:bold;
 }
 
-#eFapsTableHeader div,#eFapsTableHeader table {
+#eFapsTableHeader   div {
 	position: absolute;
 	top: 0;
 	color: white;
 	background-color: #00A000;
-	border-style: none;
+	border-style: solid;
+	border-bottom-width: 2px;
+	border-top-width: 2px;
+	border-left-width: 1px;
+	border-right-width: 1px;
+	border-color: white;
 	white-space: nowrap;
 	overflow: hidden;
 	height: 20px;
