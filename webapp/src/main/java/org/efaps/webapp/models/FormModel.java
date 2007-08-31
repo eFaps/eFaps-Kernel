@@ -22,7 +22,6 @@ package org.efaps.webapp.models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
@@ -35,13 +34,12 @@ import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
-import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 /**
@@ -66,8 +64,6 @@ public class FormModel extends ModelAbstract {
    */
   private final UUID formuuid;
 
-  private UUID typeuuid;
-
   public FormModel() throws EFapsException {
     super();
     CommandAbstract command = super.getCommand();
@@ -88,7 +84,7 @@ public class FormModel extends ModelAbstract {
     }
   }
 
-  public UUID getUUI() {
+  public UUID getUUID() {
     return this.formuuid;
   }
 
@@ -143,7 +139,7 @@ public class FormModel extends ModelAbstract {
           }
         }
       }
-      this.typeuuid = type.getUUID();
+
     } else {
       query = new SearchQuery();
       query.setObject(super.getOid());
@@ -237,29 +233,18 @@ public class FormModel extends ModelAbstract {
     }
   }
 
-  public void update(Map<?, ?> _requestparameters) {
-
-    Update update;
+  public void updateDB() {
+    CommandAbstract command = super.getCommand();
     try {
-      if (super.isCreateMode()) {
-        update = new Insert(Type.get(this.typeuuid));
-      } else {
-        update = new Update(super.getOid());
-      }
-      for (Field field : this.getForm().getFields()) {
-        if (((super.isCreateMode() && field.isCreatable()) || (super
-            .isEditMode() && field.isEditable()))
-            && field.getExpression() != null) {
 
-          String[] value = (String[]) _requestparameters.get(field.getName());
-          update.add(field.getExpression(), value[0]);
-
+      if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+        if (super.getOid() != null) {
+          command.executeEvents(EventType.UI_COMMAND_EXECUTE,
+              ParameterValues.INSTANCE, new Instance(super.getOid()));
+        } else {
+          command.executeEvents(EventType.UI_COMMAND_EXECUTE);
         }
-
       }
-
-      update.execute();
-
     } catch (EFapsException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();

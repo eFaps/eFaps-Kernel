@@ -20,8 +20,6 @@
 
 package org.efaps.webapp.components.footer;
 
-import java.util.Map;
-
 import org.apache.wicket.PageMap;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -143,9 +141,8 @@ public class FooterPanel extends Panel {
     @Override
     protected void onSubmit(AjaxRequestTarget _target) {
 
-      Map<?, ?> para = this.form.getRequest().getParameterMap();
       if (this.form.getParent().getModel() instanceof FormModel) {
-        ((FormModel) this.form.getParent().getModel()).update(para);
+        ((FormModel) this.form.getParent().getModel()).updateDB();
       }
 
       ModelAbstract model = (ModelAbstract) this.imodel;
