@@ -174,6 +174,7 @@ public class TableModel extends ModelAbstract {
   public void detach() {
     super.setInitialised(false);
     this.values.clear();
+    this.columnLabels.clear();
   }
 
   public void execute() throws Exception {
