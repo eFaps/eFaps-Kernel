@@ -62,7 +62,7 @@ public class ListMenuRemoveLinkComponent extends AjaxLink {
 
     x.remove(del);
     x.remove(del);
-//    target.addComponent(listmenupanel);
+   target.addComponent(listmenupanel);
 
   }
 

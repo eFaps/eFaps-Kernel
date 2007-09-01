@@ -67,7 +67,7 @@ public class ListMenuUpdate {
     boolean old = false;
     if (view != null) {
       List<Object> list = view.getList();
-
+      level++;
       for (Object item : view.getList()) {
         if (item instanceof MenuItemModel) {
           item = (MenuItemModel) item;
@@ -87,7 +87,7 @@ public class ListMenuUpdate {
           model = new MenuItemModel(_menu.getName(), _oid);
           model.setLevel(level);
           for (MenuItemModel item : model.getChilds()) {
-            item.setLevel(level + 1);
+            item.setLevel(level);
           }
           list.add(model);
           list.add(model.getChilds());

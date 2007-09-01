@@ -4,33 +4,50 @@
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
-	display: block;
 	background-color: #008800;
 }
 
 .eFapsListMenuHeader:hover,.eFapsListMenuItem:hover {
-	background-color: #d0edb8;
-	color: #008800;
+	background-color: #96d265;
+	cursor: pointer;
+}
+
+.eFapsListMenuItemLink:hover {
+	background-color: #96d265;
+	color: #FFF;
 	cursor: pointer;
 }
 
 .eFapsListMenuItem {
-	display: block;
-	color: #FFF;
 	background-color: #96d265;
-	padding: 3px;
-	text-decoration: none;
+	width: 100%;
+	border: 0;
 	border-bottom: 1px solid #fff;
+}
+
+.eFapsListMenuItemLink {
+	background-color: #d0edb8;
+	color: #008800;
+	padding: 0px;
+	text-decoration: none;
+	padding-left: 20px;
 }
 
 .eFapsListMenuHeader {
 	background-color: #008800;
-	display: block;
 	padding: 3px;
 	color: #FFF;
 	font-weight: bold;
 }
 
 .eFapsListMenuClose {
-	display: inline;
+	background-color: #008800;
+	text-align: center;
+	width: 1%;
+	color: #FFF;
+}
+
+.eFapsListMenuClose:hover {
+	background-color: #96d265;
+	color: red;
 }

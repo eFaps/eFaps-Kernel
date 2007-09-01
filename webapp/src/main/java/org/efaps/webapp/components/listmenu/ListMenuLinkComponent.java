@@ -53,14 +53,14 @@ public class ListMenuLinkComponent extends AjaxLink {
   protected void onComponentTag(ComponentTag tag) {
     super.onComponentTag(tag);
     MenuItemModel model = (MenuItemModel) super.getModel();
-    int padding = model.getLevel() * 3;
+    int padding = model.getLevel() * 4 + 1;
     if (((MenuItemModel) super.getModel()).hasChilds()
         && (this.findParent(ListItem.class) != null)) {
-      tag.put("style", "margin-left:" + padding + "px;");
+      tag.put("style", "padding-left:" + padding + "px;");
       tag.put("class", "eFapsListMenuHeader");
     } else {
-      tag.put("style", "margin-left:" + padding + "px;");
-      tag.put("class", "eFapsListMenuItem");
+      tag.put("style", "padding-left:" + padding + "px;");
+      tag.put("class", "eFapsListMenuItemLink");
     }
 
   }

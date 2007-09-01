@@ -62,7 +62,7 @@ public class ListMenuPanel extends DojoPanelContainer {
       menu.add(model.getChilds());
 
       for (MenuItemModel item : model.getChilds()) {
-        item.setLevel(_level + 1);
+        item.setLevel(_level);
       }
       add(new Rows("rows", menu));
 
@@ -137,11 +137,11 @@ public class ListMenuPanel extends DojoPanelContainer {
         link.setOutputMarkupId(true);
 
         if (model.hasChilds() && (this.findParent(ListItem.class) != null)) {
-          link.add(new ListMenuRemoveLinkComponent("removelink", model));
+          row.add(new ListMenuRemoveLinkComponent("removelink", model));
         } else {
           WebMarkupContainer empty = new WebMarkupContainer("removelink");
           empty.setVisible(false);
-          link.add(empty);
+          row.add(empty);
         }
         _listItem.add(row);
       }
