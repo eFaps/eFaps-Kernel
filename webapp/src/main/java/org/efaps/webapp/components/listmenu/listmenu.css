@@ -1,42 +1,36 @@
 #eFapsListMenu ul {
+	font-family: arial, verdana, helvetica, sans-serif;
+	font-size: 9pt;
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
 	display: block;
-	color: #FFF;
-	background-color: #036;
+	background-color: #008800;
 }
 
-#eFapsListMenu a:hover {
-	background-color: #369;
-	color: #FFF;
+.eFapsListMenuHeader:hover,.eFapsListMenuItem:hover {
+	background-color: #d0edb8;
+	color: #008800;
+	cursor: pointer;
 }
 
-#eFapsListMenu li a {
-	margin: 0;
-	padding: 3px;
+.eFapsListMenuItem {
 	display: block;
 	color: #FFF;
-	background-color: #036;
+	background-color: #96d265;
+	padding: 3px;
+	text-decoration: none;
 	border-bottom: 1px solid #fff;
+}
+
+.eFapsListMenuHeader {
+	background-color: #008800;
+	display: block;
+	padding: 3px;
+	color: #FFF;
 	font-weight: bold;
 }
 
-#eFapsListMenu ul ul {
-	margin: 0;
-	padding: 0;
-	list-style-type: none;
-	display: block;
-	color: #FFF;
-	background-color: #036;
-}
-
-#eFapsListMenu ul ul li a {
-	display: block;
-	color: #FFF;
-	background-color: #69C;
-	padding: 3px 12px 3px 8px;
-	text-decoration: none;
-	border-bottom: 1px solid #fff;
-	font-weight: normal;
+.eFapsListMenuClose {
+	display: inline;
 }

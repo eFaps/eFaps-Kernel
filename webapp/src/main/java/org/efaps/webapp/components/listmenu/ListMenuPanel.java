@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -41,19 +42,28 @@ public class ListMenuPanel extends DojoPanelContainer {
   private static final long serialVersionUID = 1L;
 
   public ListMenuPanel(final String _id, final PageParameters _parameters) {
+    this(_id, _parameters, 0);
+  }
+
+  public ListMenuPanel(final String _id, final PageParameters _parameters,
+                       final int _level) {
     super(_id, "noTitel");
     setVersioned(false);
-    // add(HeaderContributor.forCss(getClass(), "listmenu.css"));
+    add(HeaderContributor.forCss(getClass(), "listmenu.css"));
     try {
 
       MenuItemModel model =
           new MenuItemModel(_parameters.getString("command"), _parameters
               .getString("oid"));
       this.setModel(model);
-
+      model.setLevel(_level);
       List<Object> menu = new ArrayList<Object>();
       menu.add(model);
       menu.add(model.getChilds());
+
+      for (MenuItemModel item : model.getChilds()) {
+        item.setLevel(_level + 1);
+      }
       add(new Rows("rows", menu));
 
     } catch (Exception e) {
@@ -65,6 +75,7 @@ public class ListMenuPanel extends DojoPanelContainer {
 
   public ListMenuPanel(final String _id, final List<?> _modelObject) {
     super(_id, "noTitel");
+
     setVersioned(false);
     add(new Rows("rows", _modelObject));
 
@@ -72,12 +83,6 @@ public class ListMenuPanel extends DojoPanelContainer {
 
   public ListMenuPanel(String _id) {
     super(_id, "noTitel");
-  }
-
-  @Override
-  protected void onBeforeRender() {
-    super.onBeforeRender();
-
   }
 
   /**
@@ -131,13 +136,12 @@ public class ListMenuPanel extends DojoPanelContainer {
         row.add(link);
         link.setOutputMarkupId(true);
 
-        if (model.hasChilds()
-            && (this.findParent(ListItem.class)!=null)) {
-          row.add(new ListMenuRemoveLinkComponent("removelink", model));
+        if (model.hasChilds() && (this.findParent(ListItem.class) != null)) {
+          link.add(new ListMenuRemoveLinkComponent("removelink", model));
         } else {
           WebMarkupContainer empty = new WebMarkupContainer("removelink");
           empty.setVisible(false);
-          row.add(empty);
+          link.add(empty);
         }
         _listItem.add(row);
       }

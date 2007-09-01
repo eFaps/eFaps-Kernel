@@ -68,6 +68,8 @@ public class MenuItemModel implements IModel {
 
   private final UUID uuid;
 
+  private int level = 0;
+
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
@@ -113,6 +115,14 @@ public class MenuItemModel implements IModel {
         }
       }
     }
+  }
+
+  public void setLevel(final int _level) {
+    this.level = _level;
+  }
+
+  public int getLevel() {
+    return this.level;
   }
 
   public int getTarget() {

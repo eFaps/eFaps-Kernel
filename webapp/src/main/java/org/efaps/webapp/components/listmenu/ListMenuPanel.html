@@ -23,13 +23,15 @@
 
 <html xmlns:wicket>
 <wicket:panel>
-  <ul>
+  <div id="eFapsListMenu">
+  <ul >
     <span wicket:id="rows">
       <li wicket:id="row">
-        <a wicket:id="link"><span wicket:id="label"></span></a>   <a wicket:id="removelink">X</a>
+        <div wicket:id="link"><span wicket:id="label"></span>  <div class="eFapsListMenuClose"><a wicket:id="removelink">X</a></div></div>
       </li>
       <span wicket:id="nested"/>
     </span>
   </ul>
+  </div>
 </wicket:panel>
 </html>

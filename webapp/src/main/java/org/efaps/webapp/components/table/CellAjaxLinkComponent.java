@@ -20,25 +20,15 @@
 
 package org.efaps.webapp.components.table;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.AbstractParentAjaxLink;
-import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
-import org.efaps.webapp.components.listmenu.ListMenuPanel;
-import org.efaps.webapp.models.MenuItemModel;
+import org.efaps.webapp.components.listmenu.ListMenuUpdate;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
@@ -112,67 +102,7 @@ public class CellAjaxLinkComponent extends AbstractParentAjaxLink {
 
   private void firstStep(AjaxRequestTarget _target, final Menu _menu,
       final PageParameters _parameters) {
-    ListMenuLinkComponent comp =
-        ((EFapsSession) (Session.get())).getSideMenuSelected();
-    MarkupContainer listitem = comp.findParent(ListItem.class);
-
-    Iterator<?> childs = listitem.iterator();
-    ListMenuPanel newmenu = null;
-    ListView view = null;
-
-    while (childs.hasNext()) {
-
-      Object child = childs.next();
-      if (child instanceof ListMenuPanel) {
-        newmenu = (ListMenuPanel) child;
-        break;
-      }
-    }
-
-    childs = newmenu.iterator();
-    while (childs.hasNext()) {
-      Object child = childs.next();
-      if (child instanceof ListView) {
-        view = (ListView) child;
-        break;
-      }
-    }
-    boolean old = false;
-    if (view != null) {
-      List<Object> list = view.getList();
-
-      for (Object item : view.getList()) {
-        if (item instanceof MenuItemModel) {
-          item = (MenuItemModel) item;
-
-          if (((MenuItemModel) item).getOid().equals(this.oid)
-              && ((MenuItemModel) item).getUUID().equals(
-                  _menu.getUUID())) {
-            old = true;
-            break;
-          }
-
-        }
-
-      }
-      if (!old) {
-        MenuItemModel model;
-        try {
-          model = new MenuItemModel(_menu.getName(), this.oid);
-          list.add(model);
-          list.add(model.getChilds());
-        } catch (Exception e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-
-      }
-    } else {
-      newmenu = new ListMenuPanel("nested", _parameters);
-      listitem.replace(newmenu);
-    }
-
-    _target.addComponent(newmenu);
+    ListMenuUpdate.update(_target, _menu, _parameters, this.oid);
   }
 
   private void secondStep(final Menu _menu, final PageParameters _parameters) {

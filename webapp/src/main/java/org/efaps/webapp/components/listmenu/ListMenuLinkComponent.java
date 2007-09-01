@@ -25,7 +25,9 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.link.InlineFrame;
+import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.CommandAbstract;
@@ -48,6 +50,22 @@ public class ListMenuLinkComponent extends AjaxLink {
   }
 
   @Override
+  protected void onComponentTag(ComponentTag tag) {
+    super.onComponentTag(tag);
+    MenuItemModel model = (MenuItemModel) super.getModel();
+    int padding = model.getLevel() * 3;
+    if (((MenuItemModel) super.getModel()).hasChilds()
+        && (this.findParent(ListItem.class) != null)) {
+      tag.put("style", "margin-left:" + padding + "px;");
+      tag.put("class", "eFapsListMenuHeader");
+    } else {
+      tag.put("style", "margin-left:" + padding + "px;");
+      tag.put("class", "eFapsListMenuItem");
+    }
+
+  }
+
+  @Override
   public void onClick(final AjaxRequestTarget _target) {
 
     MenuItemModel model = (MenuItemModel) super.getModel();
@@ -56,7 +74,6 @@ public class ListMenuLinkComponent extends AjaxLink {
     para.add("oid", model.getOid());
     para.add("command", cmd.getName());
 
-  
     InlineFrame page;
     if (cmd.getTargetTable() != null) {
       page =

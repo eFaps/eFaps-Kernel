@@ -32,7 +32,6 @@ import org.efaps.webapp.models.MenuItemModel;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class ListMenuRemoveLinkComponent extends AjaxLink {
 
@@ -44,7 +43,7 @@ public class ListMenuRemoveLinkComponent extends AjaxLink {
 
   @Override
   public void onClick(AjaxRequestTarget target) {
-    
+
     ListMenuPanel listmenupanel =
         (ListMenuPanel) this.findParent(ListMenuPanel.class);
 
@@ -63,7 +62,8 @@ public class ListMenuRemoveLinkComponent extends AjaxLink {
 
     x.remove(del);
     x.remove(del);
-    target.addComponent(listmenupanel);
+//    target.addComponent(listmenupanel);
+
   }
 
 }
