@@ -1437,8 +1437,7 @@ public abstract class AbstractQuery {
         String expression =
             _attr.getTable().getSqlTable() + getTypeIndex() + "." + _sqlColName;
         getTypeTableNames().add(_attr.getTable());
-        SelectExpression selectExpr =
-            getJoinElement().getSelectExpression(this, expression, "null");
+        getJoinElement().getSelectExpression(this, expression, "null");
       }
     }
 
