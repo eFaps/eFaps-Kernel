@@ -58,9 +58,9 @@ public class CachedResult {
    * key. The order is not changed, the order is the same than the result of
    * select statement.
    */
-  private final List<List> rows = new ArrayList<List>();
+  private final List<List<Object>> rows = new ArrayList<List<Object>>();
 
-  private Iterator<List> iter = null;
+  private Iterator<List<Object>> iter = null;
 
   /**
    * The instance variable is a pointer to the current row in the cached result
@@ -70,7 +70,7 @@ public class CachedResult {
    * @see #next
    * @see #gotoKey
    */
-  private List currentRow = null;
+  private List<Object> currentRow = null;
 
   // ////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
