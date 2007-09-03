@@ -25,14 +25,17 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.efaps.admin.program.esjp.Compiler;
 import org.efaps.util.EFapsException;
 
+import org.jfrog.maven.annomojo.annotations.MojoGoal;
+import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
+
 /**
  * Compiles all esjp's within eFaps.
  *
  * @author tmo
  * @version $Id$
- * @goal compile
- * @requiresDependencyResolution compile
  */
+@MojoGoal("compile")
+@MojoRequiresDependencyResolution("compile")
 public final class CompileMojo extends EFapsAbstractMojo {
 
   /////////////////////////////////////////////////////////////////////////////

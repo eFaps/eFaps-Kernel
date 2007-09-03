@@ -25,15 +25,18 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.efaps.maven.install.Application;
 import org.efaps.util.EFapsException;
 
+import org.jfrog.maven.annomojo.annotations.MojoGoal;
+import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
+
 /**
  * Makes an update of an eFaps application for the last version of the
  * application.
  *
  * @author tmo
  * @version $Id$
- * @goal update
- * @requiresDependencyResolution compile
  */
+@MojoGoal("update")
+@MojoRequiresDependencyResolution("compile")
 public final class UpdateMojo extends EFapsAbstractMojo  {
   
   /////////////////////////////////////////////////////////////////////////////

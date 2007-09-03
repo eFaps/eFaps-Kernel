@@ -25,14 +25,17 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.efaps.maven.install.Application;
 import org.efaps.util.EFapsException;
 
+import org.jfrog.maven.annomojo.annotations.MojoGoal;
+import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
+
 /**
  * Installs an eFaps application.
  *
  * @author tmo
  * @version $Id$
- * @goal install
- * @requiresDependencyResolution compile
  */
+@MojoGoal("install")
+@MojoRequiresDependencyResolution("compile")
 public final class InstallMojo extends EFapsAbstractMojo {
 
   /////////////////////////////////////////////////////////////////////////////

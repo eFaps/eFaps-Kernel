@@ -27,14 +27,17 @@ import java.io.StringReader;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
+import org.jfrog.maven.annomojo.annotations.MojoGoal;
+import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
+
 /**
  *
  * @author tmo
  * @version $Id$
  * @todo description
- * @goal kernel-install
- * @requiresDependencyResolution compile
  */
+@MojoGoal("kernel-install")
+@MojoRequiresDependencyResolution("compile")
 public final class KernelInstallMojo extends AbstractJavaScriptMojo  {
   
   /////////////////////////////////////////////////////////////////////////////

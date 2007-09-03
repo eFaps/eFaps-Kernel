@@ -26,12 +26,15 @@ import org.apache.derby.drda.NetworkServerControl;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
+import org.jfrog.maven.annomojo.annotations.MojoGoal;
+import org.jfrog.maven.annomojo.annotations.MojoParameter;
+
 /**
  * 
  * @author tmo
  * @version $Id$
- * @goal derby-start
  */
+@MojoGoal("derby-start")
 public class DerbyStartMojo extends AbstractMojo {
 
   /////////////////////////////////////////////////////////////////////////////
@@ -39,9 +42,8 @@ public class DerbyStartMojo extends AbstractMojo {
 
   /**
    * Derby specific Properties.
-   *
-   * @parameter
    */
+  @MojoParameter
   private Properties properties;
 
   /////////////////////////////////////////////////////////////////////////////

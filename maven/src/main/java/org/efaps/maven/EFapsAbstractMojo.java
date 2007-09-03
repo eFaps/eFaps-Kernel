@@ -35,6 +35,8 @@ import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.slide.transaction.SlideTransactionManager;
 
+import org.jfrog.maven.annomojo.annotations.MojoParameter;
+
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
@@ -62,57 +64,53 @@ abstract class EFapsAbstractMojo implements Mojo {
   private Log log = null;
 
   /**
-   * @parameter expression="${org.efaps.db.factory}"
    */
+  @MojoParameter(expression = "${org.efaps.db.factory}")
   private String factory;
 
   /**
    * Holds all properties of the connection to the database.
-   * 
-   * @parameter
    */
+  @MojoParameter
   private Properties connection;
 
   /**
    * Stores the name of the logged in user.
    * 
    * @see #login
-   * @parameter
-   * @required
    */
+  @MojoParameter(required = true)
   private String userName;
 
   /**
    * Stores the name of the logged in user.
    * 
    * @see #login
-   * @parameter
-   * @required
    */
+  @MojoParameter(required = true)
   private String passWord;
 
   /**
-   * @parameter expression="${org.efaps.db.type}"
    */
+  @MojoParameter(expression = "${org.efaps.db.type}")
   private String type;
 
   /**
    * Project classpath.
-   *
-   * @parameter expression="${project.compileClasspathElements}"
-   * @required
-   * @readonly
    */
+  @MojoParameter(expression = "${project.compileClasspathElements}",
+                 required = true,
+                 readonly = true)
   private List<String> classpathElements;
 
   /**
-   * @parameter expression="${basedir}/src/main/efaps/versions.xml"
    */
+  @MojoParameter(expression = "${basedir}/src/main/efaps/versions.xml")
   private File versionFile;
 
   /**
-   * @parameter expression="${basedir}/src/main/efaps"
    */
+  @MojoParameter(expression = "${basedir}/src/main/efaps")
   private File eFapsDir;
 
   /////////////////////////////////////////////////////////////////////////////
