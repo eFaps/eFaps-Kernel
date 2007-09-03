@@ -20,6 +20,9 @@
 
 package org.efaps.webapp;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.wicket.Request;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebSession;
@@ -29,7 +32,6 @@ import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class EFapsSession extends WebSession {
 
@@ -41,7 +43,8 @@ public class EFapsSession extends WebSession {
 
   private int contentcontainerversion;
 
-  private ListMenuLinkComponent sidemenuselected;
+  private final Map<String, ListMenuLinkComponent> listmenuitemmap =
+      new HashMap<String, ListMenuLinkComponent>();
 
   private IModel model;
 
@@ -60,12 +63,13 @@ public class EFapsSession extends WebSession {
     return this.contentcontainerversion;
   }
 
-  public void setSideMenuSelected(ListMenuLinkComponent _selected) {
-    this.sidemenuselected = _selected;
+  public void setListMenuSelectedItem(final String _menukey,
+      final ListMenuLinkComponent _selected) {
+    this.listmenuitemmap.put(_menukey, _selected);
   }
 
-  public ListMenuLinkComponent getSideMenuSelected() {
-    return this.sidemenuselected;
+  public ListMenuLinkComponent getListMenuSelectedItem(final String _menukey) {
+    return this.listmenuitemmap.get(_menukey);
   }
 
   public void setOpenerModel(final IModel _model) {

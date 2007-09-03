@@ -27,8 +27,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.webapp.models.MenuItemModel;
-
 /**
  * @author jmo
  * @version $Id$
@@ -47,22 +45,13 @@ public class ListMenuRemoveLinkComponent extends AjaxLink {
     ListMenuPanel listmenupanel =
         (ListMenuPanel) this.findParent(ListMenuPanel.class);
 
-    List<?> x =
+    List<?> list =
         (List<?>) ((Component) listmenupanel.iterator().next())
             .getModelObject();
-    int del = 0;
-    for (int i = 0; i < x.size(); i++) {
-      if (x.get(i) instanceof MenuItemModel) {
-        if (x.get(i).equals(this.getModel())) {
-          del = i;
-          break;
-        }
-      }
-    }
-
-    x.remove(del);
-    x.remove(del);
-   target.addComponent(listmenupanel);
+    int del = list.indexOf(this.getModel());
+    list.remove(del);
+    list.remove(del);
+    target.addComponent(listmenupanel);
 
   }
 

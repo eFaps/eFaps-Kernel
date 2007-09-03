@@ -44,9 +44,12 @@ public class ListMenuLinkComponent extends AjaxLink {
 
   private static final long serialVersionUID = 1L;
 
-  public ListMenuLinkComponent(final String _id, final IModel _model) {
-    super(_id, _model);
+  private final String menukey;
 
+  public ListMenuLinkComponent(final String _id, final String _menukey,
+                               final IModel _model) {
+    super(_id, _model);
+    this.menukey = _menukey;
   }
 
   @Override
@@ -92,7 +95,8 @@ public class ListMenuLinkComponent extends AjaxLink {
 
     component.replaceWith(page);
     _target.addComponent(page.getParent());
-    ((EFapsSession) (Session.get())).setSideMenuSelected(this);
+    ((EFapsSession) (Session.get()))
+        .setListMenuSelectedItem(this.menukey, this);
   }
 
 }

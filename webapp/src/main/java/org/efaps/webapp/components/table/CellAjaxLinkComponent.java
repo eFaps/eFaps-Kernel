@@ -29,6 +29,7 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.components.AbstractParentAjaxLink;
 import org.efaps.webapp.components.listmenu.ListMenuUpdate;
+import org.efaps.webapp.pages.ContentContainerPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
@@ -37,9 +38,12 @@ import org.efaps.webapp.pages.WebTablePage;
  * @version $Id$
  */
 public class CellAjaxLinkComponent extends AbstractParentAjaxLink {
+
   private static final long serialVersionUID = 1L;
 
   private final String label;
+
+  private int step = 1;
 
   private final String oid;
 
@@ -57,13 +61,13 @@ public class CellAjaxLinkComponent extends AbstractParentAjaxLink {
   }
 
   @Override
-  protected void onComponentTagBody(MarkupStream _markupStream,
-      ComponentTag _openTag) {
+  protected void onComponentTagBody(final MarkupStream _markupStream,
+                                    final ComponentTag _openTag) {
     super.replaceComponentTagBody(_markupStream, _openTag, this.label);
   }
 
   @Override
-  public void onClick(AjaxRequestTarget target) {
+  public void onClick(final AjaxRequestTarget _target) {
     Instance instance = null;
     if (this.oid != null) {
       instance = new Instance(oid);
@@ -78,7 +82,7 @@ public class CellAjaxLinkComponent extends AbstractParentAjaxLink {
       para.add("oid", this.oid);
 
       if (isFirstStep()) {
-        this.firstStep(target, menu, para);
+        this.firstStep(_target, menu, para);
       } else {
         this.secondStep(menu, para);
       }
@@ -89,8 +93,6 @@ public class CellAjaxLinkComponent extends AbstractParentAjaxLink {
     }
   }
 
-  private int step = 1;
-
   private boolean isFirstStep() {
     if (step == 1) {
       step = 2;
@@ -100,9 +102,10 @@ public class CellAjaxLinkComponent extends AbstractParentAjaxLink {
     }
   }
 
-  private void firstStep(AjaxRequestTarget _target, final Menu _menu,
-      final PageParameters _parameters) {
-    ListMenuUpdate.update(_target, _menu, _parameters, this.oid);
+  private void firstStep(final AjaxRequestTarget _target, final Menu _menu,
+                         final PageParameters _parameters) {
+    ListMenuUpdate.update(_target, ContentContainerPage.LISTMENU, _menu,
+        _parameters, this.oid);
   }
 
   private void secondStep(final Menu _menu, final PageParameters _parameters) {

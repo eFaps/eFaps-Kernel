@@ -41,6 +41,8 @@ public class ContentContainerPage extends WebPage {
 
   private static final long serialVersionUID = 3169723830151134904L;
 
+  public static String LISTMENU = "MainListMenu";
+
   public ContentContainerPage(PageParameters _parameters) {
     super(PageMap.forName(MainPage.INLINEFRAMENAME));
     final ClientProperties properties =
@@ -56,15 +58,19 @@ public class ContentContainerPage extends WebPage {
     add(parentcontainer);
     parentcontainer.setOrientation(DojoSplitContainer.ORIENTATION_HORIZONTAL);
 
-    parentcontainer.add(new ListMenuPanel("eFapsListMenu", _parameters));
+    DojoSimpleContainer containerlinks =
+      new DojoSimpleContainer("containerlinks", "Menu");
+    parentcontainer.add(containerlinks);
+    containerlinks.add(new ListMenuPanel("eFapsListMenu", LISTMENU,
+        _parameters));
 
-    DojoSimpleContainer container =
+    DojoSimpleContainer containerrechts =
         new DojoSimpleContainer("containerrechts", "Content");
-    parentcontainer.add(container);
-    //
+    parentcontainer.add(containerrechts);
+   
     WebMarkupContainer parent = new WebMarkupContainer("aktParent");
     parent.setOutputMarkupId(true);
-    container.add(parent);
+    containerrechts.add(parent);
     InlineFrame inline =
         new InlineFrame("eFapsContentContainerFrame", PageMap
             .forName("content"), WebFormPage.class, _parameters);

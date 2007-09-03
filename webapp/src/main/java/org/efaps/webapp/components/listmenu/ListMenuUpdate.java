@@ -32,20 +32,27 @@ import org.apache.wicket.markup.html.list.ListView;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.webapp.EFapsSession;
+import org.efaps.webapp.components.listmenu.ListMenuPanel.Rows;
 import org.efaps.webapp.models.MenuItemModel;
 
+/**
+ * @author jmo
+ * @version $Id$
+ * 
+ */
 public class ListMenuUpdate {
 
-  public static void update(AjaxRequestTarget _target, Menu _menu,
-      PageParameters _parameters, final String _oid) {
+  public static void update(final AjaxRequestTarget _target,
+                            final String _menukey, final Menu _menu,
+                            final PageParameters _parameters, final String _oid) {
 
     ListMenuLinkComponent comp =
-        ((EFapsSession) (Session.get())).getSideMenuSelected();
+        ((EFapsSession) (Session.get())).getListMenuSelectedItem(_menukey);
     MarkupContainer listitem = comp.findParent(ListItem.class);
 
     Iterator<?> childs = listitem.iterator();
     ListMenuPanel newmenu = null;
-    ListView view = null;
+    Rows view = null;
     int level = ((MenuItemModel) comp.getModel()).getLevel();
     while (childs.hasNext()) {
 
@@ -60,7 +67,7 @@ public class ListMenuUpdate {
     while (childs.hasNext()) {
       Object child = childs.next();
       if (child instanceof ListView) {
-        view = (ListView) child;
+        view = (Rows) child;
         break;
       }
     }
@@ -98,7 +105,7 @@ public class ListMenuUpdate {
 
       }
     } else {
-      newmenu = new ListMenuPanel("nested", _parameters, level + 1);
+      newmenu = new ListMenuPanel("nested", _menukey, _parameters, level + 1);
       listitem.replace(newmenu);
     }
 

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.Session;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -31,6 +32,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.wicketstuff.dojo.markup.html.container.DojoPanelContainer;
 
+import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.models.MenuItemModel;
 
 /**
@@ -41,15 +43,25 @@ public class ListMenuPanel extends DojoPanelContainer {
 
   private static final long serialVersionUID = 1L;
 
-  public ListMenuPanel(final String _id, final PageParameters _parameters) {
-    this(_id, _parameters, 0);
+  /**
+   * this Instancevariable holds the key wich is used to retrieve a item of this
+   * ListMenuPanel from the Map in the Session
+   * {@link #org.efaps.webapp.EFapsSession}
+   */
+  private final String menukey;
+
+  public ListMenuPanel(final String _id, final String _menukey,
+                       final PageParameters _parameters) {
+    this(_id, _menukey, _parameters, 0);
   }
 
-  public ListMenuPanel(final String _id, final PageParameters _parameters,
-                       final int _level) {
+  
+  public ListMenuPanel(final String _id, final String _menukey,
+                       final PageParameters _parameters, final int _level) {
     super(_id, "noTitel");
+    this.menukey = _menukey;
     setVersioned(false);
-    add(HeaderContributor.forCss(getClass(), "listmenu.css"));
+    add(HeaderContributor.forCss(getClass(), "ListMenuPanel.css"));
     try {
 
       MenuItemModel model =
@@ -64,7 +76,17 @@ public class ListMenuPanel extends DojoPanelContainer {
       for (MenuItemModel item : model.getChilds()) {
         item.setLevel(_level);
       }
-      add(new Rows("rows", menu));
+      add(new Rows("rows", _menukey, menu));
+
+      if (_level > 0) {
+        ListMenuLinkComponent comp =
+            ((EFapsSession) (Session.get())).getListMenuSelectedItem(_menukey);
+        Rows row = (Rows) comp.findParent(Rows.class);
+
+        List<Object> list = row.getList();
+        final int index = list.indexOf(comp.getModel());
+        list.add(index + 1, menu);
+      }
 
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -73,27 +95,37 @@ public class ListMenuPanel extends DojoPanelContainer {
 
   }
 
-  public ListMenuPanel(final String _id, final List<?> _modelObject) {
-    super(_id, "noTitel");
+  public String getMenuKey() {
+    return this.menukey;
+  }
 
+  public ListMenuPanel(final String _id, final String _menukey,
+                       final List<?> _modelObject) {
+    super(_id, "noTitel");
+    this.menukey = _menukey;
     setVersioned(false);
-    add(new Rows("rows", _modelObject));
+    add(new Rows("rows", _menukey, _modelObject));
 
   }
 
-  public ListMenuPanel(String _id) {
+  public ListMenuPanel(String _id, String _menukey) {
     super(_id, "noTitel");
+    this.menukey = _menukey;
   }
 
   /**
    * The list class.
    */
-  private static class Rows extends ListView {
+  public static class Rows extends ListView {
 
     private static final long serialVersionUID = 1L;
 
-    public Rows(String id, List<?> childs) {
+    private final String menukey;
+
+    public Rows(String id, String _menukey, List<?> childs) {
       super(id, childs);
+      this.menukey = _menukey;
+      setReuseItems(true);
     }
 
     protected void populateItem(final ListItem _listItem) {
@@ -102,7 +134,7 @@ public class ListMenuPanel extends DojoPanelContainer {
       if (modelObject instanceof List) {
         // create a panel that renders the sub lis
         ListMenuPanel nested =
-            new ListMenuPanel("nested", (List<?>) modelObject);
+            new ListMenuPanel("nested", this.menukey, (List<?>) modelObject);
         _listItem.add(nested);
         // if the current element is a list, we create a dummy row/
         // label element
@@ -112,8 +144,6 @@ public class ListMenuPanel extends DojoPanelContainer {
         WebMarkupContainer row = new WebMarkupContainer("row");
         row.setVisible(false);
         row.setOutputMarkupPlaceholderTag(true);
-        row.add(new WebMarkupContainer("link"));
-        row.add(new WebMarkupContainer("removelink"));
         _listItem.add(row);
       } else {
         // if the current element is not a list, we create a dummy panel
@@ -121,7 +151,7 @@ public class ListMenuPanel extends DojoPanelContainer {
         // to confirm to our HTML definition, and set this panel's
         // visibility
         // property to false to avoid having the UL tag rendered
-        ListMenuPanel nested = new ListMenuPanel("nested");
+        ListMenuPanel nested = new ListMenuPanel("nested", this.menukey);
         nested.setVisible(false);
         nested.setOutputMarkupPlaceholderTag(true);
         _listItem.add(nested);
@@ -131,17 +161,22 @@ public class ListMenuPanel extends DojoPanelContainer {
         WebMarkupContainer row = new WebMarkupContainer("row");
         MenuItemModel model = (MenuItemModel) modelObject;
 
-        ListMenuLinkComponent link = new ListMenuLinkComponent("link", model);
+        ListMenuLinkComponent link =
+            new ListMenuLinkComponent("link", this.menukey, model);
         link.add(new Label("label", model.getLabel()));
         row.add(link);
         link.setOutputMarkupId(true);
 
         if (model.hasChilds() && (this.findParent(ListItem.class) != null)) {
           row.add(new ListMenuRemoveLinkComponent("removelink", model));
+          row.add(new ListMenuGoIntoLinkComponent("gointolink", model));
         } else {
           WebMarkupContainer empty = new WebMarkupContainer("removelink");
           empty.setVisible(false);
           row.add(empty);
+          WebMarkupContainer empty2 = new WebMarkupContainer("gointolink");
+          empty2.setVisible(false);
+          row.add(empty2);
         }
         _listItem.add(row);
       }
