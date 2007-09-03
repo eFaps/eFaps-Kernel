@@ -230,8 +230,8 @@ public class TableModel extends ModelAbstract {
   }
 
   private void executeRowResult(
-      final Map<Instance, List<Instance>> _instMapper, final ListQuery _query)
-      throws Exception {
+                                final Map<Instance, List<Instance>> _instMapper,
+                                final ListQuery _query) throws Exception {
     while (_query.next()) {
 
       // get all found oids (typically more than one if it is an expand)
@@ -274,7 +274,9 @@ public class TableModel extends ModelAbstract {
           strValue = "";
         }
         if (field.getAlternateOID() != null) {
-          oid = field.getAlternateOID();
+          Instance inst =
+              new Instance((String) _query.getValue(field.getAlternateOID()));
+          oid = inst.getOid();
         } else {
           oid = instance.getOid();
         }
@@ -307,6 +309,7 @@ public class TableModel extends ModelAbstract {
       }
       final int index = sortKey;
       Collections.sort(this.values, new Comparator<RowModel>() {
+
         public int compare(RowModel _o1, RowModel _o2) {
 
           String a1 = (_o1.getValues().get(index)).getCellValue();
