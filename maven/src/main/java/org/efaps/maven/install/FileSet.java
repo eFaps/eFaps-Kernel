@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * 
  * @author tmo
- * @version $Id: FileSet.java 609 2007-01-07 18:34:38 +0000 (Sun, 07 Jan 2007)
- *          tmo $
+ * @version $Id$
  */
 public class FileSet implements FileFilter {
 
@@ -72,21 +71,21 @@ public class FileSet implements FileFilter {
    * <ul>
    * <li>if value is not null, the starting directory is set to this value</li>
    * <li>if value is null, the expression is not null and not a string with
-   * with zero length, the expression is evaluted and used as starting directory</li>
+   * 	 with zero length, the expression is evaluted and used as starting 
+   * 	 directory</li>
    * </ul>
    * 
-   * @param _expr
-   *          expression used to evalute the starting directory (expression is
-   *          evaluted if not null or zero string)
-   * @param _value
-   *          hard coded value (is used if not null)
+   * @param _expr	expression used to evalute the starting directory (expression is
+   *          		evaluted if not null or zero string)
+   * @param _value 	hard coded value (is used if not null)
    * @see #directory
    */
+  @SuppressWarnings("unchecked")
   public void setDirectory(final String _expr, final String _value)
-                                                                   throws Exception {
-    if (_value != null) {
+                                                           throws Exception {
+    if (_value != null)  {
       this.directory = _value;
-    } else if ((_expr != null) && (_expr.length() > 0)) {
+    } else if ((_expr != null) && (_expr.length() > 0))  {
       JexlContext jexlContext = JexlHelper.createContext();
       jexlContext.getVars().put("System", System.class);
       Expression jexlExpr = ExpressionFactory.createExpression(_expr);
@@ -97,8 +96,7 @@ public class FileSet implements FileFilter {
   /**
    * Adds an regular expression for the directory names.
    * 
-   * @param _directory
-   *          regular expression for directories
+   * @param _directory	regular expression for directories
    * @see #includeDirs
    */
   public void addIncludeDir(final String _directory) {
@@ -157,8 +155,7 @@ public class FileSet implements FileFilter {
    * Test, if the given file /directiry implements the defined rules for this
    * fileset.
    * 
-   * @param _file
-   *          file to set
+   * @param _file	file to set
    * @return <i>true</i> if the file / directory
    */
   public boolean accept(final File _file) {
