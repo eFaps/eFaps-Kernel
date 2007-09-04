@@ -7,33 +7,36 @@
   background-color: #008800;
 }
 
-.eFapsListMenuHeader:hover,.eFapsListMenuItem:hover {
+.eFapsListMenuHeader:hover,.eFapsListMenuTable:hover,.eFapsListMenuItem:hover {
   background-color: #96d265;
   cursor: pointer;
-}
-
-.eFapsListMenuItemLink:hover {
-  background-color: #96d265;
   color: #FFF;
-  cursor: pointer;
 }
 
-.eFapsListMenuItem {
+.eFapsListMenuTable {
   background-color: #96d265;
   width: 100%;
   border: 0;
   border-bottom: 1px solid #fff;
 }
 
-.eFapsListMenuItemLink {
+.eFapsListMenuItem,.eFapsListMenuHeader {
   background-color: #d0edb8;
   color: #008800;
   padding: 0px;
   text-decoration: none;
-  padding-left: 20px;
+  vertical-align: top;
 }
 
 .eFapsListMenuHeader {
+  font-weight: bold;
+}
+
+.eFapsListMenuHeader span {
+  padding-left: 2px;
+}
+
+.eFapsListMenuSelected {
   background-color: #008800;
   padding: 3px;
   color: #FFF;
@@ -62,4 +65,10 @@
 .eFapsListMenuGoInto:hover {
   background-color: #96d265;
   color: red;
+}
+
+img.eFapsListMenuIcon {
+  vertical-align: bottom;
+  width: 16px;
+  height: 16px;
 }

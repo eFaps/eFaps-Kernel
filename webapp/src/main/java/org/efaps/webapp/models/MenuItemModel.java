@@ -34,6 +34,7 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.MenuAbstract;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
+import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 
 /**
@@ -48,7 +49,7 @@ public class MenuItemModel implements IModel {
   private static final long serialVersionUID = 505704924081527139L;
 
   /** Url to the image of this menu item. */
-  public final String image;
+  private String image;
 
   /** Label of this menu item. */
   public final String label;
@@ -102,6 +103,7 @@ public class MenuItemModel implements IModel {
         }
         query.close();
       }
+
     }
     this.label = label;
     this.description = "";
@@ -136,6 +138,18 @@ public class MenuItemModel implements IModel {
   public UUID getUUID() {
     return uuid;
 
+  }
+
+  public String getImage() {
+    return this.image;
+  }
+
+  public String getTypeImage() {
+    String ret = null;
+    if (this.oid != null) {
+      ret = new Instance(this.oid).getType().getIcon();
+    }
+    return ret;
   }
 
   public void setURL(String _url) {

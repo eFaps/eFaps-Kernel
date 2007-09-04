@@ -23,12 +23,15 @@ package org.efaps.webapp.components.listmenu;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.webapp.EFapsSession;
@@ -38,7 +41,6 @@ import org.efaps.webapp.models.MenuItemModel;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class ListMenuUpdate {
 
@@ -46,8 +48,9 @@ public class ListMenuUpdate {
                             final String _menukey, final Menu _menu,
                             final PageParameters _parameters, final String _oid) {
 
-    ListMenuLinkComponent comp =
-        ((EFapsSession) (Session.get())).getListMenuSelectedItem(_menukey);
+    Component comp =
+        ((EFapsSession) (Session.get())).getSelectedComponent(_menukey);
+    deselectItem(_menukey, comp, _target);
     MarkupContainer listitem = comp.findParent(ListItem.class);
 
     Iterator<?> childs = listitem.iterator();
@@ -103,13 +106,56 @@ public class ListMenuUpdate {
           e.printStackTrace();
         }
 
+      } else {
+        setSelectedItem(_menukey, newmenu.getHeaderComponent(), _target);
       }
     } else {
       newmenu = new ListMenuPanel("nested", _menukey, _parameters, level + 1);
+
       listitem.replace(newmenu);
     }
 
     _target.addComponent(newmenu);
 
+  }
+
+  public static void setSelectedItem(final String _menukey,
+                                     final Component _component) {
+    setSelectedItem(_menukey, _component, null);
+
+  }
+
+  public static void setSelectedItem(final String _menukey,
+                                     final Component _component,
+                                     final AjaxRequestTarget _target) {
+    _component.add(new AttributeModifier("class", new Model(
+        "eFapsListMenuSelected")));
+    EFapsSession session = (EFapsSession) (Session.get());
+    Component previous = session.getSelectedComponent(_menukey);
+
+    if (previous != null && !previous.equals(_component)) {
+      if (previous instanceof ListMenuLinkComponent) {
+        String styleClass =
+            ((ListMenuLinkComponent) previous).getDefaultStyleClass();
+        previous.add(new AttributeModifier("class", new Model(styleClass)));
+      }
+    }
+    session.setSelectedComponent(_menukey, _component);
+    if (_target != null) {
+      _target.addComponent(_component);
+      if (previous != null) {
+        _target.addComponent(previous);
+      }
+    }
+  }
+
+  public static void deselectItem(final String _menukey,
+                                  final Component _component,
+                                  final AjaxRequestTarget _target) {
+    String styleClass =
+        ((ListMenuLinkComponent) _component).getDefaultStyleClass();
+    _component.add(new AttributeModifier("class", new Model(styleClass)));
+    _target.addComponent(_component);
+    ((EFapsSession) (Session.get())).setSelectedComponent(_menukey, null);
   }
 }

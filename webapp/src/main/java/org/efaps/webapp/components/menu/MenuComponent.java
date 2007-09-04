@@ -218,12 +218,12 @@ public class MenuComponent extends AbstractParentMarkupContainer {
       final StringBuilder _prefix) {
 
     _html.append("['");
-    if (_menuItem.image != null) {
+    if (_menuItem.getImage() != null) {
       if (_isMain) {
-        _html.append("<img src=\"/..").append(_menuItem.image).append(
+        _html.append("<img src=\"/..").append(_menuItem.getImage()).append(
             "\" class=\"eFapsMenuMainImage\"/>");
       } else {
-        _html.append("<img src=\"/..").append(_menuItem.image).append(
+        _html.append("<img src=\"/..").append(_menuItem.getImage()).append(
             "\" class=\"eFapsMenuSubImage\"/>");
       }
     } else if (!_isMain) {

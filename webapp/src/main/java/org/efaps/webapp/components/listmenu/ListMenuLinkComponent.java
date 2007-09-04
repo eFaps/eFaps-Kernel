@@ -22,7 +22,6 @@ package org.efaps.webapp.components.listmenu;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
@@ -46,26 +45,55 @@ public class ListMenuLinkComponent extends AjaxLink {
 
   private final String menukey;
 
+  private int padding = 12;
+
+  private int paddingAddItem = 18;
+
+  private String defaultStyleClass;
+
+  private boolean isInit;
+
   public ListMenuLinkComponent(final String _id, final String _menukey,
                                final IModel _model) {
     super(_id, _model);
     this.menukey = _menukey;
+    this.isInit = true;
+
   }
 
   @Override
   protected void onComponentTag(ComponentTag tag) {
     super.onComponentTag(tag);
     MenuItemModel model = (MenuItemModel) super.getModel();
-    int padding = model.getLevel() * 4 + 1;
+    int padding = model.getLevel() * this.padding;
     if (((MenuItemModel) super.getModel()).hasChilds()
         && (this.findParent(ListItem.class) != null)) {
       tag.put("style", "padding-left:" + padding + "px;");
       tag.put("class", "eFapsListMenuHeader");
+      this.defaultStyleClass = "eFapsListMenuHeader";
+      if (this.isInit) {
+        ((EFapsSession) this.getSession()).setSelectedComponent(this.menukey,
+            this);
+        tag.put("class", "eFapsListMenuSelected");
+
+        ListMenuPanel parentListMenuPanel =
+            (ListMenuPanel) this.findParent(ListMenuPanel.class);
+        parentListMenuPanel.setHeaderComponent(this);
+        this.isInit = false;
+      } else {
+        tag.put("class", "eFapsListMenuHeader");
+      }
     } else {
+      padding += this.paddingAddItem;
       tag.put("style", "padding-left:" + padding + "px;");
-      tag.put("class", "eFapsListMenuItemLink");
+      tag.put("class", "eFapsListMenuItem");
+      this.defaultStyleClass = "eFapsListMenuItem";
     }
 
+  }
+
+  public String getDefaultStyleClass() {
+    return this.defaultStyleClass;
   }
 
   @Override
@@ -95,8 +123,6 @@ public class ListMenuLinkComponent extends AjaxLink {
 
     component.replaceWith(page);
     _target.addComponent(page.getParent());
-    ((EFapsSession) (Session.get()))
-        .setListMenuSelectedItem(this.menukey, this);
+    ListMenuUpdate.setSelectedItem(this.menukey, this, _target);
   }
-
 }

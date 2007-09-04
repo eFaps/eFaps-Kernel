@@ -23,11 +23,10 @@ package org.efaps.webapp;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Request;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebSession;
-
-import org.efaps.webapp.components.listmenu.ListMenuLinkComponent;
 
 /**
  * @author jmo
@@ -43,8 +42,8 @@ public class EFapsSession extends WebSession {
 
   private int contentcontainerversion;
 
-  private final Map<String, ListMenuLinkComponent> listmenuitemmap =
-      new HashMap<String, ListMenuLinkComponent>();
+  private final Map<String, Component> componentmap =
+      new HashMap<String, Component>();
 
   private IModel model;
 
@@ -63,13 +62,17 @@ public class EFapsSession extends WebSession {
     return this.contentcontainerversion;
   }
 
-  public void setListMenuSelectedItem(final String _menukey,
-      final ListMenuLinkComponent _selected) {
-    this.listmenuitemmap.put(_menukey, _selected);
+  public void setSelectedComponent(final String _key, final Component _component) {
+    this.componentmap.remove(_key);
+    this.componentmap.put(_key, _component);
   }
 
-  public ListMenuLinkComponent getListMenuSelectedItem(final String _menukey) {
-    return this.listmenuitemmap.get(_menukey);
+  public Component getSelectedComponent(final String _key) {
+    return this.componentmap.get(_key);
+  }
+
+  public void removeSelectedComponent(final String _key) {
+    this.componentmap.remove(_key);
   }
 
   public void setOpenerModel(final IModel _model) {

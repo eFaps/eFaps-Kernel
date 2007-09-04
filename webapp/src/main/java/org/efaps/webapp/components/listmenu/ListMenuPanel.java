@@ -23,6 +23,7 @@ package org.efaps.webapp.components.listmenu;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.behavior.HeaderContributor;
@@ -30,9 +31,11 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.model.Model;
 import org.wicketstuff.dojo.markup.html.container.DojoPanelContainer;
 
 import org.efaps.webapp.EFapsSession;
+import org.efaps.webapp.components.StaticImageComponent;
 import org.efaps.webapp.models.MenuItemModel;
 
 /**
@@ -50,12 +53,13 @@ public class ListMenuPanel extends DojoPanelContainer {
    */
   private final String menukey;
 
+  private Component header;
+
   public ListMenuPanel(final String _id, final String _menukey,
                        final PageParameters _parameters) {
     this(_id, _menukey, _parameters, 0);
   }
 
-  
   public ListMenuPanel(final String _id, final String _menukey,
                        final PageParameters _parameters, final int _level) {
     super(_id, "noTitel");
@@ -79,8 +83,8 @@ public class ListMenuPanel extends DojoPanelContainer {
       add(new Rows("rows", _menukey, menu));
 
       if (_level > 0) {
-        ListMenuLinkComponent comp =
-            ((EFapsSession) (Session.get())).getListMenuSelectedItem(_menukey);
+        Component comp =
+            ((EFapsSession) (Session.get())).getSelectedComponent(_menukey);
         Rows row = (Rows) comp.findParent(Rows.class);
 
         List<Object> list = row.getList();
@@ -164,24 +168,43 @@ public class ListMenuPanel extends DojoPanelContainer {
         ListMenuLinkComponent link =
             new ListMenuLinkComponent("link", this.menukey, model);
         link.add(new Label("label", model.getLabel()));
-        row.add(link);
-        link.setOutputMarkupId(true);
 
-        if (model.hasChilds() && (this.findParent(ListItem.class) != null)) {
+        link.setOutputMarkupId(true);
+        row.add(link);
+        if (model.hasChilds()) {
+          String imageUrl = model.getImage();
+          if (imageUrl == null) {
+            imageUrl = model.getTypeImage();
+          }
+          if (imageUrl != null) {
+            link.add(new StaticImageComponent("icon", new Model(imageUrl)));
+          } else {
+            link.add(new WebMarkupContainer("icon").setVisible(false));
+          }
+        } else {
+          link.add(new WebMarkupContainer("icon").setVisible(false));
+        }
+
+        if (model.hasChilds() && this.findParent(ListItem.class) != null) {
           row.add(new ListMenuRemoveLinkComponent("removelink", model));
           row.add(new ListMenuGoIntoLinkComponent("gointolink", model));
         } else {
-          WebMarkupContainer empty = new WebMarkupContainer("removelink");
-          empty.setVisible(false);
-          row.add(empty);
-          WebMarkupContainer empty2 = new WebMarkupContainer("gointolink");
-          empty2.setVisible(false);
-          row.add(empty2);
+          row.add(new WebMarkupContainer("removelink").setVisible(false));
+          row.add(new WebMarkupContainer("gointolink").setVisible(false));
         }
         _listItem.add(row);
       }
 
     }
+  }
+
+  public void setHeaderComponent(Component _header) {
+    this.header = _header;
+
+  }
+
+  public Component getHeaderComponent() {
+    return this.header;
   }
 
 }
