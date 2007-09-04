@@ -27,6 +27,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.webapp.EFapsSession;
+
 /**
  * @author jmo
  * @version $Id$
@@ -40,7 +42,7 @@ public class ListMenuRemoveLinkComponent extends AjaxLink {
   }
 
   @Override
-  public void onClick(AjaxRequestTarget target) {
+  public void onClick(final AjaxRequestTarget _target) {
 
     ListMenuPanel listmenupanel =
         (ListMenuPanel) this.findParent(ListMenuPanel.class);
@@ -51,7 +53,21 @@ public class ListMenuRemoveLinkComponent extends AjaxLink {
     int del = list.indexOf(this.getModel());
     list.remove(del);
     list.remove(del);
-    target.addComponent(listmenupanel);
+    _target.addComponent(listmenupanel);
+
+    ListMenuPanel parentlistmenupanel =
+        (ListMenuPanel) listmenupanel.findParent(ListMenuPanel.class);
+    while (parentlistmenupanel.getHeaderComponent() == null) {
+      parentlistmenupanel =
+          (ListMenuPanel) parentlistmenupanel.findParent(ListMenuPanel.class);
+    }
+    ((EFapsSession) this.getSession()).removeSelectedComponent(listmenupanel
+        .getMenuKey());
+
+    if (parentlistmenupanel.getHeaderComponent() instanceof ListMenuLinkComponent) {
+      _target.appendJavascript(((ListMenuLinkComponent) parentlistmenupanel
+          .getHeaderComponent()).getCallbackScript());
+    }
 
   }
 

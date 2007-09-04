@@ -25,7 +25,6 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.Session;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -34,7 +33,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.Model;
 import org.wicketstuff.dojo.markup.html.container.DojoPanelContainer;
 
-import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.StaticImageComponent;
 import org.efaps.webapp.models.MenuItemModel;
 
@@ -53,7 +51,11 @@ public class ListMenuPanel extends DojoPanelContainer {
    */
   private final String menukey;
 
+  private int padding = 10;
+
   private Component header;
+
+  private int paddingAdd = 18;
 
   public ListMenuPanel(final String _id, final String _menukey,
                        final PageParameters _parameters) {
@@ -62,6 +64,12 @@ public class ListMenuPanel extends DojoPanelContainer {
 
   public ListMenuPanel(final String _id, final String _menukey,
                        final PageParameters _parameters, final int _level) {
+    this(_id, _menukey, _parameters, 0, null);
+  }
+
+  public ListMenuPanel(final String _id, final String _menukey,
+                       final PageParameters _parameters, final int _level,
+                       final Component _selectedparent) {
     super(_id, "noTitel");
     this.menukey = _menukey;
     setVersioned(false);
@@ -82,25 +90,32 @@ public class ListMenuPanel extends DojoPanelContainer {
       }
       add(new Rows("rows", _menukey, menu));
 
-      if (_level > 0) {
-        Component comp =
-            ((EFapsSession) (Session.get())).getSelectedComponent(_menukey);
-        Rows row = (Rows) comp.findParent(Rows.class);
-
-        List<Object> list = row.getList();
-        final int index = list.indexOf(comp.getModel());
-        list.add(index + 1, menu);
-      }
+      // if (_level > 0 && _selectedparent != null) {
+      //
+      // Rows row = (Rows) _selectedparent.findParent(Rows.class);
+      //
+      // // List<Object> list = row.getList();
+      // // final int index = list.indexOf(_selectedparent.getModel());
+      // // list.add(index + 1, menu);
+      // System.out.print("");
+      // }
 
     } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
   }
 
   public String getMenuKey() {
     return this.menukey;
+  }
+
+  public int getPadding() {
+    return this.padding;
+  }
+
+  public int getPaddingAdd() {
+    return this.paddingAdd;
   }
 
   public ListMenuPanel(final String _id, final String _menukey,
@@ -181,16 +196,20 @@ public class ListMenuPanel extends DojoPanelContainer {
           } else {
             link.add(new WebMarkupContainer("icon").setVisible(false));
           }
+
         } else {
           link.add(new WebMarkupContainer("icon").setVisible(false));
+
         }
 
         if (model.hasChilds() && this.findParent(ListItem.class) != null) {
           row.add(new ListMenuRemoveLinkComponent("removelink", model));
           row.add(new ListMenuGoIntoLinkComponent("gointolink", model));
+          row.add(new ListMenuCollapseLinkComponent("collapse", model));
         } else {
           row.add(new WebMarkupContainer("removelink").setVisible(false));
           row.add(new WebMarkupContainer("gointolink").setVisible(false));
+          row.add(new WebMarkupContainer("collapse").setVisible(false));
         }
         _listItem.add(row);
       }

@@ -22,9 +22,10 @@ package org.efaps.webapp.components.listmenu;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.model.IModel;
@@ -39,15 +40,11 @@ import org.efaps.webapp.pages.WebTablePage;
  * @author jmo
  * @version $Id$
  */
-public class ListMenuLinkComponent extends AjaxLink {
+public class ListMenuLinkComponent extends WebMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
   private final String menukey;
-
-  private int padding = 12;
-
-  private int paddingAddItem = 18;
 
   private String defaultStyleClass;
 
@@ -58,18 +55,15 @@ public class ListMenuLinkComponent extends AjaxLink {
     super(_id, _model);
     this.menukey = _menukey;
     this.isInit = true;
-
+    this.add(new AjaxClickBehaviour());
   }
 
   @Override
   protected void onComponentTag(ComponentTag tag) {
     super.onComponentTag(tag);
     MenuItemModel model = (MenuItemModel) super.getModel();
-    int padding = model.getLevel() * this.padding;
-    if (((MenuItemModel) super.getModel()).hasChilds()
-        && (this.findParent(ListItem.class) != null)) {
-      tag.put("style", "padding-left:" + padding + "px;");
-      tag.put("class", "eFapsListMenuHeader");
+
+    if (model.hasChilds() && (this.findParent(ListItem.class) != null)) {
       this.defaultStyleClass = "eFapsListMenuHeader";
       if (this.isInit) {
         ((EFapsSession) this.getSession()).setSelectedComponent(this.menukey,
@@ -81,10 +75,21 @@ public class ListMenuLinkComponent extends AjaxLink {
         parentListMenuPanel.setHeaderComponent(this);
         this.isInit = false;
       } else {
-        tag.put("class", "eFapsListMenuHeader");
+        if (((EFapsSession) this.getSession()).getSelectedComponent(
+            this.menukey).equals(this)) {
+          tag.put("class", "eFapsListMenuSelected");
+        } else {
+
+          tag.put("class", "eFapsListMenuHeader");
+        }
       }
     } else {
-      padding += this.paddingAddItem;
+      ListMenuPanel listmenupanel =
+          (ListMenuPanel) this.findParent(ListMenuPanel.class);
+      int padding =
+          model.getLevel() * listmenupanel.getPadding()
+              + listmenupanel.getPaddingAdd();
+
       tag.put("style", "padding-left:" + padding + "px;");
       tag.put("class", "eFapsListMenuItem");
       this.defaultStyleClass = "eFapsListMenuItem";
@@ -96,33 +101,53 @@ public class ListMenuLinkComponent extends AjaxLink {
     return this.defaultStyleClass;
   }
 
-  @Override
-  public void onClick(final AjaxRequestTarget _target) {
+  public String getCallbackScript() {
+    return ((AjaxClickBehaviour) super.getBehaviors().get(0))
+        .getCallbackScript();
+  }
 
-    MenuItemModel model = (MenuItemModel) super.getModel();
-    CommandAbstract cmd = model.getCommand();
-    PageParameters para = new PageParameters();
-    para.add("oid", model.getOid());
-    para.add("command", cmd.getName());
+  private class AjaxClickBehaviour extends AjaxEventBehavior {
 
-    InlineFrame page;
-    if (cmd.getTargetTable() != null) {
-      page =
-          new InlineFrame("eFapsContentContainerFrame", PageMap
-              .forName("content"), WebTablePage.class, para);
-    } else {
-      page =
-          new InlineFrame("eFapsContentContainerFrame", PageMap
-              .forName("content"), WebFormPage.class, para);
+    private static final long serialVersionUID = 1L;
+
+    public AjaxClickBehaviour() {
+      super("onclick");
     }
-    InlineFrame component =
-        (InlineFrame) getPage()
-            .get(
-                "eFapsSplitContainer:containerrechts:aktParent:eFapsContentContainerFrame");
-    page.setOutputMarkupId(true);
 
-    component.replaceWith(page);
-    _target.addComponent(page.getParent());
-    ListMenuUpdate.setSelectedItem(this.menukey, this, _target);
+    public String getCallbackScript() {
+      return super.getCallbackScript().toString();
+
+    }
+
+    @Override
+    protected void onEvent(final AjaxRequestTarget _target) {
+      MenuItemModel model = (MenuItemModel) this.getComponent().getModel();
+
+      CommandAbstract cmd = model.getCommand();
+      PageParameters para = new PageParameters();
+      para.add("oid", model.getOid());
+      para.add("command", cmd.getName());
+
+      InlineFrame page;
+      if (cmd.getTargetTable() != null) {
+        page =
+            new InlineFrame("eFapsContentContainerFrame", PageMap
+                .forName("content"), WebTablePage.class, para);
+      } else {
+        page =
+            new InlineFrame("eFapsContentContainerFrame", PageMap
+                .forName("content"), WebFormPage.class, para);
+      }
+      InlineFrame component =
+          (InlineFrame) getPage()
+              .get(
+                  "eFapsSplitContainer:containerrechts:aktParent:eFapsContentContainerFrame");
+      page.setOutputMarkupId(true);
+
+      component.replaceWith(page);
+      _target.addComponent(page.getParent());
+      ListMenuUpdate.setSelectedItem(menukey, this.getComponent(), _target);
+
+    }
   }
 }

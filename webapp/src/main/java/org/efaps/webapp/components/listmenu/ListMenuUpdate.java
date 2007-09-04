@@ -110,7 +110,8 @@ public class ListMenuUpdate {
         setSelectedItem(_menukey, newmenu.getHeaderComponent(), _target);
       }
     } else {
-      newmenu = new ListMenuPanel("nested", _menukey, _parameters, level + 1);
+      newmenu =
+          new ListMenuPanel("nested", _menukey, _parameters, level + 1, comp);
 
       listitem.replace(newmenu);
     }
@@ -121,31 +122,33 @@ public class ListMenuUpdate {
 
   public static void setSelectedItem(final String _menukey,
                                      final Component _component) {
-    setSelectedItem(_menukey, _component, null);
+    setSelectedItem(_menukey, _component, null, true);
 
   }
 
   public static void setSelectedItem(final String _menukey,
                                      final Component _component,
                                      final AjaxRequestTarget _target) {
+    setSelectedItem(_menukey, _component, _target, true);
+  }
+
+  public static void setSelectedItem(final String _menukey,
+                                     final Component _component,
+                                     final AjaxRequestTarget _target,
+                                     final boolean _deselect) {
     _component.add(new AttributeModifier("class", new Model(
         "eFapsListMenuSelected")));
     EFapsSession session = (EFapsSession) (Session.get());
     Component previous = session.getSelectedComponent(_menukey);
 
-    if (previous != null && !previous.equals(_component)) {
+    if (previous != null && !previous.equals(_component) && _deselect) {
       if (previous instanceof ListMenuLinkComponent) {
-        String styleClass =
-            ((ListMenuLinkComponent) previous).getDefaultStyleClass();
-        previous.add(new AttributeModifier("class", new Model(styleClass)));
+        deselectItem(_menukey, previous, _target);
       }
     }
     session.setSelectedComponent(_menukey, _component);
     if (_target != null) {
       _target.addComponent(_component);
-      if (previous != null) {
-        _target.addComponent(previous);
-      }
     }
   }
 
@@ -155,7 +158,59 @@ public class ListMenuUpdate {
     String styleClass =
         ((ListMenuLinkComponent) _component).getDefaultStyleClass();
     _component.add(new AttributeModifier("class", new Model(styleClass)));
-    _target.addComponent(_component);
-    ((EFapsSession) (Session.get())).setSelectedComponent(_menukey, null);
+    if (_target != null) {
+      _target.addComponent(_component);
+    }
+    ((EFapsSession) (Session.get())).removeSelectedComponent(_menukey);
   }
+
+  /**
+   * checks if the previous is child of the Component _parent, and if true will
+   * not deselect it
+   * 
+   * @param _menukey
+   * @param _component
+   * @param _target
+   * @param _parent
+   */
+  public static void setSelectedItem(final String _menukey,
+                                     final Component _component,
+                                     final AjaxRequestTarget _target,
+                                     final Component _parent) {
+
+    Component selected =
+        ((EFapsSession) Session.get()).getSelectedComponent(_menukey);
+
+    boolean deselect = true;
+    if (selected != null) {
+      if (_parent instanceof MarkupContainer) {
+        Iterator it = ((MarkupContainer) _parent).iterator();
+        while (it.hasNext() && deselect) {
+          deselect = isChild(it.next(), selected);
+        }
+      }
+    }
+
+    setSelectedItem(_menukey, _component, _target, deselect);
+  }
+
+  private static boolean isChild(final Object _child, final Component _parent) {
+    boolean ret = true;
+
+    if (_child instanceof Component) {
+
+      if (_child instanceof MarkupContainer) {
+        Iterator it = ((MarkupContainer) _child).iterator();
+        while (it.hasNext() && ret) {
+          ret = isChild(it.next(), _parent);
+        }
+      }
+      if (_child.equals(_parent)) {
+        return false;
+      }
+    }
+
+    return ret;
+  }
+
 }

@@ -16,8 +16,9 @@
 .eFapsListMenuTable {
   background-color: #96d265;
   width: 100%;
-  border: 0;
-  border-bottom: 1px solid #fff;
+  border-bottom: 2px solid #fff;
+  border-collapse: collapse;
+  height: 18px;
 }
 
 .eFapsListMenuItem,.eFapsListMenuHeader {
@@ -25,11 +26,17 @@
   color: #008800;
   padding: 0px;
   text-decoration: none;
-  vertical-align: top;
+  vertical-align: middle;
+}
+
+.eFapsListCollapse {
+  border-right: 0px;
+  background-color: #d0edb8;
 }
 
 .eFapsListMenuHeader {
   font-weight: bold;
+  padding-left: 1px;
 }
 
 .eFapsListMenuHeader span {
@@ -50,7 +57,7 @@
   color: #FFF;
 }
 
-.eFapsListMenuClose:hover {
+.eFapsListMenuClose:hover  , .eFapsListCollapse:hover {
   background-color: #96d265;
   color: red;
 }
@@ -71,4 +78,8 @@ img.eFapsListMenuIcon {
   vertical-align: bottom;
   width: 16px;
   height: 16px;
+}
+
+.eFapsListCollapse {
+  width: 1%;
 }
