@@ -1,5 +1,6 @@
 body {
   background-color: white;
+  overflow: hidden;
 }
 
 body,th,td,p,div {
@@ -9,7 +10,7 @@ body,th,td,p,div {
 }
 
 #eFapsFrameTitle {
-  position: fixed;
+  position: static;
   top: 0;
   width: 100%;
   margin: 0px;
@@ -20,13 +21,12 @@ body,th,td,p,div {
   height: 18px;
   white-space: nowrap;
   background-color: white;
-  z-index: 1;
 }
 
 #eFapsMenu {
-  position: fixed;
+  position: static;
   width: 100%;
-  top: 24px;
+  top: 0px;
   height: 20px;
   background-color: #EFEBDE;
   border-style: solid;
@@ -34,5 +34,4 @@ body,th,td,p,div {
   border-color: black;
   margin: 0;
   padding: 2px;
-  z-index: 2;
 }

@@ -125,7 +125,7 @@ span {
         bottom: 0px;
         left: 0px;
         right: 0px;
-        overflow: auto;
+        overflow: hidden;
         padding: 0px;
         margin: 0px; 
 /*background-color: green; for tests*/
