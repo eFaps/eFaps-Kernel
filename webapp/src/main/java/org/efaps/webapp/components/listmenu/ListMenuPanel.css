@@ -57,7 +57,7 @@
   color: #FFF;
 }
 
-.eFapsListMenuClose:hover  , .eFapsListCollapse:hover {
+.eFapsListMenuClose:hover,.eFapsListCollapse:hover,.eFapsListMenuGoInto:hover {
   background-color: #96d265;
   color: red;
 }
@@ -67,11 +67,6 @@
   text-align: center;
   width: 1%;
   color: #FFF;
-}
-
-.eFapsListMenuGoInto:hover {
-  background-color: #96d265;
-  color: red;
 }
 
 img.eFapsListMenuIcon {

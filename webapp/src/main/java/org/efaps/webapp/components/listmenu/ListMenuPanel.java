@@ -25,11 +25,14 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.ResourceReference;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.wicketstuff.dojo.markup.html.container.DojoPanelContainer;
 
@@ -43,6 +46,9 @@ import org.efaps.webapp.models.MenuItemModel;
 public class ListMenuPanel extends DojoPanelContainer {
 
   private static final long serialVersionUID = 1L;
+
+  private static final ResourceReference ICON_SUBMENUREMOVE =
+      new ResourceReference(ListMenuPanel.class, "eFapsSubMenuRemove.gif");
 
   /**
    * this Instancevariable holds the key wich is used to retrieve a item of this
@@ -64,12 +70,6 @@ public class ListMenuPanel extends DojoPanelContainer {
 
   public ListMenuPanel(final String _id, final String _menukey,
                        final PageParameters _parameters, final int _level) {
-    this(_id, _menukey, _parameters, 0, null);
-  }
-
-  public ListMenuPanel(final String _id, final String _menukey,
-                       final PageParameters _parameters, final int _level,
-                       final Component _selectedparent) {
     super(_id, "noTitel");
     this.menukey = _menukey;
     setVersioned(false);
@@ -88,17 +88,7 @@ public class ListMenuPanel extends DojoPanelContainer {
       for (MenuItemModel item : model.getChilds()) {
         item.setLevel(_level);
       }
-      add(new Rows("rows", _menukey, menu));
-
-      // if (_level > 0 && _selectedparent != null) {
-      //
-      // Rows row = (Rows) _selectedparent.findParent(Rows.class);
-      //
-      // // List<Object> list = row.getList();
-      // // final int index = list.indexOf(_selectedparent.getModel());
-      // // list.add(index + 1, menu);
-      // System.out.print("");
-      // }
+      add(new Rows("rows", _menukey, menu, model));
 
     } catch (Exception e) {
       // TODO Auto-generated catch block
@@ -119,11 +109,12 @@ public class ListMenuPanel extends DojoPanelContainer {
   }
 
   public ListMenuPanel(final String _id, final String _menukey,
-                       final List<?> _modelObject) {
+                       final List<?> _modelObject, IModel _model) {
     super(_id, "noTitel");
     this.menukey = _menukey;
+    this.setModel(_model);
     setVersioned(false);
-    add(new Rows("rows", _menukey, _modelObject));
+    add(new Rows("rows", _menukey, _modelObject, _model));
 
   }
 
@@ -141,9 +132,13 @@ public class ListMenuPanel extends DojoPanelContainer {
 
     private final String menukey;
 
-    public Rows(String id, String _menukey, List<?> childs) {
+    private final IModel model;
+
+    public Rows(final String id, final String _menukey, final List<?> childs,
+                final IModel _model) {
       super(id, childs);
       this.menukey = _menukey;
+      this.model = _model;
       setReuseItems(true);
     }
 
@@ -153,7 +148,8 @@ public class ListMenuPanel extends DojoPanelContainer {
       if (modelObject instanceof List) {
         // create a panel that renders the sub lis
         ListMenuPanel nested =
-            new ListMenuPanel("nested", this.menukey, (List<?>) modelObject);
+            new ListMenuPanel("nested", this.menukey, (List<?>) modelObject,
+                this.model);
         _listItem.add(nested);
         // if the current element is a list, we create a dummy row/
         // label element
@@ -196,16 +192,25 @@ public class ListMenuPanel extends DojoPanelContainer {
           } else {
             link.add(new WebMarkupContainer("icon").setVisible(false));
           }
-
+          if (model.ancestor != null) {
+            row.add(new ListMenuGoUpLinkComponent("gouplink", model));
+          } else {
+            row.add(new WebMarkupContainer("gouplink").setVisible(false));
+          }
         } else {
           link.add(new WebMarkupContainer("icon").setVisible(false));
-
+          row.add(new WebMarkupContainer("gouplink").setVisible(false));
         }
 
         if (model.hasChilds() && this.findParent(ListItem.class) != null) {
-          row.add(new ListMenuRemoveLinkComponent("removelink", model));
+          ListMenuRemoveLinkComponent remove =
+              new ListMenuRemoveLinkComponent("removelink", model);
+          remove.add(new Image("iconremove", ICON_SUBMENUREMOVE));
+          row.add(remove);
+
           row.add(new ListMenuGoIntoLinkComponent("gointolink", model));
           row.add(new ListMenuCollapseLinkComponent("collapse", model));
+
         } else {
           row.add(new WebMarkupContainer("removelink").setVisible(false));
           row.add(new WebMarkupContainer("gointolink").setVisible(false));

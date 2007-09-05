@@ -34,8 +34,8 @@ import org.efaps.webapp.models.MenuItemModel;
 
 /**
  * @author jmo
- * @version $Id$
- * 
+ * @version $Id: ListMenuCollapseLinkComponent.java 1322 2007-09-04 19:01:16Z
+ *          jmo $
  */
 public class ListMenuCollapseLinkComponent extends AjaxLink {
 
@@ -69,13 +69,20 @@ public class ListMenuCollapseLinkComponent extends AjaxLink {
 
     Rows rows = (Rows) this.findParent(Rows.class);
     ListItem item = (ListItem) this.findParent(ListItem.class);
+    boolean mark = false;
     Iterator<?> it = rows.iterator();
+
     while (it.hasNext()) {
       Component child = (Component) it.next();
-      if (child.equals(item)) {
-      } else {
-        child.setVisible(this.visible);
 
+      if (child.equals(item)) {
+        mark = true;
+      } else if (mark) {
+        if (child.getModelObject() instanceof MenuItemModel) {
+          mark = false;
+        } else {
+          child.setVisible(this.visible);
+        }
       }
     }
     this.visible = !this.visible;

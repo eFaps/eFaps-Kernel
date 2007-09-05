@@ -75,8 +75,8 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
         parentListMenuPanel.setHeaderComponent(this);
         this.isInit = false;
       } else {
-        if (((EFapsSession) this.getSession()).getSelectedComponent(
-            this.menukey).equals(this)) {
+        if (this.equals(((EFapsSession) this.getSession())
+            .getSelectedComponent(this.menukey))) {
           tag.put("class", "eFapsListMenuSelected");
         } else {
 

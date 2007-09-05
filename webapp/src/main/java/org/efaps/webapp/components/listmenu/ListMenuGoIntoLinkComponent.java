@@ -20,8 +20,15 @@
 
 package org.efaps.webapp.components.listmenu;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.model.Model;
 
 import org.efaps.webapp.components.listmenu.ListMenuPanel.Rows;
 import org.efaps.webapp.models.MenuItemModel;
@@ -58,14 +65,60 @@ public class ListMenuGoIntoLinkComponent extends AjaxLink {
     while (rowparent.findParent(Rows.class) != null) {
       rowparent = (Rows) rowparent.findParent(Rows.class);
     }
+
+    MenuItemModel model = (MenuItemModel) listmenupanel.getModel();
+    model.previouslevel = model.getLevel();
+    model.setLevel(0);
+    for (Object child : model.getChilds()) {
+      if (child instanceof MenuItemModel) {
+        MenuItemModel item = (MenuItemModel) child;
+        item.previouslevel = item.getLevel();
+        item.setLevel(0);
+      }
+    }
+
+    List<?> x = getChildModel(rootlistmenupanel);
+
+    model.ancestor = new Model((Serializable) x);
+
     rowparent.removeAll();
     rowparent.setList(row.getList());
-    MenuItemModel model = (MenuItemModel) listmenupanel.getModel();
-    model.setLevel(0);
-    for (MenuItemModel item : model.getChilds()) {
-      item.setLevel(0);
-    }
+
     _target.addComponent(rootlistmenupanel);
 
+  }
+
+  private List<?> getChildModel(final Component _child) {
+    List<Object> model = null;
+
+    if (_child instanceof MarkupContainer) {
+      Iterator<Component> it = ((MarkupContainer) _child).iterator();
+      int i = 0;
+      if (_child instanceof Rows) {
+        model = (List<Object>) _child.getModelObject();
+        if (model.isEmpty()) {
+          model = null;
+        }
+      }
+
+      while (it.hasNext()) {
+        List<?> model2 = getChildModel(it.next());
+        if (model2 != null) {
+          if (model != null) {
+            if (!model.contains(model2)) {
+              model.add(i + 1, model2);
+            }
+          } else {
+            model = (List<Object>) model2;
+          }
+          if (model.isEmpty()) {
+            model = null;
+          }
+        }
+        i++;
+      }
+    }
+
+    return model;
   }
 }

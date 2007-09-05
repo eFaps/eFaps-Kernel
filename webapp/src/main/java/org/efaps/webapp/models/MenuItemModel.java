@@ -71,6 +71,10 @@ public class MenuItemModel implements IModel {
 
   private int level = 0;
 
+  public int previouslevel = 0;
+
+  public IModel ancestor;
+
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 

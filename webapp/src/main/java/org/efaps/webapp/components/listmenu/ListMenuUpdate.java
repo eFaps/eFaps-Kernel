@@ -110,8 +110,7 @@ public class ListMenuUpdate {
         setSelectedItem(_menukey, newmenu.getHeaderComponent(), _target);
       }
     } else {
-      newmenu =
-          new ListMenuPanel("nested", _menukey, _parameters, level + 1, comp);
+      newmenu = new ListMenuPanel("nested", _menukey, _parameters, level + 1);
 
       listitem.replace(newmenu);
     }

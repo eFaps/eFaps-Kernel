@@ -39,6 +39,7 @@ public class ListMenuRemoveLinkComponent extends AjaxLink {
 
   public ListMenuRemoveLinkComponent(final String _id, final IModel _model) {
     super(_id, _model);
+
   }
 
   @Override
