@@ -18,37 +18,22 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.components.table;
+package org.efaps.webapp.components.table.cell;
 
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
-import org.apache.wicket.markup.html.WebComponent;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.model.IModel;
 
 /**
  * @author jmo
  * @version $Id$
  * 
  */
-public class CellValueComponent extends WebComponent {
+public class CellContainer extends WebMarkupContainer {
+
   private static final long serialVersionUID = 1L;
 
-  private final String label;
-
-  public CellValueComponent(String id) {
-    super(id);
-    this.label = null;
-  }
-
-  public CellValueComponent(String id, String _label) {
-    super(id);
-    this.label = _label;
-
-  }
-
-  @Override
-  protected void onComponentTagBody(MarkupStream _markupStream,
-      ComponentTag _openTag) {
-    super.replaceComponentTagBody(_markupStream, _openTag, this.label);
+  public CellContainer(String id, IModel model) {
+    super(id, model);
   }
 
 }

@@ -18,27 +18,30 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.components;
+package org.efaps.webapp.components.table.cell;
 
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 
 /**
  * @author jmo
  * @version $Id$
+ * 
  */
-public class StaticImageComponent extends WebComponent {
+public class LabelComponent extends WebComponent {
 
   private static final long serialVersionUID = 1L;
 
-  public StaticImageComponent(String id, IModel model) {
+  public LabelComponent(String id, IModel model) {
     super(id, model);
-
   }
 
-  protected void onComponentTag(ComponentTag tag) {
-    checkComponentTag(tag, "img");
-    tag.put("src", getModelObjectAsString());
+  @Override
+  protected void onComponentTagBody(MarkupStream _markupStream,
+                                    ComponentTag _openTag) {
+    super.replaceComponentTagBody(_markupStream, _openTag, (String) super
+        .getModelObject());
   }
 }

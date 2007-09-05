@@ -18,17 +18,17 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.components.table;
+package org.efaps.webapp.components.table.cell;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.components.AbstractParentAjaxLink;
 import org.efaps.webapp.components.listmenu.ListMenuUpdate;
+import org.efaps.webapp.models.TableModel.CellModel;
 import org.efaps.webapp.pages.ContentContainerPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
@@ -36,41 +36,24 @@ import org.efaps.webapp.pages.WebTablePage;
 /**
  * @author jmo
  * @version $Id$
+ * 
  */
-public class CellAjaxLinkComponent extends AbstractParentAjaxLink {
+public class AjaxLinkContainer extends AbstractParentAjaxLink {
 
   private static final long serialVersionUID = 1L;
 
-  private final String label;
-
   private int step = 1;
 
-  private final String oid;
-
-  public CellAjaxLinkComponent(String id, String _oid, String _label) {
-    super(id);
-    this.label = _label;
-    this.oid = _oid;
-
-  }
-
-  @Override
-  protected void onComponentTag(final ComponentTag tag) {
-    tag.setName("a");
-    super.onComponentTag(tag);
-  }
-
-  @Override
-  protected void onComponentTagBody(final MarkupStream _markupStream,
-                                    final ComponentTag _openTag) {
-    super.replaceComponentTagBody(_markupStream, _openTag, this.label);
+  public AjaxLinkContainer(final String id, final IModel model) {
+    super(id, model);
   }
 
   @Override
   public void onClick(final AjaxRequestTarget _target) {
+    CellModel cellmodel = (CellModel) super.getModel();
     Instance instance = null;
-    if (this.oid != null) {
-      instance = new Instance(oid);
+    if (cellmodel.getOid() != null) {
+      instance = new Instance(cellmodel.getOid());
     }
     Menu menu;
 
@@ -79,7 +62,7 @@ public class CellAjaxLinkComponent extends AbstractParentAjaxLink {
 
       PageParameters para = new PageParameters();
       para.add("command", menu.getName());
-      para.add("oid", this.oid);
+      para.add("oid", cellmodel.getOid());
 
       if (isFirstStep()) {
         this.firstStep(_target, menu, para);
@@ -91,11 +74,12 @@ public class CellAjaxLinkComponent extends AbstractParentAjaxLink {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+
   }
 
   private boolean isFirstStep() {
-    if (step == 1) {
-      step = 2;
+    if (this.step == 1) {
+      this.step = 2;
       return true;
     } else {
       return false;
@@ -105,7 +89,7 @@ public class CellAjaxLinkComponent extends AbstractParentAjaxLink {
   private void firstStep(final AjaxRequestTarget _target, final Menu _menu,
                          final PageParameters _parameters) {
     ListMenuUpdate.update(_target, ContentContainerPage.LISTMENU, _menu,
-        _parameters, this.oid);
+        _parameters, ((CellModel) super.getModel()).getOid());
   }
 
   private void secondStep(final Menu _menu, final PageParameters _parameters) {

@@ -30,6 +30,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.webapp.components.table.cell.CellPanel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.models.TableModel.CellModel;
 import org.efaps.webapp.models.TableModel.RowModel;
@@ -39,13 +40,12 @@ import org.efaps.webapp.models.TableModel.RowModel;
  * @version $Id$
  */
 public class WebTableContainer extends WebMarkupContainer {
+
   private static final long serialVersionUID = 4336311424526370681L;
 
   private static String ROWID = "eFapsRow";
 
   private static String CELLID = "eFapsCell";
-
-  private static String CELLVALUEID = "eFapsCellValue";
 
   public WebTableContainer(String id, IModel model, Page _page) {
     super(id, model);
@@ -87,25 +87,12 @@ public class WebTableContainer extends WebMarkupContainer {
 
         j++;
 
-        for (CellModel value : modelrow.getValues()) {
+        for (CellModel cellmodel : modelrow.getValues()) {
+          CellPanel cellpanel =
+              new CellPanel("cell" + "_" + i + "_" + j, (IModel) cellmodel,
+                  _page.getPageMapName().equals("content"));
+          row.add(cellpanel);
 
-          CellContainer cell = new CellContainer(CELLID + "_" + i + "_" + j);
-          cell.setOutputMarkupId(true);
-          row.add(cell);
-
-          if (value.hasReference()) {
-            if (_page.getPageMapName().equals("content")) {
-              cell.add(new CellAjaxLinkComponent(CELLVALUEID + "_" + i + "_"
-                  + j, value.getOid(), value.getCellValue()));
-            } else {
-              cell.add(new CellLinkComponent(CELLVALUEID + "_" + i + "_" + j,
-                  value.getOid(), value.getCellValue()));
-            }
-          } else {
-
-            cell.add(new CellValueComponent(CELLVALUEID + "_" + i + "_" + j,
-                value.getCellValue()));
-          }
           j++;
         }
         i++;

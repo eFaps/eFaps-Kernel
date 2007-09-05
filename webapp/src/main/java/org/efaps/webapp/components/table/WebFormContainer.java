@@ -23,11 +23,11 @@ package org.efaps.webapp.components.table;
 import java.util.Iterator;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.webapp.components.table.cell.formcell.FormCellPanel;
 import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.FormModel.FormCellModel;
 import org.efaps.webapp.models.FormModel.FormRowModel;
@@ -35,16 +35,12 @@ import org.efaps.webapp.models.FormModel.FormRowModel;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class WebFormContainer extends WebMarkupContainer {
+
   private static final long serialVersionUID = 1550111712776698728L;
 
   private static String ROWID = "eFapsRow";
-
-  private static String CELLID = "eFapsCell";
-
-  private static String CELLVALUEID = "eFapsCellValue";
 
   public WebFormContainer(String id, IModel model) {
     super(id, model);
@@ -64,26 +60,10 @@ public class WebFormContainer extends WebMarkupContainer {
         this.add(row);
         i++;
         for (FormCellModel cellmodel : rowmodel.getValues()) {
-          CellContainer cell = new CellContainer(CELLID + "_" + i + "_" + j);
-          row.add(cell);
-          if (cellmodel.isRequired()) {
-            cell.add(new SimpleAttributeModifier("class",
-                "eFapsFormLabelRequired"));
-          } else {
-            cell.add(new SimpleAttributeModifier("class", "eFapsFormLabel"));
-          }
-          cell.add(new CellValueComponent(CELLVALUEID + "_" + i + "_" + j,
-              cellmodel.getCellLabel()));
-          j++;
-          cell = new CellContainer(CELLID + "_" + i + "_" + j);
-          row.add(cell);
-          cell.add(new SimpleAttributeModifier("class", "eFapsFormInputField"));
-          Integer colspan =
-              2 * (model.getMaxGroupCount() - rowmodel.getGroupCount()) + 1;
-
-          cell.add(new SimpleAttributeModifier("colspan", colspan.toString()));
-          cell.add(new CellValueComponent(CELLVALUEID + "_" + i + "_" + j,
-              cellmodel.getCellValue()));
+          FormCellPanel formcellpanel =
+              new FormCellPanel("cell" + "_" + i + "_" + j, cellmodel, model
+                  .getMaxGroupCount(), rowmodel.getGroupCount());
+          row.add(formcellpanel);
 
           j++;
         }
@@ -108,114 +88,4 @@ public class WebFormContainer extends WebMarkupContainer {
 
   }
 
-  // private String getTable() throws Exception {
-  // IFormModel model = (IFormModel) super.getModel();
-  //
-  // model.execute();
-  //
-  // int groupCount = 1;
-  // int rowGroupCount = 1;
-  //
-  // StringBuilder ret = new StringBuilder();
-  //
-  // ret.append("<table id=\"eFapsFormTabel\">");
-  //
-  // for (FieldValue value : model.getValues()) {
-  // // if the field is a group count field, store the value in the row group
-  // // count variable, (only if not create node or field is creatable)
-  //
-  // if (value != null && value.getFieldDef().getField() != null) {
-  // Field field = value.getFieldDef().getField();
-  // if (field.getGroupCount() > 0
-  // && (!model.isCreateMode() || field.isCreatable())
-  // && (!model.isSearchMode() || field.isSearchable())) {
-  // rowGroupCount = field.getGroupCount();
-  // }
-  //
-  // // only if:
-  // // - in createmode field is createable
-  // // - in searchmode field is searchable
-  // // - otherwise show field
-  //
-  // if (value.getAttribute() != null
-  // && (!model.isCreateMode() || field.isCreatable())
-  // && (!model.isSearchMode() || field.isSearchable())) {
-  //
-  // if (groupCount == 1) {
-  // ret.append("<tr>");
-  // }
-  //
-  // if (field.isRequired()
-  // && (model.isSearchMode() || model.isCreateMode())) {
-  // ret.append("<td class=\"eFapsFormLabelRequired\">");
-  // } else {
-  // ret.append("<td class=\"eFapsFormLabel\">");
-  // }
-  // ret.append(value.getFieldDef().getLabel()).append("</td>")
-  //
-  // .append("<td class=\"eFapsFormInputField\" colspan=\"").append(
-  // 2 * (model.getMaxGroupCount() - rowGroupCount) + 1).append("\">");
-  //
-  // if (field.getReference() != null
-  // && value.getInstance().getOid() != null && model.isCreateMode()
-  // && model.isSearchMode() != true) {
-  // String targetUrl =
-  // field.getReference() + "oid=" + value.getInstance().getOid();
-  // String targetWindow;
-  // if (field.isTargetPopup()) {
-  // targetWindow = "Popup";
-  // } else {
-  // targetWindow = "Content";
-  // if (model.getNodeId() != null) {
-  // targetUrl += "&nodeId=" + model.getNodeId();
-  // }
-  // }
-  // ret.append(
-  // "<a href=\"javascript:eFapsCommonOpenUrl('<c:out value=\"")
-  // .append(targetUrl).append("','").append(targetWindow).append(
-  // "'\")>");
-  //
-  // }
-  // if (field.isShowTypeIcon() && value.getInstance().getOid() != null
-  // && model.isCreateMode() == false && model.isSearchMode() == false) {
-  // ret.append("<img src=").append(
-  // value.getInstance().getType().getIcon()).append("/>&nbsp;");
-  //
-  // }
-  //
-  // if (model.isCreateMode() && field.isCreatable()) {
-  // ret.append(value.getCreateHtml());
-  // } else if (model.isEditMode() && field.isEditable()) {
-  // ret.append(value.getEditHtml());
-  // } else if (model.isSearchMode() && field.isSearchable()) {
-  // ret.append(value.getSearchHtml());
-  // } else if (value.getAttribute() != null) {
-  // ret.append(value.getViewHtml());
-  // }
-  //
-  // if (field.getReference() != null
-  // && value.getInstance().getOid() != null && model.isCreateMode()
-  // && model.isSearchMode() != true) {
-  // ret.append("</a>");
-  // }
-  // ret.append("</td>");
-  //
-  // if (groupCount == rowGroupCount) {
-  // ret.append("</tr>");
-  // }
-  // if (groupCount < rowGroupCount) {
-  // groupCount++;
-  // } else if (groupCount == rowGroupCount) {
-  // groupCount = 1;
-  // rowGroupCount = 1;
-  // }
-  //
-  // }
-  // }
-  //
-  // }
-  //
-  // ret.append("</table>");
-  // return ret.toString();
-  // }
 }

@@ -18,64 +18,46 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.components.table;
+package org.efaps.webapp.components.table.cell;
 
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
+import org.efaps.webapp.models.TableModel.CellModel;
 import org.efaps.webapp.pages.ContentContainerPage;
 
 /**
  * @author jmo
  * @version $Id$
+ * 
  */
-public class CellLinkComponent extends Link {
+public class LinkContainer extends Link {
+
   private static final long serialVersionUID = 1L;
 
-  private final String label;
+  public LinkContainer(String id, IModel object) {
+    super(id, object);
 
-  private final String oid;
-
-  public CellLinkComponent(String id, String _oid, String _label) {
-    super(id);
-    this.label = _label;
-    this.oid = _oid;
-
-  }
-
-  @Override
-  protected void onComponentTag(final ComponentTag tag) {
-    tag.setName("a");
-    super.onComponentTag(tag);
-  }
-
-  @Override
-  protected void onComponentTagBody(MarkupStream _markupStream,
-      ComponentTag _openTag) {
-    super.replaceComponentTagBody(_markupStream, _openTag, this.label);
   }
 
   @Override
   public void onClick() {
-
     Instance instance = null;
-
-    if (this.oid != null) {
-      instance = new Instance(oid);
+    CellModel cellmodel = (CellModel) super.getModel();
+    if (cellmodel.getOid() != null) {
+      instance = new Instance(cellmodel.getOid());
     }
     Menu menu;
     try {
       menu = instance.getType().getTreeMenu();
-      PageParameters u = new PageParameters();
-      u.add("command", menu.getName());
-      u.add("oid", this.oid);
-      
-      
-      this.setResponsePage(ContentContainerPage.class, u);
+      PageParameters parameters = new PageParameters();
+      parameters.add("command", menu.getName());
+      parameters.add("oid", cellmodel.getOid());
+
+      this.setResponsePage(ContentContainerPage.class, parameters);
 
     } catch (Exception e) {
       // TODO Auto-generated catch block

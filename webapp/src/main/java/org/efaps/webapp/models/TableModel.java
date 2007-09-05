@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
@@ -273,15 +274,23 @@ public class TableModel extends ModelAbstract {
         } else {
           strValue = "";
         }
+        String icon = field.getIcon();
         if (field.getAlternateOID() != null) {
           Instance inst =
               new Instance((String) _query.getValue(field.getAlternateOID()));
           oid = inst.getOid();
+          if (field.isShowTypeIcon()) {
+            icon = inst.getType().getIcon();
+          }
         } else {
           oid = instance.getOid();
+          if (field.isShowTypeIcon()) {
+            icon = instance.getType().getIcon();
+          }
         }
 
-        row.add(new CellModel(oid, field.getReference() != null, strValue));
+        row.add(new CellModel(oid, field.getReference(), strValue, icon, field
+            .isTargetPopup()));
 
       }
 
@@ -531,33 +540,60 @@ public class TableModel extends ModelAbstract {
     }
   }
 
-  public class CellModel implements IClusterable {
+  public class CellModel implements IClusterable, IModel {
 
     private static final long serialVersionUID = 1L;
 
     private final String oid;
 
-    private final boolean hasReference;
+    private final String reference;
 
     private final String cellvalue;
 
-    public CellModel(final String _oid, final boolean _hasReference,
-                     final String _cellvalue) {
+    private final String icon;
+
+    private final boolean popup;
+
+    public CellModel(final String _oid, final String _reference,
+                     final String _cellvalue, final String _icon,
+                     final boolean _popup) {
       this.oid = _oid;
-      this.hasReference = _hasReference;
+      this.reference = _reference;
       this.cellvalue = _cellvalue;
+      this.icon = _icon;
+      this.popup = _popup;
     }
 
     public String getOid() {
       return this.oid;
     }
 
-    public boolean hasReference() {
-      return this.hasReference;
+    public String getReference() {
+      return this.reference;
     }
 
     public String getCellValue() {
       return this.cellvalue;
+    }
+
+    public String getIcon() {
+      return this.icon;
+    }
+
+    public boolean isPopUp() {
+      return this.popup;
+    }
+
+    public Object getObject() {
+
+      return null;
+    }
+
+    public void setObject(Object arg0) {
+    }
+
+    public void detach() {
+
     }
   }
 }

@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -47,6 +48,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class FormModel extends ModelAbstract {
+
   private static final long serialVersionUID = 3026168649146801622L;
 
   /**
@@ -271,7 +273,7 @@ public class FormModel extends ModelAbstract {
     }
   }
 
-  public class FormCellModel implements IClusterable {
+  public class FormCellModel implements IClusterable, IModel {
 
     private static final long serialVersionUID = 1L;
 
@@ -309,6 +311,16 @@ public class FormModel extends ModelAbstract {
 
     public String getOid() {
       return this.oid;
+    }
+
+    public Object getObject() {
+      return null;
+    }
+
+    public void setObject(Object arg0) {
+    }
+
+    public void detach() {
     }
   }
 }
