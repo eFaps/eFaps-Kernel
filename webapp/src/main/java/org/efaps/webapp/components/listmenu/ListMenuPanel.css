@@ -4,7 +4,6 @@
   margin: 0;
   padding: 0;
   list-style-type: none;
-  background-color: #008800;
 }
 
 .eFapsListMenuHeader:hover,.eFapsListMenuTable:hover,.eFapsListMenuItem:hover {
@@ -14,7 +13,7 @@
 }
 
 .eFapsListMenuTable {
-  background-color: #96d265;
+  background-color: #d0edb8;
   width: 100%;
   border-bottom: 2px solid #fff;
   border-collapse: collapse;
@@ -22,7 +21,6 @@
 }
 
 .eFapsListMenuItem,.eFapsListMenuHeader {
-  background-color: #d0edb8;
   color: #008800;
   padding: 0px;
   text-decoration: none;
@@ -30,8 +28,7 @@
 }
 
 .eFapsListCollapse {
-  border-right: 0px;
-  background-color: #d0edb8;
+  
 }
 
 .eFapsListMenuHeader {
@@ -50,23 +47,17 @@
   font-weight: bold;
 }
 
-.eFapsListMenuClose {
-  background-color: #008800;
+.eFapsListMenuClose,.eFapsListMenuGoInto {
   text-align: center;
-  width: 1%;
-  color: #FFF;
 }
 
-.eFapsListMenuClose:hover,.eFapsListCollapse:hover,.eFapsListMenuGoInto:hover {
-  background-color: #96d265;
-  color: red;
+.eFapsListMenuClose img,.eFapsListMenuGoInto img {
+  vertical-align: middle;
 }
 
-.eFapsListMenuGoInto {
-  background-color: #008800;
-  text-align: center;
-  width: 1%;
-  color: #FFF;
+.eFapsListMenuClose img:hover,.eFapsListCollapse img:hover,.eFapsListMenuGoInto img:hover
+  {
+  border: 1px solid #fff;
 }
 
 img.eFapsListMenuIcon {
@@ -75,6 +66,6 @@ img.eFapsListMenuIcon {
   height: 16px;
 }
 
-.eFapsListCollapse {
+.eFapsListCollapse,.eFapsListMenuClose,.eFapsListMenuGoInto {
   width: 1%;
 }

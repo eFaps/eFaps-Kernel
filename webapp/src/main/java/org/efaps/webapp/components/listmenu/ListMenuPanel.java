@@ -47,8 +47,17 @@ public class ListMenuPanel extends DojoPanelContainer {
 
   private static final long serialVersionUID = 1L;
 
-  private static final ResourceReference ICON_SUBMENUREMOVE =
+  public static final ResourceReference ICON_SUBMENUREMOVE =
       new ResourceReference(ListMenuPanel.class, "eFapsSubMenuRemove.gif");
+
+  public static final ResourceReference ICON_SUBMENUGOINTO =
+      new ResourceReference(ListMenuPanel.class, "eFapsSubMenuGoInto.gif");
+
+  public static final ResourceReference ICON_SUBMENUOPEN =
+      new ResourceReference(ListMenuPanel.class, "eFapsSubMenuOpen.gif");
+
+  public static final ResourceReference ICON_SUBMENUCLOSE =
+      new ResourceReference(ListMenuPanel.class, "eFapsSubMenuClose.gif");
 
   /**
    * this Instancevariable holds the key wich is used to retrieve a item of this
@@ -207,9 +216,14 @@ public class ListMenuPanel extends DojoPanelContainer {
               new ListMenuRemoveLinkComponent("removelink", model);
           remove.add(new Image("iconremove", ICON_SUBMENUREMOVE));
           row.add(remove);
-
-          row.add(new ListMenuGoIntoLinkComponent("gointolink", model));
-          row.add(new ListMenuCollapseLinkComponent("collapse", model));
+          ListMenuGoIntoLinkComponent gointo =
+              new ListMenuGoIntoLinkComponent("gointolink", model);
+          gointo.add(new Image("icongointo", ICON_SUBMENUGOINTO));
+          row.add(gointo);
+          ListMenuCollapseLinkComponent collapse =
+              new ListMenuCollapseLinkComponent("collapse", model);
+          collapse.add(new Image("iconcollapse", ICON_SUBMENUCLOSE));
+          row.add(collapse);
 
         } else {
           row.add(new WebMarkupContainer("removelink").setVisible(false));

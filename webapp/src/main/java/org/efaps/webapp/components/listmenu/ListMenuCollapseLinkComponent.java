@@ -26,6 +26,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.model.IModel;
 
@@ -76,6 +77,13 @@ public class ListMenuCollapseLinkComponent extends AjaxLink {
       Component child = (Component) it.next();
 
       if (child.equals(item)) {
+        Component image = (Component) this.iterator().next();
+        if (image instanceof Image) {
+          ((Image) image)
+              .setImageResourceReference(this.visible ? ListMenuPanel.ICON_SUBMENUCLOSE
+                  : ListMenuPanel.ICON_SUBMENUOPEN);
+        }
+
         mark = true;
       } else if (mark) {
         if (child.getModelObject() instanceof MenuItemModel) {
@@ -88,5 +96,4 @@ public class ListMenuCollapseLinkComponent extends AjaxLink {
     this.visible = !this.visible;
     _target.addComponent(rows.getParent());
   }
-
 }
