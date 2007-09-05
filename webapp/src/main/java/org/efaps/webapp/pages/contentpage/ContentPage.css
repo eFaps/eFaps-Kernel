@@ -1,34 +1,38 @@
+body {
+  background-color: white;
+}
+
 body,th,td,p,div {
-	font-family: arial, verdana, helvetica, sans-serif;
-	font-size: 8pt;
-	margin: 0;
+  font-family: arial, verdana, helvetica, sans-serif;
+  font-size: 8pt;
+  margin: 0;
 }
 
 #eFapsFrameTitle {
-	position: fixed;
-	top:0;
-	width: 100%;
-	margin: 0px;
-	padding: 3px;
-	color: #008800;
-	font-weight: bold;
-	font-size: 13pt;
-	height: 18px;
-	white-space: nowrap;
-	background-color: white;
-	z-index: 1;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  margin: 0px;
+  padding: 3px;
+  color: #008800;
+  font-weight: bold;
+  font-size: 13pt;
+  height: 18px;
+  white-space: nowrap;
+  background-color: white;
+  z-index: 1;
 }
 
 #eFapsMenu {
-	position: fixed;
-	width: 100%;
-	top: 24px;
-	height: 20px;
-	background-color: #EFEBDE;
-	border-style: solid;
-	border-width: 1px 0;
-	border-color: black;
-	margin: 0;
-	padding: 2px;
-	z-index: 2;
+  position: fixed;
+  width: 100%;
+  top: 24px;
+  height: 20px;
+  background-color: #EFEBDE;
+  border-style: solid;
+  border-width: 1px 0;
+  border-color: black;
+  margin: 0;
+  padding: 2px;
+  z-index: 2;
 }
