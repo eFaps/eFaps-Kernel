@@ -361,7 +361,7 @@ public abstract class ModelAbstract implements IModel {
   public String getNodeId() {
     return this.nodeId;
   }
-
+  public abstract void clearModel();
   /**
    * The class stores one hidden value in the instance variable
    * {@link #hiddenValues}.
@@ -425,5 +425,7 @@ public abstract class ModelAbstract implements IModel {
     public String getValue() {
       return this.value;
     }
+    
+    
   }
 }

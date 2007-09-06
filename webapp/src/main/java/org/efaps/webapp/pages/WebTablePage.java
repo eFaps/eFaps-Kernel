@@ -57,8 +57,9 @@ public class WebTablePage extends ContentPage {
       add(new StyleSheetReference("WebTablePageCSS", getClass(),
           "webtablepage/WebTablePage.css"));
       TableModel model = (TableModel) super.getModel();
-      model.execute();
-
+      if (!model.isInitialised()) {
+        model.execute();
+      }
       add(new TableHeaderPanel("eFapsTableHeader", model));
       form.add(new WebTableContainer("eFapsTable", model, this));
     } catch (Exception e) {

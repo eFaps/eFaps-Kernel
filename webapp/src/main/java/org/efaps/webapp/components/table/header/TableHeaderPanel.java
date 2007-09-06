@@ -20,13 +20,19 @@
 
 package org.efaps.webapp.components.table.header;
 
+import org.apache.wicket.ResourceReference;
+import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.models.TableModel;
+import org.efaps.webapp.models.TableModel.HeaderModel;
+import org.efaps.webapp.models.TableModel.SortDirection;
 
 /**
  * @author jmo
@@ -36,18 +42,22 @@ public class TableHeaderPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
+  public static final ResourceReference ICON_FILTER =
+      new ResourceReference(TableHeaderPanel.class, "eFapsFilter.gif");
+
+  public static final ResourceReference ICON_FILTERACTIVE =
+      new ResourceReference(TableHeaderPanel.class, "eFapsFilterActive.gif");
+
+  public static final ResourceReference ICON_SORTDESC =
+      new ResourceReference(TableHeaderPanel.class, "eFapsSortDescending.gif");
+
+  public static final ResourceReference ICON_SORTASC =
+      new ResourceReference(TableHeaderPanel.class, "eFapsSortAscending.gif");
+
   public TableHeaderPanel(final String _id, final IModel _model) {
     super(_id, _model);
-    
+    add(HeaderContributor.forCss(getClass(), "TableHeaderPanel.css"));
     TableModel model = (TableModel) super.getModel();
-    if (!model.isInitialised()) {
-      try {
-        model.execute();
-      } catch (Exception e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }
 
     WebMarkupContainer checkbox = new WebMarkupContainer("checkbox");
     add(checkbox);
@@ -58,11 +68,38 @@ public class TableHeaderPanel extends Panel {
     RepeatingView repeating = new RepeatingView("repeating");
     add(repeating);
 
-    for (String label : model.getColumnLables()) {
-      WebMarkupContainer item = new WebMarkupContainer(repeating.newChildId());
-      repeating.add(item);
+    for (HeaderModel headermodel : model.getHeaders()) {
+      WebMarkupContainer container =
+          new WebMarkupContainer(repeating.newChildId());
 
-      item.add(new Label("label", label));
+      repeating.add(container);
+      WebMarkupContainer sortlink;
+      if (headermodel.isSortable()) {
+        sortlink = new SortLinkContainer("sortlink", headermodel);
+        sortlink.add(new SimpleAttributeModifier("class", "eFapsHeaderSortTD"));
+
+      } else {
+        sortlink = new WebMarkupContainer("sortlink");
+      }
+      if (headermodel.getSortDirection() == SortDirection.NONE) {
+        sortlink.add((new WebMarkupContainer("iconsort")).setVisible(false));
+      } else if (headermodel.getSortDirection() == SortDirection.ASCENDING) {
+        sortlink.add(new Image("iconsort", ICON_SORTASC));
+      } else {
+        sortlink.add(new Image("iconsort", ICON_SORTDESC));
+      }
+      container.add(sortlink);
+      sortlink.add(new Label("label", headermodel.getLabel()));
+      WebMarkupContainer filterlink;
+      if (headermodel.isFilterable()) {
+        filterlink = new FilterLinkContainer("filterlink", headermodel);
+        filterlink.add(new Image("iconfilter", ICON_FILTER));
+      } else {
+        filterlink =
+            (WebMarkupContainer) (new WebMarkupContainer("filterlink"))
+                .setVisible(false);
+      }
+      container.add(filterlink);
     }
   }
 }

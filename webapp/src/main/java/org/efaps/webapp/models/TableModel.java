@@ -55,6 +55,12 @@ import org.efaps.util.EFapsException;
  */
 public class TableModel extends ModelAbstract {
 
+  public static enum SortDirection {
+    DESCENDING,
+    ASCENDING,
+    NONE;
+  }
+
   private static final long serialVersionUID = 1L;
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -81,7 +87,7 @@ public class TableModel extends ModelAbstract {
    * @see #getSortDirection
    * @see #setSortDirection
    */
-  private String sortDirection = null;
+  private SortDirection sortDirection = SortDirection.NONE;
 
   /**
    * The instance variable stores the UUID for the table which must be shown.
@@ -118,7 +124,7 @@ public class TableModel extends ModelAbstract {
   /**
    * The instance Array holds the Label for the Columns
    */
-  private List<String> columnLabels = new ArrayList<String>();
+  private List<HeaderModel> headers = new ArrayList<HeaderModel>();
 
   public TableModel() throws EFapsException {
     super();
@@ -141,7 +147,9 @@ public class TableModel extends ModelAbstract {
       if (command.getTargetTableSortKey() != null) {
         setSortKey(getCommand().getTargetTableSortKey());
         if (command.getTargetTableSortDirection() == CommandAbstract.TABLE_SORT_DIRECTION_DESC) {
-          this.sortDirection = "-";
+          this.sortDirection = SortDirection.DESCENDING;
+        } else {
+          this.sortDirection = SortDirection.ASCENDING;
         }
       }
 
@@ -172,10 +180,10 @@ public class TableModel extends ModelAbstract {
 
   }
 
-  public void detach() {
+  public void clearModel() {
     super.setInitialised(false);
     this.values.clear();
-    this.columnLabels.clear();
+    this.headers.clear();
   }
 
   public void execute() throws Exception {
@@ -205,7 +213,11 @@ public class TableModel extends ModelAbstract {
       if (field.getAlternateOID() != null) {
         query.addSelect(field.getAlternateOID());
       }
-      addLabel(field.getLabel());
+      SortDirection sortdirection = SortDirection.NONE;
+      if (field.getName().equals(this.sortKey)) {
+        sortdirection = this.getSortDirection();
+      }
+      this.headers.add(new HeaderModel(field, sortdirection));
     }
     query.execute();
 
@@ -218,16 +230,8 @@ public class TableModel extends ModelAbstract {
     super.setInitialised(true);
   }
 
-  private void addLabel(String _label) {
-    if (_label != null) {
-      this.columnLabels.add(DBProperties.getProperty(_label));
-    } else {
-      this.columnLabels.add("");
-    }
-  }
-
-  public List<String> getColumnLables() {
-    return this.columnLabels;
+  public List<HeaderModel> getHeaders() {
+    return this.headers;
   }
 
   private void executeRowResult(
@@ -326,7 +330,7 @@ public class TableModel extends ModelAbstract {
           return a1.compareTo(a2);
         }
       });
-      if (getSortDirection() != null && getSortDirection().equals("-")) {
+      if (getSortDirection() == SortDirection.DESCENDING) {
         Collections.reverse(this.values);
       }
     }
@@ -364,8 +368,12 @@ public class TableModel extends ModelAbstract {
    * @see #sortDirection
    * @see #setSortDirection
    */
-  public String getSortDirection() {
+  public SortDirection getSortDirection() {
     return this.sortDirection;
+  }
+
+  public void setSortDirection(SortDirection _sortdirection) {
+    this.sortDirection = _sortdirection;
   }
 
   /**
@@ -595,5 +603,72 @@ public class TableModel extends ModelAbstract {
     public void detach() {
 
     }
+  }
+
+  public class HeaderModel implements IClusterable, IModel {
+
+    private static final long serialVersionUID = 1L;
+
+    private final String label;
+
+    private final boolean sortable;
+
+    private final String name;
+
+    private final boolean filterable;
+
+    private SortDirection sortdirection;
+
+    public HeaderModel(final Field _field, final SortDirection _sortdirection) {
+      this.label = _field.getLabel();
+      this.sortable = _field.isSortAble();
+      this.name = _field.getName();
+      this.filterable = _field.isFilterable();
+      this.sortdirection = _sortdirection;
+    }
+
+    public String getLabel() {
+      if (this.label != null) {
+        return DBProperties.getProperty(this.label);
+      } else {
+        return "";
+      }
+    }
+
+    public String getName() {
+      return this.name;
+    }
+
+    public boolean isSortable() {
+      return this.sortable;
+    }
+
+    public boolean isFilterable() {
+      return this.filterable;
+    }
+
+    public SortDirection getSortDirection() {
+      return this.sortdirection;
+    }
+
+    public void setSortDirection(SortDirection _sortdirection) {
+      this.sortdirection = _sortdirection;
+    }
+
+    public Object getObject() {
+      return null;
+    }
+
+    public void setObject(Object arg0) {
+    }
+
+    public void detach() {
+    }
+
+  }
+
+  public void detach() {
+    // TODO Auto-generated method stub
+
   }
 }

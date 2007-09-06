@@ -98,6 +98,10 @@ public class FormModel extends ModelAbstract {
   }
 
   public void detach() {
+
+  }
+
+  public void clearModel() {
     this.setInitialised(false);
     this.values.clear();
   }

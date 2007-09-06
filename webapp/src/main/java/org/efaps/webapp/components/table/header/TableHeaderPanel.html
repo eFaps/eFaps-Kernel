@@ -54,18 +54,21 @@
   <div width="1%" wicket:id="checkbox">
     <input type="checkbox" onClick="eFapsTableSelectDeselectAll(document,'selectedRow',this.checked)"/>
   </div>
-  <div wicket:id="repeating">
-    <table>
-      <tr>
-        <td width="1%" >
-          <span wicket:id="label"></span>
-        </td>
-        <td>
-          
-        </td>
-      </tr>  
-    </table>     
-  </div>   
+   <span wicket:id="repeating">
+     <div>
+        <table width="100%">
+          <tr>
+            <td wicket:id="sortlink">
+              <span wicket:id="label"></span>
+              <img wicket:id="iconsort"/>
+            </td>
+            <td wicket:id="filterlink" width="1%" class="eFapsHeaderFilterTD">
+              <img wicket:id="iconfilter"/>
+            </td>
+          </tr>  
+        </table>     
+     </div>
+   </span>  
 </wicket:panel>
 </body>
 </html>
