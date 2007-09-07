@@ -38,10 +38,10 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.util.EFapsException;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
-import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.ModelAbstract;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.pages.MainPage;
@@ -79,6 +79,8 @@ public class FooterPanel extends Panel {
       label = "Create";
     } else if (model.isEditMode()) {
       label = "Update";
+    } else if (model.isSubmit() && model instanceof TableModel) {
+      label = "Connect";
     } else if (model.isSearchMode()) {
       label = "Search";
     }
@@ -86,14 +88,14 @@ public class FooterPanel extends Panel {
     add(new StyleSheetReference("panelcss", getClass(), "FooterPanel.css"));
     WebMarkupContainer createEditSearchLink = null;
 
-    if (_form != null && model instanceof FormModel) {
-      if (model.isSearchMode()) {
-        createEditSearchLink =
-            new SearchSubmitLink("createeditsearch", model, _form);
-      } else {
-        createEditSearchLink =
-            new AjaxSubmitAndCloseLink("createeditsearch", model, _form);
-      }
+    if ((model.isSubmit() && model instanceof TableModel)
+        || !model.isSearchMode()) {
+      createEditSearchLink =
+          new AjaxSubmitAndCloseLink("createeditsearch", model, _form);
+    } else if (model.isSearchMode() && model.getCallingCommandUUID() != null) {
+      createEditSearchLink =
+          new SearchSubmitLink("createeditsearch", model, _form);
+
     } else {
       createEditSearchLink =
           (WebMarkupContainer) new WebMarkupContainer("createeditsearch")
@@ -101,9 +103,11 @@ public class FooterPanel extends Panel {
     }
     if (model.isSearchMode()) {
       createEditSearchLink.add(new Image("createeditsearchicon", ICON_NEXT));
+
     } else {
       createEditSearchLink.add(new Image("createeditsearchicon", ICON_DONE));
     }
+
     createEditSearchLink.add(new Label("createeditsearchlabel", label));
     add(createEditSearchLink);
 
@@ -148,18 +152,18 @@ public class FooterPanel extends Panel {
 
     @Override
     protected void onSubmit(AjaxRequestTarget _target) {
+      String[] other =
+          this.getComponent().getRequestCycle().getRequest().getParameters(
+              "selectedRow");
 
-      if (this.form.getParent().getModel() instanceof FormModel) {
-        ((FormModel) this.form.getParent().getModel()).updateDB();
-      }
+      ((ModelAbstract) this.form.getParent().getModel()).updateDB(other);
 
       ModelAbstract model = (ModelAbstract) this.imodel;
 
       if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
         modalWindow.setUpdateParent(true);
         modalWindow.close(_target);
-      }
-      if (model.getCommand().getTarget() == CommandAbstract.TARGET_POPUP) {
+      } else {
         ModelAbstract openermodel =
             (ModelAbstract) ((EFapsSession) Session.get()).getOpenerModel();
         Class<?> clazz;
@@ -199,21 +203,36 @@ public class FooterPanel extends Panel {
 
     private static final long serialVersionUID = 1L;
 
-    private final ModelAbstract model;
-
     public SearchSubmitLink(final String _id, final ModelAbstract _model,
                             final Form _form) {
       super(_id, _form);
-      this.model = _model;
+      super.setModel(_model);
+
     }
 
     @Override
     public void onSubmit() {
       super.onSubmit();
-      PageParameters parameters = new PageParameters();
+      ModelAbstract model = (ModelAbstract) super.getModel();
 
-      parameters.add("command", this.model.getCommand().getName());
-      this.getRequestCycle().setResponsePage(WebTablePage.class, parameters);
+      PageParameters parameters = new PageParameters();
+      parameters.add("command", model.getCommand().getName());
+      parameters.add("oid", model.getOid());
+
+      try {
+        TableModel newmodel = new TableModel(parameters);
+        if (model.isSubmit()) {
+          newmodel.setSubmit(true);
+          newmodel.setCallingCommandUUID(model.getCallingCommandUUID());
+        }
+
+        WebTablePage page = new WebTablePage(newmodel);
+
+        this.getRequestCycle().setResponsePage(page);
+      } catch (EFapsException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
   }
 

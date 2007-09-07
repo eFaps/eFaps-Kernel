@@ -387,6 +387,9 @@ public class TableModel extends ModelAbstract {
    * @see #showCheckBoxes
    */
   public boolean isShowCheckBoxes() {
+    if (super.isSubmit()) {
+      return true;
+    }
     return this.showCheckBoxes;
   }
 
@@ -507,6 +510,8 @@ public class TableModel extends ModelAbstract {
   public void setFilter(String[] _filter) {
     this.filter = _filter;
   }
+
+ 
 
   /**
    * The inner class stores one row of the table.

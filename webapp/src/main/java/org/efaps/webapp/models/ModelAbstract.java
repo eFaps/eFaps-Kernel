@@ -27,12 +27,15 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.Model;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
@@ -83,6 +86,8 @@ public abstract class ModelAbstract extends Model {
 
   private int target = CommandAbstract.TARGET_UNKNOWN;
 
+  private boolean submit = false;
+
   public ModelAbstract() throws EFapsException {
     initialise();
   }
@@ -109,12 +114,40 @@ public abstract class ModelAbstract extends Model {
       this.commandUUID =
           command.getTargetSearch().getDefaultCommand().getUUID();
       this.setMode(CommandAbstract.TARGET_MODE_SEARCH);
-
+      if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+        this.submit = true;
+      }
     }
 
   }
 
   public abstract void clearModel();
+
+  public void updateDB(String[] _others) {
+    CommandAbstract command;
+    if (this.callingCommandUUID != null) {
+      command = this.getCallingCommand();
+    } else {
+      command = this.getCommand();
+    }
+    try {
+
+      if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+        if (this.getOid() != null) {
+          command.executeEvents(EventType.UI_COMMAND_EXECUTE,
+              ParameterValues.INSTANCE, new Instance(this.getOid()),
+              ParameterValues.OTHERS, _others);
+        } else {
+          command.executeEvents(EventType.UI_COMMAND_EXECUTE,
+              ParameterValues.OTHERS, _others);
+        }
+      }
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+  }
 
   public void setCommandUUID(UUID _uuid) {
     this.commandUUID = _uuid;
@@ -129,6 +162,14 @@ public abstract class ModelAbstract extends Model {
    */
   public boolean isInitialised() {
     return this.initialised;
+  }
+
+  public boolean isSubmit() {
+    return this.submit;
+  }
+
+  public void setSubmit(final boolean _submit) {
+    this.submit = _submit;
   }
 
   /**
@@ -222,6 +263,10 @@ public abstract class ModelAbstract extends Model {
 
   public UUID getCallingCommandUUID() {
     return this.callingCommandUUID;
+  }
+
+  public void setCallingCommandUUID(UUID _uuid) {
+    this.callingCommandUUID = _uuid;
   }
 
   /**

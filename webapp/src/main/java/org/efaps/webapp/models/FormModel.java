@@ -35,7 +35,6 @@ import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
@@ -229,24 +228,7 @@ public class FormModel extends ModelAbstract {
     super.setInitialised(true);
   }
 
-  public void updateDB() {
-    CommandAbstract command = super.getCommand();
-    try {
-
-      if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-        if (super.getOid() != null) {
-          command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-              ParameterValues.INSTANCE, new Instance(super.getOid()));
-        } else {
-          command.executeEvents(EventType.UI_COMMAND_EXECUTE);
-        }
-      }
-    } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
-  }
+  
 
   public void setFormUUID(UUID _uuid) {
     this.formuuid = _uuid;
