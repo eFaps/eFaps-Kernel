@@ -41,6 +41,7 @@ import org.efaps.webapp.pages.WebTablePage;
  * @version $Id$
  */
 public class MenuItemLinkComponent extends Link {
+
   private static final long serialVersionUID = 1L;
 
   public MenuItemLinkComponent(String _id, IModel _menuItem) {
@@ -58,7 +59,8 @@ public class MenuItemLinkComponent extends Link {
 
     CommandAbstract command = model.getCommand();
     if (command.getTarget() == CommandAbstract.TARGET_POPUP) {
-      ((EFapsSession) this.getSession()).setOpenerModel(this.getPage().getModel());
+      ((EFapsSession) this.getSession()).setOpenerModel(this.getPage()
+          .getModel());
     }
     PageParameters para = new PageParameters("command=" + command.getName());
     para.add("oid", model.getOid());
@@ -72,23 +74,18 @@ public class MenuItemLinkComponent extends Link {
       } else {
         this.getRequestCycle().setResponsePage(WebTablePage.class, para);
       }
-    }
-    if (command.getTargetForm() != null) {
-      if (this.getPage() instanceof MainPage) {
+    } else if (command.getTargetForm() != null
+        || command.getTargetSearch() != null) {
+      if (this.getPage() instanceof MainPage
+          && command.getTargetSearch() == null) {
         InlineFrame c =
             new InlineFrame("eFapsContentFrame", PageMap
                 .forName(MainPage.INLINEFRAMENAME), WebFormPage.class, para);
-
         this.getPage().addOrReplace(c);
       } else {
-
         this.getRequestCycle().setResponsePage(WebFormPage.class, para);
-
       }
-
-    }
-
-    else if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+    } else if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
 
       try {
         command.executeEvents(EventType.UI_COMMAND_EXECUTE);

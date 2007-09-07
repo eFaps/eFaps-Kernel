@@ -52,11 +52,12 @@ public class MenuItemAjaxSubmitComponent extends WebComponent {
   public MenuItemAjaxSubmitComponent(final String id, final IModel _menuItem,
                                      final Form _form) {
     super(id, _menuItem);
-    this.add(new SubmitAndUpdateBehavior(_form, _menuItem));
+    this.add(new SubmitAndUpdateBehavior(_form));
   }
 
-  public SubmitAndUpdateBehavior getSubmitBehaviour() {
-    return (SubmitAndUpdateBehavior) super.getBehaviors().get(0);
+  public String getJavaScript() {
+    return ((SubmitAndUpdateBehavior) super.getBehaviors().get(0))
+        .getJavaScript();
   }
 
   @Override
@@ -70,23 +71,22 @@ public class MenuItemAjaxSubmitComponent extends WebComponent {
 
     private final Form form;
 
-    private final IModel model;
-
     public String getJavaScript() {
       String script = super.getEventHandler().toString();
       return "javascript:" + script.replace("'", "\"");
     }
 
-    public SubmitAndUpdateBehavior(final Form _form, final IModel _model) {
+    public SubmitAndUpdateBehavior(final Form _form) {
       super(_form, "onCLick");
       this.form = _form;
-      this.model = _model;
+
     }
 
     @Override
     protected void onSubmit(final AjaxRequestTarget _target) {
 
-      CommandAbstract command = ((MenuItemModel) this.model).getCommand();
+      CommandAbstract command =
+          ((MenuItemModel) super.getComponent().getModel()).getCommand();
       Map<?, ?> para = this.form.getRequest().getParameterMap();
 
       if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
@@ -117,4 +117,5 @@ public class MenuItemAjaxSubmitComponent extends WebComponent {
       this.form.setResponsePage(page);
     }
   }
+
 }

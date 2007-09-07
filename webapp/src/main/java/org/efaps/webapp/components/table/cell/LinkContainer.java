@@ -32,7 +32,6 @@ import org.efaps.webapp.pages.ContentContainerPage;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class LinkContainer extends Link {
 
@@ -40,7 +39,6 @@ public class LinkContainer extends Link {
 
   public LinkContainer(String id, IModel object) {
     super(id, object);
-
   }
 
   @Override

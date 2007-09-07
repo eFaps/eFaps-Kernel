@@ -159,7 +159,7 @@ public class TableModel extends ModelAbstract {
       // set show check boxes
       boolean showCheckBoxes = getCommand().isTargetShowCheckBoxes();
       if (!showCheckBoxes) {
-        String cldName = getParameter(PARAM_CALL_CMD_NAME);
+        String cldName = getParameter("command");
         if (cldName != null) {
           CommandAbstract cmd = getCommand(cldName);
           showCheckBoxes =
@@ -289,7 +289,7 @@ public class TableModel extends ModelAbstract {
         }
 
         row.add(new CellModel(oid, field.getReference(), strValue, icon, field
-            .isTargetPopup()));
+            .getTarget()));
 
       }
 
@@ -400,10 +400,11 @@ public class TableModel extends ModelAbstract {
   }
 
   public void removeFilter() {
-    this.filter=null;
-    this.filterKey=null;
+    this.filter = null;
+    this.filterKey = null;
     this.filterValues.clear();
   }
+
   /**
    * This is the getter method for the instance variable {@link #values}.
    * 
@@ -596,16 +597,16 @@ public class TableModel extends ModelAbstract {
 
     private final String icon;
 
-    private final boolean popup;
+    private final int target;
 
     public CellModel(final String _oid, final String _reference,
                      final String _cellvalue, final String _icon,
-                     final boolean _popup) {
+                     final int _target) {
       this.oid = _oid;
       this.reference = _reference;
       this.cellvalue = _cellvalue;
       this.icon = _icon;
-      this.popup = _popup;
+      this.target = _target;
     }
 
     public String getOid() {
@@ -624,8 +625,8 @@ public class TableModel extends ModelAbstract {
       return this.icon;
     }
 
-    public boolean isPopUp() {
-      return this.popup;
+    public int getTarget() {
+      return this.target;
     }
 
   }

@@ -27,6 +27,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
+import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.components.StaticImageComponent;
 import org.efaps.webapp.models.TableModel.CellModel;
 
@@ -47,11 +48,11 @@ public class CellPanel extends Panel {
 
     WebMarkupContainer celllink;
     if (cellmodel.getReference() != null) {
-      if (_ajax && !cellmodel.isPopUp()) {
+      if (_ajax && cellmodel.getTarget() != CommandAbstract.TARGET_POPUP) {
         celllink = new AjaxLinkContainer("link", cellmodel);
       } else {
         celllink = new LinkContainer("link", cellmodel);
-        if (cellmodel.isPopUp()) {
+        if (cellmodel.getTarget() == CommandAbstract.TARGET_POPUP) {
           PopupSettings popup = new PopupSettings(PageMap.forName("popup"));
           ((LinkContainer) celllink).setPopupSettings(popup);
         }

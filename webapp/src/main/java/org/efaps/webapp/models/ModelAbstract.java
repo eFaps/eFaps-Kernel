@@ -21,11 +21,8 @@
 package org.efaps.webapp.models;
 
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
-import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.Model;
 
@@ -46,22 +43,12 @@ import org.efaps.util.EFapsException;
 public abstract class ModelAbstract extends Model {
 
   /**
-   *
-   */
-  private static String PARAM_ORIG_CMD_NAME = "eFapsOriginalCommand";
-
-  /**
-   *
-   */
-  protected static String PARAM_CALL_CMD_NAME = "eFapsCallingCommand";
-
-  /**
    * The instance variable stores the commandUUID instance for this form
    * request.
    * 
    * @see #getCommand
    */
-  private UUID commanduuid;
+  private UUID commandUUID;
 
   /**
    * The instance variable stores the mode of the form.
@@ -72,28 +59,12 @@ public abstract class ModelAbstract extends Model {
   private int mode = CommandAbstract.TARGET_MODE_UNKNOWN;
 
   /**
-   * The instance variable stores the hidden values printed as form value.
-   * 
-   * @see #getHiddenValues
-   */
-  private List<HiddenValue> hiddenValues = new ArrayList<HiddenValue>();
-
-  /**
    * Stores the maximal group count for a row.
    * 
    * @see #getMaxGroupCount
    * @see #setMaxGroupCount
    */
   private int maxGroupCount = 1;
-
-  /**
-   * The instance variable store the node id for this table or form bean used
-   * e.g. in references.
-   * 
-   * @see #getNodeId
-   * @see #setNodeId
-   */
-  private String nodeId = null;
 
   /**
    * The instance variable is the flag if this class instance is already
@@ -107,6 +78,10 @@ public abstract class ModelAbstract extends Model {
   private PageParameters parameters;
 
   private String oid;
+
+  private UUID callingCommandUUID;
+
+  private int target = CommandAbstract.TARGET_UNKNOWN;
 
   public ModelAbstract() throws EFapsException {
     initialise();
@@ -124,25 +99,25 @@ public abstract class ModelAbstract extends Model {
 
   private void initialise() throws EFapsException {
     this.oid = getParameter("oid");
-    this.nodeId = getParameter("nodeId");
+    CommandAbstract command = getCommand(getParameter("command"));
+    this.commandUUID = command.getUUID();
+    this.setMode(command.getTargetMode());
+    this.target = command.getTarget();
 
-    String cmdName = getParameter("command");
-    if ((cmdName == null) || (cmdName.length() == 0)
-        || ("undefined".equals(cmdName))) {
-      cmdName = getParameter(PARAM_ORIG_CMD_NAME);
-    }
-    CommandAbstract command = getCommand(cmdName);
-    this.commanduuid = command.getUUID();
-    if (command != null) {
-      setMode(command.getTargetMode());
-      addHiddenValue(PARAM_ORIG_CMD_NAME, cmdName);
+    if (command.getTargetSearch() != null) {
+      this.callingCommandUUID = this.commandUUID;
+      this.commandUUID =
+          command.getTargetSearch().getDefaultCommand().getUUID();
+      this.setMode(CommandAbstract.TARGET_MODE_SEARCH);
+
     }
 
-    // store original calling command (e.g. the command calling the search)
-    String cldName = getParameter(PARAM_CALL_CMD_NAME);
-    if ((cldName != null) && (cldName.length() > 0)) {
-      addHiddenValue(PARAM_CALL_CMD_NAME, cldName);
-    }
+  }
+
+  public abstract void clearModel();
+
+  public void setCommandUUID(UUID _uuid) {
+    this.commandUUID = _uuid;
   }
 
   /**
@@ -230,11 +205,23 @@ public abstract class ModelAbstract extends Model {
    * @see #command
    */
   public CommandAbstract getCommand() {
-    CommandAbstract cmd = Command.get(this.commanduuid);
+    CommandAbstract cmd = Command.get(this.commandUUID);
     if (cmd == null) {
-      cmd = Menu.get(this.commanduuid);
+      cmd = Menu.get(this.commandUUID);
     }
     return cmd;
+  }
+
+  public CommandAbstract getCallingCommand() {
+    CommandAbstract cmd = Command.get(this.callingCommandUUID);
+    if (cmd == null) {
+      cmd = Menu.get(this.callingCommandUUID);
+    }
+    return cmd;
+  }
+
+  public UUID getCallingCommandUUID() {
+    return this.callingCommandUUID;
   }
 
   /**
@@ -274,30 +261,6 @@ public abstract class ModelAbstract extends Model {
    */
   protected void setMode(int _mode) {
     this.mode = _mode;
-  }
-
-  /**
-   * The instance method adds one hidden value to the list of hidden values in
-   * variable {@link #hiddenValues}.
-   * 
-   * @param _name
-   *                name of the hidden value
-   * @param _value
-   *                value of the hidden value
-   * @see #hiddenValues
-   */
-  protected void addHiddenValue(final String _name, final String _value) {
-    getHiddenValues().add(new HiddenValue(_name, _value));
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #hiddenValues}.
-   * 
-   * @return value of instance variable {@link #hiddenValues}
-   * @see #hiddenValues
-   */
-  public List<HiddenValue> getHiddenValues() {
-    return this.hiddenValues;
   }
 
   /**
@@ -352,80 +315,8 @@ public abstract class ModelAbstract extends Model {
     this.maxGroupCount = _maxGroupCount;
   }
 
-  /**
-   * This is the getter method for the instance variable {@link #nodeId}.
-   * 
-   * @return value of instance variable {@link #nodeId}
-   * @see #nodeId
-   */
-  public String getNodeId() {
-    return this.nodeId;
+  public int getTarget() {
+    return this.target;
   }
-  public abstract void clearModel();
-  /**
-   * The class stores one hidden value in the instance variable
-   * {@link #hiddenValues}.
-   */
-  public class HiddenValue implements IClusterable {
 
-    // /////////////////////////////////////////////////////////////////////////
-    // instance variables
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * The instance variable stores the name of the hidden value.
-     * 
-     * @see #setName
-     */
-    private final String name;
-
-    /**
-     * The instance variable stores the value of the hidden value.
-     * 
-     * @see #getValue
-     */
-    private final String value;
-
-    // /////////////////////////////////////////////////////////////////////////
-    // constructors / destructors
-
-    /**
-     * The constructor creates a new hidden value.
-     * 
-     * @param _name
-     *                name of the hidden value
-     * @param _value
-     *                value of the hidden value
-     */
-    private HiddenValue(final String _name, final String _value) {
-      this.name = _name;
-      this.value = _value;
-    }
-
-    // /////////////////////////////////////////////////////////////////////////
-    // instance getter / setter methods
-
-    /**
-     * This is the getter method for the instance variable {@link #name}.
-     * 
-     * @return value of instance variable {@link #name}
-     * @see #name
-     */
-    public String getName() {
-      return this.name;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #value}.
-     * 
-     * @return value of instance variable {@link #value}
-     * @see #value
-     */
-    public String getValue() {
-      return this.value;
-    }
-    
-    
-  }
 }

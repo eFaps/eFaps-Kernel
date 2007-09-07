@@ -21,6 +21,8 @@
 package org.efaps.webapp.components.footer;
 
 import org.apache.wicket.PageMap;
+import org.apache.wicket.PageParameters;
+import org.apache.wicket.ResourceReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -30,7 +32,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.image.Image;
-import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.link.PopupCloseLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
@@ -55,6 +56,15 @@ public class FooterPanel extends Panel {
 
   private static final long serialVersionUID = -1722339596237748160L;
 
+  public static final ResourceReference ICON_NEXT =
+      new ResourceReference(FooterPanel.class, "eFapsButtonNext.gif");
+
+  public static final ResourceReference ICON_DONE =
+      new ResourceReference(FooterPanel.class, "eFapsButtonDone.gif");
+
+  public static final ResourceReference ICON_CANCEL =
+      new ResourceReference(FooterPanel.class, "eFapsButtonCancel.gif");
+
   private final ModalWindowContainer modalWindow;
 
   public FooterPanel(final String _id, final IModel _model,
@@ -63,8 +73,6 @@ public class FooterPanel extends Panel {
     super(_id, _model);
     this.modalWindow = _modalWindow;
     ModelAbstract model = (ModelAbstract) super.getModel();
-
-    CommandAbstract command = model.getCommand();
 
     String label = null;
     if (model.isCreateMode()) {
@@ -75,55 +83,55 @@ public class FooterPanel extends Panel {
       label = "Search";
     }
 
-    add(new StyleSheetReference("eFapsFooterPanelCSS", getClass(),
-        "FooterPanel.css"));
+    add(new StyleSheetReference("panelcss", getClass(), "FooterPanel.css"));
     WebMarkupContainer createEditSearchLink = null;
 
-    if (_form != null) {
-      createEditSearchLink =
-          new SubmitAndCloseLink("CreateEditSearch", model, _form);
+    if (_form != null && model instanceof FormModel) {
+      if (model.isSearchMode()) {
+        createEditSearchLink =
+            new SearchSubmitLink("createeditsearch", model, _form);
+      } else {
+        createEditSearchLink =
+            new AjaxSubmitAndCloseLink("createeditsearch", model, _form);
+      }
     } else {
-
-      createEditSearchLink = new Link("CreateEditSearch") {
-
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public void onClick() {
-          // TODO Auto-generated method stub
-
-        }
-      };
+      createEditSearchLink =
+          (WebMarkupContainer) new WebMarkupContainer("createeditsearch")
+              .setVisible(false);
     }
-    createEditSearchLink.add(new Image("eFapsButtonDone"));
-    createEditSearchLink.add(new Label("eFapsButtonDoneLabel", label));
+    if (model.isSearchMode()) {
+      createEditSearchLink.add(new Image("createeditsearchicon", ICON_NEXT));
+    } else {
+      createEditSearchLink.add(new Image("createeditsearchicon", ICON_DONE));
+    }
+    createEditSearchLink.add(new Label("createeditsearchlabel", label));
     add(createEditSearchLink);
 
     WebMarkupContainer cancelLink = null;
-    if (command.getTarget() == CommandAbstract.TARGET_POPUP) {
-      cancelLink = new PopupCloseLink("Cancel");
-    } else if (_modalWindow != null) {
-      cancelLink = new AjaxCancelLink("Cancel");
+    if (_modalWindow == null) {
+      cancelLink = new PopupCloseLink("cancel");
+    } else {
+      cancelLink = new AjaxCancelLink("cancel");
     }
 
-    cancelLink.add(new Image("eFapsButtonCancel"));
-    cancelLink.add(new Label("eFapsButtonCancelLabel", "Cancel"));
+    cancelLink.add(new Image("cancelicon", ICON_CANCEL));
+    cancelLink.add(new Label("cancellabel", "Cancel"));
     add(cancelLink);
 
   }
 
-  public class SubmitAndCloseLink extends SubmitLink {
+  public class AjaxSubmitAndCloseLink extends SubmitLink {
 
     private static final long serialVersionUID = 1L;
 
-    public SubmitAndCloseLink(final String id, final IModel _model,
-                              final Form form) {
-      super(id, form);
-      this.add(new SubmitandCloseBehavior(_model, form));
+    public AjaxSubmitAndCloseLink(final String _id, final IModel _model,
+                                  final Form _form) {
+      super(_id, _form);
+      this.add(new AjaxSubmitAndCloseBehavior(_model, _form));
     }
   }
 
-  public class SubmitandCloseBehavior extends AjaxFormSubmitBehavior {
+  public class AjaxSubmitAndCloseBehavior extends AjaxFormSubmitBehavior {
 
     private static final long serialVersionUID = 1L;
 
@@ -131,7 +139,7 @@ public class FooterPanel extends Panel {
 
     private final Form form;
 
-    public SubmitandCloseBehavior(final IModel _model, final Form _form) {
+    public AjaxSubmitAndCloseBehavior(final IModel _model, final Form _form) {
       super(_form, "onclick");
       this.imodel = _model;
       this.form = _form;
@@ -164,7 +172,8 @@ public class FooterPanel extends Panel {
         CharSequence url =
             this.form.urlFor(PageMap.forName(MainPage.INLINEFRAMENAME), clazz,
                 openermodel.getPageParameters());
-        _target.appendJavascript("opener.location.href = '" + url
+        _target.appendJavascript("opener.location.href = '"
+            + url
             + "'; self.close();");
 
       }
@@ -173,6 +182,7 @@ public class FooterPanel extends Panel {
   }
 
   public class AjaxCancelLink extends AjaxLink {
+
     public AjaxCancelLink(String id) {
       super(id);
     }
@@ -182,6 +192,28 @@ public class FooterPanel extends Panel {
     public void onClick(AjaxRequestTarget target) {
       modalWindow.setUpdateParent(false);
       modalWindow.close(target);
+    }
+  }
+
+  public class SearchSubmitLink extends SubmitLink {
+
+    private static final long serialVersionUID = 1L;
+
+    private final ModelAbstract model;
+
+    public SearchSubmitLink(final String _id, final ModelAbstract _model,
+                            final Form _form) {
+      super(_id, _form);
+      this.model = _model;
+    }
+
+    @Override
+    public void onSubmit() {
+      super.onSubmit();
+      PageParameters parameters = new PageParameters();
+
+      parameters.add("command", this.model.getCommand().getName());
+      this.getRequestCycle().setResponsePage(WebTablePage.class, parameters);
     }
   }
 

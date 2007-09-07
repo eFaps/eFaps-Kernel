@@ -2,9 +2,10 @@
   position: absolute;
   width: 100%;
   top: 75px;
-  bottom: 0px;
+  bottom: 36px;
   overflow: auto;
 }
+
 
 /* Odd Table Row Appearance */
 tr.eFapsTableRowOdd {

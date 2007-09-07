@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.Command;
@@ -41,7 +42,7 @@ import org.efaps.db.SearchQuery;
  * @author tmo
  * @version $Id$
  */
-public class MenuItemModel implements IModel {
+public class MenuItemModel extends Model {
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -89,8 +90,8 @@ public class MenuItemModel implements IModel {
     this(Menu.get(_name), _oid);
   }
 
-  private MenuItemModel(final CommandAbstract _command, String _oid)
-                                                                    throws Exception {
+  protected MenuItemModel(final CommandAbstract _command, String _oid)
+                                                                      throws Exception {
     this.image = _command.getIcon();
 
     String label = DBProperties.getProperty(_command.getLabel());
@@ -181,20 +182,5 @@ public class MenuItemModel implements IModel {
   }
 
   // ///////////////////////////////////////////////////////////////////////////
-  // instance methods
-
-  public Object getObject() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  public void setObject(final Object object) {
-    // TODO Auto-generated method stub
-
-  }
-
-  public void detach() {
-    // TODO Auto-generated method stub
-  }
 
 }

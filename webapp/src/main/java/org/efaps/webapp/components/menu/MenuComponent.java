@@ -38,6 +38,7 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.components.AbstractParentMarkupContainer;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.models.MenuItemModel;
+import org.efaps.webapp.models.SearchItemModel;
 
 /**
  * @author tmo
@@ -51,16 +52,32 @@ public class MenuComponent extends AbstractParentMarkupContainer {
       "resources/" + MenuComponent.class.getName() + "/";
 
   private static String HEADER_RESOURCE =
-      "" + JavascriptUtils.SCRIPT_OPEN_TAG + "var myThemeOfficeBase=\"" + URL
-          + "\";" + JavascriptUtils.SCRIPT_CLOSE_TAG + CssUtils.INLINE_OPEN_TAG
-          + "span.eFapsMenuLabel  {\n" + "  vertical-align: middle;\n" + "}\n"
-          + "img.eFapsMenuMainImage {\n" + "  padding-left: 2px;\n"
-          + "  vertical-align: bottom;\n" + "  width: 16px;\n"
-          + "  height: 16px;\n" + "}\n" + "img.eFapsMenuMainBlankImage  {\n"
-          + "  vertical-align: bottom;\n" + "  width: 2px;\n"
-          + "  height: 16px;\n" + "}\n" + "img.eFapsMenuSubImage {\n"
-          + "  vertical-align: bottom;\n" + "  width: 16px;\n"
-          + "  height: 16px;\n" + "}\n" + CssUtils.INLINE_CLOSE_TAG;
+      JavascriptUtils.SCRIPT_OPEN_TAG
+          + "var myThemeOfficeBase=\""
+          + URL
+          + "\";"
+          + JavascriptUtils.SCRIPT_CLOSE_TAG
+          + CssUtils.INLINE_OPEN_TAG
+          + "span.eFapsMenuLabel  {\n "
+          + "  vertical-align: middle;\n "
+          + "}\n"
+          + "img.eFapsMenuMainImage {\n"
+          + "   padding-left: 2px;\n"
+          + "   vertical-align: bottom;\n"
+          + "   width: 16px;\n"
+          + "   height: 16px;\n"
+          + "}\n"
+          + "img.eFapsMenuMainBlankImage  {\n"
+          + "  vertical-align: bottom;\n"
+          + "  width: 2px;\n"
+          + "  height: 16px;\n "
+          + "}\n"
+          + "img.eFapsMenuSubImage {\n"
+          + " vertical-align: bottom;\n"
+          + "  width: 16px;\n"
+          + "  height: 16px;"
+          + "\n}\n"
+          + CssUtils.INLINE_CLOSE_TAG;
 
   private static String IMG_BLANK_SUB =
       "<img src=\"" + URL + "blank.gif\" class=\"eFapsMenuSubImage\"/>";
@@ -69,6 +86,8 @@ public class MenuComponent extends AbstractParentMarkupContainer {
       "<img src=\"" + URL + "blank.gif\" class=\"eFapsMenuMainBlankImage\"/>";
 
   private final FormContainer form;
+
+  private Integer childID = 0;
 
   public MenuComponent(final String _id, final IModel _model) {
     this(_id, _model, null);
@@ -88,43 +107,50 @@ public class MenuComponent extends AbstractParentMarkupContainer {
 
   private void initialise() {
     MenuItemModel model = (MenuItemModel) super.getModel();
-
     for (MenuItemModel menuItem : model.childs) {
       addLink(menuItem);
     }
   }
 
-  private Integer childID = 0;
-
   private String getNewChildId() {
     return "ItemLink" + (childID++).toString();
   }
 
-  private void addLink(MenuItemModel menuItem) {
-
-    if (menuItem.getTarget() != CommandAbstract.TARGET_UNKNOWN) {
-      if (menuItem.getTarget() == CommandAbstract.TARGET_MODAL) {
-        MenuItemAjaxLinkComponent item =
-            new MenuItemAjaxLinkComponent(getNewChildId(), menuItem);
-        this.add(item);
+  private void addLink(final MenuItemModel _menuItemModel) {
+    if (!_menuItemModel.hasChilds()) {
+      if (_menuItemModel.getTarget() != CommandAbstract.TARGET_UNKNOWN) {
+        if (_menuItemModel.getTarget() == CommandAbstract.TARGET_MODAL) {
+          MenuItemAjaxLinkComponent item =
+              new MenuItemAjaxLinkComponent(getNewChildId(), _menuItemModel);
+          this.add(item);
+        } else {
+          MenuItemLinkComponent item =
+              new MenuItemLinkComponent(getNewChildId(), _menuItemModel);
+          this.add(item);
+        }
       } else {
-        MenuItemLinkComponent item =
-            new MenuItemLinkComponent(getNewChildId(), menuItem);
-        this.add(item);
+        if (_menuItemModel.getCommand().isSubmit()) {
+          MenuItemAjaxSubmitComponent item =
+              new MenuItemAjaxSubmitComponent(getNewChildId(), _menuItemModel,
+                  this.form);
+          this.add(item);
+        } else if (super.getModel() instanceof SearchItemModel) {
+
+          SearchItemLinkComponent item =
+              new SearchItemLinkComponent(getNewChildId(), _menuItemModel);
+          this.add(item);
+
+        }
       }
-    } else {
-      if (menuItem.getCommand().isSubmit()) {
-        MenuItemAjaxSubmitComponent item =
-            new MenuItemAjaxSubmitComponent(getNewChildId(), menuItem,
-                this.form);
-        this.add(item);
-      } else if (menuItem.getCommand().hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-        MenuItemLinkComponent item =
-            new MenuItemLinkComponent(getNewChildId(), menuItem);
-        this.add(item);
-      }
+    } else if (_menuItemModel.getCommand().hasEvents(
+        EventType.UI_COMMAND_EXECUTE)) {
+
+      MenuItemLinkComponent item =
+          new MenuItemLinkComponent(getNewChildId(), _menuItemModel);
+      this.add(item);
     }
-    for (MenuItemModel childs : menuItem.childs) {
+
+    for (MenuItemModel childs : _menuItemModel.childs) {
       addLink(childs);
     }
   }
@@ -159,7 +185,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
         MenuItemAjaxLinkComponent item = (MenuItemAjaxLinkComponent) child;
         MenuItemModel childModel = (MenuItemModel) item.getModel();
 
-        String url = item.getAjaxOpenModalBehavior().getJavaScript();
+        String url = item.getJavaScript();
 
         childModel.setURL(url);
 
@@ -167,7 +193,14 @@ public class MenuComponent extends AbstractParentMarkupContainer {
         MenuItemAjaxSubmitComponent item = (MenuItemAjaxSubmitComponent) child;
         MenuItemModel childModel = (MenuItemModel) item.getModel();
 
-        String url = item.getSubmitBehaviour().getJavaScript();
+        String url = item.getJavaScript();
+
+        childModel.setURL(url);
+      } else if (child instanceof SearchItemLinkComponent) {
+        SearchItemLinkComponent item = (SearchItemLinkComponent) child;
+        MenuItemModel childModel = (MenuItemModel) item.getModel();
+
+        String url = (String) item.urlFor(ILinkListener.INTERFACE);
 
         childModel.setURL(url);
       }
@@ -177,7 +210,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
   }
 
   protected void onComponentTagBody(final MarkupStream _markupStream,
-      final ComponentTag _openTag) {
+                                    final ComponentTag _openTag) {
     try {
       super.replaceComponentTagBody(_markupStream, _openTag,
           convertToHtml(_openTag));
@@ -214,8 +247,8 @@ public class MenuComponent extends AbstractParentMarkupContainer {
   }
 
   public void convertToHtml(final MenuItemModel _menuItem,
-      final StringBuilder _html, final boolean _isMain,
-      final StringBuilder _prefix) {
+                            final StringBuilder _html, final boolean _isMain,
+                            final StringBuilder _prefix) {
 
     _html.append("['");
     if (_menuItem.getImage() != null) {

@@ -64,7 +64,7 @@ public class FormModel extends ModelAbstract {
    * 
    * @see #getForm
    */
-  private final UUID formuuid;
+  private UUID formuuid;
 
   public FormModel() throws EFapsException {
     super();
@@ -79,7 +79,7 @@ public class FormModel extends ModelAbstract {
   public FormModel(PageParameters _parameters) {
     super(_parameters);
     CommandAbstract command = super.getCommand();
-    if (command != null) {
+    if (command != null && command.getTargetForm() != null) {
       this.formuuid = command.getTargetForm().getUUID();
     } else {
       this.formuuid = null;
@@ -226,6 +226,7 @@ public class FormModel extends ModelAbstract {
     if (query != null) {
       query.close();
     }
+    super.setInitialised(true);
   }
 
   public void updateDB() {
@@ -245,6 +246,10 @@ public class FormModel extends ModelAbstract {
       e.printStackTrace();
     }
 
+  }
+
+  public void setFormUUID(UUID _uuid) {
+    this.formuuid = _uuid;
   }
 
   public class FormRowModel implements IClusterable {

@@ -20,6 +20,8 @@
 
 package org.efaps.admin.ui;
 
+import java.util.UUID;
+
 import org.efaps.util.EFapsException;
 
 /**
@@ -148,7 +150,10 @@ public class Search extends MenuAbstract  {
     }
     return search;
   }
-
+  
+  static public Search get(UUID _uuid)  {
+    return getCache().get(_uuid);
+  }
   /**
    * Static getter method for the type hashtable {@link #cache}.
    *
