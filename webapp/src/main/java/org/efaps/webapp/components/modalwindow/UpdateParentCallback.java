@@ -43,15 +43,26 @@ public class UpdateParentCallback implements ModalWindow.WindowClosedCallback {
 
   private final ModalWindowContainer modalwindow;
 
+  private final boolean clearmodel;
+
   public UpdateParentCallback(final WebMarkupContainer _panel,
                               ModalWindowContainer _modalwindow) {
+    this(_panel, _modalwindow, true);
+  }
+
+  public UpdateParentCallback(final WebMarkupContainer _panel,
+                              ModalWindowContainer _modalwindow,
+                              final boolean _clearmodel) {
     this.panel = _panel;
     this.modalwindow = _modalwindow;
+    this.clearmodel = _clearmodel;
   }
 
   public void onClose(AjaxRequestTarget _target) {
     if (this.modalwindow.isUpdateParent()) {
-      ((ModelAbstract) panel.getPage().getModel()).clearModel();
+      if (this.clearmodel) {
+        ((ModelAbstract) panel.getPage().getModel()).clearModel();
+      }
 
       Page page = null;
       if (panel.getPage().getModel() instanceof TableModel) {

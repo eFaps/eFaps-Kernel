@@ -90,17 +90,6 @@ public class FormModel extends ModelAbstract {
     return this.formuuid;
   }
 
-  public Object getObject() {
-    return null;
-  }
-
-  public void setObject(Object object) {
-  }
-
-  public void detach() {
-
-  }
-
   public void clearModel() {
     this.setInitialised(false);
     this.values.clear();

@@ -27,7 +27,7 @@ import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.Command;
@@ -43,7 +43,7 @@ import org.efaps.util.EFapsException;
  * @author jmo
  * @version $Id$
  */
-public abstract class ModelAbstract implements IModel {
+public abstract class ModelAbstract extends Model {
 
   /**
    *

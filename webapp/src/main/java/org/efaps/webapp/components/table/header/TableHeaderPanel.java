@@ -30,6 +30,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
+import org.efaps.webapp.components.modalwindow.UpdateParentCallback;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.models.TableModel.HeaderModel;
 import org.efaps.webapp.models.TableModel.SortDirection;
@@ -53,6 +55,9 @@ public class TableHeaderPanel extends Panel {
 
   public static final ResourceReference ICON_SORTASC =
       new ResourceReference(TableHeaderPanel.class, "eFapsSortAscending.gif");
+
+  private final ModalWindowContainer modal =
+      new ModalWindowContainer("eFapsModal");
 
   public TableHeaderPanel(final String _id, final IModel _model) {
     super(_id, _model);
@@ -92,14 +97,31 @@ public class TableHeaderPanel extends Panel {
       sortlink.add(new Label("label", headermodel.getLabel()));
       WebMarkupContainer filterlink;
       if (headermodel.isFilterable()) {
-        filterlink = new FilterLinkContainer("filterlink", headermodel);
-        filterlink.add(new Image("iconfilter", ICON_FILTER));
+        filterlink = new AjaxFilterLinkContainer("filterlink", headermodel);
+
+        if (headermodel.getName().equals(model.getFilterKey())
+            && model.isFiltered()) {
+          filterlink.add(new Image("iconfilter", ICON_FILTERACTIVE));
+
+        } else {
+          filterlink.add(new Image("iconfilter", ICON_FILTER));
+        }
       } else {
         filterlink =
             (WebMarkupContainer) (new WebMarkupContainer("filterlink"))
                 .setVisible(false);
       }
       container.add(filterlink);
+
+      add(modal);
+      modal.setPageMapName("modal");
+
+      modal
+          .setWindowClosedCallback(new UpdateParentCallback(this, modal, false));
     }
+  }
+
+  public final ModalWindowContainer getModal() {
+    return this.modal;
   }
 }

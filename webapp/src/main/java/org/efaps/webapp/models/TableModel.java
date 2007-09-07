@@ -26,12 +26,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.UUID;
 
-import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
@@ -119,12 +117,17 @@ public class TableModel extends ModelAbstract {
   /**
    * The instance Map contains the Values to be filtered
    */
-  private Map<String, String> filterValues = new TreeMap<String, String>();
+  private List<String> filterValues = new ArrayList<String>();
 
   /**
    * The instance Array holds the Label for the Columns
    */
   private List<HeaderModel> headers = new ArrayList<HeaderModel>();
+
+  /**
+   * contains the sequential numbers of the filter
+   */
+  private String[] filter;
 
   public TableModel() throws EFapsException {
     super();
@@ -170,16 +173,6 @@ public class TableModel extends ModelAbstract {
     }
   }
 
-  public Object getObject() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  public void setObject(Object object) {
-    // TODO Auto-generated method stub
-
-  }
-
   public void clearModel() {
     super.setInitialised(false);
     this.values.clear();
@@ -217,6 +210,8 @@ public class TableModel extends ModelAbstract {
       if (field.getName().equals(this.sortKey)) {
         sortdirection = this.getSortDirection();
       }
+      if (field.getName().equals(this.filterKey))
+        ;
       this.headers.add(new HeaderModel(field, sortdirection));
     }
     query.execute();
@@ -404,6 +399,11 @@ public class TableModel extends ModelAbstract {
     return !this.filterValues.isEmpty();
   }
 
+  public void removeFilter() {
+    this.filter=null;
+    this.filterKey=null;
+    this.filterValues.clear();
+  }
   /**
    * This is the getter method for the instance variable {@link #values}.
    * 
@@ -418,7 +418,7 @@ public class TableModel extends ModelAbstract {
       for (RowModel row : this.values) {
         boolean filtered = false;
         String value = (row.getValues().get(this.filterKeyInt)).getCellValue();
-        for (String key : this.filterValues.keySet()) {
+        for (String key : this.filterValues) {
           if (value.equals(key)) {
             filtered = true;
           }
@@ -466,12 +466,51 @@ public class TableModel extends ModelAbstract {
   }
 
   /**
+   * This Map is used for contruction of the items in a myfaces "<h:selectManyCheckbox>".
+   * It produces Selectboxes with a sequential number as value and the
+   * Fieldvalue as the Label.
+   * 
+   * @return Map
+   * @throws EFapsException
+   */
+  public List<String> getFilterList() {
+    List<String> filterList = new ArrayList<String>();
+    this.filterValues = filterList;
+
+    for (RowModel rowmodel : this.values) {
+      CellModel cellmodel = rowmodel.getValues().get(this.filterKeyInt);
+      String value = cellmodel.getCellValue();
+      if (!filterList.contains(value)) {
+        filterList.add(value);
+      }
+    }
+    return filterList;
+  }
+
+  /**
+   * prepares the filter to bes used in getValues
+   * 
+   * @see #getValues()
+   */
+  public void filter() {
+    if (this.filter != null) {
+      List<String> filterList = new ArrayList<String>();
+      for (int i = 0; i < this.filter.length; i++) {
+        Integer in = Integer.valueOf(this.filter[i].toString());
+        filterList.add(this.filterValues.get(in));
+      }
+      this.filterValues = filterList;
+    }
+  }
+
+  public void setFilter(String[] _filter) {
+    this.filter = _filter;
+  }
+
+  /**
    * The inner class stores one row of the table.
    */
-  public class RowModel implements IClusterable {
-
-    // /////////////////////////////////////////////////////////////////////////
-    // instance variables
+  public class RowModel extends Model {
 
     private static final long serialVersionUID = 1L;
 
@@ -488,9 +527,6 @@ public class TableModel extends ModelAbstract {
      * @see #getOids
      */
     private final String oids;
-
-    // /////////////////////////////////////////////////////////////////////////
-    // contructors / destructors
 
     /**
      * The constructor creates a new instance of class Row.
@@ -548,7 +584,7 @@ public class TableModel extends ModelAbstract {
     }
   }
 
-  public class CellModel implements IClusterable, IModel {
+  public class CellModel extends Model {
 
     private static final long serialVersionUID = 1L;
 
@@ -592,20 +628,9 @@ public class TableModel extends ModelAbstract {
       return this.popup;
     }
 
-    public Object getObject() {
-
-      return null;
-    }
-
-    public void setObject(Object arg0) {
-    }
-
-    public void detach() {
-
-    }
   }
 
-  public class HeaderModel implements IClusterable, IModel {
+  public class HeaderModel extends Model {
 
     private static final long serialVersionUID = 1L;
 
@@ -655,20 +680,6 @@ public class TableModel extends ModelAbstract {
       this.sortdirection = _sortdirection;
     }
 
-    public Object getObject() {
-      return null;
-    }
-
-    public void setObject(Object arg0) {
-    }
-
-    public void detach() {
-    }
-
   }
 
-  public void detach() {
-    // TODO Auto-generated method stub
-
-  }
 }

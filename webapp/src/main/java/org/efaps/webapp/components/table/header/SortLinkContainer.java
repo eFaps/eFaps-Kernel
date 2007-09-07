@@ -42,7 +42,7 @@ public class SortLinkContainer extends Link {
 
   @Override
   public void onClick() {
-    System.out.println("click");
+
     TableModel tablemodel =
         (TableModel) this.findParent(TableHeaderPanel.class).getModel();
     HeaderModel model = (HeaderModel) super.getModel();

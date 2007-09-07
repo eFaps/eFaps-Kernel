@@ -46,12 +46,14 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.modalwindow.ModalWindowAjaxPageCreator;
+import org.efaps.webapp.models.MenuItemModel;
 
 /**
  * @author jmo
  * @version $Id$
  */
 public class MenuItemAjaxLinkComponent extends WebComponent {
+
   private static final long serialVersionUID = 1L;
 
   public MenuItemAjaxLinkComponent(final String _id, final IModel _menuItem) {
@@ -69,6 +71,7 @@ public class MenuItemAjaxLinkComponent extends WebComponent {
   }
 
   public class AjaxOpenModalBehaviour extends AjaxEventBehavior {
+
     private static final long serialVersionUID = 1L;
 
     private WebComponent component;
@@ -88,8 +91,8 @@ public class MenuItemAjaxLinkComponent extends WebComponent {
       MenuPanel menupanel =
           (MenuPanel) this.component.findParent(MenuPanel.class);
       ModalWindowAjaxPageCreator pageCreator =
-          new ModalWindowAjaxPageCreator(this.component.getModel(), menupanel
-              .getModal());
+          new ModalWindowAjaxPageCreator((MenuItemModel) this.component
+              .getModel(), menupanel.getModal());
       menupanel.getModal().setPageCreator(pageCreator);
       menupanel.getModal().show(_target);
 

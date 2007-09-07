@@ -23,7 +23,6 @@ package org.efaps.webapp.components.modalwindow;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.models.MenuItemModel;
@@ -38,11 +37,11 @@ public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
 
   private static final long serialVersionUID = 1L;
 
-  private final IModel imodel;
+  private final MenuItemModel imodel;
 
   private final ModalWindowContainer modalWindow;
 
-  public ModalWindowAjaxPageCreator(final IModel _model,
+  public ModalWindowAjaxPageCreator(final MenuItemModel _model,
                                     final ModalWindowContainer _modalWindow) {
     this.imodel = _model;
     this.modalWindow = _modalWindow;
