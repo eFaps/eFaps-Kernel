@@ -21,12 +21,14 @@ package org.efaps.webapp.pages;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
+import org.apache.wicket.util.string.CssUtils;
 import org.wicketstuff.dojo.markup.html.container.DojoSimpleContainer;
 import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
 
@@ -47,6 +49,13 @@ public class ContentContainerPage extends WebPage {
     super(PageMap.forName(MainPage.INLINEFRAMENAME));
     final ClientProperties properties =
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties();
+    if (properties.isBrowserSafari()) {
+      add(new StringHeaderContributor(CssUtils.INLINE_OPEN_TAG
+          + ".eFapsContentContainerFrame{\n"
+          + "  height:100%; \n"
+          + "}\n"
+          + CssUtils.INLINE_CLOSE_TAG));
+    }
 
     add(new StyleSheetReference("ContentContainerPageCSS", getClass(),
         "contentcontainerpage/ContentContainerPage.css"));
@@ -59,15 +68,15 @@ public class ContentContainerPage extends WebPage {
     parentcontainer.setOrientation(DojoSplitContainer.ORIENTATION_HORIZONTAL);
 
     DojoSimpleContainer containerlinks =
-      new DojoSimpleContainer("containerlinks", "Menu");
+        new DojoSimpleContainer("containerlinks", "Menu");
     parentcontainer.add(containerlinks);
-    containerlinks.add(new ListMenuPanel("eFapsListMenu", LISTMENU,
-        _parameters));
+    containerlinks
+        .add(new ListMenuPanel("eFapsListMenu", LISTMENU, _parameters));
 
     DojoSimpleContainer containerrechts =
         new DojoSimpleContainer("containerrechts", "Content");
     parentcontainer.add(containerrechts);
-   
+
     WebMarkupContainer parent = new WebMarkupContainer("aktParent");
     parent.setOutputMarkupId(true);
     containerrechts.add(parent);

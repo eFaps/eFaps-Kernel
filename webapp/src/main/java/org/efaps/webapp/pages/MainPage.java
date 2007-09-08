@@ -23,11 +23,13 @@ package org.efaps.webapp.pages;
 import java.util.UUID;
 
 import org.apache.wicket.PageMap;
-import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
+import org.apache.wicket.protocol.http.request.WebClientInfo;
+import org.apache.wicket.util.string.CssUtils;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
@@ -46,6 +48,16 @@ public class MainPage extends WebPage {
   public static String INLINEFRAMENAME = "ILFP";
 
   public MainPage() throws Exception {
+    // hack to show the IFrame correctly in safari
+    if (((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
+        .isBrowserSafari()) {
+      add(new StringHeaderContributor(CssUtils.INLINE_OPEN_TAG
+          + "#eFapsFrameContent {\n "
+          + "  height: 100%; \n"
+          + "}\n"
+          + CssUtils.INLINE_CLOSE_TAG));
+    }
+
     // MainToolBar
     MenuComponent menu =
         new MenuComponent("eFapsMainMenu", new MenuItemModel(UUID
@@ -69,10 +81,9 @@ public class MainPage extends WebPage {
 
       add(new StyleSheetReference("eFapsMainPageCSS", getClass(),
           "mainpage/MainPage.css"));
-      add(HeaderContributor.forJavaScript(super.getClass(),
-          "javascript/eFapsDefault.js"));
+
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
+
       e.printStackTrace();
     }
 

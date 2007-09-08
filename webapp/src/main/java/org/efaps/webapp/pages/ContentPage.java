@@ -60,7 +60,7 @@ public abstract class ContentPage extends WebPage {
       add(new MenuPanel("eFapsMenu", model, _form));
       WebMarkupContainer footerpanel;
       if (model.isCreateMode() || model.isEditMode() || model.isSearchMode()) {
-        footerpanel = new FooterPanel("eFapsFooter", model, modalWindow, _form);
+        footerpanel = new FooterPanel("eFapsFooter", model, this.modalWindow, _form);
       } else {
         footerpanel = new WebMarkupContainer("eFapsFooter");
         footerpanel.setVisible(false);
