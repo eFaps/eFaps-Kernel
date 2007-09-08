@@ -79,15 +79,15 @@ public class MenuItemModel extends Model {
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
-  public MenuItemModel(final String _name) throws Exception {
-    this(Menu.get(_name), null);
+  public MenuItemModel(final UUID _uuid) throws Exception {
+    this(Menu.get(_uuid), null);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
-  public MenuItemModel(final String _name, final String _oid) throws Exception {
-    this(Menu.get(_name), _oid);
+  public MenuItemModel(final UUID _uuid, final String _oid) throws Exception {
+    this(Menu.get(_uuid), _oid);
   }
 
   protected MenuItemModel(final CommandAbstract _command, String _oid)

@@ -29,7 +29,7 @@ import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.components.modalwindow.UpdateParentCallback;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.models.ModelAbstract;
+import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.SearchItemModel;
 
 /**
@@ -50,21 +50,21 @@ public class MenuPanel extends Panel {
   public MenuPanel(final String _id, IModel _model, FormContainer _form) {
     super(_id, _model);
 
-    if (_model instanceof ModelAbstract) {
-      ModelAbstract model = (ModelAbstract) _model;
+    if (_model instanceof AbstractModel) {
+      AbstractModel model = (AbstractModel) _model;
       super.setModel(model);
       try {
         if (model.getCommand().getTargetMenu() != null) {
           MenuComponent menu =
               new MenuComponent("eFapsMenu", new MenuItemModel(model
-                  .getCommand().getTargetMenu().getName(), model.getOid()),
+                  .getCommand().getTargetMenu().getUUID(), model.getOid()),
                   _form);
           add(menu);
         } else if (model.getMode() == CommandAbstract.TARGET_MODE_SEARCH
             && model.getCallingCommandUUID() != null) {
           MenuComponent menu =
               new MenuComponent("eFapsMenu", new SearchItemModel(model
-                  .getCallingCommand().getTargetSearch().getName()), _form);
+                  .getCallingCommand().getTargetSearch().getUUID()), _form);
 
           add(menu);
         } else {

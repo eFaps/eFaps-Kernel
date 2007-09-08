@@ -51,7 +51,7 @@ public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
     Page ret = null;
     MenuItemModel model = (MenuItemModel) this.imodel;
     CommandAbstract command = model.getCommand();
-    PageParameters para = new PageParameters("command=" + command.getName());
+    PageParameters para = new PageParameters("command=" + command.getUUID());
     para.add("oid", model.getOid());
     try {
 

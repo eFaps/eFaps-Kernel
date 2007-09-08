@@ -36,7 +36,7 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.models.ModelAbstract;
+import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
@@ -105,7 +105,7 @@ public class MenuItemAjaxSubmitComponent extends WebComponent {
           e.printStackTrace();
         }
       }
-      ((ModelAbstract) this.form.getPage().getModel()).clearModel();
+      ((AbstractModel) this.form.getPage().getModel()).resetModel();
       Page page = null;
       if (this.form.getPage().getModel() instanceof TableModel) {
 

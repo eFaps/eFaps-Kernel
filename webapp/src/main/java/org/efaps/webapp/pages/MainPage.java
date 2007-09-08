@@ -20,6 +20,8 @@
 
 package org.efaps.webapp.pages;
 
+import java.util.UUID;
+
 import org.apache.wicket.PageMap;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebPage;
@@ -44,9 +46,10 @@ public class MainPage extends WebPage {
   public static String INLINEFRAMENAME = "ILFP";
 
   public MainPage() throws Exception {
-
+    // MainToolBar
     MenuComponent menu =
-        new MenuComponent("eFapsMainMenu", new MenuItemModel("MainToolBar"));
+        new MenuComponent("eFapsMainMenu", new MenuItemModel(UUID
+            .fromString("87001cc3-c45c-44de-b8f1-776df507f268")));
     add(menu);
 
     add(new InlineFrame("eFapsContentFrame", PageMap.forName(INLINEFRAMENAME),

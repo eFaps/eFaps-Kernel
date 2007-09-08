@@ -126,7 +126,7 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
       CommandAbstract cmd = model.getCommand();
       PageParameters para = new PageParameters();
       para.add("oid", model.getOid());
-      para.add("command", cmd.getName());
+      para.add("command", cmd.getUUID().toString());
 
       InlineFrame page;
       if (cmd.getTargetTable() != null) {

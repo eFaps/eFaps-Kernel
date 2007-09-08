@@ -62,7 +62,7 @@ public class MenuItemLinkComponent extends Link {
       ((EFapsSession) this.getSession()).setOpenerModel(this.getPage()
           .getModel());
     }
-    PageParameters para = new PageParameters("command=" + command.getName());
+    PageParameters para = new PageParameters("command=" + command.getUUID());
     para.add("oid", model.getOid());
     if (command.getTargetTable() != null) {
       if (this.getPage() instanceof MainPage) {

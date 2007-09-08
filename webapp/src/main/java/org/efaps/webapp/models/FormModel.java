@@ -40,13 +40,12 @@ import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-import org.efaps.util.EFapsException;
 
 /**
  * @author jmo
  * @version $Id$
  */
-public class FormModel extends ModelAbstract {
+public class FormModel extends AbstractModel {
 
   private static final long serialVersionUID = 3026168649146801622L;
 
@@ -65,15 +64,6 @@ public class FormModel extends ModelAbstract {
    */
   private UUID formuuid;
 
-  public FormModel() throws EFapsException {
-    super();
-    CommandAbstract command = super.getCommand();
-    if (command != null) {
-      this.formuuid = command.getTargetForm().getUUID();
-    } else {
-      this.formuuid = null;
-    }
-  }
 
   public FormModel(PageParameters _parameters) {
     super(_parameters);
@@ -89,7 +79,7 @@ public class FormModel extends ModelAbstract {
     return this.formuuid;
   }
 
-  public void clearModel() {
+  public void resetModel() {
     this.setInitialised(false);
     this.values.clear();
   }

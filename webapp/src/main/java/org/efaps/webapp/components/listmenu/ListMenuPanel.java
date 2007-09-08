@@ -22,6 +22,7 @@ package org.efaps.webapp.components.listmenu;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
@@ -86,8 +87,8 @@ public class ListMenuPanel extends DojoPanelContainer {
     try {
 
       MenuItemModel model =
-          new MenuItemModel(_parameters.getString("command"), _parameters
-              .getString("oid"));
+          new MenuItemModel(UUID.fromString(_parameters.getString("command")),
+              _parameters.getString("oid"));
       this.setModel(model);
       model.setLevel(_level);
       List<Object> menu = new ArrayList<Object>();

@@ -29,7 +29,7 @@ import org.efaps.webapp.components.footer.FooterPanel;
 import org.efaps.webapp.components.menu.MenuPanel;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.components.titel.TitelPanel;
-import org.efaps.webapp.models.ModelAbstract;
+import org.efaps.webapp.models.AbstractModel;
 
 /**
  * @author jmo
@@ -51,7 +51,7 @@ public abstract class ContentPage extends WebPage {
   protected void addComponents(FormContainer _form) {
     try {
 
-      ModelAbstract model = (ModelAbstract) super.getModel();
+      AbstractModel model = (AbstractModel) super.getModel();
       add(new TitelPanel("eFapsTitel", model.getTitle()));
 
       add(new StyleSheetReference("ContentPageCSS", getClass(),

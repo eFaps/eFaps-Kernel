@@ -51,7 +51,7 @@ import org.efaps.util.EFapsException;
  * @author jmo
  * @version $Id$
  */
-public class TableModel extends ModelAbstract {
+public class TableModel extends AbstractModel {
 
   public static enum SortDirection {
     DESCENDING,
@@ -129,11 +129,6 @@ public class TableModel extends ModelAbstract {
    */
   private String[] filter;
 
-  public TableModel() throws EFapsException {
-    super();
-    initialise();
-  }
-
   public TableModel(PageParameters _parameters) throws EFapsException {
     super(_parameters);
     initialise();
@@ -159,9 +154,9 @@ public class TableModel extends ModelAbstract {
       // set show check boxes
       boolean showCheckBoxes = getCommand().isTargetShowCheckBoxes();
       if (!showCheckBoxes) {
-        String cldName = getParameter("command");
-        if (cldName != null) {
-          CommandAbstract cmd = getCommand(cldName);
+        UUID cldUUID = UUID.fromString(getParameter("command"));
+        if (cldUUID != null) {
+          CommandAbstract cmd = getCommand(cldUUID);
           showCheckBoxes =
               (cmd != null) && cmd.hasEvents(EventType.UI_COMMAND_EXECUTE);
         }
@@ -173,7 +168,7 @@ public class TableModel extends ModelAbstract {
     }
   }
 
-  public void clearModel() {
+  public void resetModel() {
     super.setInitialised(false);
     this.values.clear();
     this.headers.clear();
@@ -510,8 +505,6 @@ public class TableModel extends ModelAbstract {
   public void setFilter(String[] _filter) {
     this.filter = _filter;
   }
-
- 
 
   /**
    * The inner class stores one row of the table.

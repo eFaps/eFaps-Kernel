@@ -36,7 +36,6 @@ import org.efaps.webapp.pages.WebTablePage;
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class AjaxLinkContainer extends AbstractParentAjaxLink {
 
@@ -61,7 +60,7 @@ public class AjaxLinkContainer extends AbstractParentAjaxLink {
       menu = instance.getType().getTreeMenu();
 
       PageParameters para = new PageParameters();
-      para.add("command", menu.getName());
+      para.add("command", menu.getUUID().toString());
       para.add("oid", cellmodel.getOid());
 
       if (isFirstStep()) {

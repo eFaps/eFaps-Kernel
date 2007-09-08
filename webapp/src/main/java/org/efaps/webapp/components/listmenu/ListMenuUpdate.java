@@ -94,7 +94,7 @@ public class ListMenuUpdate {
       if (!old) {
         MenuItemModel model;
         try {
-          model = new MenuItemModel(_menu.getName(), _oid);
+          model = new MenuItemModel(_menu.getUUID(), _oid);
           model.setLevel(level);
           for (MenuItemModel item : model.getChilds()) {
             item.setLevel(level);

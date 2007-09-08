@@ -45,7 +45,7 @@ public class SearchItemLinkComponent extends Link {
   public void onClick() {
     FormModel formmodel =
         (FormModel) this.findParent(MenuPanel.class).getModel();
-    formmodel.clearModel();
+    formmodel.resetModel();
     CommandAbstract command = ((MenuItemModel) super.getModel()).getCommand();
     formmodel.setCommandUUID(command.getUUID());
     formmodel.setFormUUID(command.getTargetForm().getUUID());

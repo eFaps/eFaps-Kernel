@@ -52,7 +52,7 @@ public class LinkContainer extends Link {
     try {
       menu = instance.getType().getTreeMenu();
       PageParameters parameters = new PageParameters();
-      parameters.add("command", menu.getName());
+      parameters.add("command", menu.getUUID().toString());
       parameters.add("oid", cellmodel.getOid());
 
       this.setResponsePage(ContentContainerPage.class, parameters);

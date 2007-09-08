@@ -42,7 +42,7 @@ import org.efaps.util.EFapsException;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
-import org.efaps.webapp.models.ModelAbstract;
+import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.pages.MainPage;
 import org.efaps.webapp.pages.WebFormPage;
@@ -72,7 +72,7 @@ public class FooterPanel extends Panel {
                      FormContainer _form) {
     super(_id, _model);
     this.modalWindow = _modalWindow;
-    ModelAbstract model = (ModelAbstract) super.getModel();
+    AbstractModel model = (AbstractModel) super.getModel();
 
     String label = null;
     if (model.isCreateMode()) {
@@ -156,16 +156,16 @@ public class FooterPanel extends Panel {
           this.getComponent().getRequestCycle().getRequest().getParameters(
               "selectedRow");
 
-      ((ModelAbstract) this.form.getParent().getModel()).updateDB(other);
+      ((AbstractModel) this.form.getParent().getModel()).updateDB(other);
 
-      ModelAbstract model = (ModelAbstract) this.imodel;
+      AbstractModel model = (AbstractModel) this.imodel;
 
       if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
         modalWindow.setUpdateParent(true);
         modalWindow.close(_target);
       } else {
-        ModelAbstract openermodel =
-            (ModelAbstract) ((EFapsSession) Session.get()).getOpenerModel();
+        AbstractModel openermodel =
+            (AbstractModel) ((EFapsSession) Session.get()).getOpenerModel();
         Class<?> clazz;
         if (openermodel instanceof TableModel) {
           clazz = WebTablePage.class;
@@ -203,7 +203,7 @@ public class FooterPanel extends Panel {
 
     private static final long serialVersionUID = 1L;
 
-    public SearchSubmitLink(final String _id, final ModelAbstract _model,
+    public SearchSubmitLink(final String _id, final AbstractModel _model,
                             final Form _form) {
       super(_id, _form);
       super.setModel(_model);
@@ -213,10 +213,10 @@ public class FooterPanel extends Panel {
     @Override
     public void onSubmit() {
       super.onSubmit();
-      ModelAbstract model = (ModelAbstract) super.getModel();
+      AbstractModel model = (AbstractModel) super.getModel();
 
       PageParameters parameters = new PageParameters();
-      parameters.add("command", model.getCommand().getName());
+      parameters.add("command", model.getCommand().getUUID().toString());
       parameters.add("oid", model.getOid());
 
       try {
