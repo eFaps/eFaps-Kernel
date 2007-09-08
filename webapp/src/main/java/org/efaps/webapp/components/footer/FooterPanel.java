@@ -156,7 +156,7 @@ public class FooterPanel extends Panel {
           this.getComponent().getRequestCycle().getRequest().getParameters(
               "selectedRow");
 
-      ((AbstractModel) this.form.getParent().getModel()).updateDB(other);
+      ((AbstractModel) this.form.getParent().getModel()).executeEvents(other);
 
       AbstractModel model = (AbstractModel) this.imodel;
 

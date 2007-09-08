@@ -49,7 +49,7 @@ public abstract class AbstractModel extends Model {
    * This instance variable stores the UUID of the CommandAbstract wich was
    * originaly called from the Frontend and let to the construction of this
    * model
-   * 
+   *
    * @see #getCallingCommandUUID()
    * @see #getCallingCommand()
    * @see #setCallingCommandUUID(UUID)
@@ -58,7 +58,7 @@ public abstract class AbstractModel extends Model {
 
   /**
    * The instance variable stores the UUID of the Command for this Model
-   * 
+   *
    * @see #getCommandUUID()
    * @see #getCommand
    */
@@ -67,7 +67,7 @@ public abstract class AbstractModel extends Model {
   /**
    * The instance variable is the flag if this class instance is already
    * initialised.
-   * 
+   *
    * @see #isInitialised
    * @see #setInitialised
    */
@@ -75,7 +75,7 @@ public abstract class AbstractModel extends Model {
 
   /**
    * Stores the maximal group count for a row.
-   * 
+   *
    * @see #getMaxGroupCount
    * @see #setMaxGroupCount
    */
@@ -83,7 +83,7 @@ public abstract class AbstractModel extends Model {
 
   /**
    * The instance variable stores the mode of the form.
-   * 
+   *
    * @see #getMode
    * @see #setMode
    */
@@ -91,7 +91,7 @@ public abstract class AbstractModel extends Model {
 
   /**
    * This instance variable stores the OID of the Instance
-   * 
+   *
    * @see #getOid()
    */
   private String oid;
@@ -99,15 +99,15 @@ public abstract class AbstractModel extends Model {
   /**
    * This instance variable stores the PageParameters wich are used to create
    * the Model
-   * 
+   *
    * @see #getPageParameters()
    * @see #getParameter(String)
    */
-  private PageParameters parameters;
+  private final PageParameters parameters;
 
   /**
    * This instance variable stores, if the Model is supposed to be submited
-   * 
+   *
    * @see #isSubmit()
    * @see #setSubmit(boolean)
    */
@@ -116,7 +116,7 @@ public abstract class AbstractModel extends Model {
 
   /**
    * This instance variable stores the Target of this Model
-   * 
+   *
    * @see #getTarget()
    */
 
@@ -124,7 +124,7 @@ public abstract class AbstractModel extends Model {
 
   /**
    * Constructor
-   * 
+   *
    * @param _parameters
    *                PageParameters for this Model
    */
@@ -147,7 +147,7 @@ public abstract class AbstractModel extends Model {
   /**
    * get the CommandAbstract wich was originaly called from the Frontend and let
    * to the construction of this model
-   * 
+   *
    * @see #callingCommandUUID
    * @return the calling CommandAbstract
    */
@@ -160,31 +160,30 @@ public abstract class AbstractModel extends Model {
   }
 
   /**
-   * get the UUID of the CommandAbstract wich was originaly called from the
-   * Frontend and let to the construction of this model
-   * 
-   * @see #callingCommandUUID
-   * @return UUID of the Command
+   * This is the getter method for the instance variable
+   * {@link #callingCommandUUID}.
+   *
+   * @return value of instance variable {@link #commandUUID}
    */
   public UUID getCallingCommandUUID() {
     return this.callingCommandUUID;
   }
 
   /**
-   * set the UUID of the CommandAbstract wich was originaly called from the
-   * Frontend and let to the construction of this model
-   * 
+   * This is the setter method for the instance variable
+   * {@link #callingCommandUUID}.
+   *
    * @param _uuid
-   *                UUID of the CommandAbstrac
+   *                UUID of the CommandAbstract
    */
   public void setCallingCommandUUID(UUID _uuid) {
     this.callingCommandUUID = _uuid;
   }
 
   /**
-   * This is the getter method for the instance variable {@link #command}.
-   * 
-   * @return value of instance variable {@link #command}
+   * get the CommandAbstract for the instance variable {@link #commandUUID}.
+   *
+   * @return CommandAbstract for the instance variable {@link #commandUUID}
    * @see #command
    */
   public CommandAbstract getCommand() {
@@ -198,7 +197,7 @@ public abstract class AbstractModel extends Model {
   /**
    * For given UUID of command / menu, the related command and menu Java
    * instance is searched and, if found, returned.
-   * 
+   *
    * @param _name
    *                name of searched command object
    * @return found command / menu instance, or <code>null</null> if not found
@@ -211,17 +210,28 @@ public abstract class AbstractModel extends Model {
     return cmd;
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #commandUUID}.
+   *
+   * @return value of instance variable {@link #commandUUID}
+   */
   public UUID getCommandUUID() {
     return this.commandUUID;
   }
 
+  /**
+   * This is the setter method for the instance variable {@link #commandUUID}.
+   *
+   * @param _uuid
+   *                UUID to set for teh instance varaiable {@link #commandUUID}.
+   */
   public void setCommandUUID(UUID _uuid) {
     this.commandUUID = _uuid;
   }
 
   /**
    * This is the getter method for the instance variable {@link #maxGroupCount}.
-   * 
+   *
    * @return value of instance variable {@link #maxGroupCount}
    * @see #maxGroupCount
    * @see #setMaxGroupCount
@@ -232,7 +242,7 @@ public abstract class AbstractModel extends Model {
 
   /**
    * This is the setter method for the instance variable {@link #maxGroupCount}.
-   * 
+   *
    * @param _maxGroupCount
    *                new value for instance variable {@link #maxGroupCount}
    * @see #maxGroupCount
@@ -244,7 +254,7 @@ public abstract class AbstractModel extends Model {
 
   /**
    * This is the getter method for the instance variable {@link #mode}.
-   * 
+   *
    * @return value of instance variable {@link #mode}
    * @see #mode
    * @see #setMode
@@ -255,7 +265,7 @@ public abstract class AbstractModel extends Model {
 
   /**
    * This is the setter method for the instance variable {@link #mode}.
-   * 
+   *
    * @param _mode
    *                new value for instance variable {@link #mode}
    * @see #mode
@@ -265,43 +275,68 @@ public abstract class AbstractModel extends Model {
     this.mode = _mode;
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #oid}.
+   *
+   * @return value of instance variable {@link #oid}
+   */
   public String getOid() {
     return this.oid;
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #parameters}.
+   *
+   * @return value of instance variable {@link #parameters}
+   */
   public PageParameters getPageParameters() {
     return this.parameters;
   }
 
   /**
-   * @return value for given parameter
-   * @todo description
+   * This Method returns the Value of a Parameter for the given key. It searches
+   * for the Parameter first in the Context and then in the instance variable
+   * {@link #parameters}.
+   *
+   * @param _key
+   *                Key for the Parameter to retrieve
+   * @return Parameter for the key, null if not found
+   * @throws EFapsException
    */
-  public String getParameter(String _name) throws EFapsException {
+  public String getParameter(String _key) throws EFapsException {
     String ret = null;
 
-    String[] values = Context.getThreadContext().getParameters().get(_name);
+    String[] values = Context.getThreadContext().getParameters().get(_key);
     if (values != null) {
       ret = values[0];
     } else {
-      if (this.parameters.get(_name) instanceof String[]) {
-        values = (String[]) this.parameters.get(_name);
+      if (this.parameters.get(_key) instanceof String[]) {
+        values = (String[]) this.parameters.get(_key);
         if (values != null) {
           ret = values[0];
         }
       } else {
-        ret = (String) this.parameters.get(_name);
-
+        ret = (String) this.parameters.get(_key);
       }
     }
-
     return ret;
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #target}.
+   *
+   * @return value of instance variable {@link #target}
+   */
   public int getTarget() {
     return this.target;
   }
 
+  /**
+   * This method retrieves the Value for the Titel from the eFaps Database
+   *
+   * @return Value of the Title
+   * @throws Exception
+   */
   public String getTitle() throws Exception {
     String title =
         DBProperties.getProperty(this.getCommand().getName() + ".Title");
@@ -324,6 +359,11 @@ public abstract class AbstractModel extends Model {
     return title;
   }
 
+  /**
+   * This method initialises the AbstractModel by setting the instance variables
+   *
+   * @throws EFapsException
+   */
   private void initialise() throws EFapsException {
     this.oid = getParameter("oid");
     CommandAbstract command =
@@ -359,41 +399,10 @@ public abstract class AbstractModel extends Model {
   }
 
   /**
-   * This is the getter method for the initialised variable {@link #initialised}.
-   * 
-   * @return value of initialised variable {@link #initialised}
-   * @see #initialised
-   * @see #setInitialised
-   */
-  public boolean isInitialised() {
-    return this.initialised;
-  }
-
-  /**
-   * This is the setter method for the initialised variable {@link #initialised}.
-   * 
-   * @param _initialised
-   *                new value for initialised variable {@link #initialised}
-   * @see #initialised
-   * @see #isInitialised
-   */
-  public void setInitialised(boolean _initialised) {
-    this.initialised = _initialised;
-  }
-
-  /**
    * @see #mode
    */
   public boolean isSearchMode() {
     return getMode() == CommandAbstract.TARGET_MODE_SEARCH;
-  }
-
-  public boolean isSubmit() {
-    return this.submit;
-  }
-
-  public void setSubmit(final boolean _submit) {
-    this.submit = _submit;
   }
 
   /**
@@ -404,7 +413,59 @@ public abstract class AbstractModel extends Model {
         || getMode() == CommandAbstract.TARGET_MODE_UNKNOWN;
   }
 
-  public void updateDB(String[] _others) {
+  /**
+   * This is the getter method for the instance variable {@link #initialised}.
+   *
+   * @return value of instance variable {@link #initialised}
+   * @see #initialised
+   * @see #setInitialised
+   */
+  public boolean isInitialised() {
+    return this.initialised;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #initialised}.
+   *
+   * @param _initialised
+   *                new value for instance variable {@link #initialised}
+   * @see #initialised
+   * @see #isInitialised
+   */
+  public void setInitialised(boolean _initialised) {
+    this.initialised = _initialised;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #submit}.
+   *
+   * @return value of instance variable {@link #submit}
+   * @see #setSubmit(boolean)
+   */
+  public boolean isSubmit() {
+    return this.submit;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #submit}.
+   *
+   * @see #isSubmit()
+   */
+  public void setSubmit(final boolean _submit) {
+    this.submit = _submit;
+  }
+
+  /**
+   * This method executes the Events wich are related to this Model. It will
+   * take the Events of the CallingCommand {@link #callingCommandUUID}, if it
+   * is declared, otherwise it will take the Events of the Command
+   * {@link #commandUUID}
+   *
+   * @param _others
+   *                The values will be atached to the call as
+   *                ParameterValues.OTHERS
+   */
+  public void executeEvents(String[] _others) {
     CommandAbstract command;
     if (this.callingCommandUUID != null) {
       command = this.getCallingCommand();
@@ -412,7 +473,6 @@ public abstract class AbstractModel extends Model {
       command = this.getCommand();
     }
     try {
-
       if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
         if (this.getOid() != null) {
           command.executeEvents(EventType.UI_COMMAND_EXECUTE,
@@ -424,7 +484,6 @@ public abstract class AbstractModel extends Model {
         }
       }
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
