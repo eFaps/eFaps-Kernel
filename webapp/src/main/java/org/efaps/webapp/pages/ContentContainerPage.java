@@ -29,6 +29,7 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.CssUtils;
+import org.apache.wicket.util.string.JavascriptUtils;
 import org.wicketstuff.dojo.markup.html.container.DojoSimpleContainer;
 import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
 
@@ -49,6 +50,7 @@ public class ContentContainerPage extends WebPage {
     super(PageMap.forName(MainPage.INLINEFRAMENAME));
     final ClientProperties properties =
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties();
+
     if (properties.isBrowserSafari()) {
       add(new StringHeaderContributor(CssUtils.INLINE_OPEN_TAG
           + ".eFapsContentContainerFrame{\n"
@@ -85,7 +87,7 @@ public class ContentContainerPage extends WebPage {
             .forName("content"), WebFormPage.class, _parameters);
 
     parent.add(inline);
-
+    this.add(new ChildCallBack());
   }
 
   @Override
@@ -94,5 +96,23 @@ public class ContentContainerPage extends WebPage {
     super.onBeforeRender();
     ((EFapsSession) this.getSession()).setContentContainer(this.getNumericId(),
         this.getCurrentVersionNumber());
+  }
+
+  public class ChildCallBack extends StringHeaderContributor {
+
+    private static final long serialVersionUID = 1L;
+
+    private final static String javaScript =
+        JavascriptUtils.SCRIPT_OPEN_TAG
+            + "function childCallBack(_call){\n"
+            + "  _call = _call.replace(/^javascript:/, \"\");\n"
+            + "  eval(_call);\n"
+            + "}\n"
+            + JavascriptUtils.SCRIPT_CLOSE_TAG;
+
+    public ChildCallBack() {
+      super(javaScript);
+    }
+
   }
 }

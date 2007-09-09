@@ -22,22 +22,12 @@
 
 .eFapsListMenuItem,.eFapsListMenuHeader {
   color: #008800;
-  padding: 0px;
   text-decoration: none;
   vertical-align: middle;
 }
 
-.eFapsListCollapse {
-  
-}
-
 .eFapsListMenuHeader {
   font-weight: bold;
-  padding-left: 1px;
-}
-
-.eFapsListMenuHeader span {
-  padding-left: 2px;
 }
 
 .eFapsListMenuSelected {
@@ -63,6 +53,8 @@ img.eFapsListMenuIcon {
   vertical-align: bottom;
   width: 16px;
   height: 16px;
+  padding-right: 2px;
+  padding-left: 1px;
 }
 
 .eFapsListCollapse,.eFapsListMenuClose,.eFapsListMenuGoInto {

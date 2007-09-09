@@ -21,12 +21,14 @@
 package org.efaps.webapp.components.table.cell;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.webapp.components.AbstractParentAjaxLink;
 import org.efaps.webapp.components.listmenu.ListMenuUpdate;
 import org.efaps.webapp.models.TableModel.CellModel;
 import org.efaps.webapp.pages.ContentContainerPage;
@@ -37,74 +39,96 @@ import org.efaps.webapp.pages.WebTablePage;
  * @author jmo
  * @version $Id$
  */
-public class AjaxLinkContainer extends AbstractParentAjaxLink {
+public class AjaxLinkContainer extends WebMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
-  private int step = 1;
-
   public AjaxLinkContainer(final String id, final IModel model) {
     super(id, model);
+    this.add(new AjaxParentCallBackBehavior());
+    this.add(new AjaxSelfCallBackBehavior());
   }
 
   @Override
-  public void onClick(final AjaxRequestTarget _target) {
-    CellModel cellmodel = (CellModel) super.getModel();
-    Instance instance = null;
-    if (cellmodel.getOid() != null) {
-      instance = new Instance(cellmodel.getOid());
+  protected void onComponentTag(ComponentTag tag) {
+    super.onComponentTag(tag);
+    tag.put("href", "#");
+  }
+
+  public class AjaxParentCallBackBehavior extends AjaxEventBehavior {
+
+    private static final long serialVersionUID = 1L;
+
+    public AjaxParentCallBackBehavior() {
+      super("onmouseup");
     }
-    Menu menu;
 
-    try {
-      menu = instance.getType().getTreeMenu();
+    @Override
+    protected CharSequence getCallbackScript() {
+      String str =
+          super.getCallbackScript().toString().replace("return !wcall;", "");
+      return "parent.childCallBack(\"javascript:" + str + "\")";
+    }
 
-      PageParameters para = new PageParameters();
-      para.add("command", menu.getUUID().toString());
-      para.add("oid", cellmodel.getOid());
-
-      if (isFirstStep()) {
-        this.firstStep(_target, menu, para);
-      } else {
-        this.secondStep(menu, para);
+    @Override
+    protected void onEvent(final AjaxRequestTarget _target) {
+      CellModel cellmodel = (CellModel) super.getComponent().getModel();
+      Instance instance = null;
+      if (cellmodel.getOid() != null) {
+        instance = new Instance(cellmodel.getOid());
       }
+      try {
+        Menu menu = instance.getType().getTreeMenu();
 
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+        PageParameters para = new PageParameters();
+        para.add("command", menu.getUUID().toString());
+        para.add("oid", cellmodel.getOid());
+        ListMenuUpdate.update(_target, ContentContainerPage.LISTMENU, menu,
+            para, ((CellModel) super.getComponent().getModel()).getOid());
+      } catch (Exception e) {
 
-  }
-
-  private boolean isFirstStep() {
-    if (this.step == 1) {
-      this.step = 2;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  private void firstStep(final AjaxRequestTarget _target, final Menu _menu,
-                         final PageParameters _parameters) {
-    ListMenuUpdate.update(_target, ContentContainerPage.LISTMENU, _menu,
-        _parameters, ((CellModel) super.getModel()).getOid());
-  }
-
-  private void secondStep(final Menu _menu, final PageParameters _parameters) {
-    try {
-
-      if (_menu.getTargetTable() != null) {
-
-        this.getRequestCycle().setResponsePage(WebTablePage.class, _parameters);
-      } else {
-
-        this.getRequestCycle().setResponsePage(WebFormPage.class, _parameters);
+        e.printStackTrace();
       }
-
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     }
+
+  }
+
+  public class AjaxSelfCallBackBehavior extends AjaxEventBehavior {
+
+    private static final long serialVersionUID = 1L;
+
+    public AjaxSelfCallBackBehavior() {
+      super("onClick");
+    }
+
+    @Override
+    protected void onEvent(AjaxRequestTarget arg0) {
+      CellModel cellmodel = (CellModel) super.getComponent().getModel();
+      Instance instance = null;
+      if (cellmodel.getOid() != null) {
+        instance = new Instance(cellmodel.getOid());
+      }
+      try {
+
+        Menu menu = instance.getType().getTreeMenu();
+        PageParameters parameters = new PageParameters();
+        parameters.add("command", menu.getUUID().toString());
+        parameters.add("oid", cellmodel.getOid());
+
+        if (menu.getTargetTable() != null) {
+
+          super.getComponent().getRequestCycle().setResponsePage(
+              WebTablePage.class, parameters);
+        } else {
+
+          super.getComponent().getRequestCycle().setResponsePage(
+              WebFormPage.class, parameters);
+        }
+      } catch (Exception e) {
+
+        e.printStackTrace();
+      }
+    }
+
   }
 }
