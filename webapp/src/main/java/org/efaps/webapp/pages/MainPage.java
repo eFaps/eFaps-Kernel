@@ -31,7 +31,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
-import org.apache.wicket.util.string.CssUtils;
+import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
@@ -52,15 +52,18 @@ public class MainPage extends WebPage {
   public static String IFRAME_WICKETID = "content";
 
   public MainPage() throws Exception {
-
+    // TODO remove the 67 from this trick
     // hack to show the IFrame correctly in safari
     if (((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
         .isBrowserSafari()) {
-      this.add(new StringHeaderContributor(CssUtils.INLINE_OPEN_TAG
-          + "#eFapsFrameContent {\n "
-          + "  height: 100%; \n"
-          + "}\n"
-          + CssUtils.INLINE_CLOSE_TAG));
+      this.add(new StringHeaderContributor(JavascriptUtils.SCRIPT_OPEN_TAG
+          + "  window.onresize = eFapsSetIFrameHeight; \n"
+          + "  window.onload = eFapsSetIFrameHeight; \n"
+          + "  function eFapsSetIFrameHeight() {\n"
+          + "    var x = window.innerHeight - 67; \n"
+          + "    document.getElementById('eFapsFrameContent').height=x;\n"
+          + "  }"
+          + JavascriptUtils.SCRIPT_CLOSE_TAG));
     }
 
     this

@@ -183,23 +183,27 @@ public class FormModel extends AbstractModel {
           } else {
             strValue = fieldvalue.getViewHtml();
           }
-          String oid = instance.getOid();
+          String oid = null;
           String icon = field.getIcon();
-
-          if (field.isShowTypeIcon() && instance.getType() != null) {
-            icon = instance.getType().getIcon();
+          if (instance != null) {
+            oid = instance.getOid();
+            if (field.isShowTypeIcon() && instance.getType() != null) {
+              icon = instance.getType().getIcon();
+            }
           }
 
           if (queryhasresult) {
             FormCellModel cell =
                 new FormCellModel(oid, strValue, icon,
                     super.isEditMode() ? field.isRequired() : false, label,
-                    field);
+                    field.getReference(), field.getTarget());
             row.add(cell);
           } else if (strValue != null && !strValue.equals("")) {
             FormCellModel cell =
-                new FormCellModel(oid, strValue, icon, field.isRequired(),
-                    label, field);
+                new FormCellModel(oid, strValue, icon,
+                    super.isSearchMode() ? false : field.isRequired(), label,
+                    super.isSearchMode() ? null : field.getReference(), field
+                        .getTarget());
             row.add(cell);
           }
 
@@ -259,8 +263,9 @@ public class FormModel extends AbstractModel {
 
     public FormCellModel(final String _oid, final String _cellValue,
                          final String _icon, final boolean _required,
-                         final String _label, final Field _field) {
-      super(_oid, _field.getReference(), _cellValue, _icon, _field.getTarget());
+                         final String _label, final String _reference,
+                         final int _target) {
+      super(_oid, _reference, _cellValue, _icon, _target);
       this.required = _required;
       this.cellLabel = DBProperties.getProperty(_label);
 

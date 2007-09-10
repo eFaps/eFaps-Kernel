@@ -30,3 +30,8 @@
   margin-left: 10px;
   margin-right: 5px;
 }
+
+/*Overwrite the value from the css, to make pale for the Footer */
+#eFapsContentDiv {
+  bottom: 36px;
+}
