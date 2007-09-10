@@ -27,9 +27,8 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
-import org.efaps.webapp.components.modalwindow.UpdateParentCallback;
-import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.models.AbstractModel;
+import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.models.SearchItemModel;
 
 /**
@@ -77,10 +76,8 @@ public class MenuPanel extends Panel {
 
     }
 
-    add(modal);
-    modal.setPageMapName("modal");
-
-    modal.setWindowClosedCallback(new UpdateParentCallback(this, modal));
+    add(this.modal);
+    this.modal.setPageMapName("modal");
 
   }
 

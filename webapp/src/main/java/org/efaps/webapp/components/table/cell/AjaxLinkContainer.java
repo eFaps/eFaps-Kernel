@@ -29,6 +29,7 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
+import org.efaps.webapp.components.AbstractAjaxCallBackBehavior;
 import org.efaps.webapp.components.listmenu.ListMenuUpdate;
 import org.efaps.webapp.models.TableModel.CellModel;
 import org.efaps.webapp.pages.ContentContainerPage;
@@ -45,8 +46,8 @@ public class AjaxLinkContainer extends WebMarkupContainer {
 
   public AjaxLinkContainer(final String id, final IModel model) {
     super(id, model);
-    this.add(new AjaxParentCallBackBehavior());
     this.add(new AjaxSelfCallBackBehavior());
+    this.add(new AjaxParentCallBackBehavior());
   }
 
   @Override
@@ -55,19 +56,12 @@ public class AjaxLinkContainer extends WebMarkupContainer {
     tag.put("href", "#");
   }
 
-  public class AjaxParentCallBackBehavior extends AjaxEventBehavior {
+  public class AjaxParentCallBackBehavior extends AbstractAjaxCallBackBehavior {
 
     private static final long serialVersionUID = 1L;
 
     public AjaxParentCallBackBehavior() {
-      super("onmouseup");
-    }
-
-    @Override
-    protected CharSequence getCallbackScript() {
-      String str =
-          super.getCallbackScript().toString().replace("return !wcall;", "");
-      return "parent.childCallBack(\"javascript:" + str + "\")";
+      super("onmouseup", Target.PARENT);
     }
 
     @Override

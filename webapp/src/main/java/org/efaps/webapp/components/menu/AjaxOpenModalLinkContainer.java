@@ -52,11 +52,11 @@ import org.efaps.webapp.models.MenuItemModel;
  * @author jmo
  * @version $Id$
  */
-public class MenuItemAjaxLinkComponent extends WebComponent {
+public class AjaxOpenModalLinkContainer extends WebComponent {
 
   private static final long serialVersionUID = 1L;
 
-  public MenuItemAjaxLinkComponent(final String _id, final IModel _menuItem) {
+  public AjaxOpenModalLinkContainer(final String _id, final IModel _menuItem) {
     super(_id, _menuItem);
     this.add(new AjaxOpenModalBehaviour());
   }

@@ -29,11 +29,12 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.CssUtils;
-import org.apache.wicket.util.string.JavascriptUtils;
 import org.wicketstuff.dojo.markup.html.container.DojoSimpleContainer;
 import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
+import org.wicketstuff.dojo.widgets.StyleAttribute;
 
 import org.efaps.webapp.EFapsSession;
+import org.efaps.webapp.components.ChildCallBackHeaderContributer;
 import org.efaps.webapp.components.listmenu.ListMenuPanel;
 
 /**
@@ -47,7 +48,7 @@ public class ContentContainerPage extends WebPage {
   public static String LISTMENU = "MainListMenu";
 
   public ContentContainerPage(PageParameters _parameters) {
-    super(PageMap.forName(MainPage.INLINEFRAMENAME));
+    super(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME));
     final ClientProperties properties =
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties();
 
@@ -63,8 +64,22 @@ public class ContentContainerPage extends WebPage {
         "contentcontainerpage/ContentContainerPage.css"));
 
     DojoSplitContainer parentcontainer =
-        new DojoSplitContainer("eFapsSplitContainer");
-    parentcontainer.setHeight(properties.getBrowserHeight() + "px");
+        new DojoSplitContainer("eFapsSplitContainer") {
+
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          protected void onStyleAttribute(StyleAttribute styleAttribute) {
+            styleAttribute.put("position", "absolute");
+            styleAttribute.put("width", "100%");
+            styleAttribute.put("top", "0px");
+            styleAttribute.put("bottom", "0px");
+            styleAttribute.put("left", "0px");
+            styleAttribute.put("right", "0px");
+
+          }
+
+        };
 
     add(parentcontainer);
     parentcontainer.setOrientation(DojoSplitContainer.ORIENTATION_HORIZONTAL);
@@ -87,7 +102,7 @@ public class ContentContainerPage extends WebPage {
             .forName("content"), WebFormPage.class, _parameters);
 
     parent.add(inline);
-    this.add(new ChildCallBack());
+    this.add(new ChildCallBackHeaderContributer());
   }
 
   @Override
@@ -98,21 +113,5 @@ public class ContentContainerPage extends WebPage {
         this.getCurrentVersionNumber());
   }
 
-  public class ChildCallBack extends StringHeaderContributor {
 
-    private static final long serialVersionUID = 1L;
-
-    private final static String javaScript =
-        JavascriptUtils.SCRIPT_OPEN_TAG
-            + "function childCallBack(_call){\n"
-            + "  _call = _call.replace(/^javascript:/, \"\");\n"
-            + "  eval(_call);\n"
-            + "}\n"
-            + JavascriptUtils.SCRIPT_CLOSE_TAG;
-
-    public ChildCallBack() {
-      super(javaScript);
-    }
-
-  }
 }

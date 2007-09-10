@@ -37,8 +37,12 @@ function cmItemMouseUp (obj, isMain, idSub, menuID, index)
       
       if ((link != null) && (link.match(/^javascript:/) != null))  {
         _cmClicked = false;
-        link = link.replace(/^javascript:/, "");
-        eval(link);
+        if(target=="top"){
+          top.childCallBack(link);
+        }else{
+          link = link.replace(/^javascript:/, "");
+          eval(link);
+        }
       }else{
         window.open (link, target);
       }

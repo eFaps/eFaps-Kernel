@@ -66,7 +66,7 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
     if (model.hasChilds() && (this.findParent(ListItem.class) != null)) {
       this.defaultStyleClass = "eFapsListMenuHeader";
       if (this.isInit) {
-        ((EFapsSession) this.getSession()).setSelectedComponent(this.menukey,
+        ((EFapsSession) this.getSession()).setIntoCache(this.menukey,
             this);
         tag.put("class", "eFapsListMenuSelected");
 
@@ -76,7 +76,7 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
         this.isInit = false;
       } else {
         if (this.equals(((EFapsSession) this.getSession())
-            .getSelectedComponent(this.menukey))) {
+            .getFromCache(this.menukey))) {
           tag.put("class", "eFapsListMenuSelected");
         } else {
 

@@ -23,6 +23,8 @@ package org.efaps.webapp.pages;
 import java.util.UUID;
 
 import org.apache.wicket.PageMap;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -33,7 +35,7 @@ import org.apache.wicket.util.string.CssUtils;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
-import org.efaps.util.EFapsException;
+import org.efaps.webapp.components.ChildCallBackHeaderContributer;
 import org.efaps.webapp.components.menu.MenuComponent;
 import org.efaps.webapp.models.MenuItemModel;
 
@@ -45,47 +47,56 @@ public class MainPage extends WebPage {
 
   private static final long serialVersionUID = -4231606613730698766L;
 
-  public static String INLINEFRAMENAME = "ILFP";
+  public static String IFRAME_PAGEMAP_NAME = "MainPageIFramePageMap";
+
+  public static String IFRAME_WICKETID = "content";
 
   public MainPage() throws Exception {
+
     // hack to show the IFrame correctly in safari
     if (((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
         .isBrowserSafari()) {
-      add(new StringHeaderContributor(CssUtils.INLINE_OPEN_TAG
+      this.add(new StringHeaderContributor(CssUtils.INLINE_OPEN_TAG
           + "#eFapsFrameContent {\n "
           + "  height: 100%; \n"
           + "}\n"
           + CssUtils.INLINE_CLOSE_TAG));
     }
 
+    this
+        .add(new StyleSheetReference("css", getClass(), "mainpage/MainPage.css"));
+
+    this.add(new ChildCallBackHeaderContributer());
+
+    this.add(new Label("welcome", DBProperties
+        .getProperty("LogoRowInclude.Welcome.Label")));
+    this.add(new Label("firstname", Context.getThreadContext().getPerson()
+        .getFirstName()));
+    this.add(new Label("lastname", Context.getThreadContext().getPerson()
+        .getLastName()));
+    this.add(new Label("version", DBProperties
+        .getProperty("LogoRowInclude.Version.Label")));
+
     // MainToolBar
     MenuComponent menu =
-        new MenuComponent("eFapsMainMenu", new MenuItemModel(UUID
+        new MenuComponent("menu", new MenuItemModel(UUID
             .fromString("87001cc3-c45c-44de-b8f1-776df507f268")));
-    add(menu);
+    this.add(menu);
 
-    add(new InlineFrame("eFapsContentFrame", PageMap.forName(INLINEFRAMENAME),
-        EmptyPage.class));
+    this.add(new InlineFrame(IFRAME_WICKETID, PageMap
+        .forName(IFRAME_PAGEMAP_NAME), EmptyPage.class));
 
-    add(new InlineFrame("eFapsFrameHidden", getPageMap(), EmptyPage.class));
-    add(new Label("eFapsWelcomeLabel", DBProperties
-        .getProperty("LogoRowInclude.Welcome.Label")));
+    this.add(new InlineFrame("hidden", getPageMap(), EmptyPage.class));
 
-    try {
-      add(new Label("eFapsWelcomePersonFirstNameLabel", Context
-          .getThreadContext().getPerson().getFirstName()));
-      add(new Label("eFapsWelcomePersonLastNameLabel", Context
-          .getThreadContext().getPerson().getLastName()));
-      add(new Label("eFapsLogoVersionLabel", DBProperties
-          .getProperty("LogoRowInclude.Version.Label")));
+    this.add(new AbstractDefaultAjaxBehavior() {
 
-      add(new StyleSheetReference("eFapsMainPageCSS", getClass(),
-          "mainpage/MainPage.css"));
+      private static final long serialVersionUID = 1L;
 
-    } catch (EFapsException e) {
-
-      e.printStackTrace();
-    }
+      @Override
+      protected void respond(final AjaxRequestTarget _target) {
+      }
+    });
 
   }
+
 }

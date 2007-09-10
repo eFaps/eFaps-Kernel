@@ -42,7 +42,7 @@ public class EFapsSession extends WebSession {
 
   private int contentcontainerversion;
 
-  private final Map<String, Component> componentmap =
+  private final Map<String, Component> componentcache =
       new HashMap<String, Component>();
 
   private IModel model;
@@ -62,17 +62,17 @@ public class EFapsSession extends WebSession {
     return this.contentcontainerversion;
   }
 
-  public void setSelectedComponent(final String _key, final Component _component) {
-    this.componentmap.remove(_key);
-    this.componentmap.put(_key, _component);
+  public void setIntoCache(final String _key, final Component _component) {
+    this.componentcache.remove(_key);
+    this.componentcache.put(_key, _component);
   }
 
-  public Component getSelectedComponent(final String _key) {
-    return this.componentmap.get(_key);
+  public Component getFromCache(final String _key) {
+    return this.componentcache.get(_key);
   }
 
-  public void removeSelectedComponent(final String _key) {
-    this.componentmap.remove(_key);
+  public void removeFromCache(final String _key) {
+    this.componentcache.remove(_key);
   }
 
   public void setOpenerModel(final IModel _model) {

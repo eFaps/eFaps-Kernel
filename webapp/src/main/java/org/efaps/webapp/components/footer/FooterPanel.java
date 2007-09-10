@@ -161,8 +161,8 @@ public class FooterPanel extends Panel {
       AbstractModel model = (AbstractModel) this.imodel;
 
       if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
-        modalWindow.setUpdateParent(true);
-        modalWindow.close(_target);
+        FooterPanel.this.modalWindow.setReloadParent(true);
+        FooterPanel.this.modalWindow.close(_target);
       } else {
         AbstractModel openermodel =
             (AbstractModel) ((EFapsSession) Session.get()).getOpenerModel();
@@ -172,10 +172,9 @@ public class FooterPanel extends Panel {
         } else {
           clazz = WebFormPage.class;
         }
-
         CharSequence url =
-            this.form.urlFor(PageMap.forName(MainPage.INLINEFRAMENAME), clazz,
-                openermodel.getPageParameters());
+            this.form.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
+                clazz, openermodel.getPageParameters());
         _target.appendJavascript("opener.location.href = '"
             + url
             + "'; self.close();");
@@ -193,9 +192,10 @@ public class FooterPanel extends Panel {
 
     private static final long serialVersionUID = 1L;
 
+    @Override
     public void onClick(AjaxRequestTarget target) {
-      modalWindow.setUpdateParent(false);
-      modalWindow.close(target);
+      FooterPanel.this.modalWindow.setReloadParent(false);
+      FooterPanel.this.modalWindow.close(target);
     }
   }
 
@@ -230,7 +230,7 @@ public class FooterPanel extends Panel {
 
         this.getRequestCycle().setResponsePage(page);
       } catch (EFapsException e) {
-        // TODO Auto-generated catch block
+
         e.printStackTrace();
       }
     }

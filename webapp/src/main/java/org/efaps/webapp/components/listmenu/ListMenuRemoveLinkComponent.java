@@ -62,7 +62,7 @@ public class ListMenuRemoveLinkComponent extends AjaxLink {
       parentlistmenupanel =
           (ListMenuPanel) parentlistmenupanel.findParent(ListMenuPanel.class);
     }
-    ((EFapsSession) this.getSession()).removeSelectedComponent(listmenupanel
+    ((EFapsSession) this.getSession()).removeFromCache(listmenupanel
         .getMenuKey());
 
     if (parentlistmenupanel.getHeaderComponent() instanceof ListMenuLinkComponent) {

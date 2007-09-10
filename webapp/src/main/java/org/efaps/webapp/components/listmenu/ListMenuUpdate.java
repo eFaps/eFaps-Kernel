@@ -49,7 +49,7 @@ public class ListMenuUpdate {
                             final PageParameters _parameters, final String _oid) {
 
     Component comp =
-        ((EFapsSession) (Session.get())).getSelectedComponent(_menukey);
+        ((EFapsSession) (Session.get())).getFromCache(_menukey);
     deselectItem(_menukey, comp, _target);
     MarkupContainer listitem = comp.findParent(ListItem.class);
 
@@ -138,14 +138,14 @@ public class ListMenuUpdate {
     _component.add(new AttributeModifier("class", new Model(
         "eFapsListMenuSelected")));
     EFapsSession session = (EFapsSession) (Session.get());
-    Component previous = session.getSelectedComponent(_menukey);
+    Component previous = session.getFromCache(_menukey);
 
     if (previous != null && !previous.equals(_component) && _deselect) {
       if (previous instanceof ListMenuLinkComponent) {
         deselectItem(_menukey, previous, _target);
       }
     }
-    session.setSelectedComponent(_menukey, _component);
+    session.setIntoCache(_menukey, _component);
     if (_target != null) {
       _target.addComponent(_component);
     }
@@ -160,7 +160,7 @@ public class ListMenuUpdate {
     if (_target != null) {
       _target.addComponent(_component);
     }
-    ((EFapsSession) (Session.get())).removeSelectedComponent(_menukey);
+    ((EFapsSession) (Session.get())).removeFromCache(_menukey);
   }
 
   /**
@@ -178,7 +178,7 @@ public class ListMenuUpdate {
                                      final Component _parent) {
 
     Component selected =
-        ((EFapsSession) Session.get()).getSelectedComponent(_menukey);
+        ((EFapsSession) Session.get()).getFromCache(_menukey);
 
     boolean deselect = true;
     if (selected != null) {

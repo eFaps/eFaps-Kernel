@@ -27,24 +27,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <wicket:head>
-        <link wicket:id="eFapsMainPageCSS" rel="stylesheet" type="text/css" href="mainpage/MainPage.css"/>
+        <link wicket:id="css" rel="stylesheet" type="text/css" href="mainpage/MainPage.css"/>
     </wicket:head>
   </head>
   <body>
     <div class="eFapsLogo">
       <div class="eFapsLogoUser">
-        <span wicket:id="eFapsWelcomeLabel">Welcome</span>
-        <span wicket:id="eFapsWelcomePersonFirstNameLabel">The</span>
-        <span wicket:id="eFapsWelcomePersonLastNameLabel">Administrator</span>
+        <span wicket:id="welcome">Welcome</span>
+        <span wicket:id="firstname">The</span>
+        <span wicket:id="lastname">Administrator</span>
       </div>
       <div class="eFapsLogoVersion">
-        <span wicket:id="eFapsLogoVersionLabel">eFaps 1.0</span>
+        <span wicket:id="version">eFaps 1.0</span>
       </div>
     </div>
 
-    <div wicket:id="eFapsMainMenu" id="eFapsMainMenu" class="eFapsMenu"></div>
+    <div wicket:id="menu" id="eFapsMainMenu" class="eFapsMenu"></div>
         
-    <iframe wicket:id="eFapsContentFrame"
+    <iframe wicket:id="content"
             id="eFapsFrameContent"
             src="EmptyPage.html"
             name="Content"
@@ -52,7 +52,7 @@
             frameborder="0">
     </iframe>
 
-    <iframe wicket:id="eFapsFrameHidden"
+    <iframe wicket:id="hidden"
             id="eFapsFrameHidden"
             src="EmptyPage.html"
             name="eFapsFrameHidden"

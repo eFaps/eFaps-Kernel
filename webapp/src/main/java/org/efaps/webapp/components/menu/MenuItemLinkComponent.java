@@ -67,8 +67,9 @@ public class MenuItemLinkComponent extends Link {
     if (command.getTargetTable() != null) {
       if (this.getPage() instanceof MainPage) {
         InlineFrame c =
-            new InlineFrame("eFapsContentFrame", PageMap
-                .forName(MainPage.INLINEFRAMENAME), WebTablePage.class, para);
+            new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
+                .forName(MainPage.IFRAME_PAGEMAP_NAME), WebTablePage.class,
+                para);
 
         this.getPage().addOrReplace(c);
       } else {
@@ -79,8 +80,8 @@ public class MenuItemLinkComponent extends Link {
       if (this.getPage() instanceof MainPage
           && command.getTargetSearch() == null) {
         InlineFrame c =
-            new InlineFrame("eFapsContentFrame", PageMap
-                .forName(MainPage.INLINEFRAMENAME), WebFormPage.class, para);
+            new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
+                .forName(MainPage.IFRAME_PAGEMAP_NAME), WebFormPage.class, para);
         this.getPage().addOrReplace(c);
       } else {
         this.getRequestCycle().setResponsePage(WebFormPage.class, para);
@@ -90,7 +91,6 @@ public class MenuItemLinkComponent extends Link {
       try {
         command.executeEvents(EventType.UI_COMMAND_EXECUTE);
       } catch (EFapsException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
 

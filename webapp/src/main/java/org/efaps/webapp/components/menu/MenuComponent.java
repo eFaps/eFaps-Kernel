@@ -113,15 +113,15 @@ public class MenuComponent extends AbstractParentMarkupContainer {
   }
 
   private String getNewChildId() {
-    return "ItemLink" + (childID++).toString();
+    return "ItemLink" + (this.childID++).toString();
   }
 
   private void addLink(final MenuItemModel _menuItemModel) {
     if (!_menuItemModel.hasChilds()) {
       if (_menuItemModel.getTarget() != CommandAbstract.TARGET_UNKNOWN) {
         if (_menuItemModel.getTarget() == CommandAbstract.TARGET_MODAL) {
-          MenuItemAjaxLinkComponent item =
-              new MenuItemAjaxLinkComponent(getNewChildId(), _menuItemModel);
+          AjaxOpenModalLinkContainer item =
+              new AjaxOpenModalLinkContainer(getNewChildId(), _menuItemModel);
           this.add(item);
         } else {
           MenuItemLinkComponent item =
@@ -181,8 +181,8 @@ public class MenuComponent extends AbstractParentMarkupContainer {
 
         childModel.setURL(url);
 
-      } else if (child instanceof MenuItemAjaxLinkComponent) {
-        MenuItemAjaxLinkComponent item = (MenuItemAjaxLinkComponent) child;
+      } else if (child instanceof AjaxOpenModalLinkContainer) {
+        AjaxOpenModalLinkContainer item = (AjaxOpenModalLinkContainer) child;
         MenuItemModel childModel = (MenuItemModel) item.getModel();
 
         String url = item.getJavaScript();
@@ -209,6 +209,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     super.onBeforeRender();
   }
 
+  @Override
   protected void onComponentTagBody(final MarkupStream _markupStream,
                                     final ComponentTag _openTag) {
     try {
@@ -271,6 +272,8 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     }
     if (_menuItem.getTarget() == CommandAbstract.TARGET_HIDDEN) {
       _html.append("', 'eFapsFrameHidden', '");
+    } else if (_menuItem.getTarget() == CommandAbstract.TARGET_MODAL) {
+      _html.append("', 'top', '");
     } else {
       _html.append("', '_self', '");
     }
