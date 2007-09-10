@@ -26,7 +26,7 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.webapp.models.TableModel.CellModel;
+import org.efaps.webapp.models.CellModel;
 import org.efaps.webapp.pages.ContentContainerPage;
 
 /**

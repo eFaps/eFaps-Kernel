@@ -29,7 +29,8 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.components.StaticImageComponent;
-import org.efaps.webapp.models.TableModel.CellModel;
+import org.efaps.webapp.models.CellModel;
+
 
 /**
  * @author jmo
@@ -39,7 +40,8 @@ public class CellPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public CellPanel(final String id, final IModel model, final boolean _ajax) {
+  public CellPanel(final String id, final IModel model,
+                   final boolean _updateListMenu) {
     super(id, model);
     CellContainer cellcontainer = new CellContainer("td", model);
     cellcontainer.setOutputMarkupId(true);
@@ -48,7 +50,7 @@ public class CellPanel extends Panel {
 
     WebMarkupContainer celllink;
     if (cellmodel.getReference() != null) {
-      if (_ajax && cellmodel.getTarget() != CommandAbstract.TARGET_POPUP) {
+      if (_updateListMenu && cellmodel.getTarget() != CommandAbstract.TARGET_POPUP) {
         celllink = new AjaxLinkContainer("link", cellmodel);
       } else {
         celllink = new LinkContainer("link", cellmodel);

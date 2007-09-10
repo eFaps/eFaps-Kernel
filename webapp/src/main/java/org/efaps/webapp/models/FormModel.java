@@ -26,7 +26,6 @@ import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -51,7 +50,7 @@ public class FormModel extends AbstractModel {
 
   /**
    * The instance variable stores the result list of the execution of the query.
-   * 
+   *
    * @see #getValues
    * @see #setValues
    */
@@ -59,11 +58,10 @@ public class FormModel extends AbstractModel {
 
   /**
    * The instance variable stores the form which must be shown.
-   * 
+   *
    * @see #getForm
    */
   private UUID formuuid;
-
 
   public FormModel(PageParameters _parameters) {
     super(_parameters);
@@ -79,6 +77,7 @@ public class FormModel extends AbstractModel {
     return this.formuuid;
   }
 
+  @Override
   public void resetModel() {
     this.setInitialised(false);
     this.values.clear();
@@ -86,7 +85,7 @@ public class FormModel extends AbstractModel {
 
   /**
    * This is the getter method for the instance variable {@link #values}.
-   * 
+   *
    * @return value of instance variable {@link #values}
    * @see #values
    * @see #setValues
@@ -143,7 +142,7 @@ public class FormModel extends AbstractModel {
     }
     if (queryhasresult || type != null) {
       for (int i = 0; i < form.getFields().size(); i++) {
-        Field field = (Field) form.getFields().get(i);
+        Field field = form.getFields().get(i);
         Object value = null;
         Attribute attr;
         Instance instance = null;
@@ -184,14 +183,23 @@ public class FormModel extends AbstractModel {
           } else {
             strValue = fieldvalue.getViewHtml();
           }
+          String oid = instance.getOid();
+          String icon = field.getIcon();
+
+          if (field.isShowTypeIcon() && instance.getType() != null) {
+            icon = instance.getType().getIcon();
+          }
+
           if (queryhasresult) {
             FormCellModel cell =
-                new FormCellModel(instance, strValue,
-                    super.isEditMode() ? field.isRequired() : false, label);
+                new FormCellModel(oid, strValue, icon,
+                    super.isEditMode() ? field.isRequired() : false, label,
+                    field);
             row.add(cell);
           } else if (strValue != null && !strValue.equals("")) {
             FormCellModel cell =
-                new FormCellModel(instance, strValue, field.isRequired(), label);
+                new FormCellModel(oid, strValue, icon, field.isRequired(),
+                    label, field);
             row.add(cell);
           }
 
@@ -218,8 +226,6 @@ public class FormModel extends AbstractModel {
     super.setInitialised(true);
   }
 
-  
-
   public void setFormUUID(UUID _uuid) {
     this.formuuid = _uuid;
   }
@@ -239,32 +245,25 @@ public class FormModel extends AbstractModel {
     }
 
     public int getGroupCount() {
-      return values.size();
+      return this.values.size();
     }
   }
 
-  public class FormCellModel implements IClusterable, IModel {
+  public class FormCellModel extends CellModel {
 
     private static final long serialVersionUID = 1L;
 
     private final String cellLabel;
 
-    private final String cellValue;
+    private final boolean required;
 
-    private final String oid;
-
-    private boolean required;
-
-    public FormCellModel(final Instance _instance, final String _cellValue,
-                         final boolean _required, String _label) {
-      if (_instance != null) {
-        this.oid = _instance.getOid();
-      } else {
-        this.oid = null;
-      }
-      this.cellValue = _cellValue;
+    public FormCellModel(final String _oid, final String _cellValue,
+                         final String _icon, final boolean _required,
+                         final String _label, final Field _field) {
+      super(_oid, _field.getReference(), _cellValue, _icon, _field.getTarget());
       this.required = _required;
-      this.cellLabel = DBProperties.getProperty(_label);;
+      this.cellLabel = DBProperties.getProperty(_label);
+
     }
 
     public boolean isRequired() {
@@ -275,22 +274,5 @@ public class FormModel extends AbstractModel {
       return this.cellLabel;
     }
 
-    public String getCellValue() {
-      return this.cellValue;
-    }
-
-    public String getOid() {
-      return this.oid;
-    }
-
-    public Object getObject() {
-      return null;
-    }
-
-    public void setObject(Object arg0) {
-    }
-
-    public void detach() {
-    }
   }
 }

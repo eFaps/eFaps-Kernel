@@ -20,9 +20,11 @@
 
 package org.efaps.webapp.pages;
 
+import org.apache.wicket.IPageMap;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.footer.FooterPanel;
@@ -39,36 +41,44 @@ public abstract class ContentPage extends WebPage {
 
   private static final long serialVersionUID = -2374207555009145191L;
 
-  private ModalWindowContainer modalWindow;
+  private final ModalWindowContainer modalWindow;
 
-  public ContentPage() {
+  public ContentPage(final IModel _model) {
+    this(_model, null);
   }
 
-  public ContentPage(final ModalWindowContainer _modalWindow) {
+  public ContentPage(final IModel _model,
+                     final ModalWindowContainer _modalWindow) {
+    super(_model);
+    this.modalWindow = _modalWindow;
+  }
+
+  public ContentPage(final IModel _model,
+                     final ModalWindowContainer _modalWindow,
+                     final IPageMap _pagemap) {
+    super(_pagemap, _model);
     this.modalWindow = _modalWindow;
   }
 
   protected void addComponents(FormContainer _form) {
     try {
-
-      AbstractModel model = (AbstractModel) super.getModel();
-      add(new TitelPanel("eFapsTitel", model.getTitle()));
-
-      add(new StyleSheetReference("ContentPageCSS", getClass(),
+      add(new StyleSheetReference("css", getClass(),
           "contentpage/ContentPage.css"));
+      AbstractModel model = (AbstractModel) super.getModel();
+      add(new TitelPanel("titel", model.getTitle()));
 
-      add(new MenuPanel("eFapsMenu", model, _form));
+      add(new MenuPanel("menu", model, _form));
       WebMarkupContainer footerpanel;
       if (model.isCreateMode() || model.isEditMode() || model.isSearchMode()) {
-        footerpanel = new FooterPanel("eFapsFooter", model, this.modalWindow, _form);
+        footerpanel = new FooterPanel("footer", model, this.modalWindow, _form);
       } else {
-        footerpanel = new WebMarkupContainer("eFapsFooter");
+        footerpanel = new WebMarkupContainer("footer");
         footerpanel.setVisible(false);
       }
 
       add(footerpanel);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
+
       e.printStackTrace();
     }
   }

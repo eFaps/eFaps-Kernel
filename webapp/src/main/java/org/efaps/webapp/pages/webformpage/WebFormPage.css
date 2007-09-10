@@ -6,6 +6,12 @@
   overflow: auto;
 }
 
+#eFapsContentDiv img {
+  width: 16px;
+  height: 16px;
+  border: 0;
+}
+
 /* Default Label Appearance */
 td.eFapsFormLabel {
   background-color: #dadada;

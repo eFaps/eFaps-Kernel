@@ -23,8 +23,8 @@ package org.efaps.webapp.components.table.header;
 import org.apache.wicket.markup.html.link.Link;
 
 import org.efaps.util.EFapsException;
+import org.efaps.webapp.models.HeaderModel;
 import org.efaps.webapp.models.TableModel;
-import org.efaps.webapp.models.TableModel.HeaderModel;
 import org.efaps.webapp.models.TableModel.SortDirection;
 import org.efaps.webapp.pages.WebTablePage;
 

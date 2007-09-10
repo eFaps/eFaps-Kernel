@@ -33,6 +33,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.models.MenuItemModel;
+import org.efaps.webapp.pages.ContentContainerPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
@@ -66,8 +67,7 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
     if (model.hasChilds() && (this.findParent(ListItem.class) != null)) {
       this.defaultStyleClass = "eFapsListMenuHeader";
       if (this.isInit) {
-        ((EFapsSession) this.getSession()).setIntoCache(this.menukey,
-            this);
+        ((EFapsSession) this.getSession()).setIntoCache(this.menukey, this);
         tag.put("class", "eFapsListMenuSelected");
 
         ListMenuPanel parentListMenuPanel =
@@ -87,7 +87,8 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
       ListMenuPanel listmenupanel =
           (ListMenuPanel) this.findParent(ListMenuPanel.class);
       int padding =
-          model.getLevel() * listmenupanel.getPadding()
+          model.getLevel()
+              * listmenupanel.getPadding()
               + listmenupanel.getPaddingAdd();
 
       tag.put("style", "padding-left:" + padding + "px;");
@@ -114,6 +115,7 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
       super("onclick");
     }
 
+    @Override
     public String getCallbackScript() {
       return super.getCallbackScript().toString();
 
@@ -131,22 +133,25 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
       InlineFrame page;
       if (cmd.getTargetTable() != null) {
         page =
-            new InlineFrame("eFapsContentContainerFrame", PageMap
-                .forName("content"), WebTablePage.class, para);
+            new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+                .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+                WebTablePage.class, para);
       } else {
         page =
-            new InlineFrame("eFapsContentContainerFrame", PageMap
-                .forName("content"), WebFormPage.class, para);
+            new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+                .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+                WebFormPage.class, para);
       }
+
       InlineFrame component =
-          (InlineFrame) getPage()
-              .get(
-                  "eFapsSplitContainer:containerrechts:aktParent:eFapsContentContainerFrame");
+          (InlineFrame) getPage().get(
+              ((ContentContainerPage) getPage()).getInlinePath());
       page.setOutputMarkupId(true);
 
       component.replaceWith(page);
       _target.addComponent(page.getParent());
-      ListMenuUpdate.setSelectedItem(menukey, this.getComponent(), _target);
+      ListMenuUpdate.setSelectedItem(ListMenuLinkComponent.this.menukey, this
+          .getComponent(), _target);
 
     }
   }

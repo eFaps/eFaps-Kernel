@@ -25,16 +25,16 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <wicket:head>
-  <link wicket:id="ContentContainerPageCSS" rel="stylesheet" type="text/css" href="contentcontainerpage/ContentContainerPage.css"/>
+  <link wicket:id="css" rel="stylesheet" type="text/css" href="contentcontainerpage/ContentContainerPage.css"/>
 </wicket:head>
 <body>
-  <div wicket:id="eFapsSplitContainer" class="split">
-      <div wicket:id="containerlinks" sizeMin="20" sizeShare="20">
-        <div wicket:id="eFapsListMenu" id="eFapsListMenu"></div>
+  <div wicket:id="split" class="split">
+      <div wicket:id="splitleft" sizeMin="20" sizeShare="20">
+        <div wicket:id="splitleftmenu" id="eFapsListMenu"></div>
       </div>
-      <div wicket:id="containerrechts"  sizeMin="20" sizeShare="80" >
-          <span wicket:id="aktParent">
-            <iframe wicket:id="eFapsContentContainerFrame" class="eFapsContentContainerFrame" name="eFapsContentContainerFrame"></iframe>
+      <div wicket:id="splitright"  sizeMin="20" sizeShare="80" >
+          <span wicket:id="splitrightact">
+            <iframe wicket:id="splitrightactiframe" class="eFapsContentContainerFrame" name="eFapsContentContainerFrame"></iframe>
           </span>
       </div>
     </div>

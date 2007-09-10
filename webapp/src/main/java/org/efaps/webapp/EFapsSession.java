@@ -38,29 +38,12 @@ public class EFapsSession extends WebSession {
     super(request);
   }
 
-  private int contentcontainerid;
-
-  private int contentcontainerversion;
-
   private final Map<String, Component> componentcache =
       new HashMap<String, Component>();
 
   private IModel model;
 
   private static final long serialVersionUID = 1884548064760514909L;
-
-  public void setContentContainer(int _id, int _version) {
-    this.contentcontainerid = _id;
-    this.contentcontainerversion = _version;
-  }
-
-  public int getContentContainerId() {
-    return this.contentcontainerid;
-  }
-
-  public int getContentContainerVersion() {
-    return this.contentcontainerversion;
-  }
 
   public void setIntoCache(final String _key, final Component _component) {
     this.componentcache.remove(_key);

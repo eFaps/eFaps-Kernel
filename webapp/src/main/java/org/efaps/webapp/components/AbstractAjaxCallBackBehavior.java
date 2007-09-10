@@ -59,7 +59,7 @@ public abstract class AbstractAjaxCallBackBehavior extends AjaxEventBehavior {
       ret =
           this.target.jstarget
               + ".childCallBack(\"javascript:"
-              + str.replace("'", "\"")
+              + str
               + "\")";
     } else {
       ret = str.replace("'", "\"");

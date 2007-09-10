@@ -31,9 +31,10 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.table.cell.CellPanel;
+import org.efaps.webapp.models.CellModel;
 import org.efaps.webapp.models.TableModel;
-import org.efaps.webapp.models.TableModel.CellModel;
 import org.efaps.webapp.models.TableModel.RowModel;
+import org.efaps.webapp.pages.ContentContainerPage;
 
 /**
  * @author jmo
@@ -89,8 +90,9 @@ public class WebTableContainer extends WebMarkupContainer {
 
         for (CellModel cellmodel : modelrow.getValues()) {
           CellPanel cellpanel =
-              new CellPanel("cell" + "_" + i + "_" + j, (IModel) cellmodel,
-                  "content".equals(_page.getPageMapName()));
+              new CellPanel("cell" + "_" + i + "_" + j, cellmodel,
+                  ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
+                      .getPageMapName()));
           row.add(cellpanel);
 
           j++;
@@ -111,6 +113,7 @@ public class WebTableContainer extends WebMarkupContainer {
     }
   }
 
+  @Override
   protected final void onRender(final MarkupStream markupStream) {
     final int markupStart = markupStream.getCurrentIndex();
     Iterator<?> childs = this.iterator();

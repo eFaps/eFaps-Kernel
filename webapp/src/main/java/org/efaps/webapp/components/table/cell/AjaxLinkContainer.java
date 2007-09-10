@@ -20,6 +20,7 @@
 
 package org.efaps.webapp.components.table.cell;
 
+import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -31,7 +32,7 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.components.AbstractAjaxCallBackBehavior;
 import org.efaps.webapp.components.listmenu.ListMenuUpdate;
-import org.efaps.webapp.models.TableModel.CellModel;
+import org.efaps.webapp.models.CellModel;
 import org.efaps.webapp.pages.ContentContainerPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
@@ -114,9 +115,10 @@ public class AjaxLinkContainer extends WebMarkupContainer {
           super.getComponent().getRequestCycle().setResponsePage(
               WebTablePage.class, parameters);
         } else {
-
-          super.getComponent().getRequestCycle().setResponsePage(
-              WebFormPage.class, parameters);
+          WebFormPage page =
+              new WebFormPage(parameters, null, PageMap
+                  .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
+          super.getComponent().getRequestCycle().setResponsePage(page);
         }
       } catch (Exception e) {
 

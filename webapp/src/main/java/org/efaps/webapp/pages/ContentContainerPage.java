@@ -33,7 +33,6 @@ import org.wicketstuff.dojo.markup.html.container.DojoSimpleContainer;
 import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
 import org.wicketstuff.dojo.widgets.StyleAttribute;
 
-import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.ChildCallBackHeaderContributer;
 import org.efaps.webapp.components.listmenu.ListMenuPanel;
 
@@ -45,7 +44,14 @@ public class ContentContainerPage extends WebPage {
 
   private static final long serialVersionUID = 3169723830151134904L;
 
+  public static final String IFRAME_PAGEMAP_NAME =
+      "eFapsContentContainerIFrame";
+
+  public static final String IFRAME_WICKETID = "splitrightactiframe";
+
   public static String LISTMENU = "MainListMenu";
+
+  private final String inlinePath;
 
   public ContentContainerPage(PageParameters _parameters) {
     super(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME));
@@ -60,58 +66,61 @@ public class ContentContainerPage extends WebPage {
           + CssUtils.INLINE_CLOSE_TAG));
     }
 
-    add(new StyleSheetReference("ContentContainerPageCSS", getClass(),
+    add(new StyleSheetReference("css", getClass(),
         "contentcontainerpage/ContentContainerPage.css"));
 
-    DojoSplitContainer parentcontainer =
-        new DojoSplitContainer("eFapsSplitContainer") {
+    DojoSplitContainer parentcontainer = new DojoSplitContainer("split") {
 
-          private static final long serialVersionUID = 1L;
+      private static final long serialVersionUID = 1L;
 
-          @Override
-          protected void onStyleAttribute(StyleAttribute styleAttribute) {
-            styleAttribute.put("position", "absolute");
-            styleAttribute.put("width", "100%");
-            styleAttribute.put("top", "0px");
-            styleAttribute.put("bottom", "0px");
-            styleAttribute.put("left", "0px");
-            styleAttribute.put("right", "0px");
-
-          }
-
-        };
+      @Override
+      protected void onStyleAttribute(StyleAttribute styleAttribute) {
+        styleAttribute.put("position", "absolute");
+        styleAttribute.put("width", "100%");
+        styleAttribute.put("top", "0px");
+        styleAttribute.put("bottom", "0px");
+        styleAttribute.put("left", "0px");
+        styleAttribute.put("right", "0px");
+      }
+    };
 
     add(parentcontainer);
     parentcontainer.setOrientation(DojoSplitContainer.ORIENTATION_HORIZONTAL);
 
     DojoSimpleContainer containerlinks =
-        new DojoSimpleContainer("containerlinks", "Menu");
+        new DojoSimpleContainer("splitleft", "Menu");
     parentcontainer.add(containerlinks);
     containerlinks
-        .add(new ListMenuPanel("eFapsListMenu", LISTMENU, _parameters));
+        .add(new ListMenuPanel("splitleftmenu", LISTMENU, _parameters));
 
     DojoSimpleContainer containerrechts =
-        new DojoSimpleContainer("containerrechts", "Content");
+        new DojoSimpleContainer("splitright", "Content");
     parentcontainer.add(containerrechts);
 
-    WebMarkupContainer parent = new WebMarkupContainer("aktParent");
+    WebMarkupContainer parent = new WebMarkupContainer("splitrightact");
     parent.setOutputMarkupId(true);
     containerrechts.add(parent);
     InlineFrame inline =
-        new InlineFrame("eFapsContentContainerFrame", PageMap
-            .forName("content"), WebFormPage.class, _parameters);
+        new InlineFrame(IFRAME_WICKETID, PageMap.forName(IFRAME_PAGEMAP_NAME),
+            WebFormPage.class, _parameters);
 
     parent.add(inline);
+    this.inlinePath =
+        inline.getPath().substring(inline.getPath().indexOf(":") + 1);
     this.add(new ChildCallBackHeaderContributer());
   }
 
-  @Override
-  protected void onBeforeRender() {
 
-    super.onBeforeRender();
-    ((EFapsSession) this.getSession()).setContentContainer(this.getNumericId(),
-        this.getCurrentVersionNumber());
+  /**
+   * This is the getter method for the instance variable {@link #inlinePath}.
+   *
+   * @return value of instance variable {@link #inlinePath}
+   */
+
+  public String getInlinePath() {
+    return this.inlinePath;
   }
+
 
 
 }

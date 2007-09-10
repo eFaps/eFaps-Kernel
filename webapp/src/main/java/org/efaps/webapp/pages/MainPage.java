@@ -98,5 +98,4 @@ public class MainPage extends WebPage {
     });
 
   }
-
 }

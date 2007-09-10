@@ -23,6 +23,7 @@ package org.efaps.webapp.components.table;
 import java.util.Iterator;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
@@ -31,6 +32,7 @@ import org.efaps.webapp.components.table.cell.formcell.FormCellPanel;
 import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.FormModel.FormCellModel;
 import org.efaps.webapp.models.FormModel.FormRowModel;
+import org.efaps.webapp.pages.ContentContainerPage;
 
 /**
  * @author jmo
@@ -42,12 +44,12 @@ public class WebFormContainer extends WebMarkupContainer {
 
   private static String ROWID = "eFapsRow";
 
-  public WebFormContainer(String id, IModel model) {
+  public WebFormContainer(String id, IModel model, final Page _page) {
     super(id, model);
-    initialise();
+    initialise(_page);
   }
 
-  private void initialise() {
+  private void initialise(final Page _page) {
     int i = 0;
     int j = 0;
     try {
@@ -62,7 +64,9 @@ public class WebFormContainer extends WebMarkupContainer {
         for (FormCellModel cellmodel : rowmodel.getValues()) {
           FormCellPanel formcellpanel =
               new FormCellPanel("cell" + "_" + i + "_" + j, cellmodel, model
-                  .getMaxGroupCount(), rowmodel.getGroupCount());
+                  .getMaxGroupCount(), rowmodel.getGroupCount(),
+                  ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
+                      .getPageMapName()));
           row.add(formcellpanel);
 
           j++;
@@ -77,6 +81,7 @@ public class WebFormContainer extends WebMarkupContainer {
 
   }
 
+  @Override
   protected final void onRender(final MarkupStream markupStream) {
     final int markupStart = markupStream.getCurrentIndex();
     Iterator<?> childs = this.iterator();

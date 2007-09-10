@@ -20,6 +20,7 @@
 
 package org.efaps.webapp.pages;
 
+import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
@@ -38,32 +39,45 @@ public class WebFormPage extends ContentPage {
   private static final long serialVersionUID = -3554311414948286302L;
 
   public WebFormPage(final PageParameters _parameters) {
-    super();
-    super.setModel(new FormModel(_parameters));
-    this.addComponents();
-
+    this(new FormModel(_parameters), null);
   }
 
   public WebFormPage(final PageParameters _parameters,
                      final ModalWindowContainer _modalWindow) {
-    super(_modalWindow);
-    super.setModel(new FormModel(_parameters));
-    this.addComponents();
+    this(new FormModel(_parameters), _modalWindow);
   }
 
   public WebFormPage(final IModel _model) {
-    super.setModel(_model);
+    this(_model, null);
+  }
+
+  public WebFormPage(final IModel _model,
+                     final ModalWindowContainer _modalWindow) {
+    super(_model, _modalWindow);
+    this.addComponents();
+  }
+
+  public WebFormPage(final PageParameters _parameters,
+                     final ModalWindowContainer _modalWindow,
+                     final IPageMap _pagemap) {
+    this(new FormModel(_parameters), _modalWindow, _pagemap);
+  }
+
+  public WebFormPage(final IModel _model,
+                     final ModalWindowContainer _modalWindow,
+                     final IPageMap _pagemap) {
+    super(_model, _modalWindow, _pagemap);
     this.addComponents();
   }
 
   protected void addComponents() {
-    FormContainer form = new FormContainer("eFapsForm");
+    add(new StyleSheetReference("webformcss", getClass(),
+        "webformpage/WebFormPage.css"));
+    FormContainer form = new FormContainer("form");
     add(form);
     super.addComponents(form);
-    add(new StyleSheetReference("WebFormPageCSS", getClass(),
-        "webformpage/WebFormPage.css"));
 
-    form.add(new WebFormContainer("eFapsFormTable", super.getModel()));
+    form.add(new WebFormContainer("formtable", super.getModel(), this));
 
   }
 

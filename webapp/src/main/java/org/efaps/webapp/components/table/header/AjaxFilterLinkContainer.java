@@ -26,8 +26,8 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
+import org.efaps.webapp.models.HeaderModel;
 import org.efaps.webapp.models.TableModel;
-import org.efaps.webapp.models.TableModel.HeaderModel;
 import org.efaps.webapp.pages.TableFilterPage;
 
 public class AjaxFilterLinkContainer extends AjaxLink {
@@ -53,8 +53,8 @@ public class AjaxFilterLinkContainer extends AjaxLink {
 
     tableheaderpanel.getModal().setPageCreator(pagecreator);
     tableheaderpanel.getModal().show(_target);
-    
-    
+
+
   }
 
   private class FilterPageCreator implements ModalWindow.PageCreator {

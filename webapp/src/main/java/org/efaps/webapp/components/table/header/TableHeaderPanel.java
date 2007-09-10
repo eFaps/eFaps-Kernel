@@ -32,8 +32,8 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.components.modalwindow.UpdateParentCallback;
+import org.efaps.webapp.models.HeaderModel;
 import org.efaps.webapp.models.TableModel;
-import org.efaps.webapp.models.TableModel.HeaderModel;
 import org.efaps.webapp.models.TableModel.SortDirection;
 
 /**
@@ -113,11 +113,11 @@ public class TableHeaderPanel extends Panel {
       }
       container.add(filterlink);
 
-      add(modal);
-      modal.setPageMapName("modal");
+      add(this.modal);
+      this.modal.setPageMapName("modal");
 
-      modal
-          .setWindowClosedCallback(new UpdateParentCallback(this, modal, false));
+      this.modal
+          .setWindowClosedCallback(new UpdateParentCallback(this, this.modal, false));
     }
   }
 

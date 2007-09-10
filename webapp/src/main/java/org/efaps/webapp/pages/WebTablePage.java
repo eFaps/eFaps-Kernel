@@ -38,32 +38,32 @@ public class WebTablePage extends ContentPage {
   private static final long serialVersionUID = 7564911406648729094L;
 
   public WebTablePage(final PageParameters _parameters) throws Exception {
-    super.setModel(new TableModel(_parameters));
-    this.addComponents();
+    this(new TableModel(_parameters));
   }
 
   public WebTablePage(final IModel _model) {
-    super.setModel(_model);
+    super(_model);
     this.addComponents();
   }
 
   protected void addComponents() {
-    FormContainer form = new FormContainer("eFapsForm");
-    add(form);
-    super.addComponents(form);
-
+    this.add(new StyleSheetReference("webtablecss", getClass(),
+        "webtablepage/WebTablePage.css"));
     try {
 
-      add(new StyleSheetReference("WebTablePageCSS", getClass(),
-          "webtablepage/WebTablePage.css"));
       TableModel model = (TableModel) super.getModel();
       if (!model.isInitialised()) {
         model.execute();
       }
-      add(new TableHeaderPanel("eFapsTableHeader", model));
-      form.add(new WebTableContainer("eFapsTable", model, this));
+      this.add(new TableHeaderPanel("header", model));
+
+      FormContainer form = new FormContainer("form");
+      this.add(form);
+      super.addComponents(form);
+
+      form.add(new WebTableContainer("formtable", model, this));
     } catch (Exception e) {
-      // TODO Auto-generated catch block
+
       e.printStackTrace();
     }
   }

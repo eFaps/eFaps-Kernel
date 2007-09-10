@@ -20,27 +20,33 @@
 
 package org.efaps.webapp.components.table.cell.formcell;
 
+import org.apache.wicket.PageMap;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
+import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.webapp.components.StaticImageComponent;
+import org.efaps.webapp.components.table.cell.AjaxLinkContainer;
 import org.efaps.webapp.components.table.cell.CellContainer;
 import org.efaps.webapp.components.table.cell.LabelComponent;
+import org.efaps.webapp.components.table.cell.LinkContainer;
 import org.efaps.webapp.models.FormModel.FormCellModel;
 
 /**
  * @author jmo
  * @version $Id$
- * 
  */
 public class FormCellPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
   public FormCellPanel(final String id, final IModel model,
-                       final int _maxgroupcount, final int groupcount) {
+                       final int _maxgroupcount, final int groupcount,
+                       final boolean _updateListMenu) {
     super(id, model);
     FormCellModel cellmodel = (FormCellModel) super.getModel();
     CellContainer labelcontainer = new CellContainer("tdlabel", model);
@@ -67,11 +73,30 @@ public class FormCellPanel extends Panel {
     this.add(valuecontainer);
 
     WebMarkupContainer celllink;
+    if (cellmodel.getReference() != null) {
+      if (_updateListMenu
+          && cellmodel.getTarget() != CommandAbstract.TARGET_POPUP) {
+        celllink = new AjaxLinkContainer("link", cellmodel);
+      } else {
+        celllink = new LinkContainer("link", cellmodel);
+        if (cellmodel.getTarget() == CommandAbstract.TARGET_POPUP) {
+          PopupSettings popup = new PopupSettings(PageMap.forName("popup"));
+          ((LinkContainer) celllink).setPopupSettings(popup);
+        }
 
-    celllink = new WebMarkupContainer("link");
+      }
+    } else {
+      celllink = new WebMarkupContainer("link");
+    }
     valuecontainer.add(celllink);
 
-    celllink.add(new WebMarkupContainer("icon").setVisible(false));
+    if (cellmodel.getIcon() != null) {
+      celllink.add(new StaticImageComponent("icon", new Model(cellmodel
+          .getIcon())));
+    } else {
+      celllink.add(new WebMarkupContainer("icon").setVisible(false));
+    }
+
     celllink.add(new LabelComponent("valuelabel", new Model(cellmodel
         .getCellValue())));
 

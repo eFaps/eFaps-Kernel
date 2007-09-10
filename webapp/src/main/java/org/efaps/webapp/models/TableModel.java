@@ -35,7 +35,6 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -66,14 +65,14 @@ public class TableModel extends AbstractModel {
 
   /**
    * All evaluated rows of this table are stored in this list.
-   * 
+   *
    * @see #getValues
    */
   private final List<RowModel> values = new ArrayList<RowModel>();
 
   /**
    * The instance variable stores the string of the sort key.
-   * 
+   *
    * @see #getSortKey
    * @see #setSortKey
    */
@@ -81,7 +80,7 @@ public class TableModel extends AbstractModel {
 
   /**
    * The instance variable stores the string of the sort direction.
-   * 
+   *
    * @see #getSortDirection
    * @see #setSortDirection
    */
@@ -89,7 +88,7 @@ public class TableModel extends AbstractModel {
 
   /**
    * The instance variable stores the UUID for the table which must be shown.
-   * 
+   *
    * @see #getTable
    */
   private UUID tableuuid;
@@ -102,7 +101,7 @@ public class TableModel extends AbstractModel {
   /**
    * The instance variable stores the current selected filterKey as the
    * sequential number of the field of this web table representation.
-   * 
+   *
    * @see #getFilterKey
    * @see #setFilterKey(String)
    */
@@ -122,7 +121,7 @@ public class TableModel extends AbstractModel {
   /**
    * The instance Array holds the Label for the Columns
    */
-  private List<HeaderModel> headers = new ArrayList<HeaderModel>();
+  private final List<HeaderModel> headers = new ArrayList<HeaderModel>();
 
   /**
    * contains the sequential numbers of the filter
@@ -168,6 +167,7 @@ public class TableModel extends AbstractModel {
     }
   }
 
+  @Override
   public void resetModel() {
     super.setInitialised(false);
     this.values.clear();
@@ -296,7 +296,7 @@ public class TableModel extends AbstractModel {
   /**
    * The instance method sorts the table values depending on the sort key in
    * {@link #sortKey} and the sort direction in {@link #sortDirection}.
-   * 
+   *
    * @throws EFapsException
    */
   public boolean sort() throws EFapsException {
@@ -304,7 +304,7 @@ public class TableModel extends AbstractModel {
     if (getSortKey() != null && getSortKey().length() > 0) {
       int sortKey = 0;
       for (int i = 0; i < getTable().getFields().size(); i++) {
-        Field field = (Field) getTable().getFields().get(i);
+        Field field = getTable().getFields().get(i);
         if (field.getName().equals(getSortKey())) {
           sortKey = i;
           break;
@@ -330,7 +330,7 @@ public class TableModel extends AbstractModel {
 
   /**
    * This is the getter method for the instance variable {@link #sortKey}.
-   * 
+   *
    * @return value of instance variable {@link #sortKey}
    * @see #sortKey
    * @see #setSortKey
@@ -341,7 +341,7 @@ public class TableModel extends AbstractModel {
 
   /**
    * This is the setter method for the instance variable {@link #sortKey}.
-   * 
+   *
    * @param _sortKey
    *                new value for instance variable {@link #sortKey}
    * @see #sortKey
@@ -353,7 +353,7 @@ public class TableModel extends AbstractModel {
 
   /**
    * This is the getter method for the instance variable {@link #sortDirection}.
-   * 
+   *
    * @return value of instance variable {@link #sortDirection}
    * @see #sortDirection
    * @see #setSortDirection
@@ -368,7 +368,7 @@ public class TableModel extends AbstractModel {
 
   /**
    * This is the getter method for the instance variable {@link #table}.
-   * 
+   *
    * @return value of instance variable {@link #table}
    * @see #table
    */
@@ -390,7 +390,7 @@ public class TableModel extends AbstractModel {
 
   /**
    * are the values of the Rows filtered or not
-   * 
+   *
    * @return true if filtered, else false
    */
   public boolean isFiltered() {
@@ -405,7 +405,7 @@ public class TableModel extends AbstractModel {
 
   /**
    * This is the getter method for the instance variable {@link #values}.
-   * 
+   *
    * @return value of instance variable {@link #values}
    * @throws EFapsException
    * @see #values
@@ -435,7 +435,7 @@ public class TableModel extends AbstractModel {
 
   /**
    * This is the getter method for the instance variable {@link #filterKeyInt}.
-   * 
+   *
    * @return value of instance variable {@link #filterKeyInt}
    * @see #filterKey
    * @see #setFilterKey
@@ -446,7 +446,7 @@ public class TableModel extends AbstractModel {
 
   /**
    * This is the setter method for the instance variable {@link #filterKeyInt}.
-   * 
+   *
    * @param _selectedFilter
    *                new value for instance variable {@link #filterKeyInt}
    * @see #filterKeyInt
@@ -455,7 +455,7 @@ public class TableModel extends AbstractModel {
   public void setFilterKey(String _filterkey) {
     this.filterKey = _filterkey;
     for (int i = 0; i < getTable().getFields().size(); i++) {
-      Field field = (Field) getTable().getFields().get(i);
+      Field field = getTable().getFields().get(i);
       if (field.getName().equals(_filterkey)) {
         this.filterKeyInt = i;
         break;
@@ -468,7 +468,7 @@ public class TableModel extends AbstractModel {
    * This Map is used for contruction of the items in a myfaces "<h:selectManyCheckbox>".
    * It produces Selectboxes with a sequential number as value and the
    * Fieldvalue as the Label.
-   * 
+   *
    * @return Map
    * @throws EFapsException
    */
@@ -488,7 +488,7 @@ public class TableModel extends AbstractModel {
 
   /**
    * prepares the filter to bes used in getValues
-   * 
+   *
    * @see #getValues()
    */
   public void filter() {
@@ -515,21 +515,21 @@ public class TableModel extends AbstractModel {
 
     /**
      * The instance variable stores the values for the table.
-     * 
+     *
      * @see #getValues
      */
     private final List<CellModel> values = new ArrayList<CellModel>();
 
     /**
      * The instance variable stores all oids in a string.
-     * 
+     *
      * @see #getOids
      */
     private final String oids;
 
     /**
      * The constructor creates a new instance of class Row.
-     * 
+     *
      * @param _oids
      *                string with all oids for this row
      */
@@ -543,7 +543,7 @@ public class TableModel extends AbstractModel {
     /**
      * The instance method adds a new attribute value (from instance
      * {@link AttributeTypeInterface}) to the values.
-     * 
+     *
      * @see #values
      */
     public void add(final CellModel _cellmodel) {
@@ -553,7 +553,7 @@ public class TableModel extends AbstractModel {
 
     /**
      * The instance method returns the size of the array list {@link #values}.
-     * 
+     *
      * @see #values
      */
     public int getSize() {
@@ -564,7 +564,7 @@ public class TableModel extends AbstractModel {
 
     /**
      * This is the getter method for the values variable {@link #values}.
-     * 
+     *
      * @return value of values variable {@link #values}
      * @see #values
      */
@@ -574,111 +574,13 @@ public class TableModel extends AbstractModel {
 
     /**
      * This is the getter method for the instance variable {@link #oids}.
-     * 
+     *
      * @return value of instance variable {@link #oids}
      * @see #oids
      */
     public String getOids() {
       return this.oids;
     }
-  }
-
-  public class CellModel extends Model {
-
-    private static final long serialVersionUID = 1L;
-
-    private final String oid;
-
-    private final String reference;
-
-    private final String cellvalue;
-
-    private final String icon;
-
-    private final int target;
-
-    public CellModel(final String _oid, final String _reference,
-                     final String _cellvalue, final String _icon,
-                     final int _target) {
-      this.oid = _oid;
-      this.reference = _reference;
-      this.cellvalue = _cellvalue;
-      this.icon = _icon;
-      this.target = _target;
-    }
-
-    public String getOid() {
-      return this.oid;
-    }
-
-    public String getReference() {
-      return this.reference;
-    }
-
-    public String getCellValue() {
-      return this.cellvalue;
-    }
-
-    public String getIcon() {
-      return this.icon;
-    }
-
-    public int getTarget() {
-      return this.target;
-    }
-
-  }
-
-  public class HeaderModel extends Model {
-
-    private static final long serialVersionUID = 1L;
-
-    private final String label;
-
-    private final boolean sortable;
-
-    private final String name;
-
-    private final boolean filterable;
-
-    private SortDirection sortdirection;
-
-    public HeaderModel(final Field _field, final SortDirection _sortdirection) {
-      this.label = _field.getLabel();
-      this.sortable = _field.isSortAble();
-      this.name = _field.getName();
-      this.filterable = _field.isFilterable();
-      this.sortdirection = _sortdirection;
-    }
-
-    public String getLabel() {
-      if (this.label != null) {
-        return DBProperties.getProperty(this.label);
-      } else {
-        return "";
-      }
-    }
-
-    public String getName() {
-      return this.name;
-    }
-
-    public boolean isSortable() {
-      return this.sortable;
-    }
-
-    public boolean isFilterable() {
-      return this.filterable;
-    }
-
-    public SortDirection getSortDirection() {
-      return this.sortdirection;
-    }
-
-    public void setSortDirection(SortDirection _sortdirection) {
-      this.sortdirection = _sortdirection;
-    }
-
   }
 
 }
