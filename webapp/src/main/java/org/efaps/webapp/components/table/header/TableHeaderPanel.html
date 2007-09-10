@@ -24,7 +24,11 @@
 <html xmlns:wicket>
 <wicket:head>
 <script type="text/javascript">
- function eFapsPositionTable() {
+  
+  window.onresize = eFapsPositionTableHeader;
+  window.onload = eFapsPositionTableHeader;
+  
+  function eFapsPositionTableHeader() {
        
       var headerTable = document.getElementById("eFapsTableHeader");
       var bodyTable = document.getElementById("eFapsTableBody");
@@ -49,7 +53,7 @@
     }
 </script>
 </wicket:head>
-<body onload="eFapsPositionTable()">
+<body>
 <wicket:panel>
   <div width="1%" wicket:id="checkbox">
     <input type="checkbox" onClick="eFapsTableSelectDeselectAll(document,'selectedRow',this.checked)"/>
