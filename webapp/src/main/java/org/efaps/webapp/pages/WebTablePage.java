@@ -24,6 +24,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.webapp.EFapsAuthenticatedPage;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.table.WebTableContainer;
 import org.efaps.webapp.components.table.header.TableHeaderPanel;
@@ -33,7 +34,7 @@ import org.efaps.webapp.models.TableModel;
  * @author jmo
  * @version $Id$
  */
-public class WebTablePage extends ContentPage {
+public class WebTablePage extends ContentPage implements EFapsAuthenticatedPage{
 
   private static final long serialVersionUID = 7564911406648729094L;
 

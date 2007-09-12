@@ -33,6 +33,7 @@ import org.wicketstuff.dojo.markup.html.container.DojoSimpleContainer;
 import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
 import org.wicketstuff.dojo.widgets.StyleAttribute;
 
+import org.efaps.webapp.EFapsAuthenticatedPage;
 import org.efaps.webapp.components.ChildCallBackHeaderContributer;
 import org.efaps.webapp.components.listmenu.ListMenuPanel;
 
@@ -40,7 +41,8 @@ import org.efaps.webapp.components.listmenu.ListMenuPanel;
  * @author jmo
  * @version $Id$
  */
-public class ContentContainerPage extends WebPage {
+public class ContentContainerPage extends WebPage implements
+    EFapsAuthenticatedPage {
 
   private static final long serialVersionUID = 3169723830151134904L;
 
@@ -110,7 +112,6 @@ public class ContentContainerPage extends WebPage {
     this.add(new ChildCallBackHeaderContributer());
   }
 
-
   /**
    * This is the getter method for the instance variable {@link #inlinePath}.
    *
@@ -120,7 +121,5 @@ public class ContentContainerPage extends WebPage {
   public String getInlinePath() {
     return this.inlinePath;
   }
-
-
 
 }

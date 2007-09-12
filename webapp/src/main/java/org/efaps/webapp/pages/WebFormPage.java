@@ -25,6 +25,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.webapp.EFapsAuthenticatedPage;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.components.table.WebFormContainer;
@@ -34,7 +35,7 @@ import org.efaps.webapp.models.FormModel;
  * @author jmo
  * @version $Id$
  */
-public class WebFormPage extends ContentPage {
+public class WebFormPage extends ContentPage implements EFapsAuthenticatedPage{
 
   private static final long serialVersionUID = -3554311414948286302L;
 

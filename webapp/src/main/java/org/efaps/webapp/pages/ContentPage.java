@@ -26,6 +26,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.webapp.EFapsAuthenticatedPage;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.footer.FooterPanel;
 import org.efaps.webapp.components.menu.MenuPanel;
@@ -37,7 +38,8 @@ import org.efaps.webapp.models.AbstractModel;
  * @author jmo
  * @version $Id$
  */
-public abstract class ContentPage extends WebPage {
+public abstract class ContentPage extends WebPage implements
+    EFapsAuthenticatedPage {
 
   private static final long serialVersionUID = -2374207555009145191L;
 
