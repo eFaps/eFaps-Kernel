@@ -21,38 +21,39 @@
 package org.efaps.webapp.components.menu;
 
 import org.apache.wicket.markup.MarkupStream;
-import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.markup.html.WebComponent;
 
-import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.WebFormPage;
 
-public class SearchItemLinkComponent extends Link {
+/**
+ * @author jmo
+ * @version $Id$
+ */
+public abstract class AbstractMenuItemAjaxComponent extends WebComponent {
 
   private static final long serialVersionUID = 1L;
 
-  public SearchItemLinkComponent(String id, MenuItemModel _model) {
-    super(id, _model);
+  public AbstractMenuItemAjaxComponent(final String _id,
+                                       final MenuItemModel _model) {
+    super(_id, _model);
   }
 
+  /**
+   * for the JSCookMenu nothing must be renderd, because JavaScript is used to
+   * create the Menu
+   *
+   * @see org.apache.wicket.markup.html.WebComponent#onRender(org.apache.wicket.markup.MarkupStream)
+   */
   @Override
   protected void onRender(final MarkupStream _markupStream) {
     _markupStream.next();
   }
 
-  @Override
-  public void onClick() {
-    FormModel formmodel =
-        (FormModel) this.findParent(MenuPanel.class).getModel();
-    formmodel.resetModel();
-    CommandAbstract command = ((MenuItemModel) super.getModel()).getCommand();
-    formmodel.setCommandUUID(command.getUUID());
-    formmodel.setFormUUID(command.getTargetForm().getUUID());
-    WebFormPage page = new WebFormPage(formmodel);
-
-    this.getRequestCycle().setResponsePage(page);
-
-  }
-
+  /**
+   * This Method must return the Javascript wich should be executed by the
+   * JSCooKMenu
+   *
+   * @return String with the JavaScript
+   */
+  public abstract String getJavaScript();
 }

@@ -51,10 +51,10 @@ public class ListMenuGoUpLinkComponent extends AjaxLink {
     }
 
     row.removeAll();
-    
-    row.setModel(model.ancestor);
+
+    row.setModel(model.getAncestor());
 
     _target.addComponent(listmenupanel);
-    model.ancestor = null;
+    model.setAncestor(null);
   }
 }

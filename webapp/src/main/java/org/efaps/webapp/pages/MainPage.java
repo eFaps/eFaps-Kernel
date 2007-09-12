@@ -37,7 +37,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.webapp.EFapsAuthenticatedPage;
 import org.efaps.webapp.components.ChildCallBackHeaderContributer;
-import org.efaps.webapp.components.menu.MenuComponent;
+import org.efaps.webapp.components.menu.MenuContainer;
 import org.efaps.webapp.models.MenuItemModel;
 
 /**
@@ -85,8 +85,8 @@ public class MainPage extends WebPage implements EFapsAuthenticatedPage {
         .getProperty("LogoRowInclude.Version.Label")));
 
     // MainToolBar
-    MenuComponent menu =
-        new MenuComponent("menu", new MenuItemModel(UUID
+    MenuContainer menu =
+        new MenuContainer("menu", new MenuItemModel(UUID
             .fromString("87001cc3-c45c-44de-b8f1-776df507f268")));
     this.add(menu);
 

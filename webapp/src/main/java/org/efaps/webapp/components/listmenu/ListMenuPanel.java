@@ -67,11 +67,11 @@ public class ListMenuPanel extends DojoPanelContainer {
    */
   private final String menukey;
 
-  private int padding = 10;
+  private final int padding = 10;
 
   private Component header;
 
-  private int paddingAdd = 18;
+  private final int paddingAdd = 18;
 
   public ListMenuPanel(final String _id, final String _menukey,
                        final PageParameters _parameters) {
@@ -152,6 +152,7 @@ public class ListMenuPanel extends DojoPanelContainer {
       setReuseItems(true);
     }
 
+    @Override
     protected void populateItem(final ListItem _listItem) {
       Object modelObject = _listItem.getModelObject();
 
@@ -202,7 +203,7 @@ public class ListMenuPanel extends DojoPanelContainer {
           } else {
             link.add(new WebMarkupContainer("icon").setVisible(false));
           }
-          if (model.ancestor != null) {
+          if (model.getAncestor() != null) {
             row.add(new ListMenuGoUpLinkComponent("gouplink", model));
           } else {
             row.add(new WebMarkupContainer("gouplink").setVisible(false));

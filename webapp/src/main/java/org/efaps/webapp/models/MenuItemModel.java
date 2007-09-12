@@ -59,10 +59,10 @@ public class MenuItemModel extends Model {
   public final String description;
 
   /** Url of this menu item. */
-  public String url;
+  private String url;
 
   /** All childs of this menu item. */
-  public final List<MenuItemModel> childs = new ArrayList<MenuItemModel>();
+  private final List<MenuItemModel> childs = new ArrayList<MenuItemModel>();
 
   private final String oid;
 
@@ -74,7 +74,7 @@ public class MenuItemModel extends Model {
 
   public int previouslevel = 0;
 
-  public IModel ancestor;
+  private IModel ancestor;
 
   private final String reference;
 
@@ -191,6 +191,46 @@ public class MenuItemModel extends Model {
 
   public String getReference() {
     return this.reference;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #url}.
+   *
+   * @return value of instance variable {@link #url}
+   */
+
+  public String getUrl() {
+    return this.url;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #url}.
+   *
+   * @param url
+   *                the url to set
+   */
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #ancestor}.
+   *
+   * @return value of instance variable {@link #ancestor}
+   */
+
+  public IModel getAncestor() {
+    return this.ancestor;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #ancestor}.
+   *
+   * @param ancestor
+   *                the ancestor to set
+   */
+  public void setAncestor(IModel ancestor) {
+    this.ancestor = ancestor;
   }
 
   // ///////////////////////////////////////////////////////////////////////////

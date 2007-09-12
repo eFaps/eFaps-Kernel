@@ -25,18 +25,15 @@ import java.util.Map;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
-import org.apache.wicket.markup.MarkupStream;
-import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.util.EFapsException;
+import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
@@ -45,24 +42,20 @@ import org.efaps.webapp.pages.WebTablePage;
  * @author jmo
  * @version $Id$
  */
-public class MenuItemAjaxSubmitComponent extends WebComponent {
+public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
 
   private static final long serialVersionUID = 1L;
 
-  public MenuItemAjaxSubmitComponent(final String id, final IModel _menuItem,
-                                     final Form _form) {
+  public AjaxSubmitComponent(final String id, final MenuItemModel _menuItem,
+                             final Form _form) {
     super(id, _menuItem);
     this.add(new SubmitAndUpdateBehavior(_form));
   }
 
+  @Override
   public String getJavaScript() {
     return ((SubmitAndUpdateBehavior) super.getBehaviors().get(0))
         .getJavaScript();
-  }
-
-  @Override
-  protected void onRender(final MarkupStream _markupStream) {
-    _markupStream.next();
   }
 
   public class SubmitAndUpdateBehavior extends AjaxFormSubmitBehavior {
@@ -77,7 +70,7 @@ public class MenuItemAjaxSubmitComponent extends WebComponent {
     }
 
     public SubmitAndUpdateBehavior(final Form _form) {
-      super(_form, "onCLick");
+      super(_form, "onClick");
       this.form = _form;
 
     }

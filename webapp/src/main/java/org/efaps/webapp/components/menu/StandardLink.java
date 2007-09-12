@@ -22,10 +22,7 @@ package org.efaps.webapp.components.menu;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.link.InlineFrame;
-import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.CommandAbstract;
@@ -40,17 +37,12 @@ import org.efaps.webapp.pages.WebTablePage;
  * @author jmo
  * @version $Id$
  */
-public class MenuItemLinkComponent extends Link {
+public class StandardLink extends AbstractMenuItemLink {
 
   private static final long serialVersionUID = 1L;
 
-  public MenuItemLinkComponent(String _id, IModel _menuItem) {
-    super(_id, _menuItem);
-  }
-
-  @Override
-  protected void onRender(MarkupStream markupStream) {
-    markupStream.next();
+  public StandardLink(String _id, final MenuItemModel _model) {
+    super(_id, _model);
   }
 
   @Override

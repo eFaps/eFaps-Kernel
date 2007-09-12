@@ -20,26 +20,32 @@
 
 package org.efaps.webapp.components.menu;
 
-import org.efaps.webapp.EFapsSession;
+import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.html.link.Link;
+
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.LoginPage;
 
 /**
  * @author jmo
  * @version $Id$
- *
  */
-public class LogOutLink extends AbstractMenuItemLink {
+public abstract class AbstractMenuItemLink extends Link {
 
   private static final long serialVersionUID = 1L;
 
-  public LogOutLink(final String _id, final MenuItemModel _model) {
+  public AbstractMenuItemLink(final String _id, final MenuItemModel _model) {
     super(_id, _model);
   }
 
+  /**
+   * for the JSCookMenu nothing must be renderd, because JavaScript is used to
+   * create the Menu
+   *
+   * @see org.apache.wicket.MarkupContainer#onRender(org.apache.wicket.markup.MarkupStream)
+   */
   @Override
-  public void onClick() {
-    ((EFapsSession) this.getSession()).checkout();
-    this.getRequestCycle().setResponsePage(LoginPage.class);
+  protected void onRender(final MarkupStream _markupStream) {
+    _markupStream.next();
   }
+
 }

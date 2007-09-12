@@ -20,26 +20,31 @@
 
 package org.efaps.webapp.components.menu;
 
-import org.efaps.webapp.EFapsSession;
+import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.LoginPage;
+import org.efaps.webapp.pages.WebFormPage;
 
-/**
- * @author jmo
- * @version $Id$
- *
- */
-public class LogOutLink extends AbstractMenuItemLink {
+public class SearchLink extends AbstractMenuItemLink {
 
   private static final long serialVersionUID = 1L;
 
-  public LogOutLink(final String _id, final MenuItemModel _model) {
+  public SearchLink(final String _id, final MenuItemModel _model) {
     super(_id, _model);
   }
 
   @Override
   public void onClick() {
-    ((EFapsSession) this.getSession()).checkout();
-    this.getRequestCycle().setResponsePage(LoginPage.class);
+    FormModel formmodel =
+        (FormModel) this.findParent(MenuPanel.class).getModel();
+    formmodel.resetModel();
+    CommandAbstract command = ((MenuItemModel) super.getModel()).getCommand();
+    formmodel.setCommandUUID(command.getUUID());
+    formmodel.setFormUUID(command.getTargetForm().getUUID());
+    WebFormPage page = new WebFormPage(formmodel);
+
+    this.getRequestCycle().setResponsePage(page);
+
   }
+
 }

@@ -44,12 +44,12 @@ import org.efaps.webapp.models.SearchItemModel;
  * @author tmo
  * @version $Id$
  */
-public class MenuComponent extends AbstractParentMarkupContainer {
+public class MenuContainer extends AbstractParentMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
   private static String URL =
-      "resources/" + MenuComponent.class.getName() + "/";
+      "resources/" + MenuContainer.class.getName() + "/";
 
   private static String HEADER_RESOURCE =
       JavascriptUtils.SCRIPT_OPEN_TAG
@@ -89,11 +89,11 @@ public class MenuComponent extends AbstractParentMarkupContainer {
 
   private Integer childID = 0;
 
-  public MenuComponent(final String _id, final IModel _model) {
+  public MenuContainer(final String _id, final IModel _model) {
     this(_id, _model, null);
   }
 
-  public MenuComponent(final String _id, final IModel _model,
+  public MenuContainer(final String _id, final IModel _model,
                        final FormContainer _form) {
     super(_id, _model);
     this.form = _form;
@@ -107,7 +107,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
 
   private void initialise() {
     MenuItemModel model = (MenuItemModel) super.getModel();
-    for (MenuItemModel menuItem : model.childs) {
+    for (MenuItemModel menuItem : model.getChilds()) {
       addLink(menuItem);
     }
   }
@@ -120,24 +120,22 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     if (!_menuItemModel.hasChilds()) {
       if (_menuItemModel.getTarget() != CommandAbstract.TARGET_UNKNOWN) {
         if (_menuItemModel.getTarget() == CommandAbstract.TARGET_MODAL) {
-          AjaxOpenModalLinkContainer item =
-              new AjaxOpenModalLinkContainer(getNewChildId(), _menuItemModel);
+          AjaxOpenModalComponent item =
+              new AjaxOpenModalComponent(getNewChildId(), _menuItemModel);
           this.add(item);
         } else {
-          MenuItemLinkComponent item =
-              new MenuItemLinkComponent(getNewChildId(), _menuItemModel);
+          StandardLink item = new StandardLink(getNewChildId(), _menuItemModel);
           this.add(item);
         }
       } else {
         if (_menuItemModel.getCommand().isSubmit()) {
-          MenuItemAjaxSubmitComponent item =
-              new MenuItemAjaxSubmitComponent(getNewChildId(), _menuItemModel,
+          AjaxSubmitComponent item =
+              new AjaxSubmitComponent(getNewChildId(), _menuItemModel,
                   this.form);
           this.add(item);
         } else if (super.getModel() instanceof SearchItemModel) {
 
-          SearchItemLinkComponent item =
-              new SearchItemLinkComponent(getNewChildId(), _menuItemModel);
+          SearchLink item = new SearchLink(getNewChildId(), _menuItemModel);
           this.add(item);
 
         }
@@ -145,17 +143,16 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     } else if (_menuItemModel.getCommand().hasEvents(
         EventType.UI_COMMAND_EXECUTE)) {
 
-      MenuItemLinkComponent item =
-          new MenuItemLinkComponent(getNewChildId(), _menuItemModel);
+      StandardLink item = new StandardLink(getNewChildId(), _menuItemModel);
       this.add(item);
     }
     if (_menuItemModel.getReference() != null) {
-      _menuItemModel.url = _menuItemModel.getReference();
+      _menuItemModel.setUrl(_menuItemModel.getReference());
       if (_menuItemModel.getReference().equals("/eFaps/logout?")) {
         this.add(new LogOutLink(getNewChildId(), _menuItemModel));
       }
     }
-    for (MenuItemModel childs : _menuItemModel.childs) {
+    for (MenuItemModel childs : _menuItemModel.getChilds()) {
       addLink(childs);
     }
   }
@@ -166,8 +163,8 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     Iterator<?> childs = this.iterator();
     while (childs.hasNext()) {
       Object child = childs.next();
-      if (child instanceof MenuItemLinkComponent) {
-        MenuItemLinkComponent item = (MenuItemLinkComponent) child;
+      if (child instanceof StandardLink) {
+        StandardLink item = (StandardLink) child;
         MenuItemModel childModel = (MenuItemModel) item.getModel();
 
         String url = (String) item.urlFor(ILinkListener.INTERFACE);
@@ -185,23 +182,23 @@ public class MenuComponent extends AbstractParentMarkupContainer {
 
         childModel.setURL(url);
 
-      } else if (child instanceof AjaxOpenModalLinkContainer) {
-        AjaxOpenModalLinkContainer item = (AjaxOpenModalLinkContainer) child;
+      } else if (child instanceof AjaxOpenModalComponent) {
+        AjaxOpenModalComponent item = (AjaxOpenModalComponent) child;
         MenuItemModel childModel = (MenuItemModel) item.getModel();
 
         String url = item.getJavaScript();
 
         childModel.setURL(url);
 
-      } else if (child instanceof MenuItemAjaxSubmitComponent) {
-        MenuItemAjaxSubmitComponent item = (MenuItemAjaxSubmitComponent) child;
+      } else if (child instanceof AjaxSubmitComponent) {
+        AjaxSubmitComponent item = (AjaxSubmitComponent) child;
         MenuItemModel childModel = (MenuItemModel) item.getModel();
 
         String url = item.getJavaScript();
 
         childModel.setURL(url);
-      } else if (child instanceof SearchItemLinkComponent) {
-        SearchItemLinkComponent item = (SearchItemLinkComponent) child;
+      } else if (child instanceof SearchLink) {
+        SearchLink item = (SearchLink) child;
         MenuItemModel childModel = (MenuItemModel) item.getModel();
 
         String url = (String) item.urlFor(ILinkListener.INTERFACE);
@@ -237,7 +234,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     html.append(JavascriptUtils.SCRIPT_OPEN_TAG).append("var ").append(id)
         .append("=[");
 
-    for (MenuItemModel menuItem : model.childs) {
+    for (MenuItemModel menuItem : model.getChilds()) {
       convertToHtml(menuItem, html, true, new StringBuilder());
       html.append(",\n");
     }
@@ -271,8 +268,8 @@ public class MenuComponent extends AbstractParentMarkupContainer {
     }
     _html.append("','<span class=\"eFapsMenuLabel\">").append(_menuItem.label)
         .append("</span>', '");
-    if (_menuItem.url != null) {
-      _html.append(_menuItem.url);
+    if (_menuItem.getUrl() != null) {
+      _html.append(_menuItem.getUrl());
     }
     if (_menuItem.getTarget() == CommandAbstract.TARGET_HIDDEN) {
       _html.append("', 'eFapsFrameHidden', '");
@@ -286,7 +283,7 @@ public class MenuComponent extends AbstractParentMarkupContainer {
       _html.append(_menuItem.description);
     }
     _html.append("'");
-    for (MenuItemModel menuItem : _menuItem.childs) {
+    for (MenuItemModel menuItem : _menuItem.getChilds()) {
       _html.append("\n").append(_prefix).append("  ,");
       convertToHtml(menuItem, _html, false, new StringBuilder(_prefix)
           .append("  "));

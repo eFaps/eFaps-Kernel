@@ -54,15 +54,15 @@ public class MenuPanel extends Panel {
       super.setModel(model);
       try {
         if (model.getCommand().getTargetMenu() != null) {
-          MenuComponent menu =
-              new MenuComponent("eFapsMenu", new MenuItemModel(model
+          MenuContainer menu =
+              new MenuContainer("eFapsMenu", new MenuItemModel(model
                   .getCommand().getTargetMenu().getUUID(), model.getOid()),
                   _form);
           add(menu);
         } else if (model.getMode() == CommandAbstract.TARGET_MODE_SEARCH
             && model.getCallingCommandUUID() != null) {
-          MenuComponent menu =
-              new MenuComponent("eFapsMenu", new SearchItemModel(model
+          MenuContainer menu =
+              new MenuContainer("eFapsMenu", new SearchItemModel(model
                   .getCallingCommand().getTargetSearch().getUUID()), _form);
 
           add(menu);

@@ -79,7 +79,7 @@ public class ListMenuGoIntoLinkComponent extends AjaxLink {
 
     List<?> x = getChildModel(rootlistmenupanel);
 
-    model.ancestor = new Model((Serializable) x);
+    model.setAncestor(new Model((Serializable) x));
 
     rowparent.removeAll();
     rowparent.setList(row.getList());

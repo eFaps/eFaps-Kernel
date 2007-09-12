@@ -41,9 +41,6 @@ package org.efaps.webapp.components.menu;
 
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.MarkupStream;
-import org.apache.wicket.markup.html.WebComponent;
-import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.webapp.models.MenuItemModel;
@@ -52,11 +49,12 @@ import org.efaps.webapp.models.MenuItemModel;
  * @author jmo
  * @version $Id$
  */
-public class AjaxOpenModalLinkContainer extends WebComponent {
+public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
 
   private static final long serialVersionUID = 1L;
 
-  public AjaxOpenModalLinkContainer(final String _id, final IModel _menuItem) {
+  public AjaxOpenModalComponent(final String _id,
+                                    final MenuItemModel _menuItem) {
     super(_id, _menuItem);
     this.add(new AjaxOpenModalBehaviour());
   }
@@ -64,11 +62,6 @@ public class AjaxOpenModalLinkContainer extends WebComponent {
   public String getJavaScript() {
     return ((AjaxOpenModalBehaviour) super.getBehaviors().get(0))
         .getJavaScript();
-  }
-
-  @Override
-  protected void onRender(final MarkupStream _markupStream) {
-    _markupStream.next();
   }
 
   public class AjaxOpenModalBehaviour extends AjaxEventBehavior {
