@@ -20,12 +20,17 @@
 
 package org.efaps.webapp;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Request;
 import org.apache.wicket.Response;
+import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
+import org.apache.wicket.authorization.Action;
+import org.apache.wicket.authorization.IAuthorizationStrategy;
 import org.apache.wicket.protocol.http.WebApplication;
 
-import org.efaps.webapp.pages.HomePage;
+import org.efaps.webapp.pages.LoginPage;
+import org.efaps.webapp.pages.MainPage;
 
 /**
  * @author jmo
@@ -34,10 +39,8 @@ import org.efaps.webapp.pages.HomePage;
 public class EFapsApplication extends WebApplication {
 
   @Override
-  public Class<HomePage> getHomePage() {
-    // TODO muss gegen echte Homepgae getauscht werden
-    return HomePage.class;
-
+  public Class<MainPage> getHomePage() {
+    return MainPage.class;
   }
 
   @Override
@@ -47,10 +50,38 @@ public class EFapsApplication extends WebApplication {
     getMarkupSettings().setStripComments(true);
     getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
     // getDebugSettings().setAjaxDebugModeEnabled(false);
+    super.getSecuritySettings().setAuthorizationStrategy(
+        new EFapsFormBasedAuthorizationStartegy());
+
+
   }
 
-  public Session newSession(Request _request, Response _response) {
+  @Override
+  public Session newSession(final Request _request, final Response _response) {
     return new EFapsSession(_request);
+
+  }
+
+  private class EFapsFormBasedAuthorizationStartegy implements
+      IAuthorizationStrategy {
+
+    public boolean isActionAuthorized(final Component _component,
+                                      final Action _action) {
+      return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean isInstantiationAuthorized(Class _componentClass) {
+
+      if (EFapsAuthenticatedPage.class.isAssignableFrom(_componentClass)) {
+        if (((EFapsSession) Session.get()).isLogedIn()) {
+          return true;
+        }
+        throw new RestartResponseAtInterceptPageException(LoginPage.class);
+      }
+
+      return true;
+    }
   }
 
 }
