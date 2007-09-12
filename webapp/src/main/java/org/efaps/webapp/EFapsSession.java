@@ -141,6 +141,11 @@ public class EFapsSession extends WebSession {
 
   }
 
+  public final void checkout() {
+    this.username = null;
+    closeContext();
+  }
+
   private boolean checkLogin(final String _name, final String _passwd) {
 
     boolean loginOk = false;

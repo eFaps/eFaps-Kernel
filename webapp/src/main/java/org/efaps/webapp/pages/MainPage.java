@@ -66,6 +66,9 @@ public class MainPage extends WebPage implements EFapsAuthenticatedPage {
           + "  }"
           + JavascriptUtils.SCRIPT_CLOSE_TAG));
     }
+    this.add(new StringHeaderContributor("<title>"
+        + DBProperties.getProperty("LogoRowInclude.Version.Label")
+        + "</title>"));
 
     this
         .add(new StyleSheetReference("css", getClass(), "mainpage/MainPage.css"));

@@ -21,7 +21,7 @@ public class LoginPage extends WebPage {
 
     this.add(new StringHeaderContributor(""
         + JavascriptUtils.SCRIPT_OPEN_TAG
-        + "Function test4top() {\n"
+        + "function test4top() {\n"
         + "  if(top!=self) {\n"
         + "    top.location = self.location;\n"
         + "  }\n"

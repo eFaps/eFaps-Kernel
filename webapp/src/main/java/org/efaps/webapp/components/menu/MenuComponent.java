@@ -149,7 +149,12 @@ public class MenuComponent extends AbstractParentMarkupContainer {
           new MenuItemLinkComponent(getNewChildId(), _menuItemModel);
       this.add(item);
     }
-
+    if (_menuItemModel.getReference() != null) {
+      _menuItemModel.url = _menuItemModel.getReference();
+      if (_menuItemModel.getReference().equals("/eFaps/logout?")) {
+        this.add(new LogOutLink(getNewChildId(), _menuItemModel));
+      }
+    }
     for (MenuItemModel childs : _menuItemModel.childs) {
       addLink(childs);
     }
@@ -176,7 +181,6 @@ public class MenuComponent extends AbstractParentMarkupContainer {
           popup.setTarget("\"" + url + "\"");
           String tmp = popup.getPopupJavaScript().replaceAll("'", "\"");
           url = "javascript:" + tmp.replace("return false;", "");
-
         }
 
         childModel.setURL(url);

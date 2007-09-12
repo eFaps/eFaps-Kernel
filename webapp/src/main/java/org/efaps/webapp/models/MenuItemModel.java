@@ -50,7 +50,7 @@ public class MenuItemModel extends Model {
   private static final long serialVersionUID = 505704924081527139L;
 
   /** Url to the image of this menu item. */
-  private String image;
+  private final String image;
 
   /** Label of this menu item. */
   public final String label;
@@ -76,6 +76,8 @@ public class MenuItemModel extends Model {
 
   public IModel ancestor;
 
+  private final String reference;
+
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
@@ -93,7 +95,7 @@ public class MenuItemModel extends Model {
   protected MenuItemModel(final CommandAbstract _command, String _oid)
                                                                       throws Exception {
     this.image = _command.getIcon();
-
+    this.reference = _command.getReference();
     String label = DBProperties.getProperty(_command.getLabel());
     if (_oid != null) {
       SearchQuery query = new SearchQuery();
@@ -133,7 +135,7 @@ public class MenuItemModel extends Model {
   }
 
   public int getTarget() {
-    return target;
+    return this.target;
   }
 
   public String getOid() {
@@ -141,7 +143,7 @@ public class MenuItemModel extends Model {
   }
 
   public UUID getUUID() {
-    return uuid;
+    return this.uuid;
 
   }
 
@@ -179,6 +181,16 @@ public class MenuItemModel extends Model {
       cmd = Menu.get(this.uuid);
     }
     return cmd;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #reference}.
+   *
+   * @return value of instance variable {@link #reference}
+   */
+
+  public String getReference() {
+    return this.reference;
   }
 
   // ///////////////////////////////////////////////////////////////////////////
