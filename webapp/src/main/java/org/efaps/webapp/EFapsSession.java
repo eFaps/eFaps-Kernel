@@ -81,7 +81,6 @@ public class EFapsSession extends WebSession {
     if (this.isLogedIn()) {
       openContext();
     }
-
   }
 
   @Override
@@ -94,7 +93,6 @@ public class EFapsSession extends WebSession {
         closeContext();
       }
     } catch (SystemException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
@@ -212,19 +210,17 @@ public class EFapsSession extends WebSession {
     try {
       if (TRANSACTIONSMANAGER.getStatus() != Status.STATUS_ACTIVE) {
 
+        Map<String, String[]> parameter =
+            RequestCycle.get().getRequest().getParameterMap();
         TRANSACTIONSMANAGER.begin();
         Context.newThreadContext(TRANSACTIONSMANAGER.getTransaction(),
-            this.username, super.getLocale());
-
+            this.username, super.getLocale(), null, parameter, null);
       }
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (NotSupportedException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (SystemException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -239,27 +235,19 @@ public class EFapsSession extends WebSession {
         }
         Context.rollback();
       }
-
     } catch (SecurityException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (IllegalStateException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (RollbackException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (HeuristicMixedException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (HeuristicRollbackException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (SystemException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
 
