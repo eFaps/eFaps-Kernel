@@ -53,16 +53,10 @@ public class MenuItemModel extends Model {
   private final String image;
 
   /** Label of this menu item. */
-  public final String label;
+  private final String label;
 
   /** Description of this menu item. */
-  public final String description;
-
-  /** Url of this menu item. */
-  private String url;
-
-  /** All childs of this menu item. */
-  private final List<MenuItemModel> childs = new ArrayList<MenuItemModel>();
+  private final String description;
 
   private final String oid;
 
@@ -70,16 +64,25 @@ public class MenuItemModel extends Model {
 
   private final UUID uuid;
 
+  private final String reference;
+
+  /**
+   * All childs of this menu item.
+   */
+  private final List<MenuItemModel> childs = new ArrayList<MenuItemModel>();
+
+  /** Url of this menu item. */
+  private String url;
+
   private int level = 0;
 
-  public int previouslevel = 0;
+  private int previouslevel = 0;
 
   private IModel ancestor;
 
-  private final String reference;
+  private boolean header = false;
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors / destructors
+  private boolean selected = false;
 
   public MenuItemModel(final UUID _uuid) throws Exception {
     this(Menu.get(_uuid), null);
@@ -96,7 +99,13 @@ public class MenuItemModel extends Model {
                                                                       throws Exception {
     this.image = _command.getIcon();
     this.reference = _command.getReference();
+    this.target = _command.getTarget();
+    this.uuid = _command.getUUID();
+    this.description = "";
+    this.oid = _oid;
+
     String label = DBProperties.getProperty(_command.getLabel());
+
     if (_oid != null) {
       SearchQuery query = new SearchQuery();
       query.setObject(_oid);
@@ -113,10 +122,7 @@ public class MenuItemModel extends Model {
 
     }
     this.label = label;
-    this.description = "";
-    this.oid = _oid;
-    this.target = _command.getTarget();
-    this.uuid = _command.getUUID();
+
     if (_command instanceof MenuAbstract) {
       for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
         if (subCmd.hasAccess()) {
@@ -231,6 +237,76 @@ public class MenuItemModel extends Model {
    */
   public void setAncestor(IModel ancestor) {
     this.ancestor = ancestor;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #previouslevel}.
+   *
+   * @return value of instance variable {@link #previouslevel}
+   */
+
+  public int getPreviouslevel() {
+    return this.previouslevel;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #description}.
+   *
+   * @return value of instance variable {@link #description}
+   */
+
+  public String getDescription() {
+    return this.description;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #previouslevel}.
+   *
+   * @param previouslevel
+   *                the previouslevel to set
+   */
+  public void setPreviouslevel(int previouslevel) {
+    this.previouslevel = previouslevel;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #header}.
+   *
+   * @return value of instance variable {@link #header}
+   */
+
+  public boolean isHeader() {
+    return this.header;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #header}.
+   *
+   * @param header
+   *                the header to set
+   */
+  public void setHeader(boolean header) {
+    this.header = header;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #selected}.
+   *
+   * @return value of instance variable {@link #selected}
+   */
+
+  public boolean isSelected() {
+    return this.selected;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #selected}.
+   *
+   * @param selected
+   *                the selected to set
+   */
+  public void setSelected(boolean selected) {
+    this.selected = selected;
   }
 
   // ///////////////////////////////////////////////////////////////////////////

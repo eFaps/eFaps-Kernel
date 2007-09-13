@@ -266,8 +266,8 @@ public class MenuContainer extends AbstractParentMarkupContainer {
     } else {
       _html.append(IMG_BLANK_MAIN);
     }
-    _html.append("','<span class=\"eFapsMenuLabel\">").append(_menuItem.label)
-        .append("</span>', '");
+    _html.append("','<span class=\"eFapsMenuLabel\">").append(
+        _menuItem.getLabel()).append("</span>', '");
     if (_menuItem.getUrl() != null) {
       _html.append(_menuItem.getUrl());
     }
@@ -279,8 +279,8 @@ public class MenuContainer extends AbstractParentMarkupContainer {
       _html.append("', '_self', '");
     }
 
-    if (_menuItem.description != null) {
-      _html.append(_menuItem.description);
+    if (_menuItem.getDescription() != null) {
+      _html.append(_menuItem.getDescription());
     }
     _html.append("'");
     for (MenuItemModel menuItem : _menuItem.getChilds()) {

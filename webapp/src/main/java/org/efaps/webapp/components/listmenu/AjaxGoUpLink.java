@@ -21,19 +21,18 @@
 package org.efaps.webapp.components.listmenu;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.listmenu.ListMenuPanel.Rows;
+import org.efaps.webapp.components.listmenu.ListMenuPanel.StyleClassName;
 import org.efaps.webapp.models.MenuItemModel;
 
-public class ListMenuGoUpLinkComponent extends AjaxLink {
+public class AjaxGoUpLink extends AbstractAjaxLink {
 
   private static final long serialVersionUID = 1L;
 
-  public ListMenuGoUpLinkComponent(String id, IModel model) {
+  public AjaxGoUpLink(String id, IModel model) {
     super(id, model);
-    // TODO Auto-generated constructor stub
   }
 
   @Override
@@ -44,10 +43,10 @@ public class ListMenuGoUpLinkComponent extends AjaxLink {
     Rows row = (Rows) this.findParent(Rows.class);
     MenuItemModel model = (MenuItemModel) this.getModel();
 
-    model.setLevel(model.previouslevel);
+    model.setLevel(model.getPreviouslevel());
 
     for (MenuItemModel item : model.getChilds()) {
-      item.setLevel(item.previouslevel);
+      item.setLevel(item.getPreviouslevel());
     }
 
     row.removeAll();
@@ -56,5 +55,15 @@ public class ListMenuGoUpLinkComponent extends AjaxLink {
 
     _target.addComponent(listmenupanel);
     model.setAncestor(null);
+  }
+
+  @Override
+  public StyleClassName getSelectedStyleClass() {
+    return StyleClassName.GOUP_SELECTED;
+  }
+
+  @Override
+  public StyleClassName getStyleClass() {
+    return StyleClassName.GOUP;
   }
 }

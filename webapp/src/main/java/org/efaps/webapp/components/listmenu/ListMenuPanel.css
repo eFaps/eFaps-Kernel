@@ -31,21 +31,27 @@
   font-weight: bold;
 }
 
-.eFapsListMenuSelected {
+.eFapsListMenuItemSelected {
   background-color: #008800;
   color: #FFF;
   font-weight: bold;
+}
+
+.eFapsListMenuRemoveSelected,.eFapsListCollapseSelected,.eFapsListMenuGoIntoSelected
+  {
+  background-color: #008800;
 }
 
 .eFapsListMenuClose,.eFapsListMenuGoInto {
   text-align: center;
 }
 
-.eFapsListMenuClose img,.eFapsListMenuGoInto img {
+.eFapsListMenuRemove img,.eFapsListMenuGoInto img,.eFapsListMenuRemoveSelected img,.eFapsListMenuGoIntoSelected img
+  {
   vertical-align: middle;
 }
 
-.eFapsListMenuClose img:hover,.eFapsListCollapse img:hover,.eFapsListMenuGoInto img:hover
+.eFapsListMenuRemove img:hover,.eFapsListCollapse img:hover,.eFapsListMenuGoInto img:hover
   {
   border: 1px solid #fff;
 }
@@ -58,6 +64,7 @@ img.eFapsListMenuIcon {
   padding-left: 1px;
 }
 
-.eFapsListCollapse,.eFapsListMenuClose,.eFapsListMenuGoInto {
+.eFapsListCollapse,.eFapsListMenuRemove,.eFapsListMenuGoInto,.eFapsListCollapseSelected,.eFapsListMenuRemoveSelected,.eFapsListMenuGoIntoSelected
+  {
   width: 1%;
 }

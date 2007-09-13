@@ -27,24 +27,22 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.model.Model;
 
 import org.efaps.webapp.components.listmenu.ListMenuPanel.Rows;
+import org.efaps.webapp.components.listmenu.ListMenuPanel.StyleClassName;
 import org.efaps.webapp.models.MenuItemModel;
 
 /**
  * @author jmo
  * @version $Id$
  */
-public class ListMenuGoIntoLinkComponent extends AjaxLink {
+public class AjaxGoIntoLink extends AbstractAjaxLink {
 
   private static final long serialVersionUID = 1L;
 
-  public ListMenuGoIntoLinkComponent(final String _id,
-                                     final MenuItemModel _model) {
+  public AjaxGoIntoLink(final String _id, final MenuItemModel _model) {
     super(_id, _model);
-
   }
 
   @Override
@@ -67,12 +65,12 @@ public class ListMenuGoIntoLinkComponent extends AjaxLink {
     }
 
     MenuItemModel model = (MenuItemModel) listmenupanel.getModel();
-    model.previouslevel = model.getLevel();
+    model.setPreviouslevel(model.getLevel());
     model.setLevel(0);
     for (Object child : model.getChilds()) {
       if (child instanceof MenuItemModel) {
         MenuItemModel item = (MenuItemModel) child;
-        item.previouslevel = item.getLevel();
+        item.setPreviouslevel(item.getLevel());
         item.setLevel(0);
       }
     }
@@ -120,5 +118,15 @@ public class ListMenuGoIntoLinkComponent extends AjaxLink {
     }
 
     return model;
+  }
+
+  @Override
+  public StyleClassName getSelectedStyleClass() {
+    return StyleClassName.GOINTO_SELECTED;
+  }
+
+  @Override
+  public StyleClassName getStyleClass() {
+    return StyleClassName.GOINTO;
   }
 }

@@ -24,49 +24,57 @@ import java.util.Iterator;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.listmenu.ListMenuPanel.Rows;
+import org.efaps.webapp.components.listmenu.ListMenuPanel.StyleClassName;
 import org.efaps.webapp.models.MenuItemModel;
 
 /**
+ * This class renders a Link wich is used to collapse and expand the ChildItems
+ * of a Header inside a ListMenu.
+ *
  * @author jmo
- * @version $Id: ListMenuCollapseLinkComponent.java 1322 2007-09-04 19:01:16Z
- *          jmo $
+ * @version $Id$
  */
-public class ListMenuCollapseLinkComponent extends AjaxLink {
+public class AjaxCollapseLink extends AbstractAjaxLink {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * This instance Variable stores, if the the childs of the Header should be
+   * visible or invisible. With this it information the childs will be collapsed
+   * or expanded.
+   */
   private boolean visible = false;
 
   /**
-   * @param id
+   * Constructor setting the id and the Model for this Component
+   *
+   * @param _id
+   * @param _model
    */
-  public ListMenuCollapseLinkComponent(String id, final IModel _model) {
-    super(id, _model);
+  public AjaxCollapseLink(final String _id, final MenuItemModel _model) {
+    super(_id, _model);
   }
 
   @Override
   protected void onComponentTag(ComponentTag tag) {
     super.onComponentTag(tag);
     MenuItemModel model = (MenuItemModel) super.getModel();
-    if (model.hasChilds() && (this.findParent(ListItem.class) != null)) {
+    if (model.isHeader() && (this.findParent(ListItem.class) != null)) {
       int padding =
           model.getLevel()
               * ((ListMenuPanel) this.findParent(ListMenuPanel.class))
                   .getPadding();
       tag.put("style", "padding-left:" + padding + "px;");
-
     }
   }
 
   @Override
-  public void onClick(AjaxRequestTarget _target) {
+  public void onClick(final AjaxRequestTarget _target) {
 
     Rows rows = (Rows) this.findParent(Rows.class);
     ListItem item = (ListItem) this.findParent(ListItem.class);
@@ -75,7 +83,6 @@ public class ListMenuCollapseLinkComponent extends AjaxLink {
 
     while (it.hasNext()) {
       Component child = (Component) it.next();
-
       if (child.equals(item)) {
         Component image = (Component) this.iterator().next();
         if (image instanceof Image) {
@@ -83,7 +90,6 @@ public class ListMenuCollapseLinkComponent extends AjaxLink {
               .setImageResourceReference(this.visible ? ListMenuPanel.ICON_SUBMENUCLOSE
                   : ListMenuPanel.ICON_SUBMENUOPEN);
         }
-
         mark = true;
       } else if (mark) {
         if (child.getModelObject() instanceof MenuItemModel) {
@@ -95,5 +101,15 @@ public class ListMenuCollapseLinkComponent extends AjaxLink {
     }
     this.visible = !this.visible;
     _target.addComponent(rows.getParent());
+  }
+
+  @Override
+  public StyleClassName getSelectedStyleClass() {
+    return StyleClassName.COLLAPSE_SELECTED;
+  }
+
+  @Override
+  public StyleClassName getStyleClass() {
+    return StyleClassName.COLLAPSE;
   }
 }

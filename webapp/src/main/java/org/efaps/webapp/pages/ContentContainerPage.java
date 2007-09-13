@@ -92,8 +92,9 @@ public class ContentContainerPage extends WebPage implements
     DojoSimpleContainer containerlinks =
         new DojoSimpleContainer("splitleft", "Menu");
     parentcontainer.add(containerlinks);
-    containerlinks
-        .add(new ListMenuPanel("splitleftmenu", LISTMENU, _parameters));
+
+    containerlinks.add(new ListMenuPanel("splitleftmenu", LISTMENU,
+        _parameters, true));
 
     DojoSimpleContainer containerrechts =
         new DojoSimpleContainer("splitright", "Content");

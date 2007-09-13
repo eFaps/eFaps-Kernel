@@ -32,30 +32,31 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.EFapsSession;
+import org.efaps.webapp.components.listmenu.ListMenuPanel.StyleClassName;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.ContentContainerPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
 /**
+ * This class renders the Link wich is followed when a ListMenuItem is clicked.<br>
+ * In this class the Style of the Links, are also set.
+ *
  * @author jmo
  * @version $Id$
  */
-public class ListMenuLinkComponent extends WebMarkupContainer {
+public class ListMenuAjaxLinkContainer extends WebMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
   private final String menukey;
 
-  private String defaultStyleClass;
+  private StyleClassName defaultStyleClass;
 
-  private boolean isInit;
-
-  public ListMenuLinkComponent(final String _id, final String _menukey,
-                               final IModel _model) {
+  public ListMenuAjaxLinkContainer(final String _id, final String _menukey,
+                                   final IModel _model) {
     super(_id, _model);
     this.menukey = _menukey;
-    this.isInit = true;
     this.add(new AjaxClickBehaviour());
   }
 
@@ -64,23 +65,21 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
     super.onComponentTag(tag);
     MenuItemModel model = (MenuItemModel) super.getModel();
 
-    if (model.hasChilds() && (this.findParent(ListItem.class) != null)) {
-      this.defaultStyleClass = "eFapsListMenuHeader";
-      if (this.isInit) {
-        ((EFapsSession) this.getSession()).setIntoCache(this.menukey, this);
-        tag.put("class", "eFapsListMenuSelected");
+    if (model.isHeader() && (this.findParent(ListItem.class) != null)) {
+      this.defaultStyleClass = StyleClassName.HEADER;
 
+      if (model.isSelected()) {
+        ((EFapsSession) this.getSession()).setIntoCache(this.menukey, this);
+        tag.put("class", StyleClassName.ITEM_SELECTED.name);
         ListMenuPanel parentListMenuPanel =
             (ListMenuPanel) this.findParent(ListMenuPanel.class);
-        parentListMenuPanel.setHeaderComponent(this);
-        this.isInit = false;
+        parentListMenuPanel.addHeaderComponent(this);
       } else {
         if (this.equals(((EFapsSession) this.getSession())
             .getFromCache(this.menukey))) {
-          tag.put("class", "eFapsListMenuSelected");
+          tag.put("class", StyleClassName.ITEM_SELECTED.name);
         } else {
-
-          tag.put("class", "eFapsListMenuHeader");
+          tag.put("class", StyleClassName.HEADER.name);
         }
       }
     } else {
@@ -92,13 +91,13 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
               + listmenupanel.getPaddingAdd();
 
       tag.put("style", "padding-left:" + padding + "px;");
-      tag.put("class", "eFapsListMenuItem");
-      this.defaultStyleClass = "eFapsListMenuItem";
+      tag.put("class", StyleClassName.ITEM.name);
+      this.defaultStyleClass = StyleClassName.ITEM;
     }
 
   }
 
-  public String getDefaultStyleClass() {
+  public StyleClassName getDefaultStyleClass() {
     return this.defaultStyleClass;
   }
 
@@ -118,7 +117,6 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
     @Override
     public String getCallbackScript() {
       return super.getCallbackScript().toString();
-
     }
 
     @Override
@@ -150,9 +148,20 @@ public class ListMenuLinkComponent extends WebMarkupContainer {
 
       component.replaceWith(page);
       _target.addComponent(page.getParent());
-      ListMenuUpdate.setSelectedItem(ListMenuLinkComponent.this.menukey, this
-          .getComponent(), _target);
+      ListMenuUpdate.setSelectedItem(ListMenuAjaxLinkContainer.this.menukey,
+          this.getComponent(), _target);
 
     }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.Component#onAfterRender()
+   */
+  @Override
+  protected void onAfterRender() {
+    super.onAfterRender();
+    ((MenuItemModel) super.getModel()).setSelected(false);
   }
 }

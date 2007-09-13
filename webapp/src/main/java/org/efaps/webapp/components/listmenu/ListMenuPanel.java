@@ -60,28 +60,52 @@ public class ListMenuPanel extends DojoPanelContainer {
   public static final ResourceReference ICON_SUBMENUCLOSE =
       new ResourceReference(ListMenuPanel.class, "eFapsSubMenuClose.gif");
 
+  public enum StyleClassName {
+    COLLAPSE("eFapsListCollapse"),
+    COLLAPSE_SELECTED("eFapsListCollapseSelected"),
+    GOINTO("eFapsListMenuGoInto"),
+    GOINTO_SELECTED("eFapsListMenuGoIntoSelected"),
+    GOUP("eFapsListMenuGoUp"),
+    GOUP_SELECTED("eFapsListMenuGoUpSelected"),
+    HEADER("eFapsListMenuHeader"),
+    ITEM("eFapsListMenuItem"),
+    ITEM_SELECTED("eFapsListMenuItemSelected"),
+    REMOVE("eFapsListMenuRemove"),
+    REMOVE_SELECTED("eFapsListMenuRemoveSelected");
+
+    public final String name;
+
+    private StyleClassName(final String _name) {
+      this.name = _name;
+    }
+
+  }
+
   /**
    * this Instancevariable holds the key wich is used to retrieve a item of this
    * ListMenuPanel from the Map in the Session
    * {@link #org.efaps.webapp.EFapsSession}
    */
-  private final String menukey;
+  private final String menuKey;
 
   private final int padding = 10;
 
-  private Component header;
+  private final List<Component> headerComponents = new ArrayList<Component>();
 
   private final int paddingAdd = 18;
 
   public ListMenuPanel(final String _id, final String _menukey,
-                       final PageParameters _parameters) {
-    this(_id, _menukey, _parameters, 0);
+                       final PageParameters _parameters,
+                       final boolean _setHeaderAsSelected) {
+    this(_id, _menukey, _parameters, _setHeaderAsSelected, 0);
+
   }
 
   public ListMenuPanel(final String _id, final String _menukey,
-                       final PageParameters _parameters, final int _level) {
+                       final PageParameters _parameters,
+                       final boolean _setHeaderAsSelected, final int _level) {
     super(_id, "noTitel");
-    this.menukey = _menukey;
+    this.menuKey = _menukey;
     setVersioned(false);
     add(HeaderContributor.forCss(getClass(), "ListMenuPanel.css"));
     try {
@@ -91,37 +115,29 @@ public class ListMenuPanel extends DojoPanelContainer {
               _parameters.getString("oid"));
       this.setModel(model);
       model.setLevel(_level);
+      model.setHeader(true);
+      if (_setHeaderAsSelected) {
+        model.setSelected(true);
+      }
       List<Object> menu = new ArrayList<Object>();
       menu.add(model);
-      menu.add(model.getChilds());
-
-      for (MenuItemModel item : model.getChilds()) {
-        item.setLevel(_level);
+      if (model.hasChilds()) {
+        menu.add(model.getChilds());
+        for (MenuItemModel item : model.getChilds()) {
+          item.setLevel(_level);
+        }
       }
       add(new Rows("rows", _menukey, menu, model));
 
     } catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
-  }
-
-  public String getMenuKey() {
-    return this.menukey;
-  }
-
-  public int getPadding() {
-    return this.padding;
-  }
-
-  public int getPaddingAdd() {
-    return this.paddingAdd;
   }
 
   public ListMenuPanel(final String _id, final String _menukey,
                        final List<?> _modelObject, IModel _model) {
     super(_id, "noTitel");
-    this.menukey = _menukey;
+    this.menuKey = _menukey;
     this.setModel(_model);
     setVersioned(false);
     add(new Rows("rows", _menukey, _modelObject, _model));
@@ -130,13 +146,65 @@ public class ListMenuPanel extends DojoPanelContainer {
 
   public ListMenuPanel(String _id, String _menukey) {
     super(_id, "noTitel");
-    this.menukey = _menukey;
+    this.menuKey = _menukey;
+  }
+
+  /**
+   * This is the getter method for the instance variable
+   * {@link #headerComponents}.
+   *
+   * @return value of instance variable {@link #headerComponent}
+   */
+
+  public List<Component> getHeaderComponents() {
+    return this.headerComponents;
+  }
+
+  /**
+   * This is the setter method for the instance variable
+   * {@link #headerComponent}.
+   *
+   * @param headerComponent
+   *                the headerComponent to set
+   */
+  public void addHeaderComponent(final Component _headerComponent) {
+    this.headerComponents.add(_headerComponent);
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #menuKey}.
+   *
+   * @return value of instance variable {@link #menuKey}
+   */
+
+  public String getMenuKey() {
+    return this.menuKey;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #padding}.
+   *
+   * @return value of instance variable {@link #padding}
+   */
+
+  public int getPadding() {
+    return this.padding;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #paddingAdd}.
+   *
+   * @return value of instance variable {@link #paddingAdd}
+   */
+
+  public int getPaddingAdd() {
+    return this.paddingAdd;
   }
 
   /**
    * The list class.
    */
-  public static class Rows extends ListView {
+  public class Rows extends ListView {
 
     private static final long serialVersionUID = 1L;
 
@@ -187,64 +255,54 @@ public class ListMenuPanel extends DojoPanelContainer {
         WebMarkupContainer row = new WebMarkupContainer("row");
         MenuItemModel model = (MenuItemModel) modelObject;
 
-        ListMenuLinkComponent link =
-            new ListMenuLinkComponent("link", this.menukey, model);
-        link.add(new Label("label", model.getLabel()));
+        ListMenuAjaxLinkContainer link =
+            new ListMenuAjaxLinkContainer("link", this.menukey, model);
+        link.add(new Label("link_label", model.getLabel()));
 
         link.setOutputMarkupId(true);
         row.add(link);
-        if (model.hasChilds()) {
+        if (model.isHeader()) {
           String imageUrl = model.getImage();
           if (imageUrl == null) {
             imageUrl = model.getTypeImage();
           }
           if (imageUrl != null) {
-            link.add(new StaticImageComponent("icon", new Model(imageUrl)));
+            link
+                .add(new StaticImageComponent("link_icon", new Model(imageUrl)));
           } else {
-            link.add(new WebMarkupContainer("icon").setVisible(false));
+            link.add(new WebMarkupContainer("link_icon").setVisible(false));
           }
           if (model.getAncestor() != null) {
-            row.add(new ListMenuGoUpLinkComponent("gouplink", model));
+            row.add(new AjaxGoUpLink("gouplink", model));
           } else {
             row.add(new WebMarkupContainer("gouplink").setVisible(false));
           }
         } else {
-          link.add(new WebMarkupContainer("icon").setVisible(false));
+          link.add(new WebMarkupContainer("link_icon").setVisible(false));
           row.add(new WebMarkupContainer("gouplink").setVisible(false));
         }
 
-        if (model.hasChilds() && this.findParent(ListItem.class) != null) {
-          ListMenuRemoveLinkComponent remove =
-              new ListMenuRemoveLinkComponent("removelink", model);
-          remove.add(new Image("iconremove", ICON_SUBMENUREMOVE));
+        if (model.isHeader() && this.findParent(ListItem.class) != null) {
+          AjaxRemoveLink remove = new AjaxRemoveLink("removelink", model);
+          remove.add(new Image("removelink_icon", ICON_SUBMENUREMOVE));
           row.add(remove);
-          ListMenuGoIntoLinkComponent gointo =
-              new ListMenuGoIntoLinkComponent("gointolink", model);
-          gointo.add(new Image("icongointo", ICON_SUBMENUGOINTO));
+          AjaxGoIntoLink gointo = new AjaxGoIntoLink("gointolink", model);
+          gointo.add(new Image("gointolink_icon", ICON_SUBMENUGOINTO));
           row.add(gointo);
-          ListMenuCollapseLinkComponent collapse =
-              new ListMenuCollapseLinkComponent("collapse", model);
-          collapse.add(new Image("iconcollapse", ICON_SUBMENUCLOSE));
+          AjaxCollapseLink collapse =
+              new AjaxCollapseLink("collapselink", model);
+          collapse.add(new Image("collapselink_icon", ICON_SUBMENUCLOSE));
           row.add(collapse);
 
         } else {
           row.add(new WebMarkupContainer("removelink").setVisible(false));
           row.add(new WebMarkupContainer("gointolink").setVisible(false));
-          row.add(new WebMarkupContainer("collapse").setVisible(false));
+          row.add(new WebMarkupContainer("collapselink").setVisible(false));
         }
         _listItem.add(row);
       }
 
     }
-  }
-
-  public void setHeaderComponent(Component _header) {
-    this.header = _header;
-
-  }
-
-  public Component getHeaderComponent() {
-    return this.header;
   }
 
 }
