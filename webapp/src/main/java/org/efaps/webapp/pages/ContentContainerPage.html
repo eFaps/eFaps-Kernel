@@ -30,7 +30,13 @@
 <body>
   <div wicket:id="split" class="split">
       <div wicket:id="splitleft" sizeMin="20" sizeShare="20">
-        <div wicket:id="splitleftmenu" id="eFapsListMenu"></div>
+        <div class="eFapsListMenuOverflow">
+          <table class="eFapsListMenuWidthTable">
+            <tr><td>
+            <div wicket:id="splitleftmenu" id="eFapsListMenu"></div>
+            </td></tr>
+          </table>
+        </div>
       </div>
       <div wicket:id="splitright"  sizeMin="20" sizeShare="80" >
           <span wicket:id="splitrightact">

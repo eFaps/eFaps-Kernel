@@ -7,12 +7,6 @@
   white-space: nowrap;
 }
 
-.eFapsListMenuHeader:hover,.eFapsListMenuTable:hover,.eFapsListMenuItem:hover {
-  background-color: #96d265;
-  cursor: pointer;
-  color: #FFF;
-}
-
 .eFapsListMenuTable {
   background-color: #d0edb8;
   width: 100%;
@@ -21,10 +15,17 @@
   height: 18px;
 }
 
+.eFapsListMenuHeader:hover,.eFapsListMenuTable:hover,.eFapsListMenuItem:hover {
+  background-color: #96d265;
+  cursor: pointer;
+  color: #FFF;
+}
+
 .eFapsListMenuItem,.eFapsListMenuHeader {
   color: #008800;
   text-decoration: none;
   vertical-align: middle;
+  padding-right: 2px;
 }
 
 .eFapsListMenuHeader {
@@ -35,9 +36,21 @@
   background-color: #008800;
   color: #FFF;
   font-weight: bold;
+  padding-right: 2px;
 }
 
-.eFapsListMenuRemoveSelected,.eFapsListCollapseSelected,.eFapsListMenuGoIntoSelected,.eFapsListMenuGoUpSelected
+.eFapsListMenuRemove {
+  width: 1%;
+  padding-right: 2px;
+}
+
+.eFapsListMenuRemoveSelected {
+  background-color: #008800;
+  width: 1%;
+  padding-right: 2px;
+}
+
+.eFapsListCollapseSelected,.eFapsListMenuGoIntoSelected,.eFapsListMenuGoUpSelected
   {
   background-color: #008800;
   width: 1%;
@@ -50,6 +63,7 @@
 .eFapsListMenuRemove img,.eFapsListMenuGoInto img,.eFapsListMenuRemoveSelected img,.eFapsListMenuGoIntoSelected img,.eFapsListMenuGoUp img,.eFapsListMenuGoUpSelected img
   {
   vertical-align: middle;
+  border: 1px solid transparent;
 }
 
 .eFapsListMenuRemove img:hover,.eFapsListMenuRemoveSelected img:hover,.eFapsListCollapse img:hover,.eFapsListMenuGoInto img:hover,.eFapsListMenuGoIntoSelected img:hover,.eFapsListMenuGoUp img:hover,.eFapsListMenuGoUpSelected img:hover
