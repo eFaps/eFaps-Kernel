@@ -37,21 +37,22 @@
   font-weight: bold;
 }
 
-.eFapsListMenuRemoveSelected,.eFapsListCollapseSelected,.eFapsListMenuGoIntoSelected
+.eFapsListMenuRemoveSelected,.eFapsListCollapseSelected,.eFapsListMenuGoIntoSelected,.eFapsListMenuGoUpSelected
   {
   background-color: #008800;
+  width: 1%;
 }
 
 .eFapsListMenuClose,.eFapsListMenuGoInto {
   text-align: center;
 }
 
-.eFapsListMenuRemove img,.eFapsListMenuGoInto img,.eFapsListMenuRemoveSelected img,.eFapsListMenuGoIntoSelected img
+.eFapsListMenuRemove img,.eFapsListMenuGoInto img,.eFapsListMenuRemoveSelected img,.eFapsListMenuGoIntoSelected img,.eFapsListMenuGoUp img,.eFapsListMenuGoUpSelected img
   {
   vertical-align: middle;
 }
 
-.eFapsListMenuRemove img:hover,.eFapsListCollapse img:hover,.eFapsListMenuGoInto img:hover
+.eFapsListMenuRemove img:hover,.eFapsListMenuRemoveSelected img:hover,.eFapsListCollapse img:hover,.eFapsListMenuGoInto img:hover,.eFapsListMenuGoIntoSelected img:hover,.eFapsListMenuGoUp img:hover,.eFapsListMenuGoUpSelected img:hover
   {
   border: 1px solid #fff;
 }
@@ -64,7 +65,7 @@ img.eFapsListMenuIcon {
   padding-left: 1px;
 }
 
-.eFapsListCollapse,.eFapsListMenuRemove,.eFapsListMenuGoInto,.eFapsListCollapseSelected,.eFapsListMenuRemoveSelected,.eFapsListMenuGoIntoSelected
+.eFapsListCollapse,.eFapsListMenuRemove,.eFapsListMenuGoInto,.eFapsListMenuGoUp
   {
   width: 1%;
 }

@@ -76,8 +76,6 @@ public class MenuItemModel extends Model {
 
   private int level = 0;
 
-  private int previouslevel = 0;
-
   private IModel ancestor;
 
   private boolean header = false;
@@ -95,8 +93,8 @@ public class MenuItemModel extends Model {
     this(Menu.get(_uuid), _oid);
   }
 
-  protected MenuItemModel(final CommandAbstract _command, String _oid)
-                                                                      throws Exception {
+  public MenuItemModel(final CommandAbstract _command, String _oid)
+                                                                   throws Exception {
     this.image = _command.getIcon();
     this.reference = _command.getReference();
     this.target = _command.getTarget();
@@ -240,16 +238,6 @@ public class MenuItemModel extends Model {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #previouslevel}.
-   *
-   * @return value of instance variable {@link #previouslevel}
-   */
-
-  public int getPreviouslevel() {
-    return this.previouslevel;
-  }
-
-  /**
    * This is the getter method for the instance variable {@link #description}.
    *
    * @return value of instance variable {@link #description}
@@ -257,16 +245,6 @@ public class MenuItemModel extends Model {
 
   public String getDescription() {
     return this.description;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #previouslevel}.
-   *
-   * @param previouslevel
-   *                the previouslevel to set
-   */
-  public void setPreviouslevel(int previouslevel) {
-    this.previouslevel = previouslevel;
   }
 
   /**

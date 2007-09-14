@@ -72,12 +72,10 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
     public SubmitAndUpdateBehavior(final Form _form) {
       super(_form, "onClick");
       this.form = _form;
-
     }
 
     @Override
     protected void onSubmit(final AjaxRequestTarget _target) {
-
       CommandAbstract command =
           ((MenuItemModel) super.getComponent().getModel()).getCommand();
       Map<?, ?> para = this.form.getRequest().getParameterMap();
@@ -86,15 +84,12 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
         try {
           String[] oids = (String[]) para.get("selectedRow");
           if (oids != null) {
-
             command.executeEvents(EventType.UI_COMMAND_EXECUTE,
                 ParameterValues.OTHERS, oids);
-
           } else {
             command.executeEvents(EventType.UI_COMMAND_EXECUTE);
           }
         } catch (EFapsException e) {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         }
       }

@@ -20,13 +20,28 @@
 
 package org.efaps.webapp.components.listmenu;
 
+import java.util.List;
+
+import org.apache.wicket.PageMap;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.listmenu.ListMenuPanel.Rows;
 import org.efaps.webapp.components.listmenu.ListMenuPanel.StyleClassName;
 import org.efaps.webapp.models.MenuItemModel;
+import org.efaps.webapp.pages.ContentContainerPage;
+import org.efaps.webapp.pages.WebFormPage;
+import org.efaps.webapp.pages.WebTablePage;
 
+/**
+ * @author jmo
+ * @version $Id$
+ *
+ */
 public class AjaxGoUpLink extends AbstractAjaxLink {
 
   private static final long serialVersionUID = 1L;
@@ -39,15 +54,40 @@ public class AjaxGoUpLink extends AbstractAjaxLink {
   public void onClick(final AjaxRequestTarget _target) {
     ListMenuPanel listmenupanel =
         (ListMenuPanel) this.findParent(ListMenuPanel.class);
+    ((EFapsSession) this.getSession()).removeFromCache(listmenupanel
+        .getMenuKey());
+
+    // update the Content
+    MenuItemModel model = (MenuItemModel) super.getModel();
+    MenuItemModel rootModel =
+        (MenuItemModel) ((List<?>) model.getAncestor().getObject()).get(0);
+    CommandAbstract cmd = rootModel.getCommand();
+    PageParameters para = new PageParameters();
+    para.add("oid", rootModel.getOid());
+    para.add("command", cmd.getUUID().toString());
+
+    InlineFrame page;
+    if (cmd.getTargetTable() != null) {
+      page =
+          new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+              .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+              WebTablePage.class, para);
+    } else {
+      page =
+          new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+              .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+              WebFormPage.class, para);
+    }
+
+    InlineFrame component =
+        (InlineFrame) getPage().get(
+            ((ContentContainerPage) getPage()).getInlinePath());
+    page.setOutputMarkupId(true);
+
+    component.replaceWith(page);
+    _target.addComponent(page.getParent());
 
     Rows row = (Rows) this.findParent(Rows.class);
-    MenuItemModel model = (MenuItemModel) this.getModel();
-
-    model.setLevel(model.getPreviouslevel());
-
-    for (MenuItemModel item : model.getChilds()) {
-      item.setLevel(item.getPreviouslevel());
-    }
 
     row.removeAll();
 

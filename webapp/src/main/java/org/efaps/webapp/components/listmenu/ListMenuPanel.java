@@ -60,6 +60,9 @@ public class ListMenuPanel extends DojoPanelContainer {
   public static final ResourceReference ICON_SUBMENUCLOSE =
       new ResourceReference(ListMenuPanel.class, "eFapsSubMenuClose.gif");
 
+  public static final ResourceReference ICON_SUBMENUGOUP =
+      new ResourceReference(ListMenuPanel.class, "eFapsSubMenuGoUp.gif");
+
   public enum StyleClassName {
     COLLAPSE("eFapsListCollapse"),
     COLLAPSE_SELECTED("eFapsListCollapseSelected"),
@@ -273,9 +276,14 @@ public class ListMenuPanel extends DojoPanelContainer {
             link.add(new WebMarkupContainer("link_icon").setVisible(false));
           }
           if (model.getAncestor() != null) {
-            row.add(new AjaxGoUpLink("gouplink", model));
+            AjaxGoUpLink goup = new AjaxGoUpLink("gouplink", model);
+            row.add(goup);
+            goup.add(
+            new Image("gouplink_icon", ICON_SUBMENUGOUP));
           } else {
             row.add(new WebMarkupContainer("gouplink").setVisible(false));
+
+
           }
         } else {
           link.add(new WebMarkupContainer("link_icon").setVisible(false));
