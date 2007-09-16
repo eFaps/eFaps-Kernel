@@ -26,7 +26,6 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.components.FormContainer;
-import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.models.SearchItemModel;
@@ -38,9 +37,6 @@ import org.efaps.webapp.models.SearchItemModel;
 public class MenuPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
-
-  private final ModalWindowContainer modal =
-      new ModalWindowContainer("eFapsModal");
 
   public MenuPanel(final String _id, IModel _model) {
     this(_id, _model, null);
@@ -70,19 +66,9 @@ public class MenuPanel extends Panel {
           add(new WebMarkupContainer("eFapsMenu"));
         }
       } catch (Exception e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
 
     }
-
-    add(this.modal);
-    this.modal.setPageMapName("modal");
-
   }
-
-  public final ModalWindowContainer getModal() {
-    return this.modal;
-  }
-
 }

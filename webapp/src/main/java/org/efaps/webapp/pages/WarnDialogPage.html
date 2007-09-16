@@ -1,3 +1,6 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
 <!--
  
   Copyright 2003-2007 The eFaps Team
@@ -21,8 +24,14 @@
  
 -->
 
-<html xmlns:wicket>
-<wicket:panel>
-	<div wicket:id="eFapsMenu" id="eFapsMenu" class="eFapsMenu"></div>
-</wicket:panel>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <link wicket:id="css" rel="stylesheet" type="text/css" href="warndialogpage/WarnDialogPage.css"/>
+  </head>
+  <body>
+    <div class="eFapsWarnDialog">
+      <span wicket:id="label"></span><br/><br/>
+      <button wicket:id="button"> <span wicket:id="buttonlabel"></span></button>
+    </div>
+  </body>  
 </html>

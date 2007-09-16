@@ -55,6 +55,7 @@ public class FormCellPanel extends Panel {
     if (cellmodel.isRequired()) {
       labelcontainer.add(new SimpleAttributeModifier("class",
           "eFapsFormLabelRequired"));
+      labelcontainer.setOutputMarkupId(true);
     } else {
       labelcontainer
           .add(new SimpleAttributeModifier("class", "eFapsFormLabel"));

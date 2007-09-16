@@ -2,7 +2,7 @@
   position: absolute;
   width: 100%;
   top: 50px;
-  bottom:0px;
+  bottom: 0px;
   overflow: auto;
 }
 
@@ -35,4 +35,12 @@ td.eFapsFormLabelRequired {
 td.eFapsFormInputField {
   background-color: #eeeeee;
   font-size: 12px;
+}
+
+td.eFapsFormLabelRequiredForce {
+  background-color: red;
+  color: black;
+  font-weight: bold;
+  height: 24px;
+  font-style: italic
 }

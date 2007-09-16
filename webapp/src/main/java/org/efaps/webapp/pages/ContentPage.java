@@ -45,6 +45,8 @@ public abstract class ContentPage extends WebPage implements
 
   private final ModalWindowContainer modalWindow;
 
+  private final ModalWindowContainer modal = new ModalWindowContainer("modal");
+
   public ContentPage(final IModel _model) {
     this(_model, null);
   }
@@ -66,6 +68,10 @@ public abstract class ContentPage extends WebPage implements
     try {
       add(new StyleSheetReference("css", getClass(),
           "contentpage/ContentPage.css"));
+
+      add(this.modal);
+      this.modal.setPageMapName("modal");
+
       AbstractModel model = (AbstractModel) super.getModel();
       add(new TitelPanel("titel", model.getTitle()));
 
@@ -83,5 +89,9 @@ public abstract class ContentPage extends WebPage implements
 
       e.printStackTrace();
     }
+  }
+
+  public final ModalWindowContainer getModal() {
+    return this.modal;
   }
 }

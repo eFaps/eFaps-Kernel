@@ -196,14 +196,14 @@ public class FormModel extends AbstractModel {
             FormCellModel cell =
                 new FormCellModel(oid, strValue, icon,
                     super.isEditMode() ? field.isRequired() : false, label,
-                    field.getReference(), field.getTarget());
+                    field.getReference(), field.getTarget(), field.getName());
             row.add(cell);
           } else if (strValue != null && !strValue.equals("")) {
             FormCellModel cell =
                 new FormCellModel(oid, strValue, icon,
                     super.isSearchMode() ? false : field.isRequired(), label,
                     super.isSearchMode() ? null : field.getReference(), field
-                        .getTarget());
+                        .getTarget(), field.getName());
             row.add(cell);
           }
 
@@ -261,14 +261,16 @@ public class FormModel extends AbstractModel {
 
     private final boolean required;
 
+    private final String name;
+
     public FormCellModel(final String _oid, final String _cellValue,
                          final String _icon, final boolean _required,
                          final String _label, final String _reference,
-                         final int _target) {
+                         final int _target, final String _name) {
       super(_oid, _reference, _cellValue, _icon, _target);
       this.required = _required;
       this.cellLabel = DBProperties.getProperty(_label);
-
+      this.name = _name;
     }
 
     public boolean isRequired() {
@@ -277,6 +279,16 @@ public class FormModel extends AbstractModel {
 
     public String getCellLabel() {
       return this.cellLabel;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #name}.
+     *
+     * @return value of instance variable {@link #name}
+     */
+
+    public String getName() {
+      return this.name;
     }
 
   }

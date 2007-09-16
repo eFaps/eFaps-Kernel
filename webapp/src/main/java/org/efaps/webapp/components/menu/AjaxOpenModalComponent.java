@@ -43,7 +43,9 @@ import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 
 import org.efaps.webapp.components.modalwindow.ModalWindowAjaxPageCreator;
+import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.MenuItemModel;
+import org.efaps.webapp.pages.ContentPage;
 
 /**
  * @author jmo
@@ -53,12 +55,12 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
 
   private static final long serialVersionUID = 1L;
 
-  public AjaxOpenModalComponent(final String _id,
-                                    final MenuItemModel _menuItem) {
+  public AjaxOpenModalComponent(final String _id, final MenuItemModel _menuItem) {
     super(_id, _menuItem);
     this.add(new AjaxOpenModalBehaviour());
   }
 
+  @Override
   public String getJavaScript() {
     return ((AjaxOpenModalBehaviour) super.getBehaviors().get(0))
         .getJavaScript();
@@ -79,13 +81,13 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
 
     @Override
     protected void onEvent(final AjaxRequestTarget _target) {
-      MenuPanel menupanel =
-          (MenuPanel) super.getComponent().findParent(MenuPanel.class);
+      ModalWindowContainer modal =
+          ((ContentPage) super.getComponent().getPage()).getModal();
       ModalWindowAjaxPageCreator pageCreator =
           new ModalWindowAjaxPageCreator((MenuItemModel) super.getComponent()
-              .getModel(), menupanel.getModal());
-      menupanel.getModal().setPageCreator(pageCreator);
-      menupanel.getModal().show(_target);
+              .getModel(), modal);
+      modal.setPageCreator(pageCreator);
+      modal.show(_target);
 
     }
   }

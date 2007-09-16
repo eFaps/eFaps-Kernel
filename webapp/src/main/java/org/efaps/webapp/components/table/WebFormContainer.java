@@ -20,7 +20,9 @@
 
 package org.efaps.webapp.components.table;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -43,6 +45,9 @@ public class WebFormContainer extends WebMarkupContainer {
   private static final long serialVersionUID = 1550111712776698728L;
 
   private static String ROWID = "eFapsRow";
+
+  private final List<FormCellPanel> requiredComponents =
+      new ArrayList<FormCellPanel>();
 
   public WebFormContainer(String id, IModel model, final Page _page) {
     super(id, model);
@@ -68,7 +73,10 @@ public class WebFormContainer extends WebMarkupContainer {
                   ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
                       .getPageMapName()));
           row.add(formcellpanel);
-
+          if (cellmodel.isRequired()
+              && (model.isCreateMode() || model.isEditMode())) {
+            this.requiredComponents.add(formcellpanel);
+          }
           j++;
         }
 
@@ -91,6 +99,17 @@ public class WebFormContainer extends WebMarkupContainer {
       child.render(getMarkupStream());
     }
 
+  }
+
+  /**
+   * This is the getter method for the instance variable
+   * {@link #requiredComponents}.
+   *
+   * @return value of instance variable {@link #requiredComponents}
+   */
+
+  public List<FormCellPanel> getRequiredComponents() {
+    return this.requiredComponents;
   }
 
 }

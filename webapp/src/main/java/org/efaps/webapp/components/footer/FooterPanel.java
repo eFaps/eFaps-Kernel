@@ -20,6 +20,10 @@
 
 package org.efaps.webapp.components.footer;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
@@ -27,6 +31,8 @@ import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -42,9 +48,14 @@ import org.efaps.util.EFapsException;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
+import org.efaps.webapp.components.table.WebFormContainer;
+import org.efaps.webapp.components.table.cell.formcell.FormCellPanel;
 import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.TableModel;
+import org.efaps.webapp.models.FormModel.FormCellModel;
+import org.efaps.webapp.pages.ContentPage;
 import org.efaps.webapp.pages.MainPage;
+import org.efaps.webapp.pages.WarnDialogPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
@@ -95,7 +106,6 @@ public class FooterPanel extends Panel {
     } else if (model.isSearchMode() && model.getCallingCommandUUID() != null) {
       createEditSearchLink =
           new SearchSubmitLink("createeditsearch", model, _form);
-
     } else {
       createEditSearchLink =
           (WebMarkupContainer) new WebMarkupContainer("createeditsearch")
@@ -155,32 +165,95 @@ public class FooterPanel extends Panel {
       String[] other =
           this.getComponent().getRequestCycle().getRequest().getParameters(
               "selectedRow");
+      if (checkForRequired(_target)) {
+        ((AbstractModel) this.form.getParent().getModel()).executeEvents(other);
 
-      ((AbstractModel) this.form.getParent().getModel()).executeEvents(other);
+        AbstractModel model = (AbstractModel) this.imodel;
 
-      AbstractModel model = (AbstractModel) this.imodel;
-
-      if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
-        FooterPanel.this.modalWindow.setReloadParent(true);
-        FooterPanel.this.modalWindow.close(_target);
-      } else {
-        AbstractModel openermodel =
-            (AbstractModel) ((EFapsSession) Session.get()).getOpenerModel();
-        Class<?> clazz;
-        if (openermodel instanceof TableModel) {
-          clazz = WebTablePage.class;
+        if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
+          FooterPanel.this.modalWindow.setReloadParent(true);
+          FooterPanel.this.modalWindow.close(_target);
         } else {
-          clazz = WebFormPage.class;
-        }
-        CharSequence url =
-            this.form.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-                clazz, openermodel.getPageParameters());
-        _target.appendJavascript("opener.location.href = '"
-            + url
-            + "'; self.close();");
+          AbstractModel openermodel =
+              (AbstractModel) ((EFapsSession) Session.get()).getOpenerModel();
+          Class<?> clazz;
+          if (openermodel instanceof TableModel) {
+            clazz = WebTablePage.class;
+          } else {
+            clazz = WebFormPage.class;
+          }
+          CharSequence url =
+              this.form.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
+                  clazz, openermodel.getPageParameters());
+          _target.appendJavascript("opener.location.href = '"
+              + url
+              + "'; self.close();");
 
+        }
+      }
+    }
+
+    private boolean checkForRequired(final AjaxRequestTarget _target) {
+      boolean ret = true;
+      if (this.form.getParent().getModel() instanceof TableModel) {
+        return true;
       }
 
+      Iterator<?> it = this.getComponent().getPage().iterator();
+      WebFormContainer container = null;
+      while (it.hasNext()) {
+        Object object = it.next();
+        if (object instanceof FormContainer) {
+          Iterator<?> it2 = ((FormContainer) object).iterator();
+          while (it2.hasNext()) {
+            Object object2 = it2.next();
+            if (object2 instanceof WebFormContainer) {
+              container = (WebFormContainer) object2;
+              break;
+            }
+          }
+          break;
+        }
+      }
+
+      Map<?, ?> map =
+          this.getComponent().getRequestCycle().getRequest().getParameterMap();
+      for (FormCellPanel cellpanel : container.getRequiredComponents()) {
+        String[] values =
+            (String[]) map
+                .get(((FormCellModel) cellpanel.getModel()).getName());
+        String value = values[0];
+        if (value == null || value.length() == 0) {
+          WebMarkupContainer cellcontainer =
+              (WebMarkupContainer) cellpanel.iterator().next();
+          cellcontainer.add(new SimpleAttributeModifier("class",
+              "eFapsFormLabelRequiredForce"));
+          _target.addComponent(cellcontainer);
+          ret = false;
+        }
+      }
+      if (!ret) {
+        final ModalWindowContainer modal =
+            ((ContentPage) this.getComponent().getPage()).getModal();
+        modal.setResizable(false);
+        modal.setInitialWidth(20);
+        modal.setInitialHeight(12);
+        modal.setWidthUnit("em");
+        modal.setHeightUnit("em");
+        modal.setPageMapName("warn");
+        modal.setPageCreator(new ModalWindow.PageCreator() {
+
+          private static final long serialVersionUID = 1L;
+
+          public Page createPage() {
+
+            return new WarnDialogPage(modal);
+          }
+        });
+
+        modal.show(_target);
+      }
+      return ret;
     }
   }
 
@@ -207,7 +280,6 @@ public class FooterPanel extends Panel {
                             final Form _form) {
       super(_id, _form);
       super.setModel(_model);
-
     }
 
     @Override
