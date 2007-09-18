@@ -29,7 +29,7 @@ import org.efaps.webapp.pages.LoginPage;
  * @version $Id$
  *
  */
-public class LogOutLink extends AbstractMenuItemLink {
+public class LogOutLink extends StandardLink {
 
   private static final long serialVersionUID = 1L;
 
