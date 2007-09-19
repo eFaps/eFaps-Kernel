@@ -52,9 +52,8 @@ public class AjaxFilterLinkContainer extends AjaxLink {
         new FilterPageCreator(tablemodel, tableheaderpanel.getModal());
 
     tableheaderpanel.getModal().setPageCreator(pagecreator);
+    tableheaderpanel.getModal().setInitialWidth(300);
     tableheaderpanel.getModal().show(_target);
-
-
   }
 
   private class FilterPageCreator implements ModalWindow.PageCreator {

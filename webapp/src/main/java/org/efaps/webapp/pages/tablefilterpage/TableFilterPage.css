@@ -1,0 +1,15 @@
+.eFapsFilterTable {
+  font-family: arial, verdana, helvetica, sans-serif;
+  font-size: 8pt;
+  white-space: nowrap;
+  width: 100%;
+}
+
+tr.eFapsTableRowEven {
+  background-color: #d0edb8;
+}
+
+tr.eFapsTableRowOdd {
+  background-color: #ffffff;
+}
+

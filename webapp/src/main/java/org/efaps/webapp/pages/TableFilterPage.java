@@ -20,16 +20,21 @@
 
 package org.efaps.webapp.pages;
 
+import java.util.List;
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
@@ -51,22 +56,15 @@ public class TableFilterPage extends WebPage implements EFapsAuthenticatedPage {
   public TableFilterPage(final TableModel _model,
                          final ModalWindowContainer _modalwindow) {
     super(_model);
+
+    add(new StyleSheetReference("filtercss", getClass(),
+        "tablefilterpage/TableFilterPage.css"));
+
     FormContainer form = new FormContainer("eFapsForm");
     this.add(form);
 
-    final ListView checksList =
-        new ListView("listview", _model.getFilterList()) {
-
-          private static final long serialVersionUID = 1L;
-
-          @Override
-          protected void populateItem(final ListItem _item) {
-
-            _item.add(new ValueCheckBox("check", new Model(_item.getIndex())));
-            _item.add(new Label("label", _item.getModelObjectAsString()));
-
-          }
-        }.setReuseItems(true);
+    final FilterListView checksList =
+        new FilterListView("listview", _model.getFilterList());
 
     form.add(checksList);
 
@@ -127,4 +125,35 @@ public class TableFilterPage extends WebPage implements EFapsAuthenticatedPage {
       tag.put("name", CHECKBOXNAME);
     }
   }
+
+  public class FilterListView extends ListView {
+
+    private static final long serialVersionUID = 1L;
+
+    private boolean odd = true;
+
+    public FilterListView(final String _id, final List<?> _list) {
+      super(_id, _list);
+      this.setReuseItems(true);
+    }
+
+    @Override
+    protected void populateItem(final ListItem _item) {
+      WebMarkupContainer tr = new WebMarkupContainer("listview_tr");
+      _item.add(tr);
+
+      if (this.odd) {
+        tr.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
+      } else {
+        tr.add(new SimpleAttributeModifier("class", "eFapsTableRowEven"));
+      }
+
+      this.odd = !this.odd;
+      tr
+          .add(new ValueCheckBox("listview_tr_check", new Model(_item
+              .getIndex())));
+      tr.add(new Label("listview_tr_label", _item.getModelObjectAsString()));
+    }
+  }
+
 }

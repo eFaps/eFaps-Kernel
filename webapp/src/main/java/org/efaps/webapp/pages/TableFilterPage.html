@@ -26,19 +26,18 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    
+     <link wicket:id="filtercss" rel="stylesheet" type="text/css" href="tablefilterpage/TableFilterPage.css"/>
   </head>
   <body>
     <form wicket:id="eFapsForm">
-      
-        <table>
-          <span wicket:id="listview">
-            <tr>
-              <td><input type="checkbox" wicket:id="check"/><span wicket:id="label"></span></td>
-            </tr>
-          </span>
-        </table>
-      
+      <table class="eFapsFilterTable">
+        <span wicket:id="listview">
+          <tr wicket:id="listview_tr">
+            <td><input type="checkbox" wicket:id="listview_tr_check"/><span wicket:id="listview_tr_label"></span></td>
+          </tr>
+        </span>
+      </table>
+      <br/>
       <button wicket:id="submit"><span wicket:id="submitlabel"></span></button>
       <button wicket:id="cancel"><span wicket:id="cancellabel"></span></button>
     </form>
