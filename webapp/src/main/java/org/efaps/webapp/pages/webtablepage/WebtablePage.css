@@ -2,10 +2,9 @@
   position: absolute;
   width: 100%;
   top: 75px;
-  bottom:0px;
+  bottom: 0px;
   overflow: auto;
 }
-
 
 /* Odd Table Row Appearance */
 tr.eFapsTableRowOdd {
@@ -63,4 +62,9 @@ tr.eFapsTableRowOdd td a img,tr.eFapsTableRowEven td a img {
 
 #eFapsTableBody {
   width: 100%;
+}
+
+.eFapsTableNoData {
+  position: absolute;
+  left: 30px;
 }

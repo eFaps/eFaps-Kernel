@@ -30,6 +30,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.webapp.components.table.cell.CellPanel;
 import org.efaps.webapp.models.CellModel;
 import org.efaps.webapp.models.TableModel;
@@ -102,9 +103,10 @@ public class WebTableContainer extends WebMarkupContainer {
     }
 
     if (i == 0) {
-      this
-          .add(new Label("test",
-              "keine Daten; muss noch gegen eine vernueftige meldung getauscht werden"));
+      Label nodata =
+          new Label("test", DBProperties.getProperty("WebApp_WebTable_NoData"));
+      nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
+      this.add(nodata);
     }
   }
 
