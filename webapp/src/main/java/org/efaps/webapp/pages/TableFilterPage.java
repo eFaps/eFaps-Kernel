@@ -38,7 +38,6 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
-import org.efaps.webapp.EFapsAuthenticatedPage;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.TableModel;
@@ -47,7 +46,7 @@ import org.efaps.webapp.models.TableModel;
  * @author jmo
  * @version $Id$
  */
-public class TableFilterPage extends WebPage implements EFapsAuthenticatedPage {
+public class TableFilterPage extends WebPage {
 
   private static final long serialVersionUID = 1L;
 

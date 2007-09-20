@@ -35,7 +35,6 @@ import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
-import org.efaps.webapp.EFapsAuthenticatedPage;
 import org.efaps.webapp.components.ChildCallBackHeaderContributer;
 import org.efaps.webapp.components.menu.MenuContainer;
 import org.efaps.webapp.models.MenuItemModel;
@@ -44,7 +43,7 @@ import org.efaps.webapp.models.MenuItemModel;
  * @author jmo
  * @version $Id$
  */
-public class MainPage extends WebPage implements EFapsAuthenticatedPage {
+public class MainPage extends WebPage {
 
   private static final long serialVersionUID = -4231606613730698766L;
 

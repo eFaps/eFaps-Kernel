@@ -11,9 +11,10 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.webapp.EFapsNoAuthorizationNeededInterface;
 import org.efaps.webapp.EFapsSession;
 
-public class LoginPage extends WebPage {
+public class LoginPage extends WebPage implements EFapsNoAuthorizationNeededInterface {
 
   private static final long serialVersionUID = 524408099967362477L;
 

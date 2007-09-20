@@ -21,15 +21,13 @@ package org.efaps.webapp.pages;
 
 import org.apache.wicket.markup.html.WebPage;
 
-import org.efaps.webapp.EFapsAuthenticatedPage;
-
 /**
  * This Page is used to send a Page to an IFrame wich has actually now Content.
  *
  * @author jmo
  * @version $Id$
  */
-public class EmptyPage extends WebPage implements EFapsAuthenticatedPage {
+public class EmptyPage extends WebPage  {
 
   private static final long serialVersionUID = 1L;
 

@@ -23,12 +23,12 @@ package org.efaps.webapp;
 /**
  * This interface is used to trigger the isInstantiationAuthorized Method in
  * {@link #org.efaps.webapp.EFapsApplication.EFapsFormBasedAuthorizationStartegy}.
- * This has the effect that a Page wich implements this Interface, will be
- * checked if a User is checked in.
+ * This has the effect that only a Page wich implements this Interface, will
+ * <b>not</b> be checked if a User is checked in and so can be accesed.
  *
  * @author jmo
  * @version $Id$
  */
-public interface EFapsAuthenticatedPage {
+public interface EFapsNoAuthorizationNeededInterface {
 
 }

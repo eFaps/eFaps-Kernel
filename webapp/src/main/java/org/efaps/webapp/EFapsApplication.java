@@ -21,6 +21,7 @@
 package org.efaps.webapp;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Response;
@@ -81,16 +82,25 @@ public class EFapsApplication extends WebApplication {
       return true;
     }
 
+    /**
+     * for all Pages it will be checked if a User is logged in or if the Page
+     * implements the EFapsNoAuthendPageInterface, if non of both we will
+     * redirect to the LoginPage
+     *
+     * @see org.apache.wicket.authorization.IAuthorizationStrategy#isInstantiationAuthorized(java.lang.Class)
+     */
     @SuppressWarnings("unchecked")
     public boolean isInstantiationAuthorized(Class _componentClass) {
 
-      if (EFapsAuthenticatedPage.class.isAssignableFrom(_componentClass)) {
+      if (Page.class.isAssignableFrom(_componentClass)) {
         if (((EFapsSession) Session.get()).isLogedIn()) {
+          return true;
+        } else if (EFapsNoAuthorizationNeededInterface.class
+            .isAssignableFrom(_componentClass)) {
           return true;
         }
         throw new RestartResponseAtInterceptPageException(LoginPage.class);
       }
-
       return true;
     }
   }
