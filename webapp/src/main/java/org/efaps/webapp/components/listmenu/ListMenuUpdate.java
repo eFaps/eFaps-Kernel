@@ -112,21 +112,18 @@ public class ListMenuUpdate {
       // add a new List into the existing ListMenuPanel
       if (!old) {
         MenuItemModel model;
-        try {
-          model = new MenuItemModel(_menu.getUUID(), _oid);
-          model.setLevel(level);
-          model.setHeader(true);
-          model.setSelected(true);
-          list.add(model);
-          if (model.hasChilds()) {
-            for (MenuItemModel item : model.getChilds()) {
-              item.setLevel(level);
-            }
-            list.add(model.getChilds());
+        model = new MenuItemModel(_menu.getUUID(), _oid);
+        model.setLevel(level);
+        model.setHeader(true);
+        model.setSelected(true);
+        list.add(model);
+        if (model.hasChilds()) {
+          for (MenuItemModel item : model.getChilds()) {
+            item.setLevel(level);
           }
-        } catch (Exception e) {
-          e.printStackTrace();
+          list.add(model.getChilds());
         }
+
       } else {
         setSelectedItem(_menukey, listmenupanel.getHeaderComponents()
             .get(index), _target);

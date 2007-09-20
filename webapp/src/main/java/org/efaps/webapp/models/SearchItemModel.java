@@ -34,7 +34,7 @@ public class SearchItemModel extends MenuItemModel {
 
   private final UUID searchuuid;
 
-  public SearchItemModel(final UUID _uuid) throws Exception {
+  public SearchItemModel(final UUID _uuid) {
     super(Search.get(_uuid), null);
     this.searchuuid = _uuid;
   }

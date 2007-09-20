@@ -48,25 +48,21 @@ public class MenuPanel extends Panel {
     if (_model instanceof AbstractModel) {
       AbstractModel model = (AbstractModel) _model;
       super.setModel(model);
-      try {
-        if (model.getCommand().getTargetMenu() != null) {
-          MenuContainer menu =
-              new MenuContainer("eFapsMenu", new MenuItemModel(model
-                  .getCommand().getTargetMenu().getUUID(), model.getOid()),
-                  _form);
-          add(menu);
-        } else if (model.getMode() == CommandAbstract.TARGET_MODE_SEARCH
-            && model.getCallingCommandUUID() != null) {
-          MenuContainer menu =
-              new MenuContainer("eFapsMenu", new SearchItemModel(model
-                  .getCallingCommand().getTargetSearch().getUUID()), _form);
 
-          add(menu);
-        } else {
-          add(new WebMarkupContainer("eFapsMenu"));
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
+      if (model.getCommand().getTargetMenu() != null) {
+        MenuContainer menu =
+            new MenuContainer("eFapsMenu", new MenuItemModel(model.getCommand()
+                .getTargetMenu().getUUID(), model.getOid()), _form);
+        add(menu);
+      } else if (model.getMode() == CommandAbstract.TARGET_MODE_SEARCH
+          && model.getCallingCommandUUID() != null) {
+        MenuContainer menu =
+            new MenuContainer("eFapsMenu", new SearchItemModel(model
+                .getCallingCommand().getTargetSearch().getUUID()), _form);
+
+        add(menu);
+      } else {
+        add(new WebMarkupContainer("eFapsMenu"));
       }
 
     }

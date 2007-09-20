@@ -111,30 +111,26 @@ public class ListMenuPanel extends DojoPanelContainer {
     this.menuKey = _menukey;
     setVersioned(false);
     add(HeaderContributor.forCss(getClass(), "ListMenuPanel.css"));
-    try {
 
-      MenuItemModel model =
-          new MenuItemModel(UUID.fromString(_parameters.getString("command")),
-              _parameters.getString("oid"));
-      this.setModel(model);
-      model.setLevel(_level);
-      model.setHeader(true);
-      if (_setHeaderAsSelected) {
-        model.setSelected(true);
-      }
-      List<Object> menu = new ArrayList<Object>();
-      menu.add(model);
-      if (model.hasChilds()) {
-        menu.add(model.getChilds());
-        for (MenuItemModel item : model.getChilds()) {
-          item.setLevel(_level);
-        }
-      }
-      add(new Rows("rows", _menukey, menu, model));
-
-    } catch (Exception e) {
-      e.printStackTrace();
+    MenuItemModel model =
+        new MenuItemModel(UUID.fromString(_parameters.getString("command")),
+            _parameters.getString("oid"));
+    this.setModel(model);
+    model.setLevel(_level);
+    model.setHeader(true);
+    if (_setHeaderAsSelected) {
+      model.setSelected(true);
     }
+    List<Object> menu = new ArrayList<Object>();
+    menu.add(model);
+    if (model.hasChilds()) {
+      menu.add(model.getChilds());
+      for (MenuItemModel item : model.getChilds()) {
+        item.setLevel(_level);
+      }
+    }
+    add(new Rows("rows", _menukey, menu, model));
+
   }
 
   public ListMenuPanel(final String _id, final String _menukey,
@@ -278,11 +274,9 @@ public class ListMenuPanel extends DojoPanelContainer {
           if (model.getAncestor() != null) {
             AjaxGoUpLink goup = new AjaxGoUpLink("gouplink", model);
             row.add(goup);
-            goup.add(
-            new Image("gouplink_icon", ICON_SUBMENUGOUP));
+            goup.add(new Image("gouplink_icon", ICON_SUBMENUGOUP));
           } else {
             row.add(new WebMarkupContainer("gouplink").setVisible(false));
-
 
           }
         } else {

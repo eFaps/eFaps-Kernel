@@ -22,7 +22,6 @@ package org.efaps.webapp.components.table.header;
 
 import org.apache.wicket.markup.html.link.Link;
 
-import org.efaps.util.EFapsException;
 import org.efaps.webapp.models.HeaderModel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.models.TableModel.SortDirection;
@@ -63,12 +62,7 @@ public class SortLinkContainer extends Link {
 
     tablemodel.setSortDirection(model.getSortDirection());
 
-    try {
-      tablemodel.sort();
-    } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    tablemodel.sort();
     this.getRequestCycle().setResponsePage(new WebTablePage(tablemodel));
 
   }

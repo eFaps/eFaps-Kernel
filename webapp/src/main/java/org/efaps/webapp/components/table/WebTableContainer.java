@@ -55,55 +55,50 @@ public class WebTableContainer extends WebMarkupContainer {
 
   private void initialise(Page _page) {
     int i = 0;
-    try {
-      TableModel model = (TableModel) super.getModel();
-      if (!model.isInitialised()) {
-        model.execute();
+
+    TableModel model = (TableModel) super.getModel();
+    if (!model.isInitialised()) {
+      model.execute();
+    }
+    boolean odd = true;
+
+    for (Iterator<RowModel> rowIter = model.getValues().iterator(); rowIter
+        .hasNext(); odd = !odd) {
+      RowModel modelrow = rowIter.next();
+
+      RowContainer row = new RowContainer(ROWID + "_" + i);
+      if (odd) {
+        row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
+      } else {
+        row.add(new SimpleAttributeModifier("class", "eFapsTableRowEven"));
       }
-      boolean odd = true;
+      row.setOutputMarkupId(true);
 
-      for (Iterator<RowModel> rowIter = model.getValues().iterator(); rowIter
-          .hasNext(); odd = !odd) {
-        RowModel modelrow = rowIter.next();
+      this.add(row);
+      int j = 0;
+      if (model.isShowCheckBoxes()) {
+        CellContainer cell = new CellContainer(CELLID + "_" + i + "_" + j);
+        row.add(cell);
+        CellCheckBoxComponent checkbox =
+            new CellCheckBoxComponent("box" + i, modelrow.getOids());
+        cell.add(new SimpleAttributeModifier("width", "1%"));
+        cell.add(checkbox);
 
-        RowContainer row = new RowContainer(ROWID + "_" + i);
-        if (odd) {
-          row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
-        } else {
-          row.add(new SimpleAttributeModifier("class", "eFapsTableRowEven"));
-        }
-        row.setOutputMarkupId(true);
+      }
 
-        this.add(row);
-        int j = 0;
-        if (model.isShowCheckBoxes()) {
-          CellContainer cell = new CellContainer(CELLID + "_" + i + "_" + j);
-          row.add(cell);
-          CellCheckBoxComponent checkbox =
-              new CellCheckBoxComponent("box" + i, modelrow.getOids());
-          cell.add(new SimpleAttributeModifier("width", "1%"));
-          cell.add(checkbox);
+      j++;
 
-        }
+      for (CellModel cellmodel : modelrow.getValues()) {
+        CellPanel cellpanel =
+            new CellPanel("cell" + "_" + i + "_" + j, cellmodel,
+                ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
+                    .getPageMapName()));
+        row.add(cellpanel);
 
         j++;
-
-        for (CellModel cellmodel : modelrow.getValues()) {
-          CellPanel cellpanel =
-              new CellPanel("cell" + "_" + i + "_" + j, cellmodel,
-                  ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
-                      .getPageMapName()));
-          row.add(cellpanel);
-
-          j++;
-        }
-        i++;
-
       }
+      i++;
 
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     }
 
     if (i == 0) {

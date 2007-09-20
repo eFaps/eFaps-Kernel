@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.model.Model;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -45,6 +46,7 @@ import org.efaps.admin.ui.Table;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.util.EFapsException;
+import org.efaps.webapp.pages.ErrorPage;
 
 /**
  * @author jmo
@@ -128,7 +130,7 @@ public class TableModel extends AbstractModel {
    */
   private String[] filter;
 
-  public TableModel(PageParameters _parameters) throws EFapsException {
+  public TableModel(PageParameters _parameters) {
     super(_parameters);
     initialise();
 
@@ -174,50 +176,54 @@ public class TableModel extends AbstractModel {
     this.headers.clear();
   }
 
-  public void execute() throws Exception  {
+  @SuppressWarnings("unchecked")
+  public void execute() {
+    try {
+      // first get list of object ids
+      List<Return> ret =
+          getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+              ParameterValues.INSTANCE, new Instance(super.getOid()));
 
-    // first get list of object ids
-    List<Return> ret =
-        getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-            ParameterValues.INSTANCE, new Instance(super.getOid()));
-
-    List<List<Instance>> lists =
-        (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
-    List<Instance> instances = new ArrayList<Instance>();
-    Map<Instance, List<Instance>> instMapper =
-        new HashMap<Instance, List<Instance>>();
-    for (List<Instance> oneList : lists) {
-      Instance inst = oneList.get(oneList.size() - 1);
-      instances.add(inst);
-      instMapper.put(inst, oneList);
-    }
-
-    // evaluate for all expressions in the table
-    ListQuery query = new ListQuery(instances);
-    for (Field field : this.getTable().getFields()) {
-      if (field.getExpression() != null) {
-        query.addSelect(field.getExpression());
+      List<List<Instance>> lists =
+          (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
+      List<Instance> instances = new ArrayList<Instance>();
+      Map<Instance, List<Instance>> instMapper =
+          new HashMap<Instance, List<Instance>>();
+      for (List<Instance> oneList : lists) {
+        Instance inst = oneList.get(oneList.size() - 1);
+        instances.add(inst);
+        instMapper.put(inst, oneList);
       }
-      if (field.getAlternateOID() != null) {
-        query.addSelect(field.getAlternateOID());
+
+      // evaluate for all expressions in the table
+      ListQuery query = new ListQuery(instances);
+      for (Field field : this.getTable().getFields()) {
+        if (field.getExpression() != null) {
+          query.addSelect(field.getExpression());
+        }
+        if (field.getAlternateOID() != null) {
+          query.addSelect(field.getAlternateOID());
+        }
+        SortDirection sortdirection = SortDirection.NONE;
+        if (field.getName().equals(this.sortKey)) {
+          sortdirection = this.getSortDirection();
+        }
+        if (field.getName().equals(this.filterKey))
+          ;
+        this.headers.add(new HeaderModel(field, sortdirection));
       }
-      SortDirection sortdirection = SortDirection.NONE;
-      if (field.getName().equals(this.sortKey)) {
-        sortdirection = this.getSortDirection();
+      query.execute();
+
+      this.executeRowResult(instMapper, query);
+
+      if (this.sortKey != null) {
+        this.sort();
       }
-      if (field.getName().equals(this.filterKey))
-        ;
-      this.headers.add(new HeaderModel(field, sortdirection));
+      super.setInitialised(true);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
-    query.execute();
-
-    this.executeRowResult(instMapper, query);
-
-    if (this.sortKey != null) {
-      this.sort();
-    }
-
-    super.setInitialised(true);
   }
 
   public List<HeaderModel> getHeaders() {
@@ -226,80 +232,83 @@ public class TableModel extends AbstractModel {
 
   private void executeRowResult(
                                 final Map<Instance, List<Instance>> _instMapper,
-                                final ListQuery _query) throws Exception {
-    while (_query.next()) {
+                                final ListQuery _query) {
+    try {
+      while (_query.next()) {
 
-      // get all found oids (typically more than one if it is an expand)
-      Instance instance = _query.getInstance();
-      StringBuilder oids = new StringBuilder();
-      boolean first = true;
-      for (Instance oneInstance : _instMapper.get(instance)) {
-        if (first) {
-          first = false;
-        } else {
-          oids.append("|");
-        }
-        oids.append(oneInstance.getOid());
-      }
-      RowModel row = new RowModel(oids.toString());
-      Attribute attr = null;
-
-      String strValue = "";
-      String oid = "";
-      for (Field field : this.getTable().getFields()) {
-        Object value = null;
-
-        if (field.getExpression() != null) {
-          value = _query.getValue(field.getExpression());
-          attr = _query.getAttribute(field.getExpression());
-        }
-
-        FieldValue fieldvalue =
-            new FieldValue(new FieldDefinition("egal", field), attr, value,
-                instance);
-        if (value != null) {
-          if (this.isCreateMode() && field.isEditable()) {
-            strValue = fieldvalue.getCreateHtml();
-          } else if (this.isEditMode() && field.isEditable()) {
-            strValue = fieldvalue.getEditHtml();
+        // get all found oids (typically more than one if it is an expand)
+        Instance instance = _query.getInstance();
+        StringBuilder oids = new StringBuilder();
+        boolean first = true;
+        for (Instance oneInstance : _instMapper.get(instance)) {
+          if (first) {
+            first = false;
           } else {
-            strValue = fieldvalue.getViewHtml();
+            oids.append("|");
           }
-        } else {
-          strValue = "";
+          oids.append(oneInstance.getOid());
         }
-        String icon = field.getIcon();
-        if (field.getAlternateOID() != null) {
-          Instance inst =
-              new Instance((String) _query.getValue(field.getAlternateOID()));
-          oid = inst.getOid();
-          if (field.isShowTypeIcon()) {
-            icon = inst.getType().getIcon();
+        RowModel row = new RowModel(oids.toString());
+        Attribute attr = null;
+
+        String strValue = "";
+        String oid = "";
+        for (Field field : this.getTable().getFields()) {
+          Object value = null;
+
+          if (field.getExpression() != null) {
+            value = _query.getValue(field.getExpression());
+            attr = _query.getAttribute(field.getExpression());
           }
-        } else {
-          oid = instance.getOid();
-          if (field.isShowTypeIcon()) {
-            icon = instance.getType().getIcon();
+
+          FieldValue fieldvalue =
+              new FieldValue(new FieldDefinition("egal", field), attr, value,
+                  instance);
+          if (value != null) {
+            if (this.isCreateMode() && field.isEditable()) {
+              strValue = fieldvalue.getCreateHtml();
+            } else if (this.isEditMode() && field.isEditable()) {
+              strValue = fieldvalue.getEditHtml();
+            } else {
+              strValue = fieldvalue.getViewHtml();
+            }
+          } else {
+            strValue = "";
           }
+          String icon = field.getIcon();
+          if (field.getAlternateOID() != null) {
+            Instance inst =
+                new Instance((String) _query.getValue(field.getAlternateOID()));
+            oid = inst.getOid();
+            if (field.isShowTypeIcon()) {
+              icon = inst.getType().getIcon();
+            }
+          } else {
+            oid = instance.getOid();
+            if (field.isShowTypeIcon()) {
+              icon = instance.getType().getIcon();
+            }
+          }
+
+          row.add(new CellModel(oid, field.getReference(), strValue, icon,
+              field.getTarget()));
+
         }
 
-        row.add(new CellModel(oid, field.getReference(), strValue, icon, field
-            .getTarget()));
+        this.values.add(row);
 
       }
-
-      this.values.add(row);
-
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
   }
 
   /**
    * The instance method sorts the table values depending on the sort key in
    * {@link #sortKey} and the sort direction in {@link #sortDirection}.
-   *
-   * @throws EFapsException
    */
-  public boolean sort() throws EFapsException {
+  public boolean sort() {
 
     if (getSortKey() != null && getSortKey().length() > 0) {
       int sortKey = 0;
@@ -411,7 +420,7 @@ public class TableModel extends AbstractModel {
    * @see #values
    * @see #setValues
    */
-  public List<RowModel> getValues() throws EFapsException {
+  public List<RowModel> getValues() {
     List<RowModel> ret = new ArrayList<RowModel>();
     if (isFiltered()) {
       for (RowModel row : this.values) {
@@ -429,7 +438,6 @@ public class TableModel extends AbstractModel {
     } else {
       ret = this.values;
     }
-
     return ret;
   }
 

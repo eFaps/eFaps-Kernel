@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
@@ -37,6 +38,7 @@ import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.webapp.pages.ErrorPage;
 
 /**
  * @author tmo
@@ -53,7 +55,7 @@ public class MenuItemModel extends Model {
   private final String image;
 
   /** Label of this menu item. */
-  private final String label;
+  private String label;
 
   /** Description of this menu item. */
   private final String description;
@@ -82,51 +84,55 @@ public class MenuItemModel extends Model {
 
   private boolean selected = false;
 
-  public MenuItemModel(final UUID _uuid) throws Exception {
+  public MenuItemModel(final UUID _uuid) {
     this(Menu.get(_uuid), null);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
-  public MenuItemModel(final UUID _uuid, final String _oid) throws Exception {
+  public MenuItemModel(final UUID _uuid, final String _oid) {
     this(Menu.get(_uuid), _oid);
   }
 
-  public MenuItemModel(final CommandAbstract _command, String _oid)
-                                                                   throws Exception {
+  public MenuItemModel(final CommandAbstract _command, String _oid) {
     this.image = _command.getIcon();
     this.reference = _command.getReference();
     this.target = _command.getTarget();
     this.uuid = _command.getUUID();
     this.description = "";
     this.oid = _oid;
+    this.label = "";
+    try {
+      String label = DBProperties.getProperty(_command.getLabel());
 
-    String label = DBProperties.getProperty(_command.getLabel());
-
-    if (_oid != null) {
-      SearchQuery query = new SearchQuery();
-      query.setObject(_oid);
-      ValueParser parser = new ValueParser(new StringReader(label));
-      ValueList list = parser.ExpressionString();
-      list.makeSelect(query);
-      if (query.selectSize() > 0) {
-        query.execute();
-        if (query.next()) {
-          label = list.makeString(query);
+      if (_oid != null) {
+        SearchQuery query = new SearchQuery();
+        query.setObject(_oid);
+        ValueParser parser = new ValueParser(new StringReader(label));
+        ValueList list = parser.ExpressionString();
+        list.makeSelect(query);
+        if (query.selectSize() > 0) {
+          query.execute();
+          if (query.next()) {
+            label = list.makeString(query);
+          }
+          query.close();
         }
-        query.close();
+
       }
+      this.label = label;
 
-    }
-    this.label = label;
-
-    if (_command instanceof MenuAbstract) {
-      for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
-        if (subCmd.hasAccess()) {
-          this.childs.add(new MenuItemModel(subCmd, _oid));
+      if (_command instanceof MenuAbstract) {
+        for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
+          if (subCmd.hasAccess()) {
+            this.childs.add(new MenuItemModel(subCmd, _oid));
+          }
         }
       }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
   }
 

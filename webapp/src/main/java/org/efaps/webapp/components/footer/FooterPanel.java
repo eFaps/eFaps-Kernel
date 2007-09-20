@@ -44,7 +44,6 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.util.EFapsException;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
@@ -291,20 +290,16 @@ public class FooterPanel extends Panel {
       parameters.add("command", model.getCommand().getUUID().toString());
       parameters.add("oid", model.getOid());
 
-      try {
-        TableModel newmodel = new TableModel(parameters);
-        if (model.isSubmit()) {
-          newmodel.setSubmit(true);
-          newmodel.setCallingCommandUUID(model.getCallingCommandUUID());
-        }
-
-        WebTablePage page = new WebTablePage(newmodel);
-
-        this.getRequestCycle().setResponsePage(page);
-      } catch (EFapsException e) {
-
-        e.printStackTrace();
+      TableModel newmodel = new TableModel(parameters);
+      if (model.isSubmit()) {
+        newmodel.setSubmit(true);
+        newmodel.setCallingCommandUUID(model.getCallingCommandUUID());
       }
+
+      WebTablePage page = new WebTablePage(newmodel);
+
+      this.getRequestCycle().setResponsePage(page);
+
     }
   }
 

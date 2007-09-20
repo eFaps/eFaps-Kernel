@@ -140,35 +140,34 @@ public class AjaxGoIntoLink extends AbstractAjaxLink {
     List<Object> ret = new ArrayList<Object>();
     MenuItemModel copyMenuItemModel = null;
     int j = 0;
-    try {
-      for (int i = 0; i < model.size(); i++) {
-        if (model.get(i) instanceof MenuItemModel) {
-          MenuItemModel originalMenuItemModel = (MenuItemModel) model.get(i);
-          if (originalMenuItemModel.isHeader()) {
-            copyMenuItemModel =
-                new MenuItemModel(originalMenuItemModel.getUUID(),
-                    originalMenuItemModel.getOid());
-            copyMenuItemModel.setHeader(true);
-            if (originalMenuItemModel.getLevel() == 0) {
-              copyMenuItemModel.setSelected(true);
-            }
-          } else {
-            copyMenuItemModel =
-                new MenuItemModel((list.get(j)).getCommand(),
-                    originalMenuItemModel.getOid());
-            j++;
+
+    for (int i = 0; i < model.size(); i++) {
+      if (model.get(i) instanceof MenuItemModel) {
+        MenuItemModel originalMenuItemModel = (MenuItemModel) model.get(i);
+        if (originalMenuItemModel.isHeader()) {
+          copyMenuItemModel =
+              new MenuItemModel(originalMenuItemModel.getUUID(),
+                  originalMenuItemModel.getOid());
+          copyMenuItemModel.setHeader(true);
+          if (originalMenuItemModel.getLevel() == 0) {
+            copyMenuItemModel.setSelected(true);
           }
-          copyMenuItemModel.setLevel(originalMenuItemModel.getLevel());
-          ret.add(copyMenuItemModel);
+        } else {
+          copyMenuItemModel =
+              new MenuItemModel((list.get(j)).getCommand(),
+                  originalMenuItemModel.getOid());
+          j++;
         }
-        if (model.get(i) instanceof List) {
-          ret.add(getCopyOf((List<?>) model.get(i), copyMenuItemModel
-              .getChilds()));
-        }
+        copyMenuItemModel.setLevel(originalMenuItemModel.getLevel());
+        ret.add(copyMenuItemModel);
       }
-    } catch (Exception e) {
-      e.printStackTrace();
+      if (model.get(i) instanceof List) {
+        ret
+            .add(getCopyOf((List<?>) model.get(i), copyMenuItemModel
+                .getChilds()));
+      }
     }
+
     return ret;
   }
 

@@ -31,7 +31,6 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.util.EFapsException;
 import org.efaps.webapp.components.AbstractAjaxCallBackBehavior;
 import org.efaps.webapp.components.listmenu.ListMenuUpdate;
 import org.efaps.webapp.models.CellModel;
@@ -74,18 +73,26 @@ public class AjaxLinkContainer extends WebMarkupContainer {
       Instance instance = null;
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());
-      }
-      try {
-        Menu menu = instance.getType().getTreeMenu();
+
+        Menu menu = null;
+        try {
+          menu = instance.getType().getTreeMenu();
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new RestartResponseException(new ErrorPage(e));
+        }
+        if (menu == null) {
+          Exception ex =
+              new Exception("no tree menu defined for type "
+                  + instance.getType().getName());
+          throw new RestartResponseException(new ErrorPage(ex));
+        }
 
         PageParameters para = new PageParameters();
         para.add("command", menu.getUUID().toString());
         para.add("oid", cellmodel.getOid());
         ListMenuUpdate.update(_target, ContentContainerPage.LISTMENU, menu,
             para, ((CellModel) super.getComponent().getModel()).getOid());
-      } catch (Exception e) {
-
-        e.printStackTrace();
       }
     }
 
@@ -105,31 +112,36 @@ public class AjaxLinkContainer extends WebMarkupContainer {
       Instance instance = null;
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());
+
+        Menu menu = null;
+        try {
+          menu = instance.getType().getTreeMenu();
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new RestartResponseException(new ErrorPage(e));
+        }
+        if (menu == null) {
+          Exception ex =
+              new Exception("no tree menu defined for type "
+                  + instance.getType().getName());
+          throw new RestartResponseException(new ErrorPage(ex));
+        }
+
+        PageParameters parameters = new PageParameters();
+        parameters.add("command", menu.getUUID().toString());
+        parameters.add("oid", cellmodel.getOid());
+
+        if (menu.getTargetTable() != null) {
+
+          super.getComponent().getRequestCycle().setResponsePage(
+              WebTablePage.class, parameters);
+        } else {
+          WebFormPage page =
+              new WebFormPage(parameters, null, PageMap
+                  .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
+          super.getComponent().getRequestCycle().setResponsePage(page);
+        }
       }
-      Menu menu = null;
-      try {
-        menu = instance.getType().getTreeMenu();
-      } catch (Exception e) {
-        e.printStackTrace();
-        throw new RestartResponseException(new ErrorPage(new EFapsException(
-            this.getClass(), "", "can't read the TreeMenu")));
-      }
-
-      PageParameters parameters = new PageParameters();
-      parameters.add("command", menu.getUUID().toString());
-      parameters.add("oid", cellmodel.getOid());
-
-      if (menu.getTargetTable() != null) {
-
-        super.getComponent().getRequestCycle().setResponsePage(
-            WebTablePage.class, parameters);
-      } else {
-        WebFormPage page =
-            new WebFormPage(parameters, null, PageMap
-                .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
-        super.getComponent().getRequestCycle().setResponsePage(page);
-      }
-
     }
   }
 }

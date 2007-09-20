@@ -37,7 +37,7 @@ public class WebTablePage extends ContentPage {
 
   private static final long serialVersionUID = 7564911406648729094L;
 
-  public WebTablePage(final PageParameters _parameters) throws Exception {
+  public WebTablePage(final PageParameters _parameters)  {
     this(new TableModel(_parameters));
   }
 

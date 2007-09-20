@@ -49,21 +49,15 @@ public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
 
   public Page createPage() {
     Page ret = null;
-    MenuItemModel model = (MenuItemModel) this.imodel;
+    MenuItemModel model = this.imodel;
     CommandAbstract command = model.getCommand();
     PageParameters para = new PageParameters("command=" + command.getUUID());
     para.add("oid", model.getOid());
-    try {
 
-      if (command.getTargetTable() != null) {
-        ret = new WebTablePage(para);
-
-      } else {
-        ret = new WebFormPage(para, this.modalWindow);
-      }
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    if (command.getTargetTable() != null) {
+      ret = new WebTablePage(para);
+    } else {
+      ret = new WebFormPage(para, this.modalWindow);
     }
     return ret;
   }

@@ -21,6 +21,7 @@
 package org.efaps.webapp.components.table.cell;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 
@@ -28,6 +29,7 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.models.CellModel;
 import org.efaps.webapp.pages.ContentContainerPage;
+import org.efaps.webapp.pages.ErrorPage;
 
 /**
  * @author jmo
@@ -47,19 +49,25 @@ public class LinkContainer extends Link {
     CellModel cellmodel = (CellModel) super.getModel();
     if (cellmodel.getOid() != null) {
       instance = new Instance(cellmodel.getOid());
-    }
-    Menu menu;
-    try {
-      menu = instance.getType().getTreeMenu();
+      Menu menu = null;
+      try {
+        menu = instance.getType().getTreeMenu();
+      } catch (Exception e) {
+        e.printStackTrace();
+        throw new RestartResponseException(new ErrorPage(e));
+      }
+      if (menu == null) {
+        Exception ex =
+            new Exception("no tree menu defined for type "
+                + instance.getType().getName());
+        throw new RestartResponseException(new ErrorPage(ex));
+      }
       PageParameters parameters = new PageParameters();
       parameters.add("command", menu.getUUID().toString());
       parameters.add("oid", cellmodel.getOid());
 
       this.setResponsePage(ContentContainerPage.class, parameters);
 
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     }
 
   }

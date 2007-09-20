@@ -22,6 +22,7 @@ package org.efaps.webapp.components.menu;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.InlineFrame;
 
 import org.efaps.admin.event.EventType;
@@ -29,6 +30,7 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.models.MenuItemModel;
+import org.efaps.webapp.pages.ErrorPage;
 import org.efaps.webapp.pages.MainPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
@@ -84,6 +86,7 @@ public class StandardLink extends AbstractMenuItemLink {
         command.executeEvents(EventType.UI_COMMAND_EXECUTE);
       } catch (EFapsException e) {
         e.printStackTrace();
+        throw new RestartResponseException(new ErrorPage(e));
       }
 
       if ("true".equals(command.getProperty("NoUpdateAfterCOMMAND"))) {
