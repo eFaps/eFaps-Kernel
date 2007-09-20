@@ -20,6 +20,7 @@
 
 package org.efaps.webapp.pages;
 
+import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
@@ -37,7 +38,7 @@ public class WebTablePage extends ContentPage {
 
   private static final long serialVersionUID = 7564911406648729094L;
 
-  public WebTablePage(final PageParameters _parameters)  {
+  public WebTablePage(final PageParameters _parameters) {
     this(new TableModel(_parameters));
   }
 
@@ -46,26 +47,25 @@ public class WebTablePage extends ContentPage {
     this.addComponents();
   }
 
+  public WebTablePage(final IModel _model, final IPageMap _pagemap) {
+    super(_model, null, _pagemap);
+  }
+
   protected void addComponents() {
     this.add(new StyleSheetReference("webtablecss", getClass(),
         "webtablepage/WebTablePage.css"));
-    try {
-
-      TableModel model = (TableModel) super.getModel();
-      if (!model.isInitialised()) {
-        model.execute();
-      }
-      this.add(new TableHeaderPanel("header", model));
-
-      FormContainer form = new FormContainer("form");
-      this.add(form);
-      super.addComponents(form);
-
-      form.add(new WebTableContainer("formtable", model, this));
-    } catch (Exception e) {
-
-      e.printStackTrace();
+    TableModel model = (TableModel) super.getModel();
+    if (!model.isInitialised()) {
+      model.execute();
     }
+    this.add(new TableHeaderPanel("header", model));
+
+    FormContainer form = new FormContainer("form");
+    this.add(form);
+    super.addComponents(form);
+
+    form.add(new WebTableContainer("formtable", model, this));
+
   }
 
 }

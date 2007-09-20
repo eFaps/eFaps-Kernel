@@ -23,6 +23,7 @@ package org.efaps.webapp.pages;
 import java.util.UUID;
 
 import org.apache.wicket.PageMap;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.StringHeaderContributor;
@@ -35,6 +36,7 @@ import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
+import org.efaps.util.EFapsException;
 import org.efaps.webapp.components.ChildCallBackHeaderContributer;
 import org.efaps.webapp.components.menu.MenuContainer;
 import org.efaps.webapp.models.MenuItemModel;
@@ -51,7 +53,7 @@ public class MainPage extends WebPage {
 
   public static String IFRAME_WICKETID = "content";
 
-  public MainPage() throws Exception {
+  public MainPage() {
     // TODO remove the 67 from this trick
     // hack to show the IFrame correctly in safari
     if (((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
@@ -76,10 +78,17 @@ public class MainPage extends WebPage {
 
     this.add(new Label("welcome", DBProperties
         .getProperty("LogoRowInclude.Welcome.Label")));
-    this.add(new Label("firstname", Context.getThreadContext().getPerson()
-        .getFirstName()));
-    this.add(new Label("lastname", Context.getThreadContext().getPerson()
-        .getLastName()));
+
+    try {
+      this.add(new Label("firstname", Context.getThreadContext().getPerson()
+          .getFirstName()));
+      this.add(new Label("lastname", Context.getThreadContext().getPerson()
+          .getLastName()));
+    } catch (EFapsException e) {
+      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
+    }
+
     this.add(new Label("version", DBProperties
         .getProperty("LogoRowInclude.Version.Label")));
 

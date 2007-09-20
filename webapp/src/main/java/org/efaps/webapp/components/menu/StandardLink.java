@@ -67,7 +67,7 @@ public class StandardLink extends AbstractMenuItemLink {
 
         this.getPage().addOrReplace(c);
       } else {
-        this.getRequestCycle().setResponsePage(WebTablePage.class, para);
+        this.setResponsePage(WebTablePage.class, para);
       }
     } else if (command.getTargetForm() != null
         || command.getTargetSearch() != null) {
@@ -78,7 +78,7 @@ public class StandardLink extends AbstractMenuItemLink {
                 .forName(MainPage.IFRAME_PAGEMAP_NAME), WebFormPage.class, para);
         this.getPage().addOrReplace(c);
       } else {
-        this.getRequestCycle().setResponsePage(WebFormPage.class, para);
+        this.setResponsePage(WebFormPage.class, para);
       }
     } else if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
 

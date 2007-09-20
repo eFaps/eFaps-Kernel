@@ -41,6 +41,8 @@ public abstract class ContentPage extends WebPage {
 
   private static final long serialVersionUID = -2374207555009145191L;
 
+  public static final String POPUP_PAGEMAP_NAME = "eFapsPopUp";
+
   private final ModalWindowContainer modalWindow;
 
   private final ModalWindowContainer modal = new ModalWindowContainer("modal");

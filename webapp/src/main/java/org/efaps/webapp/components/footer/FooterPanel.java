@@ -283,6 +283,7 @@ public class FooterPanel extends Panel {
 
     @Override
     public void onSubmit() {
+     this.getSession();
       super.onSubmit();
       AbstractModel model = (AbstractModel) super.getModel();
 

@@ -92,7 +92,7 @@ public class WebTableContainer extends WebMarkupContainer {
         CellPanel cellpanel =
             new CellPanel("cell" + "_" + i + "_" + j, cellmodel,
                 ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
-                    .getPageMapName()));
+                    .getPageMapName()), model);
         row.add(cellpanel);
 
         j++;
