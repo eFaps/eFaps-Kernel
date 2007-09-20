@@ -46,6 +46,7 @@ import org.efaps.webapp.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.ContentPage;
+import org.efaps.webapp.pages.MainPage;
 
 /**
  * @author jmo
@@ -81,8 +82,13 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
 
     @Override
     protected void onEvent(final AjaxRequestTarget _target) {
-      ModalWindowContainer modal =
-          ((ContentPage) super.getComponent().getPage()).getModal();
+      ModalWindowContainer modal;
+      if (super.getComponent().getPage() instanceof MainPage) {
+        modal = ((MainPage) super.getComponent().getPage()).getModal();
+      } else {
+        modal = ((ContentPage) super.getComponent().getPage()).getModal();
+
+      }
       ModalWindowAjaxPageCreator pageCreator =
           new ModalWindowAjaxPageCreator((MenuItemModel) super.getComponent()
               .getModel(), modal);

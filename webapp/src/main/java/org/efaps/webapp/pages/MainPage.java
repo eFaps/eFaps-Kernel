@@ -24,8 +24,6 @@ import java.util.UUID;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -39,6 +37,7 @@ import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.components.ChildCallBackHeaderContributer;
 import org.efaps.webapp.components.menu.MenuContainer;
+import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.MenuItemModel;
 
 /**
@@ -52,6 +51,8 @@ public class MainPage extends WebPage {
   public static String IFRAME_PAGEMAP_NAME = "MainPageIFramePageMap";
 
   public static String IFRAME_WICKETID = "content";
+
+  private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
   public MainPage() {
     // TODO remove the 67 from this trick
@@ -70,6 +71,9 @@ public class MainPage extends WebPage {
     this.add(new StringHeaderContributor("<title>"
         + DBProperties.getProperty("LogoRowInclude.Version.Label")
         + "</title>"));
+
+    add(this.modal);
+    this.modal.setPageMapName("modal");
 
     this
         .add(new StyleSheetReference("css", getClass(), "mainpage/MainPage.css"));
@@ -103,14 +107,9 @@ public class MainPage extends WebPage {
 
     this.add(new InlineFrame("hidden", getPageMap(), EmptyPage.class));
 
-    this.add(new AbstractDefaultAjaxBehavior() {
+  }
 
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      protected void respond(final AjaxRequestTarget _target) {
-      }
-    });
-
+  public final ModalWindowContainer getModal() {
+    return this.modal;
   }
 }

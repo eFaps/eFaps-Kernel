@@ -61,7 +61,7 @@
       <execute program="org.efaps.esjp.common.main.PwdChgExecute"/>
     </target>
     <!-- properties -->
-    <property name="Target">popup</property>
+    <property name="Target">modal</property>
     <property name="TargetCreateType">Admin_User_Person</property>
     <property name="TargetMode">create</property>
   </definition>
