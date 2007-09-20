@@ -134,7 +134,7 @@ public class TableModel extends AbstractModel {
 
   }
 
-  private void initialise() throws EFapsException {
+  private void initialise() {
     CommandAbstract command = getCommand();
     if (command != null) {
       // set target table
@@ -174,7 +174,7 @@ public class TableModel extends AbstractModel {
     this.headers.clear();
   }
 
-  public void execute() throws Exception {
+  public void execute() throws Exception  {
 
     // first get list of object ids
     List<Return> ret =

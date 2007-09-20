@@ -22,6 +22,7 @@ package org.efaps.webapp.components.table.cell;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
@@ -30,10 +31,12 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
+import org.efaps.util.EFapsException;
 import org.efaps.webapp.components.AbstractAjaxCallBackBehavior;
 import org.efaps.webapp.components.listmenu.ListMenuUpdate;
 import org.efaps.webapp.models.CellModel;
 import org.efaps.webapp.pages.ContentContainerPage;
+import org.efaps.webapp.pages.ErrorPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
@@ -103,28 +106,30 @@ public class AjaxLinkContainer extends WebMarkupContainer {
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());
       }
+      Menu menu = null;
       try {
-
-        Menu menu = instance.getType().getTreeMenu();
-        PageParameters parameters = new PageParameters();
-        parameters.add("command", menu.getUUID().toString());
-        parameters.add("oid", cellmodel.getOid());
-
-        if (menu.getTargetTable() != null) {
-
-          super.getComponent().getRequestCycle().setResponsePage(
-              WebTablePage.class, parameters);
-        } else {
-          WebFormPage page =
-              new WebFormPage(parameters, null, PageMap
-                  .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
-          super.getComponent().getRequestCycle().setResponsePage(page);
-        }
+        menu = instance.getType().getTreeMenu();
       } catch (Exception e) {
-
         e.printStackTrace();
+        throw new RestartResponseException(new ErrorPage(new EFapsException(
+            this.getClass(), "", "can't read the TreeMenu")));
       }
-    }
 
+      PageParameters parameters = new PageParameters();
+      parameters.add("command", menu.getUUID().toString());
+      parameters.add("oid", cellmodel.getOid());
+
+      if (menu.getTargetTable() != null) {
+
+        super.getComponent().getRequestCycle().setResponsePage(
+            WebTablePage.class, parameters);
+      } else {
+        WebFormPage page =
+            new WebFormPage(parameters, null, PageMap
+                .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
+        super.getComponent().getRequestCycle().setResponsePage(page);
+      }
+
+    }
   }
 }

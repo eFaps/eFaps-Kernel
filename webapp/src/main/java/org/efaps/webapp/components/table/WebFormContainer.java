@@ -57,34 +57,28 @@ public class WebFormContainer extends WebMarkupContainer {
   private void initialise(final Page _page) {
     int i = 0;
     int j = 0;
-    try {
-      FormModel model = (FormModel) super.getModel();
-      model.execute();
+    FormModel model = (FormModel) super.getModel();
+    model.execute();
 
-      RowContainer row = null;
-      for (FormRowModel rowmodel : model.getValues()) {
-        row = new RowContainer(ROWID + "_" + i);
-        this.add(row);
-        i++;
-        for (FormCellModel cellmodel : rowmodel.getValues()) {
-          FormCellPanel formcellpanel =
-              new FormCellPanel("cell" + "_" + i + "_" + j, cellmodel, model
-                  .getMaxGroupCount(), rowmodel.getGroupCount(),
-                  ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
-                      .getPageMapName()));
-          row.add(formcellpanel);
-          if (cellmodel.isRequired()
-              && (model.isCreateMode() || model.isEditMode())) {
-            this.requiredComponents.add(formcellpanel);
-          }
-          j++;
+    RowContainer row = null;
+    for (FormRowModel rowmodel : model.getValues()) {
+      row = new RowContainer(ROWID + "_" + i);
+      this.add(row);
+      i++;
+      for (FormCellModel cellmodel : rowmodel.getValues()) {
+        FormCellPanel formcellpanel =
+            new FormCellPanel("cell" + "_" + i + "_" + j, cellmodel, model
+                .getMaxGroupCount(), rowmodel.getGroupCount(),
+                ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
+                    .getPageMapName()));
+        row.add(formcellpanel);
+        if (cellmodel.isRequired()
+            && (model.isCreateMode() || model.isEditMode())) {
+          this.requiredComponents.add(formcellpanel);
         }
-
+        j++;
       }
 
-    } catch (Exception e) {
-
-      e.printStackTrace();
     }
 
   }

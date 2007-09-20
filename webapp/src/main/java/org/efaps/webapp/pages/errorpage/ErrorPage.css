@@ -1,0 +1,23 @@
+table.eFapsErrorTable {
+  border-style: solid;
+  border-color: #FF0000;
+  width: 100%;
+  font-family: arial, verdana, helvetica, sans-serif;
+  font-size: 12px;
+}
+
+/* Error Label Appearance */
+td.eFapsErrorLabel {
+  background-color: #FFB0B0;
+  color: black;
+  font-weight: bold;
+  width: 1%;
+  padding: 3px;
+  vertical-align: top;
+}
+
+/* Error Text Appearance */
+td.eFapsErrorText {
+  background-color: #FFD0D0;
+  padding: 3px;
+}

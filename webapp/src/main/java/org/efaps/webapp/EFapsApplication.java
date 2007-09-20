@@ -22,12 +22,14 @@ package org.efaps.webapp;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
+import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Response;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
 import org.apache.wicket.authorization.Action;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.WebRequest;
 
 import org.efaps.webapp.pages.LoginPage;
 import org.efaps.webapp.pages.MainPage;
@@ -37,6 +39,17 @@ import org.efaps.webapp.pages.MainPage;
  * @version $Id$
  */
 public class EFapsApplication extends WebApplication {
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.protocol.http.WebApplication#newRequestCycle(org.apache.wicket.Request,
+   *      org.apache.wicket.Response)
+   */
+  @Override
+  public RequestCycle newRequestCycle(Request request, Response response) {
+    return new EFapsWebRequestCycle(this, (WebRequest) request, response);
+  }
 
   @Override
   public Class<MainPage> getHomePage() {
@@ -52,8 +65,6 @@ public class EFapsApplication extends WebApplication {
     // getDebugSettings().setAjaxDebugModeEnabled(false);
     super.getSecuritySettings().setAuthorizationStrategy(
         new EFapsFormBasedAuthorizationStartegy());
-
-
   }
 
   @Override

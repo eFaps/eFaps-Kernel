@@ -24,6 +24,7 @@ import java.io.StringReader;
 import java.util.UUID;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.model.Model;
 
 import org.efaps.admin.dbproperty.DBProperties;
@@ -33,11 +34,13 @@ import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.beans.ValueList;
+import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+import org.efaps.webapp.pages.ErrorPage;
 
 /**
  * @author jmo
@@ -130,11 +133,7 @@ public abstract class AbstractModel extends Model {
    */
   public AbstractModel(PageParameters _parameters) {
     this.parameters = _parameters;
-    try {
-      initialise();
-    } catch (EFapsException e) {
-      e.printStackTrace();
-    }
+    initialise();
   }
 
   /**
@@ -202,7 +201,7 @@ public abstract class AbstractModel extends Model {
    *                name of searched command object
    * @return found command / menu instance, or <code>null</null> if not found
    */
-  protected CommandAbstract getCommand(final UUID _uuid) throws EFapsException {
+  protected CommandAbstract getCommand(final UUID _uuid) {
     CommandAbstract cmd = Command.get(_uuid);
     if (cmd == null) {
       cmd = Menu.get(_uuid);
@@ -303,22 +302,28 @@ public abstract class AbstractModel extends Model {
    * @return Parameter for the key, null if not found
    * @throws EFapsException
    */
-  public String getParameter(String _key) throws EFapsException {
+  public String getParameter(String _key) {
     String ret = null;
-
-    String[] values = Context.getThreadContext().getParameters().get(_key);
-    if (values != null) {
-      ret = values[0];
-    } else {
-      if (this.parameters.get(_key) instanceof String[]) {
-        values = (String[]) this.parameters.get(_key);
-        if (values != null) {
-          ret = values[0];
-        }
+    try {
+      String[] values;
+      values = Context.getThreadContext().getParameters().get(_key);
+      if (values != null) {
+        ret = values[0];
       } else {
-        ret = (String) this.parameters.get(_key);
+        if (this.parameters.get(_key) instanceof String[]) {
+          values = (String[]) this.parameters.get(_key);
+          if (values != null) {
+            ret = values[0];
+          }
+        } else {
+          ret = (String) this.parameters.get(_key);
+        }
       }
+    } catch (EFapsException e) {
+      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
+
     return ret;
   }
 
@@ -337,23 +342,32 @@ public abstract class AbstractModel extends Model {
    * @return Value of the Title
    * @throws Exception
    */
-  public String getTitle() throws Exception {
+  public String getTitle() {
     String title =
         DBProperties.getProperty(this.getCommand().getName() + ".Title");
+    try {
 
-    if ((title != null) && (this.getOid() != null)) {
-      SearchQuery query = new SearchQuery();
-      query.setObject(this.getOid());
-      ValueParser parser = new ValueParser(new StringReader(title));
-      ValueList list = parser.ExpressionString();
-      list.makeSelect(query);
-      if (query.selectSize() > 0) {
-        query.execute();
-        if (query.next()) {
-          title = list.makeString(query);
+      if ((title != null) && (this.getOid() != null)) {
+        SearchQuery query = new SearchQuery();
+        query.setObject(this.getOid());
+        ValueParser parser = new ValueParser(new StringReader(title));
+        ValueList list;
+        list = parser.ExpressionString();
+        list.makeSelect(query);
+        if (query.selectSize() > 0) {
+          query.execute();
+          if (query.next()) {
+            title = list.makeString(query);
+          }
+          query.close();
         }
-        query.close();
       }
+    } catch (ParseException e) {
+      throw new RestartResponseException(new ErrorPage(new EFapsException(this
+          .getClass(), "", "Error reading the Title")));
+    } catch (Exception e) {
+      throw new RestartResponseException(new ErrorPage(new EFapsException(this
+          .getClass(), "", "Error reading the Title")));
     }
 
     return title;
@@ -364,7 +378,7 @@ public abstract class AbstractModel extends Model {
    *
    * @throws EFapsException
    */
-  private void initialise() throws EFapsException {
+  private void initialise() {
     this.oid = getParameter("oid");
     CommandAbstract command =
         getCommand(UUID.fromString(getParameter("command")));
@@ -485,8 +499,8 @@ public abstract class AbstractModel extends Model {
       }
     } catch (EFapsException e) {
       e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
 
   }
-
 }

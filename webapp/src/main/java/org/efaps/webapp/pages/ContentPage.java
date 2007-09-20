@@ -65,30 +65,27 @@ public abstract class ContentPage extends WebPage implements
   }
 
   protected void addComponents(FormContainer _form) {
-    try {
-      add(new StyleSheetReference("css", getClass(),
-          "contentpage/ContentPage.css"));
 
-      add(this.modal);
-      this.modal.setPageMapName("modal");
+    add(new StyleSheetReference("css", getClass(),
+        "contentpage/ContentPage.css"));
 
-      AbstractModel model = (AbstractModel) super.getModel();
-      add(new TitelPanel("titel", model.getTitle()));
+    add(this.modal);
+    this.modal.setPageMapName("modal");
 
-      add(new MenuPanel("menu", model, _form));
-      WebMarkupContainer footerpanel;
-      if (model.isCreateMode() || model.isEditMode() || model.isSearchMode()) {
-        footerpanel = new FooterPanel("footer", model, this.modalWindow, _form);
-      } else {
-        footerpanel = new WebMarkupContainer("footer");
-        footerpanel.setVisible(false);
-      }
+    AbstractModel model = (AbstractModel) super.getModel();
+    add(new TitelPanel("titel", model.getTitle()));
 
-      add(footerpanel);
-    } catch (Exception e) {
-
-      e.printStackTrace();
+    add(new MenuPanel("menu", model, _form));
+    WebMarkupContainer footerpanel;
+    if (model.isCreateMode() || model.isEditMode() || model.isSearchMode()) {
+      footerpanel = new FooterPanel("footer", model, this.modalWindow, _form);
+    } else {
+      footerpanel = new WebMarkupContainer("footer");
+      footerpanel.setVisible(false);
     }
+
+    add(footerpanel);
+
   }
 
   public final ModalWindowContainer getModal() {
