@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * The class is used to import from all JAAS system the user into eFaps so that
- * all users which could authetificate themself outside eFaps are known inside
+ * all users which could authentificate them self outside eFaps are known inside
  * eFaps (e.g. to assign them for access or to send then an email).<br/> To
  * start an import, the class must be instanciated and method
  * {@link #importPersons} must be called.
@@ -247,7 +247,7 @@ public class ImportHandler extends LoginHandler {
     /**
      * eFaps Person instance.
      */
-    private Person person;
+    private final Person person;
 
     /**
      * User Name of the person.
@@ -283,7 +283,7 @@ public class ImportHandler extends LoginHandler {
       persMappers.add(this);
     }
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
     /**
@@ -296,20 +296,6 @@ public class ImportHandler extends LoginHandler {
      */
     private void addJAASSystem(final JAASSystem _jaasSystem, final String _key) {
       this.keys.put(_jaasSystem, _key);
-    }
-
-    // /////////////////////////////////////////////////////////////////////////
-    // getter and setter methods
-
-    /**
-     * This is the setter method for instance variable {@link #person}.
-     * 
-     * @param _id
-     *                new value for instance variable {@link #person}
-     * @see #person
-     */
-    private void setPerson(final Person _person) {
-      this.person = _person;
     }
   }
 }

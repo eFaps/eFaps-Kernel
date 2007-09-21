@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -433,7 +433,7 @@ public class LoginHandler {
     private final ActionCallback.Mode mode;
 
     /**
-     * Constructor initialising the action, name and password in this callback
+     * Constructor initializing the action, name and password in this call back
      * handler.
      * 
      * @param _action
