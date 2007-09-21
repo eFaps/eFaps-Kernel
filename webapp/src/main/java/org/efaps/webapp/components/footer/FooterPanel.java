@@ -59,6 +59,10 @@ import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
 /**
+ * This class renders the Footer under a WebForm or WebTable.<br>
+ * It provides also the necesarry links to initialise the necesarry actions of
+ * the Footer like submit, cancel and so on.
+ *
  * @author jmo
  * @version $Id$
  */
@@ -66,17 +70,43 @@ public class FooterPanel extends Panel {
 
   private static final long serialVersionUID = -1722339596237748160L;
 
+  /**
+   * static Reference to the Icon for "next'
+   */
   public static final ResourceReference ICON_NEXT =
       new ResourceReference(FooterPanel.class, "eFapsButtonNext.gif");
 
+  /**
+   * static Reference to the Icon for "done'
+   */
   public static final ResourceReference ICON_DONE =
       new ResourceReference(FooterPanel.class, "eFapsButtonDone.gif");
 
+  /**
+   * static Reference to the Icon for "cancel'
+   */
   public static final ResourceReference ICON_CANCEL =
       new ResourceReference(FooterPanel.class, "eFapsButtonCancel.gif");
 
+  /**
+   * This instance variable stores the ModalWindowContainer the Page and with it
+   * this footer was opened in, to have acess to it, for actions like closing
+   * the ModalWindow.
+   */
   private final ModalWindowContainer modalWindow;
 
+  /**
+   * Constructor for the FooterPanel.
+   *
+   * @param _id
+   *                wicket:id of the Component
+   * @param _model
+   *                Model of the Comoponent
+   * @param _modalWindow
+   *                ModalWindowContainer containing this FooterPanel
+   * @param _form
+   *                FormContainer of the Page (needed to submit the Form)
+   */
   public FooterPanel(final String _id, final IModel _model,
                      final ModalWindowContainer _modalWindow,
                      FormContainer _form) {
@@ -133,6 +163,10 @@ public class FooterPanel extends Panel {
 
   }
 
+  /**
+   * Link using Ajax to submit the Form and close the ModalWindow or the PopUp
+   * this FooterPanel is imbeded.
+   */
   public class AjaxSubmitAndCloseLink extends SubmitLink {
 
     private static final long serialVersionUID = 1L;
@@ -144,19 +178,32 @@ public class FooterPanel extends Panel {
     }
   }
 
+  /**
+   * Behavior providing the functionality for {@link #AjaxSubmitAndCloseLink}
+   */
   public class AjaxSubmitAndCloseBehavior extends AjaxFormSubmitBehavior {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Instance variable storing the model, because the superclasses of a
+     * behavior, don't store the model.
+     */
     private final IModel imodel;
 
+    /** Instance variable storing the form to be submited. */
     private final Form form;
 
+    /**
+     * Constructor
+     *
+     * @param _model
+     * @param _form
+     */
     public AjaxSubmitAndCloseBehavior(final IModel _model, final Form _form) {
       super(_form, "onclick");
       this.imodel = _model;
       this.form = _form;
-
     }
 
     @Override
@@ -192,6 +239,14 @@ public class FooterPanel extends Panel {
       }
     }
 
+    /**
+     * Method checking if the mandatory field of the Form are filled in, and if
+     * not opens a WarnDialog and marks the fields in the Form via Ajax.
+     *
+     * @param _target
+     *                RequestTarget used for this Request
+     * @return true if all mandatory fields are filled, else false
+     */
     private boolean checkForRequired(final AjaxRequestTarget _target) {
       boolean ret = true;
       if (this.form.getParent().getModel() instanceof TableModel) {
@@ -256,6 +311,9 @@ public class FooterPanel extends Panel {
     }
   }
 
+  /**
+   * Link using Ajax to close the ModalWindow the FooterPanel was opened in.
+   */
   public class AjaxCancelLink extends AjaxLink {
 
     public AjaxCancelLink(String id) {
@@ -271,6 +329,9 @@ public class FooterPanel extends Panel {
     }
   }
 
+  /**
+   * Link used to submit a Search
+   */
   public class SearchSubmitLink extends SubmitLink {
 
     private static final long serialVersionUID = 1L;
@@ -283,7 +344,7 @@ public class FooterPanel extends Panel {
 
     @Override
     public void onSubmit() {
-     this.getSession();
+      this.getSession();
       super.onSubmit();
       AbstractModel model = (AbstractModel) super.getModel();
 
