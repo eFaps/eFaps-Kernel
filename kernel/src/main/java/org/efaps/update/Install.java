@@ -118,6 +118,7 @@ public class Install {
    * Installs the xml update scripts of the schema definitions for this version
    * defined in {@link #number}.
    */
+  @SuppressWarnings("unchecked")
   public void install(final Long _number) throws EFapsException, Exception {
 
     // initialse cache
@@ -176,7 +177,7 @@ public class Install {
   /**
    * this is the getter method for instance variable {@link #urls}
    * 
-   * @return instancevarable {@link #urls}
+   * @return instance variable {@link #urls}
    * @see #urls
    */
   public Map<String, URL> getURLs() {
