@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,11 +73,6 @@ public class XMLUserLoginModule implements LoginModule  {
    * entities for the person logging in.
    */
   private Subject subject = null;
-
-  /**
-   * Has our own <code>commit()</code> returned successfully?
-   */
-  private boolean committed = false;
 
   /**
    *
@@ -211,7 +206,6 @@ public class XMLUserLoginModule implements LoginModule  {
           this.subject.getPrincipals().add(person);
         }
       }
-      this.committed = true;
       ret = true;
     } else if (this.person != null)  {
       if (LOG.isDebugEnabled())  {
@@ -226,7 +220,6 @@ public class XMLUserLoginModule implements LoginModule  {
           this.subject.getPrincipals().add(principal);
         }
       }
-      this.committed = true;
       ret = true;
     }
 
@@ -254,7 +247,6 @@ public class XMLUserLoginModule implements LoginModule  {
         this.subject.getPrincipals().remove(principal);
       }
       this.person = null;
-      this.committed = false;
       ret = true;
     }
     return ret;
@@ -282,7 +274,6 @@ public class XMLUserLoginModule implements LoginModule  {
         this.subject.getPrincipals().remove(principal);
       }
       this.person = null;
-      this.committed = false;
       ret = true;
     }
     return ret;
