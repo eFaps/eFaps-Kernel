@@ -52,6 +52,9 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_JAASKeyTree</name>
+    <target>
+      <form>Admin_User_JAASKeyForm</form>
+    </target>  
   </definition>
 
 </ui-menu>

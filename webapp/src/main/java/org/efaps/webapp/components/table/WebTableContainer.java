@@ -84,9 +84,7 @@ public class WebTableContainer extends WebMarkupContainer {
             new CellCheckBoxComponent("box" + i, modelrow.getOids());
         cell.add(new SimpleAttributeModifier("width", "1%"));
         cell.add(checkbox);
-
       }
-
       j++;
 
       for (CellModel cellmodel : modelrow.getValues()) {
@@ -95,16 +93,14 @@ public class WebTableContainer extends WebMarkupContainer {
                 ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
                     .getPageMapName()), model);
         row.add(cellpanel);
-
         j++;
       }
       i++;
-
     }
 
     if (i == 0) {
       Label nodata =
-          new Label("test", DBProperties.getProperty("WebApp_WebTable_NoData"));
+          new Label("test", DBProperties.getProperty("WebApp_WebTable.NoData"));
       nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
       this.add(nodata);
     }
@@ -120,10 +116,6 @@ public class WebTableContainer extends WebMarkupContainer {
       child.render(getMarkupStream());
     }
 
-  }
-
-  public TableModel getITableModel() {
-    return (TableModel) super.getModel();
   }
 
 }
