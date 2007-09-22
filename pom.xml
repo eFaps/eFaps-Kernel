@@ -86,35 +86,11 @@
 
   <developers>
     <developer>
-      <id>mbu</id>
-      <name>Marcus Budde</name>
-      <email>budde@buglo.de</email>
-      <url>www.buglo.org</url>
-      <organization>Budde &amp; Glodzinski OHG</organization>
-      <organizationUrl/>
-      <roles>
-      </roles>
-      <timezone>+1</timezone>
-      <properties/>
-    </developer>
-    <developer>
       <id>tjo</id>
       <name>Tim Jouaux</name>
       <email>tim.jouaux@efaps.org</email>
       <url>www.efaps.org</url>
       <organization>eFaps</organization>
-      <organizationUrl/>
-      <roles>
-      </roles>
-      <timezone>+1</timezone>
-      <properties/>
-    </developer>
-    <developer>
-      <id>jul</id>
-      <name>Andreas Julius</name>
-      <email>andreas.julius@online.de</email>
-      <url></url>
-      <organization></organization>
       <organizationUrl/>
       <roles>
       </roles>
@@ -207,6 +183,16 @@
       <groupId>commons-digester</groupId>
       <artifactId>commons-digester</artifactId>
       <version>1.8</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- For interpreting expressions (e.g. of xml definitions) -->
@@ -215,6 +201,12 @@
       <artifactId>commons-jexl</artifactId>
       <version>1.1</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -230,20 +222,13 @@
       </properties-->
     </dependency>
 
-    <!-- For Logging Purpose:
-         the api must be defined, because otherwise older versions are
-         referenced
-         http://jakarta.apache.org/commons/loggin/
+    <!-- For Logging Purpose
+         http://www.slf4j.org
     -->
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging-api</artifactId>
-      <version>1.1</version>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.4.3</version>
     </dependency>
 
     <!-- Transaction Manager -->
@@ -266,45 +251,99 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- Java program compiler -->
-    <!-- http://jakarta.apache.org/commons/jci/ -->
+    <!--
+      Java program compiler. The commons logging must be exluded because eFaps
+      uses slf4j logger.
+
+      http://jakarta.apache.org/commons/jci/
+     -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-core</artifactId>
       <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-javac</artifactId>
       <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-eclipse</artifactId>
       <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency> 
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-groovy</artifactId>
       <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency> 
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-rhino</artifactId>
       <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency> 
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-janino</artifactId>
       <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency> 
 
-    <!-- file system used for checkin / checkout on external resources -->
-    <!-- http://jakarta.apache.org/commons/vfs/ -->
+    <!--
+      File system used for checkin / checkout on external resources. The
+      commons logging must be exluded because eFaps uses slf4j logger.
+
+      http://commons.apache.org/vfs/ 
+    -->
     <dependency>
       <groupId>commons-vfs</groupId>
       <artifactId>commons-vfs</artifactId>
       <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -332,21 +371,6 @@
         <comment>The component is part of the slide module.</comment>
       </properties>
 -->
-    </dependency>
-
-    <!--
-      JUnit for Testing
-    -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.0</version>
-      <scope>test</scope>
-      <!--url>http://jakarta.apache.org/commons/fileupload/</url-->
-      <!--properties>
-        <war.bundle>true</war.bundle>
-        <comment>The component is needed for the file upload use case from the eFaps web application. It helps to access in the form process JSP to a file like a normal request paramter.</comment>
-      </properties-->
     </dependency>
 
   </dependencies>
