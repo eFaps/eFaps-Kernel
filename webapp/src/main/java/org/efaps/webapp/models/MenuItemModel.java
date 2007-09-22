@@ -84,6 +84,14 @@ public class MenuItemModel extends Model {
 
   private boolean selected = false;
 
+  private boolean askUser = false;
+
+  private boolean submit = false;
+
+  private final int windowWidth;
+
+  private final int windowHeight;
+
   public MenuItemModel(final UUID _uuid) {
     this(Menu.get(_uuid), null);
   }
@@ -100,6 +108,10 @@ public class MenuItemModel extends Model {
     this.reference = _command.getReference();
     this.target = _command.getTarget();
     this.uuid = _command.getUUID();
+    this.askUser = _command.isAskUser();
+    this.submit = _command.isSubmit();
+    this.windowHeight = _command.getWindowHeight();
+    this.windowWidth = _command.getWindowWidth();
     this.description = "";
     this.oid = _oid;
     this.label = "";
@@ -291,6 +303,46 @@ public class MenuItemModel extends Model {
    */
   public void setSelected(boolean selected) {
     this.selected = selected;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #askUser}.
+   *
+   * @return value of instance variable {@link #askUser}
+   */
+
+  public boolean isAskUser() {
+    return this.askUser;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #submit}.
+   *
+   * @return value of instance variable {@link #submit}
+   */
+
+  public boolean isSubmit() {
+    return this.submit;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #windowWidth}.
+   *
+   * @return value of instance variable {@link #windowWidth}
+   */
+
+  public int getWindowWidth() {
+    return this.windowWidth;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #windowHeight}.
+   *
+   * @return value of instance variable {@link #windowHeight}
+   */
+
+  public int getWindowHeight() {
+    return this.windowHeight;
   }
 
   // ///////////////////////////////////////////////////////////////////////////

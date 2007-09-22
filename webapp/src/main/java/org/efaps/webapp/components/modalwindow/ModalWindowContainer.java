@@ -68,8 +68,8 @@ public class ModalWindowContainer extends ModalWindow {
   }
 
   @Override
-  public void close(AjaxRequestTarget target) {
-    super.close(target);
+  public void close(final AjaxRequestTarget _target) {
+    super.close(_target);
     if (this.reloadParent) {
       AbstractModel model = (AbstractModel) this.getPage().getModel();
       Class<?> clazz;
@@ -89,7 +89,7 @@ public class ModalWindowContainer extends ModalWindow {
         javascript = "top.frames[0].frames[0].location.href = '";
       }
       javascript += url + "';";
-      target.prependJavascript(javascript);
+      _target.appendJavascript(javascript);
     }
 
   }

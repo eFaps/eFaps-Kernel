@@ -1,11 +1,13 @@
 body {
-  background-color: #E0E0E0;
   text-align: center;
   font-family: arial, verdana, helvetica, sans-serif;
   font-size: 8pt;
-  padding-top: 40px;
 }
 
-.eFapsWarnDialog {
-  
+.eFapsWarnDialogText {
+  padding: 10px;
+}
+
+.eFapsWarnDialogButtons {
+  padding: 10px;
 }

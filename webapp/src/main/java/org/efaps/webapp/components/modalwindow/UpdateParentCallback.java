@@ -20,13 +20,13 @@
 
 package org.efaps.webapp.components.modalwindow;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 
-import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.AbstractModel;
+import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
@@ -39,18 +39,18 @@ public class UpdateParentCallback implements ModalWindow.WindowClosedCallback {
 
   private static final long serialVersionUID = 1L;
 
-  private final WebMarkupContainer panel;
+  private final Component panel;
 
   private final ModalWindowContainer modalwindow;
 
   private final boolean clearmodel;
 
-  public UpdateParentCallback(final WebMarkupContainer _panel,
+  public UpdateParentCallback(final Component _panel,
                               ModalWindowContainer _modalwindow) {
     this(_panel, _modalwindow, true);
   }
 
-  public UpdateParentCallback(final WebMarkupContainer _panel,
+  public UpdateParentCallback(final Component _panel,
                               ModalWindowContainer _modalwindow,
                               final boolean _clearmodel) {
     this.panel = _panel;
@@ -61,18 +61,18 @@ public class UpdateParentCallback implements ModalWindow.WindowClosedCallback {
   public void onClose(AjaxRequestTarget _target) {
     if (this.modalwindow.isUpdateParent()) {
       if (this.clearmodel) {
-        ((AbstractModel) panel.getPage().getModel()).resetModel();
+        ((AbstractModel) this.panel.getPage().getModel()).resetModel();
       }
 
       Page page = null;
-      if (panel.getPage().getModel() instanceof TableModel) {
+      if (this.panel.getPage().getModel() instanceof TableModel) {
 
-        page = new WebTablePage(panel.getPage().getModel());
+        page = new WebTablePage(this.panel.getPage().getModel());
 
-      } else if (panel.getPage().getModel() instanceof FormModel) {
-        page = new WebFormPage(panel.getPage().getModel());
+      } else if (this.panel.getPage().getModel() instanceof FormModel) {
+        page = new WebFormPage(this.panel.getPage().getModel());
       }
-      panel.setResponsePage(page);
+      this.panel.setResponsePage(page);
     }
   }
 }

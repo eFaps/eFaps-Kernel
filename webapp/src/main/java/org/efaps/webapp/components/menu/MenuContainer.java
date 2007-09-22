@@ -213,13 +213,9 @@ public class MenuContainer extends AbstractParentMarkupContainer {
   @Override
   protected void onComponentTagBody(final MarkupStream _markupStream,
                                     final ComponentTag _openTag) {
-    try {
-      super.replaceComponentTagBody(_markupStream, _openTag,
-          convertToHtml(_openTag));
-    } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+
+    super.replaceComponentTagBody(_markupStream, _openTag,
+        convertToHtml(_openTag));
   }
 
   public String convertToHtml(final ComponentTag _openTag) {

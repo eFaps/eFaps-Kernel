@@ -23,18 +23,25 @@ package org.efaps.webapp.components.menu;
 import java.util.Map;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.form.Form;
 
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.util.EFapsException;
+import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.models.TableModel;
+import org.efaps.webapp.pages.ContentPage;
+import org.efaps.webapp.pages.ErrorPage;
+import org.efaps.webapp.pages.MainPage;
+import org.efaps.webapp.pages.DialogPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
@@ -76,33 +83,57 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
 
     @Override
     protected void onSubmit(final AjaxRequestTarget _target) {
-      CommandAbstract command =
-          ((MenuItemModel) super.getComponent().getModel()).getCommand();
-      Map<?, ?> para = this.form.getRequest().getParameterMap();
+      final MenuItemModel model =
+          (MenuItemModel) super.getComponent().getModel();
 
-      if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-        try {
-          String[] oids = (String[]) para.get("selectedRow");
-          if (oids != null) {
-            command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-                ParameterValues.OTHERS, oids);
-          } else {
-            command.executeEvents(EventType.UI_COMMAND_EXECUTE);
-          }
-        } catch (EFapsException e) {
-          e.printStackTrace();
+      final Map<?, ?> para = this.form.getRequest().getParameterMap();
+
+      if (model.isAskUser()) {
+        final ModalWindowContainer modal;
+        if (super.getComponent().getPage() instanceof MainPage) {
+          modal = ((MainPage) super.getComponent().getPage()).getModal();
+        } else {
+          modal = ((ContentPage) super.getComponent().getPage()).getModal();
         }
-      }
-      ((AbstractModel) this.form.getPage().getModel()).resetModel();
-      Page page = null;
-      if (this.form.getPage().getModel() instanceof TableModel) {
+        modal.setPageCreator(new ModalWindow.PageCreator() {
 
-        page = new WebTablePage(this.form.getPage().getModel());
+          private static final long serialVersionUID = 1L;
 
-      } else if (this.form.getPage().getModel() instanceof FormModel) {
-        page = new WebFormPage(this.form.getPage().getModel());
+          public Page createPage() {
+            return new DialogPage(modal, model, para,
+                AjaxSubmitComponent.this);
+          }
+        });
+        modal.setInitialHeight(150);
+        modal.setInitialWidth(350);
+        modal.show(_target);
+      } else {
+        CommandAbstract command =
+            ((MenuItemModel) super.getComponent().getModel()).getCommand();
+
+        if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+          try {
+            String[] oids = (String[]) para.get("selectedRow");
+            if (oids != null) {
+              command.executeEvents(EventType.UI_COMMAND_EXECUTE,
+                  ParameterValues.OTHERS, oids);
+            } else {
+              command.executeEvents(EventType.UI_COMMAND_EXECUTE);
+            }
+          } catch (EFapsException e) {
+            e.printStackTrace();
+            throw new RestartResponseException(new ErrorPage(e));
+          }
+        }
+        ((AbstractModel) this.form.getPage().getModel()).resetModel();
+        Page page = null;
+        if (this.form.getPage().getModel() instanceof TableModel) {
+          page = new WebTablePage(this.form.getPage().getModel());
+        } else if (this.form.getPage().getModel() instanceof FormModel) {
+          page = new WebFormPage(this.form.getPage().getModel());
+        }
+        this.form.setResponsePage(page);
       }
-      this.form.setResponsePage(page);
     }
   }
 

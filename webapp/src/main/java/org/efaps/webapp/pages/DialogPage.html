@@ -26,12 +26,15 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <link wicket:id="css" rel="stylesheet" type="text/css" href="warndialogpage/WarnDialogPage.css"/>
+    <link wicket:id="css" rel="stylesheet" type="text/css" href="dialogpage/DialogPage.css"/>
   </head>
   <body>
-    <div class="eFapsWarnDialog">
-      <span wicket:id="label"></span><br/><br/>
-      <button wicket:id="button"> <span wicket:id="buttonlabel"></span></button>
+    <div class="eFapsWarnDialogText">
+      <span  wicket:id="textLabel">label</span>
+    </div>
+    <div class="eFapsWarnDialogButtons">
+      <button wicket:id="submitButton"><span wicket:id="submitButtonLabel">closeButtonLabel</span></button>
+      <button wicket:id="closeButton"><span wicket:id="closeButtonLabel">closeButtonLabel</span></button>
     </div>
   </body>  
 </html>
