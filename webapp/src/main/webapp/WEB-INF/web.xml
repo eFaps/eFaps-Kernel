@@ -210,13 +210,7 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
-  <!-- Java Faces Servlet -->
-  <servlet>
-    <servlet-name>eFapsFacesServlet</servlet-name>
-    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-    <load-on-startup>1</load-on-startup>
-  </servlet>
-
+  
   <!-- -->
   <servlet-mapping>
     <servlet-name>eFapsServlet</servlet-name>
@@ -238,12 +232,7 @@
     <url-pattern>/webdav/*</url-pattern>
   </servlet-mapping>
 
-  <!-- extension mapping -->
-  <servlet-mapping>
-    <servlet-name>eFapsFacesServlet</servlet-name>
-    <url-pattern>*.jsf</url-pattern>
-  </servlet-mapping>
-
+  
   <session-config>
     <session-timeout>3000</session-timeout>
   </session-config>
