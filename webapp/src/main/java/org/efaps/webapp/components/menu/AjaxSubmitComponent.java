@@ -121,7 +121,6 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
               command.executeEvents(EventType.UI_COMMAND_EXECUTE);
             }
           } catch (EFapsException e) {
-            e.printStackTrace();
             throw new RestartResponseException(new ErrorPage(e));
           }
         }

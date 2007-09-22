@@ -89,7 +89,6 @@ public class MainPage extends WebPage {
       this.add(new Label("lastname", Context.getThreadContext().getPerson()
           .getLastName()));
     } catch (EFapsException e) {
-      e.printStackTrace();
       throw new RestartResponseException(new ErrorPage(e));
     }
 

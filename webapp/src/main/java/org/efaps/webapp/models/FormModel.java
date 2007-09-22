@@ -231,10 +231,8 @@ public class FormModel extends AbstractModel {
         query.close();
       }
     } catch (EFapsException e) {
-      e.printStackTrace();
       throw new RestartResponseException(new ErrorPage(e));
     } catch (Exception e) {
-      e.printStackTrace();
       throw new RestartResponseException(new ErrorPage(e));
     }
     super.setInitialised(true);

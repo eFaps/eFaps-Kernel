@@ -30,15 +30,29 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.util.EFapsException;
 
+/**
+ * @author jmo
+ * @version $Id$
+ */
 public class ErrorPage extends WebPage {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(ErrorPage.class);
+
   public ErrorPage(final Exception _exception) {
+
+    LOG.error("ErrorPage was called", _exception);
+
     String errorMessage = _exception.getMessage();
     String errorAction = "";
     String errorKey = "";

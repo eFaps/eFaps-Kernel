@@ -221,7 +221,6 @@ public class TableModel extends AbstractModel {
       }
       super.setInitialised(true);
     } catch (Exception e) {
-      e.printStackTrace();
       throw new RestartResponseException(new ErrorPage(e));
     }
   }
@@ -294,12 +293,9 @@ public class TableModel extends AbstractModel {
               field.getTarget()));
 
         }
-
         this.values.add(row);
-
       }
     } catch (Exception e) {
-      e.printStackTrace();
       throw new RestartResponseException(new ErrorPage(e));
     }
   }

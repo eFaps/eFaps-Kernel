@@ -152,7 +152,6 @@ public class DialogPage extends WebPage {
             command.executeEvents(EventType.UI_COMMAND_EXECUTE);
           }
         } catch (EFapsException e) {
-          e.printStackTrace();
           throw new RestartResponseException(new ErrorPage(e));
         }
       }

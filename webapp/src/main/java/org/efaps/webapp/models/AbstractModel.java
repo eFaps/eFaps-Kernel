@@ -320,7 +320,6 @@ public abstract class AbstractModel extends Model {
         }
       }
     } catch (EFapsException e) {
-      e.printStackTrace();
       throw new RestartResponseException(new ErrorPage(e));
     }
 
@@ -498,7 +497,6 @@ public abstract class AbstractModel extends Model {
         }
       }
     } catch (EFapsException e) {
-      e.printStackTrace();
       throw new RestartResponseException(new ErrorPage(e));
     }
 

@@ -53,7 +53,6 @@ public class LinkContainer extends Link {
       try {
         menu = instance.getType().getTreeMenu();
       } catch (Exception e) {
-        e.printStackTrace();
         throw new RestartResponseException(new ErrorPage(e));
       }
       if (menu == null) {

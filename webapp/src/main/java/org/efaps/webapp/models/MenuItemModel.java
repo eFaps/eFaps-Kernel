@@ -143,7 +143,6 @@ public class MenuItemModel extends Model {
         }
       }
     } catch (Exception e) {
-      e.printStackTrace();
       throw new RestartResponseException(new ErrorPage(e));
     }
   }

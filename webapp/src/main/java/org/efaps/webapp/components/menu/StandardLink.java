@@ -85,10 +85,8 @@ public class StandardLink extends AbstractMenuItemLink {
       try {
         command.executeEvents(EventType.UI_COMMAND_EXECUTE);
       } catch (EFapsException e) {
-        e.printStackTrace();
         throw new RestartResponseException(new ErrorPage(e));
       }
-
       if ("true".equals(command.getProperty("NoUpdateAfterCOMMAND"))) {
         this.getRequestCycle().setRequestTarget(null);
       }
