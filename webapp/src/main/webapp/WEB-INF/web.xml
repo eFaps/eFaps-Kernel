@@ -31,42 +31,6 @@
   <display-name>eFaps</display-name>
   <description>no description</description>
 
-  <context-param>
-    <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-    <param-value>server</param-value>
-    <description>
-      State saving method: "client" or "server" (= default) See JSF
-      Specification 2.5.2
-    </description>
-  </context-param>
-
-  <context-param>
-    <param-name>org.apache.myfaces.ALLOW_JAVASCRIPT</param-name>
-    <param-value>true</param-value>
-    <description>
-      This parameter tells MyFaces if javascript code should be allowed in the
-      rendered HTML output. If javascript is allowed, command_link anchors will
-      have javascript code that submits the corresponding form. If javascript is
-      not allowed, the state saving info and nested parameters will be added as
-      url parameters. Default: "true"
-    </description>
-  </context-param>
-
-  <context-param>
-    <param-name>org.apache.myfaces.DETECT_JAVASCRIPT</param-name>
-    <param-value>false</param-value>
-  </context-param>
-
-  <context-param>
-    <param-name>org.apache.myfaces.PRETTY_HTML</param-name>
-    <param-value>true</param-value>
-    <description>
-      If true, rendered HTML code will be formatted, so that it is "human
-      readable". i.e. additional line separators and whitespace will be written,
-      that do not influence the HTML code. Default: "true"
-    </description>
-  </context-param>
-
   <!--  
     There are three means to configure Wickets configuration mode and they are
     tested in the order given. 
@@ -81,18 +45,6 @@
     <param-value>development</param-value>
   </context-param>
 
-
-  <context-param>
-    <param-name>org.apache.myfaces.AUTO_SCROLL</param-name>
-    <param-value>true</param-value>
-    <description>
-      If true, a javascript function will be rendered that is able to restore
-      the former vertical scroll on every request. Convenient feature if you
-      have pages with long lists and you do not want the browser page to always
-      jump to the top if you trigger a link or button action that stays on the
-      same page. Default: "false"
-    </description>
-  </context-param>
 
   <!-- filter used for basic authentication for WebDAV -->
   <filter>
@@ -196,44 +148,6 @@
     <filter-class>org.efaps.webapp.filter.TransactionFilter</filter-class>
   </filter>
 
-  <!-- Extensions Filter used for Apache myFaces -->
-  <filter>
-    <filter-name>eFapsFacesFilter</filter-name>
-    <filter-class>
-      org.apache.myfaces.webapp.filter.ExtensionsFilter
-    </filter-class>
-    <init-param>
-      <param-name>maxFileSize</param-name>
-      <param-value>100m</param-value>
-      <description>
-        Set the size limit for uploaded files. Format: 10 - 10 bytes 10k - 10 KB
-        10m - 10 MB 1g - 1 GB
-      </description>
-    </init-param>
-    <!--
-      <init-param>
-      <param-name>uploadThresholdSize</param-name>
-      <param-value>100k</param-value>
-      <description>Set the threshold size - files
-      below this limit are stored in memory, files above
-      this limit are stored on disk.
-      
-      Format: 10 - 10 bytes
-      10k - 10 KB
-      10m - 10 MB
-      1g - 1 GB
-      </description>
-      </init-param>
-    -->
-    <!--        <init-param>
-      <param-name>uploadRepositoryPath</param-name>
-      <param-value>/temp</param-value>
-      <description>Set the path where the intermediary files will be stored.
-      </description>
-      </init-param>-->
-  </filter>
-  
-  
   <filter>
     <filter-name>eFaps</filter-name>
     <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
@@ -247,7 +161,7 @@
     <filter-name>eFaps</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
+
   <filter-mapping>
     <filter-name>eFapsBasicAuthenticationFilter</filter-name>
     <url-pattern>/webdav/*</url-pattern>
@@ -263,27 +177,6 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <!-- extension mapping for adding <script/>, <link/>, and other resource tags
-    to JSF-pages  -->
-  <filter-mapping>
-    <filter-name>eFapsFacesFilter</filter-name>
-    <!-- servlet-name must match the name of your javax.faces.webapp.FacesServlet entry -->
-    <servlet-name>eFapsFacesServlet</servlet-name>
-  </filter-mapping>
-
-  <!-- extension mapping for serving page-independent resources (javascript,
-    stylesheets, images, etc.)  -->
-  <filter-mapping>
-    <filter-name>eFapsFacesFilter</filter-name>
-    <url-pattern>/faces/myFacesExtensionResource/*</url-pattern>
-  </filter-mapping>
-
-  <!-- extension mapping for adding <script/>, <link/>, and other resource tags
-    to JSF-pages  -->
-  <filter-mapping>
-    <filter-name>eFapsFacesFilter</filter-name>
-    <url-pattern>*.jsf</url-pattern>
-  </filter-mapping>
 
   <servlet>
     <servlet-name>eFapsServlet</servlet-name>
@@ -354,26 +247,6 @@
   <session-config>
     <session-timeout>3000</session-timeout>
   </session-config>
-
-  <!-- Establish the default list of welcome files -->
-  <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
-  </welcome-file-list>
-
-  <taglib>
-    <taglib-uri>http://jakarta.apache.org/taglibs/i18n-1.0</taglib-uri>
-    <taglib-location>/WEB-INF/lib/taglibs-i18n.jar</taglib-location>
-  </taglib>
-
-  <taglib>
-    <taglib-uri>http://jakarta.apache.org/taglibs/string</taglib-uri>
-    <taglib-location>/WEB-INF/lib/string-1.1.0.jar</taglib-location>
-  </taglib>
-
-  <taglib>
-    <taglib-uri>http://jakarta.apache.org/taglibs/unstandard-1.0</taglib-uri>
-    <taglib-location>/WEB-INF/lib/taglibs-unstandard.jar</taglib-location>
-  </taglib>
 
   <!-- Reference to the database JDBC data source -->
   <resource-ref>
