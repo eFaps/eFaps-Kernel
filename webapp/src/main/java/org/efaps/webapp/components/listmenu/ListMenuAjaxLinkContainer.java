@@ -69,7 +69,7 @@ public class ListMenuAjaxLinkContainer extends WebMarkupContainer {
       this.defaultStyleClass = StyleClassName.HEADER;
 
       if (model.isSelected()) {
-        ((EFapsSession) this.getSession()).setIntoCache(this.menukey, this);
+        ((EFapsSession) this.getSession()).putIntoCache(this.menukey, this);
         tag.put("class", StyleClassName.ITEM_SELECTED.name);
         ListMenuPanel parentListMenuPanel =
             (ListMenuPanel) this.findParent(ListMenuPanel.class);

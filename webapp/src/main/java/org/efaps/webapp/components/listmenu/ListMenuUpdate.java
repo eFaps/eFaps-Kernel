@@ -185,7 +185,7 @@ public class ListMenuUpdate {
         deselectItem(_menukey, previous, _target);
       }
     }
-    session.setIntoCache(_menukey, _component);
+    session.putIntoCache(_menukey, _component);
     if (_target != null) {
       _target.addComponent(_component);
       changeBrothers(_component, _target, true);
