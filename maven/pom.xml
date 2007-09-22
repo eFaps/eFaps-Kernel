@@ -143,6 +143,12 @@
       <artifactId>derbynet</artifactId>
       <version>10.2.2.0</version>
     </dependency>
-  </dependencies>
+    
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.4.3</version>
+    </dependency>
 
+  </dependencies>
 </project>

@@ -92,7 +92,8 @@ abstract class EFapsAbstractMojo implements Mojo {
 
   /**
    */
-  @MojoParameter(expression = "${org.efaps.db.type}")
+  @MojoParameter(expression = "${org.efaps.db.type}",
+                 required = true)
   private String type;
 
   /**
@@ -123,10 +124,10 @@ abstract class EFapsAbstractMojo implements Mojo {
   // instance methods
 
   protected void init()  {
-    System.getProperties().setProperty(
+/*    System.getProperties().setProperty(
             org.apache.commons.logging.Log.class.getName(),
-            Maven2CommonsLog.class.getName());    
-    Maven2CommonsLog.logger = getLog();
+            Maven2SLF4JLog.class.getName());*/
+    SLF4JOverMavenLog.LOGGER = getLog();
     Context.setTransactionManager(new SlideTransactionManager());
     initDatabase();
   }
@@ -217,12 +218,13 @@ abstract class EFapsAbstractMojo implements Mojo {
     }
 
     // buildup reference and initialise datasource object
-    Reference ref = new Reference(DataSource.class.getName(), this.factory,
-        null);
+    Reference ref = new Reference(DataSource.class.getName(), 
+                                  this.factory,
+                                  null);
     for (Object key : this.connection.keySet()) {
       Object value = this.connection.get(key);
-      ref.add(new StringRefAddr(key.toString(), (value == null) ? null : value
-          .toString()));
+      ref.add(new StringRefAddr(key.toString(),
+                                (value == null) ? null : value.toString()));
     }
     ObjectFactory of = null;
     try {
