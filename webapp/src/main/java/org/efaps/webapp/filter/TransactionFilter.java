@@ -46,8 +46,8 @@ import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -71,7 +71,7 @@ public class TransactionFilter extends AbstractFilter  {
   /**
    * Logging instance used in this class.
    */
-  private final static Log LOG = LogFactory.getLog(TransactionFilter.class);
+  private final static Logger LOG = LoggerFactory.getLogger(TransactionFilter.class);
 
   /**
    * Name of the session variable for the login forward (after the login is
@@ -97,7 +97,7 @@ public class TransactionFilter extends AbstractFilter  {
    * All uris which are not needed filtered by security check (password check)
    * are stored in this set variable.
    */
-  private final Set exludeUris = new HashSet();
+  private final Set<String> exludeUris = new HashSet<String>();
 
   /**
    * The string is URI to which a forward must be made if the user is not
@@ -264,16 +264,16 @@ String uri = httpRequest.getRequestURI();
         }
       }
     } catch (RollbackException e)  {
-      LOG.error(e);
+      LOG.error("", e);
       throw new ServletException(e);
     } catch (HeuristicRollbackException e)  {
-      LOG.error(e);
+      LOG.error("", e);
       throw new ServletException(e);
     } catch (HeuristicMixedException e)  {
-      LOG.error(e);
+      LOG.error("", e);
       throw new ServletException(e);
     } catch (javax.transaction.SystemException e)  {
-      LOG.error(e);
+      LOG.error("", e);
       throw new ServletException(e);
     } finally  {
       context.close();

@@ -20,9 +20,6 @@
 
 package org.efaps.webapp;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.apache.wicket.Application;
 import org.apache.wicket.Page;
 import org.apache.wicket.Response;
@@ -32,6 +29,8 @@ import org.apache.wicket.protocol.http.PageExpiredException;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebRequestCycle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.webapp.pages.ErrorPage;
 import org.efaps.webapp.pages.LoginPage;
@@ -49,7 +48,7 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(EFapsWebRequestCycle.class);
+  private static final Logger LOG = LoggerFactory.getLogger(EFapsWebRequestCycle.class);
 
   public EFapsWebRequestCycle(WebApplication application, WebRequest request,
                               Response response) {

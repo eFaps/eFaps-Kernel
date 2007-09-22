@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Checkin;
 import org.efaps.db.Checkout;
@@ -55,7 +55,7 @@ public class TeamCenterWebDAVImpl implements WebDAVInterface  {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(TeamCenterWebDAVImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(TeamCenterWebDAVImpl.class);
 
   
 /*  getRoot(final String _name)   {

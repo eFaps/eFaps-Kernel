@@ -31,14 +31,14 @@ import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.slide.transaction.SlideTransactionManager;
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.protocol.http.WebSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
@@ -55,7 +55,7 @@ public class EFapsSession extends WebSession {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(EFapsSession.class);
+  private static final Logger LOG = LoggerFactory.getLogger(EFapsSession.class);
 
   /**
    * The static variable holds the transaction manager which is used within the
@@ -190,13 +190,13 @@ public class EFapsSession extends WebSession {
     } catch (NotSupportedException e) {
       LOG.error("could not initialise the context", e);
     } catch (RollbackException e) {
-      LOG.error(e);
+      LOG.error("", e);
     } catch (HeuristicRollbackException e) {
-      LOG.error(e);
+      LOG.error("", e);
     } catch (HeuristicMixedException e) {
-      LOG.error(e);
+      LOG.error("", e);
     } catch (javax.transaction.SystemException e) {
-      LOG.error(e);
+      LOG.error("", e);
     }
     finally {
       context.close();

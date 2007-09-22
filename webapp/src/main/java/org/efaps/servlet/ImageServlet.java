@@ -28,8 +28,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.AdminObject;
 import org.efaps.db.Checkout;
@@ -60,7 +60,7 @@ public class ImageServlet extends HttpServlet  {
   /**
    * Logging instance used in this class.
    */
-  private final static Log LOG = LogFactory.getLog(ImageServlet.class);
+  private final static Logger LOG = LoggerFactory.getLogger(ImageServlet.class);
 
   /**
    * The cache stores all instance of class {@link #ImageMappe}.

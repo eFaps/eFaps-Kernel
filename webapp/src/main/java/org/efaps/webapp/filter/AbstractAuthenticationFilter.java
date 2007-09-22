@@ -32,8 +32,9 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.RollbackException;
 import javax.transaction.Status;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.util.EFapsException;
@@ -50,8 +51,8 @@ public abstract class AbstractAuthenticationFilter extends AbstractFilter  {
   /**
    * Logging instance used in this class.
    */
-  private final static Log LOG 
-                      = LogFactory.getLog(AbstractAuthenticationFilter.class);
+  private final static Logger LOG 
+                      = LoggerFactory.getLogger(AbstractAuthenticationFilter.class);
 
   /**
    * The string is name of the parameter used to define the application.
@@ -174,13 +175,13 @@ public abstract class AbstractAuthenticationFilter extends AbstractFilter  {
     } catch (NotSupportedException e)  {
       LOG.error("could not initialise the context", e);
     } catch (RollbackException e)  {
-      LOG.error(e);
+      LOG.error("", e);
     } catch (HeuristicRollbackException e)  {
-      LOG.error(e);
+      LOG.error("", e);
     } catch (HeuristicMixedException e)  {
-      LOG.error(e);
+      LOG.error("", e);
     } catch (javax.transaction.SystemException e)  {
-      LOG.error(e);
+      LOG.error("", e);
     } finally  {
       context.close();
     }

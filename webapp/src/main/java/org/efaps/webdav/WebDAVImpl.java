@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -38,7 +38,6 @@ import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
-
 import org.efaps.webdav.resource.AbstractResource;
 import org.efaps.webdav.resource.CollectionResource;
 import org.efaps.webdav.resource.SourceResource;
@@ -59,7 +58,7 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(WebDAVImpl.class);
+  private static final Logger LOG = LoggerFactory.getLogger(WebDAVImpl.class);
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables

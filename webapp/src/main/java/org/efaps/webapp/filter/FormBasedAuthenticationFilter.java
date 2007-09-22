@@ -22,6 +22,7 @@ package org.efaps.webapp.filter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,8 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.servlet.RequestHandler;
 
@@ -49,7 +50,7 @@ public class FormBasedAuthenticationFilter extends AbstractAuthenticationFilter 
   /**
    * Logging instance used in this class.
    */
-  private final static Log LOG = LogFactory.getLog(FormBasedAuthenticationFilter.class);
+  private final static Logger LOG = LoggerFactory.getLogger(FormBasedAuthenticationFilter.class);
 
   /**
    * Name of the session variable for the login forward (after the login is
@@ -238,7 +239,7 @@ public class FormBasedAuthenticationFilter extends AbstractAuthenticationFilter 
 //      _request.getSession(true).removeAttribute(SESSIONPARAM_LOGIN_FORWARD);
 // remove all http session attributes! it's a logout!
 HttpSession session = _request.getSession();
-for (java.util.Enumeration e = session.getAttributeNames() ; e.hasMoreElements() ;) {
+for (Enumeration e = session.getAttributeNames() ; e.hasMoreElements() ;) {
   session.removeAttribute((String)e.nextElement());
 }
       _request.getRequestDispatcher("/").forward(_request, _response);
