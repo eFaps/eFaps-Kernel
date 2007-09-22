@@ -26,9 +26,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -44,7 +43,7 @@ public class SearchUpdate extends MenuUpdate  {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(SearchUpdate.class);
+  private final static Logger LOG = LoggerFactory.getLogger(SearchUpdate.class);
 
   /** Link from search to default search command */
   private final static Link LINK2DEFAULTCMD = new Link("Admin_UI_LinkDefaultSearchCommand",

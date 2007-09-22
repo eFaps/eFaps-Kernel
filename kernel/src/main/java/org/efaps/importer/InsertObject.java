@@ -36,8 +36,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
@@ -56,12 +57,13 @@ import org.efaps.util.EFapsException;
  * child to a {@code org.efaps.importer.RootObject}.
  * 
  * @author jmo
+ * @version $Id$
  */
 public class InsertObject extends AbstractObject {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(InsertObject.class);
+  private static final Logger LOG = LoggerFactory.getLogger(InsertObject.class);
 
   /**
    * contains the Name of the Type of the current InsertObeject

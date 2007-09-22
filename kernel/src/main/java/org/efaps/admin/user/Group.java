@@ -23,8 +23,8 @@ package org.efaps.admin.user;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -46,7 +46,7 @@ public class Group extends UserObject {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(Group.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Group.class);
 
   /**
    * This is the sql select statement to select all groups from the database.

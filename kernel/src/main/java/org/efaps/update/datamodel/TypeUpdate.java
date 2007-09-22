@@ -29,8 +29,10 @@ import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -39,7 +41,6 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.update.event.Event;
 import org.efaps.update.event.EventFactory;
 import org.efaps.util.EFapsException;
-import org.xml.sax.SAXException;
 
 /**
  * This Class is responsible for the Update of Type in the Database.<br/>It
@@ -58,7 +59,7 @@ public class TypeUpdate extends AbstractUpdate {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(TypeUpdate.class);
+  private final static Logger LOG = LoggerFactory.getLogger(TypeUpdate.class);
 
   private final static Set<Link> ALLLINKS = new HashSet<Link>();
   {

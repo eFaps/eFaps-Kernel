@@ -29,8 +29,8 @@ import java.util.Set;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.user.JAASSystem;
 import org.efaps.admin.user.Person;
@@ -54,7 +54,7 @@ public class ImportHandler extends LoginHandler {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private static Log LOG = LogFactory.getLog(ImportHandler.class);
+  private static Logger LOG = LoggerFactory.getLogger(ImportHandler.class);
 
   // ////////////////////////////////////////////////////////////////////////////
   // instance variables

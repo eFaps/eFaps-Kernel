@@ -26,8 +26,8 @@ import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
@@ -51,7 +51,7 @@ abstract class AbstractResource implements XAResource {
   /**
    * Logging instance used in this class.
    */
-  private static Log LOG = LogFactory.getLog(AbstractResource.class);
+  private static Logger LOG = LoggerFactory.getLogger(AbstractResource.class);
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables

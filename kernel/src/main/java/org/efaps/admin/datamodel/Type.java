@@ -32,8 +32,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
@@ -72,7 +72,7 @@ public class Type extends DataModelObject {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(Type.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Type.class);
 
   /**
    * This is the sql select statement to select all types from the database.

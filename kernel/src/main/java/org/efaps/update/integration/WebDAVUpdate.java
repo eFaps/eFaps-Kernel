@@ -26,9 +26,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import org.efaps.update.AbstractUpdate;
@@ -46,7 +45,7 @@ public class WebDAVUpdate extends AbstractUpdate {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(WebDAVUpdate.class);
+  private final static Logger LOG = LoggerFactory.getLogger(WebDAVUpdate.class);
 
   private final static Set<Link> ALLLINKS = new HashSet<Link>();
   {

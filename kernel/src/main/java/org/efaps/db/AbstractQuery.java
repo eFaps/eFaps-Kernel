@@ -31,8 +31,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
@@ -59,7 +59,7 @@ public abstract class AbstractQuery {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(AbstractQuery.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AbstractQuery.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables

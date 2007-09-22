@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Type;
@@ -52,7 +52,7 @@ public class AccessSet extends AdminObject  {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(AccessSet.class);
+  private static final Logger LOG = LoggerFactory.getLogger(AccessSet.class);
 
   /**
    * This is the sql select statement to select all access types from the

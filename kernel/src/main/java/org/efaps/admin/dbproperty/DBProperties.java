@@ -26,8 +26,8 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -50,7 +50,7 @@ public class DBProperties {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(DBProperties.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DBProperties.class);
 
   /**
    * value used to identifie the Default inside the Cache

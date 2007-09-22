@@ -26,9 +26,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import org.efaps.update.AbstractUpdate;
@@ -46,7 +45,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(JAASSystemUpdate.class);
+  private final static Logger LOG = LoggerFactory.getLogger(JAASSystemUpdate.class);
 
   /** Link from JAAS systems to persons */
   private final static Link LINK2PERSONS

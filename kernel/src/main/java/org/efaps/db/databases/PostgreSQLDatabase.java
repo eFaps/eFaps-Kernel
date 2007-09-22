@@ -25,8 +25,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -42,7 +42,7 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(OracleDatabase.class);
+  private static final Logger LOG = LoggerFactory.getLogger(PostgreSQLDatabase.class);
 
   /////////////////////////////////////////////////////////////////////////////
   // constructor / desctructors

@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.efaps.db.Insert;
 import org.efaps.util.EFapsException;
 
@@ -40,12 +40,13 @@ import org.efaps.util.EFapsException;
  * XML-File.
  * 
  * @author jmo
+ * @version $Id$
  */
 public class RootObject extends AbstractObject {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(RootObject.class);
+  private static final Logger LOG = LoggerFactory.getLogger(RootObject.class);
 
   final List<AbstractObject> CHILDS = new ArrayList<AbstractObject>();
 

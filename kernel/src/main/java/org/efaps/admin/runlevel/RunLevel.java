@@ -30,8 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -44,16 +45,14 @@ import org.efaps.util.cache.Cache;
  * 
  * @author jmo
  * @author tmo
- * @version $Id: RunLevel.java 779 2007-04-09 22:23:29 +0000 (Mon, 09 Apr 2007)
- *          tmo $
+ * @version $Id$
  */
 public class RunLevel {
 
   /**
    * Logger for this class
    */
-  private static final Log                 LOG           = LogFactory
-                                                             .getLog(RunLevel.class);
+  private static final Logger LOG = LoggerFactory.getLogger(RunLevel.class);
 
   /**
    * This is the sql select statement to select all RunLevel from the database.

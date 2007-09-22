@@ -30,8 +30,8 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -52,7 +52,7 @@ public class Attribute extends DataModelObject {
   /**
    * Logging instance used in this class.
    */
-  private final static Log log = LogFactory.getLog(Attribute.class);
+  private final static Logger log = LoggerFactory.getLogger(Attribute.class);
 
   /**
    * Stores all instances of attribute.

@@ -31,8 +31,8 @@ import java.sql.Statement;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
@@ -50,8 +50,7 @@ public class JDBCStoreResource extends StoreResource {
   /**
    * Logging instance used in this class.
    */
-  private static Log         LOG           = LogFactory
-                                               .getLog(JDBCStoreResource.class);
+  private static Logger LOG = LoggerFactory.getLogger(JDBCStoreResource.class);
 
   /**
    * Property Name of the name of the blob in the sql table defined with

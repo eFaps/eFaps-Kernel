@@ -26,8 +26,8 @@ import java.sql.SQLException;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
 
@@ -46,7 +46,7 @@ public class ConnectionResource extends AbstractResource {
   /**
    * Logging instance used in this class.
    */
-  private final static Log LOG = LogFactory.getLog(ConnectionResource.class);
+  private final static Logger LOG = LoggerFactory.getLogger(ConnectionResource.class);
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables

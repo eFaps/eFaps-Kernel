@@ -30,8 +30,10 @@ import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -40,7 +42,6 @@ import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
-import org.xml.sax.SAXException;
 
 /**
  * @author tmo
@@ -55,7 +56,7 @@ public class SQLTableUpdate extends AbstractUpdate  {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(SQLTableUpdate.class);
+  private final static Logger LOG = LoggerFactory.getLogger(SQLTableUpdate.class);
 
   // /** Link from JAAS systems to persons */
   // private final static Link LINK2PERSONS
@@ -486,13 +487,13 @@ public class SQLTableUpdate extends AbstractUpdate  {
         }
         con.commit();
       } catch (EFapsException e)  {
-        LOG.error(e);
+        LOG.error("SQLTableUpdate.executeSQL.EFapsException", e);
         if (con != null)  {
           con.abort();
         }
         throw e;
       } catch (Throwable e)  {
-        LOG.error(e);
+        LOG.error("SQLTableUpdate.executeSQL.Throwable", e);
         if (con != null)  {
           con.abort();
         }
@@ -521,13 +522,13 @@ public class SQLTableUpdate extends AbstractUpdate  {
         con.commit();
 
       } catch (EFapsException e)  {
-        LOG.error(e);
+        LOG.error("SQLTableUpdate.createSQLTable.EFapsException", e);
         if (con != null)  {
           con.abort();
         }
         throw e;
       } catch (Throwable e)  {
-        LOG.error(e);
+        LOG.error("SQLTableUpdate.createSQLTable.Throwable", e);
         if (con != null)  {
           con.abort();
         }
@@ -613,13 +614,13 @@ public class SQLTableUpdate extends AbstractUpdate  {
         con.commit();
 
       } catch (EFapsException e)  {
-        LOG.error(e);
+        LOG.error("SQLTableUpdate.updateSQLTable.EFapsException", e);
         if (con != null)  {
           con.abort();
         }
         throw e;
       } catch (Throwable e)  {
-        LOG.error(e);
+        LOG.error("SQLTableUpdate.updateSQLTable.Throwable", e);
         if (con != null)  {
           con.abort();
         }

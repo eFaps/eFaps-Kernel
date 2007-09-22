@@ -35,8 +35,8 @@ import org.apache.commons.jci.compilers.JavaCompiler;
 import org.apache.commons.jci.compilers.JavaCompilerFactory;
 import org.apache.commons.jci.readers.ResourceReader;
 import org.apache.commons.jci.stores.ResourceStore;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkout;
@@ -73,7 +73,7 @@ public class Compiler {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(Compiler.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Compiler.class);
 
   /**
    * Name of the system property to get the name of the used Java compiler.
@@ -233,7 +233,7 @@ public class Compiler {
       if (result.getErrors().length > 0) {
         LOG.error(result.getErrors().length + " errors:");
         for (int i = 0; i < result.getErrors().length; i++) {
-          LOG.error(result.getErrors()[i]);
+          LOG.error(result.getErrors()[i].toString());
         }
       }
 
@@ -241,7 +241,7 @@ public class Compiler {
         if (result.getWarnings().length > 0) {
           LOG.info(result.getWarnings().length + " warnings:");
           for (int i = 0; i < result.getWarnings().length; i++) {
-            LOG.info(result.getWarnings()[i]);
+            LOG.info(result.getWarnings()[i].toString());
           }
         }
       }
@@ -369,7 +369,7 @@ public class Compiler {
           is.read(ret);
           is.close();
         } catch (IOException e) {
-          LOG.error(e);
+          LOG.error("compile error", e);
         }
       } else {
         try {
@@ -380,9 +380,9 @@ public class Compiler {
           is.read(ret);
           is.close();
         } catch (IOException e) {
-          LOG.error(e);
+          LOG.error("compile error", e);
         } catch (EFapsException e) {
-          LOG.error(e);
+          LOG.error("compile error", e);
         }
       }
       return ret;

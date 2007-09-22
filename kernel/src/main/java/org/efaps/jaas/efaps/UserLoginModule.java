@@ -35,8 +35,8 @@ import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
 import javax.security.auth.Subject;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.JAASSystem;
@@ -54,7 +54,7 @@ public class UserLoginModule implements LoginModule  {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(UserLoginModule.class);
+  private final static Logger LOG = LoggerFactory.getLogger(UserLoginModule.class);
 
   /**
    * The string stores the name of the JAAS system. The default value is

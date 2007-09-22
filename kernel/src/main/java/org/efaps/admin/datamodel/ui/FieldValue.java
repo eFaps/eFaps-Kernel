@@ -22,8 +22,8 @@ package org.efaps.admin.datamodel.ui;
 
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventDefinition;
@@ -44,7 +44,7 @@ public class FieldValue implements Comparable<Object> {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(FieldValue.class);
+  private static final Logger LOG = LoggerFactory.getLogger(FieldValue.class);
 
   public enum HtmlType {
     CREATEHTML,

@@ -24,8 +24,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.SQLTable;
@@ -52,7 +52,7 @@ public class Delete {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(Delete.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Delete.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables

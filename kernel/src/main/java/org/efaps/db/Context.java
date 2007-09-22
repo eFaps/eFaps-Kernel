@@ -39,8 +39,8 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Person;
@@ -52,7 +52,8 @@ import org.efaps.db.transaction.VFSStoreResource;
 import org.efaps.util.EFapsException;
 
 /**
- *
+ * @author tmo
+ * @version $Id$
  */
 public class Context {
 
@@ -62,7 +63,7 @@ public class Context {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(Context.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Context.class);
 
   /**
    * Static variable storing the database type.

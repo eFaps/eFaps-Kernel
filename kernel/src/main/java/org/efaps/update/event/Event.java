@@ -23,8 +23,9 @@ package org.efaps.update.event;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -44,7 +45,7 @@ public class Event {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log          LOG        = LogFactory.getLog(Event.class);
+  private final static Logger LOG = LoggerFactory.getLogger(Event.class);
 
   /**
    * Property value depending on the property name for this Trigger

@@ -36,8 +36,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.JAASSystem;
@@ -63,7 +63,7 @@ public class LoginHandler {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private static Log LOG = LogFactory.getLog(LoginHandler.class);
+  private static Logger LOG = LoggerFactory.getLogger(LoginHandler.class);
 
   // ////////////////////////////////////////////////////////////////////////////
   // instance variables

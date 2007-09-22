@@ -25,8 +25,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -41,7 +41,7 @@ public class DerbyDatabase extends AbstractDatabase  {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(OracleDatabase.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DerbyDatabase.class);
 
   /**
    * SQL Select statement for all foreign keys and constraints.

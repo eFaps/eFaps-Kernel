@@ -24,8 +24,8 @@ import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.sql.SQLException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Type;
@@ -47,7 +47,7 @@ public abstract class UserObject extends AdminObject {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(UserObject.class);
+  private final static Logger LOG = LoggerFactory.getLogger(UserObject.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables

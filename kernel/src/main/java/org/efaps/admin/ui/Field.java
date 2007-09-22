@@ -21,8 +21,8 @@
 package org.efaps.admin.ui;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.UIInterface;
@@ -42,7 +42,7 @@ public class Field extends UserInterfaceObject {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(Field.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Field.class);
 
   // ///////////////////////////////////////////////////////////////////////////
 

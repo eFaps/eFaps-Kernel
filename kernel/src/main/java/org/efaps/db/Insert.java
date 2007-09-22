@@ -30,8 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
@@ -56,7 +56,7 @@ public class Insert extends Update {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(Insert.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Insert.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors

@@ -32,8 +32,9 @@ import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -62,7 +63,7 @@ public abstract class AbstractUpdate {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(AbstractUpdate.class);
+  private final static Logger LOG = LoggerFactory.getLogger(AbstractUpdate.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables

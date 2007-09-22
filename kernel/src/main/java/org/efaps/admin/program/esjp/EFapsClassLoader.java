@@ -23,8 +23,8 @@ package org.efaps.admin.program.esjp;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Class extends the ClassLoader of java, to be able to load Classes on
@@ -37,8 +37,7 @@ public class EFapsClassLoader extends ClassLoader {
   /**
    * Logger for this class
    */
-  private static final Log                 LOG                = LogFactory
-                                                                  .getLog(EFapsClassLoader.class);
+  private static final Logger LOG = LoggerFactory.getLogger(EFapsClassLoader.class);
 
   /**
    * should the Class be kept in a local Cache

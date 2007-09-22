@@ -30,10 +30,11 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.efaps.db.transaction.VFSStoreFactoryBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import org.efaps.db.transaction.VFSStoreFactoryBean;
 
 /**
  * Class wich contains the method to launch the import of Data into a efaps
@@ -50,7 +51,7 @@ public class DataImport {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private static final Log LOG = LogFactory.getLog(DataImport.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DataImport.class);
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables

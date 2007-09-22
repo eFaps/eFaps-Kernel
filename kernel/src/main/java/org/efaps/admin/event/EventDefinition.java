@@ -22,8 +22,10 @@ package org.efaps.admin.event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.AdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -52,7 +54,7 @@ public class EventDefinition extends AdminObject implements EventExecution {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(EventDefinition.class);
+  private static final Logger LOG = LoggerFactory.getLogger(EventDefinition.class);
 
   /**
    * The variable stores the position in a event pool (more than one event

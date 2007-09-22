@@ -29,8 +29,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.AdminObject;
 import org.efaps.db.Context;
@@ -54,8 +54,7 @@ public class JAASSystem extends AdminObject {
   /**
    * Logging instance used in this class.
    */
-  private static final Log                   LOG                      = LogFactory
-                                                                          .getLog(JAASSystem.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JAASSystem.class);
 
   /**
    * This is the sql select statement to select all JAAS systems from the

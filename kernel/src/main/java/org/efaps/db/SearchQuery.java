@@ -22,8 +22,8 @@ package org.efaps.db;
 
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -48,7 +48,7 @@ public class SearchQuery extends AbstractQuery  {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(SearchQuery.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SearchQuery.class);
 
   /////////////////////////////////////////////////////////////////////////////
   // constructor / desctructors

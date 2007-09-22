@@ -20,8 +20,8 @@
 
 package org.efaps.admin.datamodel.attributetype;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -41,7 +41,7 @@ public class ModifierLinkType extends PersonLinkType {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(ModifierLinkType.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ModifierLinkType.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // interface to the data base

@@ -23,12 +23,12 @@ package org.efaps.db.transaction;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs.provider.FileProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.util.EFapsException;
@@ -43,7 +43,7 @@ public class VFSStoreFactoryBean extends DefaultFileSystemManager  {
   /**
    * Logging instance used in this class.
    */
-  private final static Log LOG = LogFactory.getLog(VFSStoreFactoryBean.class);
+  private final static Logger LOG = LoggerFactory.getLogger(VFSStoreFactoryBean.class);
 
   /**
    * Property Name defined on the type for the virtual file system name.

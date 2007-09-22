@@ -29,11 +29,11 @@ import java.util.zip.ZipOutputStream;
 import javax.transaction.xa.XAException;
 import javax.transaction.xa.Xid;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs.FileContent;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
@@ -75,7 +75,7 @@ public class VFSStoreResource extends StoreResource  {
   /**
    * Logging instance used in this class.
    */
-  private final static Log LOG = LogFactory.getLog(VFSStoreResource.class);
+  private final static Logger LOG = LoggerFactory.getLogger(VFSStoreResource.class);
 
   /**
    * Property Name of the number of sub directories.

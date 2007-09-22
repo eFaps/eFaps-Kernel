@@ -24,8 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
@@ -35,14 +36,13 @@ import org.efaps.util.EFapsException;
  * 
  * 
  * @author jmo
- * 
+ * @version $Id$
  */
 public class ForeignObject {
   /**
    * Logger for this class
    */
-  private static final Log    LOG           = LogFactory
-                                                .getLog(ForeignObject.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ForeignObject.class);
 
   /**
    * contains the name of the attribute wich links to an InsertObject

@@ -24,9 +24,8 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import org.efaps.update.AbstractUpdate;
@@ -44,7 +43,7 @@ public class AccessTypeUpdate extends AbstractUpdate {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(AccessTypeUpdate.class);
+  private final static Logger LOG = LoggerFactory.getLogger(AccessTypeUpdate.class);
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors

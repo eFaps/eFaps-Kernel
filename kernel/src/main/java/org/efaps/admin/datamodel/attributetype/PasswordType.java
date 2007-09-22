@@ -23,8 +23,8 @@ package org.efaps.admin.datamodel.attributetype;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author grs
@@ -39,7 +39,7 @@ public class PasswordType extends StringType {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(PasswordType.class);
+  private final static Logger LOG = LoggerFactory.getLogger(PasswordType.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods

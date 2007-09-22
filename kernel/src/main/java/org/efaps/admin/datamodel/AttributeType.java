@@ -25,8 +25,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Context;
@@ -46,7 +46,7 @@ public class AttributeType extends DataModelObject  {
   /**
    * Logging instance used in this class.
    */
-  private final static Log LOG = LogFactory.getLog(AttributeType.class);
+  private final static Logger LOG = LoggerFactory.getLogger(AttributeType.class);
 
   /**
    * This is the sql select statement to select all attribute types from the
