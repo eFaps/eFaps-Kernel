@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev: 1368 $
+ * Last Changed:    $Date: 2007-09-22 15:43:28 +0200 (Sa, 22 Sep 2007) $
+ * Last Changed By: $Author: tmo $
  */
 
-package org.efaps.maven.install;
+package org.efaps.maven.plugin.goal.efaps.install;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -41,7 +41,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @version $Id$
+ * @version $Id: Application.java 1368 2007-09-22 13:43:28Z tmo $
  */
 public class Application {
 

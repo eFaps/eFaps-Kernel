@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven;
+package org.efaps.maven.plugin.goal;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,15 +34,15 @@ import org.apache.commons.digester.Digester;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.slide.transaction.SlideTransactionManager;
-
 import org.jfrog.maven.annomojo.annotations.MojoParameter;
 
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
-import org.efaps.maven.install.Application;
-import org.efaps.maven.install.ApplicationVersion;
-import org.efaps.maven.install.FileSet;
+import org.efaps.maven.logger.SLF4JOverMavenLog;
+import org.efaps.maven.plugin.goal.efaps.install.Application;
+import org.efaps.maven.plugin.goal.efaps.install.ApplicationVersion;
+import org.efaps.maven.plugin.goal.efaps.install.FileSet;
 import org.efaps.util.EFapsException;
 
 /**
@@ -50,7 +50,7 @@ import org.efaps.util.EFapsException;
  * @author tmo
  * @version $Id$
  */
-abstract class EFapsAbstractMojo implements Mojo {
+public abstract class EFapsAbstractMojo implements Mojo {
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables

@@ -23,8 +23,8 @@ package org.slf4j.impl;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.spi.LoggerFactoryBinder;
 
-import org.efaps.maven.SLF4JOverMavenLog;
-import org.efaps.maven.SLF4JOverMavenLogFactory;
+import org.efaps.maven.logger.SLF4JOverMavenLog;
+import org.efaps.maven.logger.SLF4JOverMavenLogFactory;
 
 /**
  * @author tmo

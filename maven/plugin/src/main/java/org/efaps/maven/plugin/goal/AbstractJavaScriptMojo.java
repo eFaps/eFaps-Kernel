@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven;
+package org.efaps.maven.plugin.goal;
 
 import java.io.IOException;
 import java.io.Reader;

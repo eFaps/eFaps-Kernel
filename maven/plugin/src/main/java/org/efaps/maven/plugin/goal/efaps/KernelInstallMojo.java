@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven;
+package org.efaps.maven.plugin.goal.efaps;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,6 +26,7 @@ import java.io.Reader;
 import java.io.StringReader;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.efaps.maven.plugin.goal.AbstractJavaScriptMojo;
 
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
 import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;

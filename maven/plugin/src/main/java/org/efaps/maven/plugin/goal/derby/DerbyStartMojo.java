@@ -18,10 +18,11 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven;
+package org.efaps.maven.plugin.goal.derby;
 
-import java.util.UUID;
+import java.util.Properties;
 
+import org.apache.derby.drda.NetworkServerControl;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -29,34 +30,38 @@ import org.jfrog.maven.annomojo.annotations.MojoGoal;
 import org.jfrog.maven.annomojo.annotations.MojoParameter;
 
 /**
- * A new universally unique identifier (UUID) is created and printed out.
- *
+ * 
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("generateUUID")
-public final class GenerateUUIDMojo extends AbstractMojo  {
+@MojoGoal("derby-start")
+public class DerbyStartMojo extends AbstractMojo {
 
   /////////////////////////////////////////////////////////////////////////////
-  // constructors / desctructors
+  // instance variables
 
   /**
-   * Number of UUID's to generate.
+   * Derby specific Properties.
    */
   @MojoParameter
-  private int count = 1;
+  private Properties properties;
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
-   * The new universally unique identifier is created and printed out with a 
-   * normal call to the mojo log info.
+   *
    */
   public void execute() throws MojoExecutionException  {
-    for (int i = 0; i < this.count; i++)  {
-      UUID uuid = UUID.randomUUID();
-      getLog().info("UUID[" + (i + 1) + "] = " + uuid.toString());
+    getLog().info("Start Derby Database");
+    if (this.properties != null)  {
+      for (Object propName : this.properties.keySet())  {
+        String propValue = this.properties.getProperty((String) propName);
+        getLog().info("- using " + propName + " = " + propValue);
+        System.setProperty((String) propName,
+                           propValue);
+      }
     }
+    NetworkServerControl.main(new String[]{"start"});
   }
 }

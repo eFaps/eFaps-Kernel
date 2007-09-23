@@ -3,7 +3,7 @@
 // Decompiler options: packimports(3) nonlb radix(10) lradix(10) 
 // Source File Name:   Log4jLoggerFactory.java
 
-package org.efaps.maven;
+package org.efaps.maven.logger;
 
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;

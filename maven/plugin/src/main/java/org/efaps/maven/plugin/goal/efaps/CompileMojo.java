@@ -18,31 +18,32 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven;
+package org.efaps.maven.plugin.goal.efaps;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import org.efaps.maven.install.Application;
+import org.efaps.admin.program.esjp.Compiler;
+import org.efaps.maven.plugin.goal.EFapsAbstractMojo;
 import org.efaps.util.EFapsException;
 
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
 import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
 
 /**
- * Installs an eFaps application.
+ * Compiles all esjp's within eFaps.
  *
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("install")
+@MojoGoal("compile")
 @MojoRequiresDependencyResolution("compile")
-public final class InstallMojo extends EFapsAbstractMojo {
+public final class CompileMojo extends EFapsAbstractMojo {
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
-   * Executes the install goal.
+   * Executes the esjp goal.
    */
   public void execute() throws MojoExecutionException {
     init();
@@ -50,19 +51,8 @@ public final class InstallMojo extends EFapsAbstractMojo {
     try {
       reloadCache();
       startTransaction();
-
-      Application appl = getApplication();
-      if (appl != null) {
-        appl.install();
-      }
-
+      (new Compiler(getClasspathElements())).compile();
       commitTransaction();
-      if (appl != null) {
-        reloadCache();
-        startTransaction();
-        appl.importData();
-        commitTransaction();
-      }
 
     } catch (EFapsException e) {
       getLog().error(e);

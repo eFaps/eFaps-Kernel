@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev: 1232 $
+ * Last Changed:    $Date: 2007-08-02 17:55:41 +0200 (Do, 02 Aug 2007) $
+ * Last Changed By: $Author: jmo $
  */
 
-package org.efaps.maven.install;
+package org.efaps.maven.plugin.goal.efaps.install;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import org.efaps.util.EFapsException;
 /**
  * 
  * @author tmo
- * @version $Id$
+ * @version $Id: ApplicationVersion.java 1232 2007-08-02 15:55:41Z jmo $
  * @todo description
  */
 public class ApplicationVersion implements Comparable /* < ApplicationVersion > */<Object>{

@@ -18,50 +18,45 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven;
+package org.efaps.maven.plugin.goal.efaps;
 
+import java.util.UUID;
+
+import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
-import org.efaps.maven.install.Application;
-import org.efaps.util.EFapsException;
-
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
+import org.jfrog.maven.annomojo.annotations.MojoParameter;
 
 /**
- * Makes an update of an eFaps application for the last version of the
- * application.
+ * A new universally unique identifier (UUID) is created and printed out.
  *
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("update")
-@MojoRequiresDependencyResolution("compile")
-public final class UpdateMojo extends EFapsAbstractMojo  {
-  
+@MojoGoal("generateUUID")
+public final class GenerateUUIDMojo extends AbstractMojo  {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // constructors / desctructors
+
+  /**
+   * Number of UUID's to generate.
+   */
+  @MojoParameter
+  private int count = 1;
+
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
-   * Executes the update goal.
+   * The new universally unique identifier is created and printed out with a 
+   * normal call to the mojo log info.
    */
   public void execute() throws MojoExecutionException  {
-    init();
-
-    try  {
-      reloadCache();
-      startTransaction();
-     
-      Application appl = getApplication();
-      if (appl != null)  {
-        appl.updateLastVersion();
-      }
-
-      commitTransaction();
-    } catch (EFapsException e)  {
-      getLog().error(e);
-    } catch (Exception e)  {
-      getLog().error(e);
+    for (int i = 0; i < this.count; i++)  {
+      UUID uuid = UUID.randomUUID();
+      getLog().info("UUID[" + (i + 1) + "] = " + uuid.toString());
     }
   }
 }

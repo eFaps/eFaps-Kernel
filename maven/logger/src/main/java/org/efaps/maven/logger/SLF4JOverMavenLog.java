@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven;
+package org.efaps.maven.logger;
 
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -34,7 +34,7 @@ import org.slf4j.helpers.MessageFormatter;
  */
 public class SLF4JOverMavenLog implements Logger {
 
-  static org.apache.maven.plugin.logging.Log LOGGER;
+  public static org.apache.maven.plugin.logging.Log LOGGER;
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors

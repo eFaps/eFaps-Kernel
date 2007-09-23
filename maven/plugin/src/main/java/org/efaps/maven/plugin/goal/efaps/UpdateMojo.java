@@ -18,50 +18,51 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven;
+package org.efaps.maven.plugin.goal.efaps;
 
-import java.util.Properties;
-
-import org.apache.derby.drda.NetworkServerControl;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
+import org.efaps.maven.plugin.goal.EFapsAbstractMojo;
+import org.efaps.maven.plugin.goal.efaps.install.Application;
+import org.efaps.util.EFapsException;
+
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoParameter;
+import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
 
 /**
- * 
+ * Makes an update of an eFaps application for the last version of the
+ * application.
+ *
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("derby-start")
-public class DerbyStartMojo extends AbstractMojo {
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance variables
-
-  /**
-   * Derby specific Properties.
-   */
-  @MojoParameter
-  private Properties properties;
-
+@MojoGoal("update")
+@MojoRequiresDependencyResolution("compile")
+public final class UpdateMojo extends EFapsAbstractMojo  {
+  
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
-   *
+   * Executes the update goal.
    */
   public void execute() throws MojoExecutionException  {
-    getLog().info("Start Derby Database");
-    if (this.properties != null)  {
-      for (Object propName : this.properties.keySet())  {
-        String propValue = this.properties.getProperty((String) propName);
-        getLog().info("- using " + propName + " = " + propValue);
-        System.setProperty((String) propName,
-                           propValue);
+    init();
+
+    try  {
+      reloadCache();
+      startTransaction();
+     
+      Application appl = getApplication();
+      if (appl != null)  {
+        appl.updateLastVersion();
       }
+
+      commitTransaction();
+    } catch (EFapsException e)  {
+      getLog().error(e);
+    } catch (Exception e)  {
+      getLog().error(e);
     }
-    NetworkServerControl.main(new String[]{"start"});
   }
 }
