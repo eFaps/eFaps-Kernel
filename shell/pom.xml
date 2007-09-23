@@ -62,7 +62,7 @@
         eFaps plugin used to compile
       -->
       <plugin>
-        <groupId>org.efaps</groupId>
+        <groupId>org.efaps.maven</groupId>
         <artifactId>maven-efaps-plugin</artifactId>
         <version>1.0-SNAPSHOT</version>
         <configuration>
