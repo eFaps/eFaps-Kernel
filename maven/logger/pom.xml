@@ -94,6 +94,13 @@
       <version>1.4.3</version>
     </dependency>
 
+    <!-- Apache Commons Logger over Simple Logging Facade for Java -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl104-over-slf4j</artifactId>
+      <version>1.4.3</version>
+    </dependency>
+
     <!-- maven plugin api -->
     <dependency>
       <groupId>org.apache.maven</groupId>
