@@ -43,6 +43,8 @@ public abstract class ContentPage extends WebPage {
 
   public static final String POPUP_PAGEMAP_NAME = "eFapsPopUp";
 
+  private String listMenuKey;
+
   private final ModalWindowContainer modalWindow;
 
   private final ModalWindowContainer modal = new ModalWindowContainer("modal");
@@ -91,4 +93,25 @@ public abstract class ContentPage extends WebPage {
   public final ModalWindowContainer getModal() {
     return this.modal;
   }
+
+  /**
+   * This is the getter method for the instance variable {@link #listMenuKey}.
+   *
+   * @return value of instance variable {@link #listMenuKey}
+   */
+
+  public String getListMenuKey() {
+    return this.listMenuKey;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #listMenuKey}.
+   *
+   * @param _listmenunkey
+   *                the listMenuName to set
+   */
+  public void setListMenuKey(final String _listmenunkey) {
+    this.listMenuKey = _listmenunkey;
+  }
+
 }

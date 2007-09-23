@@ -19,11 +19,14 @@
  */
 package org.efaps.webapp.pages;
 
+import org.apache.wicket.IPageMap;
+import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.protocol.http.ClientProperties;
@@ -49,12 +52,25 @@ public class ContentContainerPage extends WebPage {
 
   public static final String IFRAME_WICKETID = "splitrightactiframe";
 
-  public static String LISTMENU = "MainListMenu";
+  private String listMenuKey;
 
-  private final String inlinePath;
+  private String inlinePath;
 
-  public ContentContainerPage(PageParameters _parameters) {
-    super(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME));
+  private final PageParameters parameters;
+
+  public ContentContainerPage(final PageParameters _parameters) {
+    this.parameters = _parameters;
+    initialise();
+  }
+
+  public ContentContainerPage(final PageParameters _parameters,
+                              final IPageMap _pagemap) {
+    super(_pagemap);
+    this.parameters = _parameters;
+    initialise();
+  }
+
+  private void initialise() {
     final ClientProperties properties =
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties();
 
@@ -65,6 +81,7 @@ public class ContentContainerPage extends WebPage {
           + "}\n"
           + CssUtils.INLINE_CLOSE_TAG));
     }
+    this.listMenuKey = "ListMenu_" + this.getPageMapName();
 
     add(new StyleSheetReference("css", getClass(),
         "contentcontainerpage/ContentContainerPage.css"));
@@ -91,8 +108,8 @@ public class ContentContainerPage extends WebPage {
         new DojoSimpleContainer("splitleft", "Menu");
     parentcontainer.add(containerlinks);
 
-    containerlinks.add(new ListMenuPanel("splitleftmenu", LISTMENU,
-        _parameters, true));
+    containerlinks.add(new ListMenuPanel("splitleftmenu", this.listMenuKey,
+        this.parameters, true));
 
     DojoSimpleContainer containerrechts =
         new DojoSimpleContainer("splitright", "Content");
@@ -101,9 +118,24 @@ public class ContentContainerPage extends WebPage {
     WebMarkupContainer parent = new WebMarkupContainer("splitrightact");
     parent.setOutputMarkupId(true);
     containerrechts.add(parent);
+
     InlineFrame inline =
         new InlineFrame(IFRAME_WICKETID, PageMap.forName(IFRAME_PAGEMAP_NAME),
-            WebFormPage.class, _parameters);
+            new IPageLink() {
+
+              private static final long serialVersionUID = 1L;
+
+              public Page getPage() {
+                WebFormPage page =
+                    new WebFormPage(ContentContainerPage.this.parameters);
+                page.setListMenuKey(ContentContainerPage.this.listMenuKey);
+                return page;
+              }
+
+              public Class<WebFormPage> getPageIdentity() {
+                return WebFormPage.class;
+              }
+            });
 
     parent.add(inline);
     this.inlinePath =
@@ -119,6 +151,16 @@ public class ContentContainerPage extends WebPage {
 
   public String getInlinePath() {
     return this.inlinePath;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #listMenuKey}.
+   *
+   * @return value of instance variable {@link #listMenuKey}
+   */
+
+  public String getListMenuKey() {
+    return this.listMenuKey;
   }
 
 }

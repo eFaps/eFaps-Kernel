@@ -20,12 +20,14 @@
 
 package org.efaps.webapp.components.listmenu;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.model.IModel;
@@ -124,7 +126,7 @@ public class ListMenuAjaxLinkContainer extends WebMarkupContainer {
       MenuItemModel model = (MenuItemModel) this.getComponent().getModel();
 
       CommandAbstract cmd = model.getCommand();
-      PageParameters para = new PageParameters();
+      final PageParameters para = new PageParameters();
       para.add("oid", model.getOid());
       para.add("command", cmd.getUUID().toString());
 
@@ -133,12 +135,38 @@ public class ListMenuAjaxLinkContainer extends WebMarkupContainer {
         page =
             new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
                 .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-                WebTablePage.class, para);
+                new IPageLink() {
+
+                  private static final long serialVersionUID = 1L;
+
+                  public Page getPage() {
+                    WebTablePage page = new WebTablePage(para);
+                    page.setListMenuKey(ListMenuAjaxLinkContainer.this.menukey);
+                    return page;
+                  }
+
+                  public Class<WebTablePage> getPageIdentity() {
+                    return WebTablePage.class;
+                  }
+                });
       } else {
         page =
             new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
                 .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-                WebFormPage.class, para);
+                new IPageLink() {
+
+                  private static final long serialVersionUID = 1L;
+
+                  public Page getPage() {
+                    WebFormPage page = new WebFormPage(para);
+                    page.setListMenuKey(ListMenuAjaxLinkContainer.this.menukey);
+                    return page;
+                  }
+
+                  public Class<WebFormPage> getPageIdentity() {
+                    return WebFormPage.class;
+                  }
+                });
       }
 
       InlineFrame component =

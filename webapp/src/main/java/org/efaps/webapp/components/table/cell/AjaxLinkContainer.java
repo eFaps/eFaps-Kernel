@@ -35,6 +35,7 @@ import org.efaps.webapp.components.AbstractAjaxCallBackBehavior;
 import org.efaps.webapp.components.listmenu.ListMenuUpdate;
 import org.efaps.webapp.models.CellModel;
 import org.efaps.webapp.pages.ContentContainerPage;
+import org.efaps.webapp.pages.ContentPage;
 import org.efaps.webapp.pages.ErrorPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
@@ -90,11 +91,13 @@ public class AjaxLinkContainer extends WebMarkupContainer {
         PageParameters para = new PageParameters();
         para.add("command", menu.getUUID().toString());
         para.add("oid", cellmodel.getOid());
-        ListMenuUpdate.update(_target, ContentContainerPage.LISTMENU, menu,
-            para, ((CellModel) super.getComponent().getModel()).getOid());
+
+        String listMenuKey =
+            ((ContentPage) this.getComponent().getPage()).getListMenuKey();
+        ListMenuUpdate.update(_target, listMenuKey, menu, para,
+            ((CellModel) super.getComponent().getModel()).getOid());
       }
     }
-
   }
 
   public class AjaxSelfCallBackBehavior extends AjaxEventBehavior {

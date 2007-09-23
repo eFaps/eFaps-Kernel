@@ -25,6 +25,7 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.models.CellModel;
@@ -64,8 +65,14 @@ public class LinkContainer extends Link {
       PageParameters parameters = new PageParameters();
       parameters.add("command", menu.getUUID().toString());
       parameters.add("oid", cellmodel.getOid());
-
-      this.setResponsePage(ContentContainerPage.class, parameters);
+      ContentContainerPage page;
+      if (cellmodel.getTarget() == CommandAbstract.TARGET_POPUP) {
+        page = new ContentContainerPage(parameters);
+      } else {
+        page =
+            new ContentContainerPage(parameters, this.getPage().getPageMap());
+      }
+      this.setResponsePage(page);
 
     }
 
