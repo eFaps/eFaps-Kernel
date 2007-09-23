@@ -43,6 +43,7 @@
   <modules>
     <module>logger</module>
     <module>plugin</module>
+    <module>run</module>
   </modules>
 
 </project>
