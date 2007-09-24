@@ -76,7 +76,7 @@ public class AjaxRemoveLink extends AbstractAjaxLink {
 
     if (del > -1) {
       list.remove(del);
-      if (list.size() > 0 && list.get(del) instanceof List) {
+      if (list.size() > del && list.get(del) instanceof List) {
         list.remove(del);
       }
       if (listmenupanel.getHeaderComponents().size() > 1) {
