@@ -9,6 +9,12 @@ body,th,td,p,div {
   margin: 0;
 }
 
+a:visited,a:link {
+  font-weight: bold;
+  color: #00A000;
+  text-decoration: none;
+}
+
 #eFapsFrameTitle {
   position: static;
   top: 0;
