@@ -56,12 +56,16 @@
     <!-- target definitions -->
     <target>
       <form>TeamWork_CollectionForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Create"/>
     </target>
     <!-- property definitions -->
-    <property name="Target">popup</property>
+    <property name="Target">modal</property>
     <property name="TargetConnectAttribute">TeamWork_Collection/ParentCollectionLink</property>
     <property name="TargetCreateType">TeamWork_Collection</property>
     <property name="TargetMode">create</property>
+    <property name="WindowHeight">150</property>
+    <property name="WindowWidth">500</property>
+    
     <!-- trigger -->
     <trigger name="TeamWork_CollectionTree_Create_UI_ACCESSCHECK" event="UI_ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnUserInterface" method="execute" index="1">
       <property name="AccessType">create</property>

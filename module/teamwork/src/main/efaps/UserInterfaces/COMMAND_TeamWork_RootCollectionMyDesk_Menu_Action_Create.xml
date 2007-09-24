@@ -60,11 +60,14 @@
     <!-- target definitions -->
     <target>
       <form>TeamWork_CollectionForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Create"/>
     </target>
     <!-- property definitions -->
-    <property name="Target">popup</property>
+    <property name="Target">modal</property>
     <property name="TargetCreateType">TeamWork_RootCollection</property>
     <property name="TargetMode">create</property>
+    <property name="WindowHeight">150</property>
+    <property name="WindowWidth">500</property>
   </definition>
 
 </ui-command>

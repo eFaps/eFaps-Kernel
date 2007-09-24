@@ -472,7 +472,8 @@ public abstract class AbstractModel extends Model {
    * This method executes the Events wich are related to this Model. It will
    * take the Events of the CallingCommand {@link #callingCommandUUID}, if it
    * is declared, otherwise it will take the Events of the Command
-   * {@link #commandUUID}
+   * {@link #commandUUID}. The Method also adds the oid {@link #oid} to the
+   * Context, so that it is accessable for the esjp.
    *
    * @param _others
    *                The values will be atached to the call as
@@ -488,6 +489,8 @@ public abstract class AbstractModel extends Model {
     try {
       if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
         if (this.getOid() != null) {
+          String[] contextoid = { this.getOid() };
+          Context.getThreadContext().getParameters().put("oid", contextoid);
           command.executeEvents(EventType.UI_COMMAND_EXECUTE,
               ParameterValues.INSTANCE, new Instance(this.getOid()),
               ParameterValues.OTHERS, _others);

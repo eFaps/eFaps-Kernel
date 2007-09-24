@@ -60,10 +60,12 @@
     <!-- target definitions -->
     <target>
       <form>TeamWork_CollectionForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Edit"/>
     </target>
     <!-- property definitions -->
-    <property name="Target">popup</property>
+    <property name="Target">modal</property>
     <property name="TargetMode">edit</property>
+    <property name="WindowHeight">250</property>
   </definition>
 
 </ui-command>
