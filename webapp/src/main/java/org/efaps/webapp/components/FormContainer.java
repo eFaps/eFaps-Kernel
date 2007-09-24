@@ -20,7 +20,11 @@
 
 package org.efaps.webapp.components;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.util.string.AppendingStringBuffer;
 
 /**
  * @author jmo
@@ -30,8 +34,62 @@ public class FormContainer extends Form {
 
   private static final long serialVersionUID = 1L;
 
+  private Component defaultSubmit;
+
   public FormContainer(String id) {
     super(id);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.markup.html.form.Form#onComponentTagBody(org.apache.wicket.markup.MarkupStream,
+   *      org.apache.wicket.markup.ComponentTag)
+   */
+  @Override
+  protected void onComponentTagBody(final MarkupStream _markupstream,
+                                    final ComponentTag _tag) {
+    super.onComponentTagBody(_markupstream, _tag);
+    if (getDefaultButton() == null && this.defaultSubmit != null) {
+      appendDefaultSubmit(_markupstream, _tag);
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.markup.html.form.Form#onComponentTag(org.apache.wicket.markup.ComponentTag)
+   */
+  @Override
+  protected void onComponentTag(final ComponentTag _tag) {
+    super.onComponentTag(_tag);
+    _tag.put("onSubmit", "return false;");
+    _tag.put("action", "");
+  }
+
+  public void setDefaultSubmit(final Component _component) {
+    this.defaultSubmit = _component;
+  }
+
+  protected void appendDefaultSubmit(final MarkupStream markupStream,
+                                     final ComponentTag openTag) {
+
+    AppendingStringBuffer buffer = new AppendingStringBuffer();
+
+    // div that is not visible (but not display:none either)
+    buffer.append("<div style=\"width:0px;height:0px;position:absolute;"
+        + "left:-100px;top:-100px;overflow:hidden\">");
+
+    // add an empty textfield (otherwise IE doesn't work)
+    buffer.append("<input type=\"text\" autocomplete=\"false\"/>");
+
+    buffer.append("<input type=\"submit\" onclick=\" var b=Wicket.$('");
+    buffer.append(this.defaultSubmit.getMarkupId());
+    buffer.append("'); if (typeof(b.onclick) != 'undefined') "
+        + "{ b.onclick();  }"
+        + " \" ");
+    buffer.append(" /></div>");
+    getResponse().write(buffer);
   }
 
 }

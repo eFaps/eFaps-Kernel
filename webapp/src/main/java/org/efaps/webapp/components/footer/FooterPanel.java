@@ -172,9 +172,10 @@ public class FooterPanel extends Panel {
     private static final long serialVersionUID = 1L;
 
     public AjaxSubmitAndCloseLink(final String _id, final IModel _model,
-                                  final Form _form) {
+                                  final FormContainer _form) {
       super(_id, _form);
       this.add(new AjaxSubmitAndCloseBehavior(_model, _form));
+      _form.setDefaultSubmit(this);
     }
   }
 
@@ -192,7 +193,7 @@ public class FooterPanel extends Panel {
     private final IModel imodel;
 
     /** Instance variable storing the form to be submited. */
-    private final Form form;
+    private final FormContainer form;
 
     /**
      * Constructor
@@ -200,7 +201,8 @@ public class FooterPanel extends Panel {
      * @param _model
      * @param _form
      */
-    public AjaxSubmitAndCloseBehavior(final IModel _model, final Form _form) {
+    public AjaxSubmitAndCloseBehavior(final IModel _model,
+                                      final FormContainer _form) {
       super(_form, "onclick");
       this.imodel = _model;
       this.form = _form;

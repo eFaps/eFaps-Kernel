@@ -75,7 +75,7 @@ public class DialogPage extends WebPage {
   public DialogPage(final ModalWindowContainer _modal) {
     this.modal = _modal;
     add(new StyleSheetReference("css", getClass(),
-        "warndialogpage/WarnDialogPage.css"));
+        "dialogpage/DialogPage.css"));
     this.add(new Label("textLabel", DBProperties
         .getProperty("Common_UIForm_Mandotory.Message")));
 
