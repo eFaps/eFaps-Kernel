@@ -232,6 +232,13 @@
     </dependency>
 
     <!-- Transaction Manager -->
+<!--
+      <url>http://jakarta.apache.org/slide</url>
+      <properties>
+        <war.bundle>true</war.bundle>
+        <comment>The component is part of the slide module.</comment>
+      </properties>
+-->
     <dependency>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-jta</artifactId>
@@ -249,6 +256,12 @@
       <artifactId>commons-transaction</artifactId>
       <version>1.1</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!--
@@ -346,31 +359,17 @@
       </exclusions>
     </dependency>
 
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
 <!--
       <url>http://java.sun.com/products/servlet</url>
       <properties>
         <comment>Needed to compile the servlets from eFaps.</comment>
       </properties>
 -->
-    </dependency>
-
     <dependency>
-      <groupId>slide</groupId>
-      <artifactId>slide-kernel</artifactId>
-      <version>2.1</version>
-      <scope>compile</scope>
-<!--
-      <url>http://jakarta.apache.org/slide</url>
-      <properties>
-        <war.bundle>true</war.bundle>
-        <comment>The component is part of the slide module.</comment>
-      </properties>
--->
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
     </dependency>
 
   </dependencies>
