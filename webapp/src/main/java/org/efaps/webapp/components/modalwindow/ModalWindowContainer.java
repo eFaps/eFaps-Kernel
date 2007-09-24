@@ -21,11 +21,13 @@
 package org.efaps.webapp.components.modalwindow;
 
 import org.apache.wicket.PageMap;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 
 import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.TableModel;
+import org.efaps.webapp.pages.ContentPage;
 import org.efaps.webapp.pages.MainPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
@@ -38,7 +40,7 @@ public class ModalWindowContainer extends ModalWindow {
 
   private static final long serialVersionUID = 1L;
 
-  private boolean reloadParent = false;
+  private boolean reloadChild = false;
 
   private boolean updateParent = false;
 
@@ -48,29 +50,29 @@ public class ModalWindowContainer extends ModalWindow {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #reloadParent}.
+   * This is the getter method for the instance variable {@link #reloadChild}.
    *
-   * @return value of instance variable {@link #reloadParent}
+   * @return value of instance variable {@link #reloadChild}
    */
 
-  public boolean isReloadParent() {
-    return this.reloadParent;
+  public boolean isReloadChild() {
+    return this.reloadChild;
   }
 
   /**
-   * This is the setter method for the instance variable {@link #reloadParent}.
+   * This is the setter method for the instance variable {@link #reloadChild}.
    *
-   * @param reloadParent
+   * @param _reloadchild
    *                the reloadParent to set
    */
-  public void setReloadParent(boolean reloadParent) {
-    this.reloadParent = reloadParent;
+  public void setReloadChild(boolean _reloadchild) {
+    this.reloadChild = _reloadchild;
   }
 
   @Override
   public void close(final AjaxRequestTarget _target) {
     super.close(_target);
-    if (this.reloadParent) {
+    if (this.reloadChild) {
       AbstractModel model = (AbstractModel) this.getPage().getModel();
       Class<?> clazz;
       if (model instanceof TableModel) {
@@ -78,10 +80,12 @@ public class ModalWindowContainer extends ModalWindow {
       } else {
         clazz = WebFormPage.class;
       }
-
+      PageParameters parameters = model.getPageParameters();
+      parameters.put("listMenuKey", ((ContentPage) this.getPage())
+          .getListMenuKey());
       CharSequence url =
           this.urlFor(PageMap.forName(this.getPage().getPageMapName()), clazz,
-              model.getPageParameters());
+              parameters);
       String javascript = null;
       if (this.getPage().getPageMapName().equals(MainPage.IFRAME_PAGEMAP_NAME)) {
         javascript = "top.frames[0].location.href = '";

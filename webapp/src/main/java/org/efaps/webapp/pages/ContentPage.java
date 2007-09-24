@@ -114,4 +114,19 @@ public abstract class ContentPage extends WebPage {
     this.listMenuKey = _listmenunkey;
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.Component#onAfterRender()
+   */
+  @Override
+  protected void onAfterRender() {
+    super.onAfterRender();
+    if (this.listMenuKey == null) {
+      this.listMenuKey =
+          ((AbstractModel) this.getModel()).getParameter("listMenuKey");
+
+    }
+  }
+
 }

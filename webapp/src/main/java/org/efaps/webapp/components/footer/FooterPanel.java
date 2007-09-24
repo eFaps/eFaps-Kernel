@@ -219,7 +219,7 @@ public class FooterPanel extends Panel {
         AbstractModel model = (AbstractModel) this.imodel;
 
         if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
-          FooterPanel.this.modalWindow.setReloadParent(true);
+          FooterPanel.this.modalWindow.setReloadChild(true);
           FooterPanel.this.modalWindow.close(_target);
         } else {
           AbstractModel openermodel =
@@ -326,7 +326,7 @@ public class FooterPanel extends Panel {
 
     @Override
     public void onClick(AjaxRequestTarget target) {
-      FooterPanel.this.modalWindow.setReloadParent(false);
+      FooterPanel.this.modalWindow.setReloadChild(false);
       FooterPanel.this.modalWindow.close(target);
     }
   }
@@ -346,7 +346,6 @@ public class FooterPanel extends Panel {
 
     @Override
     public void onSubmit() {
-      this.getSession();
       super.onSubmit();
       AbstractModel model = (AbstractModel) super.getModel();
 
