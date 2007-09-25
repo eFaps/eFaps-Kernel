@@ -87,12 +87,15 @@ public class WebFormContainer extends WebMarkupContainer {
   protected final void onRender(final MarkupStream markupStream) {
     final int markupStart = markupStream.getCurrentIndex();
     Iterator<?> childs = this.iterator();
-    while (childs.hasNext()) {
-      markupStream.setCurrentIndex(markupStart);
-      Component child = (Component) childs.next();
-      child.render(getMarkupStream());
+    if (childs.hasNext()) {
+      while (childs.hasNext()) {
+        markupStream.setCurrentIndex(markupStart);
+        Component child = (Component) childs.next();
+        child.render(getMarkupStream());
+      }
+    } else {
+      markupStream.next();
     }
-
   }
 
   /**
