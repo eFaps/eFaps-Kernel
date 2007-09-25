@@ -33,6 +33,7 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
+import org.efaps.admin.ui.Search;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
@@ -136,6 +137,38 @@ public abstract class AbstractModel extends Model {
     initialise();
   }
 
+  public AbstractModel(final UUID _commandUUID, final String _oid) {
+    this.parameters = new PageParameters();
+    this.parameters.add("oid", _oid);
+    this.parameters.add("command", _commandUUID.toString());
+    initialise();
+  }
+
+  /**
+   * This method initialises the AbstractModel by setting the instance variables
+   *
+   * @throws EFapsException
+   */
+  private void initialise() {
+    this.oid = getParameter("oid");
+    CommandAbstract command =
+        getCommand(UUID.fromString(getParameter("command")));
+    this.commandUUID = command.getUUID();
+    this.mode = command.getTargetMode();
+    this.target = command.getTarget();
+    this.submit = command.isSubmit();
+    if (command.getTargetSearch() != null && !(this instanceof MenuItemModel)) {
+      this.callingCommandUUID = this.commandUUID;
+      this.commandUUID =
+          command.getTargetSearch().getDefaultCommand().getUUID();
+      this.setMode(CommandAbstract.TARGET_MODE_SEARCH);
+      if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+        this.submit = true;
+      }
+    }
+
+  }
+
   /**
    * This Method resets the Model, so that the next time the Model is going to
    * be connected, the underlying Data will be recieved newly from the
@@ -190,12 +223,15 @@ public abstract class AbstractModel extends Model {
     if (cmd == null) {
       cmd = Menu.get(this.commandUUID);
     }
+    if (cmd == null) {
+      cmd = Search.get(this.commandUUID);
+    }
     return cmd;
   }
 
   /**
-   * For given UUID of command / menu, the related command and menu Java
-   * instance is searched and, if found, returned.
+   * For given UUID of command / menu / Search, the related command / menu
+   * /search Java instance is searched and, if found, returned.
    *
    * @param _name
    *                name of searched command object
@@ -205,6 +241,9 @@ public abstract class AbstractModel extends Model {
     CommandAbstract cmd = Command.get(_uuid);
     if (cmd == null) {
       cmd = Menu.get(_uuid);
+      if (cmd == null) {
+        cmd = Search.get(_uuid);
+      }
     }
     return cmd;
   }
@@ -294,8 +333,8 @@ public abstract class AbstractModel extends Model {
 
   /**
    * This Method returns the Value of a Parameter for the given key. It searches
-   * for the Parameter first in the Context and then in the instance variable
-   * {@link #parameters}.
+   * for the Parameter first in the instance variable {@link #parameters} and if
+   * not found in the Context.
    *
    * @param _key
    *                Key for the Parameter to retrieve
@@ -306,17 +345,19 @@ public abstract class AbstractModel extends Model {
     String ret = null;
     try {
       String[] values;
-      values = Context.getThreadContext().getParameters().get(_key);
-      if (values != null) {
-        ret = values[0];
+
+      if (this.parameters.get(_key) instanceof String[]) {
+        values = (String[]) this.parameters.get(_key);
+        if (values != null) {
+          ret = values[0];
+        }
       } else {
-        if (this.parameters.get(_key) instanceof String[]) {
-          values = (String[]) this.parameters.get(_key);
-          if (values != null) {
-            ret = values[0];
-          }
-        } else {
-          ret = (String) this.parameters.get(_key);
+        ret = (String) this.parameters.get(_key);
+      }
+      if (ret == null) {
+        values = Context.getThreadContext().getParameters().get(_key);
+        if (values != null) {
+          ret = values[0];
         }
       }
     } catch (EFapsException e) {
@@ -370,31 +411,6 @@ public abstract class AbstractModel extends Model {
     }
 
     return title;
-  }
-
-  /**
-   * This method initialises the AbstractModel by setting the instance variables
-   *
-   * @throws EFapsException
-   */
-  private void initialise() {
-    this.oid = getParameter("oid");
-    CommandAbstract command =
-        getCommand(UUID.fromString(getParameter("command")));
-    this.commandUUID = command.getUUID();
-    this.setMode(command.getTargetMode());
-    this.target = command.getTarget();
-
-    if (command.getTargetSearch() != null) {
-      this.callingCommandUUID = this.commandUUID;
-      this.commandUUID =
-          command.getTargetSearch().getDefaultCommand().getUUID();
-      this.setMode(CommandAbstract.TARGET_MODE_SEARCH);
-      if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-        this.submit = true;
-      }
-    }
-
   }
 
   /**

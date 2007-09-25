@@ -55,10 +55,12 @@
     <!-- target definitions -->
     <target>
       <form>TeamWork_CollectionForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Edit"/>
     </target>
     <!-- property definitions -->
-    <property name="Target">popup</property>
+    <property name="Target">modal</property>
     <property name="TargetMode">edit</property>
+    <property name="WindowHeight">250</property>
     
     <!-- trigger -->
     <trigger name="TeamWork_CollectionTree_Menu_Action_Edit_UI_ACCESSCHECK" event="UI_ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnUserInterface" method="execute" index="1">

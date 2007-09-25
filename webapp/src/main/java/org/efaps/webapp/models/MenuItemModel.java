@@ -27,12 +27,9 @@ import java.util.UUID;
 
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.MenuAbstract;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
@@ -44,7 +41,7 @@ import org.efaps.webapp.pages.ErrorPage;
  * @author tmo
  * @version $Id$
  */
-public class MenuItemModel extends Model {
+public class MenuItemModel extends AbstractModel {
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -52,21 +49,15 @@ public class MenuItemModel extends Model {
   private static final long serialVersionUID = 505704924081527139L;
 
   /** Url to the image of this menu item. */
-  private final String image;
+  private String image;
 
   /** Label of this menu item. */
   private String label;
 
   /** Description of this menu item. */
-  private final String description;
+  private String description;
 
-  private final String oid;
-
-  private final int target;
-
-  private final UUID uuid;
-
-  private final String reference;
+  private String reference;
 
   /**
    * All childs of this menu item.
@@ -86,41 +77,38 @@ public class MenuItemModel extends Model {
 
   private boolean askUser = false;
 
-  private boolean submit = false;
+  private int windowWidth;
 
-  private final int windowWidth;
-
-  private final int windowHeight;
+  private int windowHeight;
 
   public MenuItemModel(final UUID _uuid) {
-    this(Menu.get(_uuid), null);
+    this(_uuid, null);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
   public MenuItemModel(final UUID _uuid, final String _oid) {
-    this(Menu.get(_uuid), _oid);
+    super(_uuid, _oid);
+    initialise();
   }
 
-  public MenuItemModel(final CommandAbstract _command, String _oid) {
+  private void initialise() {
+    CommandAbstract _command = super.getCommand();
     this.image = _command.getIcon();
     this.reference = _command.getReference();
-    this.target = _command.getTarget();
-    this.uuid = _command.getUUID();
     this.askUser = _command.isAskUser();
-    this.submit = _command.isSubmit();
     this.windowHeight = _command.getWindowHeight();
     this.windowWidth = _command.getWindowWidth();
     this.description = "";
-    this.oid = _oid;
     this.label = "";
+
     try {
       String label = DBProperties.getProperty(_command.getLabel());
 
-      if (_oid != null) {
+      if (super.getOid() != null) {
         SearchQuery query = new SearchQuery();
-        query.setObject(_oid);
+        query.setObject(super.getOid());
         ValueParser parser = new ValueParser(new StringReader(label));
         ValueList list = parser.ExpressionString();
         list.makeSelect(query);
@@ -131,14 +119,14 @@ public class MenuItemModel extends Model {
           }
           query.close();
         }
-
       }
       this.label = label;
 
       if (_command instanceof MenuAbstract) {
         for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
           if (subCmd.hasAccess()) {
-            this.childs.add(new MenuItemModel(subCmd, _oid));
+            this.childs
+                .add(new MenuItemModel(subCmd.getUUID(), super.getOid()));
           }
         }
       }
@@ -155,27 +143,14 @@ public class MenuItemModel extends Model {
     return this.level;
   }
 
-  public int getTarget() {
-    return this.target;
-  }
-
-  public String getOid() {
-    return this.oid;
-  }
-
-  public UUID getUUID() {
-    return this.uuid;
-
-  }
-
   public String getImage() {
     return this.image;
   }
 
   public String getTypeImage() {
     String ret = null;
-    if (this.oid != null) {
-      ret = new Instance(this.oid).getType().getIcon();
+    if (super.getOid() != null) {
+      ret = new Instance(super.getOid()).getType().getIcon();
     }
     return ret;
   }
@@ -194,14 +169,6 @@ public class MenuItemModel extends Model {
 
   public String getLabel() {
     return this.label;
-  }
-
-  public CommandAbstract getCommand() {
-    CommandAbstract cmd = Command.get(this.uuid);
-    if (cmd == null) {
-      cmd = Menu.get(this.uuid);
-    }
-    return cmd;
   }
 
   /**
@@ -315,16 +282,6 @@ public class MenuItemModel extends Model {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #submit}.
-   *
-   * @return value of instance variable {@link #submit}
-   */
-
-  public boolean isSubmit() {
-    return this.submit;
-  }
-
-  /**
    * This is the getter method for the instance variable {@link #windowWidth}.
    *
    * @return value of instance variable {@link #windowWidth}
@@ -342,6 +299,11 @@ public class MenuItemModel extends Model {
 
   public int getWindowHeight() {
     return this.windowHeight;
+  }
+
+  @Override
+  public void resetModel() {
+
   }
 
   // ///////////////////////////////////////////////////////////////////////////

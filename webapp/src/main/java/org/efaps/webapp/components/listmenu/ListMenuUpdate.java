@@ -101,7 +101,7 @@ public class ListMenuUpdate {
       for (Object item : rows.getList()) {
         if (item instanceof MenuItemModel) {
           if (((MenuItemModel) item).getOid().equals(_oid)
-              && ((MenuItemModel) item).getUUID().equals(_menu.getUUID())) {
+              && ((MenuItemModel) item).getCommandUUID().equals(_menu.getUUID())) {
             old = true;
             break;
           }

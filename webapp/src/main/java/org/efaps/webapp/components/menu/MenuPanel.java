@@ -47,7 +47,6 @@ public class MenuPanel extends Panel {
 
     if (_model instanceof AbstractModel) {
       AbstractModel model = (AbstractModel) _model;
-      super.setModel(model);
 
       if (model.getCommand().getTargetMenu() != null) {
         MenuContainer menu =

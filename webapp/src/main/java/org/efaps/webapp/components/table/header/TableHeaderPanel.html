@@ -56,7 +56,7 @@
 <body>
 <wicket:panel>
   <div width="1%" wicket:id="checkbox">
-    <input type="checkbox" onClick="eFapsTableSelectDeselectAll(document,'selectedRow',this.checked)"/>
+    <input type="checkbox" onClick="var cb=document.getElementsByName('selectedRow'); if(!isNaN(cb.length)) {for(var i=0;i<cb.length;i++){cb[i].checked=this.checked;}}else{cb.checked=this.checked;}"/>
   </div>
    <span wicket:id="repeating">
      <div>

@@ -146,7 +146,7 @@ public class AjaxGoIntoLink extends AbstractAjaxLink {
         MenuItemModel originalMenuItemModel = (MenuItemModel) model.get(i);
         if (originalMenuItemModel.isHeader()) {
           copyMenuItemModel =
-              new MenuItemModel(originalMenuItemModel.getUUID(),
+              new MenuItemModel(originalMenuItemModel.getCommandUUID(),
                   originalMenuItemModel.getOid());
           copyMenuItemModel.setHeader(true);
           if (originalMenuItemModel.getLevel() == 0) {
@@ -154,7 +154,7 @@ public class AjaxGoIntoLink extends AbstractAjaxLink {
           }
         } else {
           copyMenuItemModel =
-              new MenuItemModel((list.get(j)).getCommand(),
+              new MenuItemModel((list.get(j)).getCommand().getUUID(),
                   originalMenuItemModel.getOid());
           j++;
         }
