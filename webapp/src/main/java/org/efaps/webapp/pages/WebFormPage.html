@@ -36,6 +36,14 @@
         </table>
       </div>
     </form>  
+    <span wicket:id="selectscript">
+      <script type="text/javascript">
+        var inp = document.getElementById('eFapsContentDiv').getElementsByTagName("input");
+        if(inp!=null){
+          inp[0].focus();
+        }
+      </script>
+    </span>
   </wicket:extend>
 </body>
 </html>

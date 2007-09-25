@@ -22,12 +22,14 @@ package org.efaps.webapp.pages;
 
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.components.table.WebFormContainer;
+import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.FormModel;
 
 /**
@@ -77,8 +79,13 @@ public class WebFormPage extends ContentPage {
     add(form);
     super.addComponents(form);
 
-    form.add(new WebFormContainer("formtable", super.getModel(), this));
+    AbstractModel model = (AbstractModel) super.getModel();
+    form.add(new WebFormContainer("formtable", model, this));
 
+    WebMarkupContainer script = new WebMarkupContainer("selectscript");
+    this.add(script);
+    script.setVisible(model.isCreateMode()
+        || model.isEditMode()
+        || model.isSearchMode());
   }
-
 }
