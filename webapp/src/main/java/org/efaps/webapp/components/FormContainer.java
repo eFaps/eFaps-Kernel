@@ -26,6 +26,8 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 
+import org.efaps.webapp.models.AbstractModel;
+
 /**
  * @author jmo
  * @version $Id$
@@ -63,8 +65,12 @@ public class FormContainer extends Form {
   @Override
   protected void onComponentTag(final ComponentTag _tag) {
     super.onComponentTag(_tag);
-    _tag.put("onSubmit", "return false;");
-    _tag.put("action", "");
+    // only on SearchMode we want normal submit, in any other case we use
+    // AjaxSubmit
+    if (!((AbstractModel) this.getPage().getModel()).isSearchMode()) {
+      _tag.put("onSubmit", "return false;");
+      _tag.put("action", "");
+    }
   }
 
   public void setDefaultSubmit(final Component _component) {
