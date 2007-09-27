@@ -61,7 +61,7 @@
     <!-- properties -->
     <property name="Target">modal</property>
     <property name="TargetMode">edit</property>
-    <property name="WindowHeight">250</property>
+    <property name="WindowHeight">300</property>
     <property name="WindowWidth">560</property>
   </definition>
 
