@@ -194,7 +194,7 @@ public class StructurBrowserModel extends AbstractModel {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
+    super.setInitialised(true);
   }
 
   protected void setParent(boolean _parent) {

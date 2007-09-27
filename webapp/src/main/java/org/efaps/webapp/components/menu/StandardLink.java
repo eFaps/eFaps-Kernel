@@ -32,7 +32,7 @@ import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.ErrorPage;
 import org.efaps.webapp.pages.MainPage;
-import org.efaps.webapp.pages.StructurBrowserPage;
+import org.efaps.webapp.pages.StructurBrowserTablePage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
@@ -64,7 +64,7 @@ public class StandardLink extends AbstractMenuItemLink {
         InlineFrame c =
             new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
                 .forName(MainPage.IFRAME_PAGEMAP_NAME),
-                StructurBrowserPage.class, para);
+                StructurBrowserTablePage.class, para);
         this.getPage().addOrReplace(c);
       } else {
         if (this.getPage() instanceof MainPage) {

@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.pages;
+package org.efaps.webapp.components.tree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -30,17 +30,20 @@ import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation;
 import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Alignment;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Unit;
-import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.panel.Panel;
 
-import org.efaps.webapp.components.StructurTreeTable;
 import org.efaps.webapp.models.StructurBrowserModel;
 
-public class StructurBrowserPage extends WebPage {
+public class StructurBrowserPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public StructurBrowserPage(final PageParameters _parameters) {
-    super(new StructurBrowserModel(_parameters));
+  public StructurBrowserPanel(final String _id, final PageParameters _parameters) {
+    this(_id, new StructurBrowserModel(_parameters));
+  }
+
+  public StructurBrowserPanel(final String _id, StructurBrowserModel _model) {
+    super(_id, _model);
 
     StructurBrowserModel model = (StructurBrowserModel) super.getModel();
     if (!model.isInitialised()) {

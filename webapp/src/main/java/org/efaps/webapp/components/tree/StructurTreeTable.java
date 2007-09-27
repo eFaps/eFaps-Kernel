@@ -18,13 +18,14 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.components;
+package org.efaps.webapp.components.tree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.IClusterable;
+import org.apache.wicket.ResourceReference;
 import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.TreeTable;
 import org.apache.wicket.markup.html.tree.ITreeState;
@@ -37,6 +38,9 @@ public class StructurTreeTable extends TreeTable {
 
   private static final long serialVersionUID = 1L;
 
+  private static final ResourceReference CSS =
+      new ResourceReference(StructurTreeTable.class, "StructurTree.css");
+
   public StructurTreeTable(final String _id, final TreeModel _treeModel,
                            final IColumn[] _columns) {
     super(_id, _treeModel, _columns);
@@ -45,6 +49,16 @@ public class StructurTreeTable extends TreeTable {
     ITreeState treeState = this.getTreeState();
     treeState.collapseAll();
     treeState.addTreeStateListener(new AsyncronTreeUpdateListener());
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.extensions.markup.html.tree.table.TreeTable#getCSS()
+   */
+  @Override
+  protected ResourceReference getCSS() {
+    return CSS;
   }
 
   public class AsyncronTreeUpdateListener implements ITreeStateListener,
