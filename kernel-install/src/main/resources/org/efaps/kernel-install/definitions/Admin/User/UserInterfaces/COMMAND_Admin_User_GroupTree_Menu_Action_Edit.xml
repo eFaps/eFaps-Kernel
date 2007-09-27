@@ -52,14 +52,17 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_GroupTree_Menu_Action_Edit</name>
+    <icon>Admin_User_Group+Edit+Image</icon>
     <!-- target definitions -->
     <target>
       <form>Admin_User_AbstractForm</form>
       <execute program="org.efaps.esjp.common.uiform.Edit"/>
     </target>
     <!-- properties -->
-    <property name="Target">popup</property>
+    <property name="Target">modal</property>
     <property name="TargetMode">edit</property>
+    <property name="WindowHeight">250</property>
+    <property name="WindowWidth">560</property>
   </definition>
 
 </ui-command>

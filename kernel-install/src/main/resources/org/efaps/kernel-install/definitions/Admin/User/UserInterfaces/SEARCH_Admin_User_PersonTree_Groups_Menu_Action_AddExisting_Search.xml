@@ -52,6 +52,7 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonTree_Groups_Menu_Action_AddExisting_Search</name>
+    <icon>Admin_User_Group+Add+Image</icon>
     <!-- defaults -->
     <default>
       <command>Admin_User_GroupSearch</command>
