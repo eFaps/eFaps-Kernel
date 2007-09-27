@@ -32,6 +32,7 @@ import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.ErrorPage;
 import org.efaps.webapp.pages.MainPage;
+import org.efaps.webapp.pages.StructurBrowserPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
@@ -59,15 +60,23 @@ public class StandardLink extends AbstractMenuItemLink {
     PageParameters para = new PageParameters("command=" + command.getUUID());
     para.add("oid", model.getOid());
     if (command.getTargetTable() != null) {
-      if (this.getPage() instanceof MainPage) {
+      if (command.getProperty("TargetStructurBrowserField") != null) {
         InlineFrame c =
             new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
-                .forName(MainPage.IFRAME_PAGEMAP_NAME), WebTablePage.class,
-                para);
-
+                .forName(MainPage.IFRAME_PAGEMAP_NAME),
+                StructurBrowserPage.class, para);
         this.getPage().addOrReplace(c);
       } else {
-        this.setResponsePage(WebTablePage.class, para);
+        if (this.getPage() instanceof MainPage) {
+          InlineFrame c =
+              new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
+                  .forName(MainPage.IFRAME_PAGEMAP_NAME), WebTablePage.class,
+                  para);
+
+          this.getPage().addOrReplace(c);
+        } else {
+          this.setResponsePage(WebTablePage.class, para);
+        }
       }
     } else if (command.getTargetForm() != null
         || command.getTargetSearch() != null) {

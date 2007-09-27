@@ -58,7 +58,22 @@
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">TeamWork_Collection/Name.Label</property>
       <property name="ShowTypeIcon">true</property>
-    </field><!--
+    </field>
+     <field name="created">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Created</property>
+      <property name="Searchable">true</property>
+      <property name="Label">TeamWork_Collection/Created.Label</property>
+    </field>
+     <field name="modified">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Modified</property>
+      <property name="Searchable">true</property>
+      <property name="Label">TeamWork_Collection/Modified.Label</property>
+    </field>
+    <!--
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>

@@ -208,8 +208,6 @@ public class TableModel extends AbstractModel {
         if (field.getName().equals(this.sortKey)) {
           sortdirection = this.getSortDirection();
         }
-        if (field.getName().equals(this.filterKey))
-          ;
         this.headers.add(new HeaderModel(field, sortdirection));
       }
       query.execute();

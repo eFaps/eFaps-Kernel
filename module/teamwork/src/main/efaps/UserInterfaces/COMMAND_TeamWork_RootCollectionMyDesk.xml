@@ -61,13 +61,14 @@
     <target>
       <table>TeamWork_CollectionTable</table>
       <menu>TeamWork_RootCollectionMyDesk_Menu</menu>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
+      <evaluate program="org.efaps.esjp.teamwork.StructurBrowser">
         <property name="Types">TeamWork_RootCollection</property>
       </evaluate>
     </target>
     <!-- property definitions -->
     <property name="Target">content</property>
     <property name="TargetShowCheckBoxes">true</property>
+    <property name="TargetStructurBrowserField">name</property>
   </definition>
 
 </ui-command>
