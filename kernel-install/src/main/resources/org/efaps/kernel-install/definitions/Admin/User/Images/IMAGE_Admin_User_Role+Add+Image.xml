@@ -21,7 +21,7 @@
  Last Changed:    $Date$
  Last Changed By: $Author$
  Original Author: Mark James (mjames@gmail.com)
- Original Name:   chart_organisation.png
+ Original Name:   chart_organisation_add.png
  Original Web:    Silk icon set 1.3
                   [ http://www.famfamfam.com/lab/icons/silk/ ] 
  Original License:Creative Commons Attribution 2.5 License 
@@ -30,7 +30,7 @@
 -->
 
 <ui-image>
-  <uuid>32b375ac-caa7-4a69-b19a-e34d834e0f67</uuid>
+  <uuid>564cd3a8-9aa3-42dd-b8e2-1a26678a52d3</uuid>
 
   <!-- ************************************************************************
     version definition used to create / update the image 
@@ -43,8 +43,8 @@
       <mode>true</mode>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_User_RoleImage</name>
-    <file>IMAGE_Admin_User_RoleImage.gif</file>
+    <name>Admin_User_Role+Add+Image</name>
+    <file>IMAGE_Admin_User_Role+Add+Image.gif</file>
   </definition>
 
 </ui-image>

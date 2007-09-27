@@ -52,6 +52,7 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_RoleMyDesk_Menu_Action_Create</name>
+    <icon>Admin_User_Role+Create+Image</icon>
     <!-- target definitions -->
     <target>
       <form>Admin_User_AbstractForm</form>

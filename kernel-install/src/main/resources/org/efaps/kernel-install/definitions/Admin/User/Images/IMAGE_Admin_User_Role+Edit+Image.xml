@@ -30,7 +30,7 @@
 -->
 
 <ui-image>
-  <uuid>32b375ac-caa7-4a69-b19a-e34d834e0f67</uuid>
+  <uuid>dcbf544c-1882-4243-88a3-b46961b9a881</uuid>
 
   <!-- ************************************************************************
     version definition used to create / update the image 
@@ -43,8 +43,8 @@
       <mode>true</mode>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_User_RoleImage</name>
-    <file>IMAGE_Admin_User_RoleImage.gif</file>
+    <name>Admin_User_Role+Edit+Image</name>
+    <file>IMAGE_Admin_User_Role+Edit+Image.gif</file>
   </definition>
 
 </ui-image>

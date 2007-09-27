@@ -52,6 +52,7 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonTree_Roles_Menu_Action_Disconnect</name>
+    <icon>Admin_User_Role+Remove+Image</icon>
     <!-- target definitions -->
     <target>
       <execute program="org.efaps.esjp.common.uitable.CommonDelete">
