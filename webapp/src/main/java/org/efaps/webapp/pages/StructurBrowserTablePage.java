@@ -24,7 +24,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
 import org.efaps.webapp.components.FormContainer;
-import org.efaps.webapp.components.tree.StructurBrowserPanel;
+import org.efaps.webapp.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.webapp.models.StructurBrowserModel;
 
 /**
@@ -51,7 +51,7 @@ public class StructurBrowserTablePage extends ContentPage {
     this.add(form);
     super.addComponents(form);
 
-    form.add(new StructurBrowserPanel("structurBrowserTable", model));
+    form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", model));
     this.add(new StyleSheetReference("structurtablecss", getClass(),
         "structurbrowsertablepage/StructurBrowserTablePage.css"));
   }

@@ -24,25 +24,29 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.Response;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractRenderableColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.AbstractTreeColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation;
 import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
+import org.apache.wicket.extensions.markup.html.tree.table.IRenderable;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Alignment;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Unit;
 import org.apache.wicket.markup.html.panel.Panel;
 
 import org.efaps.webapp.models.StructurBrowserModel;
 
-public class StructurBrowserPanel extends Panel {
+public class StructurBrowserTreeTablePanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public StructurBrowserPanel(final String _id, final PageParameters _parameters) {
+  public StructurBrowserTreeTablePanel(final String _id,
+                                       final PageParameters _parameters) {
     this(_id, new StructurBrowserModel(_parameters));
   }
 
-  public StructurBrowserPanel(final String _id, StructurBrowserModel _model) {
+  public StructurBrowserTreeTablePanel(final String _id,
+                                       StructurBrowserModel _model) {
     super(_id, _model);
 
     StructurBrowserModel model = (StructurBrowserModel) super.getModel();
@@ -50,25 +54,28 @@ public class StructurBrowserPanel extends Panel {
       model.execute();
     }
 
-    IColumn[] columns = new IColumn[model.getHeaders().size()];
+    IColumn[] columns = new IColumn[model.getHeaders().size() + 1];
+
+    columns[0] =
+        new SelectColumn(new ColumnLocation(Alignment.LEFT, 30, Unit.PX), "");
 
     for (int i = 0; i < model.getHeaders().size(); i++) {
 
       if (model.getHeaders().get(i).getName().equals(
           model.getBrowserFieldName())) {
-        columns[i] =
+        columns[i + 1] =
             new TreeColumn(new ColumnLocation(Alignment.MIDDLE, 2,
                 Unit.PROPORTIONAL), model.getHeaders().get(i).getLabel());
       } else {
-        columns[i] =
-            new TreeTableColumn(new ColumnLocation(Alignment.MIDDLE, 1,
+        columns[i + 1] =
+            new SimpleColumn(new ColumnLocation(Alignment.MIDDLE, 1,
                 Unit.PROPORTIONAL), model.getHeaders().get(i).getLabel(), i);
       }
 
     }
 
-    StructurTreeTable tree =
-        new StructurTreeTable("treeTable", model.getTreeModel(), columns);
+    StructurBrowserTreeTable tree =
+        new StructurBrowserTreeTable("treeTable", model.getTreeModel(), columns);
     add(tree);
 
   }
@@ -82,33 +89,62 @@ public class StructurBrowserPanel extends Panel {
     }
 
     @Override
-    public String renderNode(TreeNode arg0) {
+    public String renderNode(final TreeNode _node) {
 
-      return arg0.toString();
+      return _node.toString();
     }
 
   }
 
-  public class TreeTableColumn extends AbstractRenderableColumn {
+  public class SimpleColumn extends AbstractRenderableColumn {
 
     private static final long serialVersionUID = 1L;
 
     private final int index;
 
-    public TreeTableColumn(final ColumnLocation _location,
-                           final String _header, int _index) {
+    public SimpleColumn(final ColumnLocation _location, final String _header,
+                        int _index) {
       super(_location, _header);
       this.index = _index;
+      this.setContentAsTooltip(true);
     }
 
     @Override
-    public String getNodeValue(TreeNode arg0) {
+    public String getNodeValue(final TreeNode _node) {
       String ret = "";
       ret =
-          ((StructurBrowserModel) ((DefaultMutableTreeNode) arg0)
+          ((StructurBrowserModel) ((DefaultMutableTreeNode) _node)
               .getUserObject()).getColumnValue(this.index);
 
       return ret;
     }
+  }
+
+  public class SelectColumn extends AbstractRenderableColumn {
+
+    private static final long serialVersionUID = 1L;
+
+    public SelectColumn(ColumnLocation location, String header) {
+      super(location, header);
+    }
+
+    @Override
+    public IRenderable newCell(TreeNode node, int level) {
+      return new IRenderable() {
+
+        private static final long serialVersionUID = 1L;
+
+        public void render(TreeNode node, Response response) {
+          response.write("<span><input type=\"checkbox\"/>");
+          response.write("</span>");
+        }
+      };
+    }
+
+    @Override
+    public String getNodeValue(final TreeNode _node) {
+      return "";
+    }
+
   }
 }
