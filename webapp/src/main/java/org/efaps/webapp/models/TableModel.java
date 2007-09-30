@@ -46,7 +46,6 @@ import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Table;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
-import org.efaps.servlet.RequestHandler;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.pages.ErrorPage;
 
