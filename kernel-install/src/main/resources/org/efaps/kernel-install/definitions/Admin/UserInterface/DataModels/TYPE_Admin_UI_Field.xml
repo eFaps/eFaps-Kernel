@@ -57,7 +57,6 @@
     </attribute>
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_UI_FieldImage</property>
-    <property name="Tree">Admin_UI_FieldTree</property>
   </definition>
 
 </datamodel-type>

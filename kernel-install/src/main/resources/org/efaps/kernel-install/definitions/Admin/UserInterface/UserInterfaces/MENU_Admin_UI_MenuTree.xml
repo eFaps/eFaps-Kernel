@@ -52,6 +52,8 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_UI_MenuTree</name>
+    <!-- type tree for -->
+    <type>Admin_UI_Menu</type>
     <!-- targets -->
     <target>
       <form>Admin_UI_AbstractForm</form>         

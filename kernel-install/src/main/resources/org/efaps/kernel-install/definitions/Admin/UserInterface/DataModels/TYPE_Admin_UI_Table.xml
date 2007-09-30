@@ -49,7 +49,6 @@
     <parent>Admin_UI_Collection</parent>
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_UI_TableImage</property>
-    <property name="Tree">Admin_UI_TableTree</property>
   </definition>
 
 </datamodel-type>
