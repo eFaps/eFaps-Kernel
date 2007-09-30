@@ -42,9 +42,11 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
+import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Table;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
+import org.efaps.servlet.RequestHandler;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.pages.ErrorPage;
 
@@ -278,12 +280,18 @@ public class TableModel extends AbstractModel {
                 new Instance((String) _query.getValue(field.getAlternateOID()));
             oid = inst.getOid();
             if (field.isShowTypeIcon()) {
-              icon = inst.getType().getIcon();
+              final Image image = Image.getTypeIcon(inst.getType());
+              if (image != null)  {
+                icon = image.getUrl();
+              }
             }
           } else {
             oid = instance.getOid();
             if (field.isShowTypeIcon()) {
-              icon = instance.getType().getIcon();
+              final Image image = Image.getTypeIcon(instance.getType());
+              if (image != null)  {
+                icon = image.getUrl();
+              }
             }
           }
 

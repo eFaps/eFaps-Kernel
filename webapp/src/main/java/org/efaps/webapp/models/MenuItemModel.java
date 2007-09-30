@@ -30,6 +30,7 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.MenuAbstract;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
@@ -149,8 +150,11 @@ public class MenuItemModel extends AbstractModel {
 
   public String getTypeImage() {
     String ret = null;
-    if (super.getOid() != null) {
-      ret = new Instance(super.getOid()).getType().getIcon();
+    if (super.getOid() != null)  {
+      final Image image = Image.getTypeIcon(new Instance(super.getOid()).getType());
+      if (image != null)  {
+        ret = image.getUrl();
+      }
     }
     return ret;
   }

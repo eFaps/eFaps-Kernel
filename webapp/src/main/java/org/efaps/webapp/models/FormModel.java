@@ -38,6 +38,7 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
+import org.efaps.admin.ui.Image;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -191,7 +192,10 @@ public class FormModel extends AbstractModel {
             if (instance != null) {
               oid = instance.getOid();
               if (field.isShowTypeIcon() && instance.getType() != null) {
-                icon = instance.getType().getIcon();
+                final Image image = Image.getTypeIcon(instance.getType());
+                if (image != null)  {
+                  icon = image.getUrl();
+                }
               }
             }
 
