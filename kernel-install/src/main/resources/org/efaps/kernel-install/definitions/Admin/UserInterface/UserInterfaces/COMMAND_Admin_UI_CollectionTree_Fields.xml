@@ -52,7 +52,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_UI_CollectionTree_Fields</name>
-    <icon>Admin_UI_FieldListImage</icon>
     <!-- target definitions -->
     <target>
       <table>Admin_UI_FieldList</table>
