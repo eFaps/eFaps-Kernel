@@ -28,7 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.servlet.RequestHandler;
 
 
 /**
