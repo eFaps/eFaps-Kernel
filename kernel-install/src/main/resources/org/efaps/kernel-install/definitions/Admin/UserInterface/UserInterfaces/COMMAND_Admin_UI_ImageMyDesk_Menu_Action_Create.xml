@@ -52,6 +52,7 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_UI_ImageMyDesk_Menu_Action_Create</name>
+    <icon>Admin_UI_Image+Create+Image</icon>
     <!-- target definitions -->
     <target>
       <form>Admin_UI_FileForm</form>

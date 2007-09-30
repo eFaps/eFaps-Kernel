@@ -22,6 +22,7 @@
  Last Changed By: $Author$
  Original Author: Mark James (mjames@gmail.com)
  Original Name:   picture.png
+                  bullet_add.png
  Original Web:    Silk icon set 1.3
                   [ http://www.famfamfam.com/lab/icons/silk/ ] 
  Original License:Creative Commons Attribution 2.5 License 
@@ -30,7 +31,7 @@
 -->
 
 <ui-image>
-  <uuid>291f28f1-1fe4-4666-94ea-85f537117a11</uuid>
+  <uuid>98934bc9-3f90-4c8f-a2d0-c3f37ea68323</uuid>
 
   <!-- ************************************************************************
     version definition used to create / update the image 
@@ -43,8 +44,8 @@
       <mode>true</mode>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_UI_ImageImage</name>
-    <file>IMAGE_Admin_UI_ImageImage.gif</file>
+    <name>Admin_UI_Image+Create+Image</name>
+    <file>IMAGE_Admin_UI_Image+Create+Image.gif</file>
   </definition>
 
 </ui-image>
