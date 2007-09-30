@@ -22,6 +22,7 @@
  Last Changed By: $Author$
  Original Author: Mark James (mjames@gmail.com)
  Original Name:   server_connect.png
+                  bullet_add.png
  Original Web:    Silk icon set 1.3
                   [ http://www.famfamfam.com/lab/icons/silk/ ] 
  Original License:Creative Commons Attribution 2.5 License 
@@ -29,7 +30,7 @@
 -->
 
 <ui-image>
-  <uuid>6b58349c-b9f1-4e1a-a435-11193a9bb5e0</uuid>
+  <uuid>2d507172-f091-46d5-9446-0b51d9f0585a</uuid>
 
   <!-- ************************************************************************
     version definition used to create / update the image 
@@ -42,8 +43,8 @@
       <mode>true</mode>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_User_JAASSystemImage</name>
-    <file>IMAGE_Admin_User_JAASSystemImage.gif</file>
+    <name>Admin_User_JAASSystem+Create+Image</name>
+    <file>IMAGE_Admin_User_JAASSystem+Create+Image.gif</file>
   </definition>
 
 </ui-image>

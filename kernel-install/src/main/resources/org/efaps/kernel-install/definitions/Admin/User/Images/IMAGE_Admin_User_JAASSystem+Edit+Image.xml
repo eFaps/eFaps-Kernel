@@ -22,6 +22,7 @@
  Last Changed By: $Author$
  Original Author: Mark James (mjames@gmail.com)
  Original Name:   server_connect.png
+                  pencil.png
  Original Web:    Silk icon set 1.3
                   [ http://www.famfamfam.com/lab/icons/silk/ ] 
  Original License:Creative Commons Attribution 2.5 License 
@@ -29,7 +30,7 @@
 -->
 
 <ui-image>
-  <uuid>6b58349c-b9f1-4e1a-a435-11193a9bb5e0</uuid>
+  <uuid>edcf10b7-519c-43ce-9673-65a72ce76e0c</uuid>
 
   <!-- ************************************************************************
     version definition used to create / update the image 
@@ -42,8 +43,8 @@
       <mode>true</mode>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_User_JAASSystemImage</name>
-    <file>IMAGE_Admin_User_JAASSystemImage.gif</file>
+    <name>Admin_User_JAASSystem+Edit+Image</name>
+    <file>IMAGE_Admin_User_JAASSystem+Edit+Image.gif</file>
   </definition>
 
 </ui-image>

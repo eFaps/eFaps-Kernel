@@ -52,6 +52,7 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_JAASSystemTree_Menu_Action_Edit</name>
+    <icon>Admin_User_JAASSystem+Edit+Image</icon>
     <!-- target definitions -->
     <target>
       <form>Admin_User_JAASSystemForm</form>
