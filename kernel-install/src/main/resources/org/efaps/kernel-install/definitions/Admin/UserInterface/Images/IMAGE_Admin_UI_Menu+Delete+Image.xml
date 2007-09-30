@@ -20,11 +20,18 @@
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
+ Original Author: Mark James (mjames@gmail.com)
+ Original Name:   layout_sidebar.png
+                  bullet_add.png
+ Original Web:    Silk icon set 1.3
+                  [ http://www.famfamfam.com/lab/icons/silk/ ] 
+ Original License:Creative Commons Attribution 2.5 License 
+                  [ http://creativecommons.org/licenses/by/2.5/ ]
 
 -->
 
 <ui-image>
-  <uuid>27f8f5c1-76c1-43f1-b539-00f31d18c11e</uuid>
+  <uuid>247c0162-9762-4269-bd8e-4ff2f8844b16</uuid>
 
   <!-- ************************************************************************
     version definition used to create / update the image 
@@ -37,8 +44,8 @@
       <mode>true</mode>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_UI_MenuParentListImage</name>
-    <file>IMAGE_Admin_UI_MenuParentListImage.gif</file>
+    <name>Admin_UI_Menu+Delete+Image</name>
+    <file>IMAGE_Admin_UI_Menu+Delete+Image.gif</file>
   </definition>
 
 </ui-image>

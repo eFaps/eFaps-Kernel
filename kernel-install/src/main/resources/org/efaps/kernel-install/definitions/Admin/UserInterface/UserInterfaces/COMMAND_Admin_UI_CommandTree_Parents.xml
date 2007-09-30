@@ -52,7 +52,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_UI_CommandTree_Parents</name>
-    <icon>Admin_UI_MenuParentListImage</icon>
     <!-- target definitions -->
     <target>
       <table>Admin_UI_AbstractList</table>
