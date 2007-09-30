@@ -52,6 +52,7 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonMyDesk_Menu_Action_Create</name>
+    <icon>Admin_User_Person+Create+Image</icon>
     <!-- target definitions -->
     <target>
       <form>Admin_User_PersonForm</form>

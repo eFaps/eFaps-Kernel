@@ -52,7 +52,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_RoleTree_Persons</name>
-    <icon>Admin_User_PersonListImage</icon>
     <!-- target definitions -->
     <target>
       <table>Admin_User_PersonTable</table>
