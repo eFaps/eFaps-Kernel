@@ -47,7 +47,6 @@
     </version>
     <name>Admin_DataModel_Type_Trigger_UpdatePre</name>
     <parent>Admin_DataModel_Type_Trigger</parent>
-    <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 
 </datamodel-type>

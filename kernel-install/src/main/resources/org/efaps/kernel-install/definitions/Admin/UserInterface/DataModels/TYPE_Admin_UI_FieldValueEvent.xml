@@ -47,8 +47,6 @@
     </version>
     <name>Admin_UI_FieldValueEvent</name>
     <parent>Admin_Event_Definition</parent>
-    <!-- properties -->
-    <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
   
 </datamodel-type>

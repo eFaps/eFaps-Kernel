@@ -95,8 +95,6 @@
       <sqltable>Common_History_AbstractSQLTable</sqltable>
       <sqlcolumn>CREATED</sqlcolumn>
     </attribute>
-    
-    <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 
 </datamodel-type>
