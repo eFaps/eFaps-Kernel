@@ -61,6 +61,5 @@
       <sqltable>ContactWork_PersonSQLTable</sqltable>
       <sqlcolumn>SURNAME</sqlcolumn>
     </attribute>
-    <property name="Tree">ContactWork_PersonTree</property>
   </definition>
 </datamodel-type>

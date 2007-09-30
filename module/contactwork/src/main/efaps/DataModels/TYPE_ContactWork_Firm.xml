@@ -44,9 +44,7 @@
       <local>$Rev$</local>
       <mode>(version==3)</mode>
     </version>
-
     <name>ContactWork_Firm</name>
     <parent>ContactWork_Abstract</parent>
-    <property name="Tree">ContactWork_FirmTree</property>
   </definition>
 </datamodel-type>

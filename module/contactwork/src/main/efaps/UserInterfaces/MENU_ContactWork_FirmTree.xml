@@ -52,11 +52,14 @@
       <mode>(version>=3)</mode>
     </version>
     <name>ContactWork_FirmTree</name>
+    <!-- type tree for -->
+    <type>ContactWork_Person</type>
+    <!-- targets -->
     <target>
       <form>ContactWork_FirmForm</form>
       <menu>ContactWork_FirmTree_Menu</menu>
     </target>
-    
+    <!-- childs -->
     <childs>
       <child>ContactWork_AbstractTree_Email</child>
       <child>ContactWork_AbstractTree_Phone</child>

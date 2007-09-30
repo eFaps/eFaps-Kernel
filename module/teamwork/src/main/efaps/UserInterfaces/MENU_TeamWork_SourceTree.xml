@@ -52,10 +52,14 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_SourceTree</name>
+    <!-- type tree for -->
+    <type>TeamWork_Source</type>
+    <!-- targets -->
     <target>
       <form>TeamWork_SourceForm</form>
       <menu>TeamWork_SourceTree_Menu</menu>
     </target>
+    <!-- childs -->
     <childs>
       <child>TeamWork_SourceTree_Versions</child>
       <child>Common_History_Abstract</child>

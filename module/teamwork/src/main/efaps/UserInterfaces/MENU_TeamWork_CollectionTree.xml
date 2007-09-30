@@ -52,10 +52,14 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_CollectionTree</name>
+    <!-- type tree for -->
+    <type>TeamWork_Collection</type>
+    <!-- targets -->
     <target>
       <form>TeamWork_CollectionForm</form>
       <menu>TeamWork_CollectionTree_Menu</menu>
     </target>
+    <!-- childs -->
     <childs>
       <child>TeamWork_CollectionTree_SubCollections</child>
       <child>TeamWork_CollectionTree_Sources</child>

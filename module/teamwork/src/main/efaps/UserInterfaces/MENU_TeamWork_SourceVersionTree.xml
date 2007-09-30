@@ -52,11 +52,13 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_SourceVersionTree</name>
+    <!-- type tree for -->
+    <type>TeamWork_SourceVersion</type>
+    <!-- targets -->
     <target>
       <form>TeamWork_SourceVersionForm</form>
       <menu>TeamWork_SourceVersionTree_Menu</menu>
     </target>
-    
     <!-- property definitions -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
