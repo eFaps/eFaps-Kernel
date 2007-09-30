@@ -52,6 +52,7 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_UI_SearchMyDesk_Menu_Action_Create</name>
+    <icon>Admin_UI_Search+Create+Image</icon>
     <!-- target definitions -->
     <target>
       <form>Admin_UI_AbstractForm</form>
