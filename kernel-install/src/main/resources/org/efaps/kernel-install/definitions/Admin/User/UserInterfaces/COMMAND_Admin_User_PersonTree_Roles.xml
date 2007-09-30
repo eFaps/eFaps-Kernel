@@ -52,7 +52,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonTree_Roles</name>
-    <icon>Admin_User_RoleListImage</icon>
     <!-- target definitions -->
     <target>
       <menu>Admin_User_PersonTree_Roles_Menu</menu>
