@@ -60,7 +60,7 @@
     <!-- target definitions -->
     <target>
       <form>Admin_UI_AbstractForm</form>
-      <table>Admin_UI_AbstractTable</table>
+      <table>Admin_UI_AbstractList</table>
       <evaluate program="org.efaps.esjp.common.uisearch.QuerySearch">
         <property name="Types">Admin_UI_Table</property>
       </evaluate>
