@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>0b7ba72e-180c-470e-b1bd-839e5684b88d</uuid>
+<ui-command>
+  <uuid>51a3d785-bccf-43ce-93c2-8e36c068c95d</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_UI_ImageTree</name>
+    <name>Admin_UI_ImageTree_Links</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,22 +51,18 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_UI_ImageTree</name>
-    <!-- type tree for -->
-    <type>Admin_UI_Image</type>
-    <!-- targets -->
+    <name>Admin_UI_ImageTree_Links</name>
+    <!-- target definitions -->
     <target>
-      <form>Admin_UI_FileForm</form>
-      <menu>Admin_UI_ImageTree_Menu</menu>
+      <table>Admin_UI_LinkList4Links</table>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
+        <property name="Expand">Admin_UI_Link\From</property>
+      </evaluate>
     </target>
-    <!-- childs -->
-    <childs>
-      <child>Admin_UI_ImageTree_Links</child>
-      <child>Admin_UI_DirectTree_Used</child>
-    </childs>
     <!-- properties -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
+    <property name="TargetShowCheckBoxes">true</property>
   </definition>
 
-</ui-menu>
+</ui-command>
