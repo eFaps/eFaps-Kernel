@@ -486,12 +486,9 @@ public class Type extends DataModelObject {
   /**
    * The instance method sets a new property value.
    * 
-   * @param _context
-   *          context for this request
-   * @param _name
-   *          name of the property
-   * @param _value
-   *          value of the property
+   * @param _context  context for this request
+   * @param _name     name of the property
+   * @param _value    value of the property
    * @see #addUniqueKey
    * @see #setViewAttribute
    */
@@ -499,8 +496,6 @@ public class Type extends DataModelObject {
       throws CacheReloadException {
     if ("Icon".equals(_name)) {
       setIcon(RequestHandler.replaceMacrosInUrl(_value));
-    } else if ("Tree".equals(_name)) {
-      setTreeMenuName(_value);
     } else if (_name.startsWith("UniqueKey")) {
       addUniqueKey(_value);
     } else if (_name.equals("ViewAttribute")) {
@@ -697,22 +692,6 @@ public class Type extends DataModelObject {
    */
   public Form getFormCreate() {
     return this.formCreate;
-  }
-
-  private String treeMenuName = null;
-
-  private void setTreeMenuName(final String _treeMenuName) {
-    this.treeMenuName = _treeMenuName;
-  }
-
-  /**
-   * @deprecated use org.efaps.admin.ui.getTypeTreeMenu instead
-   */
-  public Menu getTreeMenu()  {
-    if ((this.treeMenu == null) && (this.treeMenuName != null)) {
-      this.treeMenu = Menu.get(this.treeMenuName);
-    }
-    return this.treeMenu;
   }
 
   /**

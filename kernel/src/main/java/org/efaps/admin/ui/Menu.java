@@ -148,16 +148,17 @@ public class Menu extends MenuAbstract  {
   }
   
   /**
-   * 
-   * @param _type
-   * @return
-   * @todo remove old method to get type tree menu from type
+   * Returns for given type the type tree menu. If no type tree menu is defined
+   * for the type, it is searched if for parent type a menu is defined.
+   *
+   * @param _type   type for which the type tree menu is searched
+   * @return type tree menu for given type if found; otherwise
+   *         <code>null</code>.
    */
   public static Menu getTypeTreeMenu(final Type _type)  {
     Menu ret = TYPE2MENUS.get(_type);
-    if (ret == null)  {
-      LOG.error("Type Tree Menu for '" + _type.getName() + "' not defined correctly!");
-      ret = _type.getTreeMenu();
+    if ((ret == null) && (_type.getParentType() != null))  {
+      ret = getTypeTreeMenu(_type.getParentType());
     }
     return ret;
   }
