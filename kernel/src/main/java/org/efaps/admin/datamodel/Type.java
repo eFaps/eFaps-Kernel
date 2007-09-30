@@ -204,11 +204,6 @@ public class Type extends DataModelObject {
   private Collection<UniqueKey> uniqueKeys = null;
 
   /**
-   * The type icon is stored in this instance variable.
-   */
-  private String icon = null;
-
-  /**
    * All attributes which are used as links are stored in this map.
    * 
    * @see #getLinks
@@ -485,9 +480,7 @@ public class Type extends DataModelObject {
    */
   protected void setProperty(final String _name, final String _value)
       throws CacheReloadException {
-    if ("Icon".equals(_name)) {
-      setIcon(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.startsWith("UniqueKey")) {
+    if (_name.startsWith("UniqueKey")) {
       addUniqueKey(_value);
     } else if (_name.equals("ViewAttribute")) {
       // setViewAttribute(_context, _value);
@@ -717,29 +710,6 @@ public class Type extends DataModelObject {
    */
   private void setUniqueKeys(final Collection<UniqueKey> _uniqueKeys) {
     this.uniqueKeys = _uniqueKeys;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #icon}.
-   * 
-   * @return value of instance variable {@link #icon}
-   * @see #setIcon
-   * @see #icon
-   */
-  public String getIcon() {
-    return this.icon;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #icon}.
-   * 
-   * @param _icon
-   *          new value for instance variable {@link #icon}
-   * @see #getIcon
-   * @see #icon
-   */
-  private void setIcon(final String _icon) {
-    this.icon = _icon;
   }
 
   /**

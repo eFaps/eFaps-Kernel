@@ -82,6 +82,8 @@ public abstract class AdminObject implements CacheObjectInterface {
     IMAGE("Admin_UI_Image", null),
 
     LINK_ICON("Admin_UI_LinkIcon", null),
+    LINK_ICONISTYPEICONFOR("Admin_UI_LinkIsTypeIconFor",
+                           "74b91e57-e5a3-43df-b0e4-43815ad79fec"),
     LINK_MENUISTYPETREEFOR("Admin_UI_LinkIsTypeTreeFor", 
                            "ce5087b5-ee5c-49c3-adfb-5da18f95a4d0"),
     LINK_TARGET_FORM("Admin_UI_LinkTargetForm", null),

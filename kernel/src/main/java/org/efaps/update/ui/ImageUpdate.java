@@ -23,6 +23,7 @@ package org.efaps.update.ui;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
@@ -47,10 +48,20 @@ public class ImageUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static variables
 
+  /** Link from menu to type as type tree menu */
+  private final static Link LINK2TYPE
+             = new Link("Admin_UI_LinkIsTypeIconFor",
+                        "From",
+                        "Admin_DataModel_Type", "To");
+
   /**
    * Logging instance used to give logging information of this class.
    */
   private final static Logger LOG = LoggerFactory.getLogger(ImageUpdate.class);
+
+  private final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
+    ALLLINKS.add(LINK2TYPE);
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
@@ -59,7 +70,7 @@ public class ImageUpdate extends AbstractUpdate  {
    *
    */
   public ImageUpdate() {
-    super("Admin_UI_Image", null);
+    super("Admin_UI_Image", ALLLINKS);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -101,6 +112,9 @@ public class ImageUpdate extends AbstractUpdate  {
       
       digester.addCallMethod("ui-image/definition/name", "setName", 1);
       digester.addCallParam("ui-image/definition/name", 0);
+
+      digester.addCallMethod("ui-image/definition/type", "assignType", 1);
+      digester.addCallParam("ui-image/definition/type", 0);
 
       digester.addCallMethod("ui-image/definition/property", "addProperty", 2);
       digester.addCallParam("ui-image/definition/property", 0, "name");
@@ -167,6 +181,15 @@ public class ImageUpdate extends AbstractUpdate  {
         in.close();
       }
       return instance;
+    }
+
+    /**
+     * Assigns a type the image for which this image instance is the type icon.
+     *
+     * @param _type   type to assign
+     */
+    public void assignType(final String _type)  {
+      addLink(LINK2TYPE, _type);
     }
 
     ///////////////////////////////////////////////////////////////////////////

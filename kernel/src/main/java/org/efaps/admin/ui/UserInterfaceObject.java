@@ -307,11 +307,13 @@ public abstract class UserInterfaceObject extends AdminObject {
    *          eFaps context for this request
    */
   public static void initialise() throws CacheReloadException {
+    Image.getCache().initialise();
     Command.getCache().initialise();
     Menu.getCache().initialise();
     Search.getCache().initialise();
     Form.getCache().initialise();
     Table.getCache().initialise();
+    Image.getCache().readFromDB();
     Command.getCache().readFromDB();
     Menu.getCache().readFromDB();
     Search.getCache().readFromDB();
