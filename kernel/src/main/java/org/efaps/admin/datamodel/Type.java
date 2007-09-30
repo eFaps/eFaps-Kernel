@@ -44,7 +44,6 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.Form;
-import org.efaps.admin.ui.Menu;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
@@ -189,15 +188,7 @@ public class Type extends DataModelObject {
   private Form formCreate = null;
 
   /**
-   * This instance variable stores the standard type menu.
-   * 
-   * @see #getTreeMenu
-   * @see #setTreeMenu
-   */
-  private Menu treeMenu = null;
-
-  /**
-   * Th instance variable stores the attribute used to represent this type.
+   * The instance variable stores the attribute used to represent this type.
    * 
    * @see #getViewAttribute
    * @see #setViewAttribute
