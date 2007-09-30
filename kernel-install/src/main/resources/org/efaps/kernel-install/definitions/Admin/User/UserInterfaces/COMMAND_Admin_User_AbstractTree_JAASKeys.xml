@@ -52,7 +52,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_AbstractTree_JAASKeys</name>
-    <icon>Admin_User_JAASKeyListImage</icon>
 <!--   addRole("Administration");
  -->
     <!-- target definitions -->

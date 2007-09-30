@@ -52,7 +52,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_JAASSystemTree_Keys</name>
-    <icon>Admin_User_JAASKeyListImage</icon>
     <!-- target definitions -->
     <target>
       <table>Admin_User_JAASKeyTable</table>
