@@ -47,8 +47,6 @@
     </version>
     <name>Admin_UI_Form</name>
     <parent>Admin_UI_Collection</parent>
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_UI_FormImage</property>
   </definition>
 
 </datamodel-type>

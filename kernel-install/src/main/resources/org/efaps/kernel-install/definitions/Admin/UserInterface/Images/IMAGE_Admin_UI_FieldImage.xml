@@ -45,6 +45,8 @@
     </version>
     <name>Admin_UI_FieldImage</name>
     <file>IMAGE_Admin_UI_FieldImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_UI_Field</type>
   </definition>
 
 </ui-image>

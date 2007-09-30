@@ -55,8 +55,6 @@
       <sqlcolumn>COLLECTION</sqlcolumn>
       <typelink>Admin_UI_Collection</typelink>
     </attribute>
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_UI_FieldImage</property>
   </definition>
 
 </datamodel-type>

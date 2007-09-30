@@ -47,8 +47,6 @@
     </version>
     <name>Admin_UI_Image</name>
     <parent>Admin_UI_File</parent>
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_UI_ImageImage</property>
   </definition>
 
 </datamodel-type>

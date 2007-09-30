@@ -45,6 +45,8 @@
     </version>
     <name>Admin_UI_ImageImage</name>
     <file>IMAGE_Admin_UI_ImageImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_UI_Image</type>
   </definition>
 
 </ui-image>

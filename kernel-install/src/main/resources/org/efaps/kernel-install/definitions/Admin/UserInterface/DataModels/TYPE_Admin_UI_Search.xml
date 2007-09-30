@@ -47,8 +47,6 @@
     </version>
     <name>Admin_UI_Search</name>
     <parent>Admin_UI_Menu</parent>
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_UI_SearchImage</property>
   </definition>
 
 </datamodel-type>
