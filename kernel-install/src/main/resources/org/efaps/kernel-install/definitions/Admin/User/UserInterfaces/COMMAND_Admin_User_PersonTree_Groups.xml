@@ -52,7 +52,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonTree_Groups</name>
-    <icon>Admin_User_GroupListImage</icon>
     <!-- target definitions -->
     <target>
       <menu>Admin_User_PersonTree_Groups_Menu</menu>
