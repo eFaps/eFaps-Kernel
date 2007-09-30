@@ -79,7 +79,6 @@
     </attribute>
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_DataModel_AttributeImage</property>
-    <property name="Tree">Admin_DataModel_AttributeTree</property>
    </definition>
 
 </datamodel-type>

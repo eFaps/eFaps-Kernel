@@ -64,7 +64,6 @@
     </attribute>
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_DataModel_SQLTableImage</property>
-    <property name="Tree">Admin_DataModel_SQLTableTree</property>
    </definition>
 
 </datamodel-type>

@@ -52,6 +52,8 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_PersonTree</name>
+    <!-- type tree for -->
+    <type>Admin_User_Person</type>
     <!-- targets -->
     <target>
       <form>Admin_User_PersonForm</form>

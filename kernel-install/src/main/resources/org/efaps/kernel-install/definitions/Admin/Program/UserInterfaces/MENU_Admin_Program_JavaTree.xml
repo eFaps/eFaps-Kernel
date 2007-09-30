@@ -52,6 +52,9 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Program_JavaTree</name>
+    <!-- type tree for -->
+    <type>Admin_Program_Java</type>
+    <!-- targets -->
     <target>
       <form>Admin_Program_JavaForm</form>
       <!--menu>TeamWork_CollectionTree_Menu</menu-->

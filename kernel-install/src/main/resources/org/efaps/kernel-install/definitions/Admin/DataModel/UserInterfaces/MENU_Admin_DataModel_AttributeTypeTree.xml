@@ -52,6 +52,8 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_DataModel_AttributeTypeTree</name>
+    <!-- type tree for -->
+    <type>Admin_DataModel_AttributeType</type>
     <!-- targets -->
     <target>
       <form>Admin_DataModel_AttributeTypeForm</form>

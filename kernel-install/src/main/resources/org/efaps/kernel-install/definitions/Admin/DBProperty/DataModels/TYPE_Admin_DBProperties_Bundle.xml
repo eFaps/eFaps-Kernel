@@ -26,53 +26,44 @@
 <datamodel-type>
   <uuid>03c51ba4-00a6-47ac-b987-270308fe68d8</uuid>
 
- <definition>
+  <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-
     <name>Admin_DBProperties_Bundle</name>
-    
-
-   <attribute>
+    <attribute>
       <name>OID</name>
       <type>OID</type>
       <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
    </attribute>
-
     <attribute>
       <name>ID</name>
       <type>Integer</type>
       <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
-
-
     <attribute>
       <name>Name</name>
       <type>String</type>
       <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
       <sqlcolumn>NAME</sqlcolumn>
     </attribute>
-    
     <attribute>
       <name>UUID</name>
       <type>String</type>
       <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
       <sqlcolumn>UUID</sqlcolumn>
     </attribute>
-    
     <attribute>
       <name>Sequence</name>
       <type>Integer</type>
       <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
       <sqlcolumn>SEQUENCE</sqlcolumn>
     </attribute>
-    <property name="Tree">Admin_DBProperties_BundleTree</property>
   </definition>
   
 </datamodel-type>

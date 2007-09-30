@@ -52,6 +52,8 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Access_AccessSetTree</name>
+    <!-- type tree for -->
+    <type>Admin_Access_AccessSet</type>
     <!-- targets -->
     <target>
       <form>Admin_Access_AccessSetForm</form>

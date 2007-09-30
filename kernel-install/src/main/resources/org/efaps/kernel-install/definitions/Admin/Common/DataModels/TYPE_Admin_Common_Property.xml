@@ -68,7 +68,6 @@
     </attribute>
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_Common_PropertyImage</property>
-    <property name="Tree">Admin_Common_PropertyTree</property>
   </definition>
 
 </datamodel-type>

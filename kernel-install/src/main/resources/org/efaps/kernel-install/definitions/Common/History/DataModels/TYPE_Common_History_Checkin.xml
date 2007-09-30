@@ -47,7 +47,6 @@
     </version>
     <name>Common_History_Checkin</name>
     <parent>Common_History_Update</parent>
-    <property name="Tree">Common_History_AttributesTree</property>
   </definition>
 
 </datamodel-type>

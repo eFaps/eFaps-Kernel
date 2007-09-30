@@ -56,7 +56,6 @@
     <property name="StoreJDBCKey">ID</property>
     <property name="StoreJDBCTable">T_PRGABSTRACT</property>
     <property name="StoreResource">org.efaps.db.transaction.JDBCStoreResource</property>
-    <property name="Tree">Admin_Program_JavaTree</property>
   </definition>
 
 </datamodel-type>

@@ -52,6 +52,9 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Event_DefinitionTree</name>
+    <!-- type tree for -->
+    <type>Admin_Event_Definition</type>
+    <!-- targets -->
     <target>
       <form>Admin_Event_DefinitionForm</form>
       <menu>Admin_Event_DefinitionTree_Menu_Action</menu>

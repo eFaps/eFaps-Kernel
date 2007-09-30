@@ -52,6 +52,16 @@
       <mode>(version==11)</mode>
     </version>
     <name>Common_History_AttributesTree</name>
+    <!-- type tree for -->
+    <type>Common_History_AddChild</type>
+    <type>Common_History_Attributes</type>
+    <type>Common_History_Checkin</type>
+    <type>Common_History_Checkout</type>
+    <type>Common_History_Delete</type>
+    <type>Common_History_Insert</type>
+    <type>Common_History_Reference</type>
+    <type>Common_History_RemoveChild</type>
+    <type>Common_History_Update</type>
     <!-- targets -->
     <target>
       <table>Common_History_AttributesTable</table>

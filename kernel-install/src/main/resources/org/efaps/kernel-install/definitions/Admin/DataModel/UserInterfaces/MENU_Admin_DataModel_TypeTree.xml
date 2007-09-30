@@ -52,6 +52,8 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_DataModel_TypeTree</name>
+    <!-- type tree for -->
+    <type>Admin_DataModel_Type</type>
     <!-- targets -->
     <target>
       <form>Admin_DataModel_TypeForm</form>

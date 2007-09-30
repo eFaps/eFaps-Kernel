@@ -38,7 +38,6 @@
     <parent>Admin_User_Abstract</parent>
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_User_GroupImage</property>
-    <property name="Tree">Admin_User_GroupTree</property>
     <!-- triggers -->
     <trigger name="Admin_User_Group_AccessCheck" event="ACCESSCHECK" 
       program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" />

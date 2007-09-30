@@ -78,8 +78,6 @@
       <sqltable>Common_History_AttributesSQLTable</sqltable>
       <sqlcolumn>VALUE</sqlcolumn>
     </attribute>
-     
-    <property name="Tree">Admin_Event_DefinitionTree</property>
   </definition>
 
 </datamodel-type>

@@ -67,6 +67,7 @@
     </attribute>
  
   </definition>
+
   <definition>
     <version>
       <application>eFaps</application>
@@ -74,19 +75,14 @@
       <local>$Rev:1145 $</local>
       <mode>(version==6)</mode>
     </version>
-
     <name>Admin_DBProperties</name>
-    
-
-   <attribute>
+    <attribute>
       <name>BundleID</name>
       <type>Link</type>
       <typelink>Admin_DBProperties_Bundle</typelink>
       <sqltable>Admin_DBPropertiesSQLTable</sqltable>
       <sqlcolumn>BUNDLEID</sqlcolumn>
-   </attribute>
-
-    <property name="Tree">Admin_DBPropertiesTree</property>
-
- </definition>
+    </attribute>
+  </definition>
+  
 </datamodel-type>

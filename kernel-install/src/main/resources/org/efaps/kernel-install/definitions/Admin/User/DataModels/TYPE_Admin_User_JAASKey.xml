@@ -105,7 +105,6 @@
     </attribute>
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_User_JAASKeyImage</property>
-    <property name="Tree">Admin_User_JAASKeyTree</property>
    </definition>
 
 </datamodel-type>

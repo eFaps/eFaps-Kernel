@@ -52,6 +52,9 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_DBProperties_BundleTree</name>
+    <!-- type tree for -->
+    <type>Admin_DBProperties_Bundle</type>
+    <!-- targets -->
     <target>
       <form>Admin_DBProperties_BundleForm</form>
       <menu>Admin_DBProperties_BundleTree_Menu</menu>
@@ -59,7 +62,6 @@
     <!-- childs -->
     <childs>
       <child>Admin_DBProperties_BundleTree_DBProperties</child>
-     
     </childs>
     <!-- properties -->
     <property name="Target">content</property>

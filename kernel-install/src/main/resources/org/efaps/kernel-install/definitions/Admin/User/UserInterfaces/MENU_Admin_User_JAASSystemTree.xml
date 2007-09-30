@@ -52,6 +52,8 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_JAASSystemTree</name>
+    <!-- type tree for -->
+    <type>Admin_User_JAASSystem</type>
     <!-- targets -->
     <target>
       <form>Admin_User_JAASSystemForm</form>

@@ -60,7 +60,6 @@
       <sqltable>Common_History_ReferenceSQLTable</sqltable>
       <sqlcolumn>TOID</sqlcolumn>
     </attribute>
-    <property name="Tree">Common_History_AttributesTree</property>
   </definition>
 
 </datamodel-type>

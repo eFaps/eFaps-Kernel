@@ -103,7 +103,6 @@
     </attribute>
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_Access_AccessTypeImage</property>
-    <property name="Tree">Admin_Access_AccessTypeTree</property>
    </definition>
 
 </datamodel-type>

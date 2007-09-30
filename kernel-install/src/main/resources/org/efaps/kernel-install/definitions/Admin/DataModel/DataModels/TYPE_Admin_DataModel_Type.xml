@@ -65,7 +65,6 @@
     
     <!-- properties -->
     <property name="Icon">${ROOTURL}/servlet/image/Admin_DataModel_TypeImage</property>
-    <property name="Tree">Admin_DataModel_TypeTree</property>
     
      <!-- triggers -->
     <trigger name="Admin_DataModel_Type_AccessCheck" event="ACCESSCHECK" 
