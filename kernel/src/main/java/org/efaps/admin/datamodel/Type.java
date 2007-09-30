@@ -699,19 +699,18 @@ public class Type extends DataModelObject {
     return this.formCreate;
   }
 
-  String treeMenuName = null;
+  private String treeMenuName = null;
 
   private void setTreeMenuName(final String _treeMenuName) {
     this.treeMenuName = _treeMenuName;
   }
 
-  public String getTreeMenuName() {
-    return this.treeMenuName;
-  }
-
-  public Menu getTreeMenu() throws Exception {
-    if ((this.treeMenu == null) && (getTreeMenuName() != null)) {
-      this.treeMenu = Menu.get(getTreeMenuName());
+  /**
+   * @deprecated use org.efaps.admin.ui.getTypeTreeMenu instead
+   */
+  public Menu getTreeMenu()  {
+    if ((this.treeMenu == null) && (this.treeMenuName != null)) {
+      this.treeMenu = Menu.get(this.treeMenuName);
     }
     return this.treeMenu;
   }

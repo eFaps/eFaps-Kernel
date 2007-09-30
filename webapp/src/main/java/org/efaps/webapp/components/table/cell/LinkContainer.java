@@ -52,7 +52,7 @@ public class LinkContainer extends Link {
       instance = new Instance(cellmodel.getOid());
       Menu menu = null;
       try {
-        menu = instance.getType().getTreeMenu();
+        menu = Menu.getTypeTreeMenu(instance.getType());
       } catch (Exception e) {
         throw new RestartResponseException(new ErrorPage(e));
       }

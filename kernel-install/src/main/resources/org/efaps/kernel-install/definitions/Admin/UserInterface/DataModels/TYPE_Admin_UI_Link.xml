@@ -60,7 +60,7 @@
       <type>Link</type>
       <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
       <sqlcolumn>TOID</sqlcolumn>
-      <typelink>Admin_UI_Direct</typelink>
+      <typelink>Admin_Abstract</typelink>
     </attribute>
   </definition>
 

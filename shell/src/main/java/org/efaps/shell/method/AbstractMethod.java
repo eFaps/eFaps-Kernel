@@ -38,8 +38,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
@@ -59,7 +59,7 @@ public abstract class AbstractMethod  {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Log LOG = LogFactory.getLog(AbstractMethod.class);
+  private final static Logger LOG = LoggerFactory.getLogger(AbstractMethod.class);
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables

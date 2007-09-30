@@ -77,7 +77,7 @@ public class AjaxLinkContainer extends WebMarkupContainer {
 
         Menu menu = null;
         try {
-          menu = instance.getType().getTreeMenu();
+          menu = Menu.getTypeTreeMenu(instance.getType());
         } catch (Exception e) {
           throw new RestartResponseException(new ErrorPage(e));
         }
@@ -117,7 +117,7 @@ public class AjaxLinkContainer extends WebMarkupContainer {
 
         Menu menu = null;
         try {
-          menu = instance.getType().getTreeMenu();
+          menu = Menu.getTypeTreeMenu(instance.getType());
         } catch (Exception e) {
           throw new RestartResponseException(new ErrorPage(e));
         }

@@ -53,12 +53,19 @@ public class MenuUpdate extends CommandUpdate  {
 
   /** Link from menu to child command / menu */
   private final static Link LINK2CHILD
-             = new OrderedLink("Admin_UI_Menu2Command", 
-                               "FromMenu", 
+             = new OrderedLink("Admin_UI_Menu2Command",
+                               "FromMenu",
                                "Admin_UI_Command", "ToCommand");
+
+  /** Link from menu to type as type tree menu */
+  private final static Link LINK2TYPE
+             = new Link("Admin_UI_LinkIsTypeTreeFor",
+                        "From",
+                        "Admin_DataModel_Type", "To");
 
   protected final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
     ALLLINKS.add(LINK2CHILD);
+    ALLLINKS.add(LINK2TYPE);
     ALLLINKS.addAll(CommandUpdate.ALLLINKS);
   }
 
@@ -108,6 +115,9 @@ public class MenuUpdate extends CommandUpdate  {
       digester.addCallMethod("ui-menu/definition/icon", "assignIcon", 1);
       digester.addCallParam("ui-menu/definition/icon", 0);
 
+      digester.addCallMethod("ui-menu/definition/type", "assignType", 1);
+      digester.addCallParam("ui-menu/definition/type", 0);
+
       digester.addCallMethod("ui-menu/definition/target/table", "assignTargetTable", 1);
       digester.addCallParam("ui-menu/definition/target/table", 0);
 
@@ -156,12 +166,22 @@ public class MenuUpdate extends CommandUpdate  {
     // instance methods
 
     /**
-     * .
+     * Assigns child commands / menus to this menu.
      *
      * @param _childName  name of the child command / menu
      */
     public void assignChild(final String _childName)  {
       addLink(LINK2CHILD, _childName);
+    }
+
+    /**
+     * Assigns a type the menu for which this menu instance is the type tree
+     * menu.
+     *
+     * @param _type   type to assign
+     */
+    public void assignType(final String _type)  {
+      addLink(LINK2TYPE, _type);
     }
   }
 }

@@ -114,7 +114,7 @@ public class StructurBrowserTreeTable extends TreeTable {
           instance = new Instance(model.getOid());
           Menu menu = null;
           try {
-            menu = instance.getType().getTreeMenu();
+            menu = Menu.getTypeTreeMenu(instance.getType());
           } catch (Exception e) {
             throw new RestartResponseException(new ErrorPage(e));
           }

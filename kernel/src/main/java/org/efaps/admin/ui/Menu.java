@@ -20,7 +20,15 @@
 
 package org.efaps.admin.ui;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.efaps.admin.datamodel.Type;
+import org.efaps.servlet.RequestHandler;
 
 
 /**
@@ -34,7 +42,17 @@ public class Menu extends MenuAbstract  {
   /**
    * The static variable defines the class name in eFaps.
    */
-  static public EFapsClassName EFAPS_CLASSNAME = EFapsClassName.MENU;
+  public static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.MENU;
+
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(Menu.class);
+
+  /**
+   * Stores the mapping from type to tree menu.
+   */
+  private static Map<Type, Menu> TYPE2MENUS = new HashMap<Type, Menu>();
 
   /**
    * Constructor to set the id and name of the menu object.
@@ -53,6 +71,7 @@ public class Menu extends MenuAbstract  {
    * @param _sortId   id used to sort
    * @param _id       command / menu id
    */
+  @Override
   protected void add(long _sortId, long _id)  {
     Command command = Command.get(_id);
     if (command != null)  {
@@ -60,6 +79,35 @@ public class Menu extends MenuAbstract  {
     } else  {
       Menu subMenu = Menu.get(_id);
       add(_sortId, subMenu);
+    }
+  }
+
+  /**
+   * Sets the link properties for this object.
+   * 
+   * @param _linkType type of the link property
+   * @param _toId     to id
+   * @param _toType   to type
+   * @param _toName   to name
+   */
+  @Override
+  protected void setLinkProperty(final EFapsClassName _linkType,
+                                 final long _toId,
+                                 final EFapsClassName _toType,
+                                 final String _toName)  throws Exception {
+    switch (_linkType) {
+      case LINK_MENUISTYPETREEFOR:
+        Type type = Type.get(_toId);
+        if (type == null)  {
+          LOG.error("Menu '" + this.getName() + "' could not defined as type "
+                    + "tree menu for type '" + _toName + "'! Type does not "
+                    + "exists!");
+        } else  {
+          TYPE2MENUS.put(type, this);
+        }
+        break;
+      default:
+        super.setLinkProperty(_linkType, _toId, _toType, _toName);
     }
   }
 
@@ -100,6 +148,20 @@ public class Menu extends MenuAbstract  {
     return getCache().get(_uuid);
   }
   
+  /**
+   * 
+   * @param _type
+   * @return
+   * @todo remove old method to get type tree menu from type
+   */
+  public static Menu getTypeTreeMenu(final Type _type)  {
+    Menu ret = TYPE2MENUS.get(_type);
+    if (ret == null)  {
+      LOG.error("Type Tree Menu for '" + _type.getName() + "' not defined correctly!");
+      ret = _type.getTreeMenu();
+    }
+    return ret;
+  }
   
   /**
    * Static getter method for the type hashtable {@link #cache}.
@@ -117,5 +179,6 @@ public class Menu extends MenuAbstract  {
    *
    * @see #getCache
    */
-  static final private UserInterfaceObjectCache<Menu> cache = new UserInterfaceObjectCache<Menu>(Menu.class);
+  static final private UserInterfaceObjectCache<Menu> cache
+          = new UserInterfaceObjectCache<Menu>(Menu.class);
 }
