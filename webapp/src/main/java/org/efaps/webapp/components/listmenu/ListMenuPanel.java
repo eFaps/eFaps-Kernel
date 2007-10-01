@@ -33,9 +33,9 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.wicketstuff.dojo.markup.html.container.DojoPanelContainer;
 
 import org.efaps.webapp.components.StaticImageComponent;
 import org.efaps.webapp.models.MenuItemModel;
@@ -44,7 +44,7 @@ import org.efaps.webapp.models.MenuItemModel;
  * @author jmo
  * @version $Id$
  */
-public class ListMenuPanel extends DojoPanelContainer {
+public class ListMenuPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
@@ -107,7 +107,7 @@ public class ListMenuPanel extends DojoPanelContainer {
   public ListMenuPanel(final String _id, final String _menukey,
                        final PageParameters _parameters,
                        final boolean _setHeaderAsSelected, final int _level) {
-    super(_id, "noTitel");
+    super(_id);
     this.menuKey = _menukey;
     setVersioned(false);
     add(HeaderContributor.forCss(getClass(), "ListMenuPanel.css"));
@@ -135,7 +135,7 @@ public class ListMenuPanel extends DojoPanelContainer {
 
   public ListMenuPanel(final String _id, final String _menukey,
                        final List<?> _modelObject, IModel _model) {
-    super(_id, "noTitel");
+    super(_id);
     this.menuKey = _menukey;
     this.setModel(_model);
     setVersioned(false);
@@ -144,7 +144,7 @@ public class ListMenuPanel extends DojoPanelContainer {
   }
 
   public ListMenuPanel(String _id, String _menukey) {
-    super(_id, "noTitel");
+    super(_id);
     this.menuKey = _menukey;
   }
 

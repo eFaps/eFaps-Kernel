@@ -28,17 +28,9 @@
   <link wicket:id="css" rel="stylesheet" type="text/css" href="contentcontainerpage/ContentContainerPage.css"/>
 </wicket:head>
 <body>
-  <div wicket:id="split" class="split">
-      <div wicket:id="splitleft" sizeMin="20" sizeShare="20">
-        <div class="eFapsListMenuOverflow">
-          <table class="eFapsListMenuWidthTable">
-            <tr><td>
-            <div wicket:id="splitleftmenu" id="eFapsListMenu"></div>
-            </td></tr>
-          </table>
-        </div>
-      </div>
-      <div wicket:id="splitright"  sizeMin="20" sizeShare="80" >
+  <div wicket:id="split">
+      <div wicket:id="left"></div>
+      <div wicket:id="right">
           <span wicket:id="splitrightact">
             <iframe wicket:id="splitrightactiframe" class="eFapsContentContainerFrame" name="eFapsContentContainerFrame"></iframe>
           </span>

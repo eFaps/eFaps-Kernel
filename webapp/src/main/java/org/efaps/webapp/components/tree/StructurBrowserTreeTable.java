@@ -131,7 +131,7 @@ public class StructurBrowserTreeTable extends TreeTable {
           if (model.getTarget() == CommandAbstract.TARGET_POPUP) {
             page = new ContentContainerPage(parameters);
           } else {
-            page = new ContentContainerPage(parameters, getPage().getPageMap());
+            page = new ContentContainerPage(parameters, getPage().getPageMap(),true);
           }
 
           setResponsePage(page);

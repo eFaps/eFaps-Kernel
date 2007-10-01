@@ -32,12 +32,12 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.CssUtils;
-import org.wicketstuff.dojo.markup.html.container.DojoSimpleContainer;
-import org.wicketstuff.dojo.markup.html.container.split.DojoSplitContainer;
-import org.wicketstuff.dojo.widgets.StyleAttribute;
 
 import org.efaps.webapp.components.ChildCallBackHeaderContributer;
-import org.efaps.webapp.components.listmenu.ListMenuPanel;
+import org.efaps.webapp.components.dojo.ContentPaneBehavior;
+import org.efaps.webapp.components.dojo.SplitContainerBehavior;
+import org.efaps.webapp.components.split.ListOnlyPanel;
+import org.efaps.webapp.components.split.StructBrowsSplitPanel;
 
 /**
  * @author jmo
@@ -58,6 +58,8 @@ public class ContentContainerPage extends WebPage {
 
   private final PageParameters parameters;
 
+  private boolean structurbrowser;
+
   public ContentContainerPage(final PageParameters _parameters) {
     this.parameters = _parameters;
     initialise();
@@ -67,6 +69,14 @@ public class ContentContainerPage extends WebPage {
                               final IPageMap _pagemap) {
     super(_pagemap);
     this.parameters = _parameters;
+    initialise();
+  }
+
+  public ContentContainerPage(final PageParameters _parameters,
+                              final IPageMap _pagemap, final boolean _strucbrow) {
+    super(_pagemap);
+    this.parameters = _parameters;
+    this.structurbrowser = _strucbrow;
     initialise();
   }
 
@@ -86,38 +96,23 @@ public class ContentContainerPage extends WebPage {
     add(new StyleSheetReference("css", getClass(),
         "contentcontainerpage/ContentContainerPage.css"));
 
-    DojoSplitContainer parentcontainer = new DojoSplitContainer("split") {
+    WebMarkupContainer split = new WebMarkupContainer("split");
+    this.add(split);
+    split.add(new SplitContainerBehavior());
+    if (this.structurbrowser) {
+      split.add(new StructBrowsSplitPanel("left", this.listMenuKey,
+          this.parameters));
+    } else {
+      split.add(new ListOnlyPanel("left", this.listMenuKey, this.parameters));
+    }
+    WebMarkupContainer right = new WebMarkupContainer("right");
+    split.add(right);
 
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      protected void onStyleAttribute(StyleAttribute styleAttribute) {
-        styleAttribute.put("position", "absolute");
-        styleAttribute.put("width", "100%");
-        styleAttribute.put("top", "0px");
-        styleAttribute.put("bottom", "0px");
-        styleAttribute.put("left", "0px");
-        styleAttribute.put("right", "0px");
-      }
-    };
-
-    add(parentcontainer);
-    parentcontainer.setOrientation(DojoSplitContainer.ORIENTATION_HORIZONTAL);
-
-    DojoSimpleContainer containerlinks =
-        new DojoSimpleContainer("splitleft", "Menu");
-    parentcontainer.add(containerlinks);
-
-    containerlinks.add(new ListMenuPanel("splitleftmenu", this.listMenuKey,
-        this.parameters, true));
-
-    DojoSimpleContainer containerrechts =
-        new DojoSimpleContainer("splitright", "Content");
-    parentcontainer.add(containerrechts);
+    right.add(new ContentPaneBehavior(80, 20));
 
     WebMarkupContainer parent = new WebMarkupContainer("splitrightact");
+    right.add(parent);
     parent.setOutputMarkupId(true);
-    containerrechts.add(parent);
 
     InlineFrame inline =
         new InlineFrame(IFRAME_WICKETID, PageMap.forName(IFRAME_PAGEMAP_NAME),

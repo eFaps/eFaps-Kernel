@@ -131,7 +131,7 @@ public class ListMenuUpdate {
     } else {
       listmenupanel =
           new ListMenuPanel("nested", _menukey, _parameters, true, level + 1);
-
+      listmenupanel.setOutputMarkupId(true);
       listitem.replace(listmenupanel);
     }
     _target.addComponent(listmenupanel);
