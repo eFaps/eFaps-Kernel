@@ -45,6 +45,8 @@
     </version>
     <name>Admin_User_GroupImage</name>
     <file>IMAGE_Admin_User_GroupImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_User_Group</type>
   </definition>
 
 </ui-image>

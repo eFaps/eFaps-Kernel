@@ -103,8 +103,6 @@
       <sqlcolumn>USERABSTRACT</sqlcolumn>
       <typelink>Admin_User_Abstract</typelink>
     </attribute>
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_User_JAASKeyImage</property>
-   </definition>
+  </definition>
 
 </datamodel-type>

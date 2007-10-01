@@ -44,6 +44,8 @@
     </version>
     <name>Admin_User_JAASSystemImage</name>
     <file>IMAGE_Admin_User_JAASSystemImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_User_JAASSystem</type>
   </definition>
 
 </ui-image>

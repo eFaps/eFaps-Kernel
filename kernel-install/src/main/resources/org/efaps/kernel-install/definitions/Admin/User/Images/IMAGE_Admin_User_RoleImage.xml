@@ -45,6 +45,8 @@
     </version>
     <name>Admin_User_RoleImage</name>
     <file>IMAGE_Admin_User_RoleImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_User_Role</type>
   </definition>
 
 </ui-image>

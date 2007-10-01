@@ -44,6 +44,8 @@
     </version>
     <name>Admin_User_JAASKeyImage</name>
     <file>IMAGE_Admin_User_JAASKeyImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_User_JAASKey</type>
   </definition>
 
 </ui-image>

@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:1145 $
- Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -31,7 +31,7 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
     <name>Admin_User_Person</name>
@@ -114,8 +114,6 @@
     <name>Admin_User_Person</name>
     <parent>Admin_User_Abstract</parent>
     
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_User_PersonImage</property>
      <!-- triggers -->
     <trigger name="Admin_User_Person_ACCESSCHECK" event="ACCESSCHECK" 
       program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType"/>
