@@ -58,6 +58,9 @@
     <target>
       <form>TeamWork_CollectionForm</form>
       <menu>TeamWork_CollectionTree_Menu</menu>
+      <evaluate program="org.efaps.esjp.teamwork.StructurBrowser">
+        <property name="Types">TeamWork_RootCollection</property>
+      </evaluate>
     </target>
     <!-- childs -->
     <childs>
@@ -69,6 +72,7 @@
     <!-- property definitions -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
+    <property name="TargetStructurBrowserExpression">Name</property>
   </definition>
 
 </ui-menu>
