@@ -28,7 +28,12 @@ import org.efaps.webapp.components.dojo.ContentPaneBehavior;
 import org.efaps.webapp.components.dojo.SplitContainerBehavior;
 import org.efaps.webapp.components.dojo.SplitContainerBehavior.Orientation;
 import org.efaps.webapp.components.listmenu.ListMenuPanel;
+import org.efaps.webapp.components.tree.StructurBrowserTreePanel;
 
+/**
+ * @author jmo
+ * @version $Id$
+ */
 public class StructBrowsSplitPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
@@ -44,11 +49,16 @@ public class StructBrowsSplitPanel extends Panel {
     top.add(new ContentPaneBehavior(50, 20));
     this.add(top);
 
+    top.add(new StructurBrowserTreePanel("stuctbrows", _parameters));
+
     WebMarkupContainer bottom = new WebMarkupContainer("bottom");
     bottom.add(new ContentPaneBehavior(50, 20));
     this.add(bottom);
 
-    bottom.add(new ListMenuPanel("menu", _listmenukey, _parameters, true));
+    WebMarkupContainer menuact = new WebMarkupContainer("menuact");
+    menuact.setOutputMarkupId(true);
+    bottom.add(menuact);
+    menuact.add(new ListMenuPanel("menu", _listmenukey, _parameters, true));
 
   }
 

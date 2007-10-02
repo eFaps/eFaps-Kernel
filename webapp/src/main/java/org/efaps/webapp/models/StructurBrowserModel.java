@@ -76,6 +76,8 @@ public class StructurBrowserModel extends AbstractModel {
 
   private boolean parent;
 
+  private String browserExpression;
+
   public StructurBrowserModel(PageParameters _parameters) {
     super(_parameters);
     initialise();
@@ -90,12 +92,16 @@ public class StructurBrowserModel extends AbstractModel {
 
   private void initialise() {
     CommandAbstract command = getCommand();
-    if (command != null) {
+    if (command != null && command.getTargetTable() != null) {
       this.tableuuid = command.getTargetTable().getUUID();
       this.browserFieldName = command.getProperty("TargetStructurBrowserField");
+    } else {
+      this.browserExpression =
+          command.getProperty("TargetStructurBrowserExpression");
     }
   }
 
+  @SuppressWarnings("unchecked")
   public void execute() {
     List<Return> ret;
     try {
@@ -105,15 +111,53 @@ public class StructurBrowserModel extends AbstractModel {
 
       List<List<Instance>> lists =
           (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
-
-      internalExecute(lists);
+      if (this.tableuuid != null) {
+        executeTreeTable(lists);
+      } else {
+        executeTree(lists);
+      }
     } catch (EFapsException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
 
-  private void internalExecute(List<List<Instance>> _lists) {
+  private void executeTree(List<List<Instance>> _lists) {
+    try {
+      List<Instance> instances = new ArrayList<Instance>();
+      Map<Instance, List<Instance>> instMapper =
+          new HashMap<Instance, List<Instance>>();
+      for (List<Instance> oneList : _lists) {
+        Instance inst = oneList.get(oneList.size() - 1);
+        instances.add(inst);
+        instMapper.put(inst, oneList);
+      }
+      ListQuery query = new ListQuery(instances);
+
+      query.addSelect(this.browserExpression);
+      query.execute();
+      while (query.next()) {
+        Object value = null;
+        Instance instance = query.getInstance();
+
+        value = query.getValue(this.browserExpression);
+        StructurBrowserModel child =
+            new StructurBrowserModel(super.getCommandUUID(), instance.getOid());
+        this.childs.add(child);
+
+        child.setLabel(value.toString());
+        child.setParent(checkForChilds(instance));
+
+      }
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    super.setInitialised(true);
+
+  }
+
+  private void executeTreeTable(List<List<Instance>> _lists) {
     try {
       List<Instance> instances = new ArrayList<Instance>();
       Map<Instance, List<Instance>> instMapper =
@@ -157,6 +201,7 @@ public class StructurBrowserModel extends AbstractModel {
         StructurBrowserModel child =
             new StructurBrowserModel(super.getCommandUUID(), instance.getOid());
         this.childs.add(child);
+
         for (Field field : this.getTable().getFields()) {
           Object value = null;
 
@@ -287,8 +332,11 @@ public class StructurBrowserModel extends AbstractModel {
         instances.add(new Instance((String) query.get("OID")));
         lists.add(instances);
       }
-
-      internalExecute(lists);
+      if (this.tableuuid != null) {
+        executeTreeTable(lists);
+      } else {
+        this.executeTree(lists);
+      }
       add(parent, this.childs);
     } catch (EFapsException e) {
       // TODO Auto-generated catch block

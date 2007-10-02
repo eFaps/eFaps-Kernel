@@ -25,7 +25,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.IClusterable;
 import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
@@ -36,14 +35,12 @@ import org.apache.wicket.extensions.markup.html.tree.table.TreeTable;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.tree.ITreeState;
-import org.apache.wicket.markup.html.tree.ITreeStateListener;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.models.StructurBrowserModel;
-import org.efaps.webapp.models.StructurBrowserModel.BogusNode;
 import org.efaps.webapp.pages.ContentContainerPage;
 import org.efaps.webapp.pages.ErrorPage;
 
@@ -52,7 +49,8 @@ public class StructurBrowserTreeTable extends TreeTable {
   private static final long serialVersionUID = 1L;
 
   private static final ResourceReference CSS =
-      new ResourceReference(StructurBrowserTreeTable.class, "StructurTree.css");
+      new ResourceReference(StructurBrowserTreeTable.class,
+          "StructurTreeTable.css");
 
   public StructurBrowserTreeTable(final String _id, final TreeModel _treeModel,
                                   final IColumn[] _columns) {
@@ -107,8 +105,8 @@ public class StructurBrowserTreeTable extends TreeTable {
       public void onClick(AjaxRequestTarget target) {
         Instance instance = null;
         StructurBrowserModel model =
-
-        (StructurBrowserModel) ((DefaultMutableTreeNode) _node).getUserObject();
+            (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
+                .getUserObject();
 
         if (model.getOid() != null) {
           instance = new Instance(model.getOid());
@@ -131,7 +129,9 @@ public class StructurBrowserTreeTable extends TreeTable {
           if (model.getTarget() == CommandAbstract.TARGET_POPUP) {
             page = new ContentContainerPage(parameters);
           } else {
-            page = new ContentContainerPage(parameters, getPage().getPageMap(),true);
+            page =
+                new ContentContainerPage(parameters, getPage().getPageMap(),
+                    true);
           }
 
           setResponsePage(page);
@@ -139,44 +139,6 @@ public class StructurBrowserTreeTable extends TreeTable {
         }
       }
     });
-  }
-
-  public class AsyncronTreeUpdateListener implements ITreeStateListener,
-      IClusterable {
-
-    private static final long serialVersionUID = 1L;
-
-    public void allNodesCollapsed() {
-      // not needed here
-    }
-
-    public void allNodesExpanded() {
-      // not needed here
-    }
-
-    public void nodeCollapsed(final TreeNode _node) {
-      // not needed here
-    }
-
-    public void nodeExpanded(final TreeNode _node) {
-      if (!_node.isLeaf() && _node.getChildAt(0) instanceof BogusNode) {
-
-        StructurBrowserModel model =
-            (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
-                .getUserObject();
-        model.addChildren((DefaultMutableTreeNode) _node);
-      }
-
-    }
-
-    public void nodeSelected(final TreeNode _node) {
-      // not needed here
-    }
-
-    public void nodeUnselected(final TreeNode _node) {
-      // not needed here
-    }
-
   }
 
   private class StructurBrowserTreeFragment extends Fragment {

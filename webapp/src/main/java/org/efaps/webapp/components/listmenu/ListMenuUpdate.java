@@ -101,7 +101,8 @@ public class ListMenuUpdate {
       for (Object item : rows.getList()) {
         if (item instanceof MenuItemModel) {
           if (((MenuItemModel) item).getOid().equals(_oid)
-              && ((MenuItemModel) item).getCommandUUID().equals(_menu.getUUID())) {
+              && ((MenuItemModel) item).getCommandUUID()
+                  .equals(_menu.getUUID())) {
             old = true;
             break;
           }
@@ -135,6 +136,23 @@ public class ListMenuUpdate {
       listitem.replace(listmenupanel);
     }
     _target.addComponent(listmenupanel);
+  }
+
+  public static void newMenu(final AjaxRequestTarget _target,
+                             final String _menukey,
+                             final PageParameters _parameters) {
+    Component comp = ((EFapsSession) (Session.get())).getFromCache(_menukey);
+    comp = comp.findParent(ListMenuPanel.class);
+
+    while (comp.findParent(ListMenuPanel.class) != null) {
+      comp = comp.findParent(ListMenuPanel.class);
+    }
+    ListMenuPanel newlits =
+        new ListMenuPanel("menu", _menukey, _parameters, true);
+    newlits.setOutputMarkupId(true);
+    comp.replaceWith(newlits);
+
+    _target.addComponent(newlits.getParent());
   }
 
   /**
