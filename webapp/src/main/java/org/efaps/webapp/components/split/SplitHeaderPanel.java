@@ -23,21 +23,45 @@ package org.efaps.webapp.components.split;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.webapp.pages.ContentContainerPage;
 
+/**
+ * @author jmo
+ * @version $Id$
+ *
+ */
 public class SplitHeaderPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
+
+  /**
+   * enum for the StyleSheets which are used in this Component
+   */
+  public enum Css {
+    HEADER_OPEN("eFapsSplitHeader"),
+    HEADER_CLOSE_VERT("eFapsSplitHeaderVert"),
+    IMAGE_EXPAND("eFapsSplitImageExpand"),
+    IMAGE_CONTRACT("eFapsSplitImageContract");
+
+    public String value;
+
+    private Css(String _value) {
+      this.value = _value;
+    }
+
+  }
 
   public SplitHeaderPanel(String id) {
     super(id);
     this.setOutputMarkupId(true);
     this.add(HeaderContributor.forCss(SplitHeaderPanel.class,
         "SplitHeaderPanel.css"));
+    this.add(new StringHeaderContributor(getJavaScript()));
 
     AjaxLink link = new AjaxLink("expandcontract") {
 
@@ -63,7 +87,49 @@ public class SplitHeaderPanel extends Panel {
     };
     this.add(link);
 
-    link.add(new ImageDiv("image"));
+  }
+
+  /**
+   * get the JavaScript wich actually toggles the Split
+   *
+   * @return String with the JavaScript
+   */
+  private String getJavaScript() {
+    StringBuilder ret = new StringBuilder();
+
+    ret
+        .append(JavascriptUtils.SCRIPT_OPEN_TAG)
+        .append("  var connections = [];\n")
+        .append("  var header;\n")
+        .append("  function togglePane(splitId, paneId, headerId) {\n")
+        .append("    header = dojo.byId(headerId);\n")
+        .append("    var split = dijit.byId(splitId);\n")
+        .append("    var pane = dijit.byId(paneId);\n")
+        .append("    if(pane.sizeShare > 0) {\n")
+        .append("      connections[0] = dojo.connect(split,\"beginSizing\",this," +
+                               " \"toggleHeader\" );\n")
+        .append("      header.className=\"")
+        .append(Css.HEADER_CLOSE_VERT.value).append("\";\n")
+        .append("      header.getElementsByTagName(\"div\")[0].className=\"")
+        .append(Css.IMAGE_EXPAND.value).append("\"\n")
+        .append("      pane.sizeShare = 0;\n")
+        .append("      split.layout();\n")
+        .append("    } else {\n")
+        .append("      toggleHeader();\n")
+        .append("      split._restoreState();\n")
+        .append("      split.layout();\n")
+        .append("    }\n")
+        .append("  }\n")
+        .append("  function toggleHeader(){\n")
+        .append("    header.className=\"")
+        .append(Css.HEADER_OPEN.value).append("\";\n")
+        .append("    header.getElementsByTagName(\"div\")[0].className=\"")
+        .append(Css.IMAGE_CONTRACT.value).append("\"\n")
+        .append("    dojo.disconnect(connections[0]);\n")
+        .append("}\n")
+        .append(JavascriptUtils.SCRIPT_CLOSE_TAG);
+
+    return ret.toString();
   }
 
   /*
@@ -75,28 +141,6 @@ public class SplitHeaderPanel extends Panel {
   protected void onComponentTag(final ComponentTag _tag) {
     super.onComponentTag(_tag);
     _tag.put("class", "eFapsSplitHeader");
-  }
-
-  public class ImageDiv extends WebMarkupContainer {
-
-    private static final long serialVersionUID = 1L;
-
-    public ImageDiv(String id) {
-      super(id);
-      setOutputMarkupId(true);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
-     */
-    @Override
-    protected void onComponentTag(final ComponentTag _tag) {
-      super.onComponentTag(_tag);
-      _tag.put("class", "eFapsSplitImageContract");
-    }
-
   }
 
 }

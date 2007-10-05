@@ -26,31 +26,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <wicket:head>
   <link wicket:id="css" rel="stylesheet" type="text/css" href="contentcontainerpage/ContentContainerPage.css"/>
-<script type="text/javascript">
-  var objectConnections = [];
-  var headerobject;
-  function togglePane(splitContainerId, paneid, headerobjectid) {
-    headerobject =  dojo.byId(headerobjectid);
-    var spc = dijit.byId(splitContainerId);
-    var pane = dijit.byId(paneid);
-    if(pane.sizeShare>0) {           
-      objectConnections[0]= dojo.connect(spc,"beginSizing",this, "test" );
-      headerobject.className="eFapsSplitHeaderVert";
-      headerobject.getElementsByTagName("div")[0].className="eFapsSplitImageExpand"
-      pane.sizeShare = 0;
-      spc.layout();
-    } else {
-      test();
-      spc._restoreState();
-      spc.layout();
-    }   
-  }
-  function test(){
-    headerobject.className="eFapsSplitHeader";
-    headerobject.getElementsByTagName("div")[0].className="eFapsSplitImageContract"
-    dojo.disconnect(objectConnections[0]);
-  }
-</script>
 </wicket:head>
 <body>
   <div wicket:id="split">
