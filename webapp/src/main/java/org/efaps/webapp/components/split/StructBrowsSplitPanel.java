@@ -21,6 +21,7 @@
 package org.efaps.webapp.components.split;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 
@@ -45,6 +46,10 @@ public class StructBrowsSplitPanel extends Panel {
     SplitContainerBehavior beh = new SplitContainerBehavior();
     beh.setOrientation(Orientation.VERTICAL);
     this.add(beh);
+
+    this.add(HeaderContributor.forCss(SplitHeaderPanel.class,
+        "StructBrowsSplitPanel.css"));
+    this.add(new SplitHeaderPanel("header"));
     WebMarkupContainer top = new WebMarkupContainer("top");
     top.add(new ContentPaneBehavior(50, 20));
     this.add(top);

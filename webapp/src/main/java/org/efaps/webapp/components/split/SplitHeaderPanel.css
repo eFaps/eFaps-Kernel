@@ -25,6 +25,7 @@
   height: 19px;
   width: 100%;
   white-space: nowrap;
+  z-index: 20;
 }
 
 .eFapsSplitHeader img,.eFapsSplitHeaderVert img {
@@ -58,10 +59,11 @@
   left: 2px;
   top: 2px;
 }
-.eFapsSplitTitelHide{
- display:none;  
+
+.eFapsSplitTitelHide {
+  display: none;
 }
+
 .dijitContentPane {
   overflow-x: hidden;
 }
-

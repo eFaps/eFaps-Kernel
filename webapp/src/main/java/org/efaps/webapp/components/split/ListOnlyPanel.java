@@ -21,11 +21,17 @@
 package org.efaps.webapp.components.split;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.panel.Panel;
 
 import org.efaps.webapp.components.dojo.ContentPaneBehavior;
 import org.efaps.webapp.components.listmenu.ListMenuPanel;
 
+/**
+ * @author jmo
+ * @version $Id$
+ *
+ */
 public class ListOnlyPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
@@ -33,7 +39,8 @@ public class ListOnlyPanel extends Panel {
   public ListOnlyPanel(final String _id, final String _listmenukey,
                        final PageParameters _parameters) {
     super(_id);
-
+    this.add(HeaderContributor.forCss(SplitHeaderPanel.class,
+        "ListOnlyPanel.css"));
     this.add(new ListMenuPanel("menu", _listmenukey, _parameters, true)
         .setOutputMarkupId(true));
     this.add(new ContentPaneBehavior(20, 20));

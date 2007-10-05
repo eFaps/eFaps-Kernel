@@ -1,0 +1,20 @@
+.eFapsListMenuOverflow {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  overflow: auto;
+  width: 100%;
+}
+
+.eFapsListMenuWidthTable {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.eFapsStructBrows{
+  position: absolute;
+  top: 20px;
+  bottom: 0px;
+  overflow: auto;
+  width: 100%;
+}

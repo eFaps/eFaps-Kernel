@@ -30,15 +30,3 @@ html,body {
   border-bottom: 63px solid white;
 }
 
-.eFapsListMenuOverflow {
-  position: absolute;
-  top: 20px;
-  bottom: 0px;
-  overflow: auto;
-  width: 100%;
-}
-
-.eFapsListMenuWidthTable {
-  border-collapse: collapse;
-  width: 100%;
-}

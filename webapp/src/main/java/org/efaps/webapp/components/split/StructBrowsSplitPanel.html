@@ -23,19 +23,20 @@
 
 <html xmlns:wicket>
 <wicket:panel>
-    <div wicket:id="top">
-      <div wicket:id="stuctbrows"></div>
+  <div wicket:id="header"></div>
+  <div wicket:id="top">
+    <div wicket:id="stuctbrows" class="eFapsStructBrows"></div>
+  </div>
+  <div wicket:id="bottom">
+    <div class="eFapsListMenuOverflow">
+      <table class="eFapsListMenuWidthTable">
+        <tr><td>
+          <span wicket:id="menuact">
+            <div wicket:id="menu" id="eFapsListMenu"></div>
+          </span>
+        </td></tr>
+      </table>
     </div>
-    <div wicket:id="bottom">
-      <div class="eFapsListMenuOverflow">
-        <table class="eFapsListMenuWidthTable">
-          <tr><td>
-            <span wicket:id="menuact">
-              <div wicket:id="menu" id="eFapsListMenu"></div>
-            </span>
-          </td></tr>
-        </table>
-      </div>
-    </div>
+  </div>
 </wicket:panel>
 </html>

@@ -75,14 +75,22 @@ public class SplitHeaderPanel extends Panel {
 
       @Override
       public void onClick(final AjaxRequestTarget _target) {
-        String ret;
-        ret =
+
+        String panelId;
+        if(findParent(ListOnlyPanel.class)!=null){
+          panelId = findParent(ListOnlyPanel.class).getMarkupId();
+        }
+        else{
+          panelId = findParent(StructBrowsSplitPanel.class).getMarkupId();
+        }
+
+        String ret =
             "togglePane(\""
                 + getPage().get(
                     ((ContentContainerPage) getPage()).getSplitPath())
                     .getMarkupId()
                 + "\",\""
-                + findParent(ListOnlyPanel.class).getMarkupId()
+                + panelId
                 + "\",\""
                 + this.getParent().getMarkupId()
                 + "\")";
