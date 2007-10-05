@@ -20,11 +20,13 @@
 
 package org.efaps.webapp.components.split;
 
+
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.util.string.JavascriptUtils;
 
@@ -46,7 +48,9 @@ public class SplitHeaderPanel extends Panel {
     HEADER_OPEN("eFapsSplitHeader"),
     HEADER_CLOSE_VERT("eFapsSplitHeaderVert"),
     IMAGE_EXPAND("eFapsSplitImageExpand"),
-    IMAGE_CONTRACT("eFapsSplitImageContract");
+    IMAGE_CONTRACT("eFapsSplitImageContract"),
+    TITEL("eFapsSplitTitel"),
+    TITEL_HIDE("eFapsSplitTitelHide");
 
     public String value;
 
@@ -62,6 +66,8 @@ public class SplitHeaderPanel extends Panel {
     this.add(HeaderContributor.forCss(SplitHeaderPanel.class,
         "SplitHeaderPanel.css"));
     this.add(new StringHeaderContributor(getJavaScript()));
+
+   this.add(new Label("titel","Menu"));
 
     AjaxLink link = new AjaxLink("expandcontract") {
 
@@ -111,7 +117,9 @@ public class SplitHeaderPanel extends Panel {
         .append("      header.className=\"")
         .append(Css.HEADER_CLOSE_VERT.value).append("\";\n")
         .append("      header.getElementsByTagName(\"div\")[0].className=\"")
-        .append(Css.IMAGE_EXPAND.value).append("\"\n")
+        .append(Css.IMAGE_EXPAND.value).append("\";\n")
+        .append("      header.getElementsByTagName(\"span\")[0].className=\"")
+        .append(Css.TITEL_HIDE.value).append("\";\n")
         .append("      pane.sizeShare = 0;\n")
         .append("      split.layout();\n")
         .append("    } else {\n")
@@ -124,7 +132,9 @@ public class SplitHeaderPanel extends Panel {
         .append("    header.className=\"")
         .append(Css.HEADER_OPEN.value).append("\";\n")
         .append("    header.getElementsByTagName(\"div\")[0].className=\"")
-        .append(Css.IMAGE_CONTRACT.value).append("\"\n")
+        .append(Css.IMAGE_CONTRACT.value).append("\";\n")
+        .append("    header.getElementsByTagName(\"span\")[0].className=\"")
+        .append(Css.TITEL.value).append("\";\n")
         .append("    dojo.disconnect(connections[0]);\n")
         .append("}\n")
         .append(JavascriptUtils.SCRIPT_CLOSE_TAG);

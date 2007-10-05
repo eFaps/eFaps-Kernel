@@ -1,18 +1,19 @@
 .eFapsSplitImageContract {
   position: absolute;
   background-image: url("contract.png");
-  width:16px;
-  height:16px;
-  right:2px;
-  top:2px;
+  width: 16px;
+  height: 16px;
+  right: 2px;
+  top: 2px;
 }
+
 .eFapsSplitImageExpand {
   position: absolute;
   background-image: url("expand.png");
-  width:16px;
-  height:16px;
-  left:2px;
-  top:2px;
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  top: 2px;
 }
 
 .eFapsSplitHeader {
@@ -23,7 +24,7 @@
   border-color: black;
   height: 19px;
   width: 100%;
-  text-align: right;
+  white-space: nowrap;
 }
 
 .eFapsSplitHeader img,.eFapsSplitHeaderVert img {
@@ -48,3 +49,19 @@
   height: 100%;
   width: 90%;
 }
+
+.eFapsSplitTitel {
+  position: absolute;
+  font-family: arial, verdana, helvetica, sans-serif;
+  font-size: 10pt;
+  font-weight: bold;
+  left: 2px;
+  top: 2px;
+}
+.eFapsSplitTitelHide{
+ display:none;  
+}
+.dijitContentPane {
+  overflow-x: hidden;
+}
+

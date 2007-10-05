@@ -31,13 +31,14 @@ html,body {
 }
 
 .eFapsListMenuOverflow {
-  height: 100%;
+  position: absolute;
+  top: 20px;
+  bottom: 0px;
   overflow: auto;
-}
-
-.eFapsListMenuWidthTable {
-  margin-top: 20px;
-  border-collapse: collapse;
   width: 100%;
 }
 
+.eFapsListMenuWidthTable {
+  border-collapse: collapse;
+  width: 100%;
+}
