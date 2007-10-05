@@ -32,10 +32,6 @@
     <packaging>jar</packaging>
   <name>eFaps</name>
 
-
- 
-
-
   <parent>
     <groupId>org.efaps</groupId>
     <artifactId>efaps</artifactId>
@@ -58,8 +54,7 @@
         <artifactId>maven-resources-plugin</artifactId>
         <configuration>
           <filters>
-<exclude>**/*.psd</exclude>
-
+             <exclude>**/*.psd</exclude>
           </filters>
         </configuration>
       </plugin>
@@ -98,8 +93,6 @@
           </execution>
         </executions>
       </plugin>
-
-
     </plugins>
 
   </build>
@@ -120,7 +113,7 @@
                   <!-- Continous Integration -->
                  <!-- report>cim</report -->
                   <!-- Dependencies Report -->
-                 <!-- report>dependencies</report -->
+                 <report>dependencies</report>
                   <!-- Issue Tracking -->
                  <!-- report>issue-tracking</report-->
                   <!-- Mailing Lists -->
@@ -134,20 +127,9 @@
               </reports>
            </reportSet>
         </reportSets>
-
-    <!-- news from site/xdocs/news.xml -->
-<!--
-    <report>maven-news-plugin</report>
--->
-    <!-- task list from site/xdocs/tasks.xml -->
-<!--
-    <report>maven-tasks-plugin</report>
-
-    <report>jutils-lint4j-plugin</report>
--->
       </plugin>
 
-      <!-- Checkstyle Report -->
+      <!-- Checkstyle Report 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
@@ -155,8 +137,8 @@
           <configLocation>checkstyle.xml</configLocation>
         </configuration>
       </plugin>
-
-      <!-- JavaDoc 
+-->
+      <!-- JavaDoc -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
@@ -164,13 +146,13 @@
           <private/>
         </configuration>
       </plugin>
--->
-      <!-- Readable SourceCode as HTML-Pages 
+
+      <!-- Readable SourceCode as HTML-Pages -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jxr-maven-plugin</artifactId>
       </plugin>
--->
+
       <!-- todo list from source code -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
@@ -182,14 +164,13 @@
 
     </plugins>
   </reporting>
-<!--
+
   <distributionManagement>
     <site>
       <id>eFaps</id>
-      <url>scp://root@80.237.163.137/home/httpd/vhosts/efaps.org/httpdocs/</url>
+      <url>scp://tmo@shell.berlios.de/home/groups/efaps/htdocs/</url>
     </site>
   </distributionManagement>
--->
 
   <!-- ************************************************************************
   * Depencies

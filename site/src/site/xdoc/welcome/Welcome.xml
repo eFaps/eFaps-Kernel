@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<!DOCTYPE document PUBLIC "-//Apache Software Foundation//DTD XDOC 1.0//EN"
+"http://www.apache.org/dtds/xdoc_1_0.dtd">
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,18 +17,22 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
+
 <document>
   <properties>
-    <title>Installation on Database Oracle</title>
+    <title>Welcome</title>
   </properties>
-  <body>
 
+  <body>
+    <section name="Welcome">
+      Welcome to eFaps.
+    </section>
   </body>
 </document>

@@ -116,7 +116,7 @@
       <name>Jan Moxter</name>
       <email>jan.moxter@moxter.net</email>
       <url>www.moxter.net</url>
-      <organization>Moxter.Net Ltd. &amp; Co. KG</organization>
+      <organization>moxter.net S.A.C, Peru</organization>
       <organizationUrl/>
       <roles>
         <role>Architect</role>
@@ -159,9 +159,7 @@
     <module>maven</module>
     <module>shell</module>
     <module>webapp</module>
-<!--
-    <module>site</module>
--->
+  <!--  <module>site</module>-->
   </modules>
 
   <!-- ************************************************************************

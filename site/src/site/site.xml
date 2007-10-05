@@ -28,7 +28,7 @@
  
   <bannerLeft>
     <src>images/logo.jpg</src>
-    <href>http://www.efaps.org/site</href>
+    <href>http://efaps.berlios.de/</href>
   </bannerLeft>
   
   <body>
@@ -36,48 +36,11 @@
       <item name="Maven 2" href="http://maven.apache.org/maven2/"/>
     </links>
 
-    <menu name="Overview">
-      <item name="Download" href="/overview/download.html"/>
-      <item name="News" href="/news.html"/>
+    <menu name="Main">
+      <item name="Welcome" href="/welcome/welcome.html"/>
+      <item name="Wiki" href="/wiki/"/>
     </menu>
-    <menu name="Documentation">
-      <item name="Modules"      href="/modules/index.html" collapse="true">
-      	<item name="shell"       href="/modules/shell.html" />
-      </item>
-      <item name="Configuration"      href="/configuration/index.html" collapse="true">
-        <item name="Data Model"         href="/configuration/datamodel/index.html" collapse="true">
-          <item name="SQL Tables"       href="/configuration/datamodel/sqltables.html" />
-          <item name="Types"            href="/configuration/datamodel/types.html"/>
-          <item name="Attribute Types"  href="/configuration/datamodel/attributetypes.html"/>
-        </item>
-        <item name="User Interface"     href="/configuration/ui/index.html" collapse="true">
-          <item name="Commands and Menus" href="/configuration/ui/commands.html"/>
-          <item name="Collections (Forms and Tables)" href="/configuration/ui/collections.html"/>
-        </item>
-        <item name="Stores"             href="/configuration/store/index.html" collapse="true">
-          <item name="JDBC Store"       href="/configuration/store/JDBCStore.html"/>
-          <item name="VFS Store"        href="/configuration/store/VFSStore.html"/>
-        </item>
-      </item>
-
-    </menu>
-    <menu name="Installation">
-      <item name="Prerequisites"        href="/installation/prerequisite.html"/>
-      <item name="HowTo"                href="/installation/howto.html"/>
-      <item name="Database"             href="/installation/database/index.html" collapse="true">
-        <item name="Derby"              href="/installation/database/derby.html"/>
-        <item name="Oracle"             href="/installation/database/oracle.html"/>
-        <item name="PostgreSQL"         href="/installation/database/postgreSQL.html"/>
-      </item>
-      <item name="JAAS Authentication"  href="/installation/jaas/index.html" collapse="true">
-        <item name="Configuration File" href="/installation/jaas/configuration.html"/>
-        <item name="JAAS Systems"       href="/installation/jaas/jaassystems.html"/>
-        <item name="eFaps Module"       href="/installation/jaas/efaps.html"/>
-        <item name="XML Module"         href="/installation/jaas/xml.html"/>
-      </item>
-    </menu>
-
-
+   
     ${reports}
 
   </body>
