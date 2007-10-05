@@ -1,0 +1,50 @@
+.eFapsSplitImageContract {
+  position: absolute;
+  background-image: url("contract.png");
+  width:16px;
+  height:16px;
+  right:2px;
+  top:2px;
+}
+.eFapsSplitImageExpand {
+  position: absolute;
+  background-image: url("expand.png");
+  width:16px;
+  height:16px;
+  left:2px;
+  top:2px;
+}
+
+.eFapsSplitHeader {
+  position: absolute;
+  background-color: #EFEBDE;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-color: black;
+  height: 19px;
+  width: 100%;
+  text-align: right;
+}
+
+.eFapsSplitHeader img,.eFapsSplitHeaderVert img {
+  border: 0;
+  padding-right: 4px;
+}
+
+.eFapsSplitHeaderVert img {
+  border: 0;
+  padding-left: 2px;
+}
+
+.eFapsSplitHeaderVert {
+  position: absolute;
+  background-color: #EFEBDE;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-color: black;
+  z-index: 20;
+  height: 100%;
+  width: 90%;
+}

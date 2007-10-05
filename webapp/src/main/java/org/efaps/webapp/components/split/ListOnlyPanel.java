@@ -31,16 +31,13 @@ public class ListOnlyPanel extends Panel {
   private static final long serialVersionUID = 1L;
 
   public ListOnlyPanel(final String _id, final String _listmenukey,
-                            final PageParameters _parameters) {
+                       final PageParameters _parameters) {
     super(_id);
 
     this.add(new ListMenuPanel("menu", _listmenukey, _parameters, true)
         .setOutputMarkupId(true));
-    ContentPaneBehavior cpb = new ContentPaneBehavior();
-    cpb.setSizemin(20);
-    cpb.setSizeshare(20);
-    this.add(cpb);
-
+    this.add(new ContentPaneBehavior(20, 20));
+    this.add(new SplitHeaderPanel("header"));
   }
 
 }

@@ -56,6 +56,8 @@ public class ContentContainerPage extends WebPage {
 
   private String inlinePath;
 
+  private String splitPath;
+
   private final PageParameters parameters;
 
   private boolean structurbrowser;
@@ -133,8 +135,12 @@ public class ContentContainerPage extends WebPage {
             });
 
     parent.add(inline);
+
     this.inlinePath =
         inline.getPath().substring(inline.getPath().indexOf(":") + 1);
+    this.splitPath =
+        split.getPath().substring(inline.getPath().indexOf(":") + 1);
+
     this.add(new ChildCallBackHeaderContributer());
   }
 
@@ -156,6 +162,16 @@ public class ContentContainerPage extends WebPage {
 
   public String getListMenuKey() {
     return this.listMenuKey;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #splitPath}.
+   *
+   * @return value of instance variable {@link #splitPath}
+   */
+
+  public String getSplitPath() {
+    return this.splitPath;
   }
 
 }

@@ -20,6 +20,7 @@
 
 package org.efaps.webapp.components.dojo;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.behavior.AbstractBehavior;
@@ -46,5 +47,14 @@ public class AbstractDojoBehavior extends AbstractBehavior {
     ret.append(" djConfig=\"parseOnLoad: true\"");
     ret.append("></script>\n");
     return ret.toString();
+  }
+
+  /* (non-Javadoc)
+   * @see org.apache.wicket.behavior.AbstractBehavior#beforeRender(org.apache.wicket.Component)
+   */
+  @Override
+  public void beforeRender(Component component) {
+    component.setOutputMarkupId(true);
+    super.beforeRender(component);
   }
 }
