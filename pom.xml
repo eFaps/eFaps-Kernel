@@ -407,7 +407,7 @@
              <!-- <report>cim</report> --> 
               <report>issue-tracking</report>
               <report>license</report>
-              <report>scm</report>
+              <!--<report>scm</report>--> 
             </reports>
           </reportSet>
         </reportSets>

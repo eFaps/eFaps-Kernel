@@ -24,26 +24,31 @@
 -->
 
 <project name="eFaps">
-
-
   <bannerLeft>
-    <src>http://efaps.berlios.de/images/logo.jpg</src>
+    <src>/images/logo.jpg</src>
     <href>http://efaps.berlios.de/</href>
   </bannerLeft>
   <bannerRight>
     <src>http://developer.berlios.de/bslogo.php?group_id=8903</src>
     <href>http://developer.berlios.de/projects/efaps/</href>
   </bannerRight>
-<poweredBy>
+  <poweredBy>
     <logo name="Maven" href="http://maven.apache.org/"
           img="http://maven.apache.org/images/logos/maven-feather.png"/>
   </poweredBy>
+  
+  <skin>
+    <groupId>org.efaps</groupId>
+    <artifactId>eFaps-skin</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </skin>
+  
   <body>
+  
     <links>
       <item name="eFaps" href="http://developer.berlios.de/projects/efaps/"/>
       <item name="Maven 2" href="http://maven.apache.org/maven2/"/>
     </links>
-
 
     <menu name="Main">
       <item name="Wiki" href="/wiki/"/>
