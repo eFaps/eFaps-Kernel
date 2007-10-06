@@ -24,6 +24,7 @@
 -->
 
 <project name="eFaps">
+  <publishDate position="left" format="dd-MMMM-yyyy"/>
   <bannerLeft>
     <src>/images/logo.jpg</src>
     <href>http://efaps.berlios.de/</href>
