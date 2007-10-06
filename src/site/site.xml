@@ -52,7 +52,7 @@
     </links>
 
     <menu name="Main">
-      <item name="Wiki" href="/wiki/"/>
+      <item name="Wiki" href="http://efaps.berlios.de/wiki/"/>
     </menu>
     <menu ref="parent" />
     <menu ref="modules" />

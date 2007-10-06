@@ -90,7 +90,7 @@
     <developer>
       <id>tjo</id>
       <name>Tim Jouaux</name>
-      <email>tim.jouaux@efaps.org</email>
+      <email>tim.jouaux AT efaps DOT org</email>
       <url>www.efaps.org</url>
       <organization>eFaps</organization>
       <organizationUrl />
@@ -101,7 +101,7 @@
     <developer>
       <id>tmo</id>
       <name>Tim Moxter</name>
-      <email>tim.moxter@efaps.org</email>
+      <email>tim.moxter AT efaps DOT org</email>
       <url>www.efaps.org</url>
       <organization>eFaps</organization>
       <organizationUrl />
@@ -115,7 +115,7 @@
     <developer>
       <id>jmo</id>
       <name>Jan Moxter</name>
-      <email>jan.moxter@moxter.net</email>
+      <email>jan.moxter AT moxter DOT net</email>
       <url>www.moxter.net</url>
       <organization>moxter.net S.A.C, Peru</organization>
       <organizationUrl />
@@ -416,8 +416,8 @@
   </reporting>
   <distributionManagement>
     <site>
-      <id>eFaps</id>
-      <url>scp://tmo@shell.berlios.de/home/groups/efaps/htdocs/</url>
+      <id>eFaps-WebPage</id>
+      <url>scp://shell.berlios.de/home/groups/efaps/htdocs/</url>
     </site>
   </distributionManagement>
 </project>
