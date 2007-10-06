@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  
+  Copyright 2006 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          tmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+  
+-->
+
+<project name="eFaps">
+
+
+  <bannerLeft>
+    <src>http://efaps.berlios.de/images/logo.jpg</src>
+    <href>http://efaps.berlios.de/</href>
+  </bannerLeft>
+  <bannerRight>
+    <src>http://developer.berlios.de/bslogo.php?group_id=8903</src>
+    <href>http://developer.berlios.de/projects/efaps/</href>
+  </bannerRight>
+<poweredBy>
+    <logo name="Maven" href="http://maven.apache.org/"
+          img="http://maven.apache.org/images/logos/maven-feather.png"/>
+  </poweredBy>
+  <body>
+    <links>
+      <item name="eFaps" href="http://developer.berlios.de/projects/efaps/"/>
+      <item name="Maven 2" href="http://maven.apache.org/maven2/"/>
+    </links>
+
+
+    <menu name="Main">
+      <item name="Wiki" href="/wiki/"/>
+    </menu>
+    <menu ref="parent" />
+    <menu ref="modules" />
+    <menu ref="reports" />
+
+  </body>
+
+</project>

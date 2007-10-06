@@ -1,29 +1,31 @@
 <!--
-
- Copyright 2003-2007 The eFaps Team
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-
- Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
-
+  
+  Copyright 2003-2007 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          tmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+  
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
 
   <repositories>
     <repository>
@@ -57,7 +59,7 @@
     </repository>
 
   </repositories>
-  
+
   <!-- needed for the org.jfrog.maven.annomojo mojo annotation plugin -->
   <pluginRepositories>
     <pluginRepository>
@@ -78,8 +80,8 @@
   <description></description>
   <version>1.0-SNAPSHOT</version>
 
-<!--  <packaging>jar</packaging>-->
-<packaging>pom</packaging>
+  <!--  <packaging>jar</packaging>-->
+  <packaging>pom</packaging>
   <name>eFaps</name>
   <url>http://www.efaps.org</url>
 
@@ -91,11 +93,10 @@
       <email>tim.jouaux@efaps.org</email>
       <url>www.efaps.org</url>
       <organization>eFaps</organization>
-      <organizationUrl/>
-      <roles>
-      </roles>
+      <organizationUrl />
+      <roles></roles>
       <timezone>+1</timezone>
-      <properties/>
+      <properties />
     </developer>
     <developer>
       <id>tmo</id>
@@ -103,13 +104,13 @@
       <email>tim.moxter@efaps.org</email>
       <url>www.efaps.org</url>
       <organization>eFaps</organization>
-      <organizationUrl/>
+      <organizationUrl />
       <roles>
         <role>Architect</role>
         <role>Release Manager</role>
       </roles>
       <timezone>+1</timezone>
-      <properties/>
+      <properties />
     </developer>
     <developer>
       <id>jmo</id>
@@ -117,12 +118,12 @@
       <email>jan.moxter@moxter.net</email>
       <url>www.moxter.net</url>
       <organization>moxter.net S.A.C, Peru</organization>
-      <organizationUrl/>
+      <organizationUrl />
       <roles>
         <role>Architect</role>
       </roles>
-      <timezone>+1</timezone>
-      <properties/>
+      <timezone>-5</timezone>
+      <properties />
     </developer>
   </developers>
 
@@ -130,15 +131,17 @@
     <license>
       <name>Apache License, Version 2.0</name>
       <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution/>
-      <comments/>
+      <distribution />
+      <comments />
     </license>
   </licenses>
 
   <scm>
     <connection>scm:svn:https://moxter.net:4443/svn/efaps/trunk</connection>
-    <developerConnection>scm:svn:https://moxter.net:4443/svn/efaps/trunk</developerConnection>
-    <tag/>
+    <developerConnection>
+      scm:svn:https://moxter.net:4443/svn/efaps/trunk
+    </developerConnection>
+    <tag />
     <url>https://moxter.net:4443/svn/efaps</url>
   </scm>
 
@@ -146,12 +149,12 @@
     <name>eFaps</name>
     <url>http://www.efaps.org/</url>
   </organization>
-  
 
-   
+
+
   <!-- ************************************************************************
-  * All Modules
-  ************************************************************************+ -->
+    * All Modules
+    ************************************************************************+ -->
   <modules>
     <module>examples/derby</module>
     <module>kernel</module>
@@ -159,16 +162,16 @@
     <module>maven</module>
     <module>shell</module>
     <module>webapp</module>
-  <!--  <module>site</module>-->
+    <!--  <module>site</module>-->
   </modules>
 
   <!-- ************************************************************************
-  * Depencies
-  ************************************************************************+ -->
+    * Depencies
+    ************************************************************************+ -->
   <dependencies>
 
     <!-- used for toString methods
-         http://jakarta.apache.org/commons/lang
+      http://jakarta.apache.org/commons/lang
     -->
     <dependency>
       <groupId>commons-lang</groupId>
@@ -212,16 +215,16 @@
       <artifactId>commons-fileupload</artifactId>
       <version>1.1</version>
       <scope>provided</scope>
-<!--      <type>compile</type>-->
+      <!--      <type>compile</type>-->
       <!--url>http://jakarta.apache.org/commons/fileupload/</url-->
       <!--properties>
         <war.bundle>true</war.bundle>
         <comment>The component is needed for the file upload use case from the eFaps web application. It helps to access in the form process JSP to a file like a normal request paramter.</comment>
-      </properties-->
+        </properties-->
     </dependency>
 
     <!-- For Logging Purpose
-         http://www.slf4j.org
+      http://www.slf4j.org
     -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -230,13 +233,13 @@
     </dependency>
 
     <!-- Transaction Manager -->
-<!--
+    <!--
       <url>http://jakarta.apache.org/slide</url>
       <properties>
-        <war.bundle>true</war.bundle>
-        <comment>The component is part of the slide module.</comment>
+      <war.bundle>true</war.bundle>
+      <comment>The component is part of the slide module.</comment>
       </properties>
--->
+    -->
     <dependency>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-jta</artifactId>
@@ -265,9 +268,9 @@
     <!--
       Java program compiler. The commons logging must be exluded because eFaps
       uses slf4j logger.
-
+      
       http://jakarta.apache.org/commons/jci/
-     -->
+    -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-core</artifactId>
@@ -300,7 +303,7 @@
           <artifactId>commons-logging-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-groovy</artifactId>
@@ -311,7 +314,7 @@
           <artifactId>commons-logging-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-rhino</artifactId>
@@ -322,7 +325,7 @@
           <artifactId>commons-logging-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-jci-janino</artifactId>
@@ -333,12 +336,12 @@
           <artifactId>commons-logging-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency> 
+    </dependency>
 
     <!--
       File system used for checkin / checkout on external resources. The
       commons logging must be exluded because eFaps uses slf4j logger.
-
+      
       http://commons.apache.org/vfs/ 
     -->
     <dependency>
@@ -357,12 +360,12 @@
       </exclusions>
     </dependency>
 
-<!--
+    <!--
       <url>http://java.sun.com/products/servlet</url>
       <properties>
-        <comment>Needed to compile the servlets from eFaps.</comment>
+      <comment>Needed to compile the servlets from eFaps.</comment>
       </properties>
--->
+    -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -371,6 +374,50 @@
     </dependency>
 
   </dependencies>
-
-
+  
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <configuration>
+          <linkJavadoc>true</linkJavadoc>
+          <javadocDir>apidocs</javadocDir>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+              <report>summary</report>
+              <report>dependencies</report>
+              <report>project-team</report>
+           <!--   <report>mailing-list</report>--> 
+             <!-- <report>cim</report> --> 
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
+  <distributionManagement>
+    <site>
+      <id>eFaps</id>
+      <url>scp://tmo@shell.berlios.de/home/groups/efaps/htdocs/</url>
+    </site>
+  </distributionManagement>
 </project>

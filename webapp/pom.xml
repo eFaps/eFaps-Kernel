@@ -49,7 +49,7 @@
   <packaging>war</packaging>
   <artifactId>eFaps-WebApp</artifactId>
   <version>1.0-SNAPSHOT</version>
-
+<name>eFaps-WebApp</name>
   <parent>
     <groupId>org.efaps</groupId>
     <artifactId>efaps</artifactId>

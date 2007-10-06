@@ -30,7 +30,7 @@
   <packaging>jar</packaging>
   <artifactId>eFaps-Kernel</artifactId>
   <version>1.0-SNAPSHOT</version>
-
+<name>eFaps-Kernel</name>
   <parent>
     <groupId>org.efaps</groupId>
     <artifactId>efaps</artifactId>
