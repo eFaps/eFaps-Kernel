@@ -101,7 +101,7 @@
     <developer>
       <id>tmo</id>
       <name>Tim Moxter</name>
-      <email>tim.moxter AT efaps DOT org</email>
+      <email>tmo at users.berlios.de</email>
       <url>www.efaps.org</url>
       <organization>eFaps</organization>
       <organizationUrl />
@@ -113,10 +113,10 @@
       <properties />
     </developer>
     <developer>
-      <id>jmo</id>
+      <id>jmox</id>
       <name>Jan Moxter</name>
-      <email>jan.moxter AT moxter DOT net</email>
-      <url>www.moxter.net</url>
+      <email>tmo at users.berlios.de</email>
+      <url>www.efaps.org</url>
       <organization>moxter.net S.A.C, Peru</organization>
       <organizationUrl />
       <roles>
@@ -135,16 +135,11 @@
       <comments />
     </license>
   </licenses>
-
   <scm>
-    <connection>scm:svn:https://moxter.net:4443/svn/efaps/trunk</connection>
-    <developerConnection>
-      scm:svn:https://moxter.net:4443/svn/efaps/trunk
-    </developerConnection>
-    <tag />
-    <url>https://moxter.net:4443/svn/efaps</url>
+    <connection>scm:svn:http://svn.berlios.de/svnroot/repos/efaps/trunk</connection>
+    <developerConnection>scm:svn:https://developername@svn.berlios.de/svnroot/repos/efaps/trunk</developerConnection>
+    <url>http://svn.berlios.de/svnroot/repos/efaps/trunk</url>
   </scm>
-
   <organization>
     <name>eFaps</name>
     <url>http://www.efaps.org/</url>
@@ -407,12 +402,13 @@
              <!-- <report>cim</report> --> 
               <report>issue-tracking</report>
               <report>license</report>
-              <!--<report>scm</report>--> 
+              <report>scm</report>
             </reports>
           </reportSet>
         </reportSets>
       </plugin>
     </plugins>
+    
   </reporting>
   <distributionManagement>
     <site>
