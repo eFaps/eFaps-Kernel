@@ -52,7 +52,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Access_AccessSetTree_DataModelTypes</name>
-    <icon>Admin_DataModel_TypeListImage</icon>
     <!-- target definitions -->
     <target>
       <menu>Admin_Access_AccessSetTree_DataModelTypes_Menu</menu>

@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:1145 $
- Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -31,7 +31,7 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
     <name>Admin_DataModel_Type</name>
@@ -57,15 +57,11 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>(version==11)</mode>
     </version>
     <name>Admin_DataModel_Type</name>
     <parent>Admin_DataModel_Abstract</parent>
-    
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_DataModel_TypeImage</property>
-    
      <!-- triggers -->
     <trigger name="Admin_DataModel_Type_AccessCheck" event="ACCESSCHECK" 
       program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType"/>

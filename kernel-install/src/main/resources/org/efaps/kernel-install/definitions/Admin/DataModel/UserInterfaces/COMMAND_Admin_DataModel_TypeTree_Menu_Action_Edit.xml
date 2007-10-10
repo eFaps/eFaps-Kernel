@@ -52,6 +52,7 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_DataModel_TypeTree_Menu_Action_Edit</name>
+    <icon>Admin_DataModel_Type+Edit+Image</icon>
     <!-- target definitions -->
     <target>
       <form>Admin_DataModel_TypeForm</form>

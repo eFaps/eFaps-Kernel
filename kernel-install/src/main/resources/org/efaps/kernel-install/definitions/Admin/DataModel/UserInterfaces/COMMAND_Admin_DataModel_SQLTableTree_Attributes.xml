@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:1145 $
- Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -33,7 +33,7 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
@@ -47,12 +47,11 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
     <name>Admin_DataModel_SQLTableTree_Attributes</name>
-    <icon>Admin_DataModel_AttributeListImage</icon>
     <!-- target definitions -->
     <target>
       <table>Admin_DataModel_AttributeTable</table>

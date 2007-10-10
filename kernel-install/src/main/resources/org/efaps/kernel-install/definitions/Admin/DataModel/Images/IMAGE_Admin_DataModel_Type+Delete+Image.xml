@@ -20,11 +20,17 @@
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
+ Original Author: Mark James (mjames@gmail.com)
+ Original Name:   brick_add.png
+ Original Web:    Silk icon set 1.3
+                  [ http://www.famfamfam.com/lab/icons/silk/ ] 
+ Original License:Creative Commons Attribution 2.5 License 
+                  [ http://creativecommons.org/licenses/by/2.5/ ]
 
 -->
 
 <ui-image>
-  <uuid>1d671ce4-1eb6-43e8-9a00-54dce6d52b58</uuid>
+  <uuid>bb0eb6d8-4418-4ce3-80be-76fb636c8596</uuid>
 
   <!-- ************************************************************************
     version definition used to create / update the image 
@@ -37,8 +43,8 @@
       <mode>true</mode>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_DataModel_SQLTableListImage</name>
-    <file>IMAGE_Admin_DataModel_SQLTableListImage.gif</file>
+    <name>Admin_DataModel_Type+Delete+Image</name>
+    <file>IMAGE_Admin_DataModel_Type+Delete+Image.gif</file>
   </definition>
 
 </ui-image>

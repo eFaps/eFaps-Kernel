@@ -61,8 +61,6 @@
       <sqltable>Admin_DataModel_AttributeTypeSQLTable</sqltable>
       <sqlcolumn>CREATEUPDATE</sqlcolumn>
     </attribute>
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_DataModel_AttributeTypeImage</property>
   </definition>
 
 </datamodel-type>
