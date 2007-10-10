@@ -27,7 +27,7 @@
 -->
 
 <ui-image>
-  <uuid>ac12aeec-cfd2-4a30-86eb-e1edf5321dc0</uuid>
+  <uuid>bd1a455e-72d6-4cc7-881d-e8c226f86400</uuid>
 
   <!-- ************************************************************************
     version definition used to create / update the image 
@@ -40,10 +40,10 @@
       <mode>true</mode>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_Program_JavaImage</name>
-    <file>IMAGE_Admin_Program_JavaImage.gif</file>
+    <name>Admin_Program_JavaClassImage</name>
+    <file>IMAGE_Admin_Program_JavaClassImage.gif</file>
     <!-- is type icon for -->
-    <type>Admin_Program_Java</type>
+    <type>Admin_Program_JavaClass</type>
   </definition>
 
 </ui-image>
