@@ -46,6 +46,8 @@
     </version>
     <name>Admin_Integration_WebDAVImage</name>
     <file>IMAGE_Admin_Integration_WebDAVImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_Integration_WebDAV</type>
   </definition>
 
 </ui-image>

@@ -53,8 +53,6 @@
       <sqltable>Admin_Integration_WebDAVSQLTable</sqltable>
       <sqlcolumn>PATH</sqlcolumn>
     </attribute>
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_Integration_WebDAVImage</property>
-    <property name="Tree">Admin_Integration_WebDAVTree</property>
   </definition>
 
 </datamodel-type>
