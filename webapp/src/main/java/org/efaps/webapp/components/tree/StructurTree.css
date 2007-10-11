@@ -113,6 +113,7 @@ div.wicket-tree a {
 div.wicket-tree span.indent-blank {
   width: 18px;
   height: 1em;
+  float: left;
 }
 
 div.wicket-tree span.indent-line {
