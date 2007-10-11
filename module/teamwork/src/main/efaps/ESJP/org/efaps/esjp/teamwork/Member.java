@@ -45,7 +45,7 @@ import org.efaps.util.EFapsException;
 /**
  * This Class is a JavaProgram for eFaps, wich takes care of the Members in
  * TeamWork.
- * 
+ *
  * @author jmo
  * @version $Id$
  */
@@ -57,7 +57,7 @@ public class Member implements EventExecution {
 
   /**
    * Insert a new Member for a Collection.
-   * 
+   *
    * @param _parameter
    * @return null
    */
@@ -77,7 +77,7 @@ public class Member implements EventExecution {
       Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
       Attribute attr = (Attribute) entry.getKey();
       String attrName = attr.getName();
-      String value = (String) entry.getValue().toString();
+      String value = entry.getValue().toString();
       newValues.put(attrName, value);
     }
 
@@ -128,7 +128,7 @@ public class Member implements EventExecution {
 
   /**
    * check if this TeamWork_Abstract is a Root
-   * 
+   *
    * @param _abstractlink
    *                Abstract to search for
    * @return true, if a Root, otherwise false
@@ -156,7 +156,7 @@ public class Member implements EventExecution {
 
   /**
    * get the ID of the Root, for a TeamWork_Abstract
-   * 
+   *
    * @param _abstractlink
    *                TeamWork_Abstract the Root is searched for
    * @return the ID of the Root of the TeamWork_Abstract
@@ -171,8 +171,8 @@ public class Member implements EventExecution {
       query.addSelect("AncestorLink");
       query.executeWithoutAccessCheck();
       if (query.next()) {
-        ID = (String) query.get("AncestorLink").toString();
-        System.out.print(ID);
+        ID = query.get("AncestorLink").toString();
+
       } else {
         LOG.error("Cant't find the ID of the Root for: " + _abstractlink);
       }
@@ -202,7 +202,7 @@ public class Member implements EventExecution {
       Map.Entry<?,?> entry = (Map.Entry<?,?>) iter.next();
       Attribute attr = (Attribute) entry.getKey();
       String attrName = attr.getName();
-      String value = (String) entry.getValue().toString();
+      String value = entry.getValue().toString();
       newValues.put(attrName, value);
     }
     SearchQuery query = new SearchQuery();
@@ -239,7 +239,7 @@ public class Member implements EventExecution {
   /**
    * This Method is used by a Trigger, when a new Root Collection is created, to
    * set the default Right for the Creator of the RootCollection.
-   * 
+   *
    * @param _parameter
    * @return null
    */
@@ -272,7 +272,7 @@ public class Member implements EventExecution {
 
   /**
    * Get the ID of a AccessSet
-   * 
+   *
    * @param _accessset
    *                AccessSet to Search for
    * @return ID of the AccessSet, Null if not found
@@ -300,7 +300,7 @@ public class Member implements EventExecution {
   /**
    * This Method is used to remove a Member from a RootCollection and all of its
    * Childs. It can only be inisiated in a RootCollection.
-   * 
+   *
    * @param _parameter
    * @return
    */

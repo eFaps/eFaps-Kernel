@@ -58,8 +58,7 @@ public class AccessCheckOnTypeInstance implements EventExecution {
   private boolean checkAccess(final Instance _instance,
       final AccessType _accessType) {
     boolean hasAccess = false;
-    System.out.println(_instance);
-    System.out.println(_accessType);
+
     // this only checks the rights for ..
     if ("TeamWork_RootCollection".equals(_instance.getType().getName())
         || "TeamWork_Collection".equals(_instance.getType().getName())
@@ -117,7 +116,7 @@ public class AccessCheckOnTypeInstance implements EventExecution {
         LOG.error("checkAccess(Instance, AccessType)", e);
       }
     }
-    System.out.println(hasAccess);
+
 
     return hasAccess;
   }

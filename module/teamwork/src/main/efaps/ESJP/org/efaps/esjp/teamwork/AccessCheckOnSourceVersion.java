@@ -58,8 +58,7 @@ public class AccessCheckOnSourceVersion implements EventExecution {
   private boolean checkAccess(final Instance _instance,
       final AccessType _accessType) {
     boolean hasAccess = false;
-    System.out.println(_instance);
-    System.out.println(_accessType);
+
     // this only checks the rights for ..
     if ("TeamWork_SourceVersion".equals(_instance.getType().getName())) {
       try {
@@ -115,7 +114,7 @@ public class AccessCheckOnSourceVersion implements EventExecution {
         LOG.error("checkAccess(Instance, AccessType)", e);
       }
     }
-    System.out.println(hasAccess);
+
 
     return hasAccess;
   }
