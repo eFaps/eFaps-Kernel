@@ -60,8 +60,9 @@
       <menu>TeamWork_RootCollectionTree_Menu</menu>
       <evaluate program="org.efaps.esjp.teamwork.StructurBrowser">
         <property name="Types">TeamWork_RootCollection</property>
+        <property name="checkForChildren">TeamWork_Abstract\ParentCollectionLink</property>
       </evaluate>
-     </target>
+    </target>
     <!-- childs -->
     <childs>
       <child>TeamWork_CollectionTree_SubCollections</child>

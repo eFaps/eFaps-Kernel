@@ -32,6 +32,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.RestartResponseException;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
@@ -49,11 +50,30 @@ import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
-import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.models.TableModel.SortDirection;
+import org.efaps.webapp.pages.ErrorPage;
 
 /**
+ * This class is used to provide the Model for the StructurBrowser for eFpas.<br>
+ * It is used in tow different cases. In one case it is a TreeTable, where the
+ * Table will be provided with aditional information in columns. In the other
+ * case a Tree only.<br>
+ * The concept of this class is to provide a Model wich connects throught the
+ * eFaps-kernel to the eFaps-DataBase and turn it to a Standart TreeModel from
+ * <code>javax.swing.tree</code>. wich will be used from the Component to
+ * render the Tree and the Table. This leads to a very similar behavior of the
+ * WebApp GUI to a swing GUI. <br>
+ * This model works asyncron. That means only the actually in the GUI rendered
+ * Nodes (and Columns) will be retrieved from the eFaps-DataBase. The next level
+ * in a tree will be retrieved on the expand of a TreeNode. To achieve this and
+ * to be able to render expand-links for every node it will only be checked if
+ * it is a potential parent (if it has childs). In the case of expanding this
+ * Node the children will be retrieved and rendered.<br>
+ * To access the eFaps-Database a esjp is used, wich will be used in three
+ * different cases. To distinguish the use of the esjp some extra Parameters
+ * will be passed to the esjp when calling it.
+ *
  * @author jmox
  * @version $Id$
  */
@@ -68,37 +88,97 @@ public class StructurBrowserModel extends AbstractModel {
    */
   private UUID tableuuid;
 
+  /**
+   * this instance variable holds the childs of this StructurBrowserModel
+   */
   private final List<StructurBrowserModel> childs =
       new ArrayList<StructurBrowserModel>();
 
+  /**
+   * this instance variable holds the columns in case of a TableTree
+   */
   private final List<String> columns = new ArrayList<String>();
 
+  /**
+   * this instance variable holds the label of the Node wich will be presented
+   * in the GUI
+   *
+   * @see #toString()
+   * @see #getLabel()
+   * @see #setLabel(String)
+   */
   private String label;
 
+  /**
+   * this instance variable holds the Name of the Field the StructurBrowser
+   * should be in, in case of a TableTree
+   */
   private String browserFieldName;
 
+  /**
+   * this instance variable holds the headers for the Table, in case of a
+   * TableTree
+   */
   private final List<HeaderModel> headers = new ArrayList<HeaderModel>();
 
+  /**
+   * this instance variable holds the SortDirection for the Headers, (right now
+   * it is final but might be changed later)
+   */
   private final SortDirection sortDirection = SortDirection.NONE;
 
+  /**
+   * this instance variable holds, if this StructurBrowserModel is the Root of a
+   * tree
+   */
   private final boolean root;
 
+  /**
+   * this instance variable holds if this StructurBrowserModel is a potential
+   * parent, this is needed because, first it will be only determined if a node
+   * is a potential parent, and later on the childs will be retrieved from the
+   * eFpas-DataBase.
+   *
+   * @see #isParent()
+   */
   private boolean parent;
 
+  /**
+   * this instance variable holds the Value for the Label as it is difined in
+   * the DBProperties
+   */
   private String valueLabel;
 
+  /**
+   * standart constructor, if called this StructurBrowserModel will be defined
+   * as root
+   *
+   * @param _parameters
+   *                PageParameters needed to initialise this
+   *                StructurBrowserModel
+   */
   public StructurBrowserModel(PageParameters _parameters) {
     super(_parameters);
     initialise();
     this.root = true;
   }
 
+  /**
+   * internal constructor, it is used to set that this StructurBrowserModel is
+   * not a root
+   *
+   * @param _commandUUID
+   * @param _oid
+   */
   private StructurBrowserModel(final UUID _commandUUID, final String _oid) {
     super(_commandUUID, _oid);
     this.root = false;
     initialise();
   }
 
+  /**
+   * method used to initialise this StructurBrowserModel
+   */
   private void initialise() {
     CommandAbstract command = getCommand();
     if (command != null && command.getTargetTable() != null) {
@@ -114,27 +194,45 @@ public class StructurBrowserModel extends AbstractModel {
 
   }
 
+  /**
+   * This method should be called to actually execute this StructurBrowserModel,
+   * that means to retrieve the values from the eFaps-DataBase, create the
+   * TreeModel etc. This method actually calls depending if we have a Tree or a
+   * TreeTabel the Methodes {@link #executeTree(List)} or
+   * {@link #executeTreeTable(List)}
+   *
+   * @see #executeTree(List)
+   * @see #executeTreeTable(List)
+   */
   @SuppressWarnings("unchecked")
   public void execute() {
     List<Return> ret;
     try {
-      ret =
-          getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-              ParameterValues.INSTANCE, new Instance(super.getOid()));
-
-      List<List<Instance>> lists =
-          (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
       if (this.tableuuid != null) {
+        ret =
+            getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                ParameterValues.OTHERS, "execute");
+        List<List<Instance>> lists =
+            (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
         executeTreeTable(lists);
       } else {
-        executeTree(lists);
+        List<List<Instance>> list = new ArrayList<List<Instance>>();
+        List<Instance> instances = new ArrayList<Instance>(1);
+        instances.add(new Instance(getOid()));
+        list.add(instances);
+        executeTree(list);
       }
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
   }
 
+  /**
+   * This method is called in case of a Tree from the {@link #execute()}method
+   * to fill this StructurBrowserModel with live
+   *
+   * @param _lists
+   */
   private void executeTree(List<List<Instance>> _lists) {
     try {
       List<Instance> instances = new ArrayList<Instance>();
@@ -159,17 +257,22 @@ public class StructurBrowserModel extends AbstractModel {
         this.childs.add(child);
 
         child.setLabel(value.toString());
-        child.setParent(checkForChilds(instance));
+        child.setParent(checkForChildren(instance));
 
       }
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
     super.setInitialised(true);
 
   }
 
+  /**
+   * This method is called in case of a TreeTable from the {@link #execute()}method
+   * to fill this StructurBrowserModel with live
+   *
+   * @param _lists
+   */
   private void executeTreeTable(List<List<Instance>> _lists) {
     try {
       List<Instance> instances = new ArrayList<Instance>();
@@ -240,46 +343,61 @@ public class StructurBrowserModel extends AbstractModel {
 
           if (field.getName().equals(this.browserFieldName)) {
             child.setLabel(strValue);
-            child.setParent(checkForChilds(instance));
+            child.setParent(checkForChildren(instance));
           }
           child.getColumns().add(strValue);
-
         }
-
       }
 
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
     super.setInitialised(true);
   }
 
-  protected void setParent(boolean _parent) {
+  /**
+   * This is the getter method for the instance variable {@link #parent}.
+   *
+   * @return value of instance variable {@link #parent}
+   */
+  private boolean isParent() {
+    return this.parent;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #parent}.
+   *
+   * @param _parent
+   *                the parent to set
+   */
+  private void setParent(boolean _parent) {
     this.parent = _parent;
   }
 
-  private boolean checkForChilds(final Instance _instance) {
-    SearchQuery query = new SearchQuery();
-    boolean ret = false;
+  /**
+   * this method is used to check if a node has potential children
+   *
+   * @param _instance
+   *                Instance of a Node to be checked
+   * @return true if this Node has children, else false
+   */
+  private boolean checkForChildren(final Instance _instance) {
+
     try {
-      query.setExpand(_instance, "TeamWork_Abstract\\ParentCollectionLink");
-      query.execute();
-      if (query.next()) {
-        ret = true;
-      }
-
+      List<Return> ret =
+          getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+              ParameterValues.INSTANCE, _instance, ParameterValues.OTHERS,
+              "checkForChildren");
+      return ret.get(0).get(ReturnValues.TRUE) != null;
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
-
-    return ret;
 
   }
 
   @Override
   public void resetModel() {
+    // not needed here
   }
 
   /**
@@ -292,74 +410,134 @@ public class StructurBrowserModel extends AbstractModel {
     return Table.get(this.tableuuid);
   }
 
+  /**
+   * has this StructurBrowserModel childs
+   *
+   * @return
+   */
   public boolean hasChilds() {
     return !this.childs.isEmpty();
   }
 
-  public boolean isParent() {
-    return this.parent;
-  }
-
+  /**
+   * get the TreeModel used in the Component to construct the actuall tree
+   *
+   * @see #addNode(DefaultMutableTreeNode, List)
+   * @return TreeModel of this StructurBrowseModel
+   */
   public TreeModel getTreeModel() {
     TreeModel model = null;
     DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
-    add(rootNode, this.childs);
+    addNode(rootNode, this.childs);
     model = new DefaultTreeModel(rootNode);
     return model;
   }
 
-  private void add(DefaultMutableTreeNode parent,
-                   List<StructurBrowserModel> childs) {
+  /**
+   * recursive method used to fill the TreeModel
+   *
+   * @see #getTreeModel()
+   * @param parent
+   *                ParentNode children schould be added
+   * @param childs
+   *                List<StructurBrowserModel>to be added as childs
+   */
+  private void addNode(DefaultMutableTreeNode parent,
+                       List<StructurBrowserModel> childs) {
     for (int i = 0; i < childs.size(); i++) {
       DefaultMutableTreeNode childNode =
           new DefaultMutableTreeNode(childs.get(i));
       parent.add(childNode);
       if (childs.get(i).hasChilds()) {
-        add(childNode, childs.get(i).childs);
+        addNode(childNode, childs.get(i).childs);
       } else if (childs.get(i).isParent()) {
         childNode.add(new BogusNode());
       }
-
     }
   }
 
-  public String getId() {
-    String ret = this.getOid();
-    return ret.substring(ret.indexOf(".") + 1);
-  }
-
+  /**
+   * This method should be called to add children to a Node in the Tree.<br>
+   * e.g. in a standart implementation the children would be added to the Tree
+   * on the expand-Event of the tree. The children a retrieved from an esjp with
+   * the EventType UI_TABLE_EVALUATE. To differ the different methods wich can
+   * call the same esjp, this method adds the ParameterValues.OTHERS with
+   * "addChildren".
+   *
+   * @param parent
+   *                the DefaultMutableTreeNode the new Children schould be added
+   */
+  @SuppressWarnings("unchecked")
   public void addChildren(DefaultMutableTreeNode parent) {
     parent.removeAllChildren();
-    SearchQuery query = new SearchQuery();
+    List<Return> ret;
     try {
-      query.setQueryTypes("TeamWork_Abstract");
+      ret =
+          getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+              ParameterValues.INSTANCE, new Instance(super.getOid()),
+              ParameterValues.OTHERS, "addChildren");
+      List<List<Instance>> lists =
+          (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
 
-      query.setExpandChildTypes(true);
-      query.addSelect("OID");
-      query.addWhereExprEqValue("ParentCollectionLink", this.getId());
-      query.execute();
-
-      List<List<Instance>> lists = new ArrayList<List<Instance>>();
-      while (query.next()) {
-        List<Instance> instances = new ArrayList<Instance>(1);
-        instances.add(new Instance((String) query.get("OID")));
-        lists.add(instances);
-      }
       if (this.tableuuid != null) {
         executeTreeTable(lists);
       } else {
         this.executeTree(lists);
       }
-      add(parent, this.childs);
+      addNode(parent, this.childs);
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
-
   }
 
+  /**
+   * get the Value of a Column identified by the index of the Column
+   *
+   * @param _index
+   *                index of the Column
+   * @return String with the Value of the Column
+   */
   public String getColumnValue(final int _index) {
     return this.columns.get(_index);
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #label}.
+   *
+   * @param label
+   *                the label to set
+   */
+  private void setLabel(String label) {
+    this.label = label;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #columns}.
+   *
+   * @return value of instance variable {@link #columns}
+   */
+  private List<String> getColumns() {
+    return this.columns;
+  }
+
+  /**
+   * This is the getter method for the instance variable
+   * {@link #browserFieldName}.
+   *
+   * @return value of instance variable {@link #browserFieldName}
+   */
+  public String getBrowserFieldName() {
+    return this.browserFieldName;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #headers}.
+   *
+   * @return value of instance variable {@link #headers}
+   */
+
+  public List<HeaderModel> getHeaders() {
+    return this.headers;
   }
 
   /*
@@ -373,53 +551,15 @@ public class StructurBrowserModel extends AbstractModel {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #label}.
-   *
-   * @return value of instance variable {@link #label}
+   * This class is used to add a ChildNode under a ParentNode, if the ParentNode
+   * actually has some children. By using this class it then can very easy be
+   * distinguished between Nodes wich where expanded and Nodes wich still need
+   * to be expanded.
    */
-
-  public String getLabel() {
-    return this.label;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #label}.
-   *
-   * @param label
-   *                the label to set
-   */
-  public void setLabel(String label) {
-    this.label = label;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #columns}.
-   *
-   * @return value of instance variable {@link #columns}
-   */
-
-  public List<String> getColumns() {
-    return this.columns;
-  }
-
-  public List<HeaderModel> getHeaders() {
-    return this.headers;
-  }
-
-  /**
-   * This is the getter method for the instance variable
-   * {@link #browserFieldName}.
-   *
-   * @return value of instance variable {@link #browserFieldName}
-   */
-
-  public String getBrowserFieldName() {
-    return this.browserFieldName;
-  }
-
   public class BogusNode extends DefaultMutableTreeNode {
 
     private static final long serialVersionUID = 1L;
 
   }
+
 }
