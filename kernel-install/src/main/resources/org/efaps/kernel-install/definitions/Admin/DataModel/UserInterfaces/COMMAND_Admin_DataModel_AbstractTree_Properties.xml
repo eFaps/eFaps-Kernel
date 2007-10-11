@@ -52,7 +52,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_DataModel_AbstractTree_Properties</name>
-    <icon>Admin_Common_PropertyListImage</icon>
     <!-- target definitions -->
     <target>
       <menu>Admin_DataModel_AbstractTree_Properties_Menu</menu>

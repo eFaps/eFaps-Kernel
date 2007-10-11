@@ -52,7 +52,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_UI_AbstractTree_Properties</name>
-    <icon>Admin_Common_PropertyListImage</icon>
     <!-- target definitions -->
     <target>
       <table>Admin_Common_PropertyTable</table>

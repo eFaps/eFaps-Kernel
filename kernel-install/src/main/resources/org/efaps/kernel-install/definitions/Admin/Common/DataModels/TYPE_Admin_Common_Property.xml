@@ -66,8 +66,6 @@
       <sqlcolumn>ABSTRACT</sqlcolumn>
       <typelink>Admin_Abstract</typelink>
     </attribute>
-    <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_Common_PropertyImage</property>
   </definition>
 
 </datamodel-type>
