@@ -50,11 +50,14 @@ import org.efaps.util.EFapsException;
 import org.efaps.webapp.pages.ErrorPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class TableModel extends AbstractModel {
 
+  /**
+   * enum holding the different directions a column can be sorted
+   */
   public static enum SortDirection {
     DESCENDING,
     ASCENDING,
@@ -255,7 +258,7 @@ public class TableModel extends AbstractModel {
           Object value = null;
 
           if (field.getExpression() != null) {
-            value = _query.getValue(field.getExpression());
+            value = _query.get(field.getExpression());
             attr = _query.getAttribute(field.getExpression());
           }
 
@@ -276,11 +279,11 @@ public class TableModel extends AbstractModel {
           String icon = field.getIcon();
           if (field.getAlternateOID() != null) {
             Instance inst =
-                new Instance((String) _query.getValue(field.getAlternateOID()));
+                new Instance((String) _query.get(field.getAlternateOID()));
             oid = inst.getOid();
             if (field.isShowTypeIcon()) {
               final Image image = Image.getTypeIcon(inst.getType());
-              if (image != null)  {
+              if (image != null) {
                 icon = image.getUrl();
               }
             }
@@ -288,7 +291,7 @@ public class TableModel extends AbstractModel {
             oid = instance.getOid();
             if (field.isShowTypeIcon()) {
               final Image image = Image.getTypeIcon(instance.getType());
-              if (image != null)  {
+              if (image != null) {
                 icon = image.getUrl();
               }
             }

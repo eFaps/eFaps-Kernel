@@ -20,6 +20,7 @@
 
 package org.efaps.webapp.models;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,19 +36,27 @@ import org.apache.wicket.PageParameters;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
+import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Table;
+import org.efaps.beans.ValueList;
+import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.models.TableModel.SortDirection;
 
+/**
+ * @author jmox
+ * @version $Id$
+ */
 public class StructurBrowserModel extends AbstractModel {
 
   private static final long serialVersionUID = 1L;
@@ -76,7 +85,7 @@ public class StructurBrowserModel extends AbstractModel {
 
   private boolean parent;
 
-  private String browserExpression;
+  private String valueLabel;
 
   public StructurBrowserModel(PageParameters _parameters) {
     super(_parameters);
@@ -96,9 +105,13 @@ public class StructurBrowserModel extends AbstractModel {
       this.tableuuid = command.getTargetTable().getUUID();
       this.browserFieldName = command.getProperty("TargetStructurBrowserField");
     } else {
-      this.browserExpression =
-          command.getProperty("TargetStructurBrowserExpression");
+      if ("true".equals(command.getProperty("TargetStructurBrowser"))) {
+        String label =
+            Menu.getTypeTreeMenu(new Instance(getOid()).getType()).getLabel();
+        this.valueLabel = DBProperties.getProperty(label);
+      }
     }
+
   }
 
   @SuppressWarnings("unchecked")
@@ -132,15 +145,15 @@ public class StructurBrowserModel extends AbstractModel {
         instances.add(inst);
         instMapper.put(inst, oneList);
       }
+      ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
+      ValueList valuelist = parser.ExpressionString();
       ListQuery query = new ListQuery(instances);
-
-      query.addSelect(this.browserExpression);
+      valuelist.makeSelect(query);
       query.execute();
       while (query.next()) {
         Object value = null;
         Instance instance = query.getInstance();
-
-        value = query.getValue(this.browserExpression);
+        value = valuelist.makeString(query);
         StructurBrowserModel child =
             new StructurBrowserModel(super.getCommandUUID(), instance.getOid());
         this.childs.add(child);
@@ -206,7 +219,7 @@ public class StructurBrowserModel extends AbstractModel {
           Object value = null;
 
           if (field.getExpression() != null) {
-            value = query.getValue(field.getExpression());
+            value = query.get(field.getExpression());
             attr = query.getAttribute(field.getExpression());
           }
 

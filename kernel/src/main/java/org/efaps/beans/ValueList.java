@@ -27,14 +27,44 @@ import java.util.Set;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.AbstractQuery;
+import org.efaps.util.EFapsException;
 
 /**
+ * This class work together with the generated classes of the kernel
+ * (org.efpas.beans.valueparser) to get the Values for a String expression
+ * defined as a DBProperty like: "$< Type> '$< Name>': Details" from the
+ * eFaps-DataBase. The Values for an expression ("$< Type>") retrieved from the
+ * eFaps-DataBase will be combined with pure Text ("Details").
+ *
  * @author tmo
  * @version $Id$
  */
 public class ValueList {
 
+  /**
+   * enum used to differ expression parts from text parts
+   */
+  public enum TokenType {
+    EXPRESSION,
+    TEXT
+  }
+
+  /**
+   * holds the Expressions used in this ValueList
+   */
+  private final Set<String> expressions = new HashSet<String>();
+
+  /**
+   * holds the tokens of this ValueList
+   */
+  private final ArrayList<Token> tokens = new ArrayList<Token>();
+
+  /**
+   * get the ValueList
+   *
+   * @return String with the Values, wich looks like the original
+   */
   public String getValueList() {
     StringBuffer buf = new StringBuffer();
 
@@ -42,65 +72,82 @@ public class ValueList {
       switch (token.type) {
         case EXPRESSION:
           buf.append("$<").append(token.value).append(">");
-        break;
+          break;
         case TEXT:
           buf.append(token.value);
-        break;
+          break;
       }
     }
-
     return buf.toString();
   }
 
+  /**
+   * add an Expression to this ValueList
+   *
+   * @param _expression
+   *                String with the expression
+   */
   public void addExpression(String _expression) {
     this.tokens.add(new Token(TokenType.EXPRESSION, _expression));
     getExpressions().add(_expression);
   }
 
+  /**
+   * add Text to the Tokens
+   *
+   * @param _text
+   *                Text to be added
+   */
   public void addText(final String _text) {
     this.tokens.add(new Token(TokenType.TEXT, _text));
   }
 
-  public void makeSelect(final SearchQuery _query) throws Exception {
+  /**
+   * This method adds the expressions of this ValueList to the given query
+   *
+   * @param _query
+   *                AbstractQuery the expressions should be added
+   * @throws EFapsException
+   * @see {@link #makeString(AbstractQuery)}
+   */
+  public void makeSelect(final AbstractQuery _query) throws EFapsException {
     for (String expression : getExpressions()) {
       _query.addSelect(expression);
     }
   }
 
-  public String makeString(final SearchQuery _query) throws Exception {
+  /**
+   * This method retrieves the Values from the given AbstractQuery and combines
+   * them with the Text partes.
+   *
+   * @param _query
+   *                AbstractQuery the ValueString should be retrieved
+   * @return String with the actuall Value of this ValueList
+   * @throws Exception
+   * @see {@link #makeSelect(AbstractQuery)}
+   */
+  public String makeString(final AbstractQuery _query) throws Exception {
     StringBuffer buf = new StringBuffer();
 
     for (Token token : this.tokens) {
       switch (token.type) {
         case EXPRESSION:
-          // buf.append(_query.get(_context, token.value));
           Attribute attr = _query.getAttribute(token.value);
           Object value = _query.get(token.value);
           buf.append((new FieldValue(new FieldDefinition(null, null), attr,
               value, null)).getViewHtml());
-
-          ;
-        break;
+          break;
         case TEXT:
           buf.append(token.value);
-        break;
+          break;
       }
     }
-
     return buf.toString();
   }
 
-  // /////////////////////////////////////////////////////////////////////////
-
-  private ArrayList<Token> tokens = new ArrayList<Token>();
-
-  private Set<String> expressions = new HashSet<String>();
-
-  // /////////////////////////////////////////////////////////////////////////
-
   /**
    * This is the getter method for the instance variable {@link #expressions}.
-   * 
+   *
    * @return value of instance variable {@link #expressions}
    * @see #expressions
    */
@@ -108,23 +155,32 @@ public class ValueList {
     return this.expressions;
   }
 
-  // /////////////////////////////////////////////////////////////////////////
-
-  public enum TokenType {
-    EXPRESSION,
-    TEXT
-  };
-
+  /**
+   * this private class holds the Definitios of the ValueList
+   */
   private class Token {
 
+    /**
+     * this instance variable holds the Type of this token
+     */
+    private final TokenType type;
+
+    /**
+     * this instance variable holds the value of this token
+     */
+    private final String value;
+
+    /**
+     * Constructor setting the instance variables
+     *
+     * @param _type
+     * @param _value
+     */
     Token(TokenType _type, String _value) {
       this.type = _type;
       this.value = _value;
     }
 
-    private final TokenType type;
-
-    private final String value;
   }
 
 }

@@ -32,13 +32,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.query.OneRoundQuery;
+import org.efaps.util.EFapsException;
 
 /**
  * @todo description
  * @author tmo
  * @version $Id$
  */
-public class ListQuery {
+public class ListQuery extends AbstractQuery {
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -63,7 +64,7 @@ public class ListQuery {
 
   /**
    * @param _instances
-   *          list of instances for which this query is executed
+   *                list of instances for which this query is executed
    */
   public ListQuery(final List<Instance> _instances) {
     this.instances = _instances;
@@ -76,31 +77,32 @@ public class ListQuery {
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
-  public void execute() throws Exception {
-
-//    System.out.println("this=" + toString());
-
-    if (this.instances.size() > 0) {
-
-      this.query = new OneRoundQuery(this.instances, this.selects);
-      query.execute();
-
-      for (Map.Entry<String, ListQuery> sub : this.subSelects.entrySet()) {
-        while (this.query.next()) {
-          Attribute attr = this.query.getAttribute(sub.getKey());
-          if ((attr != null) && (attr.getLink() != null)) {
-            if (this.query.getValue(sub.getKey()) != null) {
-              Long id =
-                  ((Number) this.query.getValue(sub.getKey())).longValue();
-              if ((id != null) && (id != 0)) {
-                sub.getValue().addInstance(attr.getLink(), id);
+  @Override
+  public void execute() throws EFapsException {
+    try {
+      if (this.instances.size() > 0) {
+        this.query = new OneRoundQuery(this.instances, this.selects);
+        this.query.execute();
+        for (Map.Entry<String, ListQuery> sub : this.subSelects.entrySet()) {
+          while (this.query.next()) {
+            Attribute attr;
+            attr = this.query.getAttribute(sub.getKey());
+            if ((attr != null) && (attr.getLink() != null)) {
+              if (this.query.getValue(sub.getKey()) != null) {
+                Long id =
+                    ((Number) this.query.getValue(sub.getKey())).longValue();
+                if ((id != null) && (id != 0)) {
+                  sub.getValue().addInstance(attr.getLink(), id);
+                }
               }
             }
           }
+          this.query.beforeFirst();
+          sub.getValue().execute();
         }
-        this.query.beforeFirst();
-        sub.getValue().execute();
       }
+    } catch (Exception e) {
+      throw (new EFapsException(this.getClass(), "execute", e));
     }
   }
 
@@ -110,13 +112,14 @@ public class ListQuery {
 
   /**
    * Adds one select statement to this query.
-   * 
+   *
    * @param _select
-   *          select statement to add
+   *                select statement to add
    * @see #selects
    */
+  @Override
   public void addSelect(final String _select) {
-//    System.out.println("_select=" + _select);
+    // System.out.println("_select=" + _select);
     final int idx = _select.indexOf(".");
     if (idx > 0) {
       // differ select expression from sub expression
@@ -143,33 +146,40 @@ public class ListQuery {
    * @return <i>true</i> if a new row is selected and exists, otherwise
    *         <i>false</i>
    */
+  @Override
   public boolean next() {
     return (this.query != null) ? this.query.next() : false;
   }
 
   /**
    * The instance method returns for the given key the attribute value.
-   * 
+   *
    * @param _key
-   *          key for which the attribute value must returned
+   *                key for which the attribute value must returned
    * @return atribute value for given key
    */
-  public Object getValue(final String _select) throws Exception {
-    final int idx = _select.indexOf(".");
-    Object ret = null;
-    if (idx > 0) {
-      // differ select expression from sub expression
-      String select = _select.substring(0, idx);
-      String subSel = _select.substring(idx + 1);
-      // evalute sub select expression for given id
-      ListQuery subQuery = this.subSelects.get(select);
-      if (subQuery.gotoKey(this.query.getValue(select))) {
-        ret = subQuery.getValue(subSel);
+  @Override
+  public Object get(final String _select) throws EFapsException {
+    try {
+      final int idx = _select.indexOf(".");
+      Object ret = null;
+      if (idx > 0) {
+        // differ select expression from sub expression
+        String select = _select.substring(0, idx);
+        String subSel = _select.substring(idx + 1);
+        // evalute sub select expression for given id
+        ListQuery subQuery = this.subSelects.get(select);
+        if (subQuery.gotoKey(this.query.getValue(select))) {
+          ret = subQuery.get(subSel);
+        }
+      } else {
+        ret = this.query.getValue(_select);
       }
-    } else {
-      ret = this.query.getValue(_select);
+      return ret;
+    } catch (Exception e) {
+      throw (new EFapsException(this.getClass(), "get", e));
     }
-    return ret;
+
   }
 
   public Type getType() throws Exception {
@@ -182,11 +192,12 @@ public class ListQuery {
 
   /**
    * The instance method returns for the given key the atribute.
-   * 
+   *
    * @param _key
-   *          key for which the attribute value must returned
+   *                key for which the attribute value must returned
    * @return attribute for given key
    */
+  @Override
   public Attribute getAttribute(final String _select) throws Exception {
     final int idx = _select.indexOf(".");
     Attribute ret = null;
@@ -207,9 +218,10 @@ public class ListQuery {
 
   /**
    * Returns a string representation of this .
-   * 
+   *
    * @return string representation of this
    */
+  @Override
   public String toString() {
     return new ToStringBuilder(this).appendSuper(super.toString()).append(
         "selects", this.selects.toString()).append("subSelects",
