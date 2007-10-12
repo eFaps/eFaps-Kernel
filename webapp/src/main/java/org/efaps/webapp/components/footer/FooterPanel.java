@@ -53,8 +53,8 @@ import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.models.FormModel.FormCellModel;
 import org.efaps.webapp.pages.ContentPage;
-import org.efaps.webapp.pages.MainPage;
 import org.efaps.webapp.pages.DialogPage;
+import org.efaps.webapp.pages.MainPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 
@@ -310,6 +310,11 @@ public class FooterPanel extends Panel {
         modal.show(_target);
       }
       return ret;
+    }
+
+    @Override
+    protected void onError(AjaxRequestTarget arg0) {
+      // TODO Auto-generated method stub
     }
   }
 

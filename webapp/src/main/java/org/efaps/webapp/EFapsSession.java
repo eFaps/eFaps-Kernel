@@ -115,7 +115,7 @@ public class EFapsSession extends WebSession {
   @Override
   protected void attach() {
     super.attach();
-    if (this.isLogedIn()) {
+    if (this.isLogedIn() && RequestCycle.get() != null) {
       openContext();
     }
   }
@@ -319,6 +319,7 @@ public class EFapsSession extends WebSession {
       if (TRANSACTIONSMANAGER.getStatus() != Status.STATUS_ACTIVE) {
         Map<String, String[]> parameter =
             RequestCycle.get().getRequest().getParameterMap();
+
         TRANSACTIONSMANAGER.begin();
         Context.newThreadContext(TRANSACTIONSMANAGER.getTransaction(),
             this.username, super.getLocale(), null, parameter, null);
