@@ -33,6 +33,9 @@
   <artifactId>eFaps-Kernel-Install</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>eFaps-Kernel-Install</name>
+  <description>eFaps-Kernel-Install contains all definitions for the kernel in form
+  of various xml-Files, pictures etc. The whole Data will be imported into the 
+  eFaps-DataBase on the first installation of eFaps.</description>
   <parent>
     <groupId>org.efaps</groupId>
     <artifactId>efaps</artifactId>

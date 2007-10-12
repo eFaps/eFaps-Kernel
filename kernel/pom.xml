@@ -30,7 +30,10 @@
   <packaging>jar</packaging>
   <artifactId>eFaps-Kernel</artifactId>
   <version>1.0-SNAPSHOT</version>
-<name>eFaps-Kernel</name>
+  <name>eFaps-Kernel</name>
+  <description>The eFaps-Kernel is the mechanism wich connects any user interaction
+  to the eFaps-DataBase, providing all necesary issues like. access-control, runlevel etc.
+  </description>
   <parent>
     <groupId>org.efaps</groupId>
     <artifactId>efaps</artifactId>

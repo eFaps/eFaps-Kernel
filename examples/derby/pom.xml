@@ -25,6 +25,8 @@
   <artifactId>Derby-Tools</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>Derby-Tools</name>
+  <description>Derby-Tools serves only one purpose: to provide a quick and easy 
+  first deployment of eFaps for testing purposes.</description>
   <parent>
     <groupId>org.efaps</groupId>
     <artifactId>efaps</artifactId>

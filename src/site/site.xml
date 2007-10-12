@@ -53,6 +53,7 @@
 
     <menu name="Main">
       <item name="Wiki" href="http://www.efaps.org//wiki/"/>
+      <item name="eFaps@berlios" href="http://developer.berlios.de/projects/efaps/"/>
     </menu>
     <menu ref="parent" />
     <menu ref="modules" />

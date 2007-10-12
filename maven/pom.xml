@@ -31,6 +31,9 @@
   <artifactId>maven-efaps</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>maven-eFaps</name>
+  <description>eFaps uses Maven for nearly all user interaction accept the WebInterface.
+  This Module provides all needed targets and SubModules.
+  </description>
   <parent>
     <groupId>org.efaps</groupId>
     <artifactId>efaps</artifactId>
