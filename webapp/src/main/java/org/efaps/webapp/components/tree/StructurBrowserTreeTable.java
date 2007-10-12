@@ -32,8 +32,10 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.TreeTable;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Fragment;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 
@@ -70,6 +72,34 @@ public class StructurBrowserTreeTable extends TreeTable {
   @Override
   protected ResourceReference getCSS() {
     return CSS;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree#newNodeIcon(org.apache.wicket.MarkupContainer,
+   *      java.lang.String, javax.swing.tree.TreeNode)
+   */
+  @Override
+  protected Component newNodeIcon(MarkupContainer parent, String id,
+                                  TreeNode node) {
+    final StructurBrowserModel model =
+        (StructurBrowserModel) ((DefaultMutableTreeNode) node).getUserObject();
+    if (model.getImage() != null) {
+
+      return new WebMarkupContainer(id) {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        protected void onComponentTag(ComponentTag tag) {
+          super.onComponentTag(tag);
+          tag.put("style", "background-image: url('" + model.getImage() + "')");
+        }
+      };
+    } else {
+      return super.newNodeIcon(parent, id, node);
+    }
   }
 
   /*
@@ -141,7 +171,7 @@ public class StructurBrowserTreeTable extends TreeTable {
     });
   }
 
-  private class StructurBrowserTreeFragment extends Fragment {
+  private class StructurBrowserTreeFragment extends Panel {
 
     private static final long serialVersionUID = 1L;
 
@@ -150,7 +180,7 @@ public class StructurBrowserTreeTable extends TreeTable {
                                        final TreeNode node,
                                        int level,
                                        final IRenderNodeCallback renderNodeCallback) {
-      super(id, "fragment");
+      super(id);
 
       add(newIndentation(this, "indent", node, level));
 

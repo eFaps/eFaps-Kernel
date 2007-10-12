@@ -50,6 +50,7 @@ import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
+import org.efaps.servlet.RequestHandler;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.models.TableModel.SortDirection;
 import org.efaps.webapp.pages.ErrorPage;
@@ -148,6 +149,8 @@ public class StructurBrowserModel extends AbstractModel {
    * the DBProperties
    */
   private String valueLabel;
+
+  private String image;
 
   /**
    * standart constructor, if called this StructurBrowserModel will be defined
@@ -258,7 +261,7 @@ public class StructurBrowserModel extends AbstractModel {
 
         child.setLabel(value.toString());
         child.setParent(checkForChildren(instance));
-
+        child.setImage(instance.getType().getProperty("Icon"));
       }
     } catch (Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
@@ -344,6 +347,7 @@ public class StructurBrowserModel extends AbstractModel {
           if (field.getName().equals(this.browserFieldName)) {
             child.setLabel(strValue);
             child.setParent(checkForChildren(instance));
+            child.setImage(instance.getType().getProperty("Icon"));
           }
           child.getColumns().add(strValue);
         }
@@ -560,6 +564,28 @@ public class StructurBrowserModel extends AbstractModel {
 
     private static final long serialVersionUID = 1L;
 
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #image}.
+   *
+   * @return value of instance variable {@link #image}
+   */
+
+  public String getImage() {
+    return this.image;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #image}.
+   *
+   * @param image
+   *                the image to set
+   */
+  private void setImage(final String _url) {
+    if (_url != null) {
+      this.image = "/.." + RequestHandler.replaceMacrosInUrl(_url);
+    }
   }
 
 }
