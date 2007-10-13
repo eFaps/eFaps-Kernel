@@ -49,7 +49,6 @@ import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
-import org.efaps.servlet.RequestHandler;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
@@ -59,7 +58,7 @@ import org.efaps.util.cache.CacheReloadInterface;
 /**
  * This is the class for the type description. The type description holds
  * information about creation of a new instance of a type with default values.
- * 
+ *
  * @author tmo
  * @version $Id$
  */
@@ -84,7 +83,7 @@ public class Type extends DataModelObject {
 
   /**
    * Stores all instances of type.
-   * 
+   *
    * @see #get
    */
   private static Cache<Type> typeCache =
@@ -103,7 +102,7 @@ public class Type extends DataModelObject {
 
   /**
    * Instance variable for the parent type from which this type is derived.
-   * 
+   *
    * @see #getParentType
    * @see #setParentType
    */
@@ -112,31 +111,31 @@ public class Type extends DataModelObject {
   /**
    * Instance variable for the id of parent type from which this type is
    * derived. Also the parent ids from the parent is stored.
-   * 
+   *
    * @see #getParentTypeId
    * @see #setParentTypeId
    */
   // private String parentTypeIds = "";
   /**
    * Instance variable for all child types derived from this type.
-   * 
+   *
    * @see #getChildTypes
    */
-  private Set<Type> childTypes = new HashSet<Type>();
+  private final Set<Type> childTypes = new HashSet<Type>();
 
   /**
    * The instance variables stores all attributes for this type object.
-   * 
+   *
    * @see #getAttributes()
    * @see #add(Attribute)
    * @see #getAttribute
    * @see #getAttributes(Class)
    */
-  private Map<String, Attribute> attributes = new HashMap<String, Attribute>();
+  private final Map<String, Attribute> attributes = new HashMap<String, Attribute>();
 
   /**
    * Cache of the business objects of this type.
-   * 
+   *
    * @see #getCache
    * @see #setCache
    */
@@ -145,17 +144,17 @@ public class Type extends DataModelObject {
   /**
    * Instance of a HashSet to store all needed tables for this type. The tables
    * are automatically added via the method {@link #add(Attribute)}.
-   * 
+   *
    * @see #add(Attribute)
    * @see #getTables
    */
-  private Set<SQLTable> tables = new HashSet<SQLTable>();
+  private final Set<SQLTable> tables = new HashSet<SQLTable>();
 
   /**
    * The instance variable stores the main table, which must be inserted first.
    * In the main table stands also the select statement to get a new id. The
    * value is automatically set with method {@link #add(Attribute)}.
-   * 
+   *
    * @see Table.mainTable
    * @see #add(Attribute)
    * @see #getMainTable
@@ -165,39 +164,39 @@ public class Type extends DataModelObject {
 
   /**
    * This instance variable stores the form for the viewing mode.
-   * 
+   *
    * @see #getFormView
    * @see #setFormView
    */
-  private Form formView = null;
+  private final Form formView = null;
 
   /**
    * This instance variable stores the form for the editing mode.
-   * 
+   *
    * @see #getFormEdit
    * @see #setFormEdit
    */
-  private Form formEdit = null;
+  private final Form formEdit = null;
 
   /**
    * This instance variable stores the form for the creating mode.
-   * 
+   *
    * @see #getFormCreate
    * @see #setFormCreate
    */
-  private Form formCreate = null;
+  private final Form formCreate = null;
 
   /**
    * The instance variable stores the attribute used to represent this type.
-   * 
+   *
    * @see #getViewAttribute
    * @see #setViewAttribute
    */
-  private Attribute viewAttribute = null;
+  private final Attribute viewAttribute = null;
 
   /**
    * The instance variable stores all unique keys of this type instance.
-   * 
+   *
    * @see #getUniqueKeys
    * @see #setUniqueKeys
    */
@@ -205,15 +204,15 @@ public class Type extends DataModelObject {
 
   /**
    * All attributes which are used as links are stored in this map.
-   * 
+   *
    * @see #getLinks
    */
-  private Map<String, Attribute> links = new HashMap<String, Attribute>();
+  private final Map<String, Attribute> links = new HashMap<String, Attribute>();
 
   /**
    * All access sets which are assigned to this type are store in this instance
    * variable.
-   * 
+   *
    * @see #addAccessSet
    * @see #getAccessSets
    */
@@ -243,7 +242,7 @@ public class Type extends DataModelObject {
 
   /**
    * Add an attribute to this type and all child types of this type.
-   * 
+   *
    * @param _attribute
    *          attribute to add
    */
@@ -271,7 +270,7 @@ public class Type extends DataModelObject {
   /**
    * Adds link from an attribute to this type. The link is also registered under
    * the name of all child types of the attribute.
-   * 
+   *
    * @param _attr
    *          attribute with the link to this type
    * @todo description of algorithm
@@ -290,7 +289,7 @@ public class Type extends DataModelObject {
 
   /**
    * Returns for the given parameter <b>_name</b> the attribute.
-   * 
+   *
    * @param _name
    *          name of the attribute for this type to return
    * @return instance of class {@link Attribute}
@@ -302,7 +301,7 @@ public class Type extends DataModelObject {
   /**
    * The instance method returns all attributes which are from the same
    * attribute type as the described with the parameter <i>_class</i>.
-   * 
+   *
    * @param _class
    *          searched attribute type
    * @return all attributes assigned from parameter <i>_class</i>
@@ -320,7 +319,7 @@ public class Type extends DataModelObject {
   /**
    * If a hashtable instance for the cache is given, a <i>true</i> is returned,
    * that this type is cacheable, otherwise a <i>false</i> is returned.
-   * 
+   *
    * @return <i>true</i> if type is cacheable, otherwise <i>false</i>
    */
   public final boolean isCacheable() {
@@ -335,7 +334,7 @@ public class Type extends DataModelObject {
   /**
    * Search in the cache for the object with the given <i>_id</i> and returns
    * this Object.
-   * 
+   *
    * @return cache object for given parameter <i>_id</i>
    * @param _id
    */
@@ -355,7 +354,7 @@ public class Type extends DataModelObject {
 
   /**
    * Returns the name of the type.
-   * 
+   *
    * @param _context
    * @see #getName
    */
@@ -366,7 +365,7 @@ public class Type extends DataModelObject {
   /**
    * Tests, if this type is kind of the type in the parameter (question is, is
    * this type a child of the parameter type).
-   * 
+   *
    * @param _type
    *          type to test for parent
    * @return true if this type is a child, otherwise false
@@ -387,12 +386,13 @@ public class Type extends DataModelObject {
    * Checks if the current type holds the property with the given name. If not,
    * the value of the property of the parent type (see {@link #getParentType})
    * is returned (if a parent type exists).
-   * 
+   *
    * @see org.efaps.admin.AdminObject#getProperty
    * @param _name
    *          name of the property (key)
    * @return value of the property with the given name / key.
    */
+  @Override
   public String getProperty(final String _name) {
     String value = super.getProperty(_name);
     if ((value == null) && (getParentType() != null)) {
@@ -404,9 +404,10 @@ public class Type extends DataModelObject {
   /**
    * The method overrides the original method 'toString' and returns information
    * about this type instance.
-   * 
+   *
    * @return name of the user interface object
    */
+  @Override
   public String toString() {
     return new ToStringBuilder(this).appendSuper(super.toString()).append(
         "parentType", getParentType() != null ? getParentType().getName() : "")
@@ -419,7 +420,7 @@ public class Type extends DataModelObject {
   /**
    * Checks, if the current context user has all access defined in the list of
    * access types for the given instance.
-   * 
+   *
    * @param _instance
    *          instance for which the access must be checked
    * @param _accessTypes
@@ -447,7 +448,7 @@ public class Type extends DataModelObject {
 
   /**
    * A new access set is assigned to this type instance.
-   * 
+   *
    * @param _accessSet
    *          new access to assign to this type instance
    * @see #accessSets
@@ -458,7 +459,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #accessSets}.
-   * 
+   *
    * @return value of instance variable {@link #accessSets}
    * @see #accessSets
    */
@@ -471,13 +472,14 @@ public class Type extends DataModelObject {
 
   /**
    * The instance method sets a new property value.
-   * 
+   *
    * @param _context  context for this request
    * @param _name     name of the property
    * @param _value    value of the property
    * @see #addUniqueKey
    * @see #setViewAttribute
    */
+  @Override
   protected void setProperty(final String _name, final String _value)
       throws CacheReloadException {
     if (_name.startsWith("UniqueKey")) {
@@ -493,7 +495,7 @@ public class Type extends DataModelObject {
    * First, the instance method initiliase the set of unique keys ({@link #uniqueKeys})
    * if needed. The a new unique key is created and added to the list of unique
    * keys in {@link #uniqueKeys}.
-   * 
+   *
    * @param _attrList
    *          string with comma separated list of attribute names
    * @see #setProperty
@@ -509,7 +511,7 @@ public class Type extends DataModelObject {
    * Add a new child type for this type. All sub child types of the child type
    * are also defined as child type of this type.<br/> Also for all parent
    * types (of this type), the child type (with sub child types) are added.
-   * 
+   *
    * @param _childType
    *          child type to add
    * @see #childTypes
@@ -535,7 +537,7 @@ public class Type extends DataModelObject {
 
   /**
    * For the given type it is tested if a store is defined for the type.
-   * 
+   *
    * @param _type
    *          type to test
    * @return <i>true</i> if a store resource is defined for the type, otherwise
@@ -548,7 +550,7 @@ public class Type extends DataModelObject {
   /**
    * This is the setter method for instance variable {@link #parentType}. Only
    * the DB reader is allowed to set this!
-   * 
+   *
    * @param _tableName
    *          new value for instance variable {@link #parentType}
    * @see #parentType
@@ -560,7 +562,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #parentType}.
-   * 
+   *
    * @return value of instance variable {@link #parentType}
    * @see #parentType
    * @see #setParentType
@@ -571,7 +573,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #childTypes}.
-   * 
+   *
    * @return value of instance variable {@link #childTypes}
    * @see #childTypes
    */
@@ -581,7 +583,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #attributes}.
-   * 
+   *
    * @return value of instance variable {@link #attributes}
    * @see #attributes
    */
@@ -591,7 +593,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #cache}.
-   * 
+   *
    * @return value of instance variable {@link #cache}
    * @see #setCache
    * @see #cache
@@ -602,7 +604,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the setter method for instance variable {@link #cache}.
-   * 
+   *
    * @param _cache
    *          new value for instance variable {@link #cache}
    * @see #getCache
@@ -614,7 +616,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #tables}.
-   * 
+   *
    * @return value of instance variable {@link #tables}
    * @see #tables
    */
@@ -624,7 +626,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #mainTable}.
-   * 
+   *
    * @return value of instance variable {@link #mainTable}
    * @see #setMainTable
    * @see #mainTable
@@ -635,7 +637,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the setter method for instance variable {@link #mainTable}.
-   * 
+   *
    * @param _mainTable
    *          new value for instance variable {@link #mainTable}
    * @see #getMainTable
@@ -647,7 +649,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #formView}.
-   * 
+   *
    * @return value of instance variable {@link #formView}
    * @see #setFormView
    * @see #formView
@@ -658,7 +660,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #formEdit}.
-   * 
+   *
    * @return value of instance variable {@link #formEdit}
    * @see #setFormEdit
    * @see #formEdit
@@ -669,7 +671,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #formCreate}.
-   * 
+   *
    * @return value of instance variable {@link #formCreate}
    * @see #setFormCreate
    * @see #formCreate
@@ -680,7 +682,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #viewAttribute}.
-   * 
+   *
    * @return value of instance variable {@link #viewAttribute}
    * @see #setViewAttribute
    * @see #viewAttribute
@@ -691,7 +693,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #uniqueKeys}.
-   * 
+   *
    * @return value of instance variable {@link #uniqueKeys}
    * @see #setUniqueKeys
    * @see #uniqueKeys
@@ -702,7 +704,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the setter method for instance variable {@link #uniqueKeys}.
-   * 
+   *
    * @param _uniqueKeys
    *          new value for instance variable {@link #uniqueKeys}
    * @see #getUniqueKeys
@@ -714,7 +716,7 @@ public class Type extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #links}.
-   * 
+   *
    * @return value of instance variable {@link #links}
    * @see #links
    */
@@ -810,7 +812,7 @@ public class Type extends DataModelObject {
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Type}.
-   * 
+   *
    * @return instance of class {@link Type}
    */
   public static Type get(final long _id) {
@@ -820,7 +822,7 @@ public class Type extends DataModelObject {
   /**
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Type}.
-   * 
+   *
    * @return instance of class {@link Type}
    */
   public static Type get(final String _name) {
@@ -830,7 +832,7 @@ public class Type extends DataModelObject {
   /**
    * Returns for given parameter <i>_uuid</i> the instance of class
    * {@link Type}.
-   * 
+   *
    * @return instance of class {@link Type}
    */
   public static Type get(final UUID _uuid) {
@@ -839,7 +841,7 @@ public class Type extends DataModelObject {
 
   /**
    * Static getter method for the type hashtable {@link #typeCache}.
-   * 
+   *
    * @return value of static variable {@link #typeCache}
    */
   static Cache<Type> getTypeCache() {
