@@ -123,11 +123,20 @@ public abstract class EFapsAbstractMojo implements Mojo {
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
+  /**
+   * @todo better way instead of catching class not found exception (needed for
+   *       the shell!)
+   */
   protected void init()  {
 /*    System.getProperties().setProperty(
             org.apache.commons.logging.Log.class.getName(),
             Maven2SLF4JLog.class.getName());*/
-    SLF4JOverMavenLog.LOGGER = getLog();
+    try  {
+      Class.forName("org.efaps.maven.logger.SLF4JOverMavenLog");
+      SLF4JOverMavenLog.LOGGER = getLog();
+    } catch (ClassNotFoundException e)  {
+    }
+    
     Context.setTransactionManager(new SlideTransactionManager());
     initDatabase();
   }
