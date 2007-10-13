@@ -47,8 +47,13 @@ public class WebTablePage extends ContentPage {
     this.addComponents();
   }
 
+  public WebTablePage(final PageParameters _parameters, final IPageMap _pagemap) {
+    this(new TableModel(_parameters), _pagemap);
+  }
+
   public WebTablePage(final IModel _model, final IPageMap _pagemap) {
     super(_model, null, _pagemap);
+    this.addComponents();
   }
 
   protected void addComponents() {

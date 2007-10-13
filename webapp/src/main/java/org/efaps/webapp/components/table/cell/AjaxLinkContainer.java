@@ -138,17 +138,19 @@ public class AjaxLinkContainer extends WebMarkupContainer {
         PageParameters parameters = new PageParameters();
         parameters.add("command", menu.getUUID().toString());
         parameters.add("oid", cellmodel.getOid());
-
+        ContentPage page;
         if (menu.getTargetTable() != null) {
-
-          super.getComponent().getRequestCycle().setResponsePage(
-              WebTablePage.class, parameters);
+          page =
+              new WebTablePage(parameters, PageMap
+                  .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
         } else {
-          WebFormPage page =
+          page =
               new WebFormPage(parameters, null, PageMap
                   .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
-          super.getComponent().getRequestCycle().setResponsePage(page);
         }
+        page.setListMenuKey(((ContentPage) this.getComponent().getPage())
+            .getListMenuKey());
+        super.getComponent().getRequestCycle().setResponsePage(page);
       }
     }
   }
