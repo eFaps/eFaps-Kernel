@@ -30,11 +30,14 @@ public class StructurBrowserTreePanel extends Panel {
   private static final long serialVersionUID = 1L;
 
   public StructurBrowserTreePanel(final String _id,
-                                  final PageParameters _parameters) {
-    this(_id, new StructurBrowserModel(_parameters));
+                                  final PageParameters _parameters,
+                                  final String _listmenukey) {
+    this(_id, new StructurBrowserModel(_parameters), _listmenukey);
   }
 
-  public StructurBrowserTreePanel(String _id, StructurBrowserModel _model) {
+  public StructurBrowserTreePanel(final String _id,
+                                  final StructurBrowserModel _model,
+                                  final String _listmenukey) {
     super(_id, _model);
 
     StructurBrowserModel model = (StructurBrowserModel) super.getModel();
@@ -43,7 +46,7 @@ public class StructurBrowserTreePanel extends Panel {
     }
 
     StructurBrowserTree tree =
-        new StructurBrowserTree("tree", model.getTreeModel());
+        new StructurBrowserTree("tree", model.getTreeModel(), _listmenukey);
     this.add(tree);
 
   }

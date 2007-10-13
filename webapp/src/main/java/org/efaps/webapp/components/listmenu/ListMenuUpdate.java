@@ -68,7 +68,6 @@ public class ListMenuUpdate {
     // deselect the item
     Component comp = ((EFapsSession) (Session.get())).getFromCache(_menukey);
     deselectItem(_menukey, comp, _target);
-
     // find the ListMenuPanel we want do update
     MarkupContainer listitem = comp.findParent(ListItem.class);
     ListMenuPanel listmenupanel = null;

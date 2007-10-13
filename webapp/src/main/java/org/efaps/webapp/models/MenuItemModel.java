@@ -101,6 +101,7 @@ public class MenuItemModel extends AbstractModel {
     this.askUser = _command.isAskUser();
     this.windowHeight = _command.getWindowHeight();
     this.windowWidth = _command.getWindowWidth();
+    this.selected = _command.isDefaultSelected();
     this.description = "";
     this.label = "";
 

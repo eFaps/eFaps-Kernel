@@ -29,6 +29,7 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.components.AbstractAjaxCallBackBehavior;
@@ -114,8 +115,7 @@ public class AjaxLinkContainer extends WebMarkupContainer {
       Instance instance = null;
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());
-
-        Menu menu = null;
+        CommandAbstract menu = null;
         try {
           menu = Menu.getTypeTreeMenu(instance.getType());
         } catch (Exception e) {
@@ -126,6 +126,13 @@ public class AjaxLinkContainer extends WebMarkupContainer {
               new Exception("no tree menu defined for type "
                   + instance.getType().getName());
           throw new RestartResponseException(new ErrorPage(ex));
+        }
+
+        for (CommandAbstract childcmd : ((Menu) menu).getCommands()) {
+          if (childcmd.isDefaultSelected()) {
+            menu = childcmd;
+            break;
+          }
         }
 
         PageParameters parameters = new PageParameters();

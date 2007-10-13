@@ -19,6 +19,8 @@
  */
 package org.efaps.webapp.pages;
 
+import java.util.UUID;
+
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
@@ -33,6 +35,10 @@ import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.CssUtils;
 
+import org.efaps.admin.ui.Command;
+import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.Menu;
+import org.efaps.admin.ui.Search;
 import org.efaps.webapp.components.ChildCallBackHeaderContributer;
 import org.efaps.webapp.components.dojo.ContentPaneBehavior;
 import org.efaps.webapp.components.dojo.SplitContainerBehavior;
@@ -62,6 +68,8 @@ public class ContentContainerPage extends WebPage {
 
   private boolean structurbrowser;
 
+  private boolean webForm;
+
   public ContentContainerPage(final PageParameters _parameters) {
     this.parameters = _parameters;
     initialise();
@@ -69,9 +77,7 @@ public class ContentContainerPage extends WebPage {
 
   public ContentContainerPage(final PageParameters _parameters,
                               final IPageMap _pagemap) {
-    super(_pagemap);
-    this.parameters = _parameters;
-    initialise();
+    this(_parameters, _pagemap, false);
   }
 
   public ContentContainerPage(final PageParameters _parameters,
@@ -116,6 +122,22 @@ public class ContentContainerPage extends WebPage {
     right.add(parent);
     parent.setOutputMarkupId(true);
 
+    final PageParameters parametersForPage =
+        (PageParameters) this.parameters.clone();
+
+    CommandAbstract cmd =
+        getCommand(UUID.fromString((String) parametersForPage.get("command")));
+    this.webForm = cmd.getTargetForm() != null;
+    if (cmd instanceof Menu) {
+      for (CommandAbstract childcmd : ((Menu) cmd).getCommands()) {
+        if (childcmd.isDefaultSelected()) {
+          parametersForPage.put("command", childcmd.getUUID().toString());
+          this.webForm = childcmd.getTargetForm() != null;
+          break;
+        }
+      }
+    }
+
     InlineFrame inline =
         new InlineFrame(IFRAME_WICKETID, PageMap.forName(IFRAME_PAGEMAP_NAME),
             new IPageLink() {
@@ -123,14 +145,18 @@ public class ContentContainerPage extends WebPage {
               private static final long serialVersionUID = 1L;
 
               public Page getPage() {
-                WebFormPage page =
-                    new WebFormPage(ContentContainerPage.this.parameters);
+                ContentPage page;
+                if (ContentContainerPage.this.webForm) {
+                  page = new WebFormPage(parametersForPage);
+                } else {
+                  page = new WebTablePage(parametersForPage);
+                }
                 page.setListMenuKey(ContentContainerPage.this.listMenuKey);
                 return page;
               }
 
-              public Class<WebFormPage> getPageIdentity() {
-                return WebFormPage.class;
+              public Class<ContentPage> getPageIdentity() {
+                return ContentPage.class;
               }
             });
 
@@ -174,4 +200,14 @@ public class ContentContainerPage extends WebPage {
     return this.splitPath;
   }
 
+  private CommandAbstract getCommand(final UUID _uuid) {
+    CommandAbstract cmd = Command.get(_uuid);
+    if (cmd == null) {
+      cmd = Menu.get(_uuid);
+      if (cmd == null) {
+        cmd = Search.get(_uuid);
+      }
+    }
+    return cmd;
+  }
 }

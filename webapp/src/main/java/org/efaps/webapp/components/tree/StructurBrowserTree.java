@@ -39,6 +39,7 @@ import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.ITreeState;
 
 import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.Menu;
 import org.efaps.webapp.components.listmenu.ListMenuUpdate;
 import org.efaps.webapp.models.StructurBrowserModel;
 import org.efaps.webapp.pages.ContentContainerPage;
@@ -52,14 +53,16 @@ public class StructurBrowserTree extends Tree {
   private static final ResourceReference CSS =
       new ResourceReference(StructurBrowserTree.class, "StructurTree.css");
 
-  public StructurBrowserTree(String id, TreeModel model) {
-    super(id, model);
-    this.setRootLess(true);
+  private final String listMenuKey;
 
+  public StructurBrowserTree(final String _id, final TreeModel _model,
+                             final String _listmenukey) {
+    super(_id, _model);
+    this.listMenuKey = _listmenukey;
+    this.setRootLess(true);
     ITreeState treeState = this.getTreeState();
     treeState.collapseAll();
     treeState.addTreeStateListener(new AsyncronTreeUpdateListener());
-
   }
 
   @Override
@@ -115,6 +118,16 @@ public class StructurBrowserTree extends Tree {
                 .getUserObject();
 
         CommandAbstract cmd = model.getCommand();
+
+        if (cmd instanceof Menu) {
+          for (CommandAbstract childcmd : ((Menu) cmd).getCommands()) {
+            if (childcmd.isDefaultSelected()) {
+              cmd = childcmd;
+              break;
+            }
+          }
+        }
+
         final PageParameters parameter = new PageParameters();
         parameter.add("oid", model.getOid());
         parameter.add("command", cmd.getUUID().toString());
@@ -130,8 +143,7 @@ public class StructurBrowserTree extends Tree {
 
                     public Page getPage() {
                       WebTablePage page = new WebTablePage(parameter);
-
-                      // page.setListMenuKey(ListMenuAjaxLinkContainer.this.menukey);
+                      page.setListMenuKey(StructurBrowserTree.this.listMenuKey);
                       return page;
                     }
 
@@ -149,7 +161,7 @@ public class StructurBrowserTree extends Tree {
 
                     public Page getPage() {
                       WebFormPage page = new WebFormPage(parameter);
-                      // page.setListMenuKey(ListMenuAjaxLinkContainer.this.menukey);
+                      page.setListMenuKey(StructurBrowserTree.this.listMenuKey);
                       return page;
                     }
 
@@ -167,12 +179,14 @@ public class StructurBrowserTree extends Tree {
         component.replaceWith(page);
         _target.addComponent(page.getParent());
 
+        final PageParameters parameter2 = new PageParameters();
+        parameter2.add("oid", model.getOid());
+        parameter2.put("command", model.getCommand().getUUID().toString());
         ListMenuUpdate.newMenu(_target, ((ContentContainerPage) getPage())
-            .getListMenuKey(), parameter);
+            .getListMenuKey(), parameter2);
 
       }
 
     });
   }
-
 }

@@ -118,8 +118,17 @@ public class ListMenuPanel extends Panel {
     this.setModel(model);
     model.setLevel(_level);
     model.setHeader(true);
+    // set the Item wich is selected
     if (_setHeaderAsSelected) {
-      model.setSelected(true);
+      for (MenuItemModel child : model.getChilds()) {
+        if (child.isSelected()) {
+          model.setSelected(false);
+          break;
+        } else {
+          model.setSelected(true);
+        }
+      }
+
     }
     List<Object> menu = new ArrayList<Object>();
     menu.add(model);

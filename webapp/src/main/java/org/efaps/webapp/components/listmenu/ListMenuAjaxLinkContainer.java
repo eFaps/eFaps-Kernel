@@ -93,7 +93,12 @@ public class ListMenuAjaxLinkContainer extends WebMarkupContainer {
               + listmenupanel.getPaddingAdd();
 
       tag.put("style", "padding-left:" + padding + "px;");
-      tag.put("class", StyleClassName.ITEM.name);
+      if (model.isSelected()) {
+        tag.put("class", StyleClassName.ITEM_SELECTED.name);
+        ((EFapsSession) this.getSession()).putIntoCache(this.menukey, this);
+      } else {
+        tag.put("class", StyleClassName.ITEM.name);
+      }
       this.defaultStyleClass = StyleClassName.ITEM;
     }
 
