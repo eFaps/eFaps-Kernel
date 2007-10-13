@@ -22,6 +22,7 @@ package org.efaps.admin.datamodel.attributetype;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.List;
 
 import org.efaps.db.query.CachedResult;
@@ -29,6 +30,7 @@ import org.efaps.db.query.CachedResult;
 /**
  * @author tmo
  * @version $Id$
+ * @todo till now only integer / Long ID's are allowed; this must be changed
  */
 public abstract class AbstractLinkType extends AbstractType {
 
@@ -53,10 +55,16 @@ public abstract class AbstractLinkType extends AbstractType {
    * the value is '0', the value in the database is set to <i>NULL</i> (a zero
    * in the cache means no link!).
    */
-  public void update(final Object _object, final PreparedStatement _stmt,
-      final List<Integer> _index) throws SQLException {
+  public void update(final Object _object, 
+                     final PreparedStatement _stmt,
+                     final List<Integer> _index)
+      throws SQLException {
 
-    _stmt.setObject(_index.get(0), getValue());
+    if (this.value == null)  {
+      _stmt.setNull(_index.get(0), Types.INTEGER);
+    } else  {
+      _stmt.setObject(_index.get(0), getValue());
+    }
   }
 
   /**
