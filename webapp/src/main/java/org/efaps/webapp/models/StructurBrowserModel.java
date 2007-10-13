@@ -256,7 +256,8 @@ public class StructurBrowserModel extends AbstractModel {
         Instance instance = query.getInstance();
         value = valuelist.makeString(query);
         StructurBrowserModel child =
-            new StructurBrowserModel(super.getCommandUUID(), instance.getOid());
+            new StructurBrowserModel(Menu.getTypeTreeMenu(instance.getType())
+                .getUUID(), instance.getOid());
         this.childs.add(child);
 
         child.setLabel(value.toString());
