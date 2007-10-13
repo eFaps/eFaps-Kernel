@@ -21,6 +21,7 @@
 package org.efaps.db.databases;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
@@ -69,9 +70,10 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
    * This is the PostgreSQL specific implementation of an all deletion.
    * Following order is used to remove all eFaps specific information:
    * <ul>
+   * <li>remove all views of the user</li>
    * <li>remove all tables of the user</li>
    * </ul>
-   * <p>The table are dropped with cascade, so all depending sequences, views
+   * <p>The table are dropped with cascade, so all depending sequences
    * etc. are also dropped automatically.
    * </p>
    * Attention! If application specific tables, views or contraints are defined,
@@ -82,66 +84,42 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
    */
   public void deleteAll(final Connection _con) throws SQLException  {
 
-    Statement stmtSel = _con.createStatement();
-    Statement stmtExec = _con.createStatement();
+    final Statement stmtSel = _con.createStatement();
+    final Statement stmtExec = _con.createStatement();
 
     try  {
       // remove all tables
       if (LOG.isInfoEnabled())  {
         LOG.info("Remove all Tables");
       }
-      ResultSet rs = stmtSel.executeQuery(
-          "select c.RELNAME "
-              + "from PG_CLASS c,PG_ROLES r "
-              + "where c.RELKIND='r' "
-                  + "and c.RELOWNER=r.oid "
-                  + "and r.ROLNAME=user "
-              + "order by c.RELNAME"
-      );
-      while (rs.next())  {
-        String tableName = rs.getString(1);
+      
+      final DatabaseMetaData metaData = _con.getMetaData();
+      
+      // delete all views
+      final ResultSet rsViews = metaData.getTables(null, null, "%", new String[]{"VIEW"});
+      while (rsViews.next())  {
+        final String viewName = rsViews.getString("TABLE_NAME");
+        if (LOG.isDebugEnabled())  {
+          LOG.debug("  - View '" + viewName + "'");
+        }
+        stmtExec.execute("drop view " + viewName);
+      }
+      rsViews.close();
+      
+      // delete all tables
+      final ResultSet rsTables = metaData.getTables(null, null, "%", new String[]{"TABLE"});
+      while (rsTables.next())  {
+        final String tableName = rsTables.getString("TABLE_NAME");
         if (LOG.isDebugEnabled())  {
           LOG.debug("  - Table '" + tableName + "'");
         }
         stmtExec.execute("drop table " + tableName + " cascade");
       }
-      rs.close();
+      rsTables.close();
     } finally  {
       stmtSel.close();
       stmtExec.close();
     }
-  }
-
-  /**
-   * The method tests, if the given view exists.
-   *
-   * @param _con      sql connection
-   * @param _viewName name of view to test
-   * @return <i>true</i> if view exists, otherwise <i>false</i>
-   */
-  public boolean existsView(final Connection _con,
-                            final String _viewName) throws SQLException  {
-    boolean ret = false;
-
-    Statement stmt = _con.createStatement();
-
-    try  {
-      ResultSet rs = stmt.executeQuery(
-          "select c.RELNAME "
-              + "from PG_CLASS c,PG_ROLES r "
-              + "where c.RELNAME='" + _viewName.toLowerCase() + "'"
-                  + "and c.RELKIND='v' "
-                  + "and c.RELOWNER=r.oid "
-                  + "and r.ROLNAME=user"
-      );
-      if (rs.next())  {
-        ret = true;
-      }
-      rs.close();
-    } finally  {
-      stmt.close();
-    }
-    return ret;
   }
 
   /**

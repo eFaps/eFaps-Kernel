@@ -24,7 +24,10 @@ import java.util.Map;
 import java.util.HashMap;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * @author tmo
@@ -104,14 +107,24 @@ public abstract class AbstractDatabase {
   /**
    * The method tests, if the given view exists.
    * 
-   * @param _con
-   *          sql connection
-   * @param _viewName
-   *          name of view to test
+   * @param _con        sql connection
+   * @param _viewName   name of view to test
    * @return <i>true</i> if view exists, otherwise <i>false</i>
    */
-  public abstract boolean existsView(final Connection _con,
-      final String _viewName) throws SQLException;
+  public boolean existsView(final Connection _con,
+                            final String _viewName) throws SQLException  {
+    boolean ret = false;
+
+    final DatabaseMetaData metaData = _con.getMetaData();
+
+    final ResultSet rs = metaData.getTables(null, null, _viewName, new String[]{"VIEW"});
+    if (rs.next())  {
+      ret = true;
+    }
+    rs.close();
+
+    return ret;
+  }
 
   /**
    * A new sql table with column <code>ID</code> is created. If no parent
@@ -134,7 +147,7 @@ public abstract class AbstractDatabase {
    * This int is used for the maximum numbers of Values inside an expression.<br>
    * The value is used in the OneRounQuery. The SQL-Statemenat looks like
    * "SELECT...WHERE..IN (val1,val2,val3,...valn)" The int is the maximum Value
-   * for n befor making a new Select.
+   * for n before making a new Select.
    * 
    * @return max Number of Value in an Expression, 0 if no max is kown
    */
@@ -145,7 +158,7 @@ public abstract class AbstractDatabase {
   /**
    * A new id for given column of a sql table is returned (e.g. with sequences).
    * This abstract class always throws a SQLException, because for default, it
-   * is not needed to implemente (only if the JDBC drive does not implement
+   * is not needed to implement (only if the JDBC drive does not implement
    * method 'getGeneratedKeys' for java.sql.Statements).
    * 
    * @param _con

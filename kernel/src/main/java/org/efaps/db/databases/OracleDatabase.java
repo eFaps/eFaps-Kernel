@@ -155,35 +155,6 @@ public class OracleDatabase extends AbstractDatabase  {
   }
 
   /**
-   * The method tests, if the given view exists.
-   *
-   * @param _con      sql connection
-   * @param _viewName name of view to test
-   * @return <i>true</i> if view exists, otherwise <i>false</i>
-   */
-  public boolean existsView(final Connection _con,
-                            final String _viewName) throws SQLException  {
-    boolean ret = false;
-
-    Statement stmt = _con.createStatement();
-
-    try  {
-      ResultSet rs = stmt.executeQuery(
-            "select VIEW_NAME "
-                + "from USER_VIEWS "
-                + "where VIEW_NAME='" + _viewName.toUpperCase() + "'"
-      );
-      if (rs.next())  {
-        ret = true;
-      }
-      rs.close();
-    } finally  {
-      stmt.close();
-    }
-    return ret;
-  }
-
-  /**
    * For the database from vendor Oracle, an eFaps sql table
    * is created in this steps:
    * <ul>

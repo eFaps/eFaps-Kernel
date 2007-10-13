@@ -174,37 +174,6 @@ public class DerbyDatabase extends AbstractDatabase  {
   }
 
   /**
-   * The method tests, if the given view exists.
-   *
-   * @param _con      sql connection
-   * @param _viewName name of view to test
-   * @return <i>true</i> if view exists, otherwise <i>false</i>
-   */
-  public boolean existsView(final Connection _con,
-                            final String _viewName) throws SQLException  {
-    boolean ret = false;
-
-    Statement stmt = _con.createStatement();
-
-    try  {
-      ResultSet rs = stmt.executeQuery(
-            "select t.TABLENAME "
-                + "from SYS.SYSSCHEMAS s, SYS.SYSTABLES t "
-                + "where s.AUTHORIZATIONID<>'DBA' and s.SCHEMAID=t.SCHEMAID "
-                    + "and t.TABLETYPE='V' "
-                    + "and t.TABLENAME='" + _viewName.toUpperCase() + "'"
-      );
-      if (rs.next())  {
-        ret = true;
-      }
-      rs.close();
-    } finally  {
-      stmt.close();
-    }
-    return ret;
-  }
-
-  /**
    * For the derby database, an eFaps sql table is created in this steps:
    * <ul>
    * <li>sql table itself with column <code>ID</code> and unique key on the
