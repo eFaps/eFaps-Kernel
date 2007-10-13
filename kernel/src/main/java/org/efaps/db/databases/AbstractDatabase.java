@@ -29,12 +29,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author tmo
  * @version $Id$
  * @todo description
  */
 public abstract class AbstractDatabase {
+
+  //////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(DerbyDatabase.class);
 
   /**
    * The enumeration defines the known column types in the database.
@@ -142,6 +153,167 @@ public abstract class AbstractDatabase {
    */
   public abstract void createTable(final Connection _con, final String _table,
       final String _parentTable) throws SQLException;
+
+  /**
+   * Adds a column to a SQL table.
+   * 
+   * @param _con            SQL connection
+   * @param _tableName      name of table to update
+   * @param _columnName     column to add
+   * @param _columnType     type of column to add
+   * @param _columnLength   length of column to add (or 0 if not specified)
+   * @param _isNotNull      <i>true</i> means that the column has no
+   *                        <code>null</code> values
+   * @throws SQLException if the column could not be added to the tables
+   */
+  public void addTableColumn(final Connection _con,
+                             final String _tableName,
+                             final String _columnName,
+                             final ColumnType _columnType,
+                             final int _columnLength,
+                             final boolean _isNotNull)
+      throws SQLException  {
+
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append("alter table ").append(_tableName).append(" ")
+       .append("add ").append(_columnName).append(" ")
+       .append(getColumnType(_columnType));
+    if (_columnLength > 0)  {
+      cmd.append("(").append(_columnLength).append(")");
+    }
+    if (_isNotNull)  {
+// derby has some problems here
+      cmd.append(" not null");
+    }
+    
+    // log statement
+    if (LOG.isDebugEnabled())  {
+      LOG.info("    ..SQL> " + cmd.toString());
+    }
+
+    // excecute statement
+    final Statement stmt = _con.createStatement();
+    try {
+      stmt.execute(cmd.toString());
+    } finally  {
+      stmt.close();
+    }
+  }
+
+  /**
+   * Adds a new unique key to given table name.
+   * 
+   * @param _con            SQL connection
+   * @param _tableName      name of table for which the unique key must be
+   *                        created
+   * @param _uniqueKeyName  name of unique key
+   * @param _columns        comma separated list of column names for which the
+   *                        unique key is created
+   * @throws SQLException if the unique key could not be created
+   */
+  public void addUniqueKey(final Connection _con,
+                           final String _tableName,
+                           final String _uniqueKeyName,
+                           final String _columns)
+      throws SQLException  {
+    
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append("alter table ").append(_tableName).append(" ")
+       .append("add constraint ").append(_uniqueKeyName).append(" ")
+       .append("unique(").append(_columns).append(")");
+
+    // log statement
+    if (LOG.isDebugEnabled())  {
+      LOG.info("    ..SQL> " + cmd.toString());
+    }
+
+// derby has some problems here
+    // excecute statement
+    final Statement stmt = _con.createStatement();
+    try {
+      stmt.execute(cmd.toString());
+    } finally  {
+      stmt.close();
+    }
+  }
+  
+  /**
+   * Adds a foreign key to given SQL table.
+   * 
+   * @param _con            SQL connection
+   * @param _tableName      name of table for which the foreign key must be
+   *                        created
+   * @param _foreignKeyName name of foreign key to create
+   * @param _key            key in the table (column name)
+   * @param _reference      external reference (external table and column name)
+   * @param _cascade        if the value in the external table is deleted,
+   *                        should this value also automatically deleted?
+   * @throws SQLException if foreign key could not be defined for SQL table
+   */
+  public void addForeignKey(final Connection _con,
+                            final String _tableName,
+                            final String _foreignKeyName,
+                            final String _key,
+                            final String _reference,
+                            final boolean _cascade)
+      throws SQLException  {
+      
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append("alter table ").append(_tableName).append(" ")
+       .append("add constraint ").append(_foreignKeyName).append(" ")
+       .append("foreign key(").append(_key).append(") ")
+       .append("references ").append(_reference);
+    if (_cascade)  {
+      cmd.append(" on delete cascade");
+    }
+  
+    // log statement
+    if (LOG.isDebugEnabled())  {
+      LOG.info("    ..SQL> " + cmd.toString());
+    }
+    
+    // excecute statement
+    final Statement stmt = _con.createStatement();
+    try {
+      stmt.execute(cmd.toString());
+    } finally  {
+      stmt.close();
+    }
+  }
+  
+  /**
+   * Adds a new check key to given SQL table.
+   *
+   * @param _con          SQL connection
+   * @param _tableName    name of the SQL table for which the check key must
+   *                      be created
+   * @param _checkKeyName name of check key to create
+   * @param _condition    condition of the check key
+   * @throws SQLException if check key could not be defined for SQL table
+   */
+  public void addCheckKey(final Connection _con,
+                          final String _tableName,
+                          final String _checkKeyName,
+                          final String _condition)
+      throws SQLException  {
+    final StringBuilder cmd = new StringBuilder();
+    cmd.append("alter table ").append(_tableName).append(" ")
+       .append("add constraint ").append(_checkKeyName).append(" ")
+       .append("check(").append(_condition).append(")");
+
+    // log statement
+    if (LOG.isDebugEnabled())  {
+      LOG.info("    ..SQL> " + cmd.toString());
+    }
+    
+    // excecute statement
+    final Statement stmt = _con.createStatement();
+    try {
+      stmt.execute(cmd.toString());
+    } finally  {
+      stmt.close();
+    }
+ }
 
   /**
    * This int is used for the maximum numbers of Values inside an expression.<br>

@@ -333,21 +333,21 @@ public class SQLTableUpdate extends AbstractUpdate  {
      * @see #addSQL
      * @see #executeSQLs
      */
-    private final List < String > sqls = new ArrayList < String > ();
+    private final List<String> sqls = new ArrayList < String > ();
     
     private boolean create = false;
     
     private boolean update = false;
 
-    private final List < Column > columns = new ArrayList < Column > ();
+    private final List<Column> columns = new ArrayList < Column > ();
 
-    private final List < UniqueKey > uniqueKeys 
+    private final List<UniqueKey> uniqueKeys 
                                             = new ArrayList < UniqueKey > ();
 
-    private final List < ForeignKey > foreignKeys 
+    private final List<ForeignKey> foreignKeys 
                                             = new ArrayList < ForeignKey > ();
 
-    private final List < CheckKey > checkKeys = new ArrayList < CheckKey > ();
+    private final List<CheckKey> checkKeys = new ArrayList < CheckKey > ();
 
     ///////////////////////////////////////////////////////////////////////////
     
@@ -551,66 +551,31 @@ public class SQLTableUpdate extends AbstractUpdate  {
       try  {  
         con = context.getConnectionResource();
 
-        Statement stmt = con.getConnection().createStatement();
-        
-        // update columns
-        for (Column column : this.columns)  {
-          StringBuilder cmd = new StringBuilder();
-          cmd.append("alter table ").append(tableName).append(" ")
-             .append("add ").append(column.name).append(" ")
-             .append(Context.getDbType().getColumnType(column.type));
-          if (column.length > 0)  {
-            cmd.append("(").append(column.length).append(")");
-          }
-          if (column.isNotNull)  {
-/**/            cmd.append(" not null");
-          }
-          if (LOG.isDebugEnabled())  {
-            LOG.info("    ..SQL> " + cmd.toString());
-          }
-          stmt.execute(cmd.toString());
+        // add columns
+        for (final Column column : this.columns)  {
+          Context.getDbType().addTableColumn(con.getConnection(), tableName, 
+              column.name, column.type, column.length, column.isNotNull);
         }
-        
-        // update unique keys
-        for (UniqueKey uniqueKey : this.uniqueKeys)  {
-          StringBuilder cmd = new StringBuilder();
-          cmd.append("alter table ").append(tableName).append(" ")
-             .append("add constraint ").append(uniqueKey.name).append(" ")
-             .append("unique(").append(uniqueKey.columns).append(")");
-          if (LOG.isDebugEnabled())  {
-            LOG.info("    ..SQL> " + cmd.toString());
-          }
-/**/          stmt.execute(cmd.toString());
+
+        // add unique keys
+        for (final UniqueKey uniqueKey : this.uniqueKeys)  {
+          Context.getDbType().addUniqueKey(con.getConnection(), tableName,
+               uniqueKey.name, uniqueKey.columns);
         }
-        
-        // update foreign keys
-        for (ForeignKey foreignKey : this.foreignKeys)  {
-          StringBuilder cmd = new StringBuilder();
-          cmd.append("alter table ").append(tableName).append(" ")
-             .append("add constraint ").append(foreignKey.name).append(" ")
-             .append("foreign key(").append(foreignKey.key).append(") ")
-             .append("references ").append(foreignKey.reference);
-          if (foreignKey.cascade)  {
-            cmd.append(" on delete cascade");
-          }
-          if (LOG.isDebugEnabled())  {
-            LOG.info("    ..SQL> " + cmd.toString());
-          }
-          stmt.execute(cmd.toString());
+
+        // add foreign keys
+        for (final ForeignKey foreignKey : this.foreignKeys)  {
+          Context.getDbType().addForeignKey(con.getConnection(), tableName,
+              foreignKey.name, foreignKey.key, foreignKey.reference,
+              foreignKey.cascade);
         }
-        
+
         // update check keys
-        for (CheckKey checkKey : this.checkKeys)  {
-          StringBuilder cmd = new StringBuilder();
-          cmd.append("alter table ").append(tableName).append(" ")
-             .append("add constraint ").append(checkKey.name).append(" ")
-             .append("check(").append(checkKey.condition).append(")");
-          if (LOG.isDebugEnabled())  {
-            LOG.info("    ..SQL> " + cmd.toString());
-          }
-          stmt.execute(cmd.toString());
+        for (final CheckKey checkKey : this.checkKeys)  {
+          Context.getDbType().addCheckKey(con.getConnection(), tableName,
+              checkKey.name, checkKey.condition);
         }
-        
+
         con.commit();
 
       } catch (EFapsException e)  {
