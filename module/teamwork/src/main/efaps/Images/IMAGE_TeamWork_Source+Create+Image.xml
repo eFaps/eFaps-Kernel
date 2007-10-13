@@ -21,7 +21,7 @@
  Last Changed:    $Date$
  Last Changed By: $Author$
  Original Author: Mark James (mjames@gmail.com)
- Original Name:   folder_delete.png
+ Original Name:   page.png
  Original Web:    Silk icon set 1.3
                   [ http://www.famfamfam.com/lab/icons/silk/ ] 
  Original License:Creative Commons Attribution 2.5 License 
@@ -30,7 +30,7 @@
 -->
 
 <ui-image>
-  <uuid>23d760cc-bcce-4c0f-919a-5f437bf710af</uuid>
+  <uuid>56cc5623-b6fc-4b12-a2f5-f8814f7ecce1</uuid>
 
   <!-- ************************************************************************
     version definition used to create / update the image 
@@ -43,8 +43,8 @@
       <mode>true</mode>
       <mode>(version==2)</mode>
     </version>
-    <name>TeamWork_CollectionRemoveImage</name>
-    <file>IMAGE_TeamWork_CollectionRemoveImage.gif</file>
+    <name>TeamWork_Source+Create+Image</name>
+    <file>IMAGE_TeamWork_Source+Create+Image.gif</file>
   </definition>
 
 </ui-image>

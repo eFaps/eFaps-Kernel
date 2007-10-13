@@ -52,6 +52,7 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_RootCollectionMyDesk</name>
+    <icon>TeamWork_RootCollectionImage</icon>
     <!-- access definitions -->
     <access>
       <role>TeamWorkAdmin</role>

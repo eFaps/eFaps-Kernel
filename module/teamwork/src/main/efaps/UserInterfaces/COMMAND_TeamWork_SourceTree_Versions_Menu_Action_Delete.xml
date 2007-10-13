@@ -52,6 +52,7 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_SourceTree_Versions_Menu_Action_Delete</name>
+    <icon>TeamWork_Source+Delet+Image</icon>
     <!-- target definitions -->
     <target>
       <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>

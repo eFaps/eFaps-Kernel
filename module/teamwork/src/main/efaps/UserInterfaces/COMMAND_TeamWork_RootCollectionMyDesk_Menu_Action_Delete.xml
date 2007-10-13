@@ -52,7 +52,7 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_RootCollectionMyDesk_Menu_Action_Delete</name>
-    <icon>TeamWork_RootCollectionRemoveImage</icon>
+    <icon>TeamWork_RootCollection+Delete+Image</icon>
     <!-- target definitions -->
     <target>
       <execute program="org.efaps.esjp.common.uitable.CommonDelete"/>

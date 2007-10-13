@@ -52,6 +52,7 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_CollectionTree_Sources_Menu_Action_Create</name>
+    <icon>TeamWork_Source+Create+Image</icon>
     <!-- target definitions -->
     <target>
       <form>TeamWork_SourceForm</form>

@@ -52,7 +52,7 @@
       <mode>(version>=3)</mode>
     </version>
     <name>TeamWork_CollectionTree_SubCollections_Menu_Action_Create</name>
-    <icon>TeamWork_CollectionAddImage</icon>
+    <icon>TeamWork_Collection+Create+Image</icon>
     <!-- target definitions -->
     <target>
       <form>TeamWork_CollectionForm</form>
