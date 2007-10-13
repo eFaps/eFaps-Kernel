@@ -161,7 +161,9 @@ public abstract class AbstractDatabase {
    * @param _tableName      name of table to update
    * @param _columnName     column to add
    * @param _columnType     type of column to add
-   * @param _columnLength   length of column to add (or 0 if not specified)
+   * @param _defaultValue   default value of the column (or null if not
+   *                        specified)
+   * @param _length         length of column to add (or 0 if not specified)
    * @param _isNotNull      <i>true</i> means that the column has no
    *                        <code>null</code> values
    * @throws SQLException if the column could not be added to the tables
@@ -170,7 +172,8 @@ public abstract class AbstractDatabase {
                              final String _tableName,
                              final String _columnName,
                              final ColumnType _columnType,
-                             final int _columnLength,
+                             final String _defaultValue,
+                             final int _length,
                              final boolean _isNotNull)
       throws SQLException  {
 
@@ -178,11 +181,13 @@ public abstract class AbstractDatabase {
     cmd.append("alter table ").append(_tableName).append(" ")
        .append("add ").append(_columnName).append(" ")
        .append(getColumnType(_columnType));
-    if (_columnLength > 0)  {
-      cmd.append("(").append(_columnLength).append(")");
+    if (_length > 0)  {
+      cmd.append("(").append(_length).append(")");
+    }
+    if (_defaultValue != null)  {
+      cmd.append(" default ").append(_defaultValue);
     }
     if (_isNotNull)  {
-// derby has some problems here
       cmd.append(" not null");
     }
     
@@ -227,7 +232,6 @@ public abstract class AbstractDatabase {
       LOG.info("    ..SQL> " + cmd.toString());
     }
 
-// derby has some problems here
     // excecute statement
     final Statement stmt = _con.createStatement();
     try {

@@ -21,6 +21,7 @@
 package org.efaps.db.databases;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.SQLException;
@@ -220,6 +221,87 @@ public class DerbyDatabase extends AbstractDatabase  {
 
     } finally  {
       stmt.close();
+    }
+  }
+
+  /**
+   * Adds a column to a SQL table. The method overrides the original method,
+   * because Derby does not allow for <code>NOT NULL</code> columns that no
+   * default value is defined. Is such column is created, the default value for
+   * real and integer is <code>0</code>, for datetime, short and long string
+   * a zero length string.
+   * 
+   * @param _con            SQL connection
+   * @param _tableName      name of table to update
+   * @param _columnName     column to add
+   * @param _columnType     type of column to add
+   * @param _defaultValue   default value of the column (or null if not
+   *                        specified)
+   * @param _length         length of column to add (or 0 if not specified)
+   * @param _isNotNull      <i>true</i> means that the column has no
+   *                        <code>null</code> values
+   * @throws SQLException if the column could not be added to the tables
+   */
+  @Override
+  public void addTableColumn(final Connection _con,
+                             final String _tableName,
+                             final String _columnName,
+                             final ColumnType _columnType,
+                             final String _defaultValue,
+                             final int _length,
+                             final boolean _isNotNull)
+      throws SQLException  {
+
+    String defaultValue = _defaultValue;
+    
+    if (_isNotNull && (defaultValue == null))  {
+      switch (_columnType)  {
+        case INTEGER:
+        case REAL:
+          defaultValue = "0";
+          break;
+        case DATETIME:
+        case STRING_LONG:
+        case STRING_SHORT:
+          defaultValue = "''";
+          break;
+      }
+    }
+    
+    super.addTableColumn(_con, _tableName, _columnName, _columnType, 
+        defaultValue, _length, _isNotNull);
+  }
+
+  /**
+   * Adds a new unique key to given table name, but only if for the column a
+   * <code>NOT NULL</code> is defined.
+   * 
+   * @param _con            SQL connection
+   * @param _tableName      name of table for which the unique key must be
+   *                        created
+   * @param _uniqueKeyName  name of unique key
+   * @param _columns        comma separated list of column names for which the
+   *                        unique key is created
+   * @throws SQLException if the unique key could not be created
+   */
+  @Override
+  public void addUniqueKey(final Connection _con,
+                           final String _tableName,
+                           final String _uniqueKeyName,
+                           final String _columns)
+      throws SQLException  {
+
+    if (_columns.indexOf(',') < 0)  {
+      final ResultSet rs = _con.getMetaData().getColumns(null, null, _tableName, _columns);
+      rs.next();
+      // unique key is only allowed if 'not null' for the column is defined!
+      if (rs.getInt("NULLABLE") == DatabaseMetaData.columnNoNulls)  {
+        super.addUniqueKey(_con, _tableName, _uniqueKeyName, _columns);
+      }
+// TODO: else??? what to do instead of unique key?
+      rs.close();
+    } else  {
+      super.addUniqueKey(_con, _tableName, _uniqueKeyName, _columns);
     }
   }
 

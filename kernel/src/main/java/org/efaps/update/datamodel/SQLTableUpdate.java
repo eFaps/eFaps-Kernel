@@ -554,7 +554,7 @@ public class SQLTableUpdate extends AbstractUpdate  {
         // add columns
         for (final Column column : this.columns)  {
           Context.getDbType().addTableColumn(con.getConnection(), tableName, 
-              column.name, column.type, column.length, column.isNotNull);
+              column.name, column.type, null, column.length, column.isNotNull);
         }
 
         // add unique keys
