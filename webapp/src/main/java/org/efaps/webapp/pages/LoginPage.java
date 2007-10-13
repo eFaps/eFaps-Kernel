@@ -14,7 +14,13 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.webapp.EFapsNoAuthorizationNeededInterface;
 import org.efaps.webapp.EFapsSession;
 
-public class LoginPage extends WebPage implements EFapsNoAuthorizationNeededInterface {
+/**
+ * @author jmox
+ * @version $Id$
+ *
+ */
+public class LoginPage extends WebPage implements
+    EFapsNoAuthorizationNeededInterface {
 
   private static final long serialVersionUID = 524408099967362477L;
 
@@ -52,7 +58,22 @@ public class LoginPage extends WebPage implements EFapsNoAuthorizationNeededInte
     form.add(new Label("formpwd", new Model(DBProperties.getProperty(
         "Login.Password.Label", Session.get().getLocale().getLanguage()))));
 
-    Button button = new Button("formbutton");
+    Button button = new Button("formbutton") {
+
+      private static final long serialVersionUID = 1L;
+
+      /*
+       * (non-Javadoc)
+       *
+       * @see org.apache.wicket.markup.html.form.Button#onComponentTag(org.apache.wicket.markup.ComponentTag)
+       */
+      @Override
+      protected void onComponentTag(ComponentTag tag) {
+        super.onComponentTag(tag);
+        tag.put("type", "submit");
+      }
+    };
+
     form.add(button);
 
     button.add(new Label("formbuttonlabel", new Model(DBProperties.getProperty(
