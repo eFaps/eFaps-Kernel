@@ -1,4 +1,4 @@
-package org.efaps.webapp.pages;
+package org.efaps.webapp.pages.login;
 
 import org.apache.wicket.Session;
 import org.apache.wicket.behavior.StringHeaderContributor;
@@ -13,6 +13,7 @@ import org.apache.wicket.util.string.JavascriptUtils;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.webapp.EFapsNoAuthorizationNeededInterface;
 import org.efaps.webapp.EFapsSession;
+import org.efaps.webapp.pages.MainPage;
 
 /**
  * @author jmox
