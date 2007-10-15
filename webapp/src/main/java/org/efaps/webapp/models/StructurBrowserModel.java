@@ -53,7 +53,7 @@ import org.efaps.db.ListQuery;
 import org.efaps.servlet.RequestHandler;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.models.TableModel.SortDirection;
-import org.efaps.webapp.pages.ErrorPage;
+import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
  * This class is used to provide the Model for the StructurBrowser for eFpas.<br>

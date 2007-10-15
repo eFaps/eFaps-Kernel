@@ -44,7 +44,7 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.models.StructurBrowserModel;
 import org.efaps.webapp.pages.ContentContainerPage;
-import org.efaps.webapp.pages.ErrorPage;
+import org.efaps.webapp.pages.error.ErrorPage;
 
 public class StructurBrowserTreeTable extends TreeTable {
 

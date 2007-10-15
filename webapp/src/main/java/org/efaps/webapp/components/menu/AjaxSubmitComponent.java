@@ -40,10 +40,10 @@ import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.pages.ContentPage;
 import org.efaps.webapp.pages.DialogPage;
-import org.efaps.webapp.pages.ErrorPage;
 import org.efaps.webapp.pages.MainPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
  * @author jmo

@@ -32,8 +32,8 @@ import org.apache.wicket.protocol.http.WebRequestCycle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.webapp.pages.ErrorPage;
 import org.efaps.webapp.pages.LoginPage;
+import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
  * This class extends the

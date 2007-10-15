@@ -39,6 +39,7 @@ import org.efaps.webapp.components.ChildCallBackHeaderContributer;
 import org.efaps.webapp.components.menu.MenuContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.MenuItemModel;
+import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
  * @author jmo

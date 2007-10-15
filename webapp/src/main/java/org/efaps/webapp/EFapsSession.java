@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.util.EFapsException;
-import org.efaps.webapp.pages.ErrorPage;
+import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
  * @author jmo

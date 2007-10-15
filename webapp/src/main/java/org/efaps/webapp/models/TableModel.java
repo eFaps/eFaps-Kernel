@@ -47,7 +47,7 @@ import org.efaps.admin.ui.Table;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.util.EFapsException;
-import org.efaps.webapp.pages.ErrorPage;
+import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
  * @author jmox

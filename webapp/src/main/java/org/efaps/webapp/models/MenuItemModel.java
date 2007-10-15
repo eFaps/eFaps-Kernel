@@ -36,7 +36,7 @@ import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-import org.efaps.webapp.pages.ErrorPage;
+import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
  * @author tmo

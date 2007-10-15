@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.pages;
+package org.efaps.webapp.pages.error;
 
 import java.text.MessageFormat;
 

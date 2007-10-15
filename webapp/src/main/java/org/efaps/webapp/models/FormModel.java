@@ -42,7 +42,7 @@ import org.efaps.admin.ui.Image;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-import org.efaps.webapp.pages.ErrorPage;
+import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
  * @author jmo

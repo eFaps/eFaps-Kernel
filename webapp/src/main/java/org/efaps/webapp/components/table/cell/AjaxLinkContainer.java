@@ -37,9 +37,9 @@ import org.efaps.webapp.components.listmenu.ListMenuUpdate;
 import org.efaps.webapp.models.CellModel;
 import org.efaps.webapp.pages.ContentContainerPage;
 import org.efaps.webapp.pages.ContentPage;
-import org.efaps.webapp.pages.ErrorPage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
  * @author jmo
