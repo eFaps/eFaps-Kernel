@@ -30,10 +30,10 @@ import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.StructurBrowserModel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.pages.ContentPage;
-import org.efaps.webapp.pages.MainPage;
 import org.efaps.webapp.pages.StructurBrowserTablePage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.main.MainPage;
 
 /**
  * @author jmo

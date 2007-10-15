@@ -30,11 +30,11 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.MainPage;
 import org.efaps.webapp.pages.StructurBrowserTablePage;
 import org.efaps.webapp.pages.WebFormPage;
 import org.efaps.webapp.pages.WebTablePage;
 import org.efaps.webapp.pages.error.ErrorPage;
+import org.efaps.webapp.pages.main.MainPage;
 
 /**
  * @author jmo

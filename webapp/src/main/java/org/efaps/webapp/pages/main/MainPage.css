@@ -53,7 +53,7 @@ div.eFapsLogo {
   text-align: right;
   height: 41px;
   background-color: white;
-  background-image: url(../../../servlet/image/Admin_Common_HeaderImage);
+  background-image: url(../../servlet/image/Admin_Common_HeaderImage);
 }
 
 /**

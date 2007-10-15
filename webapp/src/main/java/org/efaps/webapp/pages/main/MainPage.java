@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.pages;
+package org.efaps.webapp.pages.main;
 
 import java.util.UUID;
 
@@ -78,7 +78,7 @@ public class MainPage extends WebPage {
     this.modal.setPageMapName("modal");
 
     this
-        .add(new StyleSheetReference("css", getClass(), "mainpage/MainPage.css"));
+        .add(new StyleSheetReference("css", getClass(), "MainPage.css"));
 
     this.add(new ChildCallBackHeaderContributer());
 

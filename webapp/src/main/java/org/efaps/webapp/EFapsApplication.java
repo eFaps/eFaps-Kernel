@@ -32,8 +32,8 @@ import org.apache.wicket.authorization.IAuthorizationStrategy;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
 
-import org.efaps.webapp.pages.MainPage;
 import org.efaps.webapp.pages.login.LoginPage;
+import org.efaps.webapp.pages.main.MainPage;
 
 /**
  * TODO description

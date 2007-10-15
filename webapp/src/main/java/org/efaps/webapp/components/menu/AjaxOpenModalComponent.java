@@ -46,7 +46,7 @@ import org.efaps.webapp.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.ContentPage;
-import org.efaps.webapp.pages.MainPage;
+import org.efaps.webapp.pages.main.MainPage;
 
 /**
  * @author jmo

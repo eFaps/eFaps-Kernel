@@ -13,7 +13,7 @@ import org.apache.wicket.util.string.JavascriptUtils;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.webapp.EFapsNoAuthorizationNeededInterface;
 import org.efaps.webapp.EFapsSession;
-import org.efaps.webapp.pages.MainPage;
+import org.efaps.webapp.pages.main.MainPage;
 
 /**
  * @author jmox
