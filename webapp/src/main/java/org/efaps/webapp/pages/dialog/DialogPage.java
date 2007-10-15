@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.pages;
+package org.efaps.webapp.pages.dialog;
 
 import java.util.Map;
 
@@ -60,7 +60,7 @@ public class DialogPage extends WebPage {
     this.parent = _parent;
     this.modal = _modal;
     String commandName = _model.getCommand().getName();
-    add(new StyleSheetReference("css", getClass(), "dialogpage/DialogPage.css"));
+    add(new StyleSheetReference("css", getClass(), "DialogPage.css"));
 
     this.add(new Label("textLabel", getQuestion(commandName)));
     AjaxSubmitLink submit =
