@@ -22,7 +22,8 @@ package org.efaps.webapp.components.menu;
 
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.LoginPage;
+import org.efaps.webapp.pages.login.LoginPage;
+
 
 /**
  * @author jmo

@@ -17,7 +17,7 @@
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
-package org.efaps.webapp.pages;
+package org.efaps.webapp.pages.empty;
 
 import org.apache.wicket.markup.html.WebPage;
 
