@@ -35,10 +35,10 @@ import org.efaps.webapp.components.table.cell.CellPanel;
 import org.efaps.webapp.models.CellModel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.models.TableModel.RowModel;
-import org.efaps.webapp.pages.ContentContainerPage;
+import org.efaps.webapp.pages.contentcontainer.ContentContainerPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class WebTableContainer extends WebMarkupContainer {

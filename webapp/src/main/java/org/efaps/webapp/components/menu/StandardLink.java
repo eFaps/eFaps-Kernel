@@ -30,14 +30,14 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.StructurBrowserTablePage;
-import org.efaps.webapp.pages.WebFormPage;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.content.form.FormPage;
+import org.efaps.webapp.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.webapp.pages.content.table.TablePage;
 import org.efaps.webapp.pages.error.ErrorPage;
 import org.efaps.webapp.pages.main.MainPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class StandardLink extends AbstractMenuItemLink {
@@ -64,18 +64,18 @@ public class StandardLink extends AbstractMenuItemLink {
         InlineFrame c =
             new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
                 .forName(MainPage.IFRAME_PAGEMAP_NAME),
-                StructurBrowserTablePage.class, para);
+                StructurBrowserPage.class, para);
         this.getPage().addOrReplace(c);
       } else {
         if (this.getPage() instanceof MainPage) {
           InlineFrame c =
               new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
-                  .forName(MainPage.IFRAME_PAGEMAP_NAME), WebTablePage.class,
+                  .forName(MainPage.IFRAME_PAGEMAP_NAME), TablePage.class,
                   para);
 
           this.getPage().addOrReplace(c);
         } else {
-          this.setResponsePage(WebTablePage.class, para);
+          this.setResponsePage(TablePage.class, para);
         }
       }
     } else if (command.getTargetForm() != null
@@ -84,10 +84,10 @@ public class StandardLink extends AbstractMenuItemLink {
           && command.getTargetSearch() == null) {
         InlineFrame c =
             new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
-                .forName(MainPage.IFRAME_PAGEMAP_NAME), WebFormPage.class, para);
+                .forName(MainPage.IFRAME_PAGEMAP_NAME), FormPage.class, para);
         this.getPage().addOrReplace(c);
       } else {
-        this.setResponsePage(WebFormPage.class, para);
+        this.setResponsePage(FormPage.class, para);
       }
     } else if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
 

@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  
-  Author:          jmo
+  Author:          jmox
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -25,14 +25,26 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <wicket:head>
-  <link wicket:id="structurtablecss" rel="stylesheet" type="text/css" href="webtablepage/WebTablePage.css"/>
-</wicket:head >
+  <link wicket:id="webformcss" rel="stylesheet" type="text/css" href="FormPage.css"/>
+</wicket:head>
 <body>
   <wicket:extend>
     <form wicket:id="form">
-      <div wicket:id="structurBrowserTable" class="eFapsStrucTreeBrows"></div>  
-    </form>
-	</wicket:extend>
+      <div id="eFapsContentDiv">
+        <table id="eFapsFormTable">
+          <span wicket:id="formtable"></span>
+        </table>
+      </div>
+    </form>  
+    <span wicket:id="selectscript">
+      <script type="text/javascript">
+        var inp = document.getElementById('eFapsContentDiv').getElementsByTagName("input");
+        if(inp!=null){
+          inp[0].focus();
+        }
+      </script>
+    </span>
+  </wicket:extend>
 </body>
-
 </html>
+

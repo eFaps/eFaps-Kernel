@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.pages;
+package org.efaps.webapp.pages.content.form;
 
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
@@ -31,41 +31,42 @@ import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.components.table.WebFormContainer;
 import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.FormModel;
+import org.efaps.webapp.pages.content.AbstractContentPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
-public class WebFormPage extends ContentPage {
+public class FormPage extends AbstractContentPage {
 
   private static final long serialVersionUID = -3554311414948286302L;
 
-  public WebFormPage(final PageParameters _parameters) {
+  public FormPage(final PageParameters _parameters) {
     this(new FormModel(_parameters), null);
   }
 
-  public WebFormPage(final PageParameters _parameters,
+  public FormPage(final PageParameters _parameters,
                      final ModalWindowContainer _modalWindow) {
     this(new FormModel(_parameters), _modalWindow);
   }
 
-  public WebFormPage(final IModel _model) {
+  public FormPage(final IModel _model) {
     this(_model, null);
   }
 
-  public WebFormPage(final IModel _model,
+  public FormPage(final IModel _model,
                      final ModalWindowContainer _modalWindow) {
     super(_model, _modalWindow);
     this.addComponents();
   }
 
-  public WebFormPage(final PageParameters _parameters,
+  public FormPage(final PageParameters _parameters,
                      final ModalWindowContainer _modalWindow,
                      final IPageMap _pagemap) {
     this(new FormModel(_parameters), _modalWindow, _pagemap);
   }
 
-  public WebFormPage(final IModel _model,
+  public FormPage(final IModel _model,
                      final ModalWindowContainer _modalWindow,
                      final IPageMap _pagemap) {
     super(_model, _modalWindow, _pagemap);
@@ -74,7 +75,7 @@ public class WebFormPage extends ContentPage {
 
   protected void addComponents() {
     add(new StyleSheetReference("webformcss", getClass(),
-        "webformpage/WebFormPage.css"));
+        "FormPage.css"));
     FormContainer form = new FormContainer("form");
     add(form);
     super.addComponents(form);

@@ -43,9 +43,14 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.webapp.models.StructurBrowserModel;
-import org.efaps.webapp.pages.ContentContainerPage;
+import org.efaps.webapp.pages.contentcontainer.ContentContainerPage;
 import org.efaps.webapp.pages.error.ErrorPage;
 
+/**
+ * @author jmox
+ * @version $Id$
+ *
+ */
 public class StructurBrowserTreeTable extends TreeTable {
 
   private static final long serialVersionUID = 1L;

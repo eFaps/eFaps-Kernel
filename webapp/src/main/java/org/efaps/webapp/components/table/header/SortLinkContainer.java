@@ -25,10 +25,11 @@ import org.apache.wicket.markup.html.link.Link;
 import org.efaps.webapp.models.HeaderModel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.models.TableModel.SortDirection;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.content.table.TablePage;
+
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class SortLinkContainer extends Link {
@@ -63,7 +64,7 @@ public class SortLinkContainer extends Link {
     tablemodel.setSortDirection(model.getSortDirection());
 
     tablemodel.sort();
-    this.getRequestCycle().setResponsePage(new WebTablePage(tablemodel));
+    this.getRequestCycle().setResponsePage(new TablePage(tablemodel));
 
   }
 

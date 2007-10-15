@@ -17,7 +17,7 @@
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
-package org.efaps.webapp.pages;
+package org.efaps.webapp.pages.contentcontainer;
 
 import java.util.UUID;
 
@@ -44,9 +44,12 @@ import org.efaps.webapp.components.dojo.ContentPaneBehavior;
 import org.efaps.webapp.components.dojo.SplitContainerBehavior;
 import org.efaps.webapp.components.split.ListOnlyPanel;
 import org.efaps.webapp.components.split.StructBrowsSplitPanel;
+import org.efaps.webapp.pages.content.AbstractContentPage;
+import org.efaps.webapp.pages.content.form.FormPage;
+import org.efaps.webapp.pages.content.table.TablePage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class ContentContainerPage extends WebPage {
@@ -102,7 +105,7 @@ public class ContentContainerPage extends WebPage {
     this.listMenuKey = "ListMenu_" + this.getPageMapName();
 
     add(new StyleSheetReference("css", getClass(),
-        "contentcontainerpage/ContentContainerPage.css"));
+        "ContentContainerPage.css"));
 
     WebMarkupContainer split = new WebMarkupContainer("split");
     this.add(split);
@@ -145,18 +148,18 @@ public class ContentContainerPage extends WebPage {
               private static final long serialVersionUID = 1L;
 
               public Page getPage() {
-                ContentPage page;
+                AbstractContentPage page;
                 if (ContentContainerPage.this.webForm) {
-                  page = new WebFormPage(parametersForPage);
+                  page = new FormPage(parametersForPage);
                 } else {
-                  page = new WebTablePage(parametersForPage);
+                  page = new TablePage(parametersForPage);
                 }
                 page.setListMenuKey(ContentContainerPage.this.listMenuKey);
                 return page;
               }
 
-              public Class<ContentPage> getPageIdentity() {
-                return ContentPage.class;
+              public Class<AbstractContentPage> getPageIdentity() {
+                return AbstractContentPage.class;
               }
             });
 

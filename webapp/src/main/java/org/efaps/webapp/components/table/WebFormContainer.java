@@ -34,10 +34,11 @@ import org.efaps.webapp.components.table.cell.formcell.FormCellPanel;
 import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.FormModel.FormCellModel;
 import org.efaps.webapp.models.FormModel.FormRowModel;
-import org.efaps.webapp.pages.ContentContainerPage;
+import org.efaps.webapp.pages.contentcontainer.ContentContainerPage;
+
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class WebFormContainer extends WebMarkupContainer {

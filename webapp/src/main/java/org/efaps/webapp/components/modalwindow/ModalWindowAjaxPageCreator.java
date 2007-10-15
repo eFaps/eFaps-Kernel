@@ -26,11 +26,11 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.WebFormPage;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.content.form.FormPage;
+import org.efaps.webapp.pages.content.table.TablePage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
@@ -55,9 +55,9 @@ public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
     para.add("oid", model.getOid());
 
     if (command.getTargetTable() != null) {
-      ret = new WebTablePage(para);
+      ret = new TablePage(para);
     } else {
-      ret = new WebFormPage(para, this.modalWindow);
+      ret = new FormPage(para, this.modalWindow);
     }
     return ret;
   }

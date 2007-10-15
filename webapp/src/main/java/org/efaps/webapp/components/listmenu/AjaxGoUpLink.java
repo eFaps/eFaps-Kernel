@@ -33,12 +33,12 @@ import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.listmenu.ListMenuPanel.Rows;
 import org.efaps.webapp.components.listmenu.ListMenuPanel.StyleClassName;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.ContentContainerPage;
-import org.efaps.webapp.pages.WebFormPage;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.content.form.FormPage;
+import org.efaps.webapp.pages.content.table.TablePage;
+import org.efaps.webapp.pages.contentcontainer.ContentContainerPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  *
  */
@@ -71,12 +71,12 @@ public class AjaxGoUpLink extends AbstractAjaxLink {
       page =
           new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
               .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-              WebTablePage.class, para);
+              TablePage.class, para);
     } else {
       page =
           new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
               .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-              WebFormPage.class, para);
+              FormPage.class, para);
     }
 
     InlineFrame component =

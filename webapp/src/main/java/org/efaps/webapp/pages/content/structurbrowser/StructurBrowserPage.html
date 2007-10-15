@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  
-  Author:          jmo
+  Author:          jmox
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -25,19 +25,13 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <wicket:head>
-  <link wicket:id="webtablecss" rel="stylesheet" type="text/css" href="webtablepage/WebTablePage.css"/>
+  <link wicket:id="structurtablecss" rel="stylesheet" type="text/css" href="StructurBrowserPage.css"/>
 </wicket:head >
 <body>
   <wicket:extend>
-    <div wicket:id="header" id="eFapsTableHeader"></div>
     <form wicket:id="form">
-      <div id="eFapsContentDiv">
-        <table id="eFapsTableBody">
-           <span wicket:id="formtable"></span>
-        </table>
-         <div id="eFapsSpacer"></div>
-      </div>
-    </form>  
+      <div wicket:id="structurBrowserTable" class="eFapsStrucTreeBrows"></div>  
+    </form>
 	</wicket:extend>
 </body>
 

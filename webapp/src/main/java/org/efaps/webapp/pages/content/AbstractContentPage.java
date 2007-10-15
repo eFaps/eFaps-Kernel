@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.pages;
+package org.efaps.webapp.pages.content;
 
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -34,10 +34,10 @@ import org.efaps.webapp.components.titel.TitelPanel;
 import org.efaps.webapp.models.AbstractModel;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
-public abstract class ContentPage extends WebPage {
+public abstract class AbstractContentPage extends WebPage {
 
   private static final long serialVersionUID = -2374207555009145191L;
 
@@ -49,17 +49,17 @@ public abstract class ContentPage extends WebPage {
 
   private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
-  public ContentPage(final IModel _model) {
+  public AbstractContentPage(final IModel _model) {
     this(_model, null);
   }
 
-  public ContentPage(final IModel _model,
+  public AbstractContentPage(final IModel _model,
                      final ModalWindowContainer _modalWindow) {
     super(_model);
     this.modalWindow = _modalWindow;
   }
 
-  public ContentPage(final IModel _model,
+  public AbstractContentPage(final IModel _model,
                      final ModalWindowContainer _modalWindow,
                      final IPageMap _pagemap) {
     super(_pagemap, _model);
@@ -68,8 +68,8 @@ public abstract class ContentPage extends WebPage {
 
   protected void addComponents(FormContainer _form) {
 
-    add(new StyleSheetReference("css", getClass(),
-        "contentpage/ContentPage.css"));
+    add(new StyleSheetReference("css", AbstractContentPage.class,
+        "AbstractContentPage.css"));
 
     add(this.modal);
     this.modal.setPageMapName("modal");

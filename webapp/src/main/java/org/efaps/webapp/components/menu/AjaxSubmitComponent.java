@@ -38,15 +38,15 @@ import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.models.TableModel;
-import org.efaps.webapp.pages.ContentPage;
-import org.efaps.webapp.pages.WebFormPage;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.content.AbstractContentPage;
+import org.efaps.webapp.pages.content.form.FormPage;
+import org.efaps.webapp.pages.content.table.TablePage;
 import org.efaps.webapp.pages.dialog.DialogPage;
 import org.efaps.webapp.pages.error.ErrorPage;
 import org.efaps.webapp.pages.main.MainPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
@@ -93,7 +93,7 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
         if (super.getComponent().getPage() instanceof MainPage) {
           modal = ((MainPage) super.getComponent().getPage()).getModal();
         } else {
-          modal = ((ContentPage) super.getComponent().getPage()).getModal();
+          modal = ((AbstractContentPage) super.getComponent().getPage()).getModal();
         }
         modal.setPageCreator(new ModalWindow.PageCreator() {
 
@@ -127,9 +127,9 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
         ((AbstractModel) this.form.getPage().getModel()).resetModel();
         Page page = null;
         if (this.form.getPage().getModel() instanceof TableModel) {
-          page = new WebTablePage(this.form.getPage().getModel());
+          page = new TablePage(this.form.getPage().getModel());
         } else if (this.form.getPage().getModel() instanceof FormModel) {
-          page = new WebFormPage(this.form.getPage().getModel());
+          page = new FormPage(this.form.getPage().getModel());
         }
         this.form.setResponsePage(page);
       }

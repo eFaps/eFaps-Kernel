@@ -36,15 +36,15 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.listmenu.ListMenuPanel.StyleClassName;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.ContentContainerPage;
-import org.efaps.webapp.pages.WebFormPage;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.content.form.FormPage;
+import org.efaps.webapp.pages.content.table.TablePage;
+import org.efaps.webapp.pages.contentcontainer.ContentContainerPage;
 
 /**
  * This class renders the Link wich is followed when a ListMenuItem is clicked.<br>
  * In this class the Style of the Links, are also set.
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class ListMenuAjaxLinkContainer extends WebMarkupContainer {
@@ -145,13 +145,13 @@ public class ListMenuAjaxLinkContainer extends WebMarkupContainer {
                   private static final long serialVersionUID = 1L;
 
                   public Page getPage() {
-                    WebTablePage page = new WebTablePage(para);
+                    TablePage page = new TablePage(para);
                     page.setListMenuKey(ListMenuAjaxLinkContainer.this.menukey);
                     return page;
                   }
 
-                  public Class<WebTablePage> getPageIdentity() {
-                    return WebTablePage.class;
+                  public Class<TablePage> getPageIdentity() {
+                    return TablePage.class;
                   }
                 });
       } else {
@@ -163,13 +163,13 @@ public class ListMenuAjaxLinkContainer extends WebMarkupContainer {
                   private static final long serialVersionUID = 1L;
 
                   public Page getPage() {
-                    WebFormPage page = new WebFormPage(para);
+                    FormPage page = new FormPage(para);
                     page.setListMenuKey(ListMenuAjaxLinkContainer.this.menukey);
                     return page;
                   }
 
-                  public Class<WebFormPage> getPageIdentity() {
-                    return WebFormPage.class;
+                  public Class<FormPage> getPageIdentity() {
+                    return FormPage.class;
                   }
                 });
       }

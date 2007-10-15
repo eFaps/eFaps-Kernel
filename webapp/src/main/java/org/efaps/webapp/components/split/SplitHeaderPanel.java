@@ -30,10 +30,10 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.util.string.JavascriptUtils;
 
-import org.efaps.webapp.pages.ContentContainerPage;
+import org.efaps.webapp.pages.contentcontainer.ContentContainerPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  *
  */

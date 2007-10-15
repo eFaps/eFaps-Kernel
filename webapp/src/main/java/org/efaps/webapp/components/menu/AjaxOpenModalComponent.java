@@ -45,11 +45,11 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.efaps.webapp.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.ContentPage;
+import org.efaps.webapp.pages.content.AbstractContentPage;
 import org.efaps.webapp.pages.main.MainPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
@@ -86,7 +86,7 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
       if (super.getComponent().getPage() instanceof MainPage) {
         modal = ((MainPage) super.getComponent().getPage()).getModal();
       } else {
-        modal = ((ContentPage) super.getComponent().getPage()).getModal();
+        modal = ((AbstractContentPage) super.getComponent().getPage()).getModal();
       }
       ModalWindowAjaxPageCreator pageCreator =
           new ModalWindowAjaxPageCreator((MenuItemModel) super.getComponent()

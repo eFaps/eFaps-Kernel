@@ -42,10 +42,15 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.webapp.components.listmenu.ListMenuUpdate;
 import org.efaps.webapp.models.StructurBrowserModel;
-import org.efaps.webapp.pages.ContentContainerPage;
-import org.efaps.webapp.pages.WebFormPage;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.content.form.FormPage;
+import org.efaps.webapp.pages.content.table.TablePage;
+import org.efaps.webapp.pages.contentcontainer.ContentContainerPage;
 
+/**
+ * @author jmox
+ * @version $Id$
+ *
+ */
 public class StructurBrowserTree extends Tree {
 
   private static final long serialVersionUID = 1L;
@@ -142,13 +147,13 @@ public class StructurBrowserTree extends Tree {
                     private static final long serialVersionUID = 1L;
 
                     public Page getPage() {
-                      WebTablePage page = new WebTablePage(parameter);
+                      TablePage page = new TablePage(parameter);
                       page.setListMenuKey(StructurBrowserTree.this.listMenuKey);
                       return page;
                     }
 
-                    public Class<WebTablePage> getPageIdentity() {
-                      return WebTablePage.class;
+                    public Class<TablePage> getPageIdentity() {
+                      return TablePage.class;
                     }
                   });
         } else {
@@ -160,13 +165,13 @@ public class StructurBrowserTree extends Tree {
                     private static final long serialVersionUID = 1L;
 
                     public Page getPage() {
-                      WebFormPage page = new WebFormPage(parameter);
+                      FormPage page = new FormPage(parameter);
                       page.setListMenuKey(StructurBrowserTree.this.listMenuKey);
                       return page;
                     }
 
-                    public Class<WebFormPage> getPageIdentity() {
-                      return WebFormPage.class;
+                    public Class<FormPage> getPageIdentity() {
+                      return FormPage.class;
                     }
                   });
         }

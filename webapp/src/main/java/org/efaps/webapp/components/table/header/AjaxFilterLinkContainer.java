@@ -28,8 +28,14 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.HeaderModel;
 import org.efaps.webapp.models.TableModel;
-import org.efaps.webapp.pages.TableFilterPage;
+import org.efaps.webapp.pages.content.table.filter.FilterPage;
 
+
+/**
+ * @author jmox
+ * @version $Id$
+ *
+ */
 public class AjaxFilterLinkContainer extends AjaxLink {
 
   private static final long serialVersionUID = 1L;
@@ -72,7 +78,7 @@ public class AjaxFilterLinkContainer extends AjaxLink {
 
     public Page createPage() {
 
-      return new TableFilterPage(this.model, this.modalwindow);
+      return new FilterPage(this.model, this.modalwindow);
     }
 
   }

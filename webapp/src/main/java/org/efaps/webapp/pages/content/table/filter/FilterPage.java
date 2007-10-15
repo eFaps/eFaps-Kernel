@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.pages;
+package org.efaps.webapp.pages.content.table.filter;
 
 import java.util.List;
 
@@ -43,21 +43,21 @@ import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
 import org.efaps.webapp.models.TableModel;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
-public class TableFilterPage extends WebPage {
+public class FilterPage extends WebPage {
 
   private static final long serialVersionUID = 1L;
 
   private static String CHECKBOXNAME = "eFapsFilterSelection";
 
-  public TableFilterPage(final TableModel _model,
+  public FilterPage(final TableModel _model,
                          final ModalWindowContainer _modalwindow) {
     super(_model);
 
     add(new StyleSheetReference("filtercss", getClass(),
-        "tablefilterpage/TableFilterPage.css"));
+        "FilterPage.css"));
 
     FormContainer form = new FormContainer("eFapsForm");
     this.add(form);

@@ -28,11 +28,11 @@ import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.TableModel;
-import org.efaps.webapp.pages.WebFormPage;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.content.form.FormPage;
+import org.efaps.webapp.pages.content.table.TablePage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class UpdateParentCallback implements ModalWindow.WindowClosedCallback {
@@ -67,10 +67,10 @@ public class UpdateParentCallback implements ModalWindow.WindowClosedCallback {
       Page page = null;
       if (this.panel.getPage().getModel() instanceof TableModel) {
 
-        page = new WebTablePage(this.panel.getPage().getModel());
+        page = new TablePage(this.panel.getPage().getModel());
 
       } else if (this.panel.getPage().getModel() instanceof FormModel) {
-        page = new WebFormPage(this.panel.getPage().getModel());
+        page = new FormPage(this.panel.getPage().getModel());
       }
       this.panel.setResponsePage(page);
     }

@@ -23,8 +23,13 @@ package org.efaps.webapp.components.menu;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.MenuItemModel;
-import org.efaps.webapp.pages.WebFormPage;
+import org.efaps.webapp.pages.content.form.FormPage;
 
+/**
+ * @author jmox
+ * @version $Id$
+ *
+ */
 public class SearchLink extends AbstractMenuItemLink {
 
   private static final long serialVersionUID = 1L;
@@ -41,7 +46,7 @@ public class SearchLink extends AbstractMenuItemLink {
     CommandAbstract command = ((MenuItemModel) super.getModel()).getCommand();
     formmodel.setCommandUUID(command.getUUID());
     formmodel.setFormUUID(command.getTargetForm().getUUID());
-    WebFormPage page = new WebFormPage(formmodel);
+    FormPage page = new FormPage(formmodel);
 
     this.getRequestCycle().setResponsePage(page);
 

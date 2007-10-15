@@ -52,9 +52,9 @@ import org.efaps.webapp.components.table.cell.formcell.FormCellPanel;
 import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.TableModel;
 import org.efaps.webapp.models.FormModel.FormCellModel;
-import org.efaps.webapp.pages.ContentPage;
-import org.efaps.webapp.pages.WebFormPage;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.content.AbstractContentPage;
+import org.efaps.webapp.pages.content.form.FormPage;
+import org.efaps.webapp.pages.content.table.TablePage;
 import org.efaps.webapp.pages.dialog.DialogPage;
 import org.efaps.webapp.pages.main.MainPage;
 
@@ -63,7 +63,7 @@ import org.efaps.webapp.pages.main.MainPage;
  * It provides also the necesarry links to initialise the necesarry actions of
  * the Footer like submit, cancel and so on.
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class FooterPanel extends Panel {
@@ -226,9 +226,9 @@ public class FooterPanel extends Panel {
               (AbstractModel) ((EFapsSession) Session.get()).getOpenerModel();
           Class<?> clazz;
           if (openermodel instanceof TableModel) {
-            clazz = WebTablePage.class;
+            clazz = TablePage.class;
           } else {
-            clazz = WebFormPage.class;
+            clazz = FormPage.class;
           }
           CharSequence url =
               this.form.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
@@ -290,7 +290,7 @@ public class FooterPanel extends Panel {
       }
       if (!ret) {
         final ModalWindowContainer modal =
-            ((ContentPage) this.getComponent().getPage()).getModal();
+            ((AbstractContentPage) this.getComponent().getPage()).getModal();
         modal.setResizable(false);
         modal.setInitialWidth(20);
         modal.setInitialHeight(12);
@@ -364,7 +364,7 @@ public class FooterPanel extends Panel {
         newmodel.setCallingCommandUUID(model.getCallingCommandUUID());
       }
 
-      WebTablePage page = new WebTablePage(newmodel);
+      TablePage page = new TablePage(newmodel);
 
       this.getRequestCycle().setResponsePage(page);
 

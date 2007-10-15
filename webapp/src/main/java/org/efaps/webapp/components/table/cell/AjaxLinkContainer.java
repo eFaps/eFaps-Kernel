@@ -35,14 +35,14 @@ import org.efaps.db.Instance;
 import org.efaps.webapp.components.AbstractAjaxCallBackBehavior;
 import org.efaps.webapp.components.listmenu.ListMenuUpdate;
 import org.efaps.webapp.models.CellModel;
-import org.efaps.webapp.pages.ContentContainerPage;
-import org.efaps.webapp.pages.ContentPage;
-import org.efaps.webapp.pages.WebFormPage;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.content.AbstractContentPage;
+import org.efaps.webapp.pages.content.form.FormPage;
+import org.efaps.webapp.pages.content.table.TablePage;
+import org.efaps.webapp.pages.contentcontainer.ContentContainerPage;
 import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class AjaxLinkContainer extends WebMarkupContainer {
@@ -94,7 +94,7 @@ public class AjaxLinkContainer extends WebMarkupContainer {
         para.add("oid", cellmodel.getOid());
 
         String listMenuKey =
-            ((ContentPage) this.getComponent().getPage()).getListMenuKey();
+            ((AbstractContentPage) this.getComponent().getPage()).getListMenuKey();
         ListMenuUpdate.update(_target, listMenuKey, menu, para,
             ((CellModel) super.getComponent().getModel()).getOid());
       }
@@ -138,17 +138,17 @@ public class AjaxLinkContainer extends WebMarkupContainer {
         PageParameters parameters = new PageParameters();
         parameters.add("command", menu.getUUID().toString());
         parameters.add("oid", cellmodel.getOid());
-        ContentPage page;
+        AbstractContentPage page;
         if (menu.getTargetTable() != null) {
           page =
-              new WebTablePage(parameters, PageMap
+              new TablePage(parameters, PageMap
                   .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
         } else {
           page =
-              new WebFormPage(parameters, null, PageMap
+              new FormPage(parameters, null, PageMap
                   .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
         }
-        page.setListMenuKey(((ContentPage) this.getComponent().getPage())
+        page.setListMenuKey(((AbstractContentPage) this.getComponent().getPage())
             .getListMenuKey());
         super.getComponent().getRequestCycle().setResponsePage(page);
       }

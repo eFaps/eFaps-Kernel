@@ -18,42 +18,60 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.webapp.pages;
+package org.efaps.webapp.pages.content.table;
 
+import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.webapp.components.FormContainer;
-import org.efaps.webapp.components.tree.StructurBrowserTreeTablePanel;
-import org.efaps.webapp.models.StructurBrowserModel;
+import org.efaps.webapp.components.table.WebTableContainer;
+import org.efaps.webapp.components.table.header.TableHeaderPanel;
+import org.efaps.webapp.models.TableModel;
+import org.efaps.webapp.pages.content.AbstractContentPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
-public class StructurBrowserTablePage extends ContentPage {
+public class TablePage extends AbstractContentPage {
 
   private static final long serialVersionUID = 7564911406648729094L;
 
-  public StructurBrowserTablePage(final PageParameters _parameters) {
-    super(new StructurBrowserModel(_parameters));
+  public TablePage(final PageParameters _parameters) {
+    this(new TableModel(_parameters));
+  }
+
+  public TablePage(final IModel _model) {
+    super(_model);
+    this.addComponents();
+  }
+
+  public TablePage(final PageParameters _parameters, final IPageMap _pagemap) {
+    this(new TableModel(_parameters), _pagemap);
+  }
+
+  public TablePage(final IModel _model, final IPageMap _pagemap) {
+    super(_model, null, _pagemap);
     this.addComponents();
   }
 
   protected void addComponents() {
-
-    StructurBrowserModel model = (StructurBrowserModel) super.getModel();
+    this.add(new StyleSheetReference("webtablecss", getClass(),
+        "TablePage.css"));
+    TableModel model = (TableModel) super.getModel();
     if (!model.isInitialised()) {
       model.execute();
     }
+    this.add(new TableHeaderPanel("header", model));
 
     FormContainer form = new FormContainer("form");
     this.add(form);
     super.addComponents(form);
 
-    form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", model));
-    this.add(new StyleSheetReference("structurtablecss", getClass(),
-        "structurbrowsertablepage/StructurBrowserTablePage.css"));
+    form.add(new WebTableContainer("formtable", model, this));
+
   }
 
 }

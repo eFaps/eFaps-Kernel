@@ -29,14 +29,14 @@ import org.efaps.webapp.models.AbstractModel;
 import org.efaps.webapp.models.FormModel;
 import org.efaps.webapp.models.StructurBrowserModel;
 import org.efaps.webapp.models.TableModel;
-import org.efaps.webapp.pages.ContentPage;
-import org.efaps.webapp.pages.StructurBrowserTablePage;
-import org.efaps.webapp.pages.WebFormPage;
-import org.efaps.webapp.pages.WebTablePage;
+import org.efaps.webapp.pages.content.AbstractContentPage;
+import org.efaps.webapp.pages.content.form.FormPage;
+import org.efaps.webapp.pages.content.structurbrowser.StructurBrowserPage;
+import org.efaps.webapp.pages.content.table.TablePage;
 import org.efaps.webapp.pages.main.MainPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class ModalWindowContainer extends ModalWindow {
@@ -79,14 +79,14 @@ public class ModalWindowContainer extends ModalWindow {
       AbstractModel model = (AbstractModel) this.getPage().getModel();
       Class<?> clazz = null;
       if (model instanceof TableModel) {
-        clazz = WebTablePage.class;
+        clazz = TablePage.class;
       } else if (model instanceof FormModel) {
-        clazz = WebFormPage.class;
+        clazz = FormPage.class;
       } else if (model instanceof StructurBrowserModel) {
-        clazz = StructurBrowserTablePage.class;
+        clazz = StructurBrowserPage.class;
       }
       PageParameters parameters = model.getPageParameters();
-      parameters.put("listMenuKey", ((ContentPage) this.getPage())
+      parameters.put("listMenuKey", ((AbstractContentPage) this.getPage())
           .getListMenuKey());
       CharSequence url =
           this.urlFor(PageMap.forName(this.getPage().getPageMapName()), clazz,
