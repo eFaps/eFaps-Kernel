@@ -114,8 +114,6 @@ public class ListMenuUpdate {
         MenuItemModel model;
         model = new MenuItemModel(_menu.getUUID(), _oid);
         model.setLevel(level);
-        model.setHeader(true);
-        model.setSelected(true);
         list.add(model);
         if (model.hasChilds()) {
           for (MenuItemModel item : model.getChilds()) {
