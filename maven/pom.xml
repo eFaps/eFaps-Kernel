@@ -47,6 +47,7 @@
     <module>logger</module>
     <module>plugin</module>
     <module>run</module>
+    <module>jetty</module>
   </modules>
 
 </project>
