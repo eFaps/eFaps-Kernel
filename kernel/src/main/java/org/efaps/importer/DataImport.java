@@ -26,8 +26,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.digester.Digester;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -40,25 +38,12 @@ import org.xml.sax.SAXException;
 public class DataImport {
 
   /////////////////////////////////////////////////////////////////////////////
-  // static variables
-
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(DataImport.class);
-
-  /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * contains the RootObject wich is the base for all other Objects
    */
   private RootObject root = null;
-
-  /**
-   * contains the Path of the Base for the Context
-   */
-  private String baseName = null;
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -67,15 +52,6 @@ public class DataImport {
    * DefaultConstructor used by Shell -create
    */
   public DataImport() {
-  }
-
-  /**
-   * Constructor setting the BaseName
-   * 
-   * @param _basename
-   */
-  public DataImport(final String _basename) {
-    this.baseName = _basename;
   }
 
   /////////////////////////////////////////////////////////////////////////////

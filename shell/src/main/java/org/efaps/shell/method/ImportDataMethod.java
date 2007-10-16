@@ -53,12 +53,12 @@ public class ImportDataMethod extends AbstractMethod {
     super.startTransaction();
     String basename = getCommandLine().getOptionValue("basename");
     for (String fileName : getCommandLine().getArgs()) {
-      DataImport dimport = new DataImport(basename);
+//      DataImport dimport = new DataImport(basename);
 //      dimport.initialise();
-      dimport.readXMLFile(fileName);
-      if (dimport.hasData()) {
-        dimport.updateInDB();
-      }
+//      dimport.readXMLFile(fileName);
+//      if (dimport.hasData()) {
+//        dimport.updateInDB();
+//      }
     }
     super.commitTransaction();
 
