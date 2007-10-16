@@ -25,16 +25,20 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
+import javax.transaction.TransactionManager;
 
 import org.apache.commons.digester.Digester;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.slide.transaction.SlideTransactionManager;
 import org.jfrog.maven.annomojo.annotations.MojoParameter;
+import org.mortbay.naming.NamingUtil;
 
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
@@ -137,7 +141,6 @@ public abstract class EFapsAbstractMojo implements Mojo {
     } catch (ClassNotFoundException e)  {
     }
     
-    Context.setTransactionManager(new SlideTransactionManager());
     initDatabase();
   }
 
@@ -202,6 +205,14 @@ public abstract class EFapsAbstractMojo implements Mojo {
 
     getLog().info("Initialise Database Connection");
 
+    final javax.naming.Context compCtx;
+    try {
+      final InitialContext context = new InitialContext();
+      compCtx = (javax.naming.Context)context.lookup ("java:comp");
+    } catch (NamingException e) {
+      throw new Error("Could not initialize JNDI", e);
+    }
+
     // configure database type
     String dbClass = null;
     try {
@@ -210,8 +221,10 @@ public abstract class EFapsAbstractMojo implements Mojo {
       if (dbType == null) {
         getLog().error("could not initaliase database type");
       }
-      Context.setDbType(dbType);
+
+      NamingUtil.bind(compCtx, "env/eFaps/dbType", dbType);
       initialised = true;
+
     } catch (ClassNotFoundException e) {
       getLog().error(
           "could not found database description class " + "'" + dbClass + "'",
@@ -224,9 +237,13 @@ public abstract class EFapsAbstractMojo implements Mojo {
       getLog().error(
           "could not access database description class " + "'" + dbClass + "'",
           e);
+    } catch (NamingException e) {
+      getLog().error(
+          "could not bind database description class " + "'" + dbClass + "'",
+          e);
     }
 
-    // buildup reference and initialise datasource object
+    // buildup reference and initialize data source object
     Reference ref = new Reference(DataSource.class.getName(), 
                                   this.factory,
                                   null);
@@ -253,21 +270,34 @@ public abstract class EFapsAbstractMojo implements Mojo {
               + ref.getFactoryClassName() + "'", e);
     }
     if (of != null) {
-      DataSource ds = null;
       try {
-        ds = (DataSource) of.getObjectInstance(ref, null, null, null);
+        final DataSource ds = (DataSource) of.getObjectInstance(ref, null, null, null);
+        if (ds != null) {
+          NamingUtil.bind(compCtx, "env/eFaps/jdbc", ds);
+          initialised = initialised && true;
+        }
+// TODO: must be referenced by class frmo outside
+NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new SlideTransactionManager());
+      } catch (NamingException e)  {
+        getLog().error(
+            "could not bind JDBC pooling class " + "'" 
+                + ref.getFactoryClassName() + "'",
+            e);
       } catch (Exception e) {
         getLog().error(
             "coud not get object instance of factory " + "'"
                 + ref.getFactoryClassName() + "'", e);
       }
-      if (ds != null) {
-        Context.setDataSource(ds);
-        initialised = initialised && true;
-      }
     }
+
     return initialised;
   }
+  /**
+   * The static variable holds the transaction manager which is used within the
+   * eFaps web application.
+   */
+  final public static TransactionManager TRANSACTIONSMANAGER =
+      new SlideTransactionManager();
 
   /**
    * Reloads the internal eFaps cache.

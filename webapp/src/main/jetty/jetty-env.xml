@@ -5,7 +5,7 @@
 
 <!--
 
- Copyright 2006 The eFaps Team
+ Copyright 2003-2007 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@
     </Arg>
   </New>
 
-  <!-- Define postgresql as database connection -->
+  <!-- define postgresql as database connection -->
   <New id="eFapsDBType" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>eFaps/dbType</Arg>
     <Arg>
@@ -56,6 +56,15 @@
     </Arg>
   </New>
   
+  <!--  define slide transaction manager -->
+  <New class="org.mortbay.jetty.plus.naming.Resource">
+    <Arg>eFaps/transactionManager</Arg>
+    <Arg>
+      <New class="org.apache.slide.transaction.SlideTransactionManager">
+      </New>
+    </Arg>
+  </New>
+
   <!-- define the eFaps document store -->
   <New id="eFapsStore" class="org.mortbay.jetty.plus.naming.Resource">
     <Arg>eFaps/store/documents</Arg>

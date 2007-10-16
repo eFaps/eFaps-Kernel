@@ -27,11 +27,8 @@ import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
-import javax.transaction.Status;
 import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
 
-import org.apache.slide.transaction.SlideTransactionManager;
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
@@ -58,13 +55,6 @@ public class EFapsSession extends WebSession {
    * Logger for this class
    */
   private static final Logger LOG = LoggerFactory.getLogger(EFapsSession.class);
-
-  /**
-   * The static variable holds the transaction manager which is used within the
-   * eFaps web application.
-   */
-  final public static TransactionManager TRANSACTIONSMANAGER =
-      new SlideTransactionManager();
 
   /**
    * This instance Map is a Cache for Components, wich must be able to be
@@ -115,7 +105,7 @@ public class EFapsSession extends WebSession {
   @Override
   protected void attach() {
     super.attach();
-    if (this.isLogedIn() && RequestCycle.get() != null) {
+    if (this.isLogedIn() && (RequestCycle.get() != null)) {
       openContext();
     }
   }
@@ -130,8 +120,7 @@ public class EFapsSession extends WebSession {
   protected void detach() {
     super.detach();
     try {
-      if (this.isLogedIn()
-          && TRANSACTIONSMANAGER.getStatus() != Status.STATUS_NO_TRANSACTION) {
+      if (this.isLogedIn() && !Context.isTMNoTransaction()) {
         closeContext();
       }
     } catch (SystemException e) {
@@ -253,11 +242,7 @@ public class EFapsSession extends WebSession {
 
     Context context = null;
     try {
-      TRANSACTIONSMANAGER.begin();
-      context =
-          Context.newThreadContext(TRANSACTIONSMANAGER.getTransaction(), null,
-              super.getLocale());
-      Context.setTransactionManager(TRANSACTIONSMANAGER);
+      context = Context.begin();
       boolean ok = false;
 
       try {
@@ -270,21 +255,17 @@ public class EFapsSession extends WebSession {
       }
       finally {
 
-        if (ok
-            && context.allConnectionClosed()
-            && (TRANSACTIONSMANAGER.getStatus() == Status.STATUS_ACTIVE)) {
-
-          TRANSACTIONSMANAGER.commit();
-
+        if (ok && context.allConnectionClosed() && Context.isTMActive()) {
+          Context.commit();
         } else {
-          if (TRANSACTIONSMANAGER.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
+          if (Context.isTMMarkedRollback()) {
             LOG.error("transaction is marked to roll back");
           } else if (!context.allConnectionClosed()) {
             LOG.error("not all connection to database are closed");
           } else {
             LOG.error("transaction manager in undefined status");
           }
-          TRANSACTIONSMANAGER.rollback();
+          Context.rollback();
         }
       }
     } catch (EFapsException e) {
@@ -300,9 +281,6 @@ public class EFapsSession extends WebSession {
     } catch (javax.transaction.SystemException e) {
       LOG.error("", e);
     }
-    finally {
-      context.close();
-    }
 
     return loginOk;
   }
@@ -316,13 +294,11 @@ public class EFapsSession extends WebSession {
   @SuppressWarnings("unchecked")
   private void openContext() {
     try {
-      if (TRANSACTIONSMANAGER.getStatus() != Status.STATUS_ACTIVE) {
+      if (!Context.isTMActive()) {
         Map<String, String[]> parameter =
             RequestCycle.get().getRequest().getParameterMap();
 
-        TRANSACTIONSMANAGER.begin();
-        Context.newThreadContext(TRANSACTIONSMANAGER.getTransaction(),
-            this.username, super.getLocale(), null, parameter, null);
+        Context.begin(this.username, super.getLocale(), null, parameter, null);
       }
     } catch (EFapsException e) {
       LOG.error("could not initialise the context", e);
@@ -341,12 +317,9 @@ public class EFapsSession extends WebSession {
    */
   private void closeContext() {
     try {
-      if (TRANSACTIONSMANAGER.getStatus() == Status.STATUS_ACTIVE) {
+      if (Context.isTMActive())  {
         Context.commit();
       } else {
-        if (TRANSACTIONSMANAGER.getStatus() == Status.STATUS_MARKED_ROLLBACK) {
-
-        }
         Context.rollback();
       }
     } catch (SecurityException e) {
@@ -364,6 +337,5 @@ public class EFapsSession extends WebSession {
     } catch (SystemException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
-
   }
 }

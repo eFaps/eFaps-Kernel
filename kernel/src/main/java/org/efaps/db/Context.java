@@ -29,11 +29,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
+import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
@@ -66,25 +69,58 @@ public class Context {
   private static final Logger LOG = LoggerFactory.getLogger(Context.class);
 
   /**
-   * Static variable storing the database type.
+   * The static variable holds the resource name for the JDBC database
+   * connection.
    */
-  private static AbstractDatabase dbType = null;
+  private static final String RESOURCE_DATASOURCE   = "eFaps/jdbc";
 
   /**
-   * Each thread has his own context object. The value is automatically
-   * assigned from the filter class.
+   * The static variable holds the resource name for the database type.
    */
-  private static ThreadLocal<Context> threadContext
-                                              = new ThreadLocal<Context>();
+  private static final String RESOURCE_DBTYPE = "eFaps/dbType";
 
-  private static DataSource dataSource = null;
+  /**
+   * Resource name of the transaction manager.
+   */
+  private static final String RESOURCE_TRANSMANAG = "eFaps/transactionManager";
+  
+  /**
+   * Static variable storing the database type.
+   */
+  private static AbstractDatabase DBTYPE = null;
+
+  /**
+   * 
+   */
+  private static DataSource DATASOURCE = null;
 
   /**
    * Stores the transaction manager.
    *
    * @see #setTransactionManager
    */
-  private static TransactionManager transManag = null;
+  private static TransactionManager TRANSMANAG = null;
+
+  static  {
+    try {
+      InitialContext initCtx = new InitialContext();
+      javax.naming.Context envCtx = (javax.naming.Context) initCtx.lookup("java:comp/env");
+
+      DBTYPE = (AbstractDatabase) envCtx.lookup(RESOURCE_DBTYPE);
+      DATASOURCE = (DataSource) envCtx.lookup(RESOURCE_DATASOURCE);
+      TRANSMANAG = (TransactionManager) envCtx.lookup(RESOURCE_TRANSMANAG);
+    } catch (NamingException e) {
+      e.printStackTrace();
+      throw new Error(e);
+    }
+  }
+
+  /**
+   * Each thread has his own context object. The value is automatically
+   * assigned from the filter class.
+   */
+  private static ThreadLocal<Context> THREADCONTEXT
+                                              = new ThreadLocal<Context>();
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -95,19 +131,19 @@ public class Context {
    * @see #getStoreResource(Instance)
    * @see #getStoreResource(Type,long)
    */
-  private Set < StoreResource > storeStore = new HashSet < StoreResource > ();
+  private Set<StoreResource> storeStore = new HashSet<StoreResource>();
 
   /**
    * Stores all created connection resources.
    */
-  private Set<ConnectionResource> connectionStore =
-                                      new HashSet<ConnectionResource>();
+  private Set<ConnectionResource> connectionStore
+                                      = new HashSet<ConnectionResource>();
 
   /**
    * Stack used to store returned connections for reuse.
    */
-  private Stack<ConnectionResource> connectionStack =
-                                      new Stack<ConnectionResource>();
+  private Stack<ConnectionResource> connectionStack
+                                      = new Stack<ConnectionResource>();
 
   private final Transaction transaction;
 
@@ -142,7 +178,7 @@ public class Context {
    *
    * @see #getParameters
    */
-  private final Map < String, String[] > parameters;
+  private final Map<String, String[]> parameters;
 
   /**
    * The file parameters used to open a new thread context are stored in this
@@ -154,7 +190,7 @@ public class Context {
    * @see #getFileParameters
    * @todo replace FileItem against own implementation
    */
-  private final Map < String, FileItem > fileParameters;
+  private final Map<String, FileItem> fileParameters;
 
   /**
    * A map to be able to set attributes with a lifetime of a request (e.g.
@@ -164,8 +200,7 @@ public class Context {
    * @see #getRequestAttribute
    * @see #setRequestAttribute
    */
-  private Map < String, Object > requestAttributes 
-                                          = new HashMap < String, Object > ();
+  private Map<String, Object> requestAttributes = new HashMap<String, Object>();
 
   /**
    * A map to be able to set attributes with a lifetime of a session (e.g. as
@@ -175,8 +210,7 @@ public class Context {
    * @see #getSessionAttribute
    * @see #setSessionAttribute
    */
-  private Map < String, Object > sessionAttributes 
-                                          = new HashMap < String, Object > ();
+  private Map<String, Object> sessionAttributes = new HashMap<String, Object>();
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -210,7 +244,7 @@ public class Context {
                               ? new HashMap < String, Object > ()
                               : _sessionAttributes;
 try  {
-    setConnection(getDataSource().getConnection());
+    setConnection(DATASOURCE.getConnection());
   getConnection().setAutoCommit(true);
 } catch (SQLException e)  {
   LOG.error("could not get a sql connection", e);
@@ -285,8 +319,8 @@ e.printStackTrace();
     } catch (Exception e)  {
     }
     setConnection(null);
-    if ((threadContext.get() != null) && (threadContext.get() == this))  {
-      threadContext.set(null);
+    if ((THREADCONTEXT.get() != null) && (THREADCONTEXT.get() == this))  {
+      THREADCONTEXT.set(null);
     }
     // check if all JDBC connection are close...
     for (ConnectionResource con : this.connectionStore)  {
@@ -326,7 +360,7 @@ e.printStackTrace();
 
     if (this.connectionStack.isEmpty())  {
 try  {
-      con = new ConnectionResource(this, getDataSource().getConnection());
+      con = new ConnectionResource(this, DATASOURCE.getConnection());
 } catch (SQLException e)  {
 e.printStackTrace();
   throw new EFapsException(getClass(), "getConnectionResource.SQLException", e);
@@ -608,10 +642,10 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    *
    * @return defined context object of current thread
    * @throws EFapsException if no context object for current thread is defined
-   * @see #threadContext
+   * @see #THREADCONTEXT
    */
   public static Context getThreadContext() throws EFapsException  {
-    Context context = threadContext.get();
+    Context context = THREADCONTEXT.get();
     if (context == null)  {
       throw new EFapsException(Context.class,
           "getThreadContext.NoContext4ThreadDefined");
@@ -625,12 +659,12 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @param _context  new eFaps context object to set
    * @throws EFapsException if current thread context is alread set or the new
    *         context is null
-   * @see #threadContext
+   * @see #THREADCONTEXT
    */
   private static void setThreadContext(final Context _context)
       throws EFapsException  {
 
-    if (threadContext.get() != null)  {
+    if (THREADCONTEXT.get() != null)  {
       throw new EFapsException(Context.class,
           "setThreadContext.Context4ThreadAlreadSet");
     }
@@ -638,57 +672,31 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
       throw new EFapsException(Context.class,
           "setThreadContext.NewContextIsNull");
     }
-    threadContext.set(_context);
+    THREADCONTEXT.set(_context);
   }
 
   /**
-   * For current thread a new context object must be created
-   *
-   * @param _transaction  transaction of the new thread
-   * @return new context of thread
-   * @throws EFapsException if current thread context is alread set
-   * @see #threadContext
+   * @see #begin(String, Locale, Map, Map, Map)
    */
-  public static Context newThreadContext(final Transaction _transaction)
-      throws EFapsException  {
-
-    return newThreadContext(_transaction, null, null, null, null, null);
+  public static Context begin() throws EFapsException,
+                                       NotSupportedException,
+                                       SystemException  {
+    return begin(null, null, null, null, null);
   }
 
   /**
-   * For current thread a new context object must be created
-   *
-   * @param _transaction  transaction of the new thread
-   * @param _userName     name of current user to set
-   * @return new context of thread
-   * @throws EFapsException if current thread context is alread set
-   * @see #threadContext
+   * @todo embed exceptions
+   * @see #begin(String, Locale, Map, Map, Map)
    */
-  public static Context newThreadContext(final Transaction _transaction, 
-                        final String _userName)
-                throws EFapsException  {
-    return newThreadContext(_transaction, _userName, null, null, null, null);
+  public static Context begin(final String _userName)
+                                           throws EFapsException,
+                                                  NotSupportedException,
+                                                  SystemException  {
+    return begin(_userName, null, null, null, null);
   }
 
   /**
-   * For current thread a new context object must be created
-   *
-   * @param _transaction  transaction of the new thread
-   * @param _userName     name of current user to set
-   * @return new context of thread
-   * @throws EFapsException if current thread context is alread set
-   * @see #threadContext
-   */
-  public static Context newThreadContext(final Transaction _transaction, 
-                        final String _userName, final Locale _locale)
-                throws EFapsException  {
-
-    return newThreadContext(_transaction, _userName, _locale, 
-                            null, null, null);
-  }
-
-  /**
-   * For current thread a new context object must be created
+   * For current thread a new context object must be created.
    *
    * @param _transaction    transaction of the new thread
    * @param _userName       name of current user to set
@@ -698,43 +706,29 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @param _fileParameters map with file parameters
    * @return new context of thread
    * @throws EFapsException if current thread context is alread set
-   * @see #threadContext
+   * @see #THREADCONTEXT
+   * @todo embed exceptions
    */
-  public static Context newThreadContext(final Transaction _transaction, 
-                        final String _userName, final Locale _locale,
-                        final Map < String, Object > _sessionAttributes,
-                        final Map < String, String[] > _parameters,
-                        final Map < String, FileItem > _fileParameters)
-                throws EFapsException  {
-
-    Context context = new Context(_transaction, null, _locale, 
-                                  _sessionAttributes, 
-                                  _parameters, _fileParameters);
+  public static Context begin(final String _userName,
+                              final Locale _locale,
+                              final Map<String, Object> _sessionAttributes,
+                              final Map<String, String[]> _parameters,
+                              final Map<String, FileItem> _fileParameters)
+                                           throws EFapsException,
+                                                  NotSupportedException,
+                                                  SystemException  {
+    TRANSMANAG.begin();
+    Context context = new Context(TRANSMANAG.getTransaction(),
+                                  null,
+                                  (_locale == null) ? Locale.ENGLISH : _locale,
+                                  _sessionAttributes,
+                                  _parameters,
+                                  _fileParameters);
     setThreadContext(context);
     if (_userName != null)  {
       context.person = Person.get(_userName);
     }
     return context;
-  }
-
-  /**
-   *
-   */
-  public static Context begin() throws EFapsException,
-                                                  NotSupportedException,
-                                                  SystemException  {
-    return begin((String) null);
-  }
-
-  /**
-   * @todo embed exceptions
-   */
-  public static Context begin(final String _userName)
-                                           throws EFapsException,
-                                                  NotSupportedException,
-                                                  SystemException  {
-    transManag.begin();
-    return newThreadContext(transManag.getTransaction(), _userName);
   }
 
   /**
@@ -749,7 +743,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
                  IllegalStateException,
                  SystemException  {
     try  {
-      transManag.commit();
+      TRANSMANAG.commit();
     } finally  {
       getThreadContext().close();
     }
@@ -764,41 +758,60 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
                  SecurityException,
                  SystemException  {
     try  {
-      transManag.rollback();
+      TRANSMANAG.rollback();
     } finally  {
       getThreadContext().close();
     }
   }
 
+  /**
+   * Is the status of transaction manager active?
+   *
+   * @return <i>true</i> if transaction manager is active, otherwise
+   *         <i>false</i>
+   * @throws SystemException if the status of the transaction manager could not
+   *         be evaluated
+   * @see #TRANSMANAG
+   */
+  public static boolean isTMActive() throws SystemException  {
+    return TRANSMANAG.getStatus() == Status.STATUS_ACTIVE;
+  }
+
+  /**
+   * Is a transaction associated with a target object for transaction manager?
+   *
+   * @return <i>true</i> if a transaction associated, otherwise <i>false</i>
+   * @throws SystemException if the status of the transaction manager could not
+   *         be evaluated
+   * @see #TRANSMANAG
+   */
+  public static boolean isTMNoTransaction() throws SystemException  {
+    return TRANSMANAG.getStatus() == Status.STATUS_NO_TRANSACTION;
+  }
+  
+  /**
+   * Is the status of transaction manager marked roll back?
+   *
+   * @return <i>true</i> if transaction manager is marked roll back, otherwise
+   *         <i>false</i>
+   * @throws SystemException if the status of the transaction manager could not
+   *         be evaluated
+   * @see #TRANSMANAG
+   */
+  public static boolean isTMMarkedRollback() throws SystemException  {
+    return TRANSMANAG.getStatus() == Status.STATUS_MARKED_ROLLBACK;
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   // static getter and setter methods
-
-  public static void setDbType(final AbstractDatabase _dbType)  {
-    dbType = _dbType;
-  }
 
   /**
    * Returns the database type of the default connection (database where the
    * data model definition is stored).
    *
-   * @see #dbType
+   * @see #DBTYPE
    */
   public static AbstractDatabase getDbType()  {
-    return dbType;
-  }
-
-  public static void setDataSource(final DataSource _dataSource)  {
-    dataSource = _dataSource;
-  }
-
-  protected static DataSource getDataSource()  {
-    return dataSource;
-  }
-
-  /**
-   *Ê@see #transManag
-   */
-  public static void setTransactionManager(final TransactionManager _transManag)  {
-    transManag = _transManag;
+    return DBTYPE;
   }
 }

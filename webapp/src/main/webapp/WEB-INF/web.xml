@@ -237,7 +237,7 @@
     <session-timeout>3000</session-timeout>
   </session-config>
 
-  <!-- Reference to the database JDBC data source -->
+  <!-- reference to the database JDBC data source -->
   <resource-ref>
     <description></description>
     <res-ref-name>eFaps/jdbc</res-ref-name>
@@ -245,7 +245,7 @@
     <res-auth>Container</res-auth>
   </resource-ref>
 
-  <!-- Reference to the database Type class implementation -->
+  <!-- reference to the database Type class implementation -->
   <resource-ref>
     <description></description>
     <res-ref-name>eFaps/dbType</res-ref-name>
@@ -253,7 +253,15 @@
     <res-auth>Container</res-auth>
   </resource-ref>
 
-  <!-- Reference to the document store resource -->
+  <!-- reference to the transaction manager class implementation -->
+  <resource-ref>
+    <description></description>
+    <res-ref-name>eFaps/transactionManager</res-ref-name>
+    <res-type>java.lang.Object</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
+
+  <!-- reference to the document store resource -->
   <resource-ref>
     <description></description>
     <res-ref-name>eFaps/store/documents</res-ref-name>

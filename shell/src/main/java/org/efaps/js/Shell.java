@@ -54,7 +54,7 @@ public class Shell {
    * Main entry point.
    */
   public static void main(String _args[]) throws Exception  {
-    Context.setTransactionManager(new SlideTransactionManager());
+//    Context.setTransactionManager(new SlideTransactionManager());
     (new Shell()).run(_args);
   }
 

@@ -37,10 +37,7 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.HeuristicMixedException;
 import javax.transaction.HeuristicRollbackException;
 import javax.transaction.RollbackException;
-import javax.transaction.Status;
 import javax.transaction.SystemException;
-import javax.transaction.TransactionManager;
-import org.apache.slide.transaction.SlideTransactionManager;
 
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
@@ -60,13 +57,6 @@ public class TransactionFilter extends AbstractFilter  {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
-
-  /**
-   * The static variable holds the transaction manager which is used within
-   * the eFaps web application.
-   */
-  final public static TransactionManager transactionManager 
-                                              = new SlideTransactionManager();
 
   /**
    * Logging instance used in this class.
@@ -195,10 +185,9 @@ String uri = httpRequest.getRequestURI();
   
     Context context = null;
     try  {
-      transactionManager.begin();
       Locale locale = null;
-      Map < String, String[] > params = null;
-      Map < String, FileItem > fileParams = null;
+      Map<String, String[]> params = null;
+      Map<String, FileItem> fileParams = null;
       locale = _request.getLocale();
       if (ServletFileUpload.isMultipartContent(_request))  {
         DiskFileUpload dfu = new DiskFileUpload();
@@ -220,10 +209,11 @@ String uri = httpRequest.getRequestURI();
         params = new HashMap < String, String[] > (_request.getParameterMap());
       }
 
-      context = Context.newThreadContext(transactionManager.getTransaction(),
-                                         getLoggedInUser(_request), locale,
-                                         getContextSessionAttributes(_request),
-                                         params, fileParams);
+      context = Context.begin(getLoggedInUser(_request),
+                              locale,
+                              getContextSessionAttributes(_request),
+                              params,
+                              fileParams);
     } catch (FileUploadException e)  {
       LOG.error("could not initialise the context", e);
       throw new ServletException(e);
@@ -246,12 +236,10 @@ String uri = httpRequest.getRequestURI();
         ok = true;
       } finally  {
   
-        if (ok && context.allConnectionClosed()
-            && (transactionManager.getStatus() == Status.STATUS_ACTIVE))  {
-  
-          transactionManager.commit();
+        if (ok && context.allConnectionClosed() && Context.isTMActive())  {
+          Context.commit();
         } else  {
-          if (transactionManager.getStatus() == Status.STATUS_MARKED_ROLLBACK)  {
+          if (Context.isTMMarkedRollback())  {
             LOG.error("transaction is marked to roll back");
   // TODO: throw of Exception is not a good idea... if an exception is thrown in the try code, this exception is overwritten!
   //          throw new ServletException("transaction in undefined status");
@@ -260,9 +248,12 @@ String uri = httpRequest.getRequestURI();
           } else  {
             LOG.error("transaction manager in undefined status");
           }
-          transactionManager.rollback();
+          Context.rollback();
         }
       }
+    } catch (EFapsException e)  {
+      LOG.error("", e);
+      throw new ServletException(e);
     } catch (RollbackException e)  {
       LOG.error("", e);
       throw new ServletException(e);
@@ -275,8 +266,6 @@ String uri = httpRequest.getRequestURI();
     } catch (javax.transaction.SystemException e)  {
       LOG.error("", e);
       throw new ServletException(e);
-    } finally  {
-      context.close();
     }
   }
 

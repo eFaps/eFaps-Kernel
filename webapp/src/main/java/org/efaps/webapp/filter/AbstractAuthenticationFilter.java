@@ -142,10 +142,8 @@ public abstract class AbstractAuthenticationFilter extends AbstractFilter  {
 
     Context context = null;
     try  {
-      TransactionFilter.transactionManager.begin();
+      Context.begin();
 
-      context = Context.newThreadContext(TransactionFilter.transactionManager.getTransaction());
- 
       boolean ok = false;
 
       try {
@@ -155,19 +153,17 @@ public abstract class AbstractAuthenticationFilter extends AbstractFilter  {
         ok = true;
       } finally  {
   
-        if (ok && context.allConnectionClosed()
-            && (TransactionFilter.transactionManager.getStatus() == Status.STATUS_ACTIVE))  {
-  
-          TransactionFilter.transactionManager.commit();
+        if (ok && context.allConnectionClosed() && Context.isTMActive())  {
+          Context.commit();
         } else  {
-          if (TransactionFilter.transactionManager.getStatus() == Status.STATUS_MARKED_ROLLBACK)  {
+          if (Context.isTMMarkedRollback())  {
             LOG.error("transaction is marked to roll back");
           } else if (!context.allConnectionClosed())  {
             LOG.error("not all connection to database are closed");
           } else  {
             LOG.error("transaction manager in undefined status");
           }
-          TransactionFilter.transactionManager.rollback();
+          Context.rollback();
         }
       }
     } catch (EFapsException e)  {

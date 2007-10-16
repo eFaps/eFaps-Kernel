@@ -190,7 +190,7 @@ public abstract class AbstractMethod  {
         if (dbType == null)  {
           LOG.error("could not initaliase database type");
         }
-        Context.setDbType(dbType);
+//        Context.setDbType(dbType);
         initialised = true;
       }
     } catch (ClassNotFoundException e)  {
@@ -242,7 +242,7 @@ public abstract class AbstractMethod  {
                   + "'" + ref.getFactoryClassName() + "'", e);
       }
       if (ds != null)  {
-        Context.setDataSource(ds);
+//        Context.setDataSource(ds);
         initialised = initialised && true;
       }
     }

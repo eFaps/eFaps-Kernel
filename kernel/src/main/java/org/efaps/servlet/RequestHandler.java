@@ -23,15 +23,12 @@ package org.efaps.servlet;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.naming.InitialContext;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
-import javax.sql.DataSource;
 
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
-import org.efaps.db.databases.AbstractDatabase;
 
 /**
  * 
@@ -47,18 +44,7 @@ public class RequestHandler extends HttpServlet {
    */
   private static final long serialVersionUID = 7212518317632161066L;
 
-  /**
-   * The static variable holds the resource name for the JDBC database
-   * connection.
-   */
-  final private static String RESOURCE_JDBC   = "eFaps/jdbc";
-
-  /**
-   * The static variable holds the resource name for the database type.
-   */
-  final private static String RESOURCE_DBTYPE = "eFaps/dbType";
-
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * @param _config
@@ -70,39 +56,16 @@ public class RequestHandler extends HttpServlet {
         + _config.getServletContext().getServletContextName() + "/");
 
     try {
-
-      InitialContext initCtx = new InitialContext();
-      javax.naming.Context envCtx = (javax.naming.Context) initCtx
-          .lookup("java:comp/env");
-
-      AbstractDatabase dbType = (AbstractDatabase) envCtx
-          .lookup(RESOURCE_DBTYPE);
-      if (dbType == null) {
-        throw new ServletException("no database type defined!");
-      }
-      Context.setDbType(dbType);
-
-      DataSource ds = (DataSource) envCtx.lookup(RESOURCE_JDBC);
-      if (ds == null) {
-        throw new ServletException("no SQL data source defined!");
-      }
-      Context.setDataSource(ds);
-
-      javax.transaction.TransactionManager tm = new org.apache.slide.transaction.SlideTransactionManager();
-      tm.begin();
-      Context context = Context.newThreadContext(tm.getTransaction(), null,
-          null);
+      Context.begin();
       try {
         RunLevel.init("webapp");
         RunLevel.execute();
       } catch (Throwable e) {
         e.printStackTrace();
       }
-      tm.rollback();
-      context.close();
+      Context.rollback();
     } catch (Exception e) {
       e.printStackTrace();
-
     }
 
   }
@@ -153,7 +116,7 @@ public class RequestHandler extends HttpServlet {
 
   /**
    * The static map stores all replacable url macros.
-   * 
+   *
    * @see #getReplacableMacros
    * @see #setReplacableMacros
    */
@@ -161,7 +124,7 @@ public class RequestHandler extends HttpServlet {
 
   /**
    * This is the getter method for static variable {@link #replacableMacros}.
-   * 
+   *
    * @return returns value of static variable {@link #replacableMacros}.
    * @see #replacableMacros
    * @see #setReplacableMacros
@@ -172,9 +135,9 @@ public class RequestHandler extends HttpServlet {
 
   /**
    * This is the setter method for static variable {@link #replacableMacros}.
-   * 
-   * @param _replacableMacros
-   *          new value for static variable {@link #replacableMacros}
+   *
+   * @param _replacableMacros new value for static variable 
+   *                          {@link #replacableMacros}
    * @see #replacableMacros
    * @see #getReplacableMacros
    */
