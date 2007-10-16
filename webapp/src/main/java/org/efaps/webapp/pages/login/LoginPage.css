@@ -1,0 +1,9 @@
+.eFapsWrongLoginMsg {
+  position: absolute;
+  background-color: #FFB0B0;
+  text-align: center;
+  color: red;
+  top: 150px;
+  padding: 10px;
+  width: 100%;
+}
