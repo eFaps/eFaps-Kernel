@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1489 $
+ * Last Changed:    $Date:2007-10-15 17:50:46 -0500 (Mon, 15 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.webapp.pages.dialog;
@@ -43,7 +43,7 @@ import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
  * @author jmo
- * @version $Id$
+ * @version $Id:DialogPage.java 1489 2007-10-15 22:50:46Z jmox $
  */
 public class DialogPage extends WebPage {
 
@@ -76,7 +76,7 @@ public class DialogPage extends WebPage {
   public DialogPage(final ModalWindowContainer _modal) {
     this.modal = _modal;
     add(new StyleSheetReference("css", getClass(),
-        "dialogpage/DialogPage.css"));
+        "DialogPage.css"));
     this.add(new Label("textLabel", DBProperties
         .getProperty("Common_UIForm_Mandotory.Message")));
 

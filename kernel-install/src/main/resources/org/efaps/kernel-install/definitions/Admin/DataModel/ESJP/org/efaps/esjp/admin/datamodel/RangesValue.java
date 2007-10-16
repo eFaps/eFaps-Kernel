@@ -24,10 +24,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
-
-import org.apache.commons.collections.map.AbstractLinkedMap;
-import org.apache.commons.collections.map.LinkedMap;
 
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
@@ -43,7 +41,7 @@ import org.efaps.util.EFapsException;
  * Properties of the Parameters and returns a map sorted by the values. The key
  * returned is the ID, the Value returned can be specified by the Propertie
  * "Value".
- * 
+ *
  * @author jmo
  * @version $Id$
  */
@@ -77,8 +75,9 @@ public class RangesValue implements EventExecution {
 
     java.util.Collections.sort(list,
         new Comparator<Map.Entry<String, String>>() {
+
           public int compare(Map.Entry<String, String> entry,
-              Map.Entry<String, String> entry1) {
+                             Map.Entry<String, String> entry1) {
             String r = entry.getValue().toString();
             String r1 = entry1.getValue().toString();
 
@@ -87,7 +86,7 @@ public class RangesValue implements EventExecution {
 
         });
 
-    AbstractLinkedMap map2 = new LinkedMap();
+    Map<String, String> map2 = new TreeMap<String, String>();
 
     for (Map.Entry<String, String> entry : list) {
       map2.put(entry.getKey(), entry.getValue());
