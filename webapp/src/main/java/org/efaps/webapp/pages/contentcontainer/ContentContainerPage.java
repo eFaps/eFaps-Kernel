@@ -102,10 +102,10 @@ public class ContentContainerPage extends WebPage {
           + "}\n"
           + CssUtils.INLINE_CLOSE_TAG));
     }
+
     this.listMenuKey = "ListMenu_" + this.getPageMapName();
 
-    add(new StyleSheetReference("css", getClass(),
-        "ContentContainerPage.css"));
+    add(new StyleSheetReference("css", getClass(), "ContentContainerPage.css"));
 
     WebMarkupContainer split = new WebMarkupContainer("split");
     this.add(split);
@@ -127,9 +127,14 @@ public class ContentContainerPage extends WebPage {
 
     final PageParameters parametersForPage =
         (PageParameters) this.parameters.clone();
+    String uuid;
+    if (parametersForPage.get("command") instanceof String[]) {
+      uuid = ((String[]) parametersForPage.get("command"))[0];
+    } else {
+      uuid = (String) parametersForPage.get("command");
+    }
 
-    CommandAbstract cmd =
-        getCommand(UUID.fromString((String) parametersForPage.get("command")));
+    CommandAbstract cmd = getCommand(UUID.fromString(uuid));
     this.webForm = cmd.getTargetForm() != null;
     if (cmd instanceof Menu) {
       for (CommandAbstract childcmd : ((Menu) cmd).getCommands()) {

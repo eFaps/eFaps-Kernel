@@ -88,7 +88,7 @@ public class ErrorPage extends WebPage {
         + DBProperties.getProperty("JSPPage.Exception.TextTitle")
         + "</title>"));
 
-    add(new StyleSheetReference("css", getClass(), "errorpage/ErrorPage.css"));
+    add(new StyleSheetReference("css", getClass(), "ErrorPage.css"));
 
     add(new Label("errorIDLabel", DBProperties
         .getProperty("JSPPage.Exception.TextId")));
