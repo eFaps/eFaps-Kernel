@@ -304,7 +304,6 @@ function _eFapsCreateAllImportData(_files)  {
   while (i < _files.size())  {
     var url = _files.get(i);
     var dimport = new DataImport();
-    dimport.initialise();
     dimport.readXMLFile(url);
     if (dimport.hasData()) {
       dimport.updateInDB();
