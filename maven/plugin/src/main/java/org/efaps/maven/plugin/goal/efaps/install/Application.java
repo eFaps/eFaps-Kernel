@@ -229,7 +229,6 @@ public class Application {
 
     for (Entry<?, ?> entry : map.entrySet()) {
       DataImport dimport = new DataImport();
-      dimport.initialise();
       dimport.readXMLFile((URL) entry.getValue());
       if (dimport.hasData()) {
         dimport.updateInDB();

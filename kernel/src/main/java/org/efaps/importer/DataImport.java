@@ -25,16 +25,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import org.apache.commons.digester.Digester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import org.efaps.db.transaction.VFSStoreFactoryBean;
 
 /**
  * Class wich contains the method to launch the import of Data into a efaps
@@ -86,28 +80,6 @@ public class DataImport {
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
-
-  /**
-   * initialises the Context for the VFS
-   */
-  public void initialise() {
-    System.setProperty(javax.naming.Context.INITIAL_CONTEXT_FACTORY,
-        "org.efaps.importer.InitialContextFactory");
-    VFSStoreFactoryBean bean = new VFSStoreFactoryBean();
-    bean.setBaseName(this.baseName);
-    bean
-        .setProvider("org.apache.commons.vfs.provider.local.DefaultLocalFileProvider");
-
-    Context ctx;
-    try {
-      ctx = new InitialContext();
-      ctx.bind("java:comp/env", ctx);
-      ctx.bind("eFaps/store/documents", bean);
-    } catch (NamingException e) {
-      LOG.error("initialise()", e);
-    }
-
-  }
 
   /**
    * 
