@@ -56,7 +56,7 @@ public class AjaxGoUpLink extends AbstractAjaxLink {
         (ListMenuPanel) this.findParent(ListMenuPanel.class);
     ((EFapsSession) this.getSession()).removeFromCache(listmenupanel
         .getMenuKey());
-
+    listmenupanel.setOutputMarkupId(true);
     // update the Content
     MenuItemModel model = (MenuItemModel) super.getModel();
     MenuItemModel rootModel =

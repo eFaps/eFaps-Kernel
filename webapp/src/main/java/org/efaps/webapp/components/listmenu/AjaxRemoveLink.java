@@ -83,6 +83,7 @@ public class AjaxRemoveLink extends AbstractAjaxLink {
         listmenupanel.getHeaderComponents().remove(index);
       }
     }
+
     _target.addComponent(listmenupanel);
 
     // get the previosly selected Component

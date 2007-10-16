@@ -237,6 +237,7 @@ public class ListMenuPanel extends Panel {
         ListMenuPanel nested =
             new ListMenuPanel("nested", this.menukey, (List<?>) modelObject,
                 this.model);
+        nested.setOutputMarkupId(true);
         _listItem.add(nested);
         // if the current element is a list, we create a dummy row/
         // label element
