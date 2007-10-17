@@ -101,6 +101,7 @@
         <version>1.0-SNAPSHOT</version>
         <configuration>
           <jaasConfigFile>${basedir}/src/main/jetty/jaas.config</jaasConfigFile>
+          <configFile>file:${basedir}/src/main/jetty/jetty.xml</configFile>
           <userName>Administrator</userName>
           <passWord>Administrator</passWord>
           <connection>

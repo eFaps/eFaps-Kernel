@@ -32,9 +32,8 @@ import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.Context;
-import org.mortbay.jetty.servlet.FilterHolder;
-import org.mortbay.jetty.servlet.ServletHolder;
 
+import org.efaps.maven.jetty.configuration.ServerDefinition;
 import org.efaps.maven.plugin.goal.EFapsAbstractMojo;
 
 /**
@@ -42,6 +41,7 @@ import org.efaps.maven.plugin.goal.EFapsAbstractMojo;
  * 
  * @author tmo
  * @version $Id$
+ * @todo description
  */
 @MojoGoal("run")
 @MojoRequiresDependencyResolution("compile")
@@ -72,6 +72,12 @@ public class JettyRunMojo extends EFapsAbstractMojo {
   /**
    * 
    */
+  @MojoParameter(required = true)
+  private String configFile;
+
+  /**
+   * 
+   */
   public void execute() throws MojoExecutionException, MojoFailureException {
 
     init();
@@ -94,30 +100,8 @@ public class JettyRunMojo extends EFapsAbstractMojo {
     
     Context handler = new Context(contexts,"/eFaps", Context.SESSIONS);
     
-    FilterHolder filter = new FilterHolder();
-    filter.setName("eFaps");
-    filter.setClassName("org.apache.wicket.protocol.http.WicketFilter");
-    filter.setInitParameter("applicationClassName", "org.efaps.webapp.EFapsApplication");
-    handler.addFilter(filter, "/*", 1);
-
-    filter = new FilterHolder();
-    filter.setName("eFapsTransactionFilter");
-    filter.setClassName("org.efaps.webapp.filter.TransactionFilter");
-    handler.addFilter(filter, "/*", 1);
-    
-    ServletHolder servletHolder = new ServletHolder();
-    servletHolder.setName("eFapsServlet");
-    servletHolder.setDisplayName("eFapsServlet");
-    servletHolder.setClassName("org.efaps.servlet.RequestHandler");
-    servletHolder.setInitOrder(1);
-    handler.addServlet(servletHolder,"/*");
-
-    servletHolder = new ServletHolder();
-    servletHolder.setName("eFapsImageServlet");
-    servletHolder.setDisplayName("eFapsImageServlet");
-    servletHolder.setClassName("org.efaps.servlet.ImageServlet");
-    handler.addServlet(servletHolder,"/servlet/image/*");
-
+    ServerDefinition serverDef = ServerDefinition.read(this.configFile);
+    serverDef.updateServer(handler);
 
     try {
       getLog().info("Starting Server");
