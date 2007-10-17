@@ -489,35 +489,35 @@ public abstract class AbstractModel extends Model {
    * take the Events of the CallingCommand {@link #callingCommandUUID}, if it
    * is declared, otherwise it will take the Events of the Command
    * {@link #commandUUID}. The Method also adds the oid {@link #oid} to the
-   * Context, so that it is accessable for the esjp.
+   * Context, so that it is accessable for the esjp.<br>
+   * This method throws an eFpasError to provide the possibilty for different
+   * responses in the components.
    *
    * @param _others
    *                The values will be atached to the call as
    *                ParameterValues.OTHERS
+   * @throws EFapsException
    */
-  public void executeEvents(String[] _others) {
+  public void executeEvents(String[] _others) throws EFapsException {
     CommandAbstract command;
     if (this.callingCommandUUID != null) {
       command = this.getCallingCommand();
     } else {
       command = this.getCommand();
     }
-    try {
-      if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-        if (this.getOid() != null) {
-          String[] contextoid = { this.getOid() };
-          Context.getThreadContext().getParameters().put("oid", contextoid);
-          command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-              ParameterValues.INSTANCE, new Instance(this.getOid()),
-              ParameterValues.OTHERS, _others);
-        } else {
-          command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-              ParameterValues.OTHERS, _others);
-        }
-      }
-    } catch (EFapsException e) {
-      throw new RestartResponseException(new ErrorPage(e));
-    }
 
+    if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
+      if (this.getOid() != null) {
+        String[] contextoid = { this.getOid() };
+        Context.getThreadContext().getParameters().put("oid", contextoid);
+        command.executeEvents(EventType.UI_COMMAND_EXECUTE,
+            ParameterValues.INSTANCE, new Instance(this.getOid()),
+            ParameterValues.OTHERS, _others);
+      } else {
+        command.executeEvents(EventType.UI_COMMAND_EXECUTE,
+            ParameterValues.OTHERS, _others);
+      }
+    }
   }
+
 }

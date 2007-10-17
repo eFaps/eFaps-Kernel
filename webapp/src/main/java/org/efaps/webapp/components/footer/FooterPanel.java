@@ -43,7 +43,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.util.EFapsException;
 import org.efaps.webapp.EFapsSession;
 import org.efaps.webapp.components.FormContainer;
 import org.efaps.webapp.components.modalwindow.ModalWindowContainer;
@@ -56,6 +58,7 @@ import org.efaps.webapp.pages.content.AbstractContentPage;
 import org.efaps.webapp.pages.content.form.FormPage;
 import org.efaps.webapp.pages.content.table.TablePage;
 import org.efaps.webapp.pages.dialog.DialogPage;
+import org.efaps.webapp.pages.error.ErrorPage;
 import org.efaps.webapp.pages.main.MainPage;
 
 /**
@@ -214,7 +217,23 @@ public class FooterPanel extends Panel {
           this.getComponent().getRequestCycle().getRequest().getParameters(
               "selectedRow");
       if (checkForRequired(_target)) {
-        ((AbstractModel) this.form.getParent().getModel()).executeEvents(other);
+        try {
+          ((AbstractModel) this.form.getParent().getModel())
+              .executeEvents(other);
+        } catch (final EFapsException e) {
+          final ModalWindowContainer modal =
+              ((AbstractContentPage) this.getComponent().getPage()).getModal();
+          modal.setPageCreator(new ModalWindow.PageCreator() {
+
+            private static final long serialVersionUID = 1L;
+
+            public Page createPage() {
+              return new ErrorPage(e);
+            }
+          });
+          modal.show(_target);
+          return;
+        }
 
         AbstractModel model = (AbstractModel) this.imodel;
 
@@ -239,6 +258,11 @@ public class FooterPanel extends Panel {
 
         }
       }
+    }
+
+    @Override
+    protected void onError(AjaxRequestTarget arg0) {
+      // not useful here
     }
 
     /**
@@ -302,8 +326,9 @@ public class FooterPanel extends Panel {
           private static final long serialVersionUID = 1L;
 
           public Page createPage() {
-
-            return new DialogPage(modal);
+            return new DialogPage(modal, DBProperties
+                .getProperty("Common_UIForm_Mandotory.Message"), DBProperties
+                .getProperty("Common_UIForm_Mandotory.Button"));
           }
         });
 
@@ -312,10 +337,6 @@ public class FooterPanel extends Panel {
       return ret;
     }
 
-    @Override
-    protected void onError(AjaxRequestTarget arg0) {
-      // TODO Auto-generated method stub
-    }
   }
 
   /**

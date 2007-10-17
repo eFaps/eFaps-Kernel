@@ -42,7 +42,7 @@ import org.efaps.webapp.models.MenuItemModel;
 import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id:DialogPage.java 1489 2007-10-15 22:50:46Z jmox $
  */
 public class DialogPage extends WebPage {
@@ -73,18 +73,15 @@ public class DialogPage extends WebPage {
 
   }
 
-  public DialogPage(final ModalWindowContainer _modal) {
+  public DialogPage(final ModalWindowContainer _modal, final String _message,
+                    final String _button) {
     this.modal = _modal;
-    add(new StyleSheetReference("css", getClass(),
-        "DialogPage.css"));
-    this.add(new Label("textLabel", DBProperties
-        .getProperty("Common_UIForm_Mandotory.Message")));
-
+    add(new StyleSheetReference("css", getClass(), "DialogPage.css"));
+    this.add(new Label("textLabel", _message));
     this.add(new WebMarkupContainer("submitButton").setVisible(false));
-
     AjaxCloseLink button = new AjaxCloseLink("closeButton");
     this.add(button);
-    button.add(new Label("closeButtonLabel", "close"));
+    button.add(new Label("closeButtonLabel", _button));
   }
 
   private String getCancelText(final String _commandName) {

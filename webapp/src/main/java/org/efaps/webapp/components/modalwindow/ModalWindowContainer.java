@@ -77,28 +77,31 @@ public class ModalWindowContainer extends ModalWindow {
     super.close(_target);
     if (this.reloadChild) {
       AbstractModel model = (AbstractModel) this.getPage().getModel();
-      Class<?> clazz = null;
-      if (model instanceof TableModel) {
-        clazz = TablePage.class;
-      } else if (model instanceof FormModel) {
-        clazz = FormPage.class;
-      } else if (model instanceof StructurBrowserModel) {
-        clazz = StructurBrowserPage.class;
+      if (model != null) {
+        Class<?> clazz = null;
+        if (model instanceof TableModel) {
+          clazz = TablePage.class;
+        } else if (model instanceof FormModel) {
+          clazz = FormPage.class;
+        } else if (model instanceof StructurBrowserModel) {
+          clazz = StructurBrowserPage.class;
+        }
+        PageParameters parameters = model.getPageParameters();
+        parameters.put("listMenuKey", ((AbstractContentPage) this.getPage())
+            .getListMenuKey());
+        CharSequence url =
+            this.urlFor(PageMap.forName(this.getPage().getPageMapName()),
+                clazz, parameters);
+        String javascript = null;
+        if (this.getPage().getPageMapName()
+            .equals(MainPage.IFRAME_PAGEMAP_NAME)) {
+          javascript = "top.frames[0].location.href = '";
+        } else {
+          javascript = "top.frames[0].frames[0].location.href = '";
+        }
+        javascript += url + "';";
+        _target.appendJavascript(javascript);
       }
-      PageParameters parameters = model.getPageParameters();
-      parameters.put("listMenuKey", ((AbstractContentPage) this.getPage())
-          .getListMenuKey());
-      CharSequence url =
-          this.urlFor(PageMap.forName(this.getPage().getPageMapName()), clazz,
-              parameters);
-      String javascript = null;
-      if (this.getPage().getPageMapName().equals(MainPage.IFRAME_PAGEMAP_NAME)) {
-        javascript = "top.frames[0].location.href = '";
-      } else {
-        javascript = "top.frames[0].frames[0].location.href = '";
-      }
-      javascript += url + "';";
-      _target.appendJavascript(javascript);
     }
 
   }

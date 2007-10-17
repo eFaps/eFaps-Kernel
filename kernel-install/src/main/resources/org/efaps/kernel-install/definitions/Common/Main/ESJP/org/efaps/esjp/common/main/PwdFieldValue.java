@@ -65,7 +65,7 @@ public class PwdFieldValue implements EventExecution {
             .append(
                 "var B=document.getElementById(\"eFapsPasswordNew2\").value;")
             .append("if((A.length>0) && (B.length>0) && (old.length>0)){")
-            .append("if((A!=B)){ eFapsOpenWarnDialog(\"")
+            .append("if((A!=B)){ alert(\"")
             .append(
                 DBProperties.getProperty("Common_Main_PwdChgForm/WarnMessage"))
             .append(

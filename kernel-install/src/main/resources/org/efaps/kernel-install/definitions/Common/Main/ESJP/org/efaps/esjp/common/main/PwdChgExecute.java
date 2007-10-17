@@ -34,7 +34,8 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public class PwdChgExecute implements EventExecution{
+public class PwdChgExecute implements EventExecution {
+
   /**
    * Logger for this class
    */
@@ -48,8 +49,10 @@ public class PwdChgExecute implements EventExecution{
     Context context = Context.getThreadContext();
     String passwordold = context.getParameter("passwordold");
     String passwordnew = context.getParameter("passwordnew");
+    String passwordnew2 = context.getParameter("passwordnew2");
 
-    if (context.getPerson().checkPassword(passwordold)) {
+    if (context.getPerson().checkPassword(passwordold)
+        && passwordnew.equals(passwordnew2)) {
       try {
         context.getPerson().setPassword(passwordnew);
       } catch (Exception e) {
