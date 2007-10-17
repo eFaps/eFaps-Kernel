@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
- * @author tim
+ * @author tmo
  * @version $Id$
  * @todo description
  */

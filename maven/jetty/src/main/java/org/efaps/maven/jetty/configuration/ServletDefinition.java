@@ -24,7 +24,7 @@ import org.mortbay.jetty.servlet.Context;
 import org.mortbay.jetty.servlet.ServletHolder;
 
 /**
- * @author tim
+ * @author tmo
  * @version $Id$
  * @todo description
  */

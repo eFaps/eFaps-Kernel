@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author tim
+ * @author tmo
  * @version $Id$
  * @todo description
  */
