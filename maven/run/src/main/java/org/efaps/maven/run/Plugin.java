@@ -59,6 +59,11 @@ public class Plugin {
           = LoggerFactory.getLogger(MavenLoggerOverSLF4J.class);
 
   /**
+   * Prefix used to get parameter values from system properties.
+   */
+  private final static String PREFIX_PROPERTIES = "shell.parameter";
+
+  /**
    * All known plugins are stored in this instance variable.
    */
   private final static Map<String, Plugin> PLUGINS
@@ -141,7 +146,7 @@ e.printStackTrace();
     digester.addCallParam("plugin/mojos/mojo/parameters/parameter/editable", 5);
 
     // goal configuration (default values)
-    ConfigurationRule.init(digester);
+    DefaultValueRule.init(digester);
 
     digester.parse(_url.openStream());
 
@@ -261,14 +266,29 @@ e.printStackTrace();
     }
 
     /**
-     * 
-     * @param _config
-     * @param _mavenLogger
+     * Evaluation of parameter values:
+     * <ol>
+     * <li>check, if goal parameter is defined as parameter of the application
+     *     </li>
+     * <li>if not defined, check if a system property is defined (with syntax 
+     *     {@link #PREFIX_PROPERTIES} plus point plus name of parameter, e.g.
+     *     <code>shell.parameter.port</code>)</li>
+     * <li>if not defined, check if an environment variable with the same
+     *     name as the system property exists</li>
+     * <li>if not defined, check if a default value of the parameter is
+     *     defined</li>
+     * </ol>
+     *
+     * @param _config         xml configuration instance with all parameters of
+     *                        the application
+     * @param _mavenLogger    maven logger instance
      * @throws ClassNotFoundException
      * @throws InstantiationException
      * @throws IllegalAccessException   mojo class could not be instanciated
      * @throws MojoExecutionException
      * @throws MojoFailureException
+     * @see #PREFIX_PROPERTIES
+     * @todo use on exceptions instead!
      */
     @SuppressWarnings("unchecked")
     public void execute(final XMLConfiguration _config,
@@ -287,9 +307,25 @@ e.printStackTrace();
         for (final Field field : clazz.getDeclaredFields())  {
           final Plugin.Parameter param = this.fieldParameters.get(field.getName());
           if (param != null)   {
-            if (!_config.containsKey(param.getParamName()) && (param.getConfiguration() != null))  {
-              _config.setProperty(param.getParamName(),
-                                  param.getConfiguration());
+            if (!_config.containsKey(param.getParamName()))  {
+              // system property
+              final String propName = new StringBuilder()
+                  .append(PREFIX_PROPERTIES).append('.')
+                  .append(param.getParamName()).toString();
+              final String propValue = System.getProperty(propName);
+              if (propValue != null)  {
+                _config.setProperty(param.getParamName(), propValue);
+              } else  {
+                // environment variable
+                final String envValue = System.getenv(propName);
+                if (envValue != null)  {
+                  _config.setProperty(param.getParamName(), envValue);
+                // default value
+                } else if (param.getDefaultValue() != null)  {
+                  _config.setProperty(param.getParamName(),
+                                      param.getDefaultValue());
+                }
+              }
             }
             if (_config.containsKey(param.getParamName()))  {
               filled.add(param);
@@ -311,7 +347,6 @@ System.out.println("Parameter " + param + " not defined");
 
       // execute only if all required attributes are filled
       if (allFilled)  {
-        _mavenLogger.info("HALLO");
         mojo.setLog(_mavenLogger);
         mojo.execute();
       }
@@ -331,7 +366,7 @@ System.out.println("Parameter " + param + " not defined");
       this.description = _description;
       for (Map.Entry<String, String> conf : this.configurations.entrySet())  {
         Parameter param = this.fieldParameters.get(conf.getKey());
-        param.configuration = conf.getValue();
+        param.defaultValue = conf.getValue();
       }
     }
 
@@ -440,7 +475,7 @@ System.out.println("Parameter " + param + " not defined");
     private final boolean editable;
 
     /** Stores the configuration value (default value of this parameter). */
-    private String configuration = null;
+    private String defaultValue = null;
 
     Parameter(final String _name, final String _alias, final String _className, final String _description, final boolean _required, final boolean _editable)  {
       this.fieldName = _name;
@@ -515,8 +550,8 @@ System.out.println("no mapping for '" + this.className + "' found");
     /**
      * @return the description
      */
-    public String getConfiguration() {
-      return this.configuration;
+    public String getDefaultValue() {
+      return this.defaultValue;
     }
 
     /**
@@ -549,7 +584,7 @@ System.out.println("no mapping for '" + this.className + "' found");
         .append("description",    this.description)
         .append("required",       this.required)
         .append("editable",       this.editable)
-        .append("configuration",  this.configuration)
+        .append("configuration",  this.defaultValue)
         .toString();
     }
   }
@@ -616,7 +651,7 @@ System.out.println("no mapping for '" + this.className + "' found");
    * @see #Plugin using this rule to evaluate default values for a gaol of a
    *              plugin
    */
-  protected static class ConfigurationRule extends CallMethodRule  {
+  protected static class DefaultValueRule extends CallMethodRule  {
 
     /**
      * Adds an instance of this rule to the given digester instance.
@@ -625,7 +660,7 @@ System.out.println("no mapping for '" + this.className + "' found");
      * @throws ParserConfigurationException from called methods
      */
     static void init(final Digester _digester) throws ParserConfigurationException  {
-      _digester.addRule("plugin/mojos/mojo/configuration/*", new ConfigurationRule());
+      _digester.addRule("plugin/mojos/mojo/configuration/*", new DefaultValueRule());
       _digester.addCallParam("plugin/mojos/mojo/configuration/*", 0);
       _digester.addCallParam("plugin/mojos/mojo/configuration/*", 1, "default-value");
     }
@@ -637,7 +672,7 @@ System.out.println("no mapping for '" + this.className + "' found");
      * @throws ParserConfigurationException from called constructor in
      *         {@link CallMethodRule#CallMethodRule(String, int)}
      */
-    private ConfigurationRule() throws ParserConfigurationException {
+    private DefaultValueRule() throws ParserConfigurationException {
       super(null, 2);
     }
 
