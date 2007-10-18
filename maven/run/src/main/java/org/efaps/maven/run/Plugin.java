@@ -1,5 +1,5 @@
 /*
- * * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,9 +141,8 @@ e.printStackTrace();
     digester.addCallParam("plugin/mojos/mojo/parameters/parameter/editable", 5);
 
     // goal configuration (default values)
-    digester.addRule("plugin/mojos/mojo/configuration/*", new ConfigurationRule());
-    digester.addCallParam("plugin/mojos/mojo/configuration/*", 0);
-    
+    ConfigurationRule.init(digester);
+
     digester.parse(_url.openStream());
 
     this.name = pluginRule.name;
@@ -357,7 +356,8 @@ System.out.println("Parameter " + param + " not defined");
      * @param _paramName  name of parameter
      * @param _value      configuration value of parameter
      */
-    protected void addConfiguration(final String _paramName, final String _value)  {
+    protected void addConfiguration(final String _paramName,
+                                    final String _value)  {
       this.configurations.put(_paramName, _value);
     }
 
@@ -601,21 +601,61 @@ System.out.println("no mapping for '" + this.className + "' found");
 
   /////////////////////////////////////////////////////////////////////////////
 
-  protected class ConfigurationRule extends CallMethodRule  {
+  /**
+   * Digester Rule to evaluate configurations within the plugin.xml file, e.g.:
+   * <br/>
+   * <code>&lt;port default-value="8888"/&gt;${org.efaps.db.port}&lt;/port&gt;
+   * </code><br/>
+   * The rule is used to define the default values for parameters. If an
+   * expression (the <code>${org.efaps.db.port}</code> stuff) is defined, this
+   * is the default value, otherwise if a default value (the <code>8888</code>
+   * stuff) is defined and length of the expression is zero, the default value
+   * is used.<br/>
+   * The is defined as tag name (the <code>&lt;port&gt;</code> stuff).
+   * 
+   * @see #Plugin using this rule to evaluate default values for a gaol of a
+   *              plugin
+   */
+  protected static class ConfigurationRule extends CallMethodRule  {
 
     /**
-     * @throws ParserConfigurationException
+     * Adds an instance of this rule to the given digester instance.
+     *
+     * @param _digester digester instance
+     * @throws ParserConfigurationException from called methods
      */
-    protected ConfigurationRule() throws ParserConfigurationException {
-      super(null, 1);
+    static void init(final Digester _digester) throws ParserConfigurationException  {
+      _digester.addRule("plugin/mojos/mojo/configuration/*", new ConfigurationRule());
+      _digester.addCallParam("plugin/mojos/mojo/configuration/*", 0);
+      _digester.addCallParam("plugin/mojos/mojo/configuration/*", 1, "default-value");
     }
 
+    
+    /**
+     * The constructor initialize the rule with two parameters.
+     *
+     * @throws ParserConfigurationException from called constructor in
+     *         {@link CallMethodRule#CallMethodRule(String, int)}
+     */
+    private ConfigurationRule() throws ParserConfigurationException {
+      super(null, 2);
+    }
+
+    /**
+     * End of parsing. Get both defined parameters, evaluate which is the
+     * default value (expression or default value) and stores the default value
+     * for given key at the goal.
+     */
     @Override
     public void end() throws java.lang.Exception  {
       final Object[] params = (Object[])getDigester().popParams();
       final Goal goal = (Goal) getDigester().peek();
-      goal.addConfiguration(getDigester().getCurrentElementName(),
-                            (String) params[0]);
+      final String expr = (String) params[0];
+      final String def = (String) params[1];
+      final String value = (def != null) && (expr.trim().length() == 0)
+                           ? def
+                           : expr;
+      goal.addConfiguration(getDigester().getCurrentElementName(), value);
     }
   }
 }
