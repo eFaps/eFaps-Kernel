@@ -50,7 +50,7 @@
   <filter>
     <filter-name>eFapsBasicAuthenticationFilter</filter-name>
     <filter-class>
-      org.efaps.webapp.filter.BasicAuthenticationFilter
+      org.efaps.ui.wicket.filter.BasicAuthenticationFilter
     </filter-class>
     <init-param>
       <param-name>application</param-name>
@@ -73,7 +73,7 @@
   <filter>
     <filter-name>eFapsFormBasedAuthenticationFilter</filter-name>
     <filter-class>
-      org.efaps.webapp.filter.FormBasedAuthenticationFilter
+      org.efaps.ui.wicket.filter.FormBasedAuthenticationFilter
     </filter-class>
     <init-param>
       <param-name>application</param-name>
@@ -145,7 +145,7 @@
   <!-- filter used to make a whole transaction for one request -->
   <filter>
     <filter-name>eFapsTransactionFilter</filter-name>
-    <filter-class>org.efaps.webapp.filter.TransactionFilter</filter-class>
+    <filter-class>org.efaps.ui.wicket.filter.TransactionFilter</filter-class>
   </filter>
 
   <filter>
@@ -153,7 +153,7 @@
     <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
     <init-param>
       <param-name>applicationClassName</param-name>
-      <param-value>org.efaps.webapp.EFapsApplication</param-value>
+      <param-value>org.efaps.ui.wicket.EFapsApplication</param-value>
     </init-param>
   </filter>
 
@@ -182,7 +182,7 @@
     <servlet-name>eFapsServlet</servlet-name>
     <display-name>eFapsServlet</display-name>
     <description>no description</description>
-    <servlet-class>org.efaps.servlet.RequestHandler</servlet-class>
+    <servlet-class>org.efaps.ui.servlet.RequestHandler</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
@@ -190,7 +190,7 @@
     <servlet-name>eFapsCheckoutServlet</servlet-name>
     <display-name>eFapsCheckoutServlet</display-name>
     <description>eFaps servlet used to checkout files.</description>
-    <servlet-class>org.efaps.servlet.CheckoutServlet</servlet-class>
+    <servlet-class>org.efaps.ui.servlet.CheckoutServlet</servlet-class>
   </servlet>
 
   <servlet>
@@ -199,14 +199,14 @@
     <description>
       eFaps servlet used to checkout images stored in the database.
     </description>
-    <servlet-class>org.efaps.servlet.ImageServlet</servlet-class>
+    <servlet-class>org.efaps.ui.servlet.ImageServlet</servlet-class>
   </servlet>
 
   <servlet>
     <servlet-name>eFapsWebDAVServlet</servlet-name>
     <display-name>eFapsWebDAVServlet</display-name>
     <description>eFaps servlet used for WebDAV access</description>
-    <servlet-class>org.efaps.servlet.WebDAVServlet</servlet-class>
+    <servlet-class>org.efaps.ui.servlet.WebDAVServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 

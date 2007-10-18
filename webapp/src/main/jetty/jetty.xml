@@ -26,12 +26,12 @@
   <filter path="/*"
           name="eFaps"
           classname="org.apache.wicket.protocol.http.WicketFilter">
-    <parameter key="applicationClassName">org.efaps.webapp.EFapsApplication</parameter>
+    <parameter key="applicationClassName">org.efaps.ui.wicket.EFapsApplication</parameter>
   </filter>
 
   <filter path="/*"
           name="eFapsTransactionFilter"
-          classname="org.efaps.webapp.filter.TransactionFilter"/>
+          classname="org.efaps.ui.wicket.filter.TransactionFilter"/>
 
   <servlet path="/*"
           name="eFapsServlet"
@@ -42,6 +42,6 @@
   <servlet path="/servlet/image/*"
           name="eFapsImageServlet"
           displayname="eFapsImageServlet"
-          classname="org.efaps.servlet.ImageServlet"/>
+          classname="org.efaps.ui.servlet.ImageServlet"/>
 
 </server>
