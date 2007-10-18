@@ -38,10 +38,10 @@ import org.efaps.update.event.EventFactory;
  * reads with <code>org.apache.commons.digester</code> a XML-File to create
  * the <code>CommandDefinition</code>. It is than inserted into the Database
  * by the SuperClass <code>AbstractUpdate</code>.
- * 
+ *
  * @author tmo
  * @version $Id$
- * 
+ *
  */
 public class CommandUpdate extends AbstractUpdate {
 
@@ -106,7 +106,7 @@ public class CommandUpdate extends AbstractUpdate {
   }
 
   /**
-   * 
+   *
    */
   protected CommandUpdate(final String _typeName, final Set<Link> _allLinks) {
     super(_typeName, _allLinks);
@@ -119,7 +119,7 @@ public class CommandUpdate extends AbstractUpdate {
    * Method that reads the given XML-File and than uses the
    * <code>org.apache.commons.digester</code> to create the diffrent Class and
    * invokes the Methods to Update a Command
-   * 
+   *
    * @param _file
    *          XML-File to be read by the digester
    * @return Command Definition read by digester
@@ -180,7 +180,14 @@ public class CommandUpdate extends AbstractUpdate {
       digester.addCallParam("ui-command/definition/target/execute/property", 0, "name");
       digester.addCallParam("ui-command/definition/target/execute/property", 1);
       digester.addSetNext("ui-command/definition/target/execute", "addEvent", "org.efaps.update.event.Event");
-      
+
+      digester.addFactoryCreate("ui-command/definition/target/validate", new EventFactory("Admin_UI_ValidateEvent"), false);
+      digester.addCallMethod("ui-command/definition/target/validate/property", "addProperty", 2);
+      digester.addCallParam("ui-command/definition/target/validate/property", 0, "name");
+      digester.addCallParam("ui-command/definition/target/validate/property", 1);
+      digester.addSetNext("ui-command/definition/target/validate", "addEvent", "org.efaps.update.event.Event");
+
+
       // properties
       digester
           .addCallMethod("ui-command/definition/property", "addProperty", 2);
@@ -219,7 +226,7 @@ public class CommandUpdate extends AbstractUpdate {
 
     /**
      * Assigns a role for accessing this command.
-     * 
+     *
      * @param _role
      *          name of the role
      */
@@ -229,7 +236,7 @@ public class CommandUpdate extends AbstractUpdate {
 
     /**
      * Assigns a table as target for this command definition.
-     * 
+     *
      * @param _targetTable
      *          name of the target table
      */
@@ -239,7 +246,7 @@ public class CommandUpdate extends AbstractUpdate {
 
     /**
      * Assigns a table as target for this command definition.
-     * 
+     *
      * @param _targetTable
      *          name of the target table
      */
@@ -249,7 +256,7 @@ public class CommandUpdate extends AbstractUpdate {
 
     /**
      * Assigns a form as target for this command definition.
-     * 
+     *
      * @param _targetForm
      *          name of the target form
      */
@@ -259,7 +266,7 @@ public class CommandUpdate extends AbstractUpdate {
 
     /**
      * Assigns a menu as target for this command definition.
-     * 
+     *
      * @param _targetMenu
      *          name of the target menu
      */
@@ -269,7 +276,7 @@ public class CommandUpdate extends AbstractUpdate {
 
     /**
      * Assigns a search menu as target for this command definition.
-     * 
+     *
      * @param _targetSearch
      *          name of the target search
      */

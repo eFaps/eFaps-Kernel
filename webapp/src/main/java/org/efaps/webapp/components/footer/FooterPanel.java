@@ -21,6 +21,7 @@
 package org.efaps.webapp.components.footer;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.Page;
@@ -33,6 +34,7 @@ import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
@@ -44,6 +46,8 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.util.EFapsException;
 import org.efaps.webapp.EFapsSession;
@@ -98,6 +102,8 @@ public class FooterPanel extends Panel {
    */
   private final ModalWindowContainer modalWindow;
 
+  private boolean success;
+
   /**
    * Constructor for the FooterPanel.
    *
@@ -116,6 +122,42 @@ public class FooterPanel extends Panel {
     super(_id, _model);
     this.modalWindow = _modalWindow;
     AbstractModel model = (AbstractModel) super.getModel();
+
+    if (model.getCommand().getProperty("SuccessDialog") != null) {
+      final String key = model.getCommand().getProperty("SuccessDialog");
+
+      FooterPanel.this.modalWindow
+          .setWindowClosedCallback(new WindowClosedCallback() {
+
+            private static final long serialVersionUID = 1L;
+
+            public void onClose(final AjaxRequestTarget _target) {
+              if (FooterPanel.this.success) {
+                FooterPanel.this.modalWindow.setResizable(false);
+                FooterPanel.this.modalWindow.setInitialWidth(20);
+                FooterPanel.this.modalWindow.setInitialHeight(12);
+                FooterPanel.this.modalWindow.setWidthUnit("em");
+                FooterPanel.this.modalWindow.setHeightUnit("em");
+
+                FooterPanel.this.modalWindow
+                    .setPageCreator(new ModalWindow.PageCreator() {
+
+                      private static final long serialVersionUID = 1L;
+
+                      public Page createPage() {
+                        return new DialogPage(FooterPanel.this.modalWindow,
+                            DBProperties.getProperty(key), DBProperties
+                                .getProperty(key + ".Button"));
+                      }
+                    });
+
+                FooterPanel.this.modalWindow.show(_target);
+                FooterPanel.this.success = false;
+              }
+            }
+          });
+
+    }
 
     String label = null;
     if (model.isCreateMode()) {
@@ -216,7 +258,7 @@ public class FooterPanel extends Panel {
       String[] other =
           this.getComponent().getRequestCycle().getRequest().getParameters(
               "selectedRow");
-      if (checkForRequired(_target)) {
+      if (checkForRequired(_target) && (validate(_target))) {
         try {
           ((AbstractModel) this.form.getParent().getModel())
               .executeEvents(other);
@@ -257,12 +299,34 @@ public class FooterPanel extends Panel {
               + "'; self.close();");
 
         }
+        FooterPanel.this.success = true;
+
       }
     }
 
     @Override
     protected void onError(AjaxRequestTarget arg0) {
       // not useful here
+    }
+
+    private boolean validate(final AjaxRequestTarget _target) {
+      boolean ret = true;
+
+      List<Return> validation =
+          ((AbstractModel) this.form.getParent().getModel()).validate();
+
+      for (Return oneReturn : validation) {
+        if (oneReturn.get(ReturnValues.TRUE) != null) {
+        } else {
+          final String key = (String) oneReturn.get(ReturnValues.VALUES);
+          showDialog(_target, DBProperties.getProperty(key), DBProperties
+              .getProperty(key + ".Button"));
+
+          ret = false;
+          break;
+        }
+      }
+      return ret;
     }
 
     /**
@@ -313,29 +377,38 @@ public class FooterPanel extends Panel {
         }
       }
       if (!ret) {
-        final ModalWindowContainer modal =
-            ((AbstractContentPage) this.getComponent().getPage()).getModal();
-        modal.setResizable(false);
-        modal.setInitialWidth(20);
-        modal.setInitialHeight(12);
-        modal.setWidthUnit("em");
-        modal.setHeightUnit("em");
-        modal.setPageMapName("warn");
-        modal.setPageCreator(new ModalWindow.PageCreator() {
+        showDialog(_target, DBProperties
+            .getProperty("Common_UIForm_Mandotory.Message"), DBProperties
+            .getProperty("Common_UIForm_Mandotory.Button"));
 
-          private static final long serialVersionUID = 1L;
-
-          public Page createPage() {
-            return new DialogPage(modal, DBProperties
-                .getProperty("Common_UIForm_Mandotory.Message"), DBProperties
-                .getProperty("Common_UIForm_Mandotory.Button"));
-          }
-        });
-
-        modal.show(_target);
       }
       return ret;
     }
+
+  }
+
+  private void showDialog(final AjaxRequestTarget _target, final String _msg,
+                          final String _button) {
+    final ModalWindowContainer modal =
+        ((AbstractContentPage) this.getPage()).getModal();
+
+    modal.setResizable(false);
+    modal.setInitialWidth(20);
+    modal.setInitialHeight(12);
+    modal.setWidthUnit("em");
+    modal.setHeightUnit("em");
+    modal.setPageMapName("warn");
+
+    modal.setPageCreator(new ModalWindow.PageCreator() {
+
+      private static final long serialVersionUID = 1L;
+
+      public Page createPage() {
+        return new DialogPage(modal, _msg, _button);
+      }
+    });
+
+    modal.show(_target);
 
   }
 

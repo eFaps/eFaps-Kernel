@@ -59,6 +59,7 @@
     <target>
       <form>Common_Main_PwdChgForm</form>
       <execute program="org.efaps.esjp.common.main.PwdChgExecute"/>
+      <validate program="org.efaps.esjp.common.main.PwdChgValidate"/>
     </target>
     <!-- properties -->
     <property name="Target">modal</property>
@@ -66,6 +67,7 @@
     <property name="TargetMode">create</property>
     <property name="WindowHeight">250</property>
     <property name="WindowWidth">380</property>
+    <property name="SuccessDialog">Common_Main_PwdChgForm/Success</property>
   </definition>
 
 </ui-command>

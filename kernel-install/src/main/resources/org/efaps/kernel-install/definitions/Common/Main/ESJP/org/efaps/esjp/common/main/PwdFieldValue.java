@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.FieldValue.HtmlType;
-import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
@@ -32,7 +31,7 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  * @todo description
  */
@@ -55,43 +54,17 @@ public class PwdFieldValue implements EventExecution {
 
     if (htmltype == HtmlType.CREATEHTML) {
       if (field.equals("1")) {
-        ret
-            .append("<script type=\"text/javascript\">")
-            .append("function testForEqual()")
-            .append(
-                "{ var old=document.getElementById(\"eFapsPasswordOld\").value; ")
-            .append(
-                "var A=document.getElementById(\"eFapsPasswordNew\").value; ")
-            .append(
-                "var B=document.getElementById(\"eFapsPasswordNew2\").value;")
-            .append("if((A.length>0) && (B.length>0) && (old.length>0)){")
-            .append("if((A!=B)){ alert(\"")
-            .append(
-                DBProperties.getProperty("Common_Main_PwdChgForm/WarnMessage"))
-            .append(
-                "\"); document.getElementById(\"eFapsPasswordNew2\").value=\"\";}")
-
-            .append("if((A==B)){submitLock=false;}")
-
-            .append("}}</script>").append(
-                "<br/>&nbsp;<input name=\"passwordold\" type=\"password\" ")
-            .append("size=\"20\" maxlength=\"25\" ").append(
-                "onfocus=\"submitLock=true;\" onblur=\"testForEqual();\" ")
-            .append(" id=\"eFapsPasswordOld\">&nbsp;<br/><br/>");
+        ret.append("<br/>&nbsp;").append(
+            "<input name=\"passwordold\" type=\"password\" size=\"20\">")
+            .append("&nbsp;<br/><br/>");
       } else if (field.equals("2")) {
-        ret
-            .append("<br/>&nbsp;<input name=\"passwordnew\" type=\"password\" ")
-            .append("size=\"20\" maxlength=\"25\" onfocus=\"submitLock=true;\"")
-            .append(" onblur=\"testForEqual();\" id=\"eFapsPasswordNew\">")
+        ret.append("<br/>&nbsp;").append(
+            "<input name=\"passwordnew\" type=\"password\" size=\"20\">")
             .append("&nbsp;<br/><br/>");
       } else if (field.equals("3")) {
-        ret
-            .append(
-                "<br/>&nbsp;<input name=\"passwordnew2\" type=\"password\" ")
-            .append("size=\"20\" maxlength=\"25\" onfocus=\"submitLock=true;\"")
-            .append("onblur=\"testForEqual();\" id=\"eFapsPasswordNew2\">")
+        ret.append("<br/>&nbsp;").append(
+            "<input name=\"passwordnew2\" type=\"password\" size=\"20\">")
             .append("&nbsp;<br/><br/>");
-
       }
     }
     if (ret != null) {

@@ -21,6 +21,7 @@
 package org.efaps.webapp.models;
 
 import java.io.StringReader;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.wicket.PageParameters;
@@ -29,6 +30,7 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.CommandAbstract;
@@ -44,7 +46,7 @@ import org.efaps.util.EFapsException;
 import org.efaps.webapp.pages.error.ErrorPage;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public abstract class AbstractModel extends Model {
@@ -520,4 +522,18 @@ public abstract class AbstractModel extends Model {
     }
   }
 
+  /**
+   * This method executes the Validate-Events wich are related to this Model. It
+   * will take the Events of the Command {@link #commandUUID}.
+   *
+   * @return List with Return from the esjp
+   */
+  public List<Return> validate() {
+    CommandAbstract command = this.getCommand();
+    try {
+      return command.executeEvents(EventType.UI_VALIDATE, (Object) null);
+    } catch (EFapsException e) {
+      throw new RestartResponseException(new ErrorPage(e));
+    }
+  }
 }

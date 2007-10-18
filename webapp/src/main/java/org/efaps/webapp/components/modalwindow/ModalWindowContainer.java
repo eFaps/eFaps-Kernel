@@ -126,4 +126,26 @@ public class ModalWindowContainer extends ModalWindow {
     this.updateParent = updateParent;
   }
 
+  /**
+   * This method sets this ModalWindowContainer into the state like it was just
+   * created. It uses the defaultvalues as they are defined in
+   * <code>org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow</code>
+   */
+  public void reset() {
+
+    super.setMinimalWidth(200);
+    super.setMinimalHeight(200);
+    super.setInitialHeight(400);
+    super.setInitialWidth(600);
+    super.setUseInitialHeight(true);
+    super.setResizable(true);
+    super.setHeightUnit("px");
+    super.setWidthUnit("px");
+    super.setPageCreator(null);
+    super.setCloseButtonCallback(null);
+    super.setWindowClosedCallback(null);
+    super.setPageMapName("modal-dialog-pagemap");
+
+  }
+
 }

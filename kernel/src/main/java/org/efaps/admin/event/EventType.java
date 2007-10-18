@@ -25,11 +25,11 @@ package org.efaps.admin.event;
  * This enum provides the key-value Relation for the TriggerEvent.<br>
  * Therfore using a trigger can be made by using the key. An example for the use
  * of this enum is the definition of a Trigger inside the XML-Defenition.
- * 
+ *
  * @author tmo
- * @author jmo
+ * @author jmox
  * @version $Id$
- * 
+ *
  */
 public enum EventType  {
 
@@ -53,8 +53,11 @@ public enum EventType  {
   UI_TABLE_EVALUATE  ("Admin_UI_TableEvaluateEvent"),
   UI_FIELD_VALUE     ("Admin_UI_FieldValueEvent"),
   UI_ACCESSCHECK     ("Admin_UI_AbstractAccessCheckEvent"),
-  UI_COMMAND_EXECUTE ("Admin_UI_CommandExecuteEvent");
-  
+  UI_COMMAND_EXECUTE ("Admin_UI_CommandExecuteEvent"),
+  UI_VALIDATE        ("Admin_UI_ValidateEvent"),
+  VALIDATE           ("Admin_DataModel_Validate");
+
+
   public final String name;
 
   private EventType(final String _name)  {

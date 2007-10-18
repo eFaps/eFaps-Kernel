@@ -88,6 +88,7 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
       } else {
         modal = ((AbstractContentPage) super.getComponent().getPage()).getModal();
       }
+      modal.reset();
       ModalWindowAjaxPageCreator pageCreator =
           new ModalWindowAjaxPageCreator((MenuItemModel) super.getComponent()
               .getModel(), modal);
