@@ -41,27 +41,27 @@ public class PwdFieldValue implements EventExecution {
    * @param _parameter
    */
   public Return execute(final Parameter _parameter) {
-    StringBuilder ret = new StringBuilder();
-    FieldValue fieldvalue =
+final StringBuilder ret = new StringBuilder();
+final   FieldValue fieldvalue =
         (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
-    String field =
+final   String field =
         (String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
             .get("field");
 
-    HtmlType htmltype = fieldvalue.getHtmlType();
+final   HtmlType htmltype = fieldvalue.getHtmlType();
 
-    Return retVal = new Return();
+final   Return retVal = new Return();
 
     if (htmltype == HtmlType.CREATEHTML) {
-      if (field.equals("1")) {
+      if ("1".equals(field)) {
         ret.append("<br/>&nbsp;").append(
             "<input name=\"passwordold\" type=\"password\" size=\"20\">")
             .append("&nbsp;<br/><br/>");
-      } else if (field.equals("2")) {
+      } else if ("2".equals(field)) {
         ret.append("<br/>&nbsp;").append(
             "<input name=\"passwordnew\" type=\"password\" size=\"20\">")
             .append("&nbsp;<br/><br/>");
-      } else if (field.equals("3")) {
+      } else if ("3".equals(field)) {
         ret.append("<br/>&nbsp;").append(
             "<input name=\"passwordnew2\" type=\"password\" size=\"20\">")
             .append("&nbsp;<br/><br/>");

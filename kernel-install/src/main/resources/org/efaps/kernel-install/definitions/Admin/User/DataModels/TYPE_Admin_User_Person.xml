@@ -114,7 +114,15 @@
     <name>Admin_User_Person</name>
     <parent>Admin_User_Abstract</parent>
     
-     <!-- triggers -->
+    <attribute>
+      <name>Password</name>
+      <type>Password</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <validate program="org.efaps.esjp.common.main.PwdChgValidatePwd"/>
+      <sqlcolumn>PASSWORD</sqlcolumn>
+    </attribute>
+    
+    <!-- triggers -->
     <trigger name="Admin_User_Person_ACCESSCHECK" event="ACCESSCHECK" 
       program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType"/>
     

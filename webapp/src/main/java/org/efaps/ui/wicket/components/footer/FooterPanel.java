@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.footer;
@@ -49,7 +49,6 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.util.EFapsException;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -64,6 +63,7 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.util.EFapsException;
 
 /**
  * This class renders the Footer under a WebForm or WebTable.<br>
@@ -71,7 +71,7 @@ import org.efaps.ui.wicket.pages.main.MainPage;
  * the Footer like submit, cancel and so on.
  *
  * @author jmox
- * @version $Id$
+ * @version $Id:FooterPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class FooterPanel extends Panel {
 
@@ -121,7 +121,7 @@ public class FooterPanel extends Panel {
                      FormContainer _form) {
     super(_id, _model);
     this.modalWindow = _modalWindow;
-    AbstractModel model = (AbstractModel) super.getModel();
+    final AbstractModel model = (AbstractModel) super.getModel();
 
     if (model.getCommand().getProperty("SuccessDialog") != null) {
       final String key = model.getCommand().getProperty("SuccessDialog");
@@ -254,14 +254,16 @@ public class FooterPanel extends Panel {
     }
 
     @Override
-    protected void onSubmit(AjaxRequestTarget _target) {
-      String[] other =
+    protected void onSubmit(final AjaxRequestTarget _target) {
+      final String[] other =
           this.getComponent().getRequestCycle().getRequest().getParameters(
               "selectedRow");
-      if (checkForRequired(_target) && (validate(_target))) {
+      if (checkForRequired(_target) && (validateForm(_target))) {
         try {
-          ((AbstractModel) this.form.getParent().getModel())
-              .executeEvents(other);
+          if (!executeEvents(_target, other)) {
+            return;
+          }
+
         } catch (final EFapsException e) {
           final ModalWindowContainer modal =
               ((AbstractContentPage) this.getComponent().getPage()).getModal();
@@ -277,13 +279,13 @@ public class FooterPanel extends Panel {
           return;
         }
 
-        AbstractModel model = (AbstractModel) this.imodel;
+        final AbstractModel model = (AbstractModel) this.imodel;
 
         if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
           FooterPanel.this.modalWindow.setReloadChild(true);
           FooterPanel.this.modalWindow.close(_target);
         } else {
-          AbstractModel openermodel =
+          final AbstractModel openermodel =
               (AbstractModel) ((EFapsSession) Session.get()).getOpenerModel();
           Class<?> clazz;
           if (openermodel instanceof TableModel) {
@@ -291,7 +293,7 @@ public class FooterPanel extends Panel {
           } else {
             clazz = FormPage.class;
           }
-          CharSequence url =
+          final CharSequence url =
               this.form.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
                   clazz, openermodel.getPageParameters());
           _target.appendJavascript("opener.location.href = '"
@@ -305,19 +307,56 @@ public class FooterPanel extends Panel {
     }
 
     @Override
-    protected void onError(AjaxRequestTarget arg0) {
+    protected void onError(final AjaxRequestTarget _target) {
       // not useful here
     }
 
-    private boolean validate(final AjaxRequestTarget _target) {
+    /**
+     * execute the events wich are related to CommandAbstract calling the Form
+     *
+     * @param _target
+     *                AjaxRequestTarget to be used in the case a ModalPage
+     *                should be called
+     * @param _other
+     *                Parameters to be passed on to the Event
+     * @return true if the events where executed successfully, otherwise false
+     * @throws EFapsException
+     */
+    private boolean executeEvents(final AjaxRequestTarget _target,
+                                  final String[] _other) throws EFapsException {
+      boolean ret = true;
+      final List<Return> returns =
+          ((AbstractModel) this.form.getParent().getModel())
+              .executeEvents(_other);
+      for (Return oneReturn : returns) {
+        if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
+          final String key = (String) oneReturn.get(ReturnValues.VALUES);
+          showDialog(_target, DBProperties.getProperty(key), DBProperties
+              .getProperty(key + ".Button"));
+          ret = false;
+          break;
+        }
+      }
+      return ret;
+    }
+
+    /**
+     * executes the Validation-Events related to the CommandAbstract wich called
+     * this Form
+     *
+     * @param _target
+     *                AjaxRequestTarget to be used in the case a ModalPage
+     *                should be called
+     * @return true if the Validation was valid, otherwise false
+     */
+    private boolean validateForm(final AjaxRequestTarget _target) {
       boolean ret = true;
 
-      List<Return> validation =
+      final List<Return> validation =
           ((AbstractModel) this.form.getParent().getModel()).validate();
 
       for (Return oneReturn : validation) {
-        if (oneReturn.get(ReturnValues.TRUE) != null) {
-        } else {
+        if (oneReturn.get(ReturnValues.TRUE) == null) {
           final String key = (String) oneReturn.get(ReturnValues.VALUES);
           showDialog(_target, DBProperties.getProperty(key), DBProperties
               .getProperty(key + ".Button"));
@@ -343,14 +382,14 @@ public class FooterPanel extends Panel {
         return true;
       }
 
-      Iterator<?> it = this.getComponent().getPage().iterator();
+      final Iterator<?> iterator = this.getComponent().getPage().iterator();
       WebFormContainer container = null;
-      while (it.hasNext()) {
-        Object object = it.next();
+      while (iterator.hasNext()) {
+        final Object object = iterator.next();
         if (object instanceof FormContainer) {
-          Iterator<?> it2 = ((FormContainer) object).iterator();
-          while (it2.hasNext()) {
-            Object object2 = it2.next();
+          final Iterator<?> iterator2 = ((FormContainer) object).iterator();
+          while (iterator2.hasNext()) {
+            final Object object2 = iterator2.next();
             if (object2 instanceof WebFormContainer) {
               container = (WebFormContainer) object2;
               break;
@@ -360,15 +399,15 @@ public class FooterPanel extends Panel {
         }
       }
 
-      Map<?, ?> map =
+      final Map<?, ?> map =
           this.getComponent().getRequestCycle().getRequest().getParameterMap();
       for (FormCellPanel cellpanel : container.getRequiredComponents()) {
-        String[] values =
+        final String[] values =
             (String[]) map
                 .get(((FormCellModel) cellpanel.getModel()).getName());
-        String value = values[0];
+        final String value = values[0];
         if (value == null || value.length() == 0) {
-          WebMarkupContainer cellcontainer =
+          final WebMarkupContainer cellcontainer =
               (WebMarkupContainer) cellpanel.iterator().next();
           cellcontainer.add(new SimpleAttributeModifier("class",
               "eFapsFormLabelRequiredForce"));
@@ -387,6 +426,17 @@ public class FooterPanel extends Panel {
 
   }
 
+  /**
+   * shows a modal DialogPage
+   *
+   * @param _target
+   *                AjaxRequestTarget to be used for opening the modal
+   *                DialogPage
+   * @param _msg
+   *                Message to be shown in the Dialog
+   * @param _button
+   *                Label to be used for the CloseButton
+   */
   private void showDialog(final AjaxRequestTarget _target, final String _msg,
                           final String _button) {
     final ModalWindowContainer modal =
@@ -424,9 +474,9 @@ public class FooterPanel extends Panel {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void onClick(AjaxRequestTarget target) {
+    public void onClick(final AjaxRequestTarget _target) {
       FooterPanel.this.modalWindow.setReloadChild(false);
-      FooterPanel.this.modalWindow.close(target);
+      FooterPanel.this.modalWindow.close(_target);
     }
   }
 
@@ -446,19 +496,19 @@ public class FooterPanel extends Panel {
     @Override
     public void onSubmit() {
       super.onSubmit();
-      AbstractModel model = (AbstractModel) super.getModel();
+      final AbstractModel model = (AbstractModel) super.getModel();
 
-      PageParameters parameters = new PageParameters();
+      final PageParameters parameters = new PageParameters();
       parameters.add("command", model.getCommand().getUUID().toString());
       parameters.add("oid", model.getOid());
 
-      TableModel newmodel = new TableModel(parameters);
+      final TableModel newmodel = new TableModel(parameters);
       if (model.isSubmit()) {
         newmodel.setSubmit(true);
         newmodel.setCallingCommandUUID(model.getCallingCommandUUID());
       }
 
-      TablePage page = new TablePage(newmodel);
+      final TablePage page = new TablePage(newmodel);
 
       this.getRequestCycle().setResponsePage(page);
 

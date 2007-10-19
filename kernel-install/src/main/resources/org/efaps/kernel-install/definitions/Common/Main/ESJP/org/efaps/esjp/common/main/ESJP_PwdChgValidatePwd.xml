@@ -16,37 +16,29 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
- Revision:        $Rev:1144 $
- Last Changed:    $Date:2007-07-22 21:10:06 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
+ Last Changed By: $Author$
 
 -->
 
-<datamodel-type>
-  <uuid>4eb14278-f982-4a53-92ad-be95b4ee6b30</uuid>
+<esjp>
+  
 
-  <!-- create type -->
+  <!-- ************************************************************************
+    version definition used to create / update the Program 
+  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1144 $</local>
-      <mode>(version==5)</mode>
+      <local>$Rev:1145 $</local>
+      <mode>true</mode>
+      <mode>(version==8)</mode>
     </version>
-    <name>Admin_DataModel_Validate</name>
+    
+    <file>PwdChgValidatePwd.java</file>
   </definition>
 
-  <!-- define type -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev:1144 $</local>
-      <mode>(version==6)</mode>
-    </version>
-    <name>Admin_DataModel_Validate</name>
-    <parent>Admin_Event_Definition</parent>
-  </definition>
-
-</datamodel-type>
+</esjp>

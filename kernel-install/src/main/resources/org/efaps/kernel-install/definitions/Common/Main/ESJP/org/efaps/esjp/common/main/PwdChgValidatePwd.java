@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003-2007 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,50 +20,34 @@
 
 package org.efaps.esjp.common.main;
 
-import org.efaps.admin.AdminObject.EFapsClassName;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.db.Context;
-import org.efaps.db.Update;
-import org.efaps.db.Update.Status;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
- * @todo description
  */
-public class PwdChgExecute implements EventExecution {
+public class PwdChgValidatePwd implements EventExecution {
+
 
   /**
    * @param _parameter
    */
   public Return execute(final Parameter _parameter) throws EFapsException {
-
-    final Context context = Context.getThreadContext();
-    final String passwordold = context.getParameter("passwordold");
-    final String passwordnew = context.getParameter("passwordnew");
     final Return ret = new Return();
+    final Context context = Context.getThreadContext();
+    final String passwordnew = context.getParameter("passwordnew");
 
-    if (context.getPerson().checkPassword(passwordold)) {
-      final Type type = Type.get(EFapsClassName.USER_PERSON.name);
-      final Update update = new Update(type, "" + context.getPerson().getId());
-      final Status status = update.add("Password", passwordnew);
-
-      if ((status.isOk())) {
-        update.execute();
-        ret.put(ReturnValues.TRUE, "true");
-      } else {
-        ret.put(ReturnValues.VALUES, status.getReturnValue());
-      }
+    if (passwordnew.length() > 2) {
+      ret.put(ReturnValues.TRUE, "true");
     } else {
       ret.put(ReturnValues.VALUES,
-          "Common_Main_PwdChgForm/PwdChgExecute.checkPassword");
+          "Common_Main_PwdChgForm/PwdChgValidatePwd.ShortPwd");
     }
     return ret;
   }
-
 }

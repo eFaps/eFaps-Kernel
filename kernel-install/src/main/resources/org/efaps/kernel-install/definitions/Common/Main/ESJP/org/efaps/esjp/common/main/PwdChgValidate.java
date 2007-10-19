@@ -38,15 +38,16 @@ public class PwdChgValidate implements EventExecution {
    * @param _parameter
    */
   public Return execute(final Parameter _parameter) throws EFapsException {
-    Return ret = new Return();
-    Context context = Context.getThreadContext();
-    String passwordnew = context.getParameter("passwordnew");
-    String passwordnew2 = context.getParameter("passwordnew2");
+    final Return ret = new Return();
+    final Context context = Context.getThreadContext();
+    final String passwordnew = context.getParameter("passwordnew");
+    final String passwordnew2 = context.getParameter("passwordnew2");
 
-    if (!passwordnew.equals(passwordnew2)) {
-      ret.put(ReturnValues.VALUES, "Common_Main_PwdChgForm/WarnMessage");
-    }else {
+    if (passwordnew.equals(passwordnew2)) {
       ret.put(ReturnValues.TRUE, "true");
+    } else {
+      ret.put(ReturnValues.VALUES,
+          "Common_Main_PwdChgForm/PwdChgValidate.unequal");
     }
     return ret;
   }

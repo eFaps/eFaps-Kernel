@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.models;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,12 +43,12 @@ import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-import org.efaps.util.EFapsException;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmox
- * @version $Id$
+ * @version $Id:AbstractModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public abstract class AbstractModel extends Model {
 
@@ -153,7 +154,7 @@ public abstract class AbstractModel extends Model {
    */
   private void initialise() {
     this.oid = getParameter("oid");
-    CommandAbstract command =
+    final CommandAbstract command =
         getCommand(UUID.fromString(getParameter("command")));
     this.commandUUID = command.getUUID();
     this.mode = command.getTargetMode();
@@ -210,7 +211,7 @@ public abstract class AbstractModel extends Model {
    * @param _uuid
    *                UUID of the CommandAbstract
    */
-  public void setCallingCommandUUID(UUID _uuid) {
+  public void setCallingCommandUUID(final UUID _uuid) {
     this.callingCommandUUID = _uuid;
   }
 
@@ -265,7 +266,7 @@ public abstract class AbstractModel extends Model {
    * @param _uuid
    *                UUID to set for teh instance varaiable {@link #commandUUID}.
    */
-  public void setCommandUUID(UUID _uuid) {
+  public void setCommandUUID(final UUID _uuid) {
     this.commandUUID = _uuid;
   }
 
@@ -288,7 +289,7 @@ public abstract class AbstractModel extends Model {
    * @see #maxGroupCount
    * @see #getMaxGroupCount
    */
-  protected void setMaxGroupCount(int _maxGroupCount) {
+  protected void setMaxGroupCount(final int _maxGroupCount) {
     this.maxGroupCount = _maxGroupCount;
   }
 
@@ -311,7 +312,7 @@ public abstract class AbstractModel extends Model {
    * @see #mode
    * @see #getMode
    */
-  protected void setMode(int _mode) {
+  protected void setMode(final int _mode) {
     this.mode = _mode;
   }
 
@@ -343,7 +344,7 @@ public abstract class AbstractModel extends Model {
    * @return Parameter for the key, null if not found
    * @throws EFapsException
    */
-  public String getParameter(String _key) {
+  public String getParameter(final String _key) {
     String ret = null;
     try {
       String[] values;
@@ -390,9 +391,9 @@ public abstract class AbstractModel extends Model {
     try {
 
       if ((title != null) && (this.getOid() != null)) {
-        SearchQuery query = new SearchQuery();
+        final SearchQuery query = new SearchQuery();
         query.setObject(this.getOid());
-        ValueParser parser = new ValueParser(new StringReader(title));
+        final ValueParser parser = new ValueParser(new StringReader(title));
         ValueList list;
         list = parser.ExpressionString();
         list.makeSelect(query);
@@ -463,7 +464,7 @@ public abstract class AbstractModel extends Model {
    * @see #initialised
    * @see #isInitialised
    */
-  public void setInitialised(boolean _initialised) {
+  public void setInitialised(final boolean _initialised) {
     this.initialised = _initialised;
   }
 
@@ -500,26 +501,30 @@ public abstract class AbstractModel extends Model {
    *                ParameterValues.OTHERS
    * @throws EFapsException
    */
-  public void executeEvents(String[] _others) throws EFapsException {
+  public List<Return> executeEvents(final String[] _others) throws EFapsException {
+    List<Return> ret = new ArrayList<Return>();
     CommandAbstract command;
-    if (this.callingCommandUUID != null) {
-      command = this.getCallingCommand();
-    } else {
+    if (this.callingCommandUUID == null) {
       command = this.getCommand();
+    } else {
+      command = this.getCallingCommand();
     }
 
     if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-      if (this.getOid() != null) {
-        String[] contextoid = { this.getOid() };
-        Context.getThreadContext().getParameters().put("oid", contextoid);
-        command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-            ParameterValues.INSTANCE, new Instance(this.getOid()),
-            ParameterValues.OTHERS, _others);
+      if (this.getOid() == null) {
+        ret =
+            command.executeEvents(EventType.UI_COMMAND_EXECUTE,
+                ParameterValues.OTHERS, _others);
       } else {
-        command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-            ParameterValues.OTHERS, _others);
+        final String[] contextoid = { this.getOid() };
+        Context.getThreadContext().getParameters().put("oid", contextoid);
+        ret =
+            command.executeEvents(EventType.UI_COMMAND_EXECUTE,
+                ParameterValues.INSTANCE, new Instance(this.getOid()),
+                ParameterValues.OTHERS, _others);
       }
     }
+    return ret;
   }
 
   /**
@@ -529,7 +534,7 @@ public abstract class AbstractModel extends Model {
    * @return List with Return from the esjp
    */
   public List<Return> validate() {
-    CommandAbstract command = this.getCommand();
+    final CommandAbstract command = this.getCommand();
     try {
       return command.executeEvents(EventType.UI_VALIDATE, (Object) null);
     } catch (EFapsException e) {

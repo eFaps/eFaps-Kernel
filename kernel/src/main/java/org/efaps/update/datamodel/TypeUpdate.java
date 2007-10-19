@@ -46,9 +46,9 @@ import org.efaps.util.EFapsException;
  * This Class is responsible for the Update of Type in the Database.<br/>It
  * reads with <code>org.apache.commons.digester</code> a XML-File to create
  * the different Classes and invokes the Methods to Update a Type
- * 
+ *
  * @author tmo
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class TypeUpdate extends AbstractUpdate {
@@ -74,7 +74,7 @@ public class TypeUpdate extends AbstractUpdate {
   // constructors
 
   /**
-   * 
+   *
    */
   public TypeUpdate() {
     super("Admin_DataModel_Type", ALLLINKS);
@@ -87,25 +87,29 @@ public class TypeUpdate extends AbstractUpdate {
    * Method that reads the given XML-File and than uses the
    * <code>org.apache.commons.digester</code> to create the diffrent Class and
    * invokes the Methods to Update a Type
-   * 
+   *
    * @param _file
-   *          XML-File to be read by the digester
+   *                XML-File to be read by the digester
    * @return TypUdate Definition read by digester
    */
   public static TypeUpdate readXMLFile(final URL _url) {
     TypeUpdate ret = null;
 
     try {
-      Digester digester = new Digester();
+      final Digester digester = new Digester();
       digester.setValidating(false);
+      // create a new Type
       digester.addObjectCreate("datamodel-type", TypeUpdate.class);
 
+      // set the UUID for the Type
       digester.addCallMethod("datamodel-type/uuid", "setUUID", 1);
       digester.addCallParam("datamodel-type/uuid", 0);
 
+      // add a new Definition for the Type
       digester.addObjectCreate("datamodel-type/definition", Definition.class);
       digester.addSetNext("datamodel-type/definition", "addDefinition");
 
+      // set the Version of the Type-Definition
       digester.addCallMethod("datamodel-type/definition/version", "setVersion",
           4);
       digester.addCallParam("datamodel-type/definition/version/application", 0);
@@ -113,17 +117,20 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addCallParam("datamodel-type/definition/version/local", 2);
       digester.addCallParam("datamodel-type/definition/version/mode", 3);
 
+      // set the Name of the Type-Definition
       digester.addCallMethod("datamodel-type/definition/name", "setName", 1);
       digester.addCallParam("datamodel-type/definition/name", 0);
 
+      // set the parent of the Type-Definition
       digester
           .addCallMethod("datamodel-type/definition/parent", "setParent", 1);
       digester.addCallParam("datamodel-type/definition/parent", 0);
 
-      // Attributes
+      // add an Attribute to the Type-Definition
       digester.addObjectCreate("datamodel-type/definition/attribute",
           Attribute.class);
 
+      // set Name, Type, Tabel etc, of the Attribute
       digester.addCallMethod("datamodel-type/definition/attribute",
           "setDefinitions", 6);
       digester.addCallParam("datamodel-type/definition/attribute/name", 0);
@@ -134,7 +141,7 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addCallParam("datamodel-type/definition/attribute/defaultvalue",
           5);
 
-      // Trigger for the Attribute
+      // add a Trigger-Event to the Attribute
       digester.addFactoryCreate("datamodel-type/definition/attribute/trigger",
           new EventFactory(), false);
       digester.addCallMethod(
@@ -147,16 +154,29 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addSetNext("datamodel-type/definition/attribute/trigger",
           "addEvent", "org.efaps.update.event.Event");
 
+      // add a Validate-Event to the Attribute
+      digester.addFactoryCreate("datamodel-type/definition/attribute/validate",
+          new EventFactory("Admin_DataModel_Validate"), false);
+      digester.addCallMethod(
+          "datamodel-type/definition/attribute/validate/property",
+          "addProperty", 2);
+      digester.addCallParam(
+          "datamodel-type/definition/attribute/validate/property", 0, "name");
+      digester.addCallParam(
+          "datamodel-type/definition/attribute/validate/property", 1);
+      digester.addSetNext("datamodel-type/definition/attribute/validate",
+          "addEvent", "org.efaps.update.event.Event");
+
       digester
           .addSetNext("datamodel-type/definition/attribute", "addAttribute");
 
-      // Properties for the Type
+      // add Properties to the Type-Definition
       digester.addCallMethod("datamodel-type/definition/property",
           "addProperty", 2);
       digester.addCallParam("datamodel-type/definition/property", 0, "name");
       digester.addCallParam("datamodel-type/definition/property", 1);
 
-      // Trigger for the Type
+      // add Trigger-Event to the Type-Definition
       digester.addFactoryCreate("datamodel-type/definition/trigger",
           new EventFactory(), false);
       digester.addCallMethod("datamodel-type/definition/trigger/property",
@@ -211,8 +231,9 @@ public class TypeUpdate extends AbstractUpdate {
     private String defaultValue;
 
     public void setDefinitions(final String _name, final String _type,
-        final String _sqltable, final String _sqlcolumn,
-        final String _typelink, final String _defaultvalue) {
+                               final String _sqltable, final String _sqlcolumn,
+                               final String _typelink,
+                               final String _defaultvalue) {
       this.name = _name;
       this.type = _type;
       this.sqlTable = _sqltable;
@@ -221,7 +242,8 @@ public class TypeUpdate extends AbstractUpdate {
       this.defaultValue = _defaultvalue;
     }
 
-    public void addEvent(Event _event) {
+    @Override
+    public void addEvent(final Event _event) {
       this.events.add(_event);
     }
 
@@ -229,23 +251,23 @@ public class TypeUpdate extends AbstractUpdate {
      * For given type defined with the instance parameter, this attribute is
      * searched by name. If the attribute exists, the attribute is updated.
      * Otherwise the attribute is created for this type.
-     * 
+     *
      * @param _instance
-     *          type instance to update with this attribute
+     *                type instance to update with this attribute
      * @param _typeName
-     *          name of the type to update
+     *                name of the type to update
      * @see #getAttrTypeId
      * @see #getSqlTableId
      * @see #getTypeLinkId
      * @todo throw Exception is not allowed
      */
     protected void updateInDB(final Instance _instance, final String _typeName)
-        throws Exception {
-      long attrTypeId = getAttrTypeId(_typeName);
-      long sqlTableId = getSqlTableId(_typeName);
-      long typeLinkId = getTypeLinkId(_typeName);
+                                                                               throws Exception {
+      final long attrTypeId = getAttrTypeId(_typeName);
+      final long sqlTableId = getSqlTableId(_typeName);
+      final long typeLinkId = getTypeLinkId(_typeName);
 
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setQueryTypes("Admin_DataModel_Attribute");
       query.addWhereExprEqValue("Name", this.name);
       query.addWhereExprEqValue("ParentType", _instance.getId());
@@ -276,7 +298,7 @@ public class TypeUpdate extends AbstractUpdate {
       update.executeWithoutAccessCheck();
 
       for (Event event : this.events) {
-        Instance newInstance =
+        final Instance newInstance =
             event.updateInDB(update.getInstance(), this.name);
         setPropertiesInDb(newInstance, event.getProperties());
       }
@@ -285,21 +307,28 @@ public class TypeUpdate extends AbstractUpdate {
     /**
      * Makes a search query to return the id of the attribute type defined in
      * {@link #type}.
-     * 
+     *
      * @return id of the attribute type
      * @see #type
      */
     private long getAttrTypeId(final String _typeName) throws EFapsException {
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setQueryTypes("Admin_DataModel_AttributeType");
       query.addWhereExprEqValue("Name", this.type);
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
       if (!query.next()) {
-        LOG.error("type[" + _typeName + "]." + "attribute[" + this.name + "]: "
-            + "attribute type '" + this.type + "' not found");
+        LOG.error("type["
+            + _typeName
+            + "]."
+            + "attribute["
+            + this.name
+            + "]: "
+            + "attribute type '"
+            + this.type
+            + "' not found");
       }
-      long attrTypeId = (new Instance((String) query.get("OID"))).getId();
+      final long attrTypeId = (new Instance((String) query.get("OID"))).getId();
       query.close();
       return attrTypeId;
     }
@@ -307,21 +336,28 @@ public class TypeUpdate extends AbstractUpdate {
     /**
      * Makes a search query to return the id of the SQL table defined in
      * {@link #sqlTable}.
-     * 
+     *
      * @return id of the SQL table
      * @see #sqlTable
      */
     private long getSqlTableId(final String _typeName) throws EFapsException {
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setQueryTypes("Admin_DataModel_SQLTable");
       query.addWhereExprEqValue("Name", this.sqlTable);
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
       if (!query.next()) {
-        LOG.error("type[" + _typeName + "]." + "attribute[" + this.name + "]: "
-            + "SQL table '" + this.sqlTable + "' not found");
+        LOG.error("type["
+            + _typeName
+            + "]."
+            + "attribute["
+            + this.name
+            + "]: "
+            + "SQL table '"
+            + this.sqlTable
+            + "' not found");
       }
-      long sqlTableId = (new Instance((String) query.get("OID"))).getId();
+      final long sqlTableId = (new Instance((String) query.get("OID"))).getId();
       query.close();
       return sqlTableId;
     }
@@ -329,23 +365,30 @@ public class TypeUpdate extends AbstractUpdate {
     /**
      * Makes a search query to return the id of the SQL table defined in
      * {@link #typeLink}.
-     * 
+     *
      * @return id of the linked type (or 0 if no type link is defined)
      * @see #typeLink
      */
     private long getTypeLinkId(final String _typeName) throws EFapsException {
       long typeLinkId = 0;
       if ((this.typeLink != null) && (this.typeLink.length() > 0)) {
-        SearchQuery query = new SearchQuery();
+        final SearchQuery query = new SearchQuery();
         query.setQueryTypes("Admin_DataModel_Type");
         query.addWhereExprEqValue("Name", this.typeLink);
         query.addSelect("ID");
         query.executeWithoutAccessCheck();
-        if (!query.next()) {
-          LOG.error("type[" + _typeName + "]." + "attribute[" + this.name
-              + "]: " + " Type '" + this.typeLink + "' as link not found");
-        } else {
+        if (query.next()) {
           typeLinkId = (Long) query.get("ID");
+        } else {
+          LOG.error("type["
+              + _typeName
+              + "]."
+              + "attribute["
+              + this.name
+              + "]: "
+              + " Type '"
+              + this.typeLink
+              + "' as link not found");
         }
         query.close();
       }
@@ -355,9 +398,10 @@ public class TypeUpdate extends AbstractUpdate {
     /**
      * Returns a string representation with values of all instance variables of
      * an attribute.
-     * 
+     *
      * @return string representation of this definition of an attribute
      */
+    @Override
     public String toString() {
       return new ToStringBuilder(this).append("name", this.name).append("type",
           this.type).append("sqlTable", this.sqlTable).append("sqlColumn",
@@ -371,6 +415,7 @@ public class TypeUpdate extends AbstractUpdate {
   // class for the definitions
 
   public static class Definition extends DefinitionAbstract {
+
     // /////////////////////////////////////////////////////////////////////////
     // instance variables
 
@@ -379,7 +424,7 @@ public class TypeUpdate extends AbstractUpdate {
      * evaluated because it could be that the type does not exists (and so the
      * type id is evaluated before the insert / update from method
      * {@link #updateInDB}).
-     * 
+     *
      * @see #setParent
      * @see #updateInDB
      */
@@ -387,7 +432,7 @@ public class TypeUpdate extends AbstractUpdate {
 
     /**
      * All attributes of the type are stored in this list.
-     * 
+     *
      * @see #updateInDB
      * @see #addAttribute
      */
@@ -401,23 +446,25 @@ public class TypeUpdate extends AbstractUpdate {
      * evaluated and added to attributes to update (if no parent type is
      * defined, the parent type id is set to <code>null</code>). After the
      * type is updated (or inserted if needed), all attributes must be updated.
-     * 
+     *
      * @todo throw Exception is not allowed
      * @see #parentType
      * @see #attributes
      */
+    @Override
     public Instance updateInDB(final Instance _instance,
-        final Set<Link> _allLinkTypes, final Insert _insert)
-        throws EFapsException, Exception {
+                               final Set<Link> _allLinkTypes,
+                               final Insert _insert) throws EFapsException,
+                                                    Exception {
       // set the id of the parent type (if defined)
       if ((this.parentType != null) && (this.parentType.length() > 0)) {
-        SearchQuery query = new SearchQuery();
+        final SearchQuery query = new SearchQuery();
         query.setQueryTypes("Admin_DataModel_Type");
         query.addWhereExprEqValue("Name", this.parentType);
         query.addSelect("OID");
         query.executeWithoutAccessCheck();
         if (query.next()) {
-          Instance instance = new Instance((String) query.get("OID"));
+          final Instance instance = new Instance((String) query.get("OID"));
           addValue("ParentType", "" + instance.getId());
         } else {
           addValue("ParentType", null);
@@ -438,9 +485,9 @@ public class TypeUpdate extends AbstractUpdate {
 
     /**
      * Setter method for instance variable {@link #parentType}.
-     * 
+     *
      * @param _parentType
-     *          new value to set
+     *                new value to set
      * @see #parentType
      */
     public void setParent(final String _parentType) {
@@ -449,9 +496,9 @@ public class TypeUpdate extends AbstractUpdate {
 
     /**
      * adds a Attribute to the Definition
-     * 
+     *
      * @param _attribute
-     *          Attribute to add
+     *                Attribute to add
      */
     public void addAttribute(final Attribute _attribute) {
       this.attributes.add(_attribute);

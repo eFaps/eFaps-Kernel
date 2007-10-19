@@ -28,46 +28,46 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Class witch is used for getting the Return of the Events.
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
- * 
  */
-public class Return  {
-  
+public class Return {
+
   public enum ReturnValues {
     /** used to return a Map of Values */
     VALUES,
     /** used to return true */
     TRUE;
   }
-  
-  
-  private Map<ReturnValues, Object> map = new HashMap<ReturnValues, Object>();
 
-  public Object get(ReturnValues _key) {
+  private final Map<ReturnValues, Object> map =
+      new HashMap<ReturnValues, Object>();
+
+  public Object get(final ReturnValues _key) {
     return this.map.get(_key);
   }
 
-  public void put(ReturnValues _key, Object _value) {
+  public void put(final ReturnValues _key, final Object _value) {
     this.map.put(_key, _value);
-
   }
 
   public Set<Map.Entry<ReturnValues, Object>> entrySet() {
     return this.map.entrySet();
+  }
 
+  public boolean isEmpty() {
+    return this.map.isEmpty();
   }
 
   /**
    * Returns a string representation of this parameter instance.
-   * 
+   *
    * @return string representation of this parameter instance.
    */
+  @Override
   public String toString() {
-    return new ToStringBuilder(this)
-        .appendSuper(super.toString())
-        .append("map", this.map.toString())
-        .toString();
+    return new ToStringBuilder(this).appendSuper(super.toString()).append(
+        "map", this.map.toString()).toString();
   }
 }
