@@ -55,7 +55,7 @@ public enum EventType  {
   UI_ACCESSCHECK     ("Admin_UI_AbstractAccessCheckEvent"),
   UI_COMMAND_EXECUTE ("Admin_UI_CommandExecuteEvent"),
   UI_VALIDATE        ("Admin_UI_ValidateEvent"),
-  VALIDATE           ("Admin_DataModel_Validate");
+  VALIDATE           ("Admin_DataModel_AttributeValidateEvent");
 
 
   public final String name;

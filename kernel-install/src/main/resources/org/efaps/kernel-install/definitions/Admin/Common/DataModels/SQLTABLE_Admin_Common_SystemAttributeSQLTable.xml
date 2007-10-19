@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmox
+ Revision:        $Rev:1145 $
+ Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
+ Last Changed By: $Author:tmo $
+
+-->
+
+<datamodel-sqltable>
+  <uuid>35f15728-243b-4d67-ba55-e2715d865e99</uuid>
+
+  <!-- Common Properties -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev:1145 $</local>
+      <mode>(version==1)</mode>
+    </version>
+
+    <database>
+      <create>true</create>
+      <update>true</update>
+      <table-name>T_CMSYSATTRIBUTE</table-name>
+      <!-- columns -->
+      <column name="SYSKEY"      type="STRING_SHORT" length="128"   not-null="true"/>
+      <column name="VALUE"       type="STRING_SHORT" length="128"   not-null="true"/>
+      <column name="DESCRIPTION" type="STRING_SHORT" length="255"/>
+      <!-- constraints -->
+      <unique name="T_CMSYSATTRIBUTE_UK_SYSKEY" columns="SYSKEY"/>
+    </database>
+  </definition>
+
+  <!-- define datamodel -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev:1145 $</local>
+      <mode>(version==4)</mode>
+    </version>
+    <name>Admin_Common_SystemAttributeSQLTable</name>
+    <database>
+      <table-name>T_CMSYSATTRIBUTE</table-name>
+    </database>
+  </definition>
+</datamodel-sqltable>

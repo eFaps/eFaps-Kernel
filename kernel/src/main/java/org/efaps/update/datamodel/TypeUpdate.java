@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import org.efaps.admin.event.EventType;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -156,7 +157,7 @@ public class TypeUpdate extends AbstractUpdate {
 
       // add a Validate-Event to the Attribute
       digester.addFactoryCreate("datamodel-type/definition/attribute/validate",
-          new EventFactory("Admin_DataModel_Validate"), false);
+          new EventFactory(EventType.VALIDATE.name), false);
       digester.addCallMethod(
           "datamodel-type/definition/attribute/validate/property",
           "addProperty", 2);

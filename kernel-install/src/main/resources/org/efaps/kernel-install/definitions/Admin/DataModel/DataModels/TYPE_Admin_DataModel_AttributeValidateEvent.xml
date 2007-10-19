@@ -34,7 +34,7 @@
       <local>$Rev:1144 $</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_DataModel_Validate</name>
+    <name>Admin_DataModel_AttributeValidateEvent</name>
   </definition>
 
   <!-- define type -->
@@ -45,7 +45,7 @@
       <local>$Rev:1144 $</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_DataModel_Validate</name>
+    <name>Admin_DataModel_AttributeValidateEvent</name>
     <parent>Admin_Event_Definition</parent>
   </definition>
 
