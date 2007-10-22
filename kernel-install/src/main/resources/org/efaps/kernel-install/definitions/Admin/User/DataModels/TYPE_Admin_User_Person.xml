@@ -127,7 +127,7 @@
       program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType"/>
     
     <trigger name="Admin_User_Person_INSERT_POST" event="INSERT_POST" 
-      program="org.efaps.esjp.admin.user.PersonJaaskey" />
+      program="org.efaps.esjp.admin.user.Person" method="insertJaaskeyTrg" />
   </definition>
 
 </datamodel-type>

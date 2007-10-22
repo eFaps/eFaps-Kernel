@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
+ Author:          jmox
  Revision:        $Rev:1145 $
  Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
  Last Changed By: $Author:tmo $
@@ -38,7 +38,7 @@
       <mode>(version==8)</mode>
     </version>
     
-    <file>ConnectPersonToRoleGroup.java</file>
+    <file>Person.java</file>
   </definition>
 
 </esjp>

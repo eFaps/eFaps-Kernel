@@ -22,7 +22,6 @@ package org.efaps.esjp.admin.user;
 
 import java.util.Map;
 
-import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -32,12 +31,12 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
-public class ConnectPersonToRoleGroup implements EventExecution {
+public class Person {
 
-  public Return execute(final Parameter _parameter) throws EFapsException {
+  public Return connectPerson2RoleUI(Parameter _parameter) throws EFapsException {
     Return ret = new Return();
 
     Map<?, ?> properties =
@@ -57,11 +56,37 @@ public class ConnectPersonToRoleGroup implements EventExecution {
     }
 
     return ret;
+
+  }
+
+  /**
+   * This method inserts the JAASSystem for a User into the eFaps-Database.<br>
+   * It is executed on a INSERT_POST Trigger on the Type User_Person.
+   *
+   * @param _parameter
+   * @return null
+   * @throws EFapsException
+   */
+  public Return insertJaaskeyTrg(final Parameter _parameter) throws EFapsException {
+    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    Map<?, ?> values = (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
+
+    String jaassystemid = getJAASSystemID();
+    if (jaassystemid != null) {
+      Insert insert = new Insert("Admin_User_JAASKey");
+
+      insert.add("Key", values.get(instance.getType().getAttribute("Name"))
+          .toString());
+      insert.add("JAASSystemLink", getJAASSystemID());
+      insert.add("UserLink", ((Long) instance.getId()).toString());
+      insert.execute();
+    }
+    return null;
   }
 
   /**
    * get the ID of the JAASSYstem for eFaps
-   * 
+   *
    * @return ID of the JAASSYSTEM, NULL if not found
    * @throws EFapsException
    */

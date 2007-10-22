@@ -25,6 +25,8 @@
 
 <common-systemattribute>
   <uuid>bb26c4a4-65a8-41e9-bc64-5fe0148cf805</uuid>
+  <description>This Attribute defines the minimum length of a Password in eFaps.
+  </description>
   <definition>
     <version>
       <application>eFaps</application>
