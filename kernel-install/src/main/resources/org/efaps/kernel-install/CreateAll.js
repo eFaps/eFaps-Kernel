@@ -772,35 +772,40 @@ function _eFapsInitRunLevel()  {
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",1, 'org.efaps.admin.dbproperty.DBProperties', 'initialise'");
+          "" + id + ",1, 'org.efaps.admin.common.SytemAttribute', 'initialise'");
+  
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",2, 'org.efaps.admin.user.JAASSystem', 'initialise'");
+          "" + id + ",2, 'org.efaps.admin.dbproperty.DBProperties', 'initialise'");
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",3, 'org.efaps.admin.user.Role', 'initialise'");
+          "" + id + ",3, 'org.efaps.admin.user.JAASSystem', 'initialise'");
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",4, 'org.efaps.admin.user.Group', 'initialise'");
+          "" + id + ",4, 'org.efaps.admin.user.Role', 'initialise'");
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",5, 'org.efaps.admin.datamodel.AttributeType', 'initialise'");
+          "" + id + ",5, 'org.efaps.admin.user.Group', 'initialise'");
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",6, 'org.efaps.admin.datamodel.SQLTable', 'initialise'");
+          "" + id + ",6, 'org.efaps.admin.datamodel.AttributeType', 'initialise'");
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",7, 'org.efaps.admin.datamodel.Type', 'initialise'");
+          "" + id + ",7, 'org.efaps.admin.datamodel.SQLTable', 'initialise'");
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",8, 'org.efaps.admin.datamodel.Attribute', 'initialise'");
+          "" + id + ",8, 'org.efaps.admin.datamodel.Type', 'initialise'");
+  _insert(stmt, null, null,
+          "T_RUNLEVELDEF",
+          "RUNLEVELID,PRIORITY,CLASS,METHOD",
+          "" + id + ",9, 'org.efaps.admin.datamodel.Attribute', 'initialise'");
 
   conRsrc.commit();
 }

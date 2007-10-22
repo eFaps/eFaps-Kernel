@@ -34,6 +34,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import org.efaps.update.access.AccessSetUpdate;
 import org.efaps.update.access.AccessTypeUpdate;
+import org.efaps.update.common.SystemAttributeUpdate;
 import org.efaps.update.datamodel.SQLTableUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
@@ -60,27 +61,28 @@ public class Install {
 
   /**
    * List of all update classes. The order is also used for the install order.
-   * 
+   *
    * @see #install
    */
-  private List<Class<? extends AbstractUpdate>> UPDATE_CLASSES =
+  private final List<Class<? extends AbstractUpdate>> UPDATE_CLASSES =
       new ArrayList<Class<? extends AbstractUpdate>>();
   {
-    if (UPDATE_CLASSES.size() == 0) {
-      UPDATE_CLASSES.add(RoleUpdate.class);
-      UPDATE_CLASSES.add(SQLTableUpdate.class);
-      UPDATE_CLASSES.add(TypeUpdate.class);
-      UPDATE_CLASSES.add(JAASSystemUpdate.class);
-      UPDATE_CLASSES.add(AccessTypeUpdate.class);
-      UPDATE_CLASSES.add(AccessSetUpdate.class);
-      UPDATE_CLASSES.add(ImageUpdate.class);
-      UPDATE_CLASSES.add(FormUpdate.class);
-      UPDATE_CLASSES.add(TableUpdate.class);
-      UPDATE_CLASSES.add(SearchUpdate.class);
-      UPDATE_CLASSES.add(MenuUpdate.class);
-      UPDATE_CLASSES.add(CommandUpdate.class);
-      UPDATE_CLASSES.add(WebDAVUpdate.class);
-      UPDATE_CLASSES.add(JavaUpdate.class);
+    if (this.UPDATE_CLASSES.size() == 0) {
+      this.UPDATE_CLASSES.add(RoleUpdate.class);
+      this.UPDATE_CLASSES.add(SQLTableUpdate.class);
+      this.UPDATE_CLASSES.add(TypeUpdate.class);
+      this.UPDATE_CLASSES.add(JAASSystemUpdate.class);
+      this.UPDATE_CLASSES.add(AccessTypeUpdate.class);
+      this.UPDATE_CLASSES.add(AccessSetUpdate.class);
+      this.UPDATE_CLASSES.add(ImageUpdate.class);
+      this.UPDATE_CLASSES.add(FormUpdate.class);
+      this.UPDATE_CLASSES.add(TableUpdate.class);
+      this.UPDATE_CLASSES.add(SearchUpdate.class);
+      this.UPDATE_CLASSES.add(MenuUpdate.class);
+      this.UPDATE_CLASSES.add(CommandUpdate.class);
+      this.UPDATE_CLASSES.add(WebDAVUpdate.class);
+      this.UPDATE_CLASSES.add(JavaUpdate.class);
+      this.UPDATE_CLASSES.add(SystemAttributeUpdate.class);
     }
   }
 
@@ -89,14 +91,14 @@ public class Install {
 
   /**
    * All defined file urls which are updated.
-   * 
+   *
    * @see #addURL
    */
   private final Map<String, URL> urls = new TreeMap<String, URL>();
 
   /**
    * Flag to store that the cache is initialised.
-   * 
+   *
    * @see #initialise
    * @see #addURL
    */
@@ -104,11 +106,11 @@ public class Install {
 
   /**
    * Cache with all update instances (loaded from the list of {@link #urls}).
-   * 
+   *
    * @see #initialise
    * @see #install
    */
-  private Map<Class<? extends AbstractUpdate>, List<AbstractUpdate>> cache =
+  private final Map<Class<? extends AbstractUpdate>, List<AbstractUpdate>> cache =
       new HashMap<Class<? extends AbstractUpdate>, List<AbstractUpdate>>();
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -131,7 +133,7 @@ public class Install {
     }
 
     // make update
-    for (Class<? extends AbstractUpdate> updateClass : UPDATE_CLASSES) {
+    for (Class<? extends AbstractUpdate> updateClass : this.UPDATE_CLASSES) {
       for (AbstractUpdate update : this.cache.get(updateClass)) {
         update.updateInDB(jexlContext);
       }
@@ -146,7 +148,7 @@ public class Install {
       this.initialised = true;
       this.cache.clear();
 
-      for (Class<? extends AbstractUpdate> updateClass : UPDATE_CLASSES) {
+      for (Class<? extends AbstractUpdate> updateClass : this.UPDATE_CLASSES) {
         List<AbstractUpdate> list = new ArrayList<AbstractUpdate>();
         this.cache.put(updateClass, list);
         Method method = updateClass.getMethod("readXMLFile", URL.class);
@@ -163,7 +165,7 @@ public class Install {
   /**
    * Appends a new file defined through an url. The initialised flag is
    * automatically reseted.
-   * 
+   *
    * @param _url
    *          file to append
    * @see #urls
@@ -176,7 +178,7 @@ public class Install {
 
   /**
    * this is the getter method for instance variable {@link #urls}
-   * 
+   *
    * @return instance variable {@link #urls}
    * @see #urls
    */
@@ -189,9 +191,10 @@ public class Install {
 
   /**
    * Returns a string representation with values of all instance variables.
-   * 
+   *
    * @return string representation of this Application
    */
+  @Override
   public String toString() {
     return new ToStringBuilder(this).append("urls", this.urls).toString();
   }

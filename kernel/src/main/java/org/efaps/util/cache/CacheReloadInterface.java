@@ -26,12 +26,13 @@ package org.efaps.util.cache;
  * @todo description
  */
 public interface CacheReloadInterface  {
-  
+
   /**
    * The enum defines the priority numbers for the caches used to initialise
    * the kernel.
    */
   public static enum Priority  {
+    SystemAttribute(50),
     JAASSystem(100),
     Role(200),
     Group(300),
@@ -42,10 +43,10 @@ public interface CacheReloadInterface  {
     AccessType(800),
     AccessSet(900),
     EventDefinition(1000);
-    
+
     /** Stores the priority number. */
     public final int number;
-    
+
     private Priority(final int _number)  {
       this.number = _number;
     }
@@ -53,13 +54,13 @@ public interface CacheReloadInterface  {
 
   /**
    * Returns the priority number used to define when this cache is reloaded.
-   * E.g. the cache for attribute types must be loaded before the cache of 
+   * E.g. the cache for attribute types must be loaded before the cache of
    * types.
    *
-   * @return priority number 
+   * @return priority number
    */
   public int priority();
-  
+
   /**
    * The cache is reloaded or initialised.
    *

@@ -39,16 +39,36 @@
       <create>true</create>
       <update>true</update>
       <table-name>T_CMSYSATTRIBUTE</table-name>
+      <parent-table>T_CMABSTRACT</parent-table>
       <!-- columns -->
-      <column name="SYSKEY"      type="STRING_SHORT" length="128"   not-null="true"/>
-      <column name="VALUE"       type="STRING_SHORT" length="128"   not-null="true"/>
-      <column name="DESCRIPTION" type="STRING_SHORT" length="255"/>
-      <!-- constraints -->
-      <unique name="T_CMSYSATTRIBUTE_UK_SYSKEY" columns="SYSKEY"/>
+      <column name="VALUE"  type="STRING_LONG" length="2048"  not-null="true"/>
+      
     </database>
   </definition>
-
+  
   <!-- define datamodel -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev:1145 $</local>
+      <mode>(version==2)</mode>
+    </version>
+    <database>
+      <sql>
+        create view V_COMMONSYSATTRIBUTE as 
+          select 
+                T_CMABSTRACT.ID,
+                T_CMABSTRACT.NAME,
+                T_CMABSTRACT.UUID, 
+                T_CMSYSATTRIBUTE.VALUE
+           from T_CMABSTRACT 
+           join T_CMSYSATTRIBUTE
+             on T_CMABSTRACT.ID = T_CMSYSATTRIBUTE.ID;
+        </sql>
+      <table-name>T_CMSYSATTRIBUTE</table-name>
+    </database>
+  </definition>
   <definition>
     <version>
       <application>eFaps</application>

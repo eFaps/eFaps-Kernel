@@ -20,6 +20,9 @@
 
 package org.efaps.esjp.common.main;
 
+import java.util.UUID;
+
+import org.efaps.admin.common.SytemAttribute;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
@@ -33,7 +36,6 @@ import org.efaps.util.EFapsException;
  */
 public class PwdChgValidatePwd implements EventExecution {
 
-
   /**
    * @param _parameter
    */
@@ -42,7 +44,9 @@ public class PwdChgValidatePwd implements EventExecution {
     final Context context = Context.getThreadContext();
     final String passwordnew = context.getParameter("passwordnew");
 
-    if (passwordnew.length() > 2) {
+    if (passwordnew.length() > SytemAttribute.get(
+        UUID.fromString("bb26c4a4-65a8-41e9-bc64-5fe0148cf805"))
+        .getIntegerValue()) {
       ret.put(ReturnValues.TRUE, "true");
     } else {
       ret.put(ReturnValues.VALUES,

@@ -23,32 +23,17 @@
 
 -->
 
-<datamodel-type>
-  <uuid>24653ad8-4568-41e1-bfd8-1331d2a74beb</uuid>
-
-  <!-- define type -->
+<common-systemattribute>
+  <uuid>bb26c4a4-65a8-41e9-bc64-5fe0148cf805</uuid>
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1146 $</local>
-      <mode>(version==6)</mode>
+      <local>$Rev$</local>
+      <mode>true</mode>
+      <mode>(version==8)</mode>
     </version>
-    <name>Admin_Common_SystemAttribute</name>
-    <parent>Admin_Abstract</parent>
-    <attribute>
-      <name>Key</name>
-      <type>String</type>
-      <sqltable>Admin_Common_AbstractSQLTable</sqltable>
-      <sqlcolumn>NAME</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Value</name>
-      <type>String</type>
-      <sqltable>Admin_Common_SystemAttributeSQLTable</sqltable>
-      <sqlcolumn>VALUE</sqlcolumn>
-    </attribute>
-    
+    <name>Common_Main_PwdLenght</name>
+    <value>6</value>    
   </definition>
-
-</datamodel-type>
+</common-systemattribute>
