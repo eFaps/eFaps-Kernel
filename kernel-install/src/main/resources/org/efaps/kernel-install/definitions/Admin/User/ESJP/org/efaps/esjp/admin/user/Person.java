@@ -36,15 +36,17 @@ import org.efaps.util.EFapsException;
  */
 public class Person {
 
-  public Return connectPerson2RoleUI(Parameter _parameter) throws EFapsException {
-    Return ret = new Return();
+  public Return connectPerson2RoleUI(final Parameter _parameter)
+                                                                throws EFapsException {
+    final Return ret = new Return();
 
-    Map<?, ?> properties =
+    final Map<?, ?> properties =
         (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
-    Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    String childOids[] = (String[]) _parameter.get(ParameterValues.OTHERS);
+    final Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final String childOids[] =
+        (String[]) _parameter.get(ParameterValues.OTHERS);
 
-    String type = (String) properties.get("ConnectType");
+    final String type = (String) properties.get("ConnectType");
 
     for (String childOid : childOids) {
       Instance child = new Instance(childOid);
@@ -67,11 +69,14 @@ public class Person {
    * @return null
    * @throws EFapsException
    */
-  public Return insertJaaskeyTrg(final Parameter _parameter) throws EFapsException {
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    Map<?, ?> values = (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
+  public Return insertJaaskeyTrg(final Parameter _parameter)
+                                                            throws EFapsException {
+    final Instance instance =
+        (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final Map<?, ?> values =
+        (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
 
-    String jaassystemid = getJAASSystemID();
+    final String jaassystemid = getJAASSystemID();
     if (jaassystemid != null) {
       Insert insert = new Insert("Admin_User_JAASKey");
 

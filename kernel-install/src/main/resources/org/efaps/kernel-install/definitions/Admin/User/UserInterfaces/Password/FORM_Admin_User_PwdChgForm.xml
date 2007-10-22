@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2007 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev:1145 $
+ Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
+ Last Changed By: $Author:tmo $
+
+-->
+
+<ui-form>
+  <uuid>94254c8b-a371-4d62-b939-793688cefc2c</uuid>
+
+  <!-- ************************************************************************
+    version definition used to create the table 
+  ************************************************************************* -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev:1145 $</local>
+      <mode>true</mode>
+      <mode>(version==10)</mode>
+    </version>
+    <name>Admin_User_PwdChgForm</name>
+  </definition>
+    
+  <!-- ************************************************************************
+    version definition used to define the table 
+  ************************************************************************* -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev:1145 $</local>
+      <mode>true</mode>
+      <mode>(version==11)</mode>
+    </version>
+    <name>Admin_User_PwdChgForm</name>
+    <!-- fields -->
+    <field name="passwordold">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Expression">Password</property>
+      <property name="Required">true</property>
+      <property name="Label">Admin_User_PwdChgForm/passwordold.Label</property>
+      <trigger name="Common_Main_PwdChgForm/passwordold" event="UI_FIELD_VALUE" 
+        program="org.efaps.esjp.admin.user.Password" method="getFieldValueUI">
+        <property name="field">1</property>
+      </trigger>  
+        
+    </field>
+    <field name="passwordnew">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Expression">Password</property>
+      <property name="Required">true</property>
+      <property name="Label">Admin_User_PwdChgForm/passwordnew.Label</property>
+      <trigger name="Common_Main_PwdChgForm/passwordnew" event="UI_FIELD_VALUE" 
+        program="org.efaps.esjp.admin.user.Password" method="getFieldValueUI">
+        <property name="field">2</property>
+      </trigger>  
+    </field>
+    <field name="passwordnew2">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Expression">Password</property>
+      <property name="Required">true</property>
+      <property name="Label">Admin_User_PwdChgForm/passwordnew2.Label</property>
+      <trigger name="Common_Main_PwdChgForm/passwordew2" event="UI_FIELD_VALUE" 
+        program="org.efaps.esjp.admin.user.Password" method="getFieldValueUI">
+        <property name="field">3</property>
+      </trigger>  
+    </field>
+  </definition>
+
+</ui-form>

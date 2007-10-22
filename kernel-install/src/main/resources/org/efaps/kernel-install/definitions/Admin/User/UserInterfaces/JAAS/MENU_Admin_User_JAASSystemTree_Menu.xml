@@ -17,14 +17,14 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev:1145 $
+ Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
+ Last Changed By: $Author:tmo $
 
 -->
 
 <ui-menu>
-  <uuid>f84814f4-1bc5-481e-b37c-6ae782b25a00</uuid>
+  <uuid>d85e5d77-5577-4be6-b2ef-2b67b691c99c</uuid>
 
   <!-- ************************************************************************
     version definition used to create the menu 
@@ -33,27 +33,29 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:1145 $</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Common_Main_Preferences</name>
+    <name>Admin_User_JAASSystemTree_Menu</name>
   </definition>
-
+    
   <!-- ************************************************************************
-    version definition used to update the menu 
+    version definition used to define the menu 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:1145 $</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Common_Main_Preferences</name>
+    <name>Admin_User_JAASSystemTree_Menu</name>
+    <!-- childs -->
     <childs>
-      <child>Admin_User_PwdChg</child>
+      <child>Admin_User_JAASSystemTree_Menu_Action</child>
     </childs>
   </definition>
+
 </ui-menu>

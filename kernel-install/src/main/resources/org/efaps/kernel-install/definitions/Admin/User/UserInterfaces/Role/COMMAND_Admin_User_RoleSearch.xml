@@ -17,43 +17,52 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev:1145 $
+ Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
+ Last Changed By: $Author:tmo $
 
 -->
 
-<ui-menu>
-  <uuid>f84814f4-1bc5-481e-b37c-6ae782b25a00</uuid>
+<ui-command>
+  <uuid>b6f6c7bc-62ca-43e3-a63a-a271f0b85e93</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:1145 $</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Common_Main_Preferences</name>
+    <name>Admin_User_RoleSearch</name>
   </definition>
 
   <!-- ************************************************************************
-    version definition used to update the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:1145 $</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Common_Main_Preferences</name>
-    <childs>
-      <child>Admin_User_PwdChg</child>
-    </childs>
+    <name>Admin_User_RoleSearch</name>
+    <icon>Admin_User_RoleImage</icon>
+    <!-- target definitions -->
+    <target>
+      <form>Admin_User_AbstractForm</form>
+      <table>Admin_User_AbstractTable</table>
+      <evaluate program="org.efaps.esjp.common.uisearch.QuerySearch">
+        <property name="Types">Admin_User_Role</property>
+      </evaluate>
+    </target>
+    <!-- properties -->
+    <property name="TargetMode">search</property>
   </definition>
-</ui-menu>
+
+</ui-command>

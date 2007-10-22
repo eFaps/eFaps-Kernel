@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>f84814f4-1bc5-481e-b37c-6ae782b25a00</uuid>
+<ui-command>
+  <uuid>b022e127-e5ae-4831-873b-03ca95e4962d</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Common_Main_Preferences</name>
+    <name>Admin_User_PersonTree_Roles_Menu_Action_Disconnect</name>
   </definition>
 
   <!-- ************************************************************************
-    version definition used to update the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,9 +51,17 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Common_Main_Preferences</name>
-    <childs>
-      <child>Admin_User_PwdChg</child>
-    </childs>
+    <name>Admin_User_PersonTree_Roles_Menu_Action_Disconnect</name>
+    <icon>Admin_User_Role+Remove+Image</icon>
+    <!-- target definitions -->
+    <target>
+      <execute program="org.efaps.esjp.common.uitable.CommonDelete">
+        <property name="DeleteIndex">1</property>
+      </execute>
+    </target>
+    <!-- properties -->
+    <property name="AskUser">true</property>
+    <property name="Submit">true</property>
   </definition>
-</ui-menu>
+
+</ui-command>

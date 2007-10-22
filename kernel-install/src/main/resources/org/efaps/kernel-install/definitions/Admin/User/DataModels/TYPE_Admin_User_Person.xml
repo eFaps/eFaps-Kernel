@@ -118,7 +118,7 @@
       <name>Password</name>
       <type>Password</type>
       <sqltable>Admin_User_PersonSQLTable</sqltable>
-      <validate program="org.efaps.esjp.common.main.PwdChgValidatePwd"/>
+      <validate program="org.efaps.esjp.admin.user.Password" method="validatePwdValue"/>
       <sqlcolumn>PASSWORD</sqlcolumn>
     </attribute>
     

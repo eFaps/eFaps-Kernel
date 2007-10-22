@@ -17,43 +17,51 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev:1145 $
+ Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
+ Last Changed By: $Author:tmo $
 
 -->
 
-<ui-menu>
-  <uuid>f84814f4-1bc5-481e-b37c-6ae782b25a00</uuid>
+<ui-command>
+  <uuid>9638803d-b739-4d2d-bac4-bb7e7d82f861</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:1145 $</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Common_Main_Preferences</name>
+    <name>Admin_User_PersonTree_Roles_Menu_Action_AddExisting</name>
   </definition>
 
   <!-- ************************************************************************
-    version definition used to update the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:1145 $</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Common_Main_Preferences</name>
-    <childs>
-      <child>Admin_User_PwdChg</child>
-    </childs>
+    <name>Admin_User_PersonTree_Roles_Menu_Action_AddExisting</name>
+    <icon>Admin_User_Role+Add+Image</icon>
+    <!-- target definitions -->
+    <target>
+      <search>Admin_User_PersonTree_Roles_Menu_Action_AddExisting_Search</search>
+      <execute program="org.efaps.esjp.admin.user.Person" method="connectPerson2RoleUI">
+        <property name="ConnectType">Admin_User_Person2Role</property>
+      </execute>
+    </target>
+    <!-- properties -->
+    <property name="Target">popup</property>
   </definition>
-</ui-menu>
+
+</ui-command>
