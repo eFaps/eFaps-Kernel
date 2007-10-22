@@ -33,7 +33,7 @@
       <mode>true</mode>
       <mode>(version==8)</mode>
     </version>
-    <name>Common_Main_PwdLenght</name>
+    <name>Common_Main_PwdLengthMin</name>
     <value>6</value>    
   </definition>
 </common-systemattribute>

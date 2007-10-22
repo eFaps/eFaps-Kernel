@@ -64,12 +64,34 @@ public class SytemAttribute implements CacheObjectInterface {
         };
       });
 
+  /**
+   * The instance variable stores the id of this SystemAttribute.
+   *
+   * @see #getId()
+   */
   private final long id;
 
+  /**
+   * The instance variable stores the UUID of this SystemAttribute.
+   *
+   * @see #getUUID()
+   */
   private final UUID uuid;
 
+  /**
+   * The instance variable stores the Name of this SystemAttribute.
+   *
+   * @see #getName()
+   */
   private final String name;
 
+  /**
+   * The instance variable stores the Value of this SystemAttribute.
+   *
+   * @see #getValue()
+   * @see #getIntegerValue()
+   * @see #getStringValue()
+   */
   private final Object value;
 
   public SytemAttribute(final long _id, final String _uuid, final String _name,
@@ -205,6 +227,17 @@ public class SytemAttribute implements CacheObjectInterface {
    */
   public int getIntegerValue() {
     return Integer.parseInt(this.value.toString());
+  }
+
+  /**
+   * Method that returns the Value of the instance variable {@link #value}
+   * casted to Boolean;
+   *
+   * @return value of instance variable {@link #value} as boolean, true if the
+   *         Object equals "true", else false
+   */
+  public boolean getBooleanValue() {
+    return Boolean.parseBoolean(this.value.toString());
   }
 
 }
