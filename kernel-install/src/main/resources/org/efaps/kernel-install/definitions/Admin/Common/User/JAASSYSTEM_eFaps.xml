@@ -44,12 +44,7 @@
       <firstname-method></firstname-method>
       <lastname-method></lastname-method>
       <email-method></email-method>
-      <organisation-method></organisation-method>
-      <url-method></url-method>
-      <phone-method></phone-method>
-      <mobile-method></mobile-method>
-      <fax-method></fax-method>
-    </person>
+     </person>
 
     <!-- role class and methods definitions -->
     <role>

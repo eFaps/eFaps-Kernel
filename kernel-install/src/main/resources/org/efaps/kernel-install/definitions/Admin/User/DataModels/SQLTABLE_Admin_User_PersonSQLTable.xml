@@ -43,11 +43,6 @@
       <column name="FIRSTNAME"  type="STRING_SHORT" length="128" not-null="true"/>
       <column name="LASTNAME"   type="STRING_SHORT" length="128" not-null="true"/>
       <column name="EMAIL"      type="STRING_SHORT" length="128" not-null="true"/>
-      <column name="ORG"        type="STRING_SHORT" length="128"/>
-      <column name="URL"        type="STRING_SHORT" length="254"/>
-      <column name="PHONE"      type="STRING_SHORT" length="32"/>
-      <column name="MOBILE"     type="STRING_SHORT" length="32"/>
-      <column name="FAX"        type="STRING_SHORT" length="32"/>
       <column name="PASSWORD"   type="STRING_SHORT" length="128"/>
       <column name="LASTLOGIN"  type="DATETIME"/>
      </database>
@@ -71,14 +66,10 @@
                  T_USERPERSON.FIRSTNAME,
                  T_USERPERSON.LASTNAME,
                  T_USERPERSON.EMAIL,
-                 T_USERPERSON.ORG,
-                 T_USERPERSON.URL,
-                 T_USERPERSON.PHONE,
-                 T_USERPERSON.MOBILE,
-                 T_USERPERSON.FAX,
                  T_USERPERSON.PASSWORD
-             from T_USERABSTRACT,T_USERPERSON
-             where T_USERABSTRACT.ID=T_USERPERSON.ID
+             from T_USERABSTRACT
+             join T_USERPERSON 
+               on T_USERABSTRACT.ID=T_USERPERSON.ID
       </sql>
     </database>
   </definition>

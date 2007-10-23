@@ -452,8 +452,8 @@ function _eFapsCreateUserTablesStep1()  {
           "-10000, '" + eFapsUserName + "', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP
   );
   _exec(stmt, null, null,
-    "insert into T_USERPERSON(ID, FIRSTNAME, LASTNAME, EMAIL, URL, PASSWORD) "+
-        "values (1,'The','Administrator','info@efaps.org','www.efaps.org', '')"
+    "insert into T_USERPERSON(ID, FIRSTNAME, LASTNAME, EMAIL, PASSWORD) "+
+        "values (1,'The','Administrator','info@efaps.org', '')"
   );
 
   _insert(stmt, "Insert Administrator Role",  null,

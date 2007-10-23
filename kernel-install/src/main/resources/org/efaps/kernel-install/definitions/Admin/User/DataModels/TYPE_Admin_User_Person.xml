@@ -56,42 +56,6 @@
       <sqlcolumn>EMAIL</sqlcolumn>
     </attribute>
     <attribute>
-      <name>Organisation</name>
-      <type>String</type>
-      <sqltable>Admin_User_PersonSQLTable</sqltable>
-      <sqlcolumn>ORG</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Url</name>
-      <type>String</type>
-      <sqltable>Admin_User_PersonSQLTable</sqltable>
-      <sqlcolumn>URL</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Phone</name>
-      <type>String</type>
-      <sqltable>Admin_User_PersonSQLTable</sqltable>
-      <sqlcolumn>PHONE</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Mobile</name>
-      <type>String</type>
-      <sqltable>Admin_User_PersonSQLTable</sqltable>
-      <sqlcolumn>MOBILE</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Fax</name>
-      <type>String</type>
-      <sqltable>Admin_User_PersonSQLTable</sqltable>
-      <sqlcolumn>FAX</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Fax</name>
-      <type>String</type>
-      <sqltable>Admin_User_PersonSQLTable</sqltable>
-      <sqlcolumn>FAX</sqlcolumn>
-    </attribute>
-    <attribute>
       <name>Password</name>
       <type>Password</type>
       <sqltable>Admin_User_PersonSQLTable</sqltable>

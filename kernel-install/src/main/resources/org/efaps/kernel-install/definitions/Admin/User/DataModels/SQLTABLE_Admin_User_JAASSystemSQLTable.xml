@@ -55,11 +55,6 @@
       <column name="METHODPERSONFIRSTNAME"  type="STRING_SHORT" length="128"/>
       <column name="METHODPERSONLASTNAME"   type="STRING_SHORT" length="128"/>
       <column name="METHODPERSONEMAIL"      type="STRING_SHORT" length="128"/>
-      <column name="METHODPERSONORG"        type="STRING_SHORT" length="128"/>
-      <column name="METHODPERSONURL"        type="STRING_SHORT" length="128"/>
-      <column name="METHODPERSONPHONE"      type="STRING_SHORT" length="128"/>
-      <column name="METHODPERSONMOBILE"     type="STRING_SHORT" length="128"/>
-      <column name="METHODPERSONFAX"        type="STRING_SHORT" length="128"/>
       <column name="METHODROLEKEY"          type="STRING_SHORT" length="128"/>
       <column name="METHODGROUPKEY"         type="STRING_SHORT" length="128"/>
       <!-- constraints -->
@@ -95,11 +90,6 @@
                METHODPERSONFIRSTNAME,
                METHODPERSONLASTNAME,
                METHODPERSONEMAIL,
-               METHODPERSONORG,
-               METHODPERSONURL,
-               METHODPERSONPHONE,
-               METHODPERSONMOBILE,
-               METHODPERSONFAX,
                METHODROLEKEY,
                METHODGROUPKEY
            from T_USERJAASSYSTEM

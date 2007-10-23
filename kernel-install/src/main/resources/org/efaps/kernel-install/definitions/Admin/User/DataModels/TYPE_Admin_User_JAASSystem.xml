@@ -138,36 +138,6 @@
       <sqlcolumn>METHODPERSONEMAIL</sqlcolumn>
     </attribute>
     <attribute>
-      <name>MethodNamePersonOrganisation</name>
-      <type>String</type>
-      <sqltable>Admin_User_JAASSystemSQLTable</sqltable>
-      <sqlcolumn>METHODPERSONORG</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>MethodNamePersonUrl</name>
-      <type>String</type>
-      <sqltable>Admin_User_JAASSystemSQLTable</sqltable>
-      <sqlcolumn>METHODPERSONURL</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>MethodNamePersonPhone</name>
-      <type>String</type>
-      <sqltable>Admin_User_JAASSystemSQLTable</sqltable>
-      <sqlcolumn>METHODPERSONPHONE</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>MethodNamePersonMobile</name>
-      <type>String</type>
-      <sqltable>Admin_User_JAASSystemSQLTable</sqltable>
-      <sqlcolumn>METHODPERSONMOBILE</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>MethodNamePersonFax</name>
-      <type>String</type>
-      <sqltable>Admin_User_JAASSystemSQLTable</sqltable>
-      <sqlcolumn>METHODPERSONFAX</sqlcolumn>
-    </attribute>
-    <attribute>
       <name>ClassNameRole</name>
       <type>String</type>
       <sqltable>Admin_User_JAASSystemSQLTable</sqltable>

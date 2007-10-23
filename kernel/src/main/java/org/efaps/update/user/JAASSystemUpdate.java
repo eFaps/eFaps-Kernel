@@ -49,20 +49,20 @@ public class JAASSystemUpdate extends AbstractUpdate  {
 
   /** Link from JAAS systems to persons */
   private final static Link LINK2PERSONS
-                    = new Link("Admin_User_JAASKey", 
-                               "JAASSystemLink", 
+                    = new Link("Admin_User_JAASKey",
+                               "JAASSystemLink",
                                "Admin_User_Person", "UserLink");
 
   /** Link from JAAS systems to roles */
   private final static Link LINK2ROLES
-                    = new Link("Admin_User_JAASKey", 
-                               "JAASSystemLink", 
+                    = new Link("Admin_User_JAASKey",
+                               "JAASSystemLink",
                                "Admin_User_Role", "UserLink");
 
   /** Link from JAAS systems to groups */
   private final static Link LINK2GROUPS
-                    = new Link("Admin_User_JAASKey", 
-                               "JAASSystemLink", 
+                    = new Link("Admin_User_JAASKey",
+                               "JAASSystemLink",
                                "Admin_User_Group", "UserLink");
 
   private final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
@@ -103,7 +103,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
       digester.addCallParam("user-jaassystem/definition/version/global", 1);
       digester.addCallParam("user-jaassystem/definition/version/local", 2);
       digester.addCallParam("user-jaassystem/definition/version/mode", 3);
-      
+
       digester.addCallMethod("user-jaassystem/definition/name", "setName", 1);
       digester.addCallParam("user-jaassystem/definition/name", 0);
 
@@ -124,21 +124,6 @@ public class JAASSystemUpdate extends AbstractUpdate  {
 
       digester.addCallMethod("user-jaassystem/definition/person/email-method", "setPersonEmailMethod", 1);
       digester.addCallParam("user-jaassystem/definition/person/email-method", 0);
-
-      digester.addCallMethod("user-jaassystem/definition/person/organisation-method", "setPersonOrganisationMethod", 1);
-      digester.addCallParam("user-jaassystem/definition/person/organisation-method", 0);
-
-      digester.addCallMethod("user-jaassystem/definition/person/url-method", "setPersonUrlMethod", 1);
-      digester.addCallParam("user-jaassystem/definition/person/url-method", 0);
-
-      digester.addCallMethod("user-jaassystem/definition/person/phone-method", "setPersonPhoneMethod", 1);
-      digester.addCallParam("user-jaassystem/definition/person/phone-method", 0);
-
-      digester.addCallMethod("user-jaassystem/definition/person/mobile-method", "setPersonMobileMethod", 1);
-      digester.addCallParam("user-jaassystem/definition/person/mobile-method", 0);
-
-      digester.addCallMethod("user-jaassystem/definition/person/fax-method", "setPersonFaxMethod", 1);
-      digester.addCallParam("user-jaassystem/definition/person/fax-method", 0);
 
       digester.addCallMethod("user-jaassystem/definition/role/classname", "setRoleClassName", 1);
       digester.addCallParam("user-jaassystem/definition/role/classname", 0);
@@ -181,7 +166,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
   // class for the definitions
 
   public static class Definition extends DefinitionAbstract  {
-    
+
     /**
      *
      */
@@ -204,7 +189,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
      }
 
      /**
-     * 
+     *
      * @see #values
      */
     public void setPersonClassName(final String _value)  {
@@ -212,7 +197,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
     }
 
     /**
-     * 
+     *
      * @see #values
      */
     public void setPersonKeyMethod(final String _value)  {
@@ -220,7 +205,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
     }
 
     /**
-     * 
+     *
      * @see #values
      */
     public void setPersonNameMethod(final String _value)  {
@@ -228,7 +213,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
     }
 
     /**
-     * 
+     *
      * @see #values
      */
     public void setPersonFirstNameMethod(final String _value)  {
@@ -236,7 +221,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
     }
 
     /**
-     * 
+     *
      * @see #values
      */
     public void setPersonLastNameMethod(final String _value)  {
@@ -244,7 +229,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
     }
 
     /**
-     * 
+     *
      * @see #values
      */
     public void setPersonEmailMethod(final String _value)  {
@@ -252,47 +237,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
     }
 
     /**
-     * 
-     * @see #values
-     */
-    public void setPersonOrganisationMethod(final String _value)  {
-      addValue("MethodNamePersonOrganisation", _value);
-    }
-
-    /**
-     * 
-     * @see #values
-     */
-    public void setPersonUrlMethod(final String _value)  {
-      addValue("MethodNamePersonUrl", _value);
-    }
-
-    /**
-     * 
-     * @see #values
-     */
-    public void setPersonPhoneMethod(final String _value)  {
-      addValue("MethodNamePersonPhone", _value);
-    }
-
-    /**
-     * 
-     * @see #values
-     */
-    public void setPersonMobileMethod(final String _value)  {
-      addValue("MethodNamePersonMobile", _value);
-    }
-
-    /**
-     * 
-     * @see #values
-     */
-    public void setPersonFaxMethod(final String _value)  {
-      addValue("MethodNamePersonFax", _value);
-    }
-
-    /**
-     * 
+     *
      * @see #values
      */
     public void setRoleClassName(final String _value)  {
@@ -300,7 +245,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
     }
 
     /**
-     * 
+     *
      * @see #values
      */
     public void setRoleKeyMethod(final String _value)  {
@@ -308,7 +253,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
     }
 
     /**
-     * 
+     *
      * @see #values
      */
     public void setGroupClassName(final String _value)  {
@@ -316,7 +261,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
     }
 
     /**
-     * 
+     *
      * @see #values
      */
     public void setGroupKeyMethod(final String _value)  {

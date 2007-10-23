@@ -42,7 +42,7 @@ import org.efaps.util.EFapsException;
  * eFaps (e.g. to assign them for access or to send then an email).<br/> To
  * start an import, the class must be instanciated and method
  * {@link #importPersons} must be called.
- * 
+ *
  * @author tmo
  * @version $Id$
  */
@@ -54,7 +54,8 @@ public class ImportHandler extends LoginHandler {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private static Logger LOG = LoggerFactory.getLogger(ImportHandler.class);
+  private final static Logger LOG =
+      LoggerFactory.getLogger(ImportHandler.class);
 
   // ////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -62,18 +63,18 @@ public class ImportHandler extends LoginHandler {
   /**
    * All person mapper instances are stored in this instance variable.
    */
-  private Set<PersonMapper> persMappers = new HashSet<PersonMapper>();
+  private final Set<PersonMapper> persMappers = new HashSet<PersonMapper>();
 
   /**
    * Map the person mapper instances to the user name of the persons.
    */
-  private Map<String, PersonMapper> name2persMapper =
+  private final Map<String, PersonMapper> name2persMapper =
       new HashMap<String, PersonMapper>();
 
   /**
    * Map the person mapper instances to the eFaps person instances.
    */
-  private Map<Person, PersonMapper> pers2persMapper =
+  private final Map<Person, PersonMapper> pers2persMapper =
       new HashMap<Person, PersonMapper>();
 
   // ////////////////////////////////////////////////////////////////////////////
@@ -83,7 +84,7 @@ public class ImportHandler extends LoginHandler {
    * Constructor to initialize the login handler. If <i>null</i> is given to
    * the application name, the default value defined in {@link #application} is
    * used.
-   * 
+   *
    * @param _application
    *                application name of the JAAS configuration
    */
@@ -97,7 +98,7 @@ public class ImportHandler extends LoginHandler {
   /**
    * The method calls first method {@link #readPersons} to read all persons in
    * the cache. Then all found persons are updated with the information from
-   * 
+   *
    * @see #readPersons
    * @see #updatePersons
    */
@@ -120,7 +121,7 @@ public class ImportHandler extends LoginHandler {
    */
   protected void readPersons() {
     try {
-      LoginContext login =
+      final LoginContext login =
           new LoginContext(getApplication(), new LoginCallbackHandler(
               ActionCallback.Mode.AllPersons, null, null));
       login.login();
@@ -129,7 +130,7 @@ public class ImportHandler extends LoginHandler {
         if (LOG.isDebugEnabled()) {
           LOG.debug("check JAAS system '" + system + "'");
         }
-        Set<?> users =
+        final Set<?> users =
             login.getSubject().getPrincipals(
                 system.getPersonJAASPrincipleClass());
         for (Object persObj : users) {
@@ -137,10 +138,10 @@ public class ImportHandler extends LoginHandler {
             LOG.debug("- check person '" + persObj + "'");
           }
           try {
-            String persKey =
+            final String persKey =
                 (String) system.getPersonMethodKey().invoke(persObj,
                     (Object) null);
-            String persName =
+            final String persName =
                 (String) system.getPersonMethodName().invoke(persObj,
                     (Object) null);
 
@@ -192,7 +193,7 @@ public class ImportHandler extends LoginHandler {
    * update.<br/> Each user name is written as debug information to the log
    * file.<br/> If an exception is thrown inside called methods, the exceptions
    * are only written to the log as errors.
-   * 
+   *
    * @see LoginHandler#getPerson
    * @see LoginHandler#createPerson
    * @see LoginHandler#updatePerson
@@ -205,7 +206,7 @@ public class ImportHandler extends LoginHandler {
         LOG.debug("update person '" + persMapper.name + "'");
       }
       try {
-        LoginContext login =
+        final LoginContext login =
             new LoginContext(getApplication(), new LoginCallbackHandler(
                 ActionCallback.Mode.PersonInformation, persMapper.name, null));
         login.login();
@@ -252,12 +253,13 @@ public class ImportHandler extends LoginHandler {
     /**
      * User Name of the person.
      */
-    private String name;
+    private final String name;
 
     /**
      * Mapping of the key for the keys.
      */
-    private Map<JAASSystem, String> keys = new HashMap<JAASSystem, String>();
+    private final Map<JAASSystem, String> keys =
+        new HashMap<JAASSystem, String>();
 
     // /////////////////////////////////////////////////////////////////////////
     // constructor
@@ -267,7 +269,7 @@ public class ImportHandler extends LoginHandler {
      * person mapper in {@link #name2persMapper} and the mapping for persons to
      * person mapper in {@link #pers2persMapper} are updated. The new instance
      * is added to the list of all person mappers in {@link #persMappers}.
-     * 
+     *
      * @param _person
      *                JAVA person instance (if already existing in eFaps)
      * @param _name
@@ -276,19 +278,19 @@ public class ImportHandler extends LoginHandler {
     PersonMapper(final Person _person, final String _name) {
       this.person = _person;
       this.name = _name;
-      name2persMapper.put(this.name, this);
+      ImportHandler.this.name2persMapper.put(this.name, this);
       if (this.person != null) {
-        pers2persMapper.put(this.person, this);
+        ImportHandler.this.pers2persMapper.put(this.person, this);
       }
-      persMappers.add(this);
+      ImportHandler.this.persMappers.add(this);
     }
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // instance methods
 
     /**
      * A new key of the person for the JAAS system is defined for the person.
-     * 
+     *
      * @param _jaasSystem
      *                JAAS system in which the person is defined
      * @param _key

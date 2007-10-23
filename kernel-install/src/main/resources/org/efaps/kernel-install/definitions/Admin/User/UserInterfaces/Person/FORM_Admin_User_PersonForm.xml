@@ -157,41 +157,6 @@
       <property name="Expression">Email</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="Organisation">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">Organisation</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="Url">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">Url</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="Phone">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">Phone</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="Mobile">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">Mobile</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="Fax">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">Fax</property>
-      <property name="Searchable">true</property>
-    </field>
-  </definition>
+     </definition>
 
 </ui-form>

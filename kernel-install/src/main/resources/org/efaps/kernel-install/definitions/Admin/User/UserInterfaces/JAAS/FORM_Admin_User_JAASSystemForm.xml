@@ -167,41 +167,6 @@
       <property name="Expression">MethodNamePersonEmail</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="MethodNamePersonOrganisation">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">MethodNamePersonOrganisation</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="MethodNamePersonUrl">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">MethodNamePersonUrl</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="MethodNamePersonPhone">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">MethodNamePersonPhone</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="MethodNamePersonMobile">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">MethodNamePersonMobile</property>
-      <property name="Searchable">true</property>
-    </field>
-    <field name="MethodNamePersonFax">
-      <property name="Columns">40</property>
-      <property name="Creatable">true</property>
-      <property name="Editable">true</property>
-      <property name="Expression">MethodNamePersonFax</property>
-      <property name="Searchable">true</property>
-    </field>
     <field name="ClassNameRole">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>

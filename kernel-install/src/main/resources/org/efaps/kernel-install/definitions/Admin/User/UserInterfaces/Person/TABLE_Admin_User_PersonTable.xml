@@ -67,21 +67,9 @@
       <property name="Expression">FirstName</property>
       <property name="Label">Admin_User_Person/FirstName.Label</property>
     </field>
-    <field name="organisation">
-      <property name="Expression">Organisation</property>
-      <property name="Label">Admin_User_Person/Organisation.Label</property>
-    </field>
     <field name="email">
       <property name="Expression">Email</property>
       <property name="Label">Admin_User_Person/Email.Label</property>
-    </field>
-    <field name="phone">
-      <property name="Expression">Phone</property>
-      <property name="Label">Admin_User_Person/Phone.Label</property>
-    </field>
-    <field name="mobile">
-      <property name="Expression">Mobile</property>
-      <property name="Label">Admin_User_Person/Mobile.Label</property>
     </field>
     <field name="status">
       <property name="Expression">Status</property>

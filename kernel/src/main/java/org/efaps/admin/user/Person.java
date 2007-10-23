@@ -64,17 +64,7 @@ public class Person extends UserObject {
     /** Attribute Name for the Last Name of the person. */
     LastName("LASTNAME"),
     /** Attribute Name for the Email Adresse of the person. */
-    Email("EMAIL"),
-    /** Attribute Name for the Organisation of the person. */
-    Organisation("ORG"),
-    /** Attribute Name for the URL of the person. */
-    URL("URL"),
-    /** Attribute Name for the Phone Number of the person. */
-    Phone("PHONE"),
-    /** Attribute Name for the Mobile Number of the person. */
-    Mobile("MOBILE"),
-    /** Attribute Name for the Fax Number of the person. */
-    Fax("FAX");
+    Email("EMAIL");
 
     /** The name of the depending SQL column for an attribute name */
     public final String sqlColumn;
@@ -161,7 +151,7 @@ public class Person extends UserObject {
 
   /**
    * Checks, if the given person is assigned to this user object. Here it is
-   * only test if the person is the same as the user of the parameter.
+   * only tested if the person is the same as the user of the parameter.
    *
    * @param _person
    *                person to test
@@ -344,14 +334,11 @@ public class Person extends UserObject {
 
             final int rows = stmt.executeUpdate();
             if (rows == 0) {
-              // TODO: exception in properties
               LOG.error("could not update '"
                   + cmd.toString()
-                  + "' "
-                  + "person with user name '"
+                  + "' person with user name '"
                   + getName()
-                  + "' "
-                  + "(id = "
+                  + "' (id = "
                   + getId()
                   + ")");
               throw new EFapsException(Person.class,
@@ -361,14 +348,11 @@ public class Person extends UserObject {
             // TODO: update modified date
 
           } catch (SQLException e) {
-            // TODO: exception in properties
             LOG.error("could not update '"
                 + cmd.toString()
-                + "' "
-                + "person with user name '"
+                + "' person with user name '"
                 + getName()
-                + "' "
-                + "(id = "
+                + "' (id = "
                 + getId()
                 + ")", e);
             throw new EFapsException(Person.class,
@@ -443,7 +427,6 @@ public class Person extends UserObject {
         resultset.close();
       } catch (SQLException e) {
         LOG.error("password check failed for person '" + getName() + "'", e);
-        // TODO: Exception in properties
         throw new EFapsException(getClass(), "checkPassword.SQLException", e,
             getName());
       }
@@ -481,16 +464,17 @@ public class Person extends UserObject {
   // in another way?
   public void setPassword(final Context _context, final String _newPasswd)
                                                                           throws Exception {
-    Type type = Type.get(EFapsClassName.USER_PERSON.name);
+    final Type type = Type.get(EFapsClassName.USER_PERSON.name);
 
     if (_newPasswd.length() == 0) {
       throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd
           .length());
     }
-    Attribute attrPass = type.getAttribute("Password");
-    Update update = new Update(type, "" + getId());
+    final Attribute attrPass = type.getAttribute("Password");
+    final Update update = new Update(type, "" + getId());
     update.add(attrPass, _newPasswd);
     update.executeWithoutAccessCheck();
+    update.close();
   }
 
   /**
@@ -501,16 +485,17 @@ public class Person extends UserObject {
    * @throws Exception
    */
   public void setPassword(final String _newPasswd) throws Exception {
-    Type type = Type.get(EFapsClassName.USER_PERSON.name);
+    final Type type = Type.get(EFapsClassName.USER_PERSON.name);
 
     if (_newPasswd.length() == 0) {
       throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd
           .length());
     }
-    Attribute attrPass = type.getAttribute("Password");
-    Update update = new Update(type, "" + getId());
+    final Attribute attrPass = type.getAttribute("Password");
+    final Update update = new Update(type, "" + getId());
     update.add(attrPass, _newPasswd);
     update.executeWithoutAccessCheck();
+    update.close();
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -542,17 +527,17 @@ public class Person extends UserObject {
       try {
         stmt = rsrc.getConnection().createStatement();
 
-        StringBuilder cmd = new StringBuilder("select ");
+        final StringBuilder cmd = new StringBuilder("select ");
         for (AttrName attrName : AttrName.values()) {
           cmd.append(attrName.sqlColumn).append(",");
         }
         cmd.append("0 as DUMMY ").append("from V_USERPERSON ").append(
             "where V_USERPERSON.ID=").append(getId());
 
-        ResultSet resultset = stmt.executeQuery(cmd.toString());
+        final ResultSet resultset = stmt.executeQuery(cmd.toString());
         if (resultset.next()) {
           for (AttrName attrName : AttrName.values()) {
-            String tmp = resultset.getString(attrName.sqlColumn);
+            final String tmp = resultset.getString(attrName.sqlColumn);
             setAttrValue(attrName, tmp == null ? null : tmp.trim());
           }
         }
@@ -560,7 +545,6 @@ public class Person extends UserObject {
       } catch (SQLException e) {
         LOG.error("read attributes for person with SQL statement is not "
             + "possible", e);
-        // TODO: exception in properties
         throw new EFapsException(Person.class,
             "readFromDBAttributes.SQLException", e, getName(), getId());
       }
@@ -606,7 +590,7 @@ public class Person extends UserObject {
   public Set<Role> getRolesFromDB(final JAASSystem _jaasSystem)
                                                                throws EFapsException {
 
-    Set<Role> ret = new HashSet<Role>();
+    final Set<Role> ret = new HashSet<Role>();
     ConnectionResource rsrc = null;
     try {
       rsrc = Context.getThreadContext().getConnectionResource();
@@ -614,7 +598,7 @@ public class Person extends UserObject {
       Statement stmt = null;
 
       try {
-        StringBuilder cmd = new StringBuilder();
+        final StringBuilder cmd = new StringBuilder();
         cmd.append("select ").append("USERABSTRACTTO ").append(
             "from V_USERPERSON2ROLE ").append("where USERABSTRACTFROM=")
             .append(getId());
@@ -624,7 +608,7 @@ public class Person extends UserObject {
         }
 
         stmt = rsrc.getConnection().createStatement();
-        ResultSet resultset = stmt.executeQuery(cmd.toString());
+        final ResultSet resultset = stmt.executeQuery(cmd.toString());
         while (resultset.next()) {
           ret.add(Role.get(resultset.getLong(1)));
         }
@@ -672,10 +656,10 @@ public class Person extends UserObject {
                                                                             throws EFapsException {
 
     if (_jaasSystem == null) {
-      // TODO: throw exception
+      throw new EFapsException(getClass(), "setRoles.nojaasSystem", getName());
     }
     if (_roles == null) {
-      // TODO: throw exception
+      throw new EFapsException(getClass(), "setRoles.noRoles", getName());
     }
 
     for (Role role : _roles) {
@@ -683,7 +667,7 @@ public class Person extends UserObject {
     }
 
     // current roles
-    Set<Role> rolesInDb = getRolesFromDB(_jaasSystem);
+    final Set<Role> rolesInDb = getRolesFromDB(_jaasSystem);
 
     // compare new roles with current roles (add missing roles)
     for (Role role : _roles) {
@@ -745,7 +729,7 @@ public class Person extends UserObject {
   public Set<Group> getGroupsFromDB(final JAASSystem _jaasSystem)
                                                                  throws EFapsException {
 
-    Set<Group> ret = new HashSet<Group>();
+    final Set<Group> ret = new HashSet<Group>();
     ConnectionResource rsrc = null;
     try {
       rsrc = Context.getThreadContext().getConnectionResource();
@@ -753,7 +737,7 @@ public class Person extends UserObject {
       Statement stmt = null;
 
       try {
-        StringBuilder cmd = new StringBuilder();
+        final StringBuilder cmd = new StringBuilder();
         cmd.append("select ").append("USERABSTRACTTO ").append(
             "from V_USERPERSON2GROUP ").append("where USERABSTRACTFROM=")
             .append(getId());
@@ -763,14 +747,13 @@ public class Person extends UserObject {
         }
 
         stmt = rsrc.getConnection().createStatement();
-        ResultSet resultset = stmt.executeQuery(cmd.toString());
+        final ResultSet resultset = stmt.executeQuery(cmd.toString());
         while (resultset.next()) {
           ret.add(Group.get(resultset.getLong(1)));
         }
         resultset.close();
 
       } catch (SQLException e) {
-        // TODO: exception in property
         throw new EFapsException(getClass(), "getGroupsFromDB.SQLException", e,
             getName());
       }
@@ -812,10 +795,10 @@ public class Person extends UserObject {
                                                                                throws EFapsException {
 
     if (_jaasSystem == null) {
-      // TODO: throw exception
+      throw new EFapsException(getClass(), "setGroups.nojaasSystem", getName());
     }
     if (_groups == null) {
-      // TODO: throw exception
+      throw new EFapsException(getClass(), "setGroups.noGroups", getName());
     }
 
     for (Group group : _groups) {
@@ -823,7 +806,7 @@ public class Person extends UserObject {
     }
 
     // current groups
-    Set<Group> groupsInDb = getGroupsFromDB(_jaasSystem);
+    final Set<Group> groupsInDb = getGroupsFromDB(_jaasSystem);
 
     // compare new roles with current groups (add missing groups)
     for (Group group : _groups) {
@@ -881,37 +864,31 @@ public class Person extends UserObject {
   public void updateLastLogin() throws EFapsException {
     ConnectionResource rsrc = null;
     try {
-      Context context = Context.getThreadContext();
+      final Context context = Context.getThreadContext();
       rsrc = context.getConnectionResource();
 
       Statement stmt = null;
-      StringBuilder cmd = new StringBuilder();
+      final StringBuilder cmd = new StringBuilder();
       try {
 
         cmd.append("update T_USERPERSON ").append("set LASTLOGIN=").append(
             Context.getDbType().getCurrentTimeStamp()).append(" ").append(
             "where ID=").append(getId());
         stmt = rsrc.getConnection().createStatement();
-        int rows = stmt.executeUpdate(cmd.toString());
+        final int rows = stmt.executeUpdate(cmd.toString());
         if (rows == 0) {
-          // TODO: exception in properties
           LOG.error("could not execute '"
               + cmd.toString()
-              + "' "
-              + "to update last login information "
-              + "for person '"
+              + "' to update last login information for person '"
               + toString()
               + "'");
           throw new EFapsException(getClass(), "updateLastLogin.NotUpdated",
               cmd.toString(), getName());
         }
       } catch (SQLException e) {
-        // TODO: exception in properties
         LOG.error("could not execute '"
             + cmd.toString()
-            + "' "
-            + "to update last login information "
-            + "for person '"
+            + "' to update last login information for person '"
             + toString()
             + "'", e);
         throw new EFapsException(getClass(), "updateLastLogin.SQLException", e,
@@ -1048,21 +1025,19 @@ public class Person extends UserObject {
 
       try {
         stmt = rsrc.getConnection().createStatement();
-        ResultSet resultset = stmt.executeQuery(_sql);
+        final ResultSet resultset = stmt.executeQuery(_sql);
         if (resultset.next()) {
-          long id = resultset.getLong(1);
-          String name = resultset.getString(2);
-          boolean status = resultset.getBoolean(3);
+          final long id = resultset.getLong(1);
+          final String name = resultset.getString(2);
+          final boolean status = resultset.getBoolean(3);
           ret = new Person(id, name.trim(), status);
           getCache().add(ret);
         }
         resultset.close();
       } catch (SQLException e) {
-        LOG.error("search for person with SQL statement "
-            + "'"
+        LOG.error("search for person with SQL statement '"
             + _sql
             + "' is not possible", e);
-        // TODO: exception in properties
         throw new EFapsException(Person.class, "getFromDB.SQLException", e,
             _sql);
       }
@@ -1113,7 +1088,7 @@ public class Person extends UserObject {
       Statement stmt = null;
 
       try {
-        StringBuilder cmd = new StringBuilder();
+        final StringBuilder cmd = new StringBuilder();
         cmd.append("select ").append("ID ").append("from V_USERPERSONJASSKEY ")
             .append("where JAASKEY='").append(_jaasKey).append("' ").append(
                 "and JAASSYSID=").append(_jaasSystem.getId());
@@ -1126,14 +1101,11 @@ public class Person extends UserObject {
         resultset.close();
 
       } catch (SQLException e) {
-        LOG.error("search for person for JAAS system "
-            + "'"
+        LOG.error("search for person for JAAS system '"
             + _jaasSystem.getName()
-            + "' "
-            + "with key '"
+            + "' with key '"
             + _jaasKey
             + "' is not possible", e);
-        // TODO: exception in properties
         throw new EFapsException(Person.class, "getWithJAASKey.SQLException",
             e, _jaasSystem.getName(), _jaasKey);
       }
@@ -1157,7 +1129,6 @@ public class Person extends UserObject {
     return get(personId);
   }
 
-  // TODO: Description
   /**
    * @param _jaasSystem
    *                JAAS system which want to creaet a new person in eFaps
@@ -1177,10 +1148,10 @@ public class Person extends UserObject {
                                                            throws EFapsException {
 
     long persId = 0;
-    Type persType = Type.get(EFapsClassName.USER_PERSON.name);
+    final Type persType = Type.get(EFapsClassName.USER_PERSON.name);
     ConnectionResource rsrc = null;
     try {
-      Context context = Context.getThreadContext();
+      final Context context = Context.getThreadContext();
 
       rsrc = context.getConnectionResource();
 
@@ -1190,7 +1161,12 @@ public class Person extends UserObject {
 
         // TODO: check for uniqueness!
         // TODO: hard coded mofifier and creator
-        if (!Context.getDbType().supportsGetGeneratedKeys()) {
+        if (Context.getDbType().supportsGetGeneratedKeys()) {
+          cmd.append("insert into ").append(
+              persType.getMainTable().getSqlTable()).append(
+              "(TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ").append(
+              "values (");
+        } else {
           persId =
               Context.getDbType().getNewId(rsrc.getConnection(),
                   persType.getMainTable().getSqlTable(), "ID");
@@ -1198,11 +1174,6 @@ public class Person extends UserObject {
               persType.getMainTable().getSqlTable()).append(
               "(ID,TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ").append(
               "values (").append(persId).append(",");
-        } else {
-          cmd.append("insert into ").append(
-              persType.getMainTable().getSqlTable()).append(
-              "(TYPEID,NAME,CREATOR,CREATED,MODIFIER,MODIFIED) ").append(
-              "values (");
         }
         cmd.append(persType.getId()).append(",").append("'").append(_userName)
             .append("',").append(context.getPersonId()).append(",").append(
@@ -1220,27 +1191,22 @@ public class Person extends UserObject {
 
         int rows = stmt.executeUpdate();
         if (rows == 0) {
-          // TODO: exception in properties
           LOG.error("could not execute '"
               + cmd.toString()
-              + "' "
-              + "for JAAS system "
-              + "'"
+              + "' for JAAS system '"
               + _jaasSystem.getName()
-              + "' "
-              + "person with key '"
+              + "' person with key '"
               + _jaasKey
-              + "' and "
-              + "user name '"
+              + "' and user name '"
               + _userName
               + "'");
           throw new EFapsException(Person.class, "createPerson.NotInserted",
               _jaasSystem.getName(), _jaasKey, _userName);
         }
         if (persId == 0) {
-          ResultSet rs = stmt.getGeneratedKeys();
-          if (rs.next()) {
-            persId = rs.getLong(1);
+          final ResultSet resultset = stmt.getGeneratedKeys();
+          if (resultset.next()) {
+            persId = resultset.getLong(1);
           }
         }
 
@@ -1255,15 +1221,11 @@ public class Person extends UserObject {
         if (rows == 0) {
           LOG.error("could not execute '"
               + cmd.toString()
-              + "' "
-              + "for JAAS system "
-              + "'"
+              + "' for JAAS system '"
               + _jaasSystem.getName()
-              + "' "
-              + "person with key '"
+              + "' person with key '"
               + _jaasKey
-              + "' and "
-              + "user name '"
+              + "' and user name '"
               + _userName
               + "'");
           throw new EFapsException(Person.class, "createPerson.NotInserted",
@@ -1271,12 +1233,9 @@ public class Person extends UserObject {
         }
 
       } catch (SQLException e) {
-        // TODO: exception in properties
-        LOG.error("could not create for JAAS system "
-            + "'"
+        LOG.error("could not create for JAAS system '"
             + _jaasSystem.getName()
-            + "' person with key "
-            + "'"
+            + "' person with key '"
             + _jaasKey
             + "' and user name '"
             + _userName
@@ -1290,6 +1249,8 @@ public class Person extends UserObject {
             stmt.close();
           }
         } catch (SQLException e) {
+          throw new EFapsException(Person.class, "createPerson.SQLException",
+              e, _jaasSystem.getName(), _jaasKey);
         }
       }
       rsrc.commit();
