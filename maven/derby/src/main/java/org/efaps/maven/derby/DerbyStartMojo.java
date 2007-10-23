@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven.plugin.goal.derby;
+package org.efaps.maven.derby;
 
 import java.util.Properties;
 

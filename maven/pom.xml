@@ -46,8 +46,9 @@
   <modules>
     <module>logger</module>
     <module>plugin</module>
-    <module>run</module>
+    <module>derby</module>
     <module>jetty</module>
+    <module>run</module>
   </modules>
 
 </project>

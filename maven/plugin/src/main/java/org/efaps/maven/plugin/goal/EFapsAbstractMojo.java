@@ -34,7 +34,6 @@ import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
-import javax.transaction.TransactionManager;
 
 import org.apache.commons.digester.Digester;
 import org.apache.maven.plugin.Mojo;

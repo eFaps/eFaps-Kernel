@@ -15,9 +15,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev: 1368 $
- Last Changed:    $Date: 2007-09-22 15:43:28 +0200 (Sa, 22 Sep 2007) $
- Last Changed By: $Author: tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -28,9 +28,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.efaps.maven</groupId>
   <packaging>maven-plugin</packaging>
-  <artifactId>maven-efaps-plugin</artifactId>
+  <artifactId>maven-efaps-derby</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>maven-eFaps-plugin</name>
+  <name>maven-efaps-derby</name>
   <parent>
     <groupId>org.efaps.maven</groupId>
     <artifactId>maven-efaps</artifactId>
@@ -100,7 +100,7 @@
           </dependency>
         </dependencies>
       </plugin>
- 
+
     </plugins>
   </build>
 
@@ -108,59 +108,18 @@
   * Depencies
   ************************************************************************+ -->
   <dependencies>
-    <!-- annotations used to identify maven plugin syntax -->
-    <dependency>
-      <groupId>org.jfrog.maven.annomojo</groupId>
-      <artifactId>maven-plugin-anno</artifactId>
-      <version>1.3.0</version>
-    </dependency>
-
-    <!-- eFaps kernel -->
-    <dependency>
-      <groupId>org.efaps</groupId>
-      <artifactId>eFaps-Kernel</artifactId>
-      <version>1.0-SNAPSHOT</version>
-    </dependency>
-
-    <!-- eFaps Maven Logger -->
+    <!-- eFaps Maven PLugin -->
     <dependency>
       <groupId>org.efaps.maven</groupId>
-      <artifactId>maven-efaps-logger</artifactId>
+      <artifactId>maven-efaps-plugin</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
 
-    <!-- it's used for some depencies in the type class -->
+    <!-- to compile the derby start / shutdown goals -->
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- maven plugin api -->
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>2.0.7</version>
-    </dependency>
-    
-    <!-- used as javax.naming.* implementation -->
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty</artifactId>
-      <version>6.1.5</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-util</artifactId>
-      <version>6.1.5</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mortbay.jetty</groupId>
-      <artifactId>jetty-naming</artifactId>
-      <version>6.1.5</version>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbynet</artifactId>
+      <version>10.3.1.4</version>
       <scope>compile</scope>
     </dependency>
 
