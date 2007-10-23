@@ -104,48 +104,6 @@
           <configFile>file:${basedir}/src/main/jetty/jetty.xml</configFile>
           <userName>Administrator</userName>
           <passWord>Administrator</passWord>
-          <connection>
-            <property>
-              <name>username</name>
-              <value>${org.efaps.db.username}</value>
-            </property>
-            <property>
-              <name>password</name>
-              <value>${org.efaps.db.password}</value>
-            </property>
-            <property>
-              <name>driverClassName</name>
-              <value>${org.efaps.db.driverClassName}</value>
-            </property>
-            <property>
-              <name>url</name>
-              <value>${org.efaps.db.url}</value>
-            </property>
-            <property>
-              <name>factory</name>
-              <value>${org.efaps.db.factory}</value>
-            </property>
-            <property>
-              <name>maxActive</name>
-              <value>${org.efaps.db.maxActive}</value>
-            </property>
-            <property>
-              <name>maxIdle</name>
-              <value>${org.efaps.db.maxIdle}</value>
-            </property>
-            <property>
-              <name>maxWait</name>
-              <value>${org.efaps.db.maxWait}</value>
-            </property>
-            <property>
-              <name>removeAbandoned</name>
-              <value>${org.efaps.db.removeAbandoned}</value>
-            </property>
-            <property>
-              <name>logAbandoned</name>
-              <value>${org.efaps.db.logAbandoned}</value>
-            </property>
-          </connection>
          </configuration>
         <dependencies>
           <!-- connection Pooling, used as J2EE resource -->

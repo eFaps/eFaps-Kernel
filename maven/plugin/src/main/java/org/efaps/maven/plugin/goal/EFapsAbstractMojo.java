@@ -22,8 +22,11 @@ package org.efaps.maven.plugin.goal;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -69,14 +72,17 @@ public abstract class EFapsAbstractMojo implements Mojo {
 
   /**
    */
-  @MojoParameter(expression = "${org.efaps.db.factory}")
+  @MojoParameter(required = true,
+                 expression = "${org.efaps.db.factory}")
   private String factory;
 
   /**
-   * Holds all properties of the connection to the database.
+   * Holds all properties of the connection to the database. The properties
+   * are separated by a comma.
    */
-  @MojoParameter
-  private Properties connection;
+  @MojoParameter(expression = "${org.efaps.db.connection}",
+                 required = true)
+  private String connection;
 
   /**
    * Stores the name of the logged in user.
@@ -193,14 +199,22 @@ public abstract class EFapsAbstractMojo implements Mojo {
   }
 
   /**
-   * Initiliase the database information read from the bootstrap file:
+   * Initialize the database information set from maven in the parameter
+   * instance variables.
    * <ul>
-   * <li>read boostrap properties from bootstrap file</li>
    * <li>configure the database type</li>
-   * <li>initiliase the sql datasource (JDBC connection to the database)</li>
+   * <li>initialize the sql datasource (JDBC connection to the database)</li>
+   * <li>initialize transaction manager</li>
    * </ul>
+   *
+   * @return <i>true</i> if database connection is initialized
+   * @see #convertToMap
+   * @see #type       database class
+   * @see #factory    factory class name
+   * @see #connection connection properties
    */
   protected boolean initDatabase() {
+
     boolean initialised = false;
 
     getLog().info("Initialise Database Connection");
@@ -214,32 +228,30 @@ public abstract class EFapsAbstractMojo implements Mojo {
     }
 
     // configure database type
-    String dbClass = null;
     try {
-      AbstractDatabase dbType = (AbstractDatabase) (Class.forName(this.type))
-          .newInstance();
+      AbstractDatabase dbType
+              = (AbstractDatabase)(Class.forName(this.type)).newInstance();
       if (dbType == null) {
         getLog().error("could not initaliase database type");
+      } else  {
+        NamingUtil.bind(compCtx, "env/eFaps/dbType", dbType);
+        initialised = true;
       }
-
-      NamingUtil.bind(compCtx, "env/eFaps/dbType", dbType);
-      initialised = true;
-
     } catch (ClassNotFoundException e) {
       getLog().error(
-          "could not found database description class " + "'" + dbClass + "'",
+          "could not found database description class " + "'" + this.type + "'",
           e);
     } catch (InstantiationException e) {
       getLog().error(
-          "could not initialise database description class " + "'" + dbClass
+          "could not initialise database description class " + "'" + this.type
               + "'", e);
     } catch (IllegalAccessException e) {
       getLog().error(
-          "could not access database description class " + "'" + dbClass + "'",
+          "could not access database description class " + "'" + this.type + "'",
           e);
     } catch (NamingException e) {
       getLog().error(
-          "could not bind database description class " + "'" + dbClass + "'",
+          "could not bind database description class " + "'" + this.type + "'",
           e);
     }
 
@@ -247,10 +259,8 @@ public abstract class EFapsAbstractMojo implements Mojo {
     Reference ref = new Reference(DataSource.class.getName(), 
                                   this.factory,
                                   null);
-    for (Object key : this.connection.keySet()) {
-      Object value = this.connection.get(key);
-      ref.add(new StringRefAddr(key.toString(),
-                                (value == null) ? null : value.toString()));
+    for (Map.Entry<String, String> entry : convertToMap(this.connection).entrySet()) {
+      ref.add(new StringRefAddr(entry.getKey(), entry.getValue()));
     }
     ObjectFactory of = null;
     try {
@@ -259,15 +269,15 @@ public abstract class EFapsAbstractMojo implements Mojo {
     } catch (ClassNotFoundException e) {
       getLog().error(
           "could not found data source class " + "'"
-              + ref.getFactoryClassName() + "'", e);
+              + this.factory + "'", e);
     } catch (InstantiationException e) {
       getLog().error(
           "could not initialise data source class " + "'"
-              + ref.getFactoryClassName() + "'", e);
+              + this.factory + "'", e);
     } catch (IllegalAccessException e) {
       getLog().error(
           "could not access data source class " + "'"
-              + ref.getFactoryClassName() + "'", e);
+              + this.factory + "'", e);
     }
     if (of != null) {
       try {
@@ -281,23 +291,17 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new SlideTransactionMan
       } catch (NamingException e)  {
         getLog().error(
             "could not bind JDBC pooling class " + "'" 
-                + ref.getFactoryClassName() + "'",
+                + this.factory + "'",
             e);
       } catch (Exception e) {
         getLog().error(
             "coud not get object instance of factory " + "'"
-                + ref.getFactoryClassName() + "'", e);
+                + this.factory + "'", e);
       }
     }
 
     return initialised;
   }
-  /**
-   * The static variable holds the transaction manager which is used within the
-   * eFaps web application.
-   */
-  final public static TransactionManager TRANSACTIONSMANAGER =
-      new SlideTransactionManager();
 
   /**
    * Reloads the internal eFaps cache.
@@ -335,6 +339,42 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new SlideTransactionMan
    */
   protected void commitTransaction() throws EFapsException, Exception {
     Context.commit();
+  }
+  
+
+  /**
+   * Separates all key / value pairs of given text string.<br/>
+   * Evaluation algorithm:<br/>
+   * Separates the text by all found commas (only if in front of the comma is
+   * no back slash). This are the key / value pairs. A key / value pair is
+   * separated by the first equal ('=') sign.
+   *
+   * @param _text   text string to convert to a key / value map
+   * @return Map of strings with all found key / value pairs
+   */
+  protected Map<String, String> convertToMap(final String _text)  {
+    final Map<String, String> properties = new HashMap<String, String>();
+
+    // separated all key / value pairs
+    final Pattern pattern = Pattern.compile("(([^\\\\,])|(\\\\,)|(\\\\))*");
+    final Matcher matcher = pattern.matcher(_text);
+
+    while (matcher.find())  {
+      final String group = matcher.group().trim();
+      if (group.length() > 0)  {
+        // separated key from value
+        final int index = group.indexOf('=');
+        final String key = (index > 0) 
+                           ? group.substring(0, index).trim()
+                           : group.trim();
+        final String value = (index > 0)
+                             ? group.substring(index + 1).trim()
+                             : "";
+        properties.put(key, value);
+      }
+    }
+
+    return properties;
   }
 
   /////////////////////////////////////////////////////////////////////////////
