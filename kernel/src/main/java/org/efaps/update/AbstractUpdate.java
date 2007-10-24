@@ -50,9 +50,9 @@ import org.efaps.util.EFapsException;
  * extends this AbstractUpdate. In this classes the xml-Files is read and with
  * the digester converted in Objects. After reading all Objects of one XML-File
  * the Objects are inserted coresponding to the Version.
- * 
+ *
  * @author tmo
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public abstract class AbstractUpdate {
@@ -63,7 +63,8 @@ public abstract class AbstractUpdate {
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Logger LOG = LoggerFactory.getLogger(AbstractUpdate.class);
+  private final static Logger LOG =
+      LoggerFactory.getLogger(AbstractUpdate.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -81,33 +82,36 @@ public abstract class AbstractUpdate {
   /**
    * All known link types are set to this instance varaible.
    */
-  private final Set<Link>                allLinkTypes;
+  private final Set<Link> allLinkTypes;
 
   /**
    * The univeral unique identifier of the object is stored in this instance
    * variable.
-   * 
+   *
    * @see #setUUID
    */
-  private String                         uuid        = null;
+  private String uuid = null;
 
   /**
    * All definitions of versions are added to this list.
    */
-  private final List<DefinitionAbstract> definitions = new ArrayList<DefinitionAbstract>();
+  private final List<DefinitionAbstract> definitions =
+      new ArrayList<DefinitionAbstract>();
+
+  private boolean abstractType = false;
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
-   * 
+   *
    */
   protected AbstractUpdate(final String _dataModelTypeName) {
     this(_dataModelTypeName, null);
   }
 
   /**
-   * 
+   *
    */
   protected AbstractUpdate(final String _dataModelTypeName,
                            final Set<Link> _allLinkTypes) {
@@ -121,9 +125,9 @@ public abstract class AbstractUpdate {
   /**
    * Adds one definition of a update for a specific version to all definitions
    * in {@link #definitions}.
-   * 
+   *
    * @param _definition
-   *          definition to add
+   *                definition to add
    * @see #definitions
    */
   public void addDefinition(final DefinitionAbstract _definition) {
@@ -142,44 +146,31 @@ public abstract class AbstractUpdate {
    * set is also the universal unique identifier, because the name of access set
    * is first updates in the version definition.<br/> The new created object is
    * stored as instance information in {@link #instance}.
-   * 
+   *
    * @todo description
    * @param _jexlContext
-   *          expression context used to evaluate
+   *                expression context used to evaluate
    */
   public void updateInDB(final JexlContext _jexlContext) throws EFapsException,
                                                         Exception {
     try {
-      /*
-       * Instance instance = null; Insert insert = null; // search for the
-       * instance SearchQuery query = new SearchQuery();
-       * query.setQueryTypes(this.dataModelType.getName());
-       * query.addWhereExprEqValue("UUID", this.uuid); query.addSelect("OID");
-       * query.executeWithoutAccessCheck(); if (query.next()) { instance = new
-       * Instance((String) query.get("OID")); } query.close(); // if no instance
-       * exists, a new insert must be done if (instance == null) { insert = new
-       * Insert(this.dataModelType); // insert.add(context, "Name", this.uuid);
-       * insert.add("UUID", this.uuid); }
-       */
+
       for (DefinitionAbstract def : this.definitions) {
-        // if (insert == null) {
-        // _jexlContext.getVars().put("exists", new Boolean(true));
-        // } else {
-        // _jexlContext.getVars().put("exists", new Boolean(false));
-        // }
-        Expression jexlExpr = ExpressionFactory.createExpression(def.mode);
-        boolean exec = new Boolean(jexlExpr.evaluate(_jexlContext).toString());
+
+        final Expression jexlExpr =
+            ExpressionFactory.createExpression(def.mode);
+        final boolean exec =
+            Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
         if (exec) {
-          // def.updateInDB(instance, this.allLinkTypes, insert);
           if ((this.url != null) && LOG.isInfoEnabled()) {
             LOG.info("Executing '" + this.url.toString() + "'");
           }
-          def.updateInDB(Type.get(this.dataModelTypeName), this.uuid, this.allLinkTypes);
+          def.updateInDB(Type.get(this.dataModelTypeName), this.uuid,
+              this.allLinkTypes, this.abstractType);
         }
-        // _jexlContext.getVars().remove("exists");
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      LOG.error("updateInDB", e);
       throw e;
     }
   }
@@ -203,7 +194,7 @@ public abstract class AbstractUpdate {
 
   /**
    * This is the getter method for instance variable {@link #uuid}.
-   * 
+   *
    * @return value of instance variable {@link #uuid}
    * @see #uuid
    * @see #setUUID
@@ -213,8 +204,28 @@ public abstract class AbstractUpdate {
   }
 
   /**
+   * This is the getter method for the instance variable {@link #abstractType}.
+   *
+   * @return value of instance variable {@link #abstractType}
+   */
+
+  public boolean isAbstractType() {
+    return this.abstractType;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #abstractType}.
+   *
+   * @param _abstractType
+   *                the abstractType to set
+   */
+  public void setAbstractType(final String _abstractType) {
+    this.abstractType = Boolean.parseBoolean(_abstractType);
+  }
+
+  /**
    * This is the getter method for instance variable {@link #definitions}.
-   * 
+   *
    * @return value of instance variable {@link #definitions}
    * @see #definitions
    */
@@ -224,9 +235,10 @@ public abstract class AbstractUpdate {
 
   /**
    * Returns a string representation with values of all instance variables.
-   * 
+   *
    * @return string representation of this abstract update
    */
+  @Override
   public String toString() {
     return new ToStringBuilder(this).append("uuid", this.uuid).append(
         "definitions", this.definitions).toString();
@@ -238,7 +250,7 @@ public abstract class AbstractUpdate {
   /**
    * The class is used to define the links with all information needed to update
    * the link information between the object to update and the related objects.
-   * 
+   *
    * @see #setLinksInDB
    */
   static protected class Link {
@@ -263,22 +275,22 @@ public abstract class AbstractUpdate {
 
     /**
      * Constructor used to initialise the instance variables.
-     * 
+     *
      * @param _linkName
-     *          name of the link itself
+     *                name of the link itself
      * @param _parentAttrName
-     *          name of the parent attribute in the link
+     *                name of the parent attribute in the link
      * @param _childTypeName
-     *          name of the child type
+     *                name of the child type
      * @param _childAttrName
-     *          name of the child attribute in the link
+     *                name of the child attribute in the link
      * @see #linkName
      * @see #parentAttrName
      * @see #childTypeName
      * @see #childAttrName
      */
     public Link(final String _linkName, final String _parentAttrName,
-        final String _childTypeName, final String _childAttrName) {
+                final String _childTypeName, final String _childAttrName) {
       this.linkName = _linkName;
       this.parentAttrName = _parentAttrName;
       this.childTypeName = _childTypeName;
@@ -287,7 +299,7 @@ public abstract class AbstractUpdate {
 
     /**
      * Child Type extracted from the child type name.
-     * 
+     *
      * @return child type extracted from the child type name
      */
     public Type getChildType() {
@@ -296,7 +308,7 @@ public abstract class AbstractUpdate {
 
     /**
      * Link Type extracted from the link name.
-     * 
+     *
      * @return link type extracted from the link name
      */
     public Type getLinkType() {
@@ -306,9 +318,10 @@ public abstract class AbstractUpdate {
     /**
      * Returns a string representation with values of all instance variables of
      * a link.
-     * 
+     *
      * @return string representation of this link
      */
+    @Override
     public String toString() {
       return new ToStringBuilder(this).append("linkName", this.linkName)
           .append("parentAttrName", this.parentAttrName).append(
@@ -324,77 +337,75 @@ public abstract class AbstractUpdate {
   static protected class OrderedLink extends Link {
 
     public OrderedLink(final String _linkName, final String _parentAttrName,
-        final String _childTypeName, final String _childAttrName) {
+                       final String _childTypeName, final String _childAttrName) {
       super(_linkName, _parentAttrName, _childTypeName, _childAttrName);
     }
   }
 
   /**
-   * 
+   *
    */
   protected abstract static class DefinitionAbstract {
 
     /**
      * Name of the application for which this definition is defined.
-     * 
+     *
      * @see #setVersion
      */
-    private String application   = null;
+    private String application = null;
 
     /**
      * Number of the global version of the application.
-     * 
+     *
      * @see #setVersion
      */
     private long globalVersion = 0;
 
     /**
      * Text of the local version of this definition.
-     * 
+     *
      * @see #setVersion
      */
-    private String localVersion  = null;
+    private String localVersion = null;
 
     /**
-     * 
-     * 
      * @see #setVersion
      */
     private String mode = null;
 
     /**
      * The value depending on the attribute name for this definition.
-     * 
+     *
      * @see #addValue
      * @see #getValue
      */
-    private final Map < String, String > values = new HashMap<String, String>();
+    private final Map<String, String> values = new HashMap<String, String>();
 
     /**
      * Property value depending on the property name for this definition
-     * 
+     *
      * @see #addProperty.
      */
-    private final Map < String, String > properties
-                                            = new HashMap<String, String>();
+    private final Map<String, String> properties =
+        new HashMap<String, String>();
 
     /**
-     * 
+     *
      */
-    private final Map < Link, Map < String, Map < String, String >>> links 
-                = new HashMap < Link, Map <String, Map < String, String >>>();
+    private final Map<Link, Map<String, Map<String, String>>> links =
+        new HashMap<Link, Map<String, Map<String, String>>>();
 
-    protected final List<Event>  events = new ArrayList < Event >();
+    protected final List<Event> events = new ArrayList<Event>();
 
-    public void updateInDB(final Type _dataModelType,
-                           final String _uuid,
-                           final Set<Link> _allLinkTypes)
-                                     throws EFapsException, Exception  {
+    public void updateInDB(final Type _dataModelType, final String _uuid,
+                           final Set<Link> _allLinkTypes,
+                           final boolean _abstractType) throws EFapsException,
+                                                       Exception {
       Instance instance = null;
       Insert insert = null;
 
       // search for the instance
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setQueryTypes(_dataModelType.getName());
       query.addWhereExprEqValue("UUID", _uuid);
       query.addSelect("OID");
@@ -408,40 +419,26 @@ public abstract class AbstractUpdate {
       if (instance == null) {
         insert = new Insert(_dataModelType);
         insert.add("UUID", _uuid);
+        if (insert.getInstance().getType().getAttribute("Abstract") != null) {
+          insert.add("Abstract", ((Boolean) _abstractType).toString());
+        }
       }
 
       updateInDB(instance, _allLinkTypes, insert);
     }
 
     /**
-     * 
+     *
      */
     public Instance updateInDB(final Instance _instance,
                                final Set<Link> _allLinkTypes,
-                               final Insert _insert)
-                                            throws EFapsException, Exception {
+                               final Insert _insert) throws EFapsException,
+                                                    Exception {
       Instance instance = _instance;
 
-      if (_insert != null) {
-        if (_insert.getInstance().getType().getAttribute("Revision") != null) {
-          _insert.add("Revision", this.globalVersion + "#" + this.localVersion);
-        }
-        String name = this.values.get("Name");
-        if (name == null) {
-          _insert.add("Name", "-");
-        }
-        for (Map.Entry<String, String> entry : this.values.entrySet()) {
-          _insert.add(entry.getKey(), entry.getValue());
-        }
-        if (LOG.isInfoEnabled() && (name != null)) {
-          LOG.info("    Insert " + _insert.getInstance().getType().getName()
-              + " " + "'" + name + "'");
-        }
-        _insert.executeWithoutAccessCheck();
-        instance = _insert.getInstance();
-      } else {
-        String name = this.values.get("Name");
-        Update update = new Update(_instance);
+      if (_insert == null) {
+        final String name = this.values.get("Name");
+        final Update update = new Update(_instance);
         if (_instance.getType().getAttribute("Revision") != null) {
           update.add("Revision", this.globalVersion + "#" + this.localVersion);
         }
@@ -449,10 +446,37 @@ public abstract class AbstractUpdate {
           update.add(entry.getKey(), entry.getValue());
         }
         if (LOG.isInfoEnabled() && (name != null)) {
-          LOG.info("    Update " + _instance.getType().getName() + " " + "'"
-              + name + "'");
+          LOG.info("    Update "
+              + _instance.getType().getName()
+              + " "
+              + "'"
+              + name
+              + "'");
         }
         update.executeWithoutAccessCheck();
+
+      } else {
+
+        if (_insert.getInstance().getType().getAttribute("Revision") != null) {
+          _insert.add("Revision", this.globalVersion + "#" + this.localVersion);
+        }
+        final String name = this.values.get("Name");
+        if (name == null) {
+          _insert.add("Name", "-");
+        }
+        for (Map.Entry<String, String> entry : this.values.entrySet()) {
+          _insert.add(entry.getKey(), entry.getValue());
+        }
+        if (LOG.isInfoEnabled() && (name != null)) {
+          LOG.info("    Insert "
+              + _insert.getInstance().getType().getName()
+              + " "
+              + "'"
+              + name
+              + "'");
+        }
+        _insert.executeWithoutAccessCheck();
+        instance = _insert.getInstance();
       }
       if (_allLinkTypes != null) {
         for (Link linkType : _allLinkTypes) {
@@ -462,7 +486,8 @@ public abstract class AbstractUpdate {
       setPropertiesInDb(instance, this.properties);
 
       for (Event event : this.events) {
-        Instance newInstance = event.updateInDB(instance, getValue("Name"));
+        final Instance newInstance =
+            event.updateInDB(instance, getValue("Name"));
         setPropertiesInDb(newInstance, event.getProperties());
       }
 
@@ -472,37 +497,38 @@ public abstract class AbstractUpdate {
     /**
      * Sets the links from this object to the given list of objects (with the
      * object name) in the eFaps database.
-     * 
-     * @param _instance instance for which the access types must be set
-     * @param _link     link to update
-     * @param _objNames string list of all object names to set for this object
+     *
+     * @param _instance
+     *                instance for which the access types must be set
+     * @param _link
+     *                link to update
+     * @param _objNames
+     *                string list of all object names to set for this object
      * @todo it could be that more than one current from same target is defined!
      *       E.g. menu to child!
      * @todo ordered link is only a hack, the current connection are always
      *       disconnected
      */
-    protected void setLinksInDB(final Instance _instance, 
-                                final Link _link,
+    protected void setLinksInDB(final Instance _instance, final Link _link,
                                 final Map<String, Map<String, String>> _links)
-                                            throws EFapsException, Exception  {
-
+                                                                              throws EFapsException,
+                                                                              Exception {
       // get ids from current object
-      Map<Long, String> currents = new HashMap<Long, String>();
+      final Map<Long, String> currents = new HashMap<Long, String>();
       SearchQuery query = new SearchQuery();
-      query.setExpand(_instance, _link.linkName + "\\"
-          + _link.parentAttrName);
+      query.setExpand(_instance, _link.linkName + "\\" + _link.parentAttrName);
       query.addSelect(_link.childAttrName + ".ID");
       query.addSelect("OID");
       query.addSelect("Type");
       query.addSelect(_link.childAttrName + ".Type");
       query.executeWithoutAccessCheck();
       while (query.next()) {
-        Type typeLink = (Type) query.get("Type");
-        Type typeChild = (Type) query.get(_link.childAttrName + ".Type");
-        if (typeLink.isKindOf(_link.getLinkType()) &&
-            typeChild.isKindOf(_link.getChildType())) {
+        final Type typeLink = (Type) query.get("Type");
+        final Type typeChild = (Type) query.get(_link.childAttrName + ".Type");
+        if (typeLink.isKindOf(_link.getLinkType())
+            && typeChild.isKindOf(_link.getChildType())) {
           if (_link instanceof OrderedLink) {
-            Delete del = new Delete((String) query.get("OID"));
+            final Delete del = new Delete((String) query.get("OID"));
             del.executeWithoutAccessCheck();
           } else {
             currents.put((Long) query.get(_link.childAttrName + ".ID"),
@@ -530,8 +556,10 @@ public abstract class AbstractUpdate {
           if (query.next()) {
             targets.put((Long) query.get("ID"), linkEntry.getValue());
           } else {
-            System.out.println(_link.childTypeName + " '"
-                + linkEntry.getKey() + "' not found!");
+            LOG.error(_link.childTypeName
+                + " '"
+                + linkEntry.getKey()
+                + "' not found!");
           }
           query.close();
         }
@@ -540,7 +568,7 @@ public abstract class AbstractUpdate {
       // insert needed new links and update already existing
       for (Map.Entry<Long, Map<String, String>> target : targets.entrySet()) {
         if (currents.get(target.getKey()) == null) {
-          Insert insert = new Insert(_link.linkName);
+          final Insert insert = new Insert(_link.linkName);
           insert.add(_link.parentAttrName, "" + _instance.getId());
           insert.add(_link.childAttrName, "" + target.getKey());
           if (target.getValue() != null) {
@@ -551,7 +579,7 @@ public abstract class AbstractUpdate {
           insert.executeWithoutAccessCheck();
         } else {
           if (target.getValue() != null) {
-            Update update = new Update(currents.get(target.getKey()));
+            final Update update = new Update(currents.get(target.getKey()));
             for (Map.Entry<String, String> value : target.getValue().entrySet()) {
               update.add(value.getKey(), value.getValue());
             }
@@ -563,7 +591,7 @@ public abstract class AbstractUpdate {
 
       // remove unneeded current links to access types
       for (String oid : currents.values()) {
-        Delete del = new Delete(oid);
+        final Delete del = new Delete(oid);
         del.executeWithoutAccessCheck();
       }
     }
@@ -571,26 +599,29 @@ public abstract class AbstractUpdate {
     /**
      * The properties are only set if the object to update could own properties
      * (meaning derived from 'Admin_Abstract').
-     * 
-     * @param _instance   instance for which the propertie must be set
-     * @param _properties new properties to set
+     *
+     * @param _instance
+     *                instance for which the propertie must be set
+     * @param _properties
+     *                new properties to set
      * @todo rework of the update algorithmus (not always a complete delete and
      *       and new create is needed)
      * @todo description
      */
     protected void setPropertiesInDb(final Instance _instance,
                                      final Map<String, String> _properties)
-                                             throws EFapsException, Exception {
+                                                                           throws EFapsException,
+                                                                           Exception {
 
       if (_instance.getType().isKindOf(Type.get("Admin_Abstract"))) {
         // remove old properties
-        SearchQuery query = new SearchQuery();
+        final SearchQuery query = new SearchQuery();
         query.setExpand(_instance, "Admin_Common_Property\\Abstract");
         query.addSelect("OID");
         query.executeWithoutAccessCheck();
         while (query.next()) {
-          String propOid = (String) query.get("OID");
-          Delete del = new Delete(propOid);
+          final String propOid = (String) query.get("OID");
+          final Delete del = new Delete(propOid);
           del.executeWithoutAccessCheck();
         }
         query.close();
@@ -598,7 +629,7 @@ public abstract class AbstractUpdate {
         // add current properites
         if (_properties != null) {
           for (Map.Entry<String, String> entry : _properties.entrySet()) {
-            Insert insert = new Insert("Admin_Common_Property");
+            final Insert insert = new Insert("Admin_Common_Property");
             insert.add("Name", entry.getKey());
             insert.add("Value", entry.getValue());
             insert.add("Abstract", "" + _instance.getId());
@@ -610,16 +641,15 @@ public abstract class AbstractUpdate {
 
     /**
      * The version information of this defintion is set.
-     * 
+     *
      * @param _application
-     *          name of the application for which the version is defined
+     *                name of the application for which the version is defined
      * @param _globalVersion
-     *          global version
+     *                global version
      */
     public void setVersion(final String _application,
                            final String _globalVersion,
-                           final String _localVersion, 
-                           final String _mode) {
+                           final String _localVersion, final String _mode) {
       this.application = _application;
       this.globalVersion = Long.valueOf(_globalVersion);
       this.localVersion = _localVersion;
@@ -628,14 +658,13 @@ public abstract class AbstractUpdate {
 
     /**
      * @param _link
-     *          link type
+     *                link type
      * @param _name
-     *          name of the object which is linked to
+     *                name of the object which is linked to
      * @param _values
-     *          values in the link itself (or null)
+     *                values in the link itself (or null)
      */
-    protected void addLink(final Link _link,
-                           final String _name,
+    protected void addLink(final Link _link, final String _name,
                            final Map<String, String> _values) {
       Map<String, Map<String, String>> oneLink = this.links.get(_link);
       if (oneLink == null) {
@@ -650,12 +679,14 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     * @param _link   link type
-     * @param _name   name of the object which is linked to
-     * @param _values values in the link itself (or null)
+     * @param _link
+     *                link type
+     * @param _name
+     *                name of the object which is linked to
+     * @param _values
+     *                values in the link itself (or null)
      */
-    protected void addLink(final Link _link,
-                           final String _name,
+    protected void addLink(final Link _link, final String _name,
                            final String... _values) {
       Map<String, String> valuesMap = null;
       if (_values.length > 0) {
@@ -668,8 +699,10 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     * @param _name   name of the attribute
-     * @param _value  value of the attribute
+     * @param _name
+     *                name of the attribute
+     * @param _value
+     *                value of the attribute
      * @see #values
      */
     protected void addValue(final String _name, final String _value) {
@@ -677,7 +710,8 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     * @param _name   name of the attribtue
+     * @param _name
+     *                name of the attribtue
      * @return value of the set attribute value in this definition
      * @see #values
      */
@@ -687,9 +721,11 @@ public abstract class AbstractUpdate {
 
     /**
      * Add a new property with given name and value to this definition.
-     * 
-     * @param _name   name of the property to add
-     * @param _value  value of the property to add
+     *
+     * @param _name
+     *                name of the property to add
+     * @param _value
+     *                value of the property to add
      * @see #properties
      */
     public void addProperty(final String _name, final String _value) {
@@ -697,7 +733,6 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     * 
      * @see #values
      */
     public void setName(final String _name) {
@@ -707,9 +742,10 @@ public abstract class AbstractUpdate {
     /**
      * Returns a string representation with values of all instance variables of
      * a definition.
-     * 
+     *
      * @return string representation of this definition of an access type update
      */
+    @Override
     public String toString() {
       return new ToStringBuilder(this).append("application", this.application)
           .append("global version", this.globalVersion).append("local version",
@@ -720,10 +756,10 @@ public abstract class AbstractUpdate {
 
     /**
      * add a <code>Trigger</code> to this definition
-     * 
+     *
      * @param _event
      */
-    public void addEvent(Event _event) {
+    public void addEvent(final Event _event) {
       this.events.add(_event);
     }
   }

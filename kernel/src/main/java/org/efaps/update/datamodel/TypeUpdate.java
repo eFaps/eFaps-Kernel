@@ -44,8 +44,8 @@ import org.efaps.update.event.EventFactory;
 import org.efaps.util.EFapsException;
 
 /**
- * This Class is responsible for the Update of Type in the Database.<br/>It
- * reads with <code>org.apache.commons.digester</code> a XML-File to create
+ * This Class is responsible for the Update of Type in the Database.<br>
+ * It reads with <code>org.apache.commons.digester</code> a XML-File to create
  * the different Classes and invokes the Methods to Update a Type
  *
  * @author tmo
@@ -63,13 +63,6 @@ public class TypeUpdate extends AbstractUpdate {
   private final static Logger LOG = LoggerFactory.getLogger(TypeUpdate.class);
 
   private final static Set<Link> ALLLINKS = new HashSet<Link>();
-  {
-    /*
-     * ALLLINKS.add(LINK2ACCESSTYPE); ALLLINKS.add(LINK2DATAMODELTYPE);
-     * ALLLINKS.add(LINK2PERSON); ALLLINKS.add(LINK2ROLE);
-     * ALLLINKS.add(LINK2GROUP);
-     */
-  }
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
@@ -101,6 +94,10 @@ public class TypeUpdate extends AbstractUpdate {
       digester.setValidating(false);
       // create a new Type
       digester.addObjectCreate("datamodel-type", TypeUpdate.class);
+
+      // set the UUID for the Type
+      digester.addCallMethod("datamodel-type/abstract", "setAbstractType", 1);
+      digester.addCallParam("datamodel-type/abstract", 0);
 
       // set the UUID for the Type
       digester.addCallMethod("datamodel-type/uuid", "setUUID", 1);

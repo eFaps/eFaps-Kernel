@@ -44,33 +44,28 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
 
 /**
+ * This class is responsible for generating and updating of SQLTables in eFpas.<br>
+ * It reads the definition of a SQL-Table with the
+ * <code>org.apache.commons.digester.Digester</code> and generates the Objects
+ * needed for a SQL-Tabel-definition.
+ *
  * @author tmo
  * @version $Id$
- * @todo description
  */
-public class SQLTableUpdate extends AbstractUpdate  {
+public class SQLTableUpdate extends AbstractUpdate {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Logger LOG = LoggerFactory.getLogger(SQLTableUpdate.class);
+  private final static Logger LOG =
+      LoggerFactory.getLogger(SQLTableUpdate.class);
 
-  // /** Link from JAAS systems to persons */
-  // private final static Link LINK2PERSONS
-  // = new Link("Admin_User_JAASKey",
-  // "JAASSystemLink",
-  // "Admin_User_Person", "UserLink");
+  private final static Set<Link> ALLLINKS = new HashSet<Link>();
 
-  private final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
-//    ALLLINKS.add(LINK2PERSONS);
-//    ALLLINKS.add(LINK2ROLES);
-//    ALLLINKS.add(LINK2GROUPS);
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -80,83 +75,93 @@ public class SQLTableUpdate extends AbstractUpdate  {
     super("Admin_DataModel_SQLTable", ALLLINKS);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static SQLTableUpdate readXMLFile(final URL _url)  {
+  public static SQLTableUpdate readXMLFile(final URL _url) {
     SQLTableUpdate ret = null;
 
-    try  {
-      Digester digester = new Digester();
+    try {
+      final Digester digester = new Digester();
       digester.setValidating(false);
       digester.addObjectCreate("datamodel-sqltable", SQLTableUpdate.class);
-
+      // set the UUID
       digester.addCallMethod("datamodel-sqltable/uuid", "setUUID", 1);
       digester.addCallParam("datamodel-sqltable/uuid", 0);
 
-      digester.addObjectCreate("datamodel-sqltable/definition", Definition.class);
-      digester.addSetNext("datamodel-sqltable/definition", "addDefinition");
+      // create a new SQL-Table-Definition
+      final String definition = "datamodel-sqltable/definition";
+      digester.addObjectCreate(definition, Definition.class);
+      digester.addSetNext(definition, "addDefinition");
 
-      digester.addCallMethod("datamodel-sqltable/definition/version", "setVersion", 4);
-      digester.addCallParam("datamodel-sqltable/definition/version/application", 0);
-      digester.addCallParam("datamodel-sqltable/definition/version/global", 1);
-      digester.addCallParam("datamodel-sqltable/definition/version/local", 2);
-      digester.addCallParam("datamodel-sqltable/definition/version/mode", 3);
-      
-      digester.addCallMethod("datamodel-sqltable/definition/name", "setName", 1);
-      digester.addCallParam("datamodel-sqltable/definition/name", 0);
+      digester.addCallMethod(definition + "/version", "setVersion", 4);
+      digester.addCallParam(definition + "/version/application", 0);
+      digester.addCallParam(definition + "/version/global", 1);
+      digester.addCallParam(definition + "/version/local", 2);
+      digester.addCallParam(definition + "/version/mode", 3);
+      // set the name of the SQL-Table-Definition
+      digester.addCallMethod(definition + "/name", "setName", 1);
+      digester.addCallParam(definition + "/name", 0);
 
-      digester.addCallMethod("datamodel-sqltable/definition/typeid-column", "setTypeIdColumn", 1);
-      digester.addCallParam("datamodel-sqltable/definition/typeid-column", 0);
+      // set the column wich contains the TypeId
+      digester.addCallMethod(definition + "/typeid-column", "setTypeIdColumn",
+          1);
+      digester.addCallParam(definition + "/typeid-column", 0);
 
-      digester.addCallMethod("datamodel-sqltable/definition/parent", "setParent", 1);
-      digester.addCallParam("datamodel-sqltable/definition/parent", 0);
+      // set the parent
+      digester.addCallMethod(definition + "/parent", "setParent", 1);
+      digester.addCallParam(definition + "/parent", 0);
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/sql", "addSQL", 1);
-      digester.addCallParam("datamodel-sqltable/definition/database/sql", 0);
+      final String database = definition + "/database";
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/table-name", "setSQLTableName", 1);
-      digester.addCallParam("datamodel-sqltable/definition/database/table-name", 0);
+      digester.addCallMethod(database + "/sql", "addSQL", 1);
+      digester.addCallParam(database + "/sql", 0);
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/parent-table", "setParentSQLTableName", 1);
-      digester.addCallParam("datamodel-sqltable/definition/database/parent-table", 0);
+      digester.addCallMethod(database + "/table-name", "setSQLTableName", 1);
+      digester.addCallParam(database + "/table-name", 0);
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/table-name", "setSQLTableName", 1);
-      digester.addCallParam("datamodel-sqltable/definition/database/table-name", 0);
+      digester.addCallMethod(database + "/parent-table",
+          "setParentSQLTableName", 1);
+      digester.addCallParam(database + "/parent-table", 0);
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/create", "setCreate", 1, 
-                             new Class[] {Boolean.class});
-      digester.addCallParam("datamodel-sqltable/definition/database/create", 0);
+      digester.addCallMethod(database + "/table-name", "setSQLTableName", 1);
+      digester.addCallParam(database + "/table-name", 0);
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/update", "setUpdate", 1, 
-                             new Class[] {Boolean.class});
-      digester.addCallParam("datamodel-sqltable/definition/database/update", 0);
+      digester.addCallMethod(database + "/create", "setCreate", 1,
+          new Class[] { Boolean.class });
+      digester.addCallParam(database + "/create", 0);
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/column", "addColumn", 4, 
-                             new Class[] {String.class, String.class, Integer.class, Boolean.class});
-      digester.addCallParam("datamodel-sqltable/definition/database/column", 0, "name");
-      digester.addCallParam("datamodel-sqltable/definition/database/column", 1, "type");
-      digester.addCallParam("datamodel-sqltable/definition/database/column", 2, "length");
-      digester.addCallParam("datamodel-sqltable/definition/database/column", 3, "not-null");
+      digester.addCallMethod(database + "/update", "setUpdate", 1,
+          new Class[] { Boolean.class });
+      digester.addCallParam(database + "/update", 0);
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/unique", "addUniqueKey", 2);
-      digester.addCallParam("datamodel-sqltable/definition/database/unique", 0, "name");
-      digester.addCallParam("datamodel-sqltable/definition/database/unique", 1, "columns");
+      digester.addCallMethod(database + "/column", "addColumn", 4, new Class[] {
+          String.class, String.class, Integer.class, Boolean.class });
+      digester.addCallParam(database + "/column", 0, "name");
+      digester.addCallParam(database + "/column", 1, "type");
+      digester.addCallParam(database + "/column", 2, "length");
+      digester.addCallParam(database + "/column", 3, "not-null");
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/foreign", "addForeignKey", 4,
-                             new Class[] {String.class, String.class, String.class, Boolean.class});
-      digester.addCallParam("datamodel-sqltable/definition/database/foreign", 0, "name");
-      digester.addCallParam("datamodel-sqltable/definition/database/foreign", 1, "key");
-      digester.addCallParam("datamodel-sqltable/definition/database/foreign", 2, "reference");
-      digester.addCallParam("datamodel-sqltable/definition/database/foreign", 3, "cascade");
+      digester.addCallMethod(database + "/unique", "addUniqueKey", 2);
+      digester.addCallParam(database + "/unique", 0, "name");
+      digester.addCallParam(database + "/unique", 1, "columns");
 
-      digester.addCallMethod("datamodel-sqltable/definition/database/check", "addCheckKey", 2);
-      digester.addCallParam("datamodel-sqltable/definition/database/check", 0, "name");
-      digester.addCallParam("datamodel-sqltable/definition/database/check", 1, "condition");
+      digester
+          .addCallMethod(database + "/foreign", "addForeignKey", 4,
+              new Class[] { String.class, String.class, String.class,
+                  Boolean.class });
+      digester.addCallParam(database + "/foreign", 0, "name");
+      digester.addCallParam(database + "/foreign", 1, "key");
+      digester.addCallParam(database + "/foreign", 2, "reference");
+      digester.addCallParam(database + "/foreign", 3, "cascade");
+
+      digester.addCallMethod(database + "/check", "addCheckKey", 2);
+      digester.addCallParam(database + "/check", 0, "name");
+      digester.addCallParam(database + "/check", 1, "condition");
 
       ret = (SQLTableUpdate) digester.parse(_url);
-      
-      if (ret != null)  {
+
+      if (ret != null) {
         ret.setURL(_url);
       }
     } catch (IOException e) {
@@ -167,25 +172,27 @@ public class SQLTableUpdate extends AbstractUpdate  {
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  
+  // ///////////////////////////////////////////////////////////////////////////
+
   /**
    * The class defines a column in a sql table.
    */
-  private static class Column  {
+  private static class Column {
+
     /** Name of the column. */
     private final String name;
+
     /** Type of the column. */
     private final AbstractDatabase.ColumnType type;
+
     /** Length of the Column. */
     private final int length;
+
     /** Is null allowed in the column? */
     private final boolean isNotNull;
 
-    private Column(final String _name, 
-                   final AbstractDatabase.ColumnType _type,
-                   final int _length,
-                   final boolean _notNull)  {
+    private Column(final String _name, final AbstractDatabase.ColumnType _type,
+                   final int _length, final boolean _notNull) {
       this.name = _name;
       this.type = _type;
       this.length = _length;
@@ -193,70 +200,70 @@ public class SQLTableUpdate extends AbstractUpdate  {
     }
 
     /**
-     * Returns a string representation with values of all instance variables
-     * of a column.
+     * Returns a string representation with values of all instance variables of
+     * a column.
      *
      * @return string representation of this definition of a column
      */
-    public String toString()  {
-      return new ToStringBuilder(this)
-        .append("name",       this.name)
-        .append("type",       this.type)
-        .append("isNotNull",  this.isNotNull)
-        .toString();
+    @Override
+    public String toString() {
+      return new ToStringBuilder(this).append("name", this.name).append("type",
+          this.type).append("isNotNull", this.isNotNull).toString();
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The class defines a unqiue key in a sql table.
    */
-  private static class UniqueKey  {
+  private static class UniqueKey {
+
     /** Name of the unique key. */
     private final String name;
+
     /** Columns of the unique key. */
     private final String columns;
 
-    private UniqueKey(final String _name, 
-                      final String _columns)  {
+    private UniqueKey(final String _name, final String _columns) {
       this.name = _name;
       this.columns = _columns;
     }
 
     /**
-     * Returns a string representation with values of all instance variables
-     * of a column.
+     * Returns a string representation with values of all instance variables of
+     * a column.
      *
      * @return string representation of this definition of a column
      */
-    public String toString()  {
-      return new ToStringBuilder(this)
-        .append("name",       this.name)
-        .append("columns",    this.columns)
-        .toString();
+    @Override
+    public String toString() {
+      return new ToStringBuilder(this).append("name", this.name).append(
+          "columns", this.columns).toString();
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The class defines a foreign key in a sql table.
    */
-  private static class ForeignKey  {
+  private static class ForeignKey {
+
     /** Name of the foreign key. */
     private final String name;
+
     /** Key of the foreign key. */
     private final String key;
+
     /** Reference of the foreign key. */
     private final String reference;
+
     /** Should a delete be cascaded? */
     private final boolean cascade;
 
-    private ForeignKey(final String  _name,
-                       final String  _key,
-                       final String  _reference,
-                       final boolean _cascade)  {
+    private ForeignKey(final String _name, final String _key,
+                       final String _reference, final boolean _cascade) {
       this.name = _name;
       this.key = _key;
       this.reference = _reference;
@@ -264,57 +271,55 @@ public class SQLTableUpdate extends AbstractUpdate  {
     }
 
     /**
-     * Returns a string representation with values of all instance variables
-     * of a column.
+     * Returns a string representation with values of all instance variables of
+     * a column.
      *
      * @return string representation of this definition of a column
      */
-    public String toString()  {
-      return new ToStringBuilder(this)
-        .append("name",       this.name)
-        .append("key",        this.key)
-        .append("reference",  this.reference)
-        .toString();
+    @Override
+    public String toString() {
+      return new ToStringBuilder(this).append("name", this.name).append("key",
+          this.key).append("reference", this.reference).toString();
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * The class defines a check constraint in a sql table.
    */
-  private static class CheckKey  {
+  private static class CheckKey {
+
     /** Name of the check constraint. */
     private final String name;
+
     /** Condition of the check constraint. */
     private final String condition;
 
-    private CheckKey(final String _name, 
-                      final String _condition)  {
-      this.name      = _name;
+    private CheckKey(final String _name, final String _condition) {
+      this.name = _name;
       this.condition = _condition;
     }
 
     /**
-     * Returns a string representation with values of all instance variables
-     * of a column.
+     * Returns a string representation with values of all instance variables of
+     * a column.
      *
      * @return string representation of this definition of a column
      */
-    public String toString()  {
-      return new ToStringBuilder(this)
-        .append("name",      this.name)
-        .append("condition", this.condition)
-        .toString();
+    @Override
+    public String toString() {
+      return new ToStringBuilder(this).append("name", this.name).append(
+          "condition", this.condition).toString();
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition extends DefinitionAbstract  {
-    
-    ///////////////////////////////////////////////////////////////////////////
+  public static class Definition extends DefinitionAbstract {
+
+    // /////////////////////////////////////////////////////////////////////////
     // instance variables
 
     /**
@@ -326,36 +331,33 @@ public class SQLTableUpdate extends AbstractUpdate  {
      * The SQL table name of the parent table (as internal name in eFaps).
      */
     private String parent = null;
-    
+
     /**
      * SQL statement which is directly executed (e.g. to create a SQL view).
      *
      * @see #addSQL
      * @see #executeSQLs
      */
-    private final List<String> sqls = new ArrayList < String > ();
-    
+    private final List<String> sqls = new ArrayList<String>();
+
     private boolean create = false;
-    
+
     private boolean update = false;
 
-    private final List<Column> columns = new ArrayList < Column > ();
+    private final List<Column> columns = new ArrayList<Column>();
 
-    private final List<UniqueKey> uniqueKeys 
-                                            = new ArrayList < UniqueKey > ();
+    private final List<UniqueKey> uniqueKeys = new ArrayList<UniqueKey>();
 
-    private final List<ForeignKey> foreignKeys 
-                                            = new ArrayList < ForeignKey > ();
+    private final List<ForeignKey> foreignKeys = new ArrayList<ForeignKey>();
 
-    private final List<CheckKey> checkKeys = new ArrayList < CheckKey > ();
+    private final List<CheckKey> checkKeys = new ArrayList<CheckKey>();
 
-    ///////////////////////////////////////////////////////////////////////////
-    
+    // /////////////////////////////////////////////////////////////////////////
+
     /**
-     * 
      * @see #values
      */
-    public void setSQLTableName(final String _value)  {
+    public void setSQLTableName(final String _value) {
       addValue("SQLTable", _value);
       addValue("SQLColumnID", "ID");
     }
@@ -363,15 +365,14 @@ public class SQLTableUpdate extends AbstractUpdate  {
     /**
      *
      */
-    public void setTypeIdColumn(final String _typeIdColumn)  {
+    public void setTypeIdColumn(final String _typeIdColumn) {
       addValue("SQLColumnType", _typeIdColumn);
     }
 
     /**
-     * 
      * @see #values
      */
-    public void setParentSQLTableName(final String _parentSQLTableName)  {
+    public void setParentSQLTableName(final String _parentSQLTableName) {
       this.parentSQLTableName = _parentSQLTableName;
     }
 
@@ -379,10 +380,11 @@ public class SQLTableUpdate extends AbstractUpdate  {
      * Defines sql statements which is directly executed (e.g. to create a
      * view).
      *
-     * @param _sql  sql statement to execute
+     * @param _sql
+     *                sql statement to execute
      * @see #sqls
      */
-    public void addSQL(final String _sql)  {
+    public void addSQL(final String _sql) {
       this.sqls.add(_sql);
     }
 
@@ -390,44 +392,35 @@ public class SQLTableUpdate extends AbstractUpdate  {
      * @todo throw Exception is not allowed
      */
     public void setParent(final String _parent) throws Exception {
-      if ((_parent != null) && (_parent.length() > 0))  {
+      if ((_parent != null) && (_parent.length() > 0)) {
         this.parent = _parent;
       }
     }
 
-    public void setCreate(final boolean _create)  {
+    public void setCreate(final boolean _create) {
       this.create = _create;
     }
 
-    public void setUpdate(final boolean _update)  {
+    public void setUpdate(final boolean _update) {
       this.update = _update;
     }
 
-    public void addColumn(final String _name,
-                          final String _type,
-                          final int _length,
-                          final boolean _notNull)  {
-      this.columns.add(
-            new Column(_name,
-                       Enum.valueOf(AbstractDatabase.ColumnType.class, _type),
-                       _length,
-                       _notNull));
+    public void addColumn(final String _name, final String _type,
+                          final int _length, final boolean _notNull) {
+      this.columns.add(new Column(_name, Enum.valueOf(
+          AbstractDatabase.ColumnType.class, _type), _length, _notNull));
     }
-    
-    public void addUniqueKey(final String _name,
-                             final String _columns)   {
+
+    public void addUniqueKey(final String _name, final String _columns) {
       this.uniqueKeys.add(new UniqueKey(_name, _columns));
     }
 
-    public void addForeignKey(final String _name,
-                              final String _key,
-                              final String _reference,
-                              final boolean _cascade)   {
+    public void addForeignKey(final String _name, final String _key,
+                              final String _reference, final boolean _cascade) {
       this.foreignKeys.add(new ForeignKey(_name, _key, _reference, _cascade));
     }
-    
-    public void addCheckKey(final String _name,
-                            final String _condition)   {
+
+    public void addCheckKey(final String _name, final String _condition) {
       this.checkKeys.add(new CheckKey(_name, _condition));
     }
 
@@ -436,34 +429,36 @@ public class SQLTableUpdate extends AbstractUpdate  {
      * @see #createSQLTable
      * @see #updateSQLTable
      */
-    public void updateInDB(final Type _dataModelType,
-                           final String _uuid,
-                           final Set < Link > _allLinkTypes) throws EFapsException,Exception {
-    
+    @Override
+    public void updateInDB(final Type _dataModelType, final String _uuid,
+                           final Set<Link> _allLinkTypes,
+                           final boolean _abstractType) throws EFapsException,
+                                                       Exception {
+
       executeSQLs();
-      if (this.create)  {
+      if (this.create) {
         createSQLTable();
       }
-      if (this.update)  {
+      if (this.update) {
         updateSQLTable();
       }
-      if (getValue("Name") != null)  {
-          
+      if (getValue("Name") != null) {
+
         // search for the parent SQL table name instance (if defined)
-        if (this.parent != null)  {
-          SearchQuery query = new SearchQuery();
+        if (this.parent != null) {
+          final SearchQuery query = new SearchQuery();
           query.setQueryTypes("Admin_DataModel_SQLTable");
           query.addWhereExprEqValue("Name", this.parent);
           query.addSelect("OID");
           query.executeWithoutAccessCheck();
-          if (query.next())  {
-            Instance instance = new Instance((String) query.get("OID"));
+          if (query.next()) {
+            final Instance instance = new Instance((String) query.get("OID"));
             addValue("DMTableMain", "" + instance.getId());
           }
           query.close();
         }
-    
-        super.updateInDB(_dataModelType, _uuid, _allLinkTypes);
+
+        super.updateInDB(_dataModelType, _uuid, _allLinkTypes, _abstractType);
       }
     }
 
@@ -473,28 +468,28 @@ public class SQLTableUpdate extends AbstractUpdate  {
      * @see #sqls
      * @see #updateInDB
      */
-    protected void executeSQLs() throws EFapsException  {
-      Context context = Context.getThreadContext();
+    protected void executeSQLs() throws EFapsException {
+      final Context context = Context.getThreadContext();
       ConnectionResource con = null;
-      try  {  
+      try {
         con = context.getConnectionResource();
-        Statement stmt = con.getConnection().createStatement();
-        for (String sql : this.sqls)  {
-          if (LOG.isDebugEnabled())  {
+        final Statement stmt = con.getConnection().createStatement();
+        for (String sql : this.sqls) {
+          if (LOG.isDebugEnabled()) {
             LOG.info("    ..SQL> " + sql);
           }
           stmt.execute(sql);
         }
         con.commit();
-      } catch (EFapsException e)  {
+      } catch (EFapsException e) {
         LOG.error("SQLTableUpdate.executeSQL.EFapsException", e);
-        if (con != null)  {
+        if (con != null) {
           con.abort();
         }
         throw e;
-      } catch (Throwable e)  {
+      } catch (Throwable e) {
         LOG.error("SQLTableUpdate.executeSQL.Throwable", e);
-        if (con != null)  {
+        if (con != null) {
           con.abort();
         }
         throw new EFapsException(getClass(), "executeSQL.Throwable", e);
@@ -506,30 +501,29 @@ public class SQLTableUpdate extends AbstractUpdate  {
      *
      * @see #updateInDB
      */
-    protected void createSQLTable() throws EFapsException  {
-      Context context = Context.getThreadContext();
+    protected void createSQLTable() throws EFapsException {
+      final Context context = Context.getThreadContext();
       ConnectionResource con = null;
       String tableName = getValue("SQLTable");
-      if (LOG.isInfoEnabled())  {
+      if (LOG.isInfoEnabled()) {
         LOG.info("    Create DB SQL Table '" + tableName + "'");
       }
-      try  {
+      try {
         con = context.getConnectionResource();
 
-        Context.getDbType().createTable(con.getConnection(), 
-                                        tableName, 
-                                        this.parentSQLTableName);
+        Context.getDbType().createTable(con.getConnection(), tableName,
+            this.parentSQLTableName);
         con.commit();
 
-      } catch (EFapsException e)  {
+      } catch (EFapsException e) {
         LOG.error("SQLTableUpdate.createSQLTable.EFapsException", e);
-        if (con != null)  {
+        if (con != null) {
           con.abort();
         }
         throw e;
-      } catch (Throwable e)  {
+      } catch (Throwable e) {
         LOG.error("SQLTableUpdate.createSQLTable.Throwable", e);
-        if (con != null)  {
+        if (con != null) {
           con.abort();
         }
         throw new EFapsException(getClass(), "createSQLTable.Throwable", e);
@@ -541,52 +535,52 @@ public class SQLTableUpdate extends AbstractUpdate  {
      *
      * @see #updateInDB
      */
-    protected void updateSQLTable() throws EFapsException  {
-      Context context = Context.getThreadContext();
+    protected void updateSQLTable() throws EFapsException {
+      final Context context = Context.getThreadContext();
       ConnectionResource con = null;
-      String tableName = getValue("SQLTable");
-      if (LOG.isInfoEnabled())  {
+      final String tableName = getValue("SQLTable");
+      if (LOG.isInfoEnabled()) {
         LOG.info("    Update DB SQL Table '" + tableName + "'");
       }
-      try  {  
+      try {
         con = context.getConnectionResource();
 
         // add columns
-        for (final Column column : this.columns)  {
-          Context.getDbType().addTableColumn(con.getConnection(), tableName, 
+        for (final Column column : this.columns) {
+          Context.getDbType().addTableColumn(con.getConnection(), tableName,
               column.name, column.type, null, column.length, column.isNotNull);
         }
 
         // add unique keys
-        for (final UniqueKey uniqueKey : this.uniqueKeys)  {
+        for (final UniqueKey uniqueKey : this.uniqueKeys) {
           Context.getDbType().addUniqueKey(con.getConnection(), tableName,
-               uniqueKey.name, uniqueKey.columns);
+              uniqueKey.name, uniqueKey.columns);
         }
 
         // add foreign keys
-        for (final ForeignKey foreignKey : this.foreignKeys)  {
+        for (final ForeignKey foreignKey : this.foreignKeys) {
           Context.getDbType().addForeignKey(con.getConnection(), tableName,
               foreignKey.name, foreignKey.key, foreignKey.reference,
               foreignKey.cascade);
         }
 
         // update check keys
-        for (final CheckKey checkKey : this.checkKeys)  {
+        for (final CheckKey checkKey : this.checkKeys) {
           Context.getDbType().addCheckKey(con.getConnection(), tableName,
               checkKey.name, checkKey.condition);
         }
 
         con.commit();
 
-      } catch (EFapsException e)  {
+      } catch (EFapsException e) {
         LOG.error("SQLTableUpdate.updateSQLTable.EFapsException", e);
-        if (con != null)  {
+        if (con != null) {
           con.abort();
         }
         throw e;
-      } catch (Throwable e)  {
+      } catch (Throwable e) {
         LOG.error("SQLTableUpdate.updateSQLTable.Throwable", e);
-        if (con != null)  {
+        if (con != null) {
           con.abort();
         }
         throw new EFapsException(getClass(), "updateSQLTable.Throwable", e);

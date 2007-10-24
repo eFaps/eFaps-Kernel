@@ -47,14 +47,14 @@ import org.efaps.util.EFapsException;
 /**
  * The class updates java program from type <code>Admin_Program_Java</code>
  * inside the eFaps database.
- * 
+ *
  * @author tmo
  * @version $Id$
  * @todo encoding from java files!
  */
 public class JavaUpdate extends AbstractUpdate {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -62,7 +62,7 @@ public class JavaUpdate extends AbstractUpdate {
    */
   private final static Logger LOG = LoggerFactory.getLogger(JavaUpdate.class);
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -72,14 +72,15 @@ public class JavaUpdate extends AbstractUpdate {
     super("Admin_Program_Java");
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
    * Sets the root path in which the Class file is located. The value is set for
    * each single definition of the JavaUpdate.
    *
-   * @param _root   name of the path where the image file is located
+   * @param _root
+   *                name of the path where the image file is located
    */
   protected void setRoot(final String _root) {
     for (DefinitionAbstract def : getDefinitions()) {
@@ -87,21 +88,21 @@ public class JavaUpdate extends AbstractUpdate {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
   /**
    * If the extension of the file is <code>.java</code>, the method returns
    * an instance of this class. The instance of this class owns one definition
    * instance where the code and the name is defined.
-   * 
+   *
    * @param _file
-   *          instance of the file to read
+   *                instance of the file to read
    */
-  public static JavaUpdate readXMLFile(final URL _url)  {
+  public static JavaUpdate readXMLFile(final URL _url) {
     JavaUpdate update = null;
     try {
-      Digester digester = new Digester();
+      final Digester digester = new Digester();
       digester.setValidating(false);
       digester.addObjectCreate("esjp", JavaUpdate.class);
 
@@ -121,7 +122,7 @@ public class JavaUpdate extends AbstractUpdate {
 
       if (update != null) {
         String urlStr = _url.toString();
-        int i = urlStr.lastIndexOf("/");
+        final int i = urlStr.lastIndexOf("/");
         urlStr = urlStr.substring(0, i + 1);
         update.setRoot(urlStr);
         update.setURL(_url);
@@ -135,9 +136,9 @@ public class JavaUpdate extends AbstractUpdate {
     return update;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
   /**
@@ -145,7 +146,7 @@ public class JavaUpdate extends AbstractUpdate {
    */
   public static class JavaDefinition extends DefinitionAbstract {
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // instance variables
 
     /**
@@ -157,30 +158,30 @@ public class JavaUpdate extends AbstractUpdate {
      * Name of the root path used to initialise the path for the Java File.
      */
     private String root = null;
-  
+
     /**
      * Code of the Program is stored.
      */
     private StringBuilder code = null;
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // instance methods
 
     /**
      * Read the code from the file defined through filename.
      */
-    private void readCode() throws IOException  {
+    private void readCode() throws IOException {
       final char[] buf = new char[1024];
       this.code = new StringBuilder();
 
-      InputStream in = new URL(this.root + this.file).openStream();
+      final InputStream input = new URL(this.root + this.file).openStream();
 
-      Reader r = new InputStreamReader(in);
+      final Reader reader = new InputStreamReader(input);
       int length;
-      while ((length = r.read(buf)) > 0) {
-        code.append(buf, 0, length);
+      while ((length = reader.read(buf)) > 0) {
+        this.code.append(buf, 0, length);
       }
-      r.close();
+      reader.close();
     }
 
     /**
@@ -188,13 +189,13 @@ public class JavaUpdate extends AbstractUpdate {
      * definition (the name is the package name together with the name of the
      * file exluding the <code>.java</code>).
      */
-    private void setClassName()  {
+    private void setClassName() {
 
       String name = this.file.substring(0, this.file.lastIndexOf('.'));
 
       // regular expression for the package name
-      Pattern pattern = Pattern.compile("package +[^;]+;");
-      Matcher matcher = pattern.matcher(code);
+      final Pattern pattern = Pattern.compile("package +[^;]+;");
+      final Matcher matcher = pattern.matcher(this.code);
       if (matcher.find()) {
         String pkg = matcher.group();
         pkg = pkg.replaceFirst("^(package) +", "");
@@ -208,16 +209,19 @@ public class JavaUpdate extends AbstractUpdate {
      * The method overwrites the method from the super class, because Java
      * programs are searched by the name (and not by UUID like in the super
      * class).
-     * 
-     * @param _dataModelType  instance of the type of the object which must be
-     *                        updated
-     * @param _uuid           uuid of the object to update
-     * @param _allLinkTypes   all link types to update
+     *
+     * @param _dataModelType
+     *                instance of the type of the object which must be updated
+     * @param _uuid
+     *                uuid of the object to update
+     * @param _allLinkTypes
+     *                all link types to update
      */
-    public void updateInDB(final Type _dataModelType,
-                           final String _uuid,
-                           final Set<Link> _allLinkTypes)
-            throws EFapsException, Exception {
+    @Override
+    public void updateInDB(final Type _dataModelType, final String _uuid,
+                           final Set<Link> _allLinkTypes,
+                           final boolean _abstractType) throws EFapsException,
+                                                       Exception {
 
       readCode();
       setClassName();
@@ -226,7 +230,7 @@ public class JavaUpdate extends AbstractUpdate {
       Insert insert = null;
 
       // search for the instance
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setQueryTypes(_dataModelType.getName());
       query.addWhereExprEqValue("Name", getValue("Name"));
       query.addSelect("OID");
@@ -245,19 +249,19 @@ public class JavaUpdate extends AbstractUpdate {
       instance = updateInDB(instance, _allLinkTypes, insert);
 
       // checkin source code
-      Checkin checkin = new Checkin(instance);
-      checkin.executeWithoutAccessCheck(this.file,
-                new ByteArrayInputStream(this.code.toString().getBytes("UTF8")),
-                this.code.length());
+      final Checkin checkin = new Checkin(instance);
+      checkin.executeWithoutAccessCheck(this.file, new ByteArrayInputStream(
+          this.code.toString().getBytes("UTF8")), this.code.length());
     }
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // instance getter / setter methods
 
     /**
      * This is the setter method for instance variable {@link #file}.
-     * 
-     * @param _number new value for instance variable {@link #file}
+     *
+     * @param _number
+     *                new value for instance variable {@link #file}
      * @see #file
      */
     public void setFile(final String _file) {
@@ -266,19 +270,19 @@ public class JavaUpdate extends AbstractUpdate {
 
     /**
      * This is the setter method for instance variable {@link #root}.
-     * 
-     * @param _root   new value for instance variable {@link #root}
+     *
+     * @param _root
+     *                new value for instance variable {@link #root}
      * @see #root
      */
     public void setRoot(final String _root) {
       this.root = _root;
     }
 
+    @Override
     public String toString() {
-      return new ToStringBuilder(this)
-              .appendSuper(super.toString())
-              .append("file", this.file)
-              .append("root", this.root).toString();
+      return new ToStringBuilder(this).appendSuper(super.toString()).append(
+          "file", this.file).append("root", this.root).toString();
     }
   }
 }
