@@ -18,49 +18,55 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.shell.method;
+package org.efaps.maven.plugin.goal.efaps;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.jfrog.maven.annomojo.annotations.MojoGoal;
+
 import org.efaps.importer.DataImport;
-import org.efaps.util.EFapsException;
+import org.efaps.maven.plugin.goal.EFapsAbstractMojo;
 
 /**
  * Data defined in an XML-Struktur is imported into the eFaps-Database
  * 
  * @author jmo
  * @version $Id$
- * 
+ * @todo must be reworked!
  */
-public class ImportDataMethod extends AbstractMethod {
+@MojoGoal("import-data")
+public class ImportDataMojo extends EFapsAbstractMojo {
 
-  private final static Option PROPERTY_BASENAME = OptionBuilder.withArgName(
+/*  private final static Option PROPERTY_BASENAME = OptionBuilder.withArgName(
                                                     "bname").hasArg()
                                                     .withDescription(
                                                         "defines the BaseName")
                                                     .isRequired().create(
                                                         "basename");
-
-  public ImportDataMethod() {
+*/
+/*
+  public ImportDataMojo() {
     super("importData",
         "imports Data defined in an XML-Struktur into the DataBase",
         PROPERTY_BASENAME);
   }
+*/
 
-  @Override
-  protected void doMethod() throws EFapsException, Exception {
-    super.reloadCache();
-    super.startTransaction();
-    String basename = getCommandLine().getOptionValue("basename");
-    for (String fileName : getCommandLine().getArgs()) {
+  public void execute() throws MojoExecutionException {
+    try  {
+      reloadCache();
+      startTransaction();
+//      String basename = getCommandLine().getOptionValue("basename");
+//      for (String fileName : getCommandLine().getArgs()) {
 //      DataImport dimport = new DataImport(basename);
 //      dimport.initialise();
 //      dimport.readXMLFile(fileName);
 //      if (dimport.hasData()) {
 //        dimport.updateInDB();
 //      }
+//      }
+      commitTransaction();
+    } catch (Exception e)  {
+      throw new MojoExecutionException("data import failed", e);
     }
-    super.commitTransaction();
-
   }
 }
