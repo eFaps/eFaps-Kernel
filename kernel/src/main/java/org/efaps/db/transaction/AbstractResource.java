@@ -95,7 +95,7 @@ abstract class AbstractResource implements XAResource {
       LOG.debug("open");
     }
     if (this.opened)  {
-      LOG.error("resource not opened, commit not possible");
+      LOG.error("resource already opened");
       throw new EFapsException(AbstractResource.class, "open.AlreadyOpened");
     }
     try  {

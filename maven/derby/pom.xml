@@ -119,7 +119,7 @@
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derbynet</artifactId>
-      <version>10.3.1.4</version>
+      <version>${dependency.version.derby}</version>
       <scope>compile</scope>
     </dependency>
 

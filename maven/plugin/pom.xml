@@ -148,19 +148,19 @@
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
-      <version>6.1.5</version>
+      <version>${dependency.version.jetty}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-util</artifactId>
-      <version>6.1.5</version>
+      <version>${dependency.version.jetty}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty-naming</artifactId>
-      <version>6.1.5</version>
+      <version>${dependency.version.jetty}</version>
       <scope>compile</scope>
     </dependency>
 

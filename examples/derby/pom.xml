@@ -69,7 +69,7 @@
             <groupId>org.apache.derby</groupId>
             <artifactId>derby</artifactId>
             <scope>package</scope>
-            <version>10.2.2.0</version>
+            <version>${dependency.version.derby}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -88,19 +88,19 @@
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <scope>package</scope>
-      <version>10.2.2.0</version>
+      <version>${dependency.version.derby}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derbynet</artifactId>
       <scope>package</scope>
-      <version>10.2.2.0</version>
+      <version>${dependency.version.derby}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derbytools</artifactId>
       <scope>package</scope>
-      <version>10.2.2.0</version>
+      <version>${dependency.version.derby}</version>
     </dependency>
   </dependencies>
 </project>
