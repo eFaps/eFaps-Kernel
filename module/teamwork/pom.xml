@@ -76,12 +76,6 @@
             <artifactId>commons-dbcp</artifactId>
             <version>1.2.1</version>
           </dependency>
-          <!-- Derby Client Database Driver -->
-          <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derbyclient</artifactId>
-            <version>${dependency.version.derby}</version>
-          </dependency>
           <!-- kernel install -->
           <dependency>
             <groupId>org.efaps</groupId>
@@ -153,14 +147,6 @@
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
       <version>1.2.2</version>
-      <scope>package</scope>
-    </dependency>
-
-    <!-- Derby Client Database Driver -->
-    <dependency>
-      <groupId>org.apache.derby</groupId>
-      <artifactId>derbyclient</artifactId>
-      <version>${dependency.version.derby}</version>
       <scope>package</scope>
     </dependency>
 
