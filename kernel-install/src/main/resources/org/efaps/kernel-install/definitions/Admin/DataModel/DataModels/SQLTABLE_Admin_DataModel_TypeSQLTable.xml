@@ -62,10 +62,12 @@
                 T_CMABSTRACT.ID,
                 T_CMABSTRACT.UUID,
                 T_CMABSTRACT.NAME,
+                T_CMABSTRACT.ABSTRACT,
                 T_DMTYPE.PARENTDMTYPE,
                 T_DMTYPE.SQLCACHEEXPR
-            from T_DMTYPE,T_CMABSTRACT
-            where T_CMABSTRACT.ID=T_DMTYPE.ID
+            from T_DMTYPE
+            join T_CMABSTRACT
+              on T_CMABSTRACT.ID = T_DMTYPE.ID
       </sql>
       <!-- update of the sql table -->
       <table-name>T_DMTYPE</table-name>

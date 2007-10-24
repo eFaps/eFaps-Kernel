@@ -78,7 +78,13 @@ public class Type extends DataModelObject {
    * @see #initialise
    */
   private static final String SQL_SELECT =
-      "select ID,UUID,NAME,PARENTDMTYPE,SQLCACHEEXPR "
+      "   select "
+          + "  ID,"
+          + "  UUID,"
+          + "  NAME,"
+          + "  ABSTRACT,"
+          + "  PARENTDMTYPE,"
+          + "  SQLCACHEEXPR "
           + "from V_ADMINTYPE";
 
   /**
@@ -88,6 +94,7 @@ public class Type extends DataModelObject {
    */
   private static Cache<Type> typeCache =
       new Cache<Type>(new CacheReloadInterface() {
+
         public int priority() {
           return CacheReloadInterface.Priority.Type.number;
         };
@@ -131,7 +138,8 @@ public class Type extends DataModelObject {
    * @see #getAttribute
    * @see #getAttributes(Class)
    */
-  private final Map<String, Attribute> attributes = new HashMap<String, Attribute>();
+  private final Map<String, Attribute> attributes =
+      new HashMap<String, Attribute>();
 
   /**
    * Cache of the business objects of this type.
@@ -225,10 +233,12 @@ public class Type extends DataModelObject {
    * This is the constructor for class Type. Every instance of class Type must
    * have a name (parameter <i>_name</i>).
    *
-   * @param _id     id of th type
-   * @param _uuid   universal unique identifier
-   * @param _name   name of the type
-   *          name of the instance
+   * @param _id
+   *                id of th type
+   * @param _uuid
+   *                universal unique identifier
+   * @param _name
+   *                name of the type name of the instance
    */
   private Type(final long _id, final String _uuid, final String _name) {
     super(_id, _uuid, _name);
@@ -244,7 +254,7 @@ public class Type extends DataModelObject {
    * Add an attribute to this type and all child types of this type.
    *
    * @param _attribute
-   *          attribute to add
+   *                attribute to add
    */
   protected void addAttribute(final Attribute _attribute) {
     _attribute.setParent(this);
@@ -272,7 +282,7 @@ public class Type extends DataModelObject {
    * the name of all child types of the attribute.
    *
    * @param _attr
-   *          attribute with the link to this type
+   *                attribute with the link to this type
    * @todo description of algorithm
    */
   protected void addLink(final Attribute _attr) {
@@ -291,7 +301,7 @@ public class Type extends DataModelObject {
    * Returns for the given parameter <b>_name</b> the attribute.
    *
    * @param _name
-   *          name of the attribute for this type to return
+   *                name of the attribute for this type to return
    * @return instance of class {@link Attribute}
    */
   public final Attribute getAttribute(final String _name) {
@@ -303,7 +313,7 @@ public class Type extends DataModelObject {
    * attribute type as the described with the parameter <i>_class</i>.
    *
    * @param _class
-   *          searched attribute type
+   *                searched attribute type
    * @return all attributes assigned from parameter <i>_class</i>
    */
   public final Set<Attribute> getAttributes(final Class<?> _class) {
@@ -346,7 +356,7 @@ public class Type extends DataModelObject {
    *
    */
   public void readCache(final Context _context, final String _cacheExpr)
-      throws SQLException {
+                                                                        throws SQLException {
     // Cache cache = new Cache(_context.getConnection(), getTableName(),
     // _cacheExpr);
     // setCache(cache);
@@ -367,7 +377,7 @@ public class Type extends DataModelObject {
    * this type a child of the parameter type).
    *
    * @param _type
-   *          type to test for parent
+   *                type to test for parent
    * @return true if this type is a child, otherwise false
    */
   public boolean isKindOf(final Type _type) {
@@ -389,7 +399,7 @@ public class Type extends DataModelObject {
    *
    * @see org.efaps.admin.AdminObject#getProperty
    * @param _name
-   *          name of the property (key)
+   *                name of the property (key)
    * @return value of the property with the given name / key.
    */
   @Override
@@ -422,15 +432,16 @@ public class Type extends DataModelObject {
    * access types for the given instance.
    *
    * @param _instance
-   *          instance for which the access must be checked
+   *                instance for which the access must be checked
    * @param _accessTypes
-   *          list of access types which must be checked
+   *                list of access types which must be checked
    * @param <i>true
-   *          </i> if the current context user has access, otherwise <i>false</i>.
+   *                </i> if the current context user has access, otherwise
+   *                <i>false</i>.
    * @see #accessChecks
    */
   public boolean hasAccess(final Instance _instance,
-      final AccessType _accessType) throws EFapsException {
+                           final AccessType _accessType) throws EFapsException {
     boolean hasAccess = true;
     List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
     if (events != null) {
@@ -450,7 +461,7 @@ public class Type extends DataModelObject {
    * A new access set is assigned to this type instance.
    *
    * @param _accessSet
-   *          new access to assign to this type instance
+   *                new access to assign to this type instance
    * @see #accessSets
    */
   public void addAccessSet(final AccessSet _accessSet) {
@@ -473,15 +484,18 @@ public class Type extends DataModelObject {
   /**
    * The instance method sets a new property value.
    *
-   * @param _context  context for this request
-   * @param _name     name of the property
-   * @param _value    value of the property
+   * @param _context
+   *                context for this request
+   * @param _name
+   *                name of the property
+   * @param _value
+   *                value of the property
    * @see #addUniqueKey
    * @see #setViewAttribute
    */
   @Override
   protected void setProperty(final String _name, final String _value)
-      throws CacheReloadException {
+                                                                     throws CacheReloadException {
     if (_name.startsWith("UniqueKey")) {
       addUniqueKey(_value);
     } else if (_name.equals("ViewAttribute")) {
@@ -497,7 +511,7 @@ public class Type extends DataModelObject {
    * keys in {@link #uniqueKeys}.
    *
    * @param _attrList
-   *          string with comma separated list of attribute names
+   *                string with comma separated list of attribute names
    * @see #setProperty
    */
   private void addUniqueKey(final String _attrList) {
@@ -513,7 +527,7 @@ public class Type extends DataModelObject {
    * types (of this type), the child type (with sub child types) are added.
    *
    * @param _childType
-   *          child type to add
+   *                child type to add
    * @see #childTypes
    */
   private void addChildType(final Type _childType) {
@@ -539,7 +553,7 @@ public class Type extends DataModelObject {
    * For the given type it is tested if a store is defined for the type.
    *
    * @param _type
-   *          type to test
+   *                type to test
    * @return <i>true</i> if a store resource is defined for the type, otherwise
    *         <i>false</i> is returned
    */
@@ -552,7 +566,7 @@ public class Type extends DataModelObject {
    * the DB reader is allowed to set this!
    *
    * @param _tableName
-   *          new value for instance variable {@link #parentType}
+   *                new value for instance variable {@link #parentType}
    * @see #parentType
    * @see #getParentType
    */
@@ -606,7 +620,7 @@ public class Type extends DataModelObject {
    * This is the setter method for instance variable {@link #cache}.
    *
    * @param _cache
-   *          new value for instance variable {@link #cache}
+   *                new value for instance variable {@link #cache}
    * @see #getCache
    * @see #cache
    */
@@ -639,7 +653,7 @@ public class Type extends DataModelObject {
    * This is the setter method for instance variable {@link #mainTable}.
    *
    * @param _mainTable
-   *          new value for instance variable {@link #mainTable}
+   *                new value for instance variable {@link #mainTable}
    * @see #getMainTable
    * @see #mainTable
    */
@@ -706,7 +720,7 @@ public class Type extends DataModelObject {
    * This is the setter method for instance variable {@link #uniqueKeys}.
    *
    * @param _uniqueKeys
-   *          new value for instance variable {@link #uniqueKeys}
+   *                new value for instance variable {@link #uniqueKeys}
    * @see #getUniqueKeys
    * @see #uniqueKeys
    */
@@ -724,7 +738,7 @@ public class Type extends DataModelObject {
     return this.links;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
   /**
@@ -747,13 +761,15 @@ public class Type extends DataModelObject {
           long id = rs.getLong(1);
           String uuid = rs.getString(2).trim();
           String name = rs.getString(3).trim();
-          long parentTypeId = rs.getLong(4);
-          String sqlCacheExpr = rs.getString(5);
+          boolean abstractType = rs.getBoolean(4);
+          long parentTypeId = rs.getLong(5);
+          String sqlCacheExpr = rs.getString(6);
           sqlCacheExpr = sqlCacheExpr != null ? sqlCacheExpr.trim() : null;
           if (LOG.isDebugEnabled()) {
             LOG.debug("read type '" + name + "' (id = " + id + ")");
           }
           Type type = new Type(id, uuid, name);
+          type.setAbstractType(abstractType);
           if (type.getName().equals(EFapsClassName.USER_PERSON.name)) {
             type.setCache(Person.getCache());
           } else if (type.getName().equals(EFapsClassName.USER_ROLE.name)) {
