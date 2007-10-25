@@ -33,6 +33,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.db.Context;
+import org.efaps.db.Instance;
 import org.efaps.db.Update;
 import org.efaps.db.Update.Status;
 import org.efaps.util.EFapsException;
@@ -68,7 +69,7 @@ public class Password {
                                                           throws EFapsException {
     final Return ret = new Return();
     final Context context = Context.getThreadContext();
-    final String passwordnew = context.getParameter("passwordnew");
+    final String passwordnew = context.getParameter("password");
     final String passwordnew2 = context.getParameter("passwordnew2");
 
     if (passwordnew.equals(passwordnew2)) {
@@ -99,7 +100,7 @@ public class Password {
             .append("&nbsp;<br/><br/>");
       } else if ("2".equals(field)) {
         ret.append("<br/>&nbsp;").append(
-            "<input name=\"passwordnew\" type=\"password\" size=\"20\">")
+            "<input name=\"password\" type=\"password\" size=\"20\">")
             .append("&nbsp;<br/><br/>");
       } else if ("3".equals(field)) {
         ret.append("<br/>&nbsp;").append(
@@ -113,11 +114,11 @@ public class Password {
     return retVal;
   }
 
-
-  public Return validatePwdValue(final Parameter _parameter) throws EFapsException {
+  public Return validatePwdValue(final Parameter _parameter)
+                                                            throws EFapsException {
     final Return ret = new Return();
     final Context context = Context.getThreadContext();
-    final String passwordnew = context.getParameter("passwordnew");
+    final String passwordnew = context.getParameter("password");
 
     if (passwordnew.length() > SystemAttribute.get(
         UUID.fromString("bb26c4a4-65a8-41e9-bc64-5fe0148cf805"))
@@ -126,6 +127,30 @@ public class Password {
     } else {
       ret.put(ReturnValues.VALUES,
           "Admin_User_PwdChgForm/Password.validatePwdValue.ShortPwd");
+    }
+    return ret;
+  }
+
+  /**
+   * this method is used from Admins to set a Password
+   *
+   * @param _parameter
+   * @return
+   * @throws EFapsException
+   */
+  public Return setPwdValueUI(final Parameter _parameter) throws EFapsException {
+    final Return ret = new Return();
+    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+
+    final String password = Context.getThreadContext().getParameter("password");
+
+    final Update update = new Update(instance);
+    final Status status = update.add("Password", password);
+    if ((status.isOk())) {
+      update.execute();
+      ret.put(ReturnValues.TRUE, "true");
+    } else {
+      ret.put(ReturnValues.VALUES, status.getReturnValue());
     }
     return ret;
   }

@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>9bdd754a-296d-4406-82b0-5477323606c7</uuid>
+<ui-form>
+  <uuid>3d8bb94e-08d4-4f99-9fbf-3cc01f833021</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_User_PersonTree_Menu_Action</name>
+    <name>Admin_User_PersonSetPwdForm</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,12 +51,16 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_User_PersonTree_Menu_Action</name>
-    <!-- childs -->
-    <childs>
-      <child>Admin_User_PersonTree_Menu_Action_Edit</child>
-      <child>Admin_User_PersonTree_Menu_Action_SetPwd</child>
-    </childs>
+    <name>Admin_User_PersonSetPwdForm</name>
+    <!-- fields -->
+    <field name="password">
+      <property name="Columns">20</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Password</property>
+      <property name="Required">true</property>
+    </field>
+   
   </definition>
 
-</ui-menu>
+</ui-form>

@@ -16,18 +16,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev:1145 $
  Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
  Last Changed By: $Author:tmo $
 
 -->
 
-<ui-menu>
-  <uuid>9bdd754a-296d-4406-82b0-5477323606c7</uuid>
+<ui-command>
+  <uuid>6220fe05-61fb-41d8-b19c-41c28620b7e8</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_User_PersonTree_Menu_Action</name>
+    <name>Admin_User_PersonTree_Menu_Action_SetPwd</name>
   </definition>
-    
+
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,12 +51,21 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_User_PersonTree_Menu_Action</name>
-    <!-- childs -->
-    <childs>
-      <child>Admin_User_PersonTree_Menu_Action_Edit</child>
-      <child>Admin_User_PersonTree_Menu_Action_SetPwd</child>
-    </childs>
+    <name>Admin_User_PersonTree_Menu_Action_SetPwd</name>
+    <access>
+      <role>Administration</role>
+    </access>
+    <!-- target definitions -->
+    <target>
+      <form>Admin_User_PersonSetPwdForm</form>
+      <execute program="org.efaps.esjp.admin.user.Password" method="setPwdValueUI"/>
+    </target>
+    <!-- properties -->
+    <property name="Target">modal</property>
+    <property name="TargetMode">edit</property>
+    <property name="WindowHeight">150</property>
+    <property name="WindowWidth">300</property>
+    
   </definition>
 
-</ui-menu>
+</ui-command>
