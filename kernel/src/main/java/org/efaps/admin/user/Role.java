@@ -23,6 +23,7 @@ package org.efaps.admin.user;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,17 +32,18 @@ import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
-import org.efaps.util.cache.CacheReloadInterface;
 import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * @author tmo
+ * @author jmox
  * @version $Id$
  * @todo description
  */
-public class Role extends AbstractUserObject  {
+public class Role extends AbstractUserObject {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -52,29 +54,27 @@ public class Role extends AbstractUserObject  {
   /**
    * This is the sql select statement to select all roles from the database.
    */
-  private static final String SQL_SELECT  = "select "
-                                                + "ID,"
-                                                + "NAME, "
-                                                + "STATUS "
-                                              + "from V_USERROLE";
+  private static final String SQL_SELECT =
+      "select ID, UUID, NAME, STATUS from V_USERROLE";
 
   /**
    * Stores all instances of class {@link Role}.
    *
    * @see #getCache
    */
-  private static final Cache <Role > cache = new Cache < Role > (
-    new CacheReloadInterface()  {
-        public int priority()  {
+  private static final Cache<Role> ROLECACHE =
+      new Cache<Role>(new CacheReloadInterface() {
+
+        public int priority() {
           return CacheReloadInterface.Priority.Role.number;
         };
-        public void reloadCache() throws CacheReloadException  {
+
+        public void reloadCache() throws CacheReloadException {
           Role.initialise();
         };
-    }
-  );
+      });
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
   /**
@@ -83,82 +83,91 @@ public class Role extends AbstractUserObject  {
    *
    * @param _id
    */
-  private Role(final long _id, final String _name, final boolean _status)  {
-    super(_id, _name,_status);
+  private Role(final long _id, final String _uuid, final String _name,
+               final boolean _status) {
+    super(_id, _uuid, _name, _status);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
-   * Returns the viewable name of the role. The method {@link #getName} is
-   * used for the viewing name.
+   * Returns the viewable name of the role. The method {@link #getName} is used
+   * for the viewing name.
    *
-   * @param _context context for this request
+   * @param _context
+   *                context for this request
    * @see #getName
    */
-  public String getViewableName(final Context _context)  {
+  public String getViewableName(final Context _context) {
     return getName();
   }
 
   /**
    * Checks, if the given person is assigned to this role.
    *
-   * @param _person person to test
+   * @param _person
+   *                person to test
    * @return <i>true</i> if the person is assigned to this role, otherwise
    *         <i>false</i>
    * @see #persons
    * @see #getPersons
    */
+  @Override
   public boolean hasChildPerson(final Person _person) {
-// TODO: child roles
+    // TODO: child roles
     return _person.isAssigned(this);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Initialise the cache of JAAS systems.
    *
-   * @param _context  eFaps context for this request
+   * @param _context
+   *                eFaps context for this request
    */
-  public static void initialise() throws CacheReloadException  {
+  public static void initialise() throws CacheReloadException {
     ConnectionResource con = null;
-    try  {
+    try {
       con = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
-      try  {
+      try {
 
         stmt = con.getConnection().createStatement();
 
-        ResultSet rs = stmt.executeQuery(SQL_SELECT);
-        while (rs.next())  {
-          long id =             rs.getLong(1);
-          String name =         rs.getString(2).trim();
-          boolean status =         rs.getBoolean(3);
-          LOG.debug("read role '" + name + "' (id = " + id + ")");
-          cache.add(new Role(id, name, status));
-        }
-        rs.close();
+        final ResultSet resulset = stmt.executeQuery(SQL_SELECT);
+        while (resulset.next()) {
+          final long id = resulset.getLong(1);
+          final String uuid = resulset.getString(2);
+          final String name = resulset.getString(3).trim();
+          final boolean status = resulset.getBoolean(4);
 
-      } finally  {
-        if (stmt != null)  {
+          LOG.debug("read role '" + name + "' (id = " + id + ")");
+          ROLECACHE.add(new Role(id, uuid, name, status));
+        }
+        resulset.close();
+
+      }
+      finally {
+        if (stmt != null) {
           stmt.close();
         }
       }
 
       con.commit();
 
-    } catch (SQLException e)  {
+    } catch (SQLException e) {
       throw new CacheReloadException("could not read roles", e);
-    } catch (EFapsException e)  {
+    } catch (EFapsException e) {
       throw new CacheReloadException("could not read roles", e);
-    } finally  {
-      if ((con != null) && con.isOpened())  {
-        try  {
+    }
+    finally {
+      if ((con != null) && con.isOpened()) {
+        try {
           con.abort();
-        } catch (EFapsException e)  {
+        } catch (EFapsException e) {
           throw new CacheReloadException("could not read roles", e);
         }
       }
@@ -168,89 +177,107 @@ public class Role extends AbstractUserObject  {
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Role}.
    *
-   * @param _id id to search in the cache
+   * @param _id
+   *                id to search in the cache
    * @return instance of class {@link Role}
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  public static Role get(final long _id)  {
-    return cache.get(_id);
+  public static Role get(final long _id) {
+    return getCache().get(_id);
   }
 
   /**
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Role}.
    *
-   * @param _name name to search in the cache
+   * @param _name
+   *                name to search in the cache
    * @return instance of class {@link Role}
    * @see #getCache
    * @todo rewrite to use context instance
    */
-  public static Role get(final String _name)  {
-    return cache.get(_name);
+  public static Role get(final String _name) {
+    return getCache().get(_name);
   }
 
   /**
-   * Static getter method for the role {@link #cache}.
+   * Returns for given parameter <i>_uuid</i> the instance of class
+   * {@link Role}.
    *
-   * @return value of static variable {@link #cache}
-   * @see #cache
+   * @return instance of class {@link Role}
    */
-  static public Cache < Role > getCache()  {
-    return cache;
+  public static Role get(final UUID _uuid) {
+    return getCache().get(_uuid);
+  }
+
+  /**
+   * Static getter method for the role {@link #ROLECACHE}.
+   *
+   * @return value of static variable {@link #ROLECACHE}
+   * @see #ROLECACHE
+   */
+  static public Cache<Role> getCache() {
+    return ROLECACHE;
   }
 
   /**
    * Returns for given parameter <i>_jaasKey</i> the instance of class
-   * {@link Role}. The parameter <i>_jaasKey</i> is the name of the role
-   * used in the given JAAS system for the role.
+   * {@link Role}. The parameter <i>_jaasKey</i> is the name of the role used
+   * in the given JAAS system for the role.
    *
-   * @param _jaasSystem JAAS system for which the JAAS key is named
-   * @param _jaasKey    key in the foreign JAAS system for which the role is
-   *                    searched
-   * @return instance of class {@link Role}, or <code>null</code> if role
-   *         is not found
+   * @param _jaasSystem
+   *                JAAS system for which the JAAS key is named
+   * @param _jaasKey
+   *                key in the foreign JAAS system for which the role is
+   *                searched
+   * @return instance of class {@link Role}, or <code>null</code> if role is
+   *         not found
    * @see #get(long)
    */
-  static public Role getWithJAASKey(final JAASSystem _jaasSystem, final String _jaasKey) throws EFapsException  {
+  static public Role getWithJAASKey(final JAASSystem _jaasSystem,
+                                    final String _jaasKey)
+                                                          throws EFapsException {
     long roleId = 0;
     ConnectionResource rsrc = null;
-    try  {
+    try {
       rsrc = Context.getThreadContext().getConnectionResource();
 
       Statement stmt = null;
 
-      try  {
-        StringBuilder cmd = new StringBuilder();
-        cmd.append("select ")
-           .append(   "ID ")
-           .append(   "from V_USERROLEJASSKEY ")
-           .append(   "where JAASKEY='").append(_jaasKey).append("' ")
-           .append(       "and JAASSYSID=").append(_jaasSystem.getId());
+      try {
+   final     StringBuilder cmd = new StringBuilder();
+        cmd.append("select ").append("ID ").append("from V_USERROLEJASSKEY ")
+            .append("where JAASKEY='").append(_jaasKey).append("' ").append(
+                "and JAASSYSID=").append(_jaasSystem.getId());
 
         stmt = rsrc.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(cmd.toString());
-        if (rs.next())  {
-          roleId = rs.getLong(1);
+        final ResultSet resultset = stmt.executeQuery(cmd.toString());
+        if (resultset.next()) {
+          roleId = resultset.getLong(1);
         }
-        rs.close();
+        resultset.close();
 
-      } catch (SQLException e)  {
-        LOG.warn("search for role for JAAS system "
-            + "'" + _jaasSystem.getName() + "' "
-            + "with key '" + _jaasKey + "' is not possible", e);
-// TODO: exception in properties
-        throw new EFapsException(Role.class, "getWithJAASKey.SQLException",
-                              e, _jaasSystem.getName(), _jaasKey);
-      } finally  {
-        try  {
+      } catch (SQLException e) {
+        LOG.warn("search for role for JAAS system '"
+            + _jaasSystem.getName()
+            + "' with key '"
+            + _jaasKey
+            + "' is not possible", e);
+
+        throw new EFapsException(Role.class, "getWithJAASKey.SQLException", e,
+            _jaasSystem.getName(), _jaasKey);
+      }
+      finally {
+        try {
           stmt.close();
-        } catch (SQLException e)  {
+        } catch (SQLException e) {
         }
       }
       rsrc.commit();
-    } finally  {
-      if ((rsrc != null) && rsrc.isOpened())  {
+    }
+    finally {
+      if ((rsrc != null) && rsrc.isOpened()) {
         rsrc.abort();
       }
     }

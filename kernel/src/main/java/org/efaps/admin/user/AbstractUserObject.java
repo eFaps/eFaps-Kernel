@@ -68,9 +68,9 @@ public abstract class AbstractUserObject extends AdminObject {
    * @param _name
    *                name to set
    */
-  protected AbstractUserObject(final long _id, final String _name,
-                               final boolean _status) {
-    super(_id, null, _name);
+  protected AbstractUserObject(final long _id, final String _uuid,
+                               final String _name, final boolean _status) {
+    super(_id, _uuid, _name);
     this.status = _status;
 
   }

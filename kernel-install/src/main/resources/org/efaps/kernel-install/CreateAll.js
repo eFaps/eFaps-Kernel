@@ -531,6 +531,7 @@ function _eFapsCreateUserTablesStep2()  {
         + "select "
         +       "T_USERABSTRACT.ID,"
         +       "T_USERABSTRACT.NAME, "
+        +       "T_USERABSTRACT.UUID, "
         +       "T_USERABSTRACT.STATUS "
         +   "from T_USERABSTRACT "
         +   "where T_USERABSTRACT.TYPEID=" + typeIdRole

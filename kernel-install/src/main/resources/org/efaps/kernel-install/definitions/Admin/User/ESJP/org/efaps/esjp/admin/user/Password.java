@@ -32,6 +32,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.Update;
@@ -100,8 +101,8 @@ public class Password {
             .append("&nbsp;<br/><br/>");
       } else if ("2".equals(field)) {
         ret.append("<br/>&nbsp;").append(
-            "<input name=\"password\" type=\"password\" size=\"20\">")
-            .append("&nbsp;<br/><br/>");
+            "<input name=\"password\" type=\"password\" size=\"20\">").append(
+            "&nbsp;<br/><br/>");
       } else if ("3".equals(field)) {
         ret.append("<br/>&nbsp;").append(
             "<input name=\"passwordnew2\" type=\"password\" size=\"20\">")
@@ -132,7 +133,8 @@ public class Password {
   }
 
   /**
-   * this method is used from Admins to set a Password
+   * this method is used from Admins wich have the Role Common_Main_PwdChg to
+   * set a Password for a User
    *
    * @param _parameter
    * @return
@@ -140,17 +142,28 @@ public class Password {
    */
   public Return setPwdValueUI(final Parameter _parameter) throws EFapsException {
     final Return ret = new Return();
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final Instance instance =
+        (Instance) _parameter.get(ParameterValues.INSTANCE);
 
-    final String password = Context.getThreadContext().getParameter("password");
+    // Common_Main_PwdChg
+    final Role setpwdRole =
+        Role.get(UUID.fromString("2c101471-43e3-4c97-9045-f48f5b12b6ed"));
+    if (Context.getThreadContext().getPerson().isAssigned(setpwdRole)) {
 
-    final Update update = new Update(instance);
-    final Status status = update.add("Password", password);
-    if ((status.isOk())) {
-      update.execute();
-      ret.put(ReturnValues.TRUE, "true");
+      final String password =
+          Context.getThreadContext().getParameter("password");
+
+      final Update update = new Update(instance);
+      final Status status = update.add("Password", password);
+      if ((status.isOk())) {
+        update.execute();
+        ret.put(ReturnValues.TRUE, "true");
+      } else {
+        ret.put(ReturnValues.VALUES, status.getReturnValue());
+      }
     } else {
-      ret.put(ReturnValues.VALUES, status.getReturnValue());
+      ret.put(ReturnValues.VALUES,
+          "Admin_User_PersonSetPwdForm/Password.setPwdValueUI.NoRight");
     }
     return ret;
   }

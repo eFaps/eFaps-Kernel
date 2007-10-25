@@ -147,7 +147,7 @@ public class Person extends AbstractUserObject {
    *                name of the person to set
    */
   private Person(final long _id, final String _name, final boolean _status) {
-    super(_id, _name, _status);
+    super(_id, null, _name, _status);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
