@@ -23,11 +23,11 @@
 
 -->
 
-<ui-menu>
-  <uuid>8d9aae87-fa36-4b62-aba0-dbd9c0ca273a</uuid>
+<ui-table>
+  <uuid>9cf4379d-a7f6-4393-846b-a9cce013d61a</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Common_MyDesk</name>
+    <name>Admin_Common_SystemAttributeTable</name>
   </definition>
-
+    
   <!-- ************************************************************************
-    version definition used to update the menu 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,18 +51,20 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Common_MyDesk</name>
-    <childs>
-      <child>Admin_Common_SearchMyDesk</child>
-      <child>Admin_User_AbstractMyDesk</child>
-      <child>Admin_DataModel_AbstractMyDesk</child>
-      <child>Admin_Program_AbstractMyDesk</child>
-      <child>Admin_Access_AbstractMyDesk</child>
-      <child>Admin_UI_AbstractMyDesk</child>
-      <child>Admin_DBProperties_AbstractMyDesk</child>
-      <child>Admin_Integration_AbstractMyDesk</child>
-      <child>Admin_Common_SystemAttributeMyDesk</child>
-      <child>Admin_Common_VersionMyDesk</child>
-    </childs>
+    <name>Admin_Common_SystemAttributeTable</name>
+    <!-- fields -->
+    <field name="name">
+      <property name="Expression">Name</property>
+      <property name="Label">Admin_Common_SystemAttribute/Name.Label</property>
+    </field>
+    <field name="uuid">
+      <property name="Expression">UUID</property>
+      <property name="Label">Admin_Common_SystemAttribute/UUID.Label</property>
+    </field>
+    <field name="value">
+      <property name="Expression">Value</property>
+      <property name="Label">Admin_Common_SystemAttribute/Value.Label</property>
+    </field>
   </definition>
-</ui-menu>
+
+</ui-table>

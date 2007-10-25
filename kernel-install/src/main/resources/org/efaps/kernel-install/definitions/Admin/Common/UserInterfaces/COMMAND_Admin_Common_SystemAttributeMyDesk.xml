@@ -17,52 +17,57 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
+ Revision:        $Rev:1145 $
+ Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
+ Last Changed By: $Author:tmo $
 
 -->
 
-<ui-menu>
-  <uuid>8d9aae87-fa36-4b62-aba0-dbd9c0ca273a</uuid>
+<ui-command>
+  <uuid>25250c4a-249a-4cfc-90fe-fa331a234e1c</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:1145 $</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Common_MyDesk</name>
+    <name>Admin_Common_SystemAttributeMyDesk</name>
   </definition>
-
+    
   <!-- ************************************************************************
-    version definition used to update the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev$</local>
+      <local>$Rev:1145 $</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Common_MyDesk</name>
-    <childs>
-      <child>Admin_Common_SearchMyDesk</child>
-      <child>Admin_User_AbstractMyDesk</child>
-      <child>Admin_DataModel_AbstractMyDesk</child>
-      <child>Admin_Program_AbstractMyDesk</child>
-      <child>Admin_Access_AbstractMyDesk</child>
-      <child>Admin_UI_AbstractMyDesk</child>
-      <child>Admin_DBProperties_AbstractMyDesk</child>
-      <child>Admin_Integration_AbstractMyDesk</child>
-      <child>Admin_Common_SystemAttributeMyDesk</child>
-      <child>Admin_Common_VersionMyDesk</child>
-    </childs>
+    <name>Admin_Common_SystemAttributeMyDesk</name>
+    <!-- access -->
+    <access>
+      <role>Administration</role>
+    </access>
+    
+    <!-- target definitions -->
+    <target>
+      <table>Admin_Common_SystemAttributeTable</table>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
+        <property name="Types">Admin_Common_SystemAttribute</property>
+      </evaluate>
+    </target>
+
+    <!-- properties -->
+    <property name="Target">content</property>
+     <property name="TargetTableSortKey">name</property>
   </definition>
-</ui-menu>
+
+</ui-command>

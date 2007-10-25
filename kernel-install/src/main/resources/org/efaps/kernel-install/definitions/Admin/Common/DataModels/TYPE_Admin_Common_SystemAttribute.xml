@@ -37,12 +37,6 @@
     <name>Admin_Common_SystemAttribute</name>
     <parent>Admin_Abstract</parent>
     <attribute>
-      <name>Key</name>
-      <type>String</type>
-      <sqltable>Admin_Common_AbstractSQLTable</sqltable>
-      <sqlcolumn>NAME</sqlcolumn>
-    </attribute>
-    <attribute>
       <name>Value</name>
       <type>String</type>
       <sqltable>Admin_Common_SystemAttributeSQLTable</sqltable>
