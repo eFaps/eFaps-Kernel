@@ -40,7 +40,7 @@ import org.efaps.util.cache.CacheReloadInterface;
  * @author jmox
  * @version $Id$
  */
-public class SytemAttribute implements CacheObjectInterface {
+public class SystemAttribute implements CacheObjectInterface {
 
   /**
    * this static Variable contains the SQL-Statment used to retrieve the
@@ -52,8 +52,8 @@ public class SytemAttribute implements CacheObjectInterface {
   /**
    * Stores all instances of SytemAttribute.
    */
-  private static Cache<SytemAttribute> SYSATTRIBUTECACHE =
-      new Cache<SytemAttribute>(new CacheReloadInterface() {
+  private static Cache<SystemAttribute> SYSATTRIBUTECACHE =
+      new Cache<SystemAttribute>(new CacheReloadInterface() {
 
         public int priority() {
           return CacheReloadInterface.Priority.SystemAttribute.number;
@@ -94,7 +94,7 @@ public class SytemAttribute implements CacheObjectInterface {
    */
   private final Object value;
 
-  public SytemAttribute(final long _id, final String _uuid, final String _name,
+  public SystemAttribute(final long _id, final String _uuid, final String _name,
                         final Object _value) {
     this.id = _id;
     this.uuid = UUID.fromString(_uuid);
@@ -122,7 +122,7 @@ public class SytemAttribute implements CacheObjectInterface {
         String uuid = resultset.getString(2).trim();
         String name = resultset.getString(3).trim();
         Object value = resultset.getObject(4);
-        SytemAttribute sysatt = new SytemAttribute(id, uuid, name, value);
+        SystemAttribute sysatt = new SystemAttribute(id, uuid, name, value);
         getSytemAttributeCache().add(sysatt);
       }
     } catch (EFapsException e) {
@@ -139,7 +139,7 @@ public class SytemAttribute implements CacheObjectInterface {
    *
    * @return instance of class {@link #SytemAttribute()}
    */
-  public static SytemAttribute get(final long _id) {
+  public static SystemAttribute get(final long _id) {
     return getSytemAttributeCache().get(_id);
   }
 
@@ -149,7 +149,7 @@ public class SytemAttribute implements CacheObjectInterface {
    *
    * @return instance of class {@link #SytemAttribute()}
    */
-  public static SytemAttribute get(final String _name) {
+  public static SystemAttribute get(final String _name) {
     return getSytemAttributeCache().get(_name);
   }
 
@@ -159,7 +159,7 @@ public class SytemAttribute implements CacheObjectInterface {
    *
    * @return instance of class {@link #SytemAttribute()}
    */
-  public static SytemAttribute get(final UUID _uuid) {
+  public static SystemAttribute get(final UUID _uuid) {
     return getSytemAttributeCache().get(_uuid);
   }
 
@@ -169,7 +169,7 @@ public class SytemAttribute implements CacheObjectInterface {
    *
    * @return value of instance variable {@link #sYSATTRIBUTECACHE}
    */
-  static Cache<SytemAttribute> getSytemAttributeCache() {
+  static Cache<SystemAttribute> getSytemAttributeCache() {
     return SYSATTRIBUTECACHE;
   }
 

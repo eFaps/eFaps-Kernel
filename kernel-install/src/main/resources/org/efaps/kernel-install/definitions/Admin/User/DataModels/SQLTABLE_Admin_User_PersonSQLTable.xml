@@ -45,6 +45,8 @@
       <column name="EMAIL"      type="STRING_SHORT" length="128" not-null="true"/>
       <column name="PASSWORD"   type="STRING_SHORT" length="128"/>
       <column name="LASTLOGIN"  type="DATETIME"/>
+      <column name="LOGINTRY"   type="DATETIME"/>
+      <column name="LOGINTRIES" type="INTEGER"/>
      </database>
   </definition>
 
@@ -66,7 +68,9 @@
                  T_USERPERSON.FIRSTNAME,
                  T_USERPERSON.LASTNAME,
                  T_USERPERSON.EMAIL,
-                 T_USERPERSON.PASSWORD
+                 T_USERPERSON.PASSWORD,
+                 T_USERPERSON.LOGINTRY,
+                 T_USERPERSON.LOGINTRIES
              from T_USERABSTRACT
              join T_USERPERSON 
                on T_USERABSTRACT.ID=T_USERPERSON.ID

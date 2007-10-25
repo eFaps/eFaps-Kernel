@@ -24,21 +24,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.common.SystemAttribute;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.PasswordType;
 import org.efaps.db.Context;
 import org.efaps.db.Update;
 import org.efaps.db.transaction.ConnectionResource;
+import org.efaps.util.DateTimeUtil;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
@@ -49,7 +53,7 @@ import org.efaps.util.cache.CacheReloadInterface;
  * @version $Id$
  * @todo description
  */
-public class Person extends UserObject {
+public class Person extends AbstractUserObject {
 
   // ///////////////////////////////////////////////////////////////////////////
   // enum definitions
@@ -412,17 +416,30 @@ public class Person extends UserObject {
       try {
         stmt =
             context.getConnection().prepareStatement(
-                "select STATUS "
+                "select PASSWORD,"
+                    + " STATUS, "
+                    + " LOGINTRY, "
+                    + " LOGINTRIES "
                     + "from V_USERPERSON "
-                    + "where NAME=? and PASSWORD=?");
+                    + "where NAME=? ");
         stmt.setString(1, getName());
-        stmt.setString(2, encrPass);
         final ResultSet resultset = stmt.executeQuery();
         if (resultset.next()) {
-          ret = resultset.getBoolean(1);
+          final String pwd = resultset.getString(1).trim();
+          if (encrPass.equals(pwd)) {
+            ret = resultset.getBoolean(2);
+          } else {
+            setFalseLogin(resultset.getTimestamp(3), resultset.getInt(4));
+          }
+
           if (resultset.next()) {
             ret = false;
+            LOG.error("found multiple entries for user '" + getName() + "'");
+            throw new EFapsException(getClass(), "checkPassword.Multiple",
+                getName());
           }
+        } else {
+          LOG.error("unknown username '" + getName() + "'");
         }
         resultset.close();
       } catch (SQLException e) {
@@ -449,6 +466,86 @@ public class Person extends UserObject {
     }
     return ret;
 
+  }
+
+  private void setFalseLogin(final Timestamp _logintry, final int _count)
+                                                                         throws EFapsException {
+    if (_count > 0) {
+      Timestamp now = DateTimeUtil.getCurrentTimeFromDB();
+      // Admin_User_LoginTimeBeforeRetry
+      int dif =
+          SystemAttribute.get(
+              UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"))
+              .getIntegerValue();
+      // Admin_User_LoginTries
+      int maxtries =
+          SystemAttribute.get(
+              UUID.fromString("85d94368-bc1e-49bf-88d7-a3912b50e938"))
+              .getIntegerValue();
+      int count = _count + 1;
+      if (dif > 0 && (now.getTime() - _logintry.getTime()) > dif * 60 * 1000) {
+        updateFalseLoginDB(1);
+      } else {
+        updateFalseLoginDB(count);
+      }
+      if (maxtries > 0 && count > maxtries && getStatus()) {
+        setStatusInDB(false);
+      }
+    } else {
+      updateFalseLoginDB(1);
+    }
+  }
+
+  private void updateFalseLoginDB(final int _tries) throws EFapsException {
+    ConnectionResource rsrc = null;
+    try {
+      final Context context = Context.getThreadContext();
+      rsrc = context.getConnectionResource();
+
+      Statement stmt = null;
+      final StringBuilder cmd = new StringBuilder();
+      try {
+
+        cmd.append("update T_USERPERSON ").append("set LOGINTRY=").append(
+            Context.getDbType().getCurrentTimeStamp()).append(", LOGINTRIES=")
+            .append(_tries).append(" where ID=").append(getId());
+        stmt = rsrc.getConnection().createStatement();
+        final int rows = stmt.executeUpdate(cmd.toString());
+        if (rows == 0) {
+          LOG.error("could not execute '"
+              + cmd.toString()
+              + "' to update last login information for person '"
+              + toString()
+              + "'");
+          throw new EFapsException(getClass(), "updateLastLogin.NotUpdated",
+              cmd.toString(), getName());
+        }
+      } catch (SQLException e) {
+        LOG.error("could not execute '"
+            + cmd.toString()
+            + "' to update last login information for person '"
+            + toString()
+            + "'", e);
+        throw new EFapsException(getClass(), "updateLastLogin.SQLException", e,
+            cmd.toString(), getName());
+      }
+      finally {
+        try {
+          if (stmt != null) {
+            stmt.close();
+          }
+        } catch (SQLException e) {
+          throw new EFapsException(getClass(), "updateLastLogin.SQLException",
+              e, cmd.toString(), getName());
+        }
+      }
+      rsrc.commit();
+    }
+    finally {
+      if ((rsrc != null) && rsrc.isOpened()) {
+        rsrc.abort();
+      }
+    }
   }
 
   /**
@@ -691,7 +788,7 @@ public class Person extends UserObject {
    *                JAAS system for which the role is assigned
    * @param _role
    *                role to assign
-   * @see UserObject#assignToUserObjectInDb
+   * @see AbstractUserObject#assignToUserObjectInDb
    */
   public void assignRoleInDb(final JAASSystem _jaasSystem, final Role _role)
                                                                             throws EFapsException {
@@ -707,7 +804,7 @@ public class Person extends UserObject {
    *                JAAS system for which the role is assigned
    * @param _role
    *                role to unassign
-   * @see UserObject#unassignFromUserObjectInDb
+   * @see AbstractUserObject#unassignFromUserObjectInDb
    */
   public void unassignRoleInDb(final JAASSystem _jaasSystem, final Role _role)
                                                                               throws EFapsException {
@@ -830,7 +927,7 @@ public class Person extends UserObject {
    *                JAAS system for which the role is assigned
    * @param _group
    *                group to assign
-   * @see UserObject#assignToUserObjectInDb
+   * @see AbstractUserObject#assignToUserObjectInDb
    */
   public void assignGroupInDb(final JAASSystem _jaasSystem, final Group _group)
                                                                                throws EFapsException {
@@ -846,7 +943,7 @@ public class Person extends UserObject {
    *                JAAS system for which the role is assigned
    * @param _group
    *                group to unassign
-   * @see UserObject#unassignFromUserObjectInDb
+   * @see AbstractUserObject#unassignFromUserObjectInDb
    */
   public void unassignGroupInDb(final JAASSystem _jaasSystem, final Group _group)
                                                                                  throws EFapsException {
@@ -872,8 +969,8 @@ public class Person extends UserObject {
       try {
 
         cmd.append("update T_USERPERSON ").append("set LASTLOGIN=").append(
-            Context.getDbType().getCurrentTimeStamp()).append(" ").append(
-            "where ID=").append(getId());
+            Context.getDbType().getCurrentTimeStamp())
+            .append(", LOGINTRIES=0 ").append("where ID=").append(getId());
         stmt = rsrc.getConnection().createStatement();
         final int rows = stmt.executeUpdate(cmd.toString());
         if (rows == 0) {
@@ -1201,7 +1298,7 @@ public class Person extends UserObject {
               + _userName
               + "'");
           throw new EFapsException(Person.class, "createPerson.NotInserted",
-              _jaasSystem.getName(), _jaasKey, _userName);
+              cmd.toString(), _jaasSystem.getName(), _jaasKey, _userName);
         }
         if (persId == 0) {
           final ResultSet resultset = stmt.getGeneratedKeys();
@@ -1229,7 +1326,7 @@ public class Person extends UserObject {
               + _userName
               + "'");
           throw new EFapsException(Person.class, "createPerson.NotInserted",
-              _jaasSystem.getName(), _jaasKey, _userName);
+              cmd.toString(), _jaasSystem.getName(), _jaasKey, _userName);
         }
 
       } catch (SQLException e) {

@@ -38,7 +38,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  * @todo description
  */
-public class Group extends UserObject {
+public class Group extends AbstractUserObject {
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables

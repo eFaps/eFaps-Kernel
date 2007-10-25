@@ -67,6 +67,18 @@
       <sqltable>Admin_User_PersonSQLTable</sqltable>
       <sqlcolumn>LASTLOGIN</sqlcolumn>
     </attribute>
+    <attribute>
+      <name>LoginTry</name>
+      <type>DateTime</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LOGINTRY</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>LoginTriesCounter</name>
+      <type>Integer</type>
+      <sqltable>Admin_User_PersonSQLTable</sqltable>
+      <sqlcolumn>LOGINTRIES</sqlcolumn>
+    </attribute>
   </definition>  
   <definition>
     <version>

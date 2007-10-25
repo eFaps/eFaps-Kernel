@@ -39,7 +39,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  * @todo description
  */
-public class Role extends UserObject  {
+public class Role extends AbstractUserObject  {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables

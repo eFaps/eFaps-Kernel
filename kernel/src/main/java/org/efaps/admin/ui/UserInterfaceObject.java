@@ -38,7 +38,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.user.Role;
-import org.efaps.admin.user.UserObject;
+import org.efaps.admin.user.AbstractUserObject;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -68,7 +68,7 @@ public abstract class UserInterfaceObject extends AdminObject {
    * 
    * @see #getAccess
    */
-  private final Set<UserObject> access = new HashSet<UserObject>();
+  private final Set<AbstractUserObject> access = new HashSet<AbstractUserObject>();
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -219,7 +219,7 @@ public abstract class UserInterfaceObject extends AdminObject {
               + "from T_UIACCESS " + "where T_UIACCESS.UIABSTRACT=" + getId());
       while (rs.next()) {
         long userId = rs.getLong(1);
-        UserObject userObject = UserObject.getUserObject(userId);
+        AbstractUserObject userObject = AbstractUserObject.getUserObject(userId);
         if (userObject == null) {
           throw new Exception("user " + userId + " does not exists!");
         } else {
@@ -263,7 +263,7 @@ public abstract class UserInterfaceObject extends AdminObject {
     if (getAccess().isEmpty()) {
       ret = true;
     } else {
-      for (UserObject userObject : getAccess()) {
+      for (AbstractUserObject userObject : getAccess()) {
         if (userObject.isAssigned()) {
           ret = true;
           break;
@@ -294,7 +294,7 @@ public abstract class UserInterfaceObject extends AdminObject {
    * @see #access
    * @see #add(Role)
    */
-  protected Set<UserObject> getAccess() {
+  protected Set<AbstractUserObject> getAccess() {
     return this.access;
   }
 

@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.efaps.admin.AdminObject.EFapsClassName;
-import org.efaps.admin.common.SytemAttribute;
+import org.efaps.admin.common.SystemAttribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.datamodel.ui.FieldValue.HtmlType;
@@ -119,7 +119,7 @@ public class Password {
     final Context context = Context.getThreadContext();
     final String passwordnew = context.getParameter("passwordnew");
 
-    if (passwordnew.length() > SytemAttribute.get(
+    if (passwordnew.length() > SystemAttribute.get(
         UUID.fromString("bb26c4a4-65a8-41e9-bc64-5fe0148cf805"))
         .getIntegerValue()) {
       ret.put(ReturnValues.TRUE, "true");
