@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.listmenu;
@@ -42,10 +42,17 @@ import org.efaps.ui.wicket.models.MenuItemModel;
 /**
  * This class provides some static methods to update a ListMenu.
  *
- * @author jmo
- * @version $Id$
+ * @author jmox
+ * @version $Id:ListMenuUpdate.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ListMenuUpdate {
+
+  /**
+   * private constructur (Singleton)
+   */
+  private ListMenuUpdate() {
+    // making a Singleton
+  }
 
   /**
    * Update the ListMenu by injecting a new SubListMenu into it.
@@ -66,14 +73,15 @@ public class ListMenuUpdate {
                             final String _menukey, final Menu _menu,
                             final PageParameters _parameters, final String _oid) {
     // deselect the item
-    Component comp = ((EFapsSession) (Session.get())).getFromCache(_menukey);
+    final Component comp =
+        ((EFapsSession) (Session.get())).getFromCache(_menukey);
     deselectItem(_menukey, comp, _target);
     // find the ListMenuPanel we want do update
-    MarkupContainer listitem = comp.findParent(ListItem.class);
+    final MarkupContainer listitem = comp.findParent(ListItem.class);
     ListMenuPanel listmenupanel = null;
     Iterator<?> childs = listitem.iterator();
     while (childs.hasNext()) {
-      Object child = childs.next();
+      final Object child = childs.next();
       if (child instanceof ListMenuPanel) {
         listmenupanel = (ListMenuPanel) child;
         break;
@@ -84,7 +92,7 @@ public class ListMenuUpdate {
     Rows rows = null;
     childs = listmenupanel.iterator();
     while (childs.hasNext()) {
-      Object child = childs.next();
+      final Object child = childs.next();
       if (child instanceof Rows) {
         rows = (Rows) child;
         break;
@@ -93,9 +101,15 @@ public class ListMenuUpdate {
     int level = ((MenuItemModel) comp.getModel()).getLevel();
     boolean old = false;
     int index = 0;
-    // check if an Item is allready in the Menu
-    if (rows != null) {
-      List<Object> list = rows.getList();
+    // if we have now rows, we need to create a ne ListMenuPanel
+    if (rows == null) {
+      listmenupanel =
+          new ListMenuPanel("nested", _menukey, _parameters, true, level + 1);
+      listmenupanel.setOutputMarkupId(true);
+      listitem.replace(listmenupanel);
+    } else {
+      // check if an Item is allready in the Menu
+      final List<Object> list = rows.getList();
       level++;
       for (Object item : rows.getList()) {
         if (item instanceof MenuItemModel) {
@@ -109,11 +123,16 @@ public class ListMenuUpdate {
         }
 
       }
-      // add a new List into the existing ListMenuPanel
-      if (!old) {
-        MenuItemModel model;
-        model = new MenuItemModel(_menu.getUUID(), _oid);
+      // if it is a ol item select it, else add a new List into the existing
+      // ListMenuPanel
+      if (old) {
+        setSelectedItem(_menukey, listmenupanel.getHeaderComponents()
+            .get(index), _target);
+      } else {
+        final MenuItemModel model = new MenuItemModel(_menu.getUUID(), _oid);
         model.setLevel(level);
+        model.setHeader(true);
+        model.setSelected(true);
         list.add(model);
         if (model.hasChilds()) {
           for (MenuItemModel item : model.getChilds()) {
@@ -121,20 +140,22 @@ public class ListMenuUpdate {
           }
           list.add(model.getChilds());
         }
-
-      } else {
-        setSelectedItem(_menukey, listmenupanel.getHeaderComponents()
-            .get(index), _target);
       }
-    } else {
-      listmenupanel =
-          new ListMenuPanel("nested", _menukey, _parameters, true, level + 1);
-      listmenupanel.setOutputMarkupId(true);
-      listitem.replace(listmenupanel);
     }
     _target.addComponent(listmenupanel);
   }
 
+  /**
+   * add a new Menu to the ListMenuPanel, using PageParameters to create the new
+   * Menu
+   *
+   * @param _target
+   *                AjaxRequestTarget used to update the ListMenu
+   * @param _menukey
+   *                Key to identify the ListMenu
+   * @param _parameters
+   *                parameters for the ListMenuPanel
+   */
   public static void newMenu(final AjaxRequestTarget _target,
                              final String _menukey,
                              final PageParameters _parameters) {
@@ -144,12 +165,12 @@ public class ListMenuUpdate {
     while (comp.findParent(ListMenuPanel.class) != null) {
       comp = comp.findParent(ListMenuPanel.class);
     }
-    ListMenuPanel newlits =
+    final ListMenuPanel newlistmenu =
         new ListMenuPanel("menu", _menukey, _parameters, true);
-    newlits.setOutputMarkupId(true);
-    comp.replaceWith(newlits);
+    newlistmenu.setOutputMarkupId(true);
+    comp.replaceWith(newlistmenu);
 
-    _target.addComponent(newlits.getParent());
+    _target.addComponent(newlistmenu.getParent());
   }
 
   /**
@@ -192,13 +213,14 @@ public class ListMenuUpdate {
                                      final boolean _deselect) {
     _component.add(new AttributeModifier("class", new Model(
         StyleClassName.ITEM_SELECTED.name)));
-    EFapsSession session = (EFapsSession) (Session.get());
-    Component previous = session.getFromCache(_menukey);
+    final EFapsSession session = (EFapsSession) (Session.get());
+    final Component previous = session.getFromCache(_menukey);
 
-    if (previous != null && !previous.equals(_component) && _deselect) {
-      if (previous instanceof ListMenuAjaxLinkContainer) {
-        deselectItem(_menukey, previous, _target);
-      }
+    if (previous instanceof ListMenuAjaxLinkContainer
+        && !previous.equals(_component)
+        && _deselect) {
+      deselectItem(_menukey, previous, _target);
+
     }
     session.putIntoCache(_menukey, _component);
     if (_target != null) {
@@ -221,10 +243,11 @@ public class ListMenuUpdate {
   private static void changeBrothers(final Component _component,
                                      final AjaxRequestTarget _target,
                                      final boolean _selected) {
-    WebMarkupContainer parent = (WebMarkupContainer) _component.getParent();
-    Iterator<?> it = parent.iterator();
-    while (it.hasNext()) {
-      Component child = (Component) it.next();
+    final WebMarkupContainer parent =
+        (WebMarkupContainer) _component.getParent();
+    final Iterator<?> iter = parent.iterator();
+    while (iter.hasNext()) {
+      final Component child = (Component) iter.next();
       if (child instanceof AbstractAjaxLink) {
         String classname;
         if (_selected) {
@@ -251,7 +274,7 @@ public class ListMenuUpdate {
   public static void deselectItem(final String _menukey,
                                   final Component _component,
                                   final AjaxRequestTarget _target) {
-    String styleClass =
+    final String styleClass =
         ((ListMenuAjaxLinkContainer) _component).getDefaultStyleClass().name;
     _component.add(new AttributeModifier("class", new Model(styleClass)));
     if (_target != null) {
