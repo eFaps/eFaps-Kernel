@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.split;
@@ -30,12 +30,12 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.util.string.JavascriptUtils;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
 /**
  * @author jmox
- * @version $Id$
- *
+ * @version $Id:SplitHeaderPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class SplitHeaderPanel extends Panel {
 
@@ -67,9 +67,10 @@ public class SplitHeaderPanel extends Panel {
         "SplitHeaderPanel.css"));
     this.add(new StringHeaderContributor(getJavaScript()));
 
-   this.add(new Label("titel","Menu"));
+    this
+        .add(new Label("titel", DBProperties.getProperty("Standart.SplitTitel")));
 
-    AjaxLink link = new AjaxLink("expandcontract") {
+   final AjaxLink link = new AjaxLink("expandcontract") {
 
       private static final long serialVersionUID = 1L;
 
@@ -77,11 +78,10 @@ public class SplitHeaderPanel extends Panel {
       public void onClick(final AjaxRequestTarget _target) {
 
         String panelId;
-        if(findParent(ListOnlyPanel.class)!=null){
-          panelId = findParent(ListOnlyPanel.class).getMarkupId();
-        }
-        else{
+        if (findParent(ListOnlyPanel.class) == null) {
           panelId = findParent(StructBrowsSplitPanel.class).getMarkupId();
+        } else {
+          panelId = findParent(ListOnlyPanel.class).getMarkupId();
         }
 
         String ret =
@@ -109,7 +109,7 @@ public class SplitHeaderPanel extends Panel {
    * @return String with the JavaScript
    */
   private String getJavaScript() {
-    StringBuilder ret = new StringBuilder();
+    final StringBuilder ret = new StringBuilder();
 
     ret
         .append(JavascriptUtils.SCRIPT_OPEN_TAG)
@@ -120,6 +120,7 @@ public class SplitHeaderPanel extends Panel {
         .append("    var split = dijit.byId(splitId);\n")
         .append("    var pane = dijit.byId(paneId);\n")
         .append("    if(pane.sizeShare > 0) {\n")
+        .append("      split._saveState();\n")
         .append("      connections[0] = dojo.connect(split,\"beginSizing\",this," +
                                " \"toggleHeader\" );\n")
         .append("      header.className=\"")
