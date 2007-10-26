@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 1232 $
- * Last Changed:    $Date: 2007-08-02 17:55:41 +0200 (Do, 02 Aug 2007) $
- * Last Changed By: $Author: jmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.slf4j.impl;

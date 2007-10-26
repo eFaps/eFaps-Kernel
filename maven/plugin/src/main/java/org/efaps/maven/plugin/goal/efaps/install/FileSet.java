@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 1317 $
- * Last Changed:    $Date: 2007-09-03 22:30:10 +0200 (Mo, 03 Sep 2007) $
- * Last Changed By: $Author: tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.maven.plugin.goal.efaps.install;
@@ -37,7 +37,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * 
  * 
  * @author tmo
- * @version $Id: FileSet.java 1317 2007-09-03 20:30:10Z tmo $
+ * @version $Id$
  */
 public class FileSet implements FileFilter {
 

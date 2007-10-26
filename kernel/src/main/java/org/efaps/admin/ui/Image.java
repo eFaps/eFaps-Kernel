@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 1293 $
- * Last Changed:    $Date: 2007-08-28 03:05:42 +0200 (Di, 28 Aug 2007) $
- * Last Changed By: $Author: jmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui;
@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
- * @version $Id: Command.java 1293 2007-08-28 01:05:42Z jmo $
+ * @version $Id$
  * @todo description
  */
 public class Image extends UserInterfaceObject  {
