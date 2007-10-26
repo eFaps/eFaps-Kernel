@@ -30,7 +30,7 @@
     <version>
       <application>teamwork</application>
       <global>1</global>
-      <local>$Rev:528 $</local>
+      <local>$Rev$</local>
       <mode>(version==1)</mode>
     </version>
 
@@ -56,7 +56,7 @@
     <version>
       <application>teamcenter</application>
       <global>1</global>
-      <local>$Rev:528 $</local>
+      <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
 

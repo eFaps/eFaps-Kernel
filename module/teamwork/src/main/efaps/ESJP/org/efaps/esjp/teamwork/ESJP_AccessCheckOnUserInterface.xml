@@ -16,10 +16,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
- Revision:        $Rev:851 $
- Last Changed:    $Date:2007-06-02 12:36:03 -0500 (Sat, 02 Jun 2007) $
- Last Changed By: $Author:jmo $
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -33,7 +33,7 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:851 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==1)</mode>
     </version>
