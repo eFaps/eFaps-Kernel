@@ -79,17 +79,18 @@
       <sqltable>Admin_User_PersonSQLTable</sqltable>
       <sqlcolumn>LOGINTRIES</sqlcolumn>
     </attribute>
-  </definition>  
+  </definition>
+
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_Person</name>
     <parent>Admin_User_Abstract</parent>
-    
+    <!-- attributes -->
     <attribute>
       <name>Password</name>
       <type>Password</type>
@@ -97,11 +98,9 @@
       <validate program="org.efaps.esjp.admin.user.Password" method="validatePwdValue"/>
       <sqlcolumn>PASSWORD</sqlcolumn>
     </attribute>
-    
     <!-- triggers -->
     <trigger name="Admin_User_Person_ACCESSCHECK" event="ACCESSCHECK" 
       program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType"/>
-    
     <trigger name="Admin_User_Person_INSERT_POST" event="INSERT_POST" 
       program="org.efaps.esjp.admin.user.Person" method="insertJaaskeyTrg" />
   </definition>

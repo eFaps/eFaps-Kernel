@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:1145 $
- Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -33,7 +33,7 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
@@ -47,17 +47,15 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Common_SearchMyDesk</name>
-    
     <!-- access -->
     <access>
       <role>Administration</role>
     </access>
-    
     <!-- target definitions -->
     <target>
       <search>Admin_Common_Search</search>

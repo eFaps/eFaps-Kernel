@@ -16,10 +16,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
- Revision:        $Rev:1145 $
- Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -33,11 +33,10 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>true</mode>
       <mode>(version==9)</mode>
     </version>
-    
     <file>HistoryQuery.java</file>
   </definition>
 
