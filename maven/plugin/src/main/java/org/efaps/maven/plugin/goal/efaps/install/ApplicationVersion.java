@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 1232 $
- * Last Changed:    $Date: 2007-08-02 17:55:41 +0200 (Do, 02 Aug 2007) $
- * Last Changed By: $Author: jmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.maven.plugin.goal.efaps.install;
@@ -46,7 +46,7 @@ import static org.mozilla.javascript.ScriptableObject.putProperty;
 /**
  * 
  * @author tmo
- * @version $Id: ApplicationVersion.java 1232 2007-08-02 15:55:41Z jmo $
+ * @version $Id$
  * @todo description
  */
 public class ApplicationVersion implements Comparable /* < ApplicationVersion > */<Object>{
@@ -266,17 +266,39 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
   /////////////////////////////////////////////////////////////////////////////
 
+  /**
+   * Class used to store information of needed called scripts within an
+   * application version.
+   */
   private class Script {
 
+    /**
+     * File name of the script (within the class path).
+     */
     final String fileName;
 
+    /**
+     * Name of called function.
+     */
     final String function;
 
+    /**
+     * Constructor to initialize a script.
+     *
+     * @param _fileName   script file name
+     * @param _function   called function name
+     */
     private Script(final String _fileName, final String _function)  {
       this.fileName = _fileName;
       this.function = _function;
     }
-    
+
+    /**
+     * Executes this script.
+     *
+     * @param _userName   logged in user name
+     * @throws IOException
+     */
     public void execute(final String _userName) throws IOException {
 
       LOG.info("Execute file '" + this.fileName + "' function '" 
