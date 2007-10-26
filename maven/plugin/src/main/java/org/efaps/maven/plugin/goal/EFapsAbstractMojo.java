@@ -160,23 +160,8 @@ public abstract class EFapsAbstractMojo implements Mojo {
   protected Application getApplication() {
     Application appl = null;
     try {
-      Digester digester = new Digester();
-      digester.setValidating(false);
-      digester.addObjectCreate("install", Application.class);
-
-      digester.addCallMethod("install/application", "setApplication", 1);
-      digester.addCallParam("install/application", 0);
-
-      digester.addObjectCreate("install/version", ApplicationVersion.class);
-      digester.addSetNext("install/version", "addVersion");
-
-      digester.addCallMethod("install/version", "setNumber", 1, new Class[]{Long.class});
-      digester.addCallParam("install/version", 0, "number");
-
-      digester.addCallMethod("install/version", "setCompile", 1, new Class[]{Boolean.class});
-      digester.addCallParam("install/version", 0, "compile");
-
-      appl = (Application) digester.parse(this.versionFile);
+      appl = Application.getApplication(this.versionFile.toURL(),
+                                        this.classpathElements);
 
       FileSet fileSet = new FileSet();
       fileSet.setDirectory(null, eFapsDir.toString());
@@ -184,9 +169,6 @@ public abstract class EFapsAbstractMojo implements Mojo {
       fileSet.addIncludeFile(".*xml$");
       for (File file : fileSet.getFiles())  {
         appl.addURL(file.toURL());
-      }
-      for (ApplicationVersion applVers : appl.getVersions()) {
-        applVers.setClasspathElements(this.classpathElements);
       }
     } catch (IOException e) {
       getLog().error(

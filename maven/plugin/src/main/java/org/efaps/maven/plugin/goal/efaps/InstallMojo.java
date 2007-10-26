@@ -54,7 +54,7 @@ public final class InstallMojo extends EFapsAbstractMojo {
 
       Application appl = getApplication();
       if (appl != null) {
-        appl.install();
+        appl.install(getUserName());
       }
 
       commitTransaction();

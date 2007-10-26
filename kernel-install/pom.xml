@@ -64,7 +64,7 @@
                   <configuration>
                       <properties>
                         <sourcedir>${project.basedir}/src/main/resources</sourcedir>
-                        <targetdir>${project.basedir}/target/classes/org/efaps/kernel-install</targetdir>
+                        <targetdir>${project.basedir}/target/classes/META-INF/efaps/kernel-install</targetdir>
                       </properties>
 
                       <source>
@@ -83,7 +83,7 @@
 
                         String[] files = ds.getIncludedFiles();
 
-                        Writer writer = new OutputStreamWriter(new FileOutputStream(project.properties['targetdir'] + "/index.txt"),
+                        Writer writer = new OutputStreamWriter(new FileOutputStream(project.properties['targetdir'] + "/files.txt"),
                                                                "UTF-8");
                         for (Object file : files)  {
                           writer.write(file.replaceAll("\\\\", "/"));

@@ -19,19 +19,7 @@
  * Last Changed By: $Author$
  */
 
-importClass(Packages.java.io.InputStreamReader);
-importClass(Packages.java.io.LineNumberReader);
-importClass(Packages.java.util.ArrayList);
-
-importClass(Packages.org.efaps.admin.program.esjp.Compiler);
-importClass(Packages.org.efaps.admin.runlevel.RunLevel);
-importClass(Packages.org.efaps.admin.user.Person);
 importClass(Packages.org.efaps.db.Context);
-importClass(Packages.org.efaps.importer.DataImport);
-importClass(Packages.org.efaps.update.Install);
-importClass(Packages.org.efaps.update.dbproperty.DBPropertiesUpdate);
-importClass(Packages.org.efaps.db.Update);
-importClass(Packages.org.efaps.admin.datamodel.Type);
 
 var CURRENT_TIMESTAMP = Context.getDbType().getCurrentTimeStamp();
 
@@ -41,7 +29,7 @@ var CURRENT_TIMESTAMP = Context.getDbType().getCurrentTimeStamp();
  * @param _text (String) text to print out
  */
 function _eFapsPrint(_text)  {
-  java.lang.System.out.println(_text);
+  logger.info(_text);
 }
 
 /**
@@ -66,21 +54,6 @@ function _eFapsCommonLog(_subject, _text)  {
     _eFapsPrint("  - " + _subject + "  (" + _text + ")");
   } else if (_subject!=null)  {
     _eFapsPrint("  - " + _subject);
-  }
-}
-
-/**
- * Reloades the complete eFaps cache.
- */
-function _eFapsReloadCache(_runLevel)  {
-  try  {
-    Context.begin();
-    RunLevel.init(_runLevel);
-    RunLevel.execute();
-    Context.rollback();
-
-  } catch (e)  {
-    _eFapsPrint(e);
   }
 }
 
@@ -122,41 +95,6 @@ function _insert(_stmt, _subject, _text, _table, _columns, _values)  {
   return ret;
 }
 
-
-/**
- * Updates the password for person 'Administrator' to 'Administrator'..
- *
- * @see #eFapsCreateAll
- */
-function _eFapsCreateAllUpdatePassword()  {
-  _eFapsPrint("");
-  _eFapsPrint("Update Administrator Password");
-  _eFapsPrint("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-
-  try  {
-    var c = Context.begin(eFapsUserName);
-    c.getPerson().setPassword(c, eFapsPassWord);
-    
-    var update = new Update(Type.get("Admin_User_Abstract"),"1");
-    update.add("Status","true");
-    update.executeWithoutAccessCheck();
-    
-     var update = new Update(Type.get("Admin_User_Abstract"),"2");
-    update.add("Status","true");
-    update.executeWithoutAccessCheck();
-    
-    _eFapsPrint("  - Done");
-    Context.commit();
-  } catch (e)  {
-    _eFapsPrint("  - Error:"+e);
-    try  {
-      Context.rollback();
-      c.close();
-    } catch (e)  {
-    }
-  }
-}
-
 /**
  * Rebuilds a complete new eFaps instance in the database.
  * Following steps are made:
@@ -175,42 +113,6 @@ function _eFapsCreateAllUpdatePassword()  {
  * @see #_eFapsCreateAllUpdatePassword
  */
 function eFapsCreateAll()  {
-  var cl = new Compiler().getClass().getClassLoader();
-
-  var install = new Install();
-
-  _eFapsPrint("############ Read XML Files");
-  var stream = cl.getResourceAsStream("org/efaps/kernel-install/index.txt");
-  if (stream != null)  {
-    var reader = new LineNumberReader(new InputStreamReader(stream, "UTF-8"));
-
-    var line = reader.readLine();
-    var files = new ArrayList();
-    while (line)  {
-      var url = cl.getResource(line);
-      install.addURL(url);
-      files.add(url);
-      line = reader.readLine();
-    }
-    reader.close();
-  } else  {
-    error("Could not Found the index file 'index.txt'.");
-  }
-
-  _eFapsPrint("############ Delete Old Data Model");
-  Context.begin();
-  Context.getDbType().deleteAll(Context.getThreadContext().getConnection());
-  Context.commit();
-
-  _eFapsPrint("############ Install Version 1");
-  Context.begin();
-  install.install(1);
-  Context.commit();
-
-  _eFapsPrint("############ Install Version 2");
-  Context.begin();
-  install.install(2);
-  Context.commit();
 
   Context.begin();
   _eFapsCreateUserTablesStep1();
@@ -221,107 +123,6 @@ function eFapsCreateAll()  {
   _eFapsInitRunLevel();
   Context.commit();
 
-  _eFapsPrint("############ Install Version 3");
-  Context.begin();
-  install.install(3);
-  Context.commit();
-
-  _eFapsPrint("############ Reload Cache");
-  _eFapsReloadCache("shell");
-
-  _eFapsPrint("############ Install Version 4");
-  Context.begin(eFapsUserName);
-  install.install(4);
-  Context.commit();
-
-  _eFapsPrint("############ Reload Cache");
-  _eFapsReloadCache("shell");
-
-  _eFapsPrint("############ Install Version 5");
-  Context.begin(eFapsUserName);
-  install.install(5);
-  Context.commit();
-
-  _eFapsPrint("############ Install Version 6");
-  Context.begin(eFapsUserName);
-  install.install(6);
-  Context.commit();
-
-  _eFapsPrint("############ Reload Cache");
-  _eFapsReloadCache("shell");
-
-  _eFapsPrint("############ Install Version 7");
-  Context.begin(eFapsUserName);
-  install.install(7);
-  Context.commit();
-
-  _eFapsPrint("############ Install Version 8");
-  Context.begin(eFapsUserName);
-  install.install(8);
-  Context.commit();
-
-  _eFapsPrint("############ Install Version 9");
-  Context.begin(eFapsUserName);
-  install.install(9);
-  Context.commit();
-
-  _eFapsPrint("############ Install Version 10");
-  Context.begin(eFapsUserName);
-  install.install(10);
-  Context.commit();
-
-  _eFapsPrint("############ Reload Cache");
-  _eFapsReloadCache("shell");
-
-  _eFapsPrint("############ Install Version 11");
-  Context.begin(eFapsUserName);
-  install.install(11);
-  Context.commit();
-
-  _eFapsPrint("############ Reload Cache");
-  _eFapsReloadCache("shell");
-
-  _eFapsPrint("############ Compiling Programs");
-  Context.begin(eFapsUserName);
-  (new Compiler(classPathElements)).compile();
-  Context.commit();
-
-  _eFapsPrint("############ Importing Data");
-  Context.begin(eFapsUserName);
-  _eFapsCreateAllImportData(files);
-  _eFpasCreateAllReadProperties(files);
-  Context.commit();
-
-  _eFapsCreateAllUpdatePassword();
-}
-
-/**
- * @param _cl   (ClassLoader) class loader to load the given file
- * @param _file (String)      name of file with data to import
- */
-function _eFapsCreateAllImportData(_files)  {
-  var i = 0;
-  while (i < _files.size())  {
-    var url = _files.get(i);
-    var dimport = new DataImport();
-    dimport.readXMLFile(url);
-    if (dimport.hasData()) {
-      dimport.updateInDB();
-    }
-    i++;
-  }  
-}
-
-function _eFpasCreateAllReadProperties(_files)  {
-  var i = 0;
-  while (i < _files.size())  {
-    var url = _files.get(i);
-    var prop = DBPropertiesUpdate.readXMLFile(url);
-    if (prop != null)  {
-      prop.updateInDB();
-    }
-    i++;
-  }  
 }
 
 function _eFapsCreateInsertSQLTable(_stmt, _text, _uuid, _name, _sqlTable, _sqlColId, _sqlColType, _tableMain)  {

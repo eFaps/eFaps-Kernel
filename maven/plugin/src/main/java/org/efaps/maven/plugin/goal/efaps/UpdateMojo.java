@@ -55,7 +55,7 @@ public final class UpdateMojo extends EFapsAbstractMojo  {
      
       Application appl = getApplication();
       if (appl != null)  {
-        appl.updateLastVersion();
+        appl.updateLastVersion(getUserName());
       }
 
       commitTransaction();
