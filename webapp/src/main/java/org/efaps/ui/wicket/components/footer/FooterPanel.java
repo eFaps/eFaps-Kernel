@@ -123,9 +123,7 @@ public class FooterPanel extends Panel {
     this.modalWindow = _modalWindow;
     final AbstractModel model = (AbstractModel) super.getModel();
 
-    if (model.getCommand().getProperty("SuccessDialog") != null) {
-      final String key = model.getCommand().getProperty("SuccessDialog");
-
+    if ("true".equals(model.getCommand().getProperty("SuccessDialog"))) {
       FooterPanel.this.modalWindow
           .setWindowClosedCallback(new WindowClosedCallback() {
 
@@ -146,8 +144,7 @@ public class FooterPanel extends Panel {
 
                       public Page createPage() {
                         return new DialogPage(FooterPanel.this.modalWindow,
-                            DBProperties.getProperty(key), DBProperties
-                                .getProperty(key + ".Button"));
+                            model.getCommand().getName() + ".Success");
                       }
                     });
 
@@ -160,14 +157,15 @@ public class FooterPanel extends Panel {
     }
 
     String label = null;
+
     if (model.isCreateMode()) {
-      label = "Create";
+      label = getLabel(model.getCommand().getName(), "Create");
     } else if (model.isEditMode()) {
-      label = "Update";
+      label = getLabel(model.getCommand().getName(), "Edit");
     } else if (model.isSubmit() && model instanceof TableModel) {
-      label = "Connect";
+      label = getLabel(model.getCommand().getName(), "Connect");
     } else if (model.isSearchMode()) {
-      label = "Search";
+      label = getLabel(model.getCommand().getName(), "Search");
     }
 
     add(new StyleSheetReference("panelcss", getClass(), "FooterPanel.css"));
@@ -203,9 +201,29 @@ public class FooterPanel extends Panel {
     }
 
     cancelLink.add(new Image("cancelicon", ICON_CANCEL));
-    cancelLink.add(new Label("cancellabel", "Cancel"));
+    cancelLink.add(new Label("cancellabel", getLabel(model.getCommand()
+        .getName(), "Cancel")));
     add(cancelLink);
 
+  }
+
+  /**
+   * method that searches a DBProperty for the Label
+   *
+   * @param _cmdName
+   *                Name of the CommandAbstract the Label should be searched for
+   * @param _keytype
+   *                what Label should be searched
+   * @return if found DBProperty of the CommandAbstract, else a Default
+   */
+  private String getLabel(final String _cmdName, final String _keytype) {
+    String ret;
+    if (DBProperties.hasProperty(_cmdName + ".Button." + _keytype)) {
+      ret = DBProperties.getProperty(_cmdName + ".Button." + _keytype);
+    } else {
+      ret = DBProperties.getProperty("default.Button." + _keytype);
+    }
+    return ret;
   }
 
   /**
@@ -331,8 +349,7 @@ public class FooterPanel extends Panel {
       for (Return oneReturn : returns) {
         if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
           final String key = (String) oneReturn.get(ReturnValues.VALUES);
-          showDialog(_target, DBProperties.getProperty(key), DBProperties
-              .getProperty(key + ".Button"));
+          showDialog(_target, key);
           ret = false;
           break;
         }
@@ -358,8 +375,7 @@ public class FooterPanel extends Panel {
       for (Return oneReturn : validation) {
         if (oneReturn.get(ReturnValues.TRUE) == null) {
           final String key = (String) oneReturn.get(ReturnValues.VALUES);
-          showDialog(_target, DBProperties.getProperty(key), DBProperties
-              .getProperty(key + ".Button"));
+          showDialog(_target, key);
 
           ret = false;
           break;
@@ -416,10 +432,7 @@ public class FooterPanel extends Panel {
         }
       }
       if (!ret) {
-        showDialog(_target, DBProperties
-            .getProperty("Common_UIForm_Mandotory.Message"), DBProperties
-            .getProperty("Common_UIForm_Mandotory.Button"));
-
+        showDialog(_target, "MandatoryDialog");
       }
       return ret;
     }
@@ -432,13 +445,10 @@ public class FooterPanel extends Panel {
    * @param _target
    *                AjaxRequestTarget to be used for opening the modal
    *                DialogPage
-   * @param _msg
-   *                Message to be shown in the Dialog
-   * @param _button
-   *                Label to be used for the CloseButton
+   * @param _key
+   *                the Key to get the DBProperties from the eFapsDataBaase
    */
-  private void showDialog(final AjaxRequestTarget _target, final String _msg,
-                          final String _button) {
+  private void showDialog(final AjaxRequestTarget _target, final String _key) {
     final ModalWindowContainer modal =
         ((AbstractContentPage) this.getPage()).getModal();
 
@@ -454,7 +464,7 @@ public class FooterPanel extends Panel {
       private static final long serialVersionUID = 1L;
 
       public Page createPage() {
-        return new DialogPage(modal, _msg, _button);
+        return new DialogPage(modal, _key);
       }
     });
 
@@ -467,8 +477,8 @@ public class FooterPanel extends Panel {
    */
   public class AjaxCancelLink extends AjaxLink {
 
-    public AjaxCancelLink(String id) {
-      super(id);
+    public AjaxCancelLink(final String _id) {
+      super(_id);
     }
 
     private static final long serialVersionUID = 1L;

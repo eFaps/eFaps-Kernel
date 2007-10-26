@@ -35,11 +35,11 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.util.EFapsException;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmox
@@ -59,61 +59,54 @@ public class DialogPage extends WebPage {
     super(_model);
     this.parent = _parent;
     this.modal = _modal;
-    String commandName = _model.getCommand().getName();
+    final String cmdName = _model.getCommand().getName();
     add(new StyleSheetReference("css", getClass(), "DialogPage.css"));
 
-    this.add(new Label("textLabel", getQuestion(commandName)));
-    AjaxSubmitLink submit =
+    this.add(new Label("textLabel", DBProperties.getProperty(cmdName
+        + ".Question")));
+    final AjaxSubmitLink submit =
         new AjaxSubmitLink("submitButton", _model, _parameters);
     this.add(submit);
-    submit.add(new Label("submitButtonLabel", getSubmitText(commandName)));
-    AjaxCloseLink button = new AjaxCloseLink("closeButton");
+    submit.add(new Label("submitButtonLabel", getLabel(cmdName, "Submit")));
+    final AjaxCloseLink button = new AjaxCloseLink("closeButton");
     this.add(button);
-    button.add(new Label("closeButtonLabel", getCancelText(commandName)));
+    button.add(new Label("closeButtonLabel", getLabel(cmdName, "Cancel")));
 
+  }
+
+  public DialogPage(final ModalWindowContainer _modal, final String _key) {
+    this(_modal, DBProperties.getProperty(_key + ".Message"), getLabel(_key,
+        "Close"));
   }
 
   public DialogPage(final ModalWindowContainer _modal, final String _message,
                     final String _button) {
+    super();
     this.modal = _modal;
     add(new StyleSheetReference("css", getClass(), "DialogPage.css"));
     this.add(new Label("textLabel", _message));
     this.add(new WebMarkupContainer("submitButton").setVisible(false));
-    AjaxCloseLink button = new AjaxCloseLink("closeButton");
+    final AjaxCloseLink button = new AjaxCloseLink("closeButton");
     this.add(button);
     button.add(new Label("closeButtonLabel", _button));
   }
 
-  private String getCancelText(final String _commandName) {
+  private static String getLabel(final String _cmdName, final String _keytype) {
     String ret;
-    if (DBProperties.hasProperty(_commandName + ".Cancel")) {
-      ret = DBProperties.getProperty(_commandName + ".Cancel");
+    if (DBProperties.hasProperty(_cmdName + ".Button." + _keytype)) {
+      ret = DBProperties.getProperty(_cmdName + ".Button." + _keytype);
     } else {
-      ret = DBProperties.getProperty("webapp.EFapsModalDialog.Cancel");
+      ret = DBProperties.getProperty("default.Button." + _keytype);
     }
     return ret;
-  }
-
-  private String getSubmitText(final String _commandName) {
-    String ret;
-    if (DBProperties.hasProperty(_commandName + ".Submit")) {
-      ret = DBProperties.getProperty(_commandName + ".Submit");
-    } else {
-      ret = DBProperties.getProperty("webapp.EFapsModalDialog.Submit");
-    }
-    return ret;
-  }
-
-  private String getQuestion(final String _commandName) {
-    return DBProperties.getProperty(_commandName + ".Question");
   }
 
   public class AjaxCloseLink extends AjaxLink {
 
     private static final long serialVersionUID = 1L;
 
-    public AjaxCloseLink(String id) {
-      super(id);
+    public AjaxCloseLink(final String _id) {
+      super(_id);
     }
 
     @Override
@@ -127,9 +120,9 @@ public class DialogPage extends WebPage {
 
     private final Map<?, ?> parameters;
 
-    public AjaxSubmitLink(final String id, final MenuItemModel model,
+    public AjaxSubmitLink(final String _id, final MenuItemModel _model,
                           final Map<?, ?> _parameters) {
-      super(id, model);
+      super(_id, _model);
       this.parameters = _parameters;
     }
 
@@ -138,16 +131,16 @@ public class DialogPage extends WebPage {
     @Override
     public void onClick(final AjaxRequestTarget _target) {
 
-      CommandAbstract command = ((MenuItemModel) getModel()).getCommand();
+      final CommandAbstract command = ((MenuItemModel) getModel()).getCommand();
 
       if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
         try {
-          String[] oids = (String[]) this.parameters.get("selectedRow");
-          if (oids != null) {
+          final String[] oids = (String[]) this.parameters.get("selectedRow");
+          if (oids == null) {
+            command.executeEvents(EventType.UI_COMMAND_EXECUTE);
+          } else {
             command.executeEvents(EventType.UI_COMMAND_EXECUTE,
                 ParameterValues.OTHERS, oids);
-          } else {
-            command.executeEvents(EventType.UI_COMMAND_EXECUTE);
           }
         } catch (EFapsException e) {
           throw new RestartResponseException(new ErrorPage(e));

@@ -45,12 +45,12 @@ public class SplitHeaderPanel extends Panel {
    * enum for the StyleSheets which are used in this Component
    */
   public enum Css {
-    HEADER_OPEN("eFapsSplitHeader"),
-    HEADER_CLOSE_VERT("eFapsSplitHeaderVert"),
-    IMAGE_EXPAND("eFapsSplitImageExpand"),
-    IMAGE_CONTRACT("eFapsSplitImageContract"),
-    TITEL("eFapsSplitTitel"),
-    TITEL_HIDE("eFapsSplitTitelHide");
+    HEADER_OPEN         ("eFapsSplitHeader"),
+    HEADER_CLOSE_VERT   ("eFapsSplitHeaderVert"),
+    IMAGE_EXPAND        ("eFapsSplitImageExpand"),
+    IMAGE_CONTRACT      ("eFapsSplitImageContract"),
+    TITEL               ("eFapsSplitTitel"),
+    TITEL_HIDE          ("eFapsSplitTitelHide");
 
     public String value;
 
@@ -68,7 +68,7 @@ public class SplitHeaderPanel extends Panel {
     this.add(new StringHeaderContributor(getJavaScript()));
 
     this
-        .add(new Label("titel", DBProperties.getProperty("Standart.SplitTitel")));
+        .add(new Label("titel", DBProperties.getProperty("Split.Titel")));
 
    final AjaxLink link = new AjaxLink("expandcontract") {
 

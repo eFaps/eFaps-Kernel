@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.table;
@@ -39,35 +39,36 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
 /**
  * @author jmox
- * @version $Id$
+ * @version $Id:WebTableContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class WebTableContainer extends WebMarkupContainer {
 
   private static final long serialVersionUID = 4336311424526370681L;
 
-  private static String ROWID = "eFapsRow";
+  private final static String ROWID = "eFapsRow";
 
-  private static String CELLID = "eFapsCell";
+  private final static String CELLID = "eFapsCell";
 
-  public WebTableContainer(String id, IModel model, Page _page) {
-    super(id, model);
+  public WebTableContainer(final String _id, final IModel _model,
+                           final Page _page) {
+    super(_id, _model);
     initialise(_page);
   }
 
-  private void initialise(Page _page) {
-    int i = 0;
+  private void initialise(final Page _page) {
+    int rowcount = 0;
 
-    TableModel model = (TableModel) super.getModel();
+    final TableModel model = (TableModel) super.getModel();
     if (!model.isInitialised()) {
       model.execute();
     }
     boolean odd = true;
 
-    for (Iterator<RowModel> rowIter = model.getValues().iterator(); rowIter
+    for (final Iterator<RowModel> rowIter = model.getValues().iterator(); rowIter
         .hasNext(); odd = !odd) {
-      RowModel modelrow = rowIter.next();
+      final RowModel modelrow = rowIter.next();
 
-      RowContainer row = new RowContainer(ROWID + "_" + i);
+      final RowContainer row = new RowContainer(ROWID + "_" + rowcount);
       if (odd) {
         row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
       } else {
@@ -76,31 +77,32 @@ public class WebTableContainer extends WebMarkupContainer {
       row.setOutputMarkupId(true);
 
       this.add(row);
-      int j = 0;
+      int cellcount = 0;
       if (model.isShowCheckBoxes()) {
-        CellContainer cell = new CellContainer(CELLID + "_" + i + "_" + j);
+        final CellContainer cell =
+            new CellContainer(CELLID + "_" + rowcount + "_" + cellcount);
         row.add(cell);
-        CellCheckBoxComponent checkbox =
-            new CellCheckBoxComponent("box" + i, modelrow.getOids());
+        final CellCheckBoxComponent checkbox =
+            new CellCheckBoxComponent("box" + rowcount, modelrow.getOids());
         cell.add(new SimpleAttributeModifier("width", "1%"));
         cell.add(checkbox);
       }
-      j++;
+      cellcount++;
 
       for (CellModel cellmodel : modelrow.getValues()) {
-        CellPanel cellpanel =
-            new CellPanel("cell" + "_" + i + "_" + j, cellmodel,
+        final CellPanel cellpanel =
+            new CellPanel("cell" + "_" + rowcount + "_" + cellcount, cellmodel,
                 ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
                     .getPageMapName()), model);
         row.add(cellpanel);
-        j++;
+        cellcount++;
       }
-      i++;
+      rowcount++;
     }
 
-    if (i == 0) {
-      Label nodata =
-          new Label("test", DBProperties.getProperty("WebApp_WebTable.NoData"));
+    if (rowcount == 0) {
+      final Label nodata =
+          new Label("test", DBProperties.getProperty("WebTable.NoData"));
       nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
       this.add(nodata);
     }
@@ -109,10 +111,10 @@ public class WebTableContainer extends WebMarkupContainer {
   @Override
   protected final void onRender(final MarkupStream markupStream) {
     final int markupStart = markupStream.getCurrentIndex();
-    Iterator<?> childs = this.iterator();
+    final Iterator<?> childs = this.iterator();
     while (childs.hasNext()) {
       markupStream.setCurrentIndex(markupStart);
-      Component child = (Component) childs.next();
+      final Component child = (Component) childs.next();
       child.render(getMarkupStream());
     }
 

@@ -34,13 +34,13 @@ import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
-import org.efaps.util.EFapsException;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.menu.MenuContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.empty.EmptyPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmo
@@ -50,13 +50,14 @@ public class MainPage extends WebPage {
 
   private static final long serialVersionUID = -4231606613730698766L;
 
-  public static String IFRAME_PAGEMAP_NAME = "MainPageIFramePageMap";
+  public final static String IFRAME_PAGEMAP_NAME = "MainPageIFramePageMap";
 
-  public static String IFRAME_WICKETID = "content";
+  public final static String IFRAME_WICKETID = "content";
 
   private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
   public MainPage() {
+    super();
     // TODO remove the 67 from this trick
     // hack to show the IFrame correctly in safari
     if (((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
@@ -71,19 +72,18 @@ public class MainPage extends WebPage {
           + JavascriptUtils.SCRIPT_CLOSE_TAG));
     }
     this.add(new StringHeaderContributor("<title>"
-        + DBProperties.getProperty("LogoRowInclude.Version.Label")
+        + DBProperties.getProperty("Logo.Version.Label")
         + "</title>"));
 
     add(this.modal);
     this.modal.setPageMapName("modal");
 
-    this
-        .add(new StyleSheetReference("css", getClass(), "MainPage.css"));
+    this.add(new StyleSheetReference("css", getClass(), "MainPage.css"));
 
     this.add(new ChildCallBackHeaderContributer());
 
     this.add(new Label("welcome", DBProperties
-        .getProperty("LogoRowInclude.Welcome.Label")));
+        .getProperty("Logo.Welcome.Label")));
 
     try {
       this.add(new Label("firstname", Context.getThreadContext().getPerson()
@@ -98,7 +98,7 @@ public class MainPage extends WebPage {
         .getProperty("LogoRowInclude.Version.Label")));
 
     // MainToolBar
-    MenuContainer menu =
+    final MenuContainer menu =
         new MenuContainer("menu", new MenuItemModel(UUID
             .fromString("87001cc3-c45c-44de-b8f1-776df507f268")));
     this.add(menu);

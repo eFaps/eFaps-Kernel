@@ -65,7 +65,7 @@
       </trigger>  
         
     </field>
-    <field name="passwordnew">
+    <field name="password">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
       <property name="Expression">Password</property>
