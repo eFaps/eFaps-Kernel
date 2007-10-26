@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 1368 $
- * Last Changed:    $Date: 2007-09-22 15:43:28 +0200 (Sa, 22 Sep 2007) $
- * Last Changed By: $Author: tmo $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.maven.plugin.goal.efaps.install;
@@ -23,6 +23,7 @@ package org.efaps.maven.plugin.goal.efaps.install;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,12 +31,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.Map.Entry;
-
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -53,7 +48,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @version $Id: Application.java 1368 2007-09-22 13:43:28Z tmo $
+ * @version $Id$
  */
 public class Application {
 
@@ -99,6 +94,13 @@ public class Application {
    * Install instance holding all xml update files.
    */
   private final Install install = new Install();
+
+  /**
+   * Caches not stores versions (because if the kernel install is made, the
+   * version could not be updated till the SQL tables and the data model is
+   * already installed and the cache is reloaded).
+   */
+  private final List<Long> notStoredVersions = new ArrayList<Long>();
 
   /////////////////////////////////////////////////////////////////////////////
   // static methods
@@ -242,7 +244,11 @@ public class Application {
   }
 
   /**
-   * Store for this application that the version is already installed.
+   * Store for this application that the version is already installed. If data
+   * model in the local type cache is not loaded (because, e.g., it is a new
+   * kernel install), the version numbers are cached.<br/>
+   * The first time, the version type could be get from the type cache, all
+   * cached versions are stores in eFaps.
    *
    * @param _userName   logged in user name
    * @param _version    version id to store
@@ -252,11 +258,26 @@ public class Application {
     final Type versionType = Type.get(VERSION_UUID);
     if (versionType != null)  {
       Context.begin(_userName);
+
+      // store cached versions
+      for (final Long version : this.notStoredVersions)  {
+        final Insert insert = new Insert(versionType.getName());
+        insert.add("Name", this.application);
+        insert.add("Revision", "" + version);
+        insert.execute();
+      }
+      this.notStoredVersions.clear();
+
+      // store current version
       final Insert insert = new Insert(versionType.getName());
       insert.add("Name", this.application);
       insert.add("Revision", "" + _version);
       insert.execute();
+
       Context.commit();
+    } else  {
+      // if version could not be stored, cache the version information
+      this.notStoredVersions.add(_version);
     }
   }
 
