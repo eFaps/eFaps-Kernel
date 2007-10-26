@@ -49,16 +49,11 @@ public final class InstallMojo extends EFapsAbstractMojo {
     init();
 
     try {
-      reloadCache();
-      startTransaction();
-
       Application appl = getApplication();
       if (appl != null) {
+        reloadCache();
         appl.install(getUserName());
-      }
 
-      commitTransaction();
-      if (appl != null) {
         reloadCache();
         startTransaction();
         appl.importData();
