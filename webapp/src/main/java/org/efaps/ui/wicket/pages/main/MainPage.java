@@ -95,7 +95,7 @@ public class MainPage extends WebPage {
     }
 
     this.add(new Label("version", DBProperties
-        .getProperty("LogoRowInclude.Version.Label")));
+        .getProperty("Logo.Version.Label")));
 
     // MainToolBar
     final MenuContainer menu =
