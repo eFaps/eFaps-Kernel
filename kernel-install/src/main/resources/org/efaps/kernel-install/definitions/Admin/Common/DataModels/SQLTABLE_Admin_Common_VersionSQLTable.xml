@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:1145 $
- Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -36,7 +36,6 @@
       <local>1</local>
       <mode>(version==1)</mode>
     </version>
-
     <database>
       <create>true</create>
       <update>true</update>
@@ -59,7 +58,7 @@
       <application>eFaps</application>
       <global>2</global>
       <local>1</local>
-      <mode>(version==3)</mode>
+      <mode>(version==4)</mode>
     </version>
     <database>
       <!-- view representing all versions -->
@@ -80,7 +79,7 @@
       <application>eFaps</application>
       <global>2</global>
       <local>1</local>
-      <mode>(version==4)</mode>
+      <mode>(version==5)</mode>
     </version>
     <name>Admin_Common_VersionSQLTable</name>
     <database>

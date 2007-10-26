@@ -32,7 +32,7 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==6)</mode>
+      <mode>(version==7)</mode>
     </version>
     <name>Admin_DataModel_Type</name>
     <parent>Admin_DataModel_Abstract</parent>

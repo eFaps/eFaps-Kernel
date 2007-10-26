@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -53,7 +53,7 @@
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==3)</mode>
+      <mode>(version==4)</mode>
     </version>
     <database>
       <table-name>T_RUNLEVEL</table-name>
@@ -69,7 +69,7 @@
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==4)</mode>
+      <mode>(version==5)</mode>
     </version>
     <name>Admin_RunLevel_RunLevelSQLTable</name>
     <database>

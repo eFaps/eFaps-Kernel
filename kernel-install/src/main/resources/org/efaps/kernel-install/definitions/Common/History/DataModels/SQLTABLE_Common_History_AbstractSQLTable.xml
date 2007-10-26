@@ -16,10 +16,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
- Revision:        $Rev:1145 $
- Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -27,11 +27,13 @@
   <uuid>18bd1cff-c982-47ac-81e5-a4df96ee4b6f</uuid>
 
   <!-- History of Events for Objects -->
+
+  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
     <database>
@@ -47,12 +49,13 @@
      </database>
   </definition>
 
+  <!-- define constraints -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
-      <local>$Rev:1145 $</local>
-      <mode>(version==3)</mode>
+      <local>$Rev$</local>
+      <mode>(version==4)</mode>
     </version>
     <database>
       <table-name>T_HISTORYABSTRACT</table-name>
@@ -64,12 +67,13 @@
     </database>
   </definition>
 
+  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
-      <local>$Rev:1145 $</local>
-      <mode>(version==4)</mode>
+      <local>$Rev$</local>
+      <mode>(version==5)</mode>
     </version>
     <name>Common_History_AbstractSQLTable</name>
     <typeid-column>TYPEID</typeid-column>

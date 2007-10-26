@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:1144 $
- Last Changed:    $Date:2007-07-22 21:10:06 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -27,11 +27,13 @@
   <uuid>b4fea59a-4711-4e0a-87ec-154542237473</uuid>
 
   <!-- connection between objects -->
+
+  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
-      <local>$Rev:1144 $</local>
+      <local>$Rev$</local>
       <mode>(version==1)</mode>
     </version>
     <database>
@@ -49,12 +51,13 @@
     </database>
   </definition>
 
+  <!-- define constraints -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
-      <local>$Rev:1144 $</local>
-      <mode>(version==3)</mode>
+      <local>$Rev$</local>
+      <mode>(version==4)</mode>
     </version>
     <database>
       <table-name>T_CMABSTRACT2ABSTRACT</table-name>
@@ -66,12 +69,13 @@
      </database>
   </definition>
 
+  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
-      <local>$Rev:1144 $</local>
-      <mode>(version==4)</mode>
+      <local>$Rev$</local>
+      <mode>(version==5)</mode>
     </version>
     <name>Admin_Common_Abstract2AbstractSQLTable</name>
     <typeid-column>TYPEID</typeid-column>

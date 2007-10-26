@@ -27,6 +27,8 @@
   <uuid>81803ebc-d43c-4c94-887d-60d41e243293</uuid>
 
   <!-- Access Set object -->
+
+  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -52,12 +54,13 @@
     </database>
   </definition>
 
+  <!-- define constraints -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==3)</mode>
+      <mode>(version==4)</mode>
     </version>
     <database>
       <table-name>T_ACCESSSET</table-name>
@@ -67,12 +70,13 @@
      </database>
   </definition>
 
+  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==4)</mode>
+      <mode>(version==5)</mode>
     </version>
     <name>Admin_Access_AccessSetSQLTable</name>
     <database>

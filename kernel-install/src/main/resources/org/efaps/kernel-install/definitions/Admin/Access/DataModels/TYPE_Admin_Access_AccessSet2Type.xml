@@ -32,7 +32,7 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==5)</mode>
+      <mode>(version==6)</mode>
     </version>
     <name>Admin_Access_AccessSet2Type</name>
   </definition>
@@ -43,7 +43,7 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==6)</mode>
+      <mode>(version==7)</mode>
     </version>
     <name>Admin_Access_AccessSet2Type</name>
     <!-- attributes -->

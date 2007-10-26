@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:1144 $
- Last Changed:    $Date:2007-07-22 21:10:06 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -27,11 +27,13 @@
   <uuid>2c5c3411-e38d-40b2-b303-1086126d6b2a</uuid>
 
   <!-- table used to import files for user interface objects -->
+
+  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
-      <local>$Rev:1144 $</local>
+      <local>$Rev$</local>
       <mode>(version==1)</mode>
     </version>
     <database>
@@ -46,12 +48,13 @@
     </database>
   </definition>
 
+  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
-      <local>$Rev:1144 $</local>
-      <mode>(version==4)</mode>
+      <local>$Rev$</local>
+      <mode>(version==5)</mode>
     </version>
     <name>Admin_UI_FileTable</name>
     <parent>Admin_Common_AbstractSQLTable</parent>

@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:1145 $
- Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -31,8 +31,8 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
-      <mode>(version==6)</mode>
+      <local>$Rev$</local>
+      <mode>(version==7)</mode>
     </version>
     <name>Admin_User_Person2Role</name>
     <parent>Admin_User_Abstract2Abstract</parent>

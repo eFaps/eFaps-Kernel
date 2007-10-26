@@ -27,6 +27,8 @@
   <uuid>6cfcc420-eef6-43df-8a3f-7009ae666b9f</uuid>
 
   <!-- Link from Access Sets to Data Model Types object -->
+
+  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -50,12 +52,13 @@
     </database>
   </definition>
 
+  <!-- define constraints -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==3)</mode>
+      <mode>(version==4)</mode>
     </version>
     <database>
       <table-name>T_ACCESSSET2DMTYPE</table-name>
@@ -67,12 +70,13 @@
      </database>
   </definition>
 
+  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==4)</mode>
+      <mode>(version==5)</mode>
     </version>
     <name>Admin_Access_AccessSet2DataModelTypeSQLTable</name>
     <database>

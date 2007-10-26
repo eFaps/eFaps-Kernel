@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:1144 $
- Last Changed:    $Date:2007-07-22 21:10:06 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -31,8 +31,8 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1144 $</local>
-      <mode>(version==5)</mode>
+      <local>$Rev$</local>
+      <mode>(version==6)</mode>
     </version>
     <name>Admin_DataModel_Type_Trigger_CheckoutPre</name>
   </definition>
@@ -42,8 +42,8 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1144 $</local>
-      <mode>(version==6)</mode>
+      <local>$Rev$</local>
+      <mode>(version==7)</mode>
     </version>
     <name>Admin_DataModel_Type_Trigger_CheckoutPre</name>
     <parent>Admin_DataModel_Type_Trigger</parent>

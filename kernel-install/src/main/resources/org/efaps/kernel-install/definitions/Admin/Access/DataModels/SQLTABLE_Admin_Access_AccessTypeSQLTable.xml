@@ -27,6 +27,8 @@
   <uuid>0fec9c45-6836-4312-956b-390d8e74736e</uuid>
 
   <!-- Access Type object -->
+
+  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -52,12 +54,13 @@
     </database>
   </definition>
 
+  <!-- define constraints -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==3)</mode>
+      <mode>(version==4)</mode>
     </version>
     <database>
       <table-name>T_ACCESSTYPE</table-name>
@@ -67,12 +70,13 @@
      </database>
   </definition>
 
+  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==4)</mode>
+      <mode>(version==5)</mode>
     </version>
     <name>Admin_Access_AccessTypeSQLTable</name>
     <database>

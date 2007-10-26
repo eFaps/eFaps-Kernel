@@ -35,7 +35,7 @@
       <global>1</global>
       <local>$Rev:1145 $</local>
       <mode>true</mode>
-      <mode>(version==8)</mode>
+      <mode>(version==9)</mode>
     </version>
     
     <file>SimpleAccessCheckOnType.java</file>

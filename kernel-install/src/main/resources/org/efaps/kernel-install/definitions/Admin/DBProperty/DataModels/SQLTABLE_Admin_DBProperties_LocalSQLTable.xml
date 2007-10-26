@@ -16,10 +16,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
- Revision:        $Rev:1145 $
- Last Changed:    $Date:2007-07-22 21:19:03 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -32,12 +32,9 @@
     <version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
+      <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
-
-    
-
     <database>
       <table-name>T_ADPROPLOC</table-name>
       <create>true</create>
@@ -46,26 +43,23 @@
       <column name="PROPID"  type="INTEGER"      not-null="true" />
       <column name="LANGID"  type="INTEGER"      not-null="true" />
       <column name="VALUE"   type="STRING_SHORT" not-null="true" length="254"/>
-    
     </database>
   </definition>
+
   <definition>
 	<version>
       <application>eFaps</application>
       <global>1</global>
-      <local>$Rev:1145 $</local>
-      <mode>(version==4)</mode>
+      <local>$Rev$</local>
+      <mode>(version==5)</mode>
     </version>
-
     <name>Admin_DBProperties_LocalSQLTable</name>
-
     <database>
       <table-name>T_ADPROPLOC</table-name>
       <update>true</update>
-       <foreign name="T_ADPROPLOC_FK_PROPID"	key="PROPID"  	reference="T_ADPROP(ID)"/>
-	   <foreign name="T_ADPROPLOC_FK_LANGID"	key="LANGID"  	reference="T_ADLANG(ID)"/>
-	
-	</database>
+      <foreign name="T_ADPROPLOC_FK_PROPID"	key="PROPID"  	reference="T_ADPROP(ID)"/>
+      <foreign name="T_ADPROPLOC_FK_LANGID"	key="LANGID"  	reference="T_ADLANG(ID)"/>
+    </database>
   </definition>
 
 </datamodel-sqltable>

@@ -27,6 +27,8 @@
   <uuid>5b782a85-eaf3-4574-901a-605776f4c72a</uuid>
 
   <!-- Mapping to external JAAS systems -->
+
+  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -34,7 +36,6 @@
       <local>$Rev$</local>
       <mode>(version==1)</mode>
     </version>
-
     <database>
       <table-name>T_USERJAASKEY</table-name>
       <create>true</create>
@@ -52,12 +53,13 @@
     </database>
   </definition>
 
+  <!-- define constraints -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==3)</mode>
+      <mode>(version==4)</mode>
     </version>
     <database>
       <table-name>T_USERJAASKEY</table-name>
@@ -68,14 +70,14 @@
    </database>
   </definition>
 
+  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==4)</mode>
+      <mode>(version==5)</mode>
     </version>
-
     <name>Admin_User_JAASKeySQLTable</name>
     <database>
       <table-name>T_USERJAASKEY</table-name>

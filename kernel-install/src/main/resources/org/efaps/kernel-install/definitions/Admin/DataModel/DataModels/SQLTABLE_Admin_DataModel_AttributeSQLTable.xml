@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          tmo
- Revision:        $Rev:1144 $
- Last Changed:    $Date:2007-07-22 21:10:06 +0200 (So, 22 Jul 2007) $
- Last Changed By: $Author:tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -27,14 +27,15 @@
   <uuid>d3a64746-3666-4678-9603-f304bf16bb92</uuid>
 
   <!-- attributes of types -->
+
+  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
-      <local>$Rev:1144 $</local>
+      <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
-
     <database>
       <table-name>T_DMATTRIBUTE</table-name>
       <parent-table>T_CMABSTRACT</parent-table>
@@ -50,14 +51,14 @@
      </database>
   </definition>
 
+  <!-- define constraints / views-->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
-      <local>$Rev:1144 $</local>
-      <mode>(version==3)</mode>
+      <local>$Rev$</local>
+      <mode>(version==4)</mode>
     </version>
-
     <database>
       <!-- create representing all attributes -->
       <sql>
@@ -85,13 +86,13 @@
     </database>
   </definition>
 
-
+  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
-      <local>$Rev:1144 $</local>
-      <mode>(version==4)</mode>
+      <local>$Rev$</local>
+      <mode>(version==5)</mode>
     </version>
     <name>Admin_DataModel_AttributeSQLTable</name>
     <parent>Admin_Common_AbstractSQLTable</parent>

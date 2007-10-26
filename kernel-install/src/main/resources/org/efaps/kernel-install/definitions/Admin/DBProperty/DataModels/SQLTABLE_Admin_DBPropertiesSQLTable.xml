@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -35,9 +35,6 @@
       <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
-
-    
-
     <database>
       <table-name>T_ADPROP</table-name>
       <create>true</create>
@@ -48,21 +45,19 @@
       <column name="DEFAULTV"   type="STRING_LONG"  not-null="true" length="2048"/>
       </database>
   </definition>
+
   <definition>
 	<version>
       <application>lucene</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==4)</mode>
+      <mode>(version==6)</mode>
     </version>
-
     <name>Admin_DBPropertiesSQLTable</name>
-
     <database>
       <table-name>T_ADPROP</table-name>
       <update>true</update>
-  	  <foreign name="T_ADPROP_FK_BUNDLEID"	key="BUNDLEID"  	reference="T_ADPROPBUN(ID)"/>
-	  
-	</database>
+      <foreign name="T_ADPROP_FK_BUNDLEID"	key="BUNDLEID"  	reference="T_ADPROPBUN(ID)"/>
+    </database>
   </definition>
  </datamodel-sqltable>

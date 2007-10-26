@@ -16,10 +16,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
- Revision:        $Rev:  $
- Last Changed:    $Date:  $
- Last Changed By: $Author:  $
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -31,7 +31,7 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==5)</mode>
+      <mode>(version==6)</mode>
     </version>
     <name>Admin_DBProperties_Bundle</name>
     <attribute>

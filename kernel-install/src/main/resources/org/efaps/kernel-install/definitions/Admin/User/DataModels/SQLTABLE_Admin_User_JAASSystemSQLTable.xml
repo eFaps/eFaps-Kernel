@@ -27,6 +27,8 @@
   <uuid>1f84b7ce-cc40-4453-a58c-97a3aca0e5a8</uuid>
 
 <!-- JAAS systems -->
+
+  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -34,7 +36,6 @@
       <local>$Rev$</local>
       <mode>(version==1)</mode>
     </version>
-
     <database>
       <table-name>T_USERJAASSYSTEM</table-name>
       <create>true</create>
@@ -63,12 +64,13 @@
      </database>
   </definition>
 
+  <!-- define constraints and needed views -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==3)</mode>
+      <mode>(version==4)</mode>
     </version>
     <database>
       <table-name>T_USERJAASSYSTEM</table-name>
@@ -97,12 +99,13 @@
     </database>
   </definition>
 
+  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==4)</mode>
+      <mode>(version==5)</mode>
     </version>
     <name>Admin_User_JAASSystemSQLTable</name>
     <database>

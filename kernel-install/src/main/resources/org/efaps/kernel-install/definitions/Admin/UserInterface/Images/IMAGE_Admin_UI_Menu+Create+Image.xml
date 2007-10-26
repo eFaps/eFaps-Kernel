@@ -42,7 +42,7 @@
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==7)</mode>
+      <mode>(version==8)</mode>
     </version>
     <name>Admin_UI_Menu+Create+Image</name>
     <file>IMAGE_Admin_UI_Menu+Create+Image.gif</file>

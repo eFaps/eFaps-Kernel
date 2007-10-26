@@ -16,49 +16,16 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmo
- Revision:        $Rev:  $
- Last Changed:    $Date:  $
- Last Changed By: $Author:  $
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
 <datamodel-type>
   <uuid>da18fd98-8e42-44ba-be74-443aecc87b4d</uuid>
 
- <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==5)</mode>
-    </version>
-
-    <name>Admin_DBProperties_Local</name>
-    
-
-   <attribute>
-      <name>OID</name>
-      <type>OID</type>
-      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
-      <sqlcolumn>ID</sqlcolumn>
-   </attribute>
-
-    <attribute>
-      <name>ID</name>
-      <type>Integer</type>
-      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
-      <sqlcolumn>ID</sqlcolumn>
-    </attribute>
-
-    <attribute>
-      <name>Value</name>
-      <type>String</type>
-      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
-      <sqlcolumn>VALUE</sqlcolumn>
-    </attribute>
-    
-  </definition>
   <definition>
     <version>
       <application>eFaps</application>
@@ -66,26 +33,51 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-
     <name>Admin_DBProperties_Local</name>
-    
+    <!-- attributes -->
+    <attribute>
+      <name>OID</name>
+      <type>OID</type>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Value</name>
+      <type>String</type>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
+      <sqlcolumn>VALUE</sqlcolumn>
+    </attribute>
+  </definition>
 
-   <attribute>
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==7)</mode>
+    </version>
+    <name>Admin_DBProperties_Local</name>
+    <!-- attributes -->
+    <attribute>
       <name>PropertyID</name>
       <type>Link</type>
       <typelink>Admin_DBProperties</typelink>
       <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
       <sqlcolumn>PROPID</sqlcolumn>
-   </attribute>
-
-   <attribute>
+    </attribute>
+    <attribute>
       <name>LanguageID</name>
       <type>Link</type>
       <typelink>Admin_Language</typelink>
       <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
       <sqlcolumn>LANGID</sqlcolumn>
-   </attribute>
-
- </definition>
+    </attribute>
+  </definition>
   
 </datamodel-type>
