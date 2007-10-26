@@ -43,17 +43,14 @@ div.eFapsLogo {
   width: 100%;
   overflow: hidden;
   border: 0px none transparent;
-  border-spacing: 0px;
-  border-collapse: collapse;
-  /*border-bottom-width: 25px;*/ /* used instead of toolbar menu */
-  border-bottom-style: solid;
-  border-bottom-color: red;
   padding: 0px;
   margin: 0px;
   text-align: right;
   height: 41px;
-  background-color: white;
+  background-color: #d0edb8;
   background-image: url(../../servlet/image/Admin_Common_HeaderImage);
+  background-repeat: no-repeat;
+  background-position: 10px 1px;
 }
 
 /**
