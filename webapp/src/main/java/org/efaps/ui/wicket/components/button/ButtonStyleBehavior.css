@@ -1,0 +1,40 @@
+.eFapsButton {
+  background-color: transparent;
+  background-image: url(button-rb.png);
+  background-position: right top;
+  background-repeat: no-repeat;
+  border-style: none;
+  border-width: 0pt;
+  color: #003366;
+  display: block;
+  font-family: arial;
+  font-size: 12px;
+  height: 28px;
+  line-height: normal;
+  margin-right: 6px;
+  padding-right: 18px;
+  text-decoration: none;
+}
+
+.eFapsButton span {
+  background-color: transparent;
+  background-image: url(button-lb.png);
+  background-position: left top;
+  background-repeat: no-repeat;
+  line-height: 18px;
+  padding-bottom: 5px;
+  padding-left: 18px;
+  padding-top: 5px;
+  display: block;
+}
+
+.eFapsButton:active {
+  background-position: bottom right;
+  color: #000;
+  outline: none; /* hide dotted outline in Firefox */
+}
+
+.eFapsButton:active span {
+  background-position: bottom left;
+  padding: 6px 0 4px 18px; /* push text down 1px */
+}

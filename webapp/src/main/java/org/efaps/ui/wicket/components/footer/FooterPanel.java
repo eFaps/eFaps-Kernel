@@ -39,7 +39,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.PopupCloseLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
@@ -51,6 +50,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.button.ButtonStyleBehavior;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.table.WebFormContainer;
 import org.efaps.ui.wicket.components.table.cell.formcell.FormCellPanel;
@@ -184,13 +184,14 @@ public class FooterPanel extends Panel {
               .setVisible(false);
     }
     if (model.isSearchMode()) {
-      createEditSearchLink.add(new Image("createeditsearchicon", ICON_NEXT));
+      // createEditSearchLink.add(new Image("createeditsearchicon", ICON_NEXT));
 
     } else {
-      createEditSearchLink.add(new Image("createeditsearchicon", ICON_DONE));
+      // createEditSearchLink.add(new Image("createeditsearchicon", ICON_DONE));
     }
 
     createEditSearchLink.add(new Label("createeditsearchlabel", label));
+    createEditSearchLink.add(new ButtonStyleBehavior());
     add(createEditSearchLink);
 
     WebMarkupContainer cancelLink = null;
@@ -199,8 +200,7 @@ public class FooterPanel extends Panel {
     } else {
       cancelLink = new AjaxCancelLink("cancel");
     }
-
-    cancelLink.add(new Image("cancelicon", ICON_CANCEL));
+    cancelLink.add(new ButtonStyleBehavior());
     cancelLink.add(new Label("cancellabel", getLabel(model.getCommand()
         .getName(), "Cancel")));
     add(cancelLink);
