@@ -150,14 +150,6 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- Web Application File Upload -->
-    <dependency>
-      <groupId>commons-fileupload</groupId>
-      <artifactId>commons-fileupload</artifactId>
-      <version>1.1.1</version>
-      <scope>compile</scope>
-    </dependency>
-
     <!-- To Create HTML Codes used in the WebDAV integration -->
     <dependency>
       <groupId>ecs</groupId>
