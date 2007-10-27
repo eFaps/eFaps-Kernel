@@ -35,7 +35,6 @@ import javax.naming.StringRefAddr;
 import javax.naming.spi.ObjectFactory;
 import javax.sql.DataSource;
 
-import org.apache.commons.digester.Digester;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.slide.transaction.SlideTransactionManager;
@@ -47,8 +46,7 @@ import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.maven.logger.SLF4JOverMavenLog;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
-import org.efaps.maven.plugin.goal.efaps.install.ApplicationVersion;
-import org.efaps.maven.plugin.goal.efaps.install.FileSet;
+import org.efaps.maven.plugin.install.FileSet;
 import org.efaps.util.EFapsException;
 
 /**
@@ -113,16 +111,6 @@ public abstract class EFapsAbstractMojo implements Mojo {
                  readonly = true)
   private List<String> classpathElements;
 
-  /**
-   */
-  @MojoParameter(expression = "${basedir}/src/main/efaps/versions.xml")
-  private File versionFile;
-
-  /**
-   */
-  @MojoParameter(expression = "${basedir}/src/main/efaps")
-  private File eFapsDir;
-
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
@@ -137,9 +125,6 @@ public abstract class EFapsAbstractMojo implements Mojo {
    *       the shell!)
    */
   protected void init()  {
-/*    System.getProperties().setProperty(
-            org.apache.commons.logging.Log.class.getName(),
-            Maven2SLF4JLog.class.getName());*/
     try  {
       Class.forName("org.efaps.maven.logger.SLF4JOverMavenLog");
       SLF4JOverMavenLog.LOGGER = getLog();
@@ -147,36 +132,6 @@ public abstract class EFapsAbstractMojo implements Mojo {
     }
     
     initDatabase();
-  }
-
-  /**
-   * <code>null</code> is returned, of the version file could not be opened
-   * and read.
-   * 
-   * @return application instance with all version information
-   * @todo description
-   * @todo better definition of include dir / file
-   */
-  protected Application getApplication() {
-    Application appl = null;
-    try {
-      appl = Application.getApplication(this.versionFile.toURL(),
-                                        this.classpathElements);
-
-      FileSet fileSet = new FileSet();
-      fileSet.setDirectory(null, eFapsDir.toString());
-      fileSet.addIncludeDir(".*");
-      fileSet.addIncludeFile(".*xml$");
-      for (File file : fileSet.getFiles())  {
-        appl.addURL(file.toURL());
-      }
-    } catch (IOException e) {
-      getLog().error(
-          "Could not open / read version file " + "'" + this.versionFile + "'");
-    } catch (Exception e) {
-      getLog().error(e);
-    }
-    return appl;
   }
 
   /**

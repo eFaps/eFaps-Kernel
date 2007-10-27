@@ -360,8 +360,11 @@ public class Application {
    * @return string representation of this Application
    */
   public String toString() {
-    return new ToStringBuilder(this).append("application", this.application)
-        .append("versions", this.versions).toString();
+    return new ToStringBuilder(this)
+        .append("application", this.application)
+        .append("versions", this.versions)
+        .append("install", this.install)
+        .toString();
   }
 
 }

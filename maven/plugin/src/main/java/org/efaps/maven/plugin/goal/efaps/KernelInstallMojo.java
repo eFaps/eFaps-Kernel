@@ -35,8 +35,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Update;
 import org.efaps.importer.DataImport;
-import org.efaps.maven.plugin.goal.AbstractJavaScriptMojo;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
+import org.efaps.maven.plugin.install.AbstractEFapsInstallMojo;
 import org.efaps.update.Install;
 import org.efaps.update.dbproperty.DBPropertiesUpdate;
 
@@ -48,7 +48,7 @@ import org.efaps.update.dbproperty.DBPropertiesUpdate;
  */
 @MojoGoal("kernel-install")
 @MojoRequiresDependencyResolution("compile")
-public final class KernelInstallMojo extends AbstractJavaScriptMojo  {
+public final class KernelInstallMojo extends AbstractEFapsInstallMojo  {
   
   /////////////////////////////////////////////////////////////////////////////
   // instance variables

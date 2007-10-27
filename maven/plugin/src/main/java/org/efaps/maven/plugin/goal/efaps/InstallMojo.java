@@ -22,8 +22,8 @@ package org.efaps.maven.plugin.goal.efaps;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import org.efaps.maven.plugin.goal.EFapsAbstractMojo;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
+import org.efaps.maven.plugin.install.AbstractEFapsInstallMojo;
 import org.efaps.util.EFapsException;
 
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
@@ -37,7 +37,7 @@ import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
  */
 @MojoGoal("install")
 @MojoRequiresDependencyResolution("compile")
-public final class InstallMojo extends EFapsAbstractMojo {
+public final class InstallMojo extends AbstractEFapsInstallMojo  {
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
