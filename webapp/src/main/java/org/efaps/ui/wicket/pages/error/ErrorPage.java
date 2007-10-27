@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.pages.error;
@@ -37,8 +37,8 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmo
- * @version $Id$
+ * @author jmox
+ * @version $Id:ErrorPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ErrorPage extends WebPage {
 
@@ -85,17 +85,17 @@ public class ErrorPage extends WebPage {
       errorAdvanced += traceElements[i].toString() + "\n";
     }
     this.add(new StringHeaderContributor("<title>"
-        + DBProperties.getProperty("JSPPage.Exception.TextTitle")
+        + DBProperties.getProperty("ErrorPage.Titel")
         + "</title>"));
 
     add(new StyleSheetReference("css", getClass(), "ErrorPage.css"));
 
     add(new Label("errorIDLabel", DBProperties
-        .getProperty("JSPPage.Exception.TextId")));
+        .getProperty("ErrorPage.Id.Label")));
     add(new Label("errorID", errorId));
 
     add(new Label("errorMsgLabel", DBProperties
-        .getProperty("JSPPage.Exception.TextMessage")));
+        .getProperty("ErrorPage.Message.Label")));
     add(new MultiLineLabel("errorMsg", errorMessage));
 
     final WebMarkupContainer advanced = new WebMarkupContainer("advanced");
@@ -143,7 +143,7 @@ public class ErrorPage extends WebPage {
     advanced.add(new MultiLineLabel("advancedMsg", errorAdvanced));
 
     add(new Label("errorActLabel", DBProperties
-        .getProperty("JSPPage.Exception.TextAction")));
+        .getProperty("ErrorPage.Action.Label")));
     add(new Label("errorAct", errorAction));
 
   }

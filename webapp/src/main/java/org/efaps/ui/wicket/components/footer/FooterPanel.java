@@ -24,10 +24,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
@@ -36,7 +36,6 @@ import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.PopupCloseLink;
@@ -50,7 +49,7 @@ import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.button.ButtonStyleBehavior;
+import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.table.WebFormContainer;
 import org.efaps.ui.wicket.components.table.cell.formcell.FormCellPanel;
@@ -76,24 +75,6 @@ import org.efaps.util.EFapsException;
 public class FooterPanel extends Panel {
 
   private static final long serialVersionUID = -1722339596237748160L;
-
-  /**
-   * static Reference to the Icon for "next'
-   */
-  public static final ResourceReference ICON_NEXT =
-      new ResourceReference(FooterPanel.class, "eFapsButtonNext.gif");
-
-  /**
-   * static Reference to the Icon for "done'
-   */
-  public static final ResourceReference ICON_DONE =
-      new ResourceReference(FooterPanel.class, "eFapsButtonDone.gif");
-
-  /**
-   * static Reference to the Icon for "cancel'
-   */
-  public static final ResourceReference ICON_CANCEL =
-      new ResourceReference(FooterPanel.class, "eFapsButtonCancel.gif");
 
   /**
    * This instance variable stores the ModalWindowContainer the Page and with it
@@ -157,7 +138,7 @@ public class FooterPanel extends Panel {
     }
 
     String label = null;
-
+    String closelabelkey = "Cancel";
     if (model.isCreateMode()) {
       label = getLabel(model.getCommand().getName(), "Create");
     } else if (model.isEditMode()) {
@@ -169,41 +150,32 @@ public class FooterPanel extends Panel {
     }
 
     add(new StyleSheetReference("panelcss", getClass(), "FooterPanel.css"));
-    WebMarkupContainer createEditSearchLink = null;
 
     if ((model.isSubmit() && model instanceof TableModel)
         || !model.isSearchMode()) {
-      createEditSearchLink =
-          new AjaxSubmitAndCloseLink("createeditsearch", model, _form);
+      Button button =
+          new Button("createeditsearch", new AjaxSubmitAndCloseLink(
+              Button.LINKID, model, _form), label, Button.ICON_ACCEPT);
+      this.add(button);
     } else if (model.isSearchMode() && model.getCallingCommandUUID() != null) {
-      createEditSearchLink =
-          new SearchSubmitLink("createeditsearch", model, _form);
+      Button button =
+          new Button("createeditsearch", new SearchSubmitLink(Button.LINKID,
+              model, _form), label, Button.ICON_NEXT);
+      this.add(button);
     } else {
-      createEditSearchLink =
-          (WebMarkupContainer) new WebMarkupContainer("createeditsearch")
-              .setVisible(false);
-    }
-    if (model.isSearchMode()) {
-      // createEditSearchLink.add(new Image("createeditsearchicon", ICON_NEXT));
-
-    } else {
-      // createEditSearchLink.add(new Image("createeditsearchicon", ICON_DONE));
+      closelabelkey = "Close";
+      Component invisible =
+          new WebMarkupContainer("createeditsearch").setVisible(false);
+      add(invisible);
     }
 
-    createEditSearchLink.add(new Label("createeditsearchlabel", label));
-    createEditSearchLink.add(new ButtonStyleBehavior());
-    add(createEditSearchLink);
-
-    WebMarkupContainer cancelLink = null;
     if (_modalWindow == null) {
-      cancelLink = new PopupCloseLink("cancel");
+      add(new Button("cancel", new PopupCloseLink(Button.LINKID), getLabel(
+          model.getCommand().getName(), closelabelkey), Button.ICON_CANCEL));
     } else {
-      cancelLink = new AjaxCancelLink("cancel");
+      add(new Button("cancel", new AjaxCancelLink(Button.LINKID), getLabel(
+          model.getCommand().getName(), closelabelkey), Button.ICON_CANCEL));
     }
-    cancelLink.add(new ButtonStyleBehavior());
-    cancelLink.add(new Label("cancellabel", getLabel(model.getCommand()
-        .getName(), "Cancel")));
-    add(cancelLink);
 
   }
 

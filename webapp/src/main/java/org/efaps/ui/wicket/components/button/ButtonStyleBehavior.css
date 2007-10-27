@@ -5,27 +5,36 @@
   background-repeat: no-repeat;
   border-style: none;
   border-width: 0pt;
-  color: #00A000;
   display: block;
-  font-family: arial;
-  font-size: 12px;
   height: 28px;
   line-height: normal;
   margin-right: 6px;
   padding-right: 18px;
-  text-decoration: none;
 }
 
-.eFapsButton span {
+.eFapsButton img {
+  border-style: none;
+  float: left;
+  padding-left: 12px;
+  padding-right: 3px;
+  padding-top: 5px
+}
+
+.eFapsButtonLabel {
   background-color: transparent;
   background-image: url(button-lb.png);
   background-position: left top;
   background-repeat: no-repeat;
-  line-height: 18px;
+  color: #00A000;
+  display: block;
+  font-family: arial;
+  font-size: 11px;
+  line-height: 17px;
   padding-bottom: 5px;
   padding-left: 18px;
   padding-top: 5px;
-  display: block;
+  text-decoration: none;
+  font-weight: normal;
 }
 
 .eFapsButton:active {
@@ -34,7 +43,18 @@
   outline: none; /* hide dotted outline in Firefox */
 }
 
-.eFapsButton:active span {
-  background-position: bottom left;
-  padding: 6px 0 4px 18px; /* push text down 1px */
+.eFapsButton:active img {
+  border-style: none;
+  float: left;
+  padding-left: 12px;
+  padding-right: 3px;
+  padding-top: 7px
+}
+
+.eFapsButtonLabel:active,.eFapsButton:active span {
+  background-position: left bottom;
+  padding-top: 6px;
+  padding-right: 0px;
+  padding-bottom: 5px;
+  padding-left: 18px;
 }

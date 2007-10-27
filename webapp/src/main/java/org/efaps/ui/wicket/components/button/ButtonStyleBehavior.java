@@ -25,6 +25,8 @@ import org.apache.wicket.ResourceReference;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 
 /**
  * @author jmox
@@ -58,7 +60,12 @@ public class ButtonStyleBehavior extends AbstractBehavior {
   @Override
   public void onComponentTag(final Component _component, final ComponentTag _tag) {
     super.onComponentTag(_component, _tag);
-    _tag.put("class", "eFapsButton");
+    if (_component instanceof WebMarkupContainer) {
+      _tag.put("class", "eFapsButton");
+    }
+    if (_component instanceof Label) {
+      _tag.put("class", "eFapsButtonLabel");
+    }
   }
 
 }
