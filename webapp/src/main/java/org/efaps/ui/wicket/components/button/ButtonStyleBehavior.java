@@ -35,7 +35,8 @@ public class ButtonStyleBehavior extends AbstractBehavior {
   private static final long serialVersionUID = 1L;
 
   public final static ResourceReference CSS =
-      new ResourceReference(ButtonStyleBehavior.class, "ButtonBehavior.css");
+      new ResourceReference(ButtonStyleBehavior.class,
+          "ButtonStyleBehavior.css");
 
   /*
    * (non-Javadoc)
