@@ -274,8 +274,9 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
    *                    default value is <code>**&#x002f;*.xml</code>,
    *                    <code>**&#x002f;*.gif</code>,
    *                    <code>**&#x002f;*.png</code>,
-   *                    <code>**&#x002f;*.java</code> and
-   *                    <code>**&#x002f;*.js</code>.
+   *                    <code>**&#x002f;*.java</code>,
+   *                    <code>**&#x002f;*.js</code> and
+   *                    <code>**&#x002f;*.properties</code>.
    * @see #copyExcludes defines excludes; if not specified by maven , the
    *                    default value is <code>**&#x002f;version.xml</code>
    * @see FileSet
@@ -289,6 +290,7 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
       fileSet.addInclude("**/*.png");
       fileSet.addInclude("**/*.java");
       fileSet.addInclude("**/*.js");
+      fileSet.addInclude("**/*.properties");
     } else  {
       fileSet.addIncludes(this.copyIncludes);
     }

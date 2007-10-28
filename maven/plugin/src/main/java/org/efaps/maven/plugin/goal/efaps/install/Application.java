@@ -91,7 +91,9 @@ public class Application {
   private final Set<Long> installed = new HashSet<Long>();
 
   /**
-   * Install instance holding all xml update files.
+   * Install instance holding all XML definition / update files.
+   *
+   * @see #addURL
    */
   private final Install install = new Install();
 
@@ -123,6 +125,9 @@ public class Application {
 
       digester.addCallMethod("install/application", "setApplication", 1);
       digester.addCallParam("install/application", 0);
+
+      digester.addCallMethod("install/files/file", "addClassPathFile", 1);
+      digester.addCallParam("install/files/file", 0, "name");
 
       digester.addObjectCreate("install/version", ApplicationVersion.class);
       digester.addSetNext("install/version", "addVersion");
@@ -308,8 +313,26 @@ public class Application {
     return (ApplicationVersion) this.versions.toArray()[this.versions.size() - 1];
   }
 
+  /**
+   * Adds a new URL with the XML definition file.
+   *
+   * @param _url  url of XML definition files used to install
+   * @see #install
+   */
   public void addURL(final URL _url) {
     this.install.addURL(_url);
+  }
+
+  /**
+   * Searches for the given file name (parameter _classPathFile) in the class
+   * path and adds them as URL to the list of XML installation / update /
+   * definition files ({@link #install}).
+   *
+   * @param _classPathFile    file name from the class path to add
+   * @see #addURL
+   */
+  public void addClassPathFile(final String _classPathFile)  {
+    addURL(getClass().getClassLoader().getResource(_classPathFile));
   }
 
   /////////////////////////////////////////////////////////////////////////////
