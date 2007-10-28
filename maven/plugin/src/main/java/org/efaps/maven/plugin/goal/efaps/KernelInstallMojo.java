@@ -20,20 +20,12 @@
 
 package org.efaps.maven.plugin.goal.efaps;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.maven.plugin.MojoExecutionException;
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
 import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
 
 import org.efaps.maven.plugin.goal.efaps.install.Application;
 import org.efaps.maven.plugin.install.AbstractEFapsInstallMojo;
-import org.efaps.update.Install;
 
 /**
  *
@@ -48,13 +40,6 @@ public final class KernelInstallMojo extends AbstractEFapsInstallMojo  {
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
   
-  /**
-   * 
-   */
-  final private Install install = new Install();
-
-  final List<URL> files = new ArrayList<URL>();
-
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
@@ -69,37 +54,14 @@ public final class KernelInstallMojo extends AbstractEFapsInstallMojo  {
       final ClassLoader cl = getClass().getClassLoader();
 
       // get kernel install application (read from version xml file)
-      Application appl = Application.getApplication(cl.getResource("META-INF/efaps/kernel-install/versions.xml"),
+      Application appl = Application.getApplication(cl.getResource("META-INF/efaps/install.xml"),
                                                     getClasspathElements());
-
-      // append xml files to application
-      getLog().info("Append XML Files");
-      final InputStream stream = cl.getResourceAsStream("META-INF/efaps/kernel-install/files.txt");
-      if (stream != null)  {
-        final LineNumberReader reader = new LineNumberReader(new InputStreamReader(stream, "UTF-8"));
-
-        String line = reader.readLine();
-        while (line != null)  {
-          final URL url = cl.getResource(line);
-          appl.addURL(url);
-          this.files.add(url);
-          line = reader.readLine();
-        }
-        reader.close();
-
-        getLog().info("Cache XML Files");
-        this.install.initialise();
-      } else  {
-        getLog().error("Could not Found the index file 'files.txt'.");
-      }
-
       appl.install(getUserName(), getPassWord());
 
       startTransaction();
       appl.importData();
       commitTransaction();
     } catch (Exception e)  {
-e.printStackTrace();
       throw new MojoExecutionException(
             "Could not execute Kernal Installation script", e);
     }

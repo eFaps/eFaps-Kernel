@@ -40,7 +40,7 @@
   <version number="1" reloadCache="false" login="false"/>
   <version number="2" reloadCache="false" login="false"/>
   <version number="3" reloadCache="false" login="false">
-    <script name="org/efaps/kernel-install/CreateAll.js" function="eFapsCreateAll()"/>
+    <script name="org/efaps/installations/efaps/CreateAll.js" function="eFapsCreateAll()"/>
   </version>
   <version number="4" reloadCache="false" login="false"/>
   <version number="5" reloadCache="true"/>
