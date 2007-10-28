@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -69,6 +70,22 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
    */
   private final static String TAG_INSTALL = "install";
 
+  /**
+   * List of includes used to copy files.
+   *
+   * @see #getCopyFiles()
+   */
+  @MojoParameter()
+  private List<String> copyIncludes = null;
+
+  /**
+   * List of excludes used to copy files.
+   *
+   * @see #getCopyFiles()
+   */
+  @MojoParameter()
+  private List<String> copyExcludes = null;
+
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
@@ -109,10 +126,8 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
    * @see #copyFiles(String, Collection)
    */
   public void execute() throws MojoExecutionException, MojoFailureException {
-    // get all installation files (sorted alphabetical)
-    final Set<String> filesSet = new TreeSet<String>(getFiles()); 
-    final String rootPackage = generateInstallFile(filesSet);
-    copyFiles(rootPackage, filesSet);
+    final String rootPackage = generateInstallFile();
+    copyFiles(rootPackage);
   }
 
   /**
@@ -125,12 +140,12 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
    * @throws MojoExecutionException if some files could not be copied
    * @see AbstractEFapsInstallMojo#getEFapsDir()  to get source directory
    * @see #targetDirectory                        to get target directory
+   * @see #getCopyFiles()                         get all files to copy
    */
-  protected void copyFiles(final String _rootPackage,
-                           final Collection<String> _files)
+  protected void copyFiles(final String _rootPackage)
   throws MojoExecutionException  {
     try {
-      for (final String fileName : _files)  {
+      for (final String fileName : getCopyFiles())  {
         final File srcFile = new File(getEFapsDir(), fileName);
         final File dstFile = new File(targetDirectory, _rootPackage + fileName);
           FileUtils.copyFile(srcFile, dstFile, true);
@@ -150,7 +165,6 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
    *     ({@link #targetInstallFile})</li>
    * </ul>
    *
-   * @param _files    set of files name added to the version file
    * @return root package path
    * @throws MojoExecutionException if version file could not read or
    *                                interpreted
@@ -164,7 +178,7 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
    *                                                installation XML file in
    *                                                the target directory
    */
-  protected String generateInstallFile(final Collection<String> _files) throws MojoExecutionException, MojoFailureException  {
+  protected String generateInstallFile() throws MojoExecutionException, MojoFailureException  {
     try {
       final DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
       final DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
@@ -207,8 +221,9 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
       final Node files = doc.createElement("files");
       installNode.appendChild(files);
   
-      // append all file name to files node
-      for (final String fileName : _files)  {
+      // append all file name to files node (sorted alphabetical)
+      final Set<String> filesSet = new TreeSet<String>(getFiles()); 
+      for (final String fileName : filesSet)  {
         final Node file = doc.createElement("file");
         final Attr fileAttr = doc.createAttribute("name");
         fileAttr.setValue(rootPackage + fileName);
@@ -247,5 +262,41 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
       throw new MojoExecutionException("could not create target XML "
                                        + "installation file", e);
     }
+  }
+
+  /**
+   * Uses the {@link #copyIncludes} and {@link #copyExcludes} together with the
+   * root directory {@link AbstractEFapsInstallMojo#getEFapsDir()} to get all 
+   * related and matched files. The files are used to idendtify which are
+   * copied in the target directory.
+   *
+   * @see #copyIncludes defines includes; if not specified by maven, the
+   *                    default value is <code>**&#x002f;*.xml</code>,
+   *                    <code>**&#x002f;*.gif</code>,
+   *                    <code>**&#x002f;*.png</code>,
+   *                    <code>**&#x002f;*.java</code> and
+   *                    <code>**&#x002f;*.js</code>.
+   * @see #copyExcludes defines excludes; if not specified by maven , the
+   *                    default value is <code>**&#x002f;version.xml</code>
+   * @see FileSet
+   */
+  protected Collection<String> getCopyFiles()  {
+    FileSet fileSet = new FileSet();
+    fileSet.setRootDirectory(getEFapsDir().toString());
+    if (this.copyIncludes == null)  {
+      fileSet.addInclude("**/*.xml");
+      fileSet.addInclude("**/*.gif");
+      fileSet.addInclude("**/*.png");
+      fileSet.addInclude("**/*.java");
+      fileSet.addInclude("**/*.js");
+    } else  {
+      fileSet.addIncludes(this.copyIncludes);
+    }
+    if (this.copyExcludes == null)  {
+      fileSet.addExclude("**/versions.xml");
+    } else  {
+      fileSet.addExcludes(this.copyExcludes);
+    }
+    return fileSet.getFiles();
   }
 }
