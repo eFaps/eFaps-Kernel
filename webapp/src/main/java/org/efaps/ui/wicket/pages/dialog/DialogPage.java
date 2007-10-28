@@ -35,7 +35,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.ui.wicket.components.button.ButtonStyleBehavior;
+import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.MenuItemModel;
@@ -65,16 +65,12 @@ public class DialogPage extends WebPage {
 
     this.add(new Label("textLabel", DBProperties.getProperty(cmdName
         + ".Question")));
-    final AjaxSubmitLink submit =
-        new AjaxSubmitLink("submitButton", _model, _parameters);
-    submit.add(new ButtonStyleBehavior());
-    this.add(submit);
-    submit.add(new Label("submitButtonLabel", getLabel(cmdName, "Submit")));
-    final AjaxCloseLink button = new AjaxCloseLink("closeButton");
-    button.add(new ButtonStyleBehavior());
-    this.add(button);
-    button.add(new Label("closeButtonLabel", getLabel(cmdName, "Cancel")));
 
+    this.add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID,
+        _model, _parameters), getLabel(cmdName, "Submit"), Button.ICON_ACCEPT));
+
+    this.add(new Button("closeButton", new AjaxCloseLink(Button.LINKID),
+        getLabel(cmdName, "Cancel"), Button.ICON_CANCEL));
   }
 
   public DialogPage(final ModalWindowContainer _modal, final String _key) {
@@ -89,10 +85,9 @@ public class DialogPage extends WebPage {
     add(new StyleSheetReference("css", getClass(), "DialogPage.css"));
     this.add(new Label("textLabel", _message));
     this.add(new WebMarkupContainer("submitButton").setVisible(false));
-    final AjaxCloseLink button = new AjaxCloseLink("closeButton");
-    button.add(new ButtonStyleBehavior());
-    this.add(button);
-    button.add(new Label("closeButtonLabel", _button));
+    this.add(new Button("closeButton", new AjaxCloseLink(Button.LINKID),
+        _button, Button.ICON_CANCEL));
+
   }
 
   private static String getLabel(final String _cmdName, final String _keytype) {

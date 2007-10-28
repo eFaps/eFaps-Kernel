@@ -34,7 +34,7 @@ public class Button extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public static String LINKID = "buttonLink";
+  public static final String LINKID = "buttonLink";
 
   public static final ResourceReference ICON_CANCEL =
       new ResourceReference(Button.class, "cancel.png");
@@ -59,12 +59,13 @@ public class Button extends Panel {
     super(_wicketId);
     this.add(_link);
     _link.add(new ButtonStyleBehavior());
-    Label buttonlabel = new Label("buttonLabel", _label);
+    final Label buttonlabel = new Label("buttonLabel", _label);
     buttonlabel.add(new ButtonStyleBehavior());
     _link.add(buttonlabel);
     _link.add(this.image);
     if (_icon != null) {
-      setIconReference(_icon);
+      this.image.setImageResourceReference(_icon);
+      this.imageHasResource = true;
     }
 
   }
@@ -73,7 +74,7 @@ public class Button extends Panel {
     return LINKID;
   }
 
-  public void setIconReference(ResourceReference _icon) {
+  public void setIconReference(final ResourceReference _icon) {
     this.image.setImageResourceReference(_icon);
     this.imageHasResource = true;
   }
