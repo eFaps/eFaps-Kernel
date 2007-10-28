@@ -55,7 +55,7 @@ public final class UpdateMojo extends AbstractEFapsInstallMojo  {
      
       Application appl = getApplication();
       if (appl != null)  {
-        appl.updateLastVersion(getUserName());
+        appl.updateLastVersion(getUserName(), getPassWord());
       }
 
       commitTransaction();

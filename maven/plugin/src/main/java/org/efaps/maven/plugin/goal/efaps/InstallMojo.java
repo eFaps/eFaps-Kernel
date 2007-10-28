@@ -52,7 +52,7 @@ public final class InstallMojo extends AbstractEFapsInstallMojo  {
       Application appl = getApplication();
       if (appl != null) {
         reloadCache();
-        appl.install(getUserName());
+        appl.install(getUserName(), getPassWord());
 
         reloadCache();
         startTransaction();

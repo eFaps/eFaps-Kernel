@@ -29,7 +29,7 @@ var CURRENT_TIMESTAMP = Context.getDbType().getCurrentTimeStamp();
  * @param _text (String) text to print out
  */
 function _eFapsPrint(_text)  {
-  logger.info(_text);
+  EFAPS_LOGGER.info(_text);
 }
 
 /**
@@ -250,7 +250,7 @@ function _eFapsCreateUserTablesStep1()  {
   _insert(stmt, "Insert Administrator Person", null,
           "T_USERABSTRACT",
           "TYPEID, NAME, CREATOR, CREATED, MODIFIER, MODIFIED",
-          "-10000, '" + eFapsUserName + "', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP
+          "-10000, '" + EFAPS_USERNAME + "', 1, " + CURRENT_TIMESTAMP + ", 1, " + CURRENT_TIMESTAMP
   );
   _exec(stmt, null, null,
     "insert into T_USERPERSON(ID, FIRSTNAME, LASTNAME, EMAIL, PASSWORD) "+

@@ -26,6 +26,17 @@
 <install>
   <application>efaps</application>
 
+  <version number="0" reloadCache="false" login="false">
+    <description>Delete Old Data and Data Model</description>
+    <script>
+      importClass(Packages.org.efaps.db.Context);
+      EFAPS_LOGGER.info("Delete Old Data and Data Model");
+      Context.begin();
+      Context.getDbType().deleteAll(Context.getThreadContext().getConnection());
+      Context.commit();
+    </script>
+  </version>
+
   <version number="1" reloadCache="false" login="false"/>
   <version number="2" reloadCache="false" login="false"/>
   <version number="3" reloadCache="false" login="false">
@@ -38,6 +49,35 @@
   <version number="8" reloadCache="true"/>
   <version number="9" reloadCache="false" />
   <version number="10" reloadCache="false" />
-  <version number="11"  reloadCache="true" compile="true"/>
+  <version number="11" reloadCache="true" compile="true"/>
+
+  <version number="12" reloadCache="false" login="false">
+    <description>
+      Update Password of Administrator and Activate Administrator and
+      Administration Role.
+    </description>
+    <script>
+      importClass(Packages.org.efaps.admin.datamodel.Type);
+      importClass(Packages.org.efaps.db.Context);
+      importClass(Packages.org.efaps.db.Update);
+
+      var c = Context.begin(EFAPS_USERNAME);
+
+      EFAPS_LOGGER.info("Update '" + EFAPS_USERNAME + "' Password");
+      c.getPerson().setPassword(c, EFAPS_PASSWORD);
+
+      EFAPS_LOGGER.info("Activate Person '" + EFAPS_USERNAME + "'");
+      var update = new Update(Type.get("Admin_User_Abstract"), "1");
+      update.add("Status","true");
+      update.executeWithoutAccessCheck();
+
+      EFAPS_LOGGER.info("Activate Role 'Administration'");
+      var update = new Update(Type.get("Admin_User_Abstract"), "2");
+      update.add("Status","true");
+      update.executeWithoutAccessCheck();
+
+      Context.commit();
+    </script>
+  </version>
 
 </install>

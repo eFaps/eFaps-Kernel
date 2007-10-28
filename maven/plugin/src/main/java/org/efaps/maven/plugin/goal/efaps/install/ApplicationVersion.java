@@ -116,9 +116,14 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
   /**
    * Installs the xml update scripts of the schema definitions for this version
    * defined in {@link #number}.
+   *
+   * @param _install    install instance with all cached XML definitions
+   * @param _userName   name of logged in user
+   * @param _password   password of logged in user
    */
   public void install(final Install _install,
-                      final String _userName) throws EFapsException, Exception {
+                      final String _userName,
+                      final String _password) throws EFapsException, Exception {
     // reload cache if needed
     if (this.reloadCacheNeeded)  {
       Context.begin();
@@ -141,7 +146,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
     // execute all scripts
     for (final Script script : this.scripts)  {
-      script.execute(_userName);
+      script.execute(_userName, _password);
     }
     
     // Compile esjp's in the database (if the compile flag is set).
@@ -161,11 +166,14 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
   /**
    * Adds a new Script to this version.
    *
+   * @param _code       code of script to execute
    * @param _name       file name of the script
    * @param _function   name of function which is called
    */
-  public void addScript(final String _name, final String _function)  {
-    this.scripts.add(new Script(_name, _function));
+  public void addScript(final String _code,
+                        final String _name,
+                        final String _function)  {
+    this.scripts.add(new Script(_code, _name, _function));
   }
   
   /**
@@ -273,6 +281,11 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
   private class Script {
 
     /**
+     * Script code to execute.
+     */
+    final String code;
+
+    /**
      * File name of the script (within the class path).
      */
     final String fileName;
@@ -285,10 +298,16 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
     /**
      * Constructor to initialize a script.
      *
+     * @param _code       script code
      * @param _fileName   script file name
      * @param _function   called function name
      */
-    private Script(final String _fileName, final String _function)  {
+    private Script(final String _code,
+                   final String _fileName,
+                   final String _function)  {
+      this.code = (_code == null) || ("".equals(_code.trim()))
+                  ? null
+                  : _code.trim();
       this.fileName = _fileName;
       this.function = _function;
     }
@@ -296,13 +315,12 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
     /**
      * Executes this script.
      *
-     * @param _userName   logged in user name
+     * @param _userName   name of logged in user
+     * @param _password   password of logged in user
      * @throws IOException
      */
-    public void execute(final String _userName) throws IOException {
-
-      LOG.info("Execute file '" + this.fileName + "' function '" 
-            + this.function + "'");
+    public void execute(final String _userName,
+                        final String _password) throws IOException {
 
       // create new javascript context
       org.mozilla.javascript.Context javaScriptContext = enter();
@@ -315,21 +333,37 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
       // define the scope javascript property
       putProperty(scope, "javaScriptScope", scope);
 
-      putProperty(scope, "logger",        javaToJS(LOG, scope));
-      putProperty(scope, "eFapsUserName", javaToJS(_userName, scope));
+      putProperty(scope, "EFAPS_LOGGER",   javaToJS(LOG, scope));
+      putProperty(scope, "EFAPS_USERNAME", javaToJS(_userName, scope));
+      putProperty(scope, "EFAPS_PASSWORD", javaToJS(_userName, scope));
 
-      // evaluate java script file
-      final Reader in = new InputStreamReader(
-          getClass().getClassLoader().getResourceAsStream(this.fileName));
-      javaScriptContext.evaluateReader(scope, in, this.fileName, 1, null); 
-      in.close();
+      // evaluate java script file (if defined)
+      if (this.fileName != null)  {
+        LOG.info("Execute script file '" + this.fileName + "'");
+        final Reader in = new InputStreamReader(
+            getClass().getClassLoader().getResourceAsStream(this.fileName));
+        javaScriptContext.evaluateReader(scope, in, this.fileName, 1, null); 
+        in.close();
+      }
+
+      // evaluate script code (if defined)
+      if (this.code != null)  {
+        javaScriptContext.evaluateReader(scope, 
+            new StringReader(this.code), 
+            "Executing script code of version " + ApplicationVersion.this.number, 
+            1, 
+            null); 
+      }
 
       // evalute script defined through the reader
-      javaScriptContext.evaluateReader(scope, 
-                                       new StringReader(this.function), 
-                                       this.function, 
-                                       1, 
-                                       null); 
+      if (this.function != null)  {
+        LOG.info("Execute script function '" + this.function + "'");
+        javaScriptContext.evaluateReader(scope, 
+                                         new StringReader(this.function), 
+                                         this.function, 
+                                         1, 
+                                         null);
+      }
     }
   }
 }

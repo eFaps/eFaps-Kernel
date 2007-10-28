@@ -139,9 +139,10 @@ public class Application {
       digester.addCallMethod("install/version", "setLoginNeeded", 1, new Class[]{Boolean.class});
       digester.addCallParam("install/version", 0, "login");
 
-      digester.addCallMethod("install/version/script", "addScript", 2);
-      digester.addCallParam("install/version/script", 0, "name");
-      digester.addCallParam("install/version/script", 1, "function");
+      digester.addCallMethod("install/version/script", "addScript", 3);
+      digester.addCallParam("install/version/script", 0);
+      digester.addCallParam("install/version/script", 1, "name");
+      digester.addCallParam("install/version/script", 2, "function");
 
       appl = (Application) digester.parse(_url);
 
@@ -166,11 +167,15 @@ public class Application {
    * {@link #loadInstalledVersions}). If not already installed, the version is
    * installed.
    * 
+   * @param _userName   name of logged in user
+   * @param _password   password of logged in user
    * @see #loadInstalledVersions
    * @see #versions
    * @see ApplicationVersion#install
    */
-  public void install(final String _userName) throws EFapsException, Exception {
+  public void install(final String _userName,
+                      final String _password)
+  throws EFapsException, Exception {
     loadInstalledVersions(_userName);
 
     LOG.info("Install application '" + this.application + "'");
@@ -186,7 +191,7 @@ public class Application {
         if (LOG.isInfoEnabled()) {
           LOG.info("Starting installation of version " + version.getNumber());
         }
-        version.install(this.install, _userName);
+        version.install(this.install, _userName, _password);
         storeVersion(_userName, version.getNumber());
 
         if (LOG.isInfoEnabled()) {
@@ -200,9 +205,12 @@ public class Application {
   /**
    * Updates the last installed version.
    * 
+   * @param _userName   name of logged in user
+   * @param _password   password of logged in user
    * @todo throw Exceptions instead of logging errors
    */
-  public void updateLastVersion(final String _userName) throws EFapsException, Exception {
+  public void updateLastVersion(final String _userName,
+                                final String _password) throws EFapsException, Exception {
     loadInstalledVersions(_userName);
     ApplicationVersion version = getLastVersion();
     if (this.installed.contains(version.getNumber())) {
@@ -210,7 +218,7 @@ public class Application {
         LOG.info("Update version " + version.getNumber() + " of application "
             + "'" + this.application + "'");
       }
-      version.install(this.install, _userName);
+      version.install(this.install, _userName, _password);
       if (LOG.isInfoEnabled()) {
         LOG.info("Finished update of version " + version.getNumber());
       }
