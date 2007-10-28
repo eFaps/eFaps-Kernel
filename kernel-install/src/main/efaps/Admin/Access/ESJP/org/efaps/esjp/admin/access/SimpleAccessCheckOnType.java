@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1563 $
+ * Last Changed:    $Date:2007-10-28 15:07:41 +0100 (So, 28 Okt 2007) $
+ * Last Changed By: $Author:tmo $
  */
 
 package org.efaps.esjp.admin.access;
@@ -24,8 +24,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
@@ -49,7 +49,7 @@ import org.efaps.util.EFapsException;
  * has the access defined in the list of access types.
  * 
  * @author tmo
- * @version $Id$
+ * @version $Id:SimpleAccessCheckOnType.java 1563 2007-10-28 14:07:41Z tmo $
  */
 public class SimpleAccessCheckOnType implements EventExecution {
 
@@ -59,8 +59,8 @@ public class SimpleAccessCheckOnType implements EventExecution {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG =
-      LogFactory.getLog(SimpleAccessCheckOnType.class);
+  private static final Logger LOG
+          = LoggerFactory.getLogger(SimpleAccessCheckOnType.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods

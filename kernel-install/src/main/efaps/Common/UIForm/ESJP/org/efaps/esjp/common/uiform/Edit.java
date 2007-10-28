@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1563 $
+ * Last Changed:    $Date:2007-10-28 15:07:41 +0100 (So, 28 Okt 2007) $
+ * Last Changed By: $Author:tmo $
  */
 
 package org.efaps.esjp.common.uiform;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.AbstractFileType;
@@ -37,15 +37,15 @@ import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmo
- * @version $Id$
+ * @author jmox
+ * @version $Id:Edit.java 1563 2007-10-28 14:07:41Z tmo $
  * @todo description
  */
 public class Edit implements EventExecution {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(Edit.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Edit.class);
 
   /**
    * @param _parameter

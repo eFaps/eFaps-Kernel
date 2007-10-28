@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1563 $
+ * Last Changed:    $Date:2007-10-28 15:07:41 +0100 (So, 28 Okt 2007) $
+ * Last Changed By: $Author:tmo $
  */
 
 package org.efaps.esjp.admin.common;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
@@ -34,8 +34,8 @@ import org.efaps.util.EFapsException;
  * This Class is a Java eFaps Program wich is stored inside the eFaps-Database.
  * It is executed on Userinteraction through a trigger on a Command.
  * 
- * @author jmo
- * @version $Id$
+ * @author jmox
+ * @version $Id:ReloadCache.java 1563 2007-10-28 14:07:41Z tmo $
  * @todo use EFapsException
  */
 public class ReloadCache implements EventExecution {
@@ -43,7 +43,7 @@ public class ReloadCache implements EventExecution {
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(ReloadCache.class);
+  private static final Logger LOG = LoggerFactory.getLogger(ReloadCache.class);
 
   /**
    * @param _parameter
