@@ -21,9 +21,10 @@
 package org.efaps.ui.wicket.components.button;
 
 import org.apache.wicket.ResourceReference;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.panel.Panel;
 
 /**
@@ -45,9 +46,7 @@ public class Button extends Panel {
   public static final ResourceReference ICON_NEXT =
       new ResourceReference(Button.class, "next.png");
 
-  private final Image image = new Image("icon");
-
-  private boolean imageHasResource = false;
+  private final ButtonImage imagediv = new ButtonImage("icon");
 
   public Button(final String _wicketId, final WebMarkupContainer _link,
                 final String _label) {
@@ -62,10 +61,11 @@ public class Button extends Panel {
     final Label buttonlabel = new Label("buttonLabel", _label);
     buttonlabel.add(new ButtonStyleBehavior());
     _link.add(buttonlabel);
-    _link.add(this.image);
+
+    _link.add(this.imagediv);
+
     if (_icon != null) {
-      this.image.setImageResourceReference(_icon);
-      this.imageHasResource = true;
+      this.imagediv.setImageResourceReference(_icon);
     }
 
   }
@@ -75,8 +75,8 @@ public class Button extends Panel {
   }
 
   public void setIconReference(final ResourceReference _icon) {
-    this.image.setImageResourceReference(_icon);
-    this.imageHasResource = true;
+    this.imagediv.setImageResourceReference(_icon);
+
   }
 
   /*
@@ -86,10 +86,49 @@ public class Button extends Panel {
    */
   @Override
   protected void onBeforeRender() {
-    if (!this.imageHasResource) {
-      this.image.setVisible(false);
+    if (!this.imagediv.hasReference()) {
+      this.imagediv.setVisible(false);
     }
     super.onBeforeRender();
+  }
+
+  public class ButtonImage extends WebComponent {
+
+    private static final long serialVersionUID = 1L;
+
+    private ResourceReference reference;
+
+    public ButtonImage(String id) {
+      super(id);
+    }
+
+    public void setImageResourceReference(final ResourceReference _reference) {
+      this.reference = _reference;
+    }
+
+    public boolean hasReference() {
+      return this.reference != null;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
+     */
+    @Override
+    protected void onComponentTag(final ComponentTag _tag) {
+
+      super.onComponentTag(_tag);
+      _tag
+          .put(
+              "style",
+              "background-repeat: no-repeat; " +
+              "background-position: left top; " +
+              "background-image:url("
+                  + this.getRequestCycle().urlFor(this.reference)
+                  + ")");
+    }
+
   }
 
 }
