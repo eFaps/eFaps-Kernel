@@ -18,12 +18,11 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven.plugin.goal.efaps;
+package org.efaps.maven.plugin.install;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
 import org.efaps.maven.plugin.goal.efaps.install.Application;
-import org.efaps.maven.plugin.install.AbstractEFapsInstallMojo;
 import org.efaps.util.EFapsException;
 
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
@@ -35,9 +34,9 @@ import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("install")
+@MojoGoal("source-install")
 @MojoRequiresDependencyResolution("compile")
-public final class InstallMojo extends AbstractEFapsInstallMojo  {
+public final class SourceInstallMojo extends AbstractEFapsInstallMojo  {
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -51,7 +50,7 @@ public final class InstallMojo extends AbstractEFapsInstallMojo  {
     try {
       Application appl = getApplication();
       if (appl != null) {
-        reloadCache();
+
         appl.install(getUserName(), getPassWord());
 
         reloadCache();

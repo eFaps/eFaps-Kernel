@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
@@ -181,6 +182,16 @@ public class Application {
   public void install(final String _userName,
                       final String _password)
   throws EFapsException, Exception {
+
+    // reload cache (if possible)
+    Context.begin();
+    if (RunLevel.isInitialisable())  {
+      RunLevel.init("shell");
+      RunLevel.execute();
+    }
+    Context.rollback();
+
+    // load installed versions
     loadInstalledVersions(_userName);
 
     LOG.info("Install application '" + this.application + "'");
