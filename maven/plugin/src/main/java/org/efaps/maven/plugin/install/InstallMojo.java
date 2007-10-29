@@ -18,14 +18,16 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven.plugin.goal.efaps;
+package org.efaps.maven.plugin.install;
+
+import java.util.List;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
+import org.jfrog.maven.annomojo.annotations.MojoParameter;
 import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
 
 import org.efaps.maven.plugin.goal.efaps.install.Application;
-import org.efaps.maven.plugin.install.AbstractEFapsInstallMojo;
 
 /**
  *
@@ -33,13 +35,19 @@ import org.efaps.maven.plugin.install.AbstractEFapsInstallMojo;
  * @version $Id$
  * @todo description
  */
-@MojoGoal("kernel-install")
+@MojoGoal("install")
 @MojoRequiresDependencyResolution("compile")
-public final class KernelInstallMojo extends AbstractEFapsInstallMojo  {
+public final class InstallMojo extends AbstractEFapsInstallMojo  {
   
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
-  
+
+  /**
+   * 
+   */
+  @MojoParameter()
+  private List<String> applications = null;
+
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
