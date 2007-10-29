@@ -116,7 +116,7 @@ public abstract class AbstractDatabase {
   public abstract void deleteAll(final Connection _con) throws SQLException;
 
   /**
-   * The method tests, if the given view exists.
+   * The method tests, if a view with given name exists.
    * 
    * @param _con        sql connection
    * @param _viewName   name of view to test
@@ -128,11 +128,53 @@ public abstract class AbstractDatabase {
 
     final DatabaseMetaData metaData = _con.getMetaData();
 
-    final ResultSet rs = metaData.getTables(null, null, _viewName, new String[]{"VIEW"});
+    // first test with lower case
+    final ResultSet rs = metaData.getTables(null, null, _viewName.toLowerCase(), new String[]{"VIEW"});
     if (rs.next())  {
       ret = true;
     }
     rs.close();
+
+    // then test with upper case
+    if (!ret)  {
+      final ResultSet rsUC = metaData.getTables(null, null, _viewName.toUpperCase(), new String[]{"VIEW"});
+      if (rsUC.next())  {
+        ret = true;
+      }
+      rsUC.close();
+    }
+
+    return ret;
+  }
+
+  /**
+   * The method tests, if a view with given name exists.
+   * 
+   * @param _con        sql connection
+   * @param _tableName  name of view to test
+   * @return <i>true</i> if view exists, otherwise <i>false</i>
+   */
+  public boolean existsTable(final Connection _con,
+                             final String _tableName) throws SQLException  {
+    boolean ret = false;
+
+    final DatabaseMetaData metaData = _con.getMetaData();
+
+    // first test with lower case
+    final ResultSet rs = metaData.getTables(null, null, _tableName.toLowerCase(), new String[]{"TABLE"});
+    if (rs.next())  {
+      ret = true;
+    }
+    rs.close();
+
+    // then test with upper case
+    if (!ret)  {
+      final ResultSet rsUC = metaData.getTables(null, null, _tableName.toUpperCase(), new String[]{"TABLE"});
+      if (rsUC.next())  {
+        ret = true;
+      }
+      rsUC.close();
+    }
 
     return ret;
   }

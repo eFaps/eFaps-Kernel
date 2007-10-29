@@ -55,19 +55,27 @@ public class RunLevel {
   private static final Logger LOG = LoggerFactory.getLogger(RunLevel.class);
 
   /**
-   * This is the sql select statement to select all RunLevel from the database.
+   * Name of SQL table used to test if the runlevel is already installed in the
+   * database.
+   *
+   * @see #isInitialisable
    */
-  private final static String              SQL_RUNLEVEL  = "select ID,PARENT "
-                                                             + "from T_RUNLEVEL "
-                                                             + "WHERE ";
+  private final static String TABLE_TESTS = "T_RUNLEVEL";
 
-  private final static String              SQL_DEF_PRE   = "select CLASS, METHOD, PARAMETER "
-                                                             + "from T_RUNLEVELDEF "
-                                                             + "where RUNLEVELID=";
+  /**
+   * This is the SQL select statement to select all RunLevel from the database.
+   */
+  private final static String SQL_RUNLEVEL  = "select ID,PARENT "
+                                              + "from T_RUNLEVEL "
+                                              + "WHERE ";
 
-  private final static String              SQL_DEF_POST  = " order by PRIORITY";
+  private final static String SQL_DEF_PRE   = "select CLASS, METHOD, PARAMETER "
+                                              + "from T_RUNLEVELDEF "
+                                              + "where RUNLEVELID=";
 
-  private static RunLevel                  RUNLEVEL      = null;
+  private final static String SQL_DEF_POST  = " order by PRIORITY";
+
+  private static RunLevel     RUNLEVEL      = null;
 
   private final static Map<Long, RunLevel> ALL_RUNLEVELS = new HashMap<Long, RunLevel>();
 
@@ -86,15 +94,33 @@ public class RunLevel {
 
   /**
    * The static method first removes all values in the caches. Then the cache is
-   * initialised automatically debending on the desired RunLevel
+   * initialized automatically depending on the desired RunLevel
    * 
-   * @param _runLevel
-   *          name of run level to initialise
+   * @param _runLevel   name of run level to initialise
    * @todo exception handling
    */
   public static void init(final String _runLevel) throws Exception {
     ALL_RUNLEVELS.clear();
     RUNLEVEL = new RunLevel(_runLevel);
+  }
+
+  /**
+   * Tests, if the SQL table {@link #TABLE_TESTS} exists (= <i>true</i>). This
+   * means the run level could be initialized.
+   *
+   * @return <i>true</i> if a run level is initialisable (and the SQL table
+   *         exists in the database); otherwise <i>false</i>
+   * @throws EFapsException if the test for the table fails
+   * @see #TABLE_TESTS
+   */
+  public static boolean isInitialisable() throws EFapsException  {
+    try {
+      return Context.getDbType().existsTable(Context.getThreadContext().getConnection(),
+                                             TABLE_TESTS);
+    } catch (SQLException e) {
+      throw new EFapsException(RunLevel.class,
+                               "isInitialisable.SQLException", e);
+    }
   }
 
   private void clearCache() {
