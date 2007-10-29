@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.listmenu;
@@ -42,7 +42,7 @@ import org.efaps.ui.wicket.models.MenuItemModel;
 
 /**
  * @author jmo
- * @version $Id$
+ * @version $Id:ListMenuPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ListMenuPanel extends Panel {
 
@@ -91,11 +91,13 @@ public class ListMenuPanel extends Panel {
    */
   private final String menuKey;
 
-  private final int padding = 10;
+  // TODO Is there a way to make the padding with Sylesheet
+
+  private int padding = 16;
+
+  private int paddingAdd = 17;
 
   private final List<Component> headerComponents = new ArrayList<Component>();
-
-  private final int paddingAdd = 18;
 
   public ListMenuPanel(final String _id, final String _menukey,
                        final PageParameters _parameters,
@@ -112,7 +114,7 @@ public class ListMenuPanel extends Panel {
     setVersioned(false);
     add(HeaderContributor.forCss(getClass(), "ListMenuPanel.css"));
 
-    MenuItemModel model =
+    final MenuItemModel model =
         new MenuItemModel(UUID.fromString(_parameters.getString("command")),
             _parameters.getString("oid"));
     this.setModel(model);
@@ -130,7 +132,7 @@ public class ListMenuPanel extends Panel {
       }
 
     }
-    List<Object> menu = new ArrayList<Object>();
+    final List<Object> menu = new ArrayList<Object>();
     menu.add(model);
     if (model.hasChilds()) {
       menu.add(model.getChilds());
@@ -210,6 +212,26 @@ public class ListMenuPanel extends Panel {
   }
 
   /**
+   * This is the setter method for the instance variable {@link #padding}.
+   *
+   * @param _padding
+   *                the padding to set
+   */
+  public void setPadding(final int _padding) {
+    this.padding = _padding;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #paddingAdd}.
+   *
+   * @param _paddingAdd
+   *                the paddingAdd to set
+   */
+  public void setPaddingAdd(final int _paddingAdd) {
+    this.paddingAdd = _paddingAdd;
+  }
+
+  /**
    * The list class.
    */
   public class Rows extends ListView {
@@ -220,9 +242,9 @@ public class ListMenuPanel extends Panel {
 
     private final IModel model;
 
-    public Rows(final String id, final String _menukey, final List<?> childs,
+    public Rows(final String _id, final String _menukey, final List<?> childs,
                 final IModel _model) {
-      super(id, childs);
+      super(_id, childs);
       this.menukey = _menukey;
       this.model = _model;
       setReuseItems(true);
@@ -230,11 +252,11 @@ public class ListMenuPanel extends Panel {
 
     @Override
     protected void populateItem(final ListItem _listItem) {
-      Object modelObject = _listItem.getModelObject();
+      final Object modelObject = _listItem.getModelObject();
 
       if (modelObject instanceof List) {
         // create a panel that renders the sub lis
-        ListMenuPanel nested =
+        final ListMenuPanel nested =
             new ListMenuPanel("nested", this.menukey, (List<?>) modelObject,
                 this.model);
         nested.setOutputMarkupId(true);
@@ -244,7 +266,7 @@ public class ListMenuPanel extends Panel {
         // as we have to confirm to our HTML definition, and set it's
         // visibility
         // property to false as we do not want LI tags to be rendered.
-        WebMarkupContainer row = new WebMarkupContainer("row");
+        final WebMarkupContainer row = new WebMarkupContainer("row");
         row.setVisible(false);
         row.setOutputMarkupPlaceholderTag(true);
         _listItem.add(row);
@@ -254,17 +276,17 @@ public class ListMenuPanel extends Panel {
         // to confirm to our HTML definition, and set this panel's
         // visibility
         // property to false to avoid having the UL tag rendered
-        ListMenuPanel nested = new ListMenuPanel("nested", this.menukey);
+        final ListMenuPanel nested = new ListMenuPanel("nested", this.menukey);
         nested.setVisible(false);
         nested.setOutputMarkupPlaceholderTag(true);
         _listItem.add(nested);
         // add the row (with the LI element attached, and the label with
         // the
         // row's actual value to display
-        WebMarkupContainer row = new WebMarkupContainer("row");
-        MenuItemModel model = (MenuItemModel) modelObject;
+        final WebMarkupContainer row = new WebMarkupContainer("row");
+        final MenuItemModel model = (MenuItemModel) modelObject;
 
-        ListMenuAjaxLinkContainer link =
+        final ListMenuAjaxLinkContainer link =
             new ListMenuAjaxLinkContainer("link", this.menukey, model);
         link.add(new Label("link_label", model.getLabel()));
 
@@ -275,19 +297,18 @@ public class ListMenuPanel extends Panel {
           if (imageUrl == null) {
             imageUrl = model.getTypeImage();
           }
-          if (imageUrl != null) {
+          if (imageUrl == null) {
+            link.add(new WebMarkupContainer("link_icon").setVisible(false));
+          } else {
             link
                 .add(new StaticImageComponent("link_icon", new Model(imageUrl)));
-          } else {
-            link.add(new WebMarkupContainer("link_icon").setVisible(false));
           }
-          if (model.getAncestor() != null) {
-            AjaxGoUpLink goup = new AjaxGoUpLink("gouplink", model);
+          if (model.getAncestor() == null) {
+            row.add(new WebMarkupContainer("gouplink").setVisible(false));
+          } else {
+            final AjaxGoUpLink goup = new AjaxGoUpLink("gouplink", model);
             row.add(goup);
             goup.add(new Image("gouplink_icon", ICON_SUBMENUGOUP));
-          } else {
-            row.add(new WebMarkupContainer("gouplink").setVisible(false));
-
           }
         } else {
           link.add(new WebMarkupContainer("link_icon").setVisible(false));
@@ -295,13 +316,13 @@ public class ListMenuPanel extends Panel {
         }
 
         if (model.isHeader() && this.findParent(ListItem.class) != null) {
-          AjaxRemoveLink remove = new AjaxRemoveLink("removelink", model);
+          final AjaxRemoveLink remove = new AjaxRemoveLink("removelink", model);
           remove.add(new Image("removelink_icon", ICON_SUBMENUREMOVE));
           row.add(remove);
-          AjaxGoIntoLink gointo = new AjaxGoIntoLink("gointolink", model);
+          final AjaxGoIntoLink gointo = new AjaxGoIntoLink("gointolink", model);
           gointo.add(new Image("gointolink_icon", ICON_SUBMENUGOINTO));
           row.add(gointo);
-          AjaxCollapseLink collapse =
+          final AjaxCollapseLink collapse =
               new AjaxCollapseLink("collapselink", model);
           collapse.add(new Image("collapselink_icon", ICON_SUBMENUCLOSE));
           row.add(collapse);
