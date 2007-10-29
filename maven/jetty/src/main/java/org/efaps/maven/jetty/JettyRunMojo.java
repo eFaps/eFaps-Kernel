@@ -34,7 +34,7 @@ import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.Context;
 
 import org.efaps.maven.jetty.configuration.ServerDefinition;
-import org.efaps.maven.plugin.goal.EFapsAbstractMojo;
+import org.efaps.maven.plugin.EFapsAbstractMojo;
 
 /**
  * The goal starts the Jetty web server.
