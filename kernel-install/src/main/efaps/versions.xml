@@ -26,17 +26,6 @@
 <install>
   <application>efaps</application>
 
-  <version number="0" reloadCache="false" login="false">
-    <description>Delete Old Data and Data Model</description>
-    <script>
-      importClass(Packages.org.efaps.db.Context);
-      EFAPS_LOGGER.info("Delete Old Data and Data Model");
-      Context.begin();
-      Context.getDbType().deleteAll(Context.getThreadContext().getConnection());
-      Context.commit();
-    </script>
-  </version>
-
   <version number="1" reloadCache="false" login="false"/>
   <version number="2" reloadCache="false" login="false"/>
   <version number="3" reloadCache="false" login="false">
