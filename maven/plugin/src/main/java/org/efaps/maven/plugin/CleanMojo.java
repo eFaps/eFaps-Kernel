@@ -18,46 +18,41 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven.plugin.goal.efaps;
+package org.efaps.maven.plugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
-
-import org.efaps.admin.program.esjp.Compiler;
-import org.efaps.maven.plugin.EFapsAbstractMojo;
-import org.efaps.util.EFapsException;
-
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
+
+import org.efaps.db.Context;
 
 /**
- * Compiles all esjp's within eFaps.
+ * Delete Old Data and Data Model within eFaps of current logged in SQL
+ * database user (via dropping of all tables, views, constraints etc.)..
  *
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("compile")
-@MojoRequiresDependencyResolution("compile")
-public final class CompileMojo extends EFapsAbstractMojo {
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
+@MojoGoal("clean")
+public class CleanMojo extends EFapsAbstractMojo  {
 
   /**
-   * Executes the esjp goal.
+   * Initializes the database connection, starts a connection, deletes all
+   * tables, views etc. from current logged in database user and commits
+   * transaction.
+   *
+   * @throws MojoExecutionException if delete of old data and data model failed
    */
-  public void execute() throws MojoExecutionException {
+  public void execute() throws MojoExecutionException  {
     init();
-
     try {
-      reloadCache();
-      startTransaction();
-      (new Compiler(getClasspathElements())).compile();
-      commitTransaction();
-
-    } catch (EFapsException e) {
-      getLog().error(e);
+      getLog().info("Delete Old Data and Data Model");
+      Context.begin();
+      Context.getDbType().deleteAll(Context.getThreadContext().getConnection());
+      Context.commit();
     } catch (Exception e) {
-      getLog().error(e);
+      throw new MojoExecutionException("Delete of Old Data and Data Model "
+                                       + "failed", e);
     }
   }
+  
 }

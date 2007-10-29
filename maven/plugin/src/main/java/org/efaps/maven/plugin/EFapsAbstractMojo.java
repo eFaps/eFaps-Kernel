@@ -18,10 +18,8 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven.plugin.goal;
+package org.efaps.maven.plugin;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,8 +43,6 @@ import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.maven.logger.SLF4JOverMavenLog;
-import org.efaps.maven.plugin.goal.efaps.install.Application;
-import org.efaps.maven.plugin.install.FileSet;
 import org.efaps.util.EFapsException;
 
 /**

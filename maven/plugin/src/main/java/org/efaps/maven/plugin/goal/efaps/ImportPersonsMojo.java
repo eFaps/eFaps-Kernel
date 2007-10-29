@@ -22,7 +22,7 @@ package org.efaps.maven.plugin.goal.efaps;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.efaps.jaas.ImportHandler;
-import org.efaps.maven.plugin.goal.EFapsAbstractMojo;
+import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
 import org.jfrog.maven.annomojo.annotations.MojoParameter;
 

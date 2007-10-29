@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.jfrog.maven.annomojo.annotations.MojoParameter;
 
-import org.efaps.maven.plugin.goal.EFapsAbstractMojo;
+import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
 
 /**
