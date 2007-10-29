@@ -16,6 +16,23 @@
   top: 2px;
 }
 
+.eFapsSplitImageContractVertical {
+  position: absolute;
+  background-image: url("contract_vert.png");
+  width: 16px;
+  height: 16px;
+  right: 20px;
+  top: 2px;
+}
+.eFapsSplitImageExpandVertical {
+  position: absolute;
+  background-image: url("expand_vert.png");
+  width: 16px;
+  height: 16px;
+  right: 20px;
+  top: 2px;
+}
+
 .eFapsSplitHeader {
   position: absolute;
   background-color: #EFEBDE;
@@ -38,7 +55,7 @@
   padding-left: 2px;
 }
 
-.eFapsSplitHeaderVert {
+.eFapsSplitHeaderClosed {
   position: absolute;
   background-color: #EFEBDE;
   border-left-style: solid;

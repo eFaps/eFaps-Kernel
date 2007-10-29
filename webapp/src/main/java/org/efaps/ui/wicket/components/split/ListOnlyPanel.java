@@ -30,7 +30,6 @@ import org.efaps.ui.wicket.components.listmenu.ListMenuPanel;
 /**
  * @author jmo
  * @version $Id$
- *
  */
 public class ListOnlyPanel extends Panel {
 
@@ -44,7 +43,7 @@ public class ListOnlyPanel extends Panel {
     this.add(new ListMenuPanel("menu", _listmenukey, _parameters, true)
         .setOutputMarkupId(true));
     this.add(new ContentPaneBehavior(20, 20));
-    this.add(new SplitHeaderPanel("header"));
+    this.add(new SplitHeaderPanel("header", false));
   }
 
 }

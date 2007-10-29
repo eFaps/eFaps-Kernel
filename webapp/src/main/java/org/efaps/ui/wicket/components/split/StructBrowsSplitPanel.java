@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.split;
@@ -33,7 +33,7 @@ import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
 
 /**
  * @author jmo
- * @version $Id$
+ * @version $Id:StructBrowsSplitPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class StructBrowsSplitPanel extends Panel {
 
@@ -43,25 +43,25 @@ public class StructBrowsSplitPanel extends Panel {
                                final PageParameters _parameters) {
     super(_id);
 
-    SplitContainerBehavior beh = new SplitContainerBehavior();
+    final SplitContainerBehavior beh = new SplitContainerBehavior();
     beh.setOrientation(Orientation.VERTICAL);
     this.add(beh);
 
     this.add(HeaderContributor.forCss(SplitHeaderPanel.class,
         "StructBrowsSplitPanel.css"));
-    this.add(new SplitHeaderPanel("header"));
-    WebMarkupContainer top = new WebMarkupContainer("top");
+    this.add(new SplitHeaderPanel("header", true));
+    final WebMarkupContainer top = new WebMarkupContainer("top");
     top.add(new ContentPaneBehavior(50, 20));
     this.add(top);
 
     top.add(new StructurBrowserTreePanel("stuctbrows", _parameters,
         _listmenukey));
 
-    WebMarkupContainer bottom = new WebMarkupContainer("bottom");
+    final WebMarkupContainer bottom = new WebMarkupContainer("bottom");
     bottom.add(new ContentPaneBehavior(50, 20));
     this.add(bottom);
 
-    WebMarkupContainer menuact = new WebMarkupContainer("menuact");
+    final WebMarkupContainer menuact = new WebMarkupContainer("menuact");
     menuact.setOutputMarkupId(true);
     bottom.add(menuact);
     menuact.add(new ListMenuPanel("menu", _listmenukey, _parameters, true));
