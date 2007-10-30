@@ -23,11 +23,11 @@
 
 -->
 
-<ui-table>
-  <uuid>9cf4379d-a7f6-4393-846b-a9cce013d61a</uuid>
+<ui-menu>
+  <uuid>3265c680-84c8-4f2f-a7e0-ac2629db6bd6</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the table 
+    version definition used to create the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Common_SystemAttributeTable</name>
+    <name>Admin_Common_SystemAttributeTree</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the table 
+    version definition used to define the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,21 +51,17 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Common_SystemAttributeTable</name>
-    <!-- fields -->
-    <field name="name">
-      <property name="Expression">Name</property>
-      <property name="Label">Admin_Common_SystemAttribute/Name.Label</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-    </field>
-    <field name="uuid">
-      <property name="Expression">UUID</property>
-      <property name="Label">Admin_Common_SystemAttribute/UUID.Label</property>
-    </field>
-    <field name="value">
-      <property name="Expression">Value</property>
-      <property name="Label">Admin_Common_SystemAttribute/Value.Label</property>
-    </field>
+    <name>Admin_Common_SystemAttributeTree</name>
+    <!-- type tree for -->
+    <type>Admin_Common_SystemAttribute</type>
+    <!-- targets -->
+    <target>
+      <form>Admin_Common_SystemAttributeForm</form>
+      <menu>Admin_Common_SystemAttributeTree_Menu</menu>
+    </target>
+    <!-- properties -->
+    <property name="Target">content</property>
+    <property name="TargetMode">view</property>
   </definition>
 
-</ui-table>
+</ui-menu>

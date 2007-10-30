@@ -23,11 +23,11 @@
 
 -->
 
-<ui-table>
-  <uuid>9cf4379d-a7f6-4393-846b-a9cce013d61a</uuid>
+<ui-command>
+  <uuid>86fe3b04-8482-463c-883f-cdf62e8bb3b3</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the table 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Common_SystemAttributeTable</name>
+    <name>Admin_Common_SystemAttributeTree_Menu_Action_Edit</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the table 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,21 +51,15 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Common_SystemAttributeTable</name>
-    <!-- fields -->
-    <field name="name">
-      <property name="Expression">Name</property>
-      <property name="Label">Admin_Common_SystemAttribute/Name.Label</property>
-      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-    </field>
-    <field name="uuid">
-      <property name="Expression">UUID</property>
-      <property name="Label">Admin_Common_SystemAttribute/UUID.Label</property>
-    </field>
-    <field name="value">
-      <property name="Expression">Value</property>
-      <property name="Label">Admin_Common_SystemAttribute/Value.Label</property>
-    </field>
+    <name>Admin_Common_SystemAttributeTree_Menu_Action_Edit</name>
+    <!-- target definitions -->
+    <target>
+      <form>Admin_Common_SystemAttributeForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Edit"/>
+    </target>
+    <!-- properties -->
+    <property name="Target">modal</property>
+    <property name="TargetMode">edit</property>
   </definition>
 
-</ui-table>
+</ui-command>
