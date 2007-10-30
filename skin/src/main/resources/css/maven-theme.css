@@ -17,7 +17,7 @@
  * under the License.
  */
 body {
-  padding: 0px 0px 10px 0px;
+  padding: 0px 0px 10px;
 }
 
 body,td,select,input,li {
@@ -35,101 +35,103 @@ a {
 }
 
 a:link {
-  color: #36a;
+  color: #00A000;
 }
 
 a:visited {
-  color: #47a;
+  color: #008800;
 }
 
 a:active,a:hover {
-  color: #69c;
+  color: #96D265;
 }
 
 #legend li.externalLink {
-  background: url(../images/external.png) left top no-repeat;
+  background: transparent url(../images/external.png) no-repeat scroll left top;
   padding-left: 18px;
 }
 
 a.externalLink,a.externalLink:link,a.externalLink:visited,a.externalLink:active,a.externalLink:hover
   {
-  background: url(../images/external.png) right center no-repeat;
+  background: transparent url(../images/external.png) no-repeat scroll right
+    center;
   padding-right: 18px;
 }
 
 #legend li.newWindow {
-  background: url(../images/newwindow.png) left top no-repeat;
+  background: transparent url(../images/newwindow.png) no-repeat scroll left top;
   padding-left: 18px;
 }
 
 a.newWindow,a.newWindow:link,a.newWindow:visited,a.newWindow:active,a.newWindow:hover
   {
-  background: url(../images/newwindow.png) right center no-repeat;
+  background: transparent url(../images/newwindow.png) no-repeat scroll right
+    center;
   padding-right: 18px;
 }
 
 h2 {
-  padding: 4px 4px 4px 6px;
-  border: 1px solid #999;
-  color: #900;
-  background-color: #ddd;
-  font-weight: 900;
+  background-color: white;
+  border: 1px solid #999999;
+  color: #008800;
   font-size: x-large;
+  font-weight: 900;
+  padding: 4px 4px 4px 6px;
 }
 
 h3 {
-  padding: 4px 4px 4px 6px;
-  border: 1px solid #aaa;
-  color: #900;
-  background-color: #eee;
-  font-weight: normal;
+  background-color: #EFEBDE;
+  border: 1px solid #AAAAAA;
+  color: #990000;
   font-size: large;
+  font-weight: normal;
+  padding: 4px 4px 4px 6px;
 }
 
 h4 {
-  padding: 4px 4px 4px 6px;
-  border: 1px solid #bbb;
-  color: #900;
-  background-color: #fff;
-  font-weight: normal;
+  background-color: #FFFFFF;
+  border: 1px solid #BBBBBB;
+  color: #990000;
   font-size: large;
+  font-weight: normal;
+  padding: 4px 4px 4px 6px;
 }
 
 h5 {
-  padding: 4px 4px 4px 6px;
-  color: #900;
+  color: #990000;
   font-size: medium;
+  padding: 4px 4px 4px 6px;
 }
 
 p {
-  line-height: 1.3em;
   font-size: small;
+  line-height: 1.3em;
 }
 
 #breadcrumbs {
-  border-top: 1px solid #aaa;
-  border-bottom: 1px solid #aaa;
-  background-color: #ccc;
+  background-color: #EFEBDE;
+  border-bottom: 1px solid #AAAAAA;
+  border-top: 1px solid #AAAAAA;
 }
 
 #leftColumn {
-  margin: 10px 0 0 5px;
-  border: 1px solid #999;
-  background-color: #eee;
+  background-color: #D0EDB8;
+  border: 1px solid #999999;
+  margin: 10px 0pt 0pt 5px;
 }
 
 #navcolumn h5 {
+  border-bottom: 1px solid #aaaaa;
+  color: #000000;
   font-size: smaller;
-  border-bottom: 1px solid #aaaaaa;
   padding-top: 2px;
-  color: #000;
 }
 
 table.bodyTable th {
-  color: white;
-  background-color: #bbb;
-  text-align: left;
+  background-color: #EFEBDE;
+  color: #990000;
   font-weight: bold;
+  text-align: left;
 }
 
 table.bodyTable th,table.bodyTable td {
@@ -137,25 +139,25 @@ table.bodyTable th,table.bodyTable td {
 }
 
 table.bodyTable tr.a {
-  background-color: #ddd;
+  background-color: #DDDDDD;
 }
 
 table.bodyTable tr.b {
-  background-color: #eee;
+  background-color: #EEEEEE;
 }
 
 .source {
-  border: 1px solid #999;
+  border: 1px solid #999999;
 }
 
 dl {
+  background-color: #FFFFCC;
+  border: 1px solid #AAAAAA;
   padding: 4px 4px 4px 6px;
-  border: 1px solid #aaa;
-  background-color: #ffc;
 }
 
 dt {
-  color: #900;
+  color: #990000;
 }
 
 #organizationLogo img,#projectLogo img,#projectLogo span {
@@ -163,11 +165,12 @@ dt {
 }
 
 #banner {
-  border-bottom: 1px solid #fff;
+  background: #d0edb8;
+  border-bottom: 1px solid #FFFFFF;
 }
 
 .errormark,.warningmark,.donemark,.infomark {
-  background: url(../images/icon_error_sml.gif) no-repeat;
+  background: transparent url(../images/icon_error_sml.gif) no-repeat scroll 0%;
 }
 
 .warningmark {
@@ -184,6 +187,6 @@ dt {
 
 #bannerRight img {
   position: absolute;
-  top: 40px;
   right: 0px;
+  top: 40px;
 }

@@ -26,7 +26,7 @@
 <project name="eFaps">
   <publishDate position="left" format="dd-MMMM-yyyy"/>
   <bannerLeft>
-    <src>/images/logo.jpg</src>
+    <src>/images/eFaps.png</src>
     <href>http://www.efaps.org/</href>
   </bannerLeft>
   <bannerRight>
@@ -47,12 +47,12 @@
   <body>
   
     <links>
-      <item name="eFaps" href="http://developer.berlios.de/projects/efaps/"/>
+      <item name="eFaps" href="http://developer.berlios.de/projects/efaps/" />
       <item name="Maven 2" href="http://maven.apache.org/maven2/"/>
     </links>
 
     <menu name="Main">
-      <item name="Wiki" href="http://www.efaps.org//wiki/"/>
+      <item name="Wiki" href="http://www.efaps.org//wiki/" class="externalLink"/>
       <item name="eFaps@berlios" href="http://developer.berlios.de/projects/efaps/"/>
     </menu>
     <menu ref="parent" />
