@@ -13,34 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components.table;
+package org.efaps.ui.wicket.components.table.cell;
 
 import org.apache.wicket.markup.ComponentTag;
-
-import org.efaps.ui.wicket.components.AbstractParentMarkupContainer;
+import org.apache.wicket.markup.html.WebComponent;
 
 /**
  * @author jmo
- * @version $Id:CellContainer.java 1510 2007-10-18 14:35:40Z jmox $
- *
+ * @version $Id$
+ * 
  */
-public class CellContainer extends AbstractParentMarkupContainer {
-
+public class CheckBoxComponent extends WebComponent {
   private static final long serialVersionUID = 1L;
 
-  public CellContainer(String id) {
+  private final String oid;
+
+  public CheckBoxComponent(String id, String _oid) {
     super(id);
+    oid = _oid;
   }
 
   @Override
   protected void onComponentTag(ComponentTag tag) {
-    super.onComponentTag(tag);
-    tag.setName("div");
+    tag.getAttributes().put("type", "checkbox");
+    tag.getAttributes().put("name", "selectedRow");
+    tag.getAttributes().put("value", oid);
+    tag.setName("input");
   }
 
 }

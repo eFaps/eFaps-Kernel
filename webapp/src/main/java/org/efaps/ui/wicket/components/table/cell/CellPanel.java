@@ -28,7 +28,6 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.ui.wicket.components.StaticImageComponent;
-import org.efaps.ui.wicket.components.table.CellCheckBoxComponent;
 import org.efaps.ui.wicket.models.CellModel;
 import org.efaps.ui.wicket.models.TableModel;
 
@@ -42,7 +41,7 @@ public class CellPanel extends Panel {
 
   public CellPanel(final String _id, final String _oid) {
     super(_id);
-    this.add(new CellCheckBoxComponent("checkbox", _oid));
+    this.add(new CheckBoxComponent("checkbox", _oid));
     this.add(new WebMarkupContainer("link").setVisible(false));
     this.add(new WebMarkupContainer("icon").setVisible(false));
     this.add(new WebMarkupContainer("label").setVisible(false));

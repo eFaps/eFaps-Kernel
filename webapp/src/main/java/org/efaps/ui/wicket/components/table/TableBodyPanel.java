@@ -25,9 +25,11 @@ import java.util.Iterator;
 import org.apache.wicket.Page;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.RowModel;
@@ -46,25 +48,32 @@ public class TableBodyPanel extends Panel {
     }
 
     add(HeaderContributor.forCss(getClass(), "TableBodyPanel.css"));
-
-
-    boolean odd = true;
     RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
     add(rowsRepeater);
-    for (final Iterator<RowModel> rowIter = _model.getValues().iterator(); rowIter
-        .hasNext(); odd = !odd) {
 
-      RowPanel row =
-          new RowPanel(rowsRepeater.newChildId(), rowIter.next(), _model,
-              ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
-                  .getPageMapName()));
-      row.setOutputMarkupId(true);
-      if (odd) {
-        row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
-      } else {
-        row.add(new SimpleAttributeModifier("class", "eFapsTableRowEven"));
+    if (_model.getValues().isEmpty()) {
+      final Label nodata =
+          new Label("test", DBProperties.getProperty("WebTable.NoData"));
+      nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
+      rowsRepeater.add(nodata);
+    } else {
+      boolean odd = true;
+
+      for (final Iterator<RowModel> rowIter = _model.getValues().iterator(); rowIter
+          .hasNext(); odd = !odd) {
+
+        RowPanel row =
+            new RowPanel(rowsRepeater.newChildId(), rowIter.next(), _model,
+                ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
+                    .getPageMapName()));
+        row.setOutputMarkupId(true);
+        if (odd) {
+          row.add(new SimpleAttributeModifier("class", "eFapsTableRowOdd"));
+        } else {
+          row.add(new SimpleAttributeModifier("class", "eFapsTableRowEven"));
+        }
+        rowsRepeater.add(row);
       }
-      rowsRepeater.add(row);
     }
   }
 }
