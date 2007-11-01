@@ -27,7 +27,7 @@ import org.efaps.ui.wicket.components.AbstractParentMarkupContainer;
 /**
  * @author jmo
  * @version $Id$
- * 
+ *
  */
 public class RowContainer extends AbstractParentMarkupContainer {
   private static final long serialVersionUID = 1L;
@@ -40,7 +40,7 @@ public class RowContainer extends AbstractParentMarkupContainer {
   @Override
   protected void onComponentTag(ComponentTag tag) {
     super.onComponentTag(tag);
-    tag.setName("tr");
+    tag.setName("div");
     tag.setHasNoCloseTag(true);
   }
 

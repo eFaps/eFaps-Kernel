@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.table.cell;
@@ -28,25 +28,32 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.ui.wicket.components.StaticImageComponent;
+import org.efaps.ui.wicket.components.table.CellCheckBoxComponent;
 import org.efaps.ui.wicket.models.CellModel;
 import org.efaps.ui.wicket.models.TableModel;
 
 /**
  * @author jmo
- * @version $Id$
+ * @version $Id:CellPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class CellPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
+  public CellPanel(final String _id, final String _oid) {
+    super(_id);
+    this.add(new CellCheckBoxComponent("checkbox", _oid));
+    this.add(new WebMarkupContainer("link").setVisible(false));
+    this.add(new WebMarkupContainer("icon").setVisible(false));
+    this.add(new WebMarkupContainer("label").setVisible(false));
+  }
+
   public CellPanel(final String id, final CellModel _cellmodel,
                    final boolean _updateListMenu, final TableModel _tablemodel) {
     super(id, _cellmodel);
-    CellContainer cellcontainer = new CellContainer("td", _cellmodel);
-    cellcontainer.setOutputMarkupId(true);
-    this.add(cellcontainer);
     CellModel cellmodel = (CellModel) super.getModel();
 
+    this.add(new WebMarkupContainer("checkbox").setVisible(false));
     WebMarkupContainer celllink;
     if (cellmodel.getReference() != null) {
       if (_updateListMenu
@@ -58,6 +65,7 @@ public class CellPanel extends Panel {
           // do we have "connectmode",then we don't want a link in a popup
           if (_tablemodel.isSubmit()) {
             celllink = new WebMarkupContainer("link");
+            celllink.setVisible(false);
           } else {
             celllink = new AjaxOpenerLink("link", cellmodel);
           }
@@ -71,17 +79,32 @@ public class CellPanel extends Panel {
       }
     } else {
       celllink = new WebMarkupContainer("link");
+      celllink.setVisible(false);
     }
-    cellcontainer.add(celllink);
+    this.add(celllink);
 
-    celllink.add(new LabelComponent("label",
-        new Model(cellmodel.getCellValue())));
+    if (celllink.isVisible()) {
+      celllink.add(new LabelComponent("linklabel", new Model(cellmodel
+          .getCellValue())));
 
-    if (cellmodel.getIcon() != null) {
-      celllink.add(new StaticImageComponent("icon", new Model(cellmodel
-          .getIcon())));
+      if (cellmodel.getIcon() != null) {
+        celllink.add(new StaticImageComponent("linkicon", new Model(cellmodel
+            .getIcon())));
+      } else {
+        celllink.add(new WebMarkupContainer("linkicon").setVisible(false));
+      }
+      this.add(new WebMarkupContainer("icon").setVisible(false));
+      this.add(new WebMarkupContainer("label").setVisible(false));
     } else {
-      celllink.add(new WebMarkupContainer("icon").setVisible(false));
+      this
+          .add(new LabelComponent("label", new Model(cellmodel.getCellValue())));
+      if (cellmodel.getIcon() != null) {
+        this.add(new StaticImageComponent("icon",
+            new Model(cellmodel.getIcon())));
+      } else {
+        this.add(new WebMarkupContainer("icon").setVisible(false));
+      }
+
     }
   }
 }

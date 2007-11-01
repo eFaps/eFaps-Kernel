@@ -1,0 +1,35 @@
+.eFapsTableRowOdd,.eFapsTableRowEven {
+  background-color: white;
+  line-height: 1, 6 em;
+  overflow: hidden;
+  min-height: 18px;
+  width: auto;
+  background-image: url("dotted-line.png");
+  background-repeat: repeat-x;
+  background-position: bottom;
+}
+
+.eFapsTableCell {
+  background-color: transparent;
+  border-left: 1px solid #ddd;
+  float: left;
+  min-height: 18px;
+  overflow: hidden;
+  padding-left: 6px;
+  margin-left: 6px;
+  display: block;
+  float: left;
+  white-space: nowrap;
+}
+
+.eFapsTableCell img {
+  border: 0;
+  vertical-align: top;
+}
+
+.eFapsTableCheckBoxCell {
+  padding-left: 0;
+  float: left;
+  height: 18px;
+  width: 14px;
+}

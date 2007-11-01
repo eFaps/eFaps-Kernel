@@ -14,12 +14,11 @@
  * limitations under the License.
  *
  * Author:          jmox
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1491 $
+ * Last Changed:    $Date:2007-10-15 18:40:43 -0500 (Mon, 15 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
- 
- #eFapsContentDiv {
+#eFapsContentDiv {
   position: absolute;
   width: 100%;
   top: 75px;
@@ -81,8 +80,11 @@ tr.eFapsTableRowOdd td a img,tr.eFapsTableRowEven td a img {
   color: #ccffff;
 }
 
-#eFapsTableBody {
+.eFapsTableBody {
   width: 100%;
+  position: relative;
+  top: 23px;
+  line-height: 1.6em;
 }
 
 .eFapsTableNoData {

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.table;
@@ -26,8 +26,8 @@ import org.efaps.ui.wicket.components.AbstractParentMarkupContainer;
 
 /**
  * @author jmo
- * @version $Id$
- * 
+ * @version $Id:CellContainer.java 1510 2007-10-18 14:35:40Z jmox $
+ *
  */
 public class CellContainer extends AbstractParentMarkupContainer {
 
@@ -40,7 +40,7 @@ public class CellContainer extends AbstractParentMarkupContainer {
   @Override
   protected void onComponentTag(ComponentTag tag) {
     super.onComponentTag(tag);
-    tag.setName("td");
+    tag.setName("div");
   }
 
 }
