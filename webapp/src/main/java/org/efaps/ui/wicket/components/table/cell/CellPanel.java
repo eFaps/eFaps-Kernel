@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket.components.table.cell;
 
 import org.apache.wicket.PageMap;
+import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -51,6 +52,9 @@ public class CellPanel extends Panel {
                    final boolean _updateListMenu, final TableModel _tablemodel) {
     super(id, _cellmodel);
     CellModel cellmodel = (CellModel) super.getModel();
+
+    // TODO add the titel only if wanted or??
+    this.add(new SimpleAttributeModifier("title", cellmodel.getCellValue()));
 
     this.add(new WebMarkupContainer("checkbox").setVisible(false));
     WebMarkupContainer celllink;

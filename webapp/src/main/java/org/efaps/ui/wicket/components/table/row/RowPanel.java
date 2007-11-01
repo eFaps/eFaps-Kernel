@@ -67,11 +67,10 @@ public class RowPanel extends Panel {
 
       int width = 100 / _model.getValues().size();
       if (i == _model.getValues().size()) {
-        width = width - (i * i);
+        width = width - (i * 2);
       }
       cellpanel
           .add(new SimpleAttributeModifier("style", "width:" + width + "%"));
-
       cellRepeater.add(cellpanel);
     }
 

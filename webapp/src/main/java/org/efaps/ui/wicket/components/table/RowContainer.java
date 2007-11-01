@@ -40,7 +40,7 @@ public class RowContainer extends AbstractParentMarkupContainer {
   @Override
   protected void onComponentTag(ComponentTag tag) {
     super.onComponentTag(tag);
-    tag.setName("div");
+    tag.setName("tr");
     tag.setHasNoCloseTag(true);
   }
 

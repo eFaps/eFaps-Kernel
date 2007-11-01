@@ -26,7 +26,7 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.table.TableBodyPanel;
+import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.TableHeaderPanel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -70,7 +70,7 @@ public class TablePage extends AbstractContentPage {
     this.add(form);
     super.addComponents(form);
 
-    form.add(new TableBodyPanel("tablebody", model, this));
+    form.add(new TablePanel("tablebody", model, this));
 
   }
 

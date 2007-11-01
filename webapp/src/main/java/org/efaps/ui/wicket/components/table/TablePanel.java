@@ -35,11 +35,11 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.RowModel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
-public class TableBodyPanel extends Panel {
+public class TablePanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public TableBodyPanel(final String _id, final TableModel _model,
+  public TablePanel(final String _id, final TableModel _model,
                         final Page _page) {
     super(_id, _model);
 
@@ -47,7 +47,7 @@ public class TableBodyPanel extends Panel {
       _model.execute();
     }
 
-    add(HeaderContributor.forCss(getClass(), "TableBodyPanel.css"));
+    add(HeaderContributor.forCss(getClass(), "TablePanel.css"));
     RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
     add(rowsRepeater);
 
