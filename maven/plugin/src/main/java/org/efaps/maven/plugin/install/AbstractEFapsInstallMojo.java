@@ -21,11 +21,13 @@ package org.efaps.maven.plugin.install;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.jfrog.maven.annomojo.annotations.MojoParameter;
 
+import org.apache.tools.ant.DirectoryScanner;
 import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
 
@@ -34,6 +36,29 @@ import org.efaps.maven.plugin.goal.efaps.install.Application;
  * @version $Id$
  */
 public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Default list of includes used to evaluate the files to copy.
+   *
+   * @see #getFiles
+   */
+  private final static Set<String> DEFAULT_INCLUDES = new HashSet<String>();
+  static  {
+    DEFAULT_INCLUDES.add("**/*.xml");
+  }
+
+  /**
+   * Default list of excludes used to evaluate the files to copy.
+   *
+   * @see #getFiles
+   */
+  private final static Set<String> DEFAULT_EXCLUDES = new HashSet<String>();
+  static  {
+    DEFAULT_EXCLUDES.add("**/versions.xml");
+  }
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -98,22 +123,24 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
    *                  value is <code>**&#x002f;*.xml</code>
    * @see #excludes   defines excludes; if not specified by maven , the default
    *                  value is <code>**&#x002f;version.xml</code>
-   * @see FileSet
+   * @see #DEFAULT_INCLUDES
+   * @see #DEFAULT_EXCLUDES
    */
-  protected Collection<String> getFiles()  {
-    FileSet fileSet = new FileSet();
-    fileSet.setRootDirectory(eFapsDir.toString());
-    if (this.includes == null)  {
-      fileSet.addInclude("**/*.xml");
-    } else  {
-      fileSet.addIncludes(this.includes);
-    }
-    if (this.excludes == null)  {
-      fileSet.addExclude("**/versions.xml");
-    } else  {
-      fileSet.addExcludes(this.excludes);
-    }
-    return fileSet.getFiles();
+  protected String[] getFiles()  {
+    final DirectoryScanner ds = new DirectoryScanner();
+    final String[] includes = (this.includes == null)
+                              ? DEFAULT_INCLUDES.toArray(new String[DEFAULT_INCLUDES.size()])
+                              : this.includes.toArray(new String[this.includes.size()]);
+    final String[] excludes  = (this.excludes == null)
+                              ? DEFAULT_EXCLUDES.toArray(new String[DEFAULT_EXCLUDES.size()])
+                              : this.excludes.toArray(new String[this.excludes.size()]);
+    ds.setIncludes(includes);
+    ds.setExcludes(excludes);
+    ds.setBasedir(getEFapsDir().toString());
+    ds.setCaseSensitive(true);
+    ds.scan();
+
+    return ds.getIncludedFiles();
   }
 
   /////////////////////////////////////////////////////////////////////////////

@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -225,7 +226,7 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
       installNode.appendChild(files);
   
       // append all file name to files node (sorted alphabetical)
-      final Set<String> filesSet = new TreeSet<String>(getFiles()); 
+      final Set<String> filesSet = new TreeSet<String>(Arrays.asList(getFiles())); 
       for (final String fileName : filesSet)  {
         final Node file = doc.createElement("file");
         final Attr fileAttr = doc.createAttribute("name");
