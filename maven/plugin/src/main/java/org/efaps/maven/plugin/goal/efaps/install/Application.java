@@ -360,6 +360,16 @@ public class Application {
   }
 
   /**
+   * This is the getter method for instance variable {@link #application}.
+   * 
+   * @return value of instance variable {@link #application}
+   * @see #application
+   */
+  public String getApplication() {
+    return this.application;
+  }
+
+  /**
    * This is the getter method for instance variable {@link #versions}.
    * 
    * @return value of instance variable {@link #versions}
