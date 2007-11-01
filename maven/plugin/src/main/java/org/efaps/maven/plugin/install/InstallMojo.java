@@ -20,7 +20,10 @@
 
 package org.efaps.maven.plugin.install;
 
-import java.util.List;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
@@ -43,10 +46,11 @@ public final class InstallMojo extends AbstractEFapsInstallMojo  {
   // instance variables
 
   /**
-   * 
+   * Comma separated list of applications to install. The default value is the
+   * kernel application.
    */
-  @MojoParameter()
-  private List<String> applications = null;
+  @MojoParameter(defaultValue = "efaps")
+  private String applications;
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -54,6 +58,9 @@ public final class InstallMojo extends AbstractEFapsInstallMojo  {
   /**
    * Executes the kernel install goal.
    *
+   * @throws MojoExecutionException if a defined application could not be found
+   *                                or the installation scripts could not be
+   *                                executed
    * @todo descriptionâ
    */
   public void execute() throws MojoExecutionException  {
@@ -61,17 +68,37 @@ public final class InstallMojo extends AbstractEFapsInstallMojo  {
     try  {
       final ClassLoader cl = getClass().getClassLoader();
 
-      // get kernel install application (read from version xml file)
-      Application appl = Application.getApplication(cl.getResource("META-INF/efaps/install.xml"),
-                                                    getClasspathElements());
-      appl.install(getUserName(), getPassWord());
+      // get install application (read from all install xml files)
+      final Map<String, Application> appls = new HashMap<String, Application>();
+      Enumeration<URL> urlEnum = cl.getResources("META-INF/efaps/install.xml");
+      while (urlEnum.hasMoreElements())  {
+        final Application appl = Application.getApplication(urlEnum.nextElement(),
+                                                            getClasspathElements());
+        appls.put(appl.getApplication(), appl);
+      }
 
-      startTransaction();
-      appl.importData();
-      commitTransaction();
+      // test if all defined applications could be found
+      final String[] applicationNames = this.applications.split(",");
+      for (final String applName : applicationNames)  {
+        if (appls.get(applName) == null)  {
+          throw new MojoExecutionException("Could not found defined "
+              + "application '" + applName + "'. Installation not possible!");
+        }
+      }
+
+      // install applications
+      for (final String applName : applicationNames)  {
+        final Application appl = appls.get(applName);
+        appl.install(getUserName(), getPassWord());
+        startTransaction();
+        appl.importData();
+        commitTransaction();
+      }
+    } catch (MojoExecutionException e)  {
+      throw e;
     } catch (Exception e)  {
       throw new MojoExecutionException(
-            "Could not execute Kernal Installation script", e);
+            "Could not execute Installation script", e);
     }
   }
 }
