@@ -17,6 +17,7 @@
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
+
 package org.efaps.maven.plugin.install;
 
 import java.io.File;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -40,6 +42,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.tools.ant.DirectoryScanner;
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
 import org.jfrog.maven.annomojo.annotations.MojoParameter;
 import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
@@ -69,6 +72,31 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
    * Tag name of the install.
    */
   private final static String TAG_INSTALL = "install";
+
+  /**
+   * Default list of includes used to evaluate the files to copy.
+   *
+   * @see #getCopyFiles
+   */
+  private final static Set<String> DEFAULT_COPYINCLUDES = new HashSet<String>();
+  static  {
+    DEFAULT_COPYINCLUDES.add("**/*.xml");
+    DEFAULT_COPYINCLUDES.add("**/*.gif");
+    DEFAULT_COPYINCLUDES.add("**/*.png");
+    DEFAULT_COPYINCLUDES.add("**/*.java");
+    DEFAULT_COPYINCLUDES.add("**/*.js");
+    DEFAULT_COPYINCLUDES.add("**/*.properties");
+  }
+
+  /**
+   * Default list of excludes used to evaluate the files to copy.
+   *
+   * @see #getCopyFiles
+   */
+  private final static Set<String> DEFAULT_COPYEXCLUDES = new HashSet<String>();
+  static  {
+    DEFAULT_COPYEXCLUDES.add("**/versions.xml");
+  }
 
   /**
    * List of includes used to copy files.
@@ -128,31 +156,6 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
   public void execute() throws MojoExecutionException, MojoFailureException {
     final String rootPackage = generateInstallFile();
     copyFiles(rootPackage);
-  }
-
-  /**
-   * Copy all eFaps installation files from the eFaps root directory in the
-   * related target classes directory.
-   *
-   * @param _rootPackage  root package include application sub directory
-   * @param _files        files to copy (from the source directory in the
-   *                      in the target directory with the root package)
-   * @throws MojoExecutionException if some files could not be copied
-   * @see AbstractEFapsInstallMojo#getEFapsDir()  to get source directory
-   * @see #targetDirectory                        to get target directory
-   * @see #getCopyFiles()                         get all files to copy
-   */
-  protected void copyFiles(final String _rootPackage)
-  throws MojoExecutionException  {
-    try {
-      for (final String fileName : getCopyFiles())  {
-        final File srcFile = new File(getEFapsDir(), fileName);
-        final File dstFile = new File(targetDirectory, _rootPackage + fileName);
-          FileUtils.copyFile(srcFile, dstFile, true);
-      }
-    } catch (IOException e) {
-      throw new MojoExecutionException("could not copy files", e);
-   }
   }
 
   /**
@@ -265,11 +268,37 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
   }
 
   /**
+   * Copy all eFaps installation files from the eFaps root directory in the
+   * related target classes directory.
+   *
+   * @param _rootPackage  root package include application sub directory
+   * @param _files        files to copy (from the source directory in the
+   *                      in the target directory with the root package)
+   * @throws MojoExecutionException if some files could not be copied
+   * @see AbstractEFapsInstallMojo#getEFapsDir()  to get source directory
+   * @see #targetDirectory                        to get target directory
+   * @see #getCopyFiles()                         get all files to copy
+   */
+  protected void copyFiles(final String _rootPackage)
+  throws MojoExecutionException  {
+    try {
+      for (final String fileName : getCopyFiles())  {
+        final File srcFile = new File(getEFapsDir(), fileName);
+        final File dstFile = new File(targetDirectory, _rootPackage + fileName);
+          FileUtils.copyFile(srcFile, dstFile, true);
+      }
+    } catch (IOException e) {
+      throw new MojoExecutionException("could not copy files", e);
+   }
+  }
+
+  /**
    * Uses the {@link #copyIncludes} and {@link #copyExcludes} together with the
    * root directory {@link AbstractEFapsInstallMojo#getEFapsDir()} to get all 
    * related and matched files. The files are used to idendtify which are
    * copied in the target directory.
    *
+   * @return String array of files to copy
    * @see #copyIncludes defines includes; if not specified by maven, the
    *                    default value is <code>**&#x002f;*.xml</code>,
    *                    <code>**&#x002f;*.gif</code>,
@@ -279,26 +308,24 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
    *                    <code>**&#x002f;*.properties</code>.
    * @see #copyExcludes defines excludes; if not specified by maven , the
    *                    default value is <code>**&#x002f;version.xml</code>
-   * @see FileSet
+   * @see #DEFAULT_COPYINCLUDES   definition of the default includes
+   * @see #DEFAULT_COPYEXCLUDES   definition of the default excludes
    */
-  protected Collection<String> getCopyFiles()  {
-    FileSet fileSet = new FileSet();
-    fileSet.setRootDirectory(getEFapsDir().toString());
-    if (this.copyIncludes == null)  {
-      fileSet.addInclude("**/*.xml");
-      fileSet.addInclude("**/*.gif");
-      fileSet.addInclude("**/*.png");
-      fileSet.addInclude("**/*.java");
-      fileSet.addInclude("**/*.js");
-      fileSet.addInclude("**/*.properties");
-    } else  {
-      fileSet.addIncludes(this.copyIncludes);
-    }
-    if (this.copyExcludes == null)  {
-      fileSet.addExclude("**/versions.xml");
-    } else  {
-      fileSet.addExcludes(this.copyExcludes);
-    }
-    return fileSet.getFiles();
+  protected String[] getCopyFiles()  {
+    // scan
+    final DirectoryScanner ds = new DirectoryScanner();
+    final String[] includes = (this.copyIncludes == null)
+                              ? DEFAULT_COPYINCLUDES.toArray(new String[DEFAULT_COPYINCLUDES.size()])
+                              : this.copyIncludes.toArray(new String[this.copyIncludes.size()]);
+    final String[] excludes  = (this.copyIncludes == null)
+                              ? DEFAULT_COPYEXCLUDES.toArray(new String[DEFAULT_COPYEXCLUDES.size()])
+                              : this.copyExcludes.toArray(new String[this.copyExcludes.size()]);
+    ds.setIncludes(includes);
+    ds.setExcludes(excludes);
+    ds.setBasedir(getEFapsDir().toString());
+    ds.setCaseSensitive(true);
+    ds.scan();
+
+    return ds.getIncludedFiles();
   }
 }
