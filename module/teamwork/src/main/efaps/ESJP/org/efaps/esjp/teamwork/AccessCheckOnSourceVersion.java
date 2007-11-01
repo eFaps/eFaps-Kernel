@@ -20,8 +20,8 @@
 
 package org.efaps.esjp.teamwork;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
@@ -45,8 +45,8 @@ public class AccessCheckOnSourceVersion implements EventExecution {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG =
-      LogFactory.getLog(AccessCheckOnSourceVersion.class);
+  private static final Logger LOG =
+    LoggerFactory.getLogger(AccessCheckOnSourceVersion.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods

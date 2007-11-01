@@ -22,8 +22,8 @@ package org.efaps.esjp.teamwork;
 
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
@@ -41,7 +41,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * Class to check the AccessRights for the UserInterfaces in TeamWork.<br>
- * 
+ *
  * @author jmo
  * @version $Id$
  */
@@ -53,8 +53,8 @@ public class AccessCheckOnUserInterface implements EventExecution {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG =
-      LogFactory.getLog(AccessCheckOnUserInterface.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(AccessCheckOnUserInterface.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -66,7 +66,6 @@ public class AccessCheckOnUserInterface implements EventExecution {
   private boolean checkAccess(final Type _type, final AccessType _accessType) {
     boolean hasAccess = false;
 
-    
     try {
       Context context = Context.getThreadContext();
       for (Role role : context.getPerson().getRoles()) {
@@ -114,7 +113,7 @@ public class AccessCheckOnUserInterface implements EventExecution {
   }
 
   private long getSpecificAccessSetID(final String _oid,
-      final long _abstractuserid) {
+                                      final long _abstractuserid) {
     SearchQuery query = new SearchQuery();
     long ret = 0;
     try {
@@ -142,8 +141,8 @@ public class AccessCheckOnUserInterface implements EventExecution {
             .get(ParameterValues.PROPERTIES)).get("AccessType"));
 
     Type type =
-        Type.get((String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
-            .get("Type"));
+        Type.get((String) ((Map<?, ?>) _parameter
+            .get(ParameterValues.PROPERTIES)).get("Type"));
 
     Return ret = new Return();
 

@@ -20,8 +20,8 @@
 
 package org.efaps.esjp.teamwork;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
@@ -39,8 +39,9 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author jmo
- * @version $Id$ TODO loeschen von sich selber nicht erlaubt, loeschen von
- *          letzdem holder nicht erlaubt
+ * @version $Id$ TODO
+ *          loeschen von sich selber nicht erlaubt, loeschen von letzdem holder
+ *          nicht erlaubt
  */
 public class AccessCheckOnMember implements EventExecution {
 
@@ -50,7 +51,8 @@ public class AccessCheckOnMember implements EventExecution {
   /**
    * Logging instance used in this class.
    */
-  private static final Log LOG = LogFactory.getLog(AccessCheckOnMember.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(AccessCheckOnMember.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -60,7 +62,7 @@ public class AccessCheckOnMember implements EventExecution {
    * defined in the list of access types.
    */
   private boolean checkAccess(final Instance _instance,
-      final AccessType _accessType) {
+                              final AccessType _accessType) {
     boolean hasAccess = false;
 
     // this only checks the rights for ..
@@ -118,7 +120,7 @@ public class AccessCheckOnMember implements EventExecution {
   }
 
   private long getSpecificAccessSetID(final String _oid,
-      final long _abstractuserid) {
+                                      final long _abstractuserid) {
     SearchQuery query = new SearchQuery();
     long ret = 0;
     try {

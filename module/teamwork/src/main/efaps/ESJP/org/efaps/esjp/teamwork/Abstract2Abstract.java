@@ -20,8 +20,8 @@
 
 package org.efaps.esjp.teamwork;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
@@ -33,10 +33,12 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 public class Abstract2Abstract implements EventExecution {
+
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(Abstract2Abstract.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(Abstract2Abstract.class);
 
   public Return execute(Parameter _parameter) {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
@@ -96,8 +98,7 @@ public class Abstract2Abstract implements EventExecution {
     insertDB(abstractlink, abstractlink, "1");
     return null;
   }
-  
-  
+
   private void insertDB(final String _abstractlink, final String _ancestorlink,
                         final String _rank) {
 

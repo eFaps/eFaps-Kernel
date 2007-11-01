@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventExecution;
@@ -50,10 +50,11 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class Member implements EventExecution {
+
   /**
    * Logger for this class
    */
-  private static final Log LOG = LogFactory.getLog(Member.class);
+  private static final Logger LOG = LoggerFactory.getLogger(Member.class);
 
   /**
    * Insert a new Member for a Collection.
@@ -147,7 +148,8 @@ public class Member implements EventExecution {
       }
       query.close();
     } catch (EFapsException e) {
-      LOG.error("Can't check if TeamWork_Abstract: " + _abstractlink
+      LOG.error("Can't check if TeamWork_Abstract: "
+          + _abstractlink
           + " is a Root", e);
     }
 
@@ -199,7 +201,7 @@ public class Member implements EventExecution {
             .iterator();
     Map<String, String> newValues = new HashMap<String, String>();
     while (iter.hasNext()) {
-      Map.Entry<?,?> entry = (Map.Entry<?,?>) iter.next();
+      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
       Attribute attr = (Attribute) entry.getKey();
       String attrName = attr.getName();
       String value = entry.getValue().toString();
