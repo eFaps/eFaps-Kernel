@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <!--
   
   Copyright 2003-2007 The eFaps Team
@@ -26,6 +28,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
 >
+  <modelVersion>4.0.0</modelVersion>
 
   <repositories>
     <repository>
@@ -72,26 +75,35 @@
     </pluginRepository>
   </pluginRepositories>
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.efaps</groupId>
+  <!-- ************************************************************************
+    * Properties
+    ************************************************************************+ -->
+  <properties>
+    <!-- definition of the dependency version of derby -->
+    <dependency.version.derby>10.3.1.4</dependency.version.derby>
+    <!-- definition of the dependency version of jetty -->
+    <dependency.version.jetty>6.1.5</dependency.version.jetty>
+  </properties>
 
+
+  <packaging>pom</packaging>
+  <groupId>org.efaps</groupId>
   <artifactId>efaps</artifactId>
-  <inceptionYear>2002</inceptionYear>
-  <description>eFaps is a framework used to map objects with or without attached 
-    files to a relational database and optional file systems (only for attaches files). 
-    Configurable access control can be provided down to object and attribute level 
-    depending on implementation and use case. Depending on requirements, 
-    events (like triggers) allow to implement business logic and to separate business 
-    logic from user interface.
-    The framework includes integrations (e.g. webdav, full text search) and a 
-    web application as 'simple' configurable user interface. Some best practises, 
-    example web application modules (e.g. team work module) support administrators 
-    and implementers using this framework.
-  </description>
   <version>1.0-SNAPSHOT</version>
 
-  <!--  <packaging>jar</packaging>-->
-  <packaging>pom</packaging>
+  <inceptionYear>2002</inceptionYear>
+  <description>
+    eFaps is a framework used to map objects with or without attached files to
+    a relational database and optional file systems (only for attaches files). 
+    Configurable access control can be provided down to object and attribute 
+    level depending on implementation and use case. Depending on requirements, 
+    events (like triggers) allow to implement business logic and to separate 
+    business logic from user interface.
+    The framework includes integrations (e.g. webdav, full text search) and a 
+    web application as 'simple' configurable user interface. Some best
+    practises, example web application modules (e.g. team work module) support
+    administrators and implementers using this framework.
+  </description>
   <name>eFaps</name>
   <url>http://www.efaps.org</url>
 
@@ -100,7 +112,7 @@
     <developer>
       <id>tjo</id>
       <name>Tim Jouaux</name>
-      <email>tim.jouaux AT efaps DOT org</email>
+      <email>tim.jouaux at efaps.org</email>
       <url>www.efaps.org</url>
       <organization>eFaps</organization>
       <organizationUrl />
@@ -156,24 +168,13 @@
   </organization>
 
   <!-- ************************************************************************
-    * Properties
-    ************************************************************************+ -->
-  <properties>
-    <!-- definition of the dependency version of derby -->
-    <dependency.version.derby>10.3.1.4</dependency.version.derby>
-
-    <!-- definition of the dependency version of jetty -->
-    <dependency.version.jetty>6.1.5</dependency.version.jetty>
-  </properties>
-
-  <!-- ************************************************************************
     * All Modules
     ************************************************************************+ -->
   <modules>
-    <module>examples/derby</module>
     <module>kernel</module>
-    <module>kernel-install</module>
     <module>maven</module>
+    <module>kernel-install</module>
+    <module>module</module>
     <module>webapp</module>
     <!--  <module>site</module>-->
   </modules>

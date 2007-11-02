@@ -43,23 +43,18 @@
   ************************************************************************* -->
   <packaging>pom</packaging>
   <groupId>org.efaps</groupId>
-  <artifactId>maven</artifactId>
+  <artifactId>module</artifactId>
 
-  <name>maven</name>
+  <name>modules</name>
   <description>
-    eFaps uses Maven for nearly all user interaction accept the WebInterface.
-    This Module provides all needed targets and SubModules.
   </description>
 
   <!-- ************************************************************************
   * All Modules
   ************************************************************************* -->
   <modules>
-    <module>logger</module>
-    <module>plugin</module>
-    <module>derby</module>
-    <module>jetty</module>
-    <module>run</module>
+    <module>contactwork</module>
+    <module>teamwork</module>
   </modules>
 
 </project>

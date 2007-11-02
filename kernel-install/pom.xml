@@ -28,14 +28,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.efaps</groupId>
-  <packaging>jar</packaging>
-  <artifactId>eFaps-Kernel-Install</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>eFaps-Kernel-Install</name>
-  <description>eFaps-Kernel-Install contains all definitions for the kernel in form
-  of various xml-Files, pictures etc. The whole Data will be imported into the 
-  eFaps-DataBase on the first installation of eFaps.</description>
+
+  <!-- ************************************************************************
+  * Parent Module Definition
+  ************************************************************************* -->
   <parent>
     <groupId>org.efaps</groupId>
     <artifactId>efaps</artifactId>
@@ -43,8 +39,20 @@
   </parent>
 
   <!-- ************************************************************************
+  * Module Definition
+  ************************************************************************* -->
+  <packaging>jar</packaging>
+  <groupId>org.efaps</groupId>
+  <artifactId>eFaps-Kernel-Install</artifactId>
+
+  <name>eFaps-Kernel-Install</name>
+  <description>eFaps-Kernel-Install contains all definitions for the kernel in form
+  of various xml-Files, pictures etc. The whole Data will be imported into the 
+  eFaps-DataBase on the first installation of eFaps.</description>
+
+  <!-- ************************************************************************
   * Project itself
-  ************************************************************************+ -->
+  ************************************************************************* -->
   <build>
 
     <plugins>
@@ -55,7 +63,7 @@
       <plugin>
         <groupId>org.efaps.maven</groupId>
         <artifactId>maven-efaps-plugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
         <executions>
           <execution>
             <phase>generate-resources</phase>
@@ -76,25 +84,28 @@
             <artifactId>commons-dbcp</artifactId>
             <version>1.2.1</version>
           </dependency>
-<!-- kernel install (must be defined because otherwise the 
-     Javascript class does not exists... -->
-<dependency>
-  <groupId>org.efaps</groupId>
-  <artifactId>eFaps-Kernel-Install</artifactId>
-  <version>1.0-SNAPSHOT</version>
-</dependency>
+          <!-- kernel install (must be defined because otherwise the 
+               Javascript class does not exists... -->
+          <!-- dependency>
+            <groupId>org.efaps</groupId>
+            <artifactId>eFaps-Kernel-Install</artifactId>
+            <version>${project.version}</version>
+          </dependency -->
         </dependencies>
       </plugin>
 
     </plugins>
   </build>
 
+  <!-- ************************************************************************
+  * Dependencies
+  ************************************************************************* -->
   <dependencies>
     <!-- eFaps kernel -->
     <dependency>
       <groupId>org.efaps</groupId>
       <artifactId>eFaps-Kernel</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

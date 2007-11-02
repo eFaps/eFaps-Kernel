@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 
  Copyright 2006 The eFaps Team
@@ -26,14 +28,10 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.efaps</groupId>
-  <packaging>jar</packaging>
-  <artifactId>eFaps-Kernel</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>eFaps-Kernel</name>
-  <description>The eFaps-Kernel is the mechanism wich connects any user interaction
-  to the eFaps-DataBase, providing all necesary issues like. access-control, runlevel etc.
-  </description>
+
+  <!-- ************************************************************************
+  * Parent Module Definition
+  ************************************************************************* -->
   <parent>
     <groupId>org.efaps</groupId>
     <artifactId>efaps</artifactId>
@@ -41,8 +39,22 @@
   </parent>
 
   <!-- ************************************************************************
+  * Module Definition
+  ************************************************************************* -->
+  <packaging>jar</packaging>
+  <groupId>org.efaps</groupId>
+  <artifactId>eFaps-Kernel</artifactId>
+
+  <name>kernel</name>
+  <description>
+    The eFaps-Kernel is the mechanism which connects any user interaction to the
+    eFaps-DataBase, providing all necessary issues like. access-control,
+    runlevel etc.
+  </description>
+
+  <!-- ************************************************************************
   * Project itself
-  ************************************************************************+ -->
+  ************************************************************************* -->
   <build>
     <plugins>
       <!--
@@ -100,8 +112,8 @@
   </build>
 
   <!-- ************************************************************************
-  * Depencies
-  ************************************************************************+ -->
+  * Dependencies
+  ************************************************************************* -->
 
   <dependencies>
 

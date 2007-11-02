@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 
  Copyright 2003-2007 The eFaps Team
@@ -26,16 +28,24 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
+
+  <!-- ************************************************************************
+  * Parent Module Definition
+  ************************************************************************* -->
+  <parent>
+    <groupId>org.efaps</groupId>
+    <artifactId>maven</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <!-- ************************************************************************
+  * Module Definition
+  ************************************************************************* -->
   <groupId>org.efaps.maven</groupId>
   <packaging>jar</packaging>
   <artifactId>maven-efaps-run</artifactId>
-  <version>1.0-SNAPSHOT</version>
- <name>maven-eFaps-run</name>
-  <parent>
-    <groupId>org.efaps.maven</groupId>
-    <artifactId>maven-efaps</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
+
+  <name>maven-run</name>
 
   <profiles>
     <!-- NOTE: This will not be activated on OS X, since
@@ -62,7 +72,7 @@
  
   <!-- ************************************************************************
   * Project itself
-  ************************************************************************+ -->
+  ************************************************************************* -->
   <build>
 
     <plugins>
@@ -83,8 +93,8 @@
   </build>
 
   <!-- ************************************************************************
-  * Depencies
-  ************************************************************************+ -->
+  * Dependencies
+  ************************************************************************* -->
   <dependencies>
     <!-- Commons Configuration -->
     <dependency>
@@ -107,14 +117,14 @@
     <dependency>
       <groupId>org.efaps</groupId>
       <artifactId>eFaps-Kernel</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- eFaps Maven PLugin -->
     <dependency>
       <groupId>org.efaps.maven</groupId>
       <artifactId>maven-efaps-plugin</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.efaps.maven</groupId>

@@ -1,3 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
 <!--
 
  Copyright 2003-2007 The eFaps Team
@@ -24,16 +26,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
   <repositories>
-    <repository>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <layout>default</layout>
-      <url>http://repo1.maven.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
     <repository>
       <id>wicket-stuff</id>
       <name>wicket-stuff</name>
@@ -44,14 +40,10 @@
       </snapshots>
     </repository>
   </repositories>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.efaps</groupId>
-  <packaging>jar</packaging>
-  <artifactId>eFaps-WebApp</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>eFaps-WebApp</name>
-  <description>eFaps-WebApp provides a Webinterface as the Grafic User Interface 
-  for eFaps wich can be easily expanded and altered.</description>
+
+  <!-- ************************************************************************
+  * Parent Module Definition
+  ************************************************************************* -->
   <parent>
     <groupId>org.efaps</groupId>
     <artifactId>efaps</artifactId>
@@ -59,8 +51,21 @@
   </parent>
 
   <!-- ************************************************************************
+  * Module Definition
+  ************************************************************************* -->
+  <packaging>jar</packaging>
+  <groupId>org.efaps</groupId>
+  <artifactId>eFaps-WebApp</artifactId>
+
+  <name>webapp</name>
+  <description>
+    eFaps-WebApp provides a web interface as the User Interface for eFaps
+    which can be easily expanded and altered.
+  </description>
+
+  <!-- ************************************************************************
   * Project itself
-  ************************************************************************+ -->
+  ************************************************************************* -->
   <build>
     <resources>
       <resource>
@@ -98,7 +103,7 @@
       <plugin>
         <groupId>org.efaps.maven</groupId>
         <artifactId>maven-efaps-jetty</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
         <configuration>
           <jaasConfigFile>${basedir}/src/main/jetty/jaas.config</jaasConfigFile>
           <configFile>file:${basedir}/src/main/jetty/jetty.xml</configFile>
@@ -116,7 +121,7 @@
           <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>eFaps-WebApp</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -124,15 +129,15 @@
   </build>
 
   <!-- ************************************************************************
-  * Depencies
-  ************************************************************************+ -->
+  * Dependencies
+  ************************************************************************* -->
   <dependencies>
 
     <!-- eFaps kernel -->
     <dependency>
       <groupId>org.efaps</groupId>
       <artifactId>eFaps-Kernel</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- to define a higher version (needed from another tool) -->
