@@ -100,7 +100,7 @@ public class TableModel extends AbstractModel {
   private UUID tableuuid;
 
   /**
-   *
+   * This instance variable sores if the Table should show CheckBodes
    */
   private boolean showCheckBoxes;
 
@@ -132,25 +132,30 @@ public class TableModel extends AbstractModel {
   /**
    * contains the sequential numbers of the filter
    */
-  private String[] filter;
+  private String[] filterSequence;
 
+  /**
+   * This instance variable stores the total weight of the widths of the Cells.
+   * (Sum of all widths)
+   */
   private int widthWeight;
 
   public TableModel(PageParameters _parameters) {
     super(_parameters);
     initialise();
-
   }
 
   private void initialise() {
-    CommandAbstract command = getCommand();
-    if (command != null) {
+    final CommandAbstract command = getCommand();
+    if (command == null) {
+      this.showCheckBoxes = false;
+    } else {
       // set target table
       this.tableuuid = command.getTargetTable().getUUID();
 
       // set default sort
       if (command.getTargetTableSortKey() != null) {
-        setSortKey(getCommand().getTargetTableSortKey());
+        this.sortKey = getCommand().getTargetTableSortKey();
         if (command.getTargetTableSortDirection() == CommandAbstract.TABLE_SORT_DIRECTION_DESC) {
           this.sortDirection = SortDirection.DESCENDING;
         } else {
@@ -161,17 +166,15 @@ public class TableModel extends AbstractModel {
       // set show check boxes
       boolean showCheckBoxes = getCommand().isTargetShowCheckBoxes();
       if (!showCheckBoxes) {
-        UUID cldUUID = UUID.fromString(getParameter("command"));
+        final UUID cldUUID = UUID.fromString(getParameter("command"));
         if (cldUUID != null) {
-          CommandAbstract cmd = getCommand(cldUUID);
+          final CommandAbstract cmd = getCommand(cldUUID);
           showCheckBoxes =
               (cmd != null) && cmd.hasEvents(EventType.UI_COMMAND_EXECUTE);
         }
       }
       this.showCheckBoxes = showCheckBoxes;
 
-    } else {
-      this.showCheckBoxes = false;
     }
   }
 
@@ -186,23 +189,23 @@ public class TableModel extends AbstractModel {
   public void execute() {
     try {
       // first get list of object ids
-      List<Return> ret =
+      final List<Return> ret =
           getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
               ParameterValues.INSTANCE, new Instance(super.getOid()));
 
-      List<List<Instance>> lists =
+      final List<List<Instance>> lists =
           (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
-      List<Instance> instances = new ArrayList<Instance>();
-      Map<Instance, List<Instance>> instMapper =
+      final List<Instance> instances = new ArrayList<Instance>();
+      final Map<Instance, List<Instance>> instMapper =
           new HashMap<Instance, List<Instance>>();
       for (List<Instance> oneList : lists) {
-        Instance inst = oneList.get(oneList.size() - 1);
+        final Instance inst = oneList.get(oneList.size() - 1);
         instances.add(inst);
         instMapper.put(inst, oneList);
       }
 
       // evaluate for all expressions in the table
-      ListQuery query = new ListQuery(instances);
+      final ListQuery query = new ListQuery(instances);
       for (Field field : this.getTable().getFields()) {
         if (field.getExpression() != null) {
           query.addSelect(field.getExpression());
@@ -241,8 +244,8 @@ public class TableModel extends AbstractModel {
       while (_query.next()) {
 
         // get all found oids (typically more than one if it is an expand)
-        Instance instance = _query.getInstance();
-        StringBuilder oids = new StringBuilder();
+        final Instance instance = _query.getInstance();
+        final StringBuilder oids = new StringBuilder();
         boolean first = true;
         for (Instance oneInstance : _instMapper.get(instance)) {
           if (first) {
@@ -252,7 +255,7 @@ public class TableModel extends AbstractModel {
           }
           oids.append(oneInstance.getOid());
         }
-        RowModel row = new RowModel(oids.toString());
+        final RowModel row = new RowModel(oids.toString());
         Attribute attr = null;
 
         String strValue = "";
@@ -265,10 +268,12 @@ public class TableModel extends AbstractModel {
             attr = _query.getAttribute(field.getExpression());
           }
 
-          FieldValue fieldvalue =
+          final FieldValue fieldvalue =
               new FieldValue(new FieldDefinition("egal", field), attr, value,
                   instance);
-          if (value != null) {
+          if (value == null) {
+            strValue = "";
+          } else {
             if (this.isCreateMode() && field.isEditable()) {
               strValue = fieldvalue.getCreateHtml();
             } else if (this.isEditMode() && field.isEditable()) {
@@ -276,12 +281,18 @@ public class TableModel extends AbstractModel {
             } else {
               strValue = fieldvalue.getViewHtml();
             }
-          } else {
-            strValue = "";
           }
           String icon = field.getIcon();
-          if (field.getAlternateOID() != null) {
-            Instance inst =
+          if (field.getAlternateOID() == null) {
+            oid = instance.getOid();
+            if (field.isShowTypeIcon()) {
+              final Image image = Image.getTypeIcon(instance.getType());
+              if (image != null) {
+                icon = image.getUrl();
+              }
+            }
+          } else {
+            final Instance inst =
                 new Instance((String) _query.get(field.getAlternateOID()));
             oid = inst.getOid();
             if (field.isShowTypeIcon()) {
@@ -290,19 +301,9 @@ public class TableModel extends AbstractModel {
                 icon = image.getUrl();
               }
             }
-          } else {
-            oid = instance.getOid();
-            if (field.isShowTypeIcon()) {
-              final Image image = Image.getTypeIcon(instance.getType());
-              if (image != null) {
-                icon = image.getUrl();
-              }
-            }
+
           }
-
-          row.add(new CellModel(oid, field.getReference(), strValue, icon,
-              field.getTarget()));
-
+          row.add(new CellModel(field, oid, strValue, icon));
         }
         this.values.add(row);
       }
@@ -320,7 +321,7 @@ public class TableModel extends AbstractModel {
     if (getSortKey() != null && getSortKey().length() > 0) {
       int sortKey = 0;
       for (int i = 0; i < getTable().getFields().size(); i++) {
-        Field field = getTable().getFields().get(i);
+        final Field field = getTable().getFields().get(i);
         if (field.getName().equals(getSortKey())) {
           sortKey = i;
           break;
@@ -329,11 +330,13 @@ public class TableModel extends AbstractModel {
       final int index = sortKey;
       Collections.sort(this.values, new Comparator<RowModel>() {
 
-        public int compare(RowModel _o1, RowModel _o2) {
+        public int compare(RowModel _rowModel1, RowModel _rowModel2) {
 
-          String a1 = (_o1.getValues().get(index)).getCellValue();
-          String a2 = (_o2.getValues().get(index)).getCellValue();
-          return a1.compareTo(a2);
+          final String value1 =
+              (_rowModel1.getValues().get(index)).getCellValue();
+          final String value2 =
+              (_rowModel2.getValues().get(index)).getCellValue();
+          return value1.compareTo(value2);
         }
       });
       if (getSortDirection() == SortDirection.DESCENDING) {
@@ -363,7 +366,7 @@ public class TableModel extends AbstractModel {
    * @see #sortKey
    * @see #getSortKey
    */
-  public void setSortKey(String _sortKey) {
+  public void setSortKey(final String _sortKey) {
     this.sortKey = _sortKey;
   }
 
@@ -378,7 +381,7 @@ public class TableModel extends AbstractModel {
     return this.sortDirection;
   }
 
-  public void setSortDirection(SortDirection _sortdirection) {
+  public void setSortDirection(final SortDirection _sortdirection) {
     this.sortDirection = _sortdirection;
   }
 
@@ -398,10 +401,13 @@ public class TableModel extends AbstractModel {
    * @see #showCheckBoxes
    */
   public boolean isShowCheckBoxes() {
+    boolean ret;
     if (super.isSubmit()) {
-      return true;
+      ret = true;
+    } else {
+      ret = this.showCheckBoxes;
     }
-    return this.showCheckBoxes;
+    return ret;
   }
 
   /**
@@ -414,7 +420,7 @@ public class TableModel extends AbstractModel {
   }
 
   public void removeFilter() {
-    this.filter = null;
+    this.filterSequence = null;
     this.filterKey = null;
     this.filterValues.clear();
   }
@@ -432,7 +438,8 @@ public class TableModel extends AbstractModel {
     if (isFiltered()) {
       for (RowModel row : this.values) {
         boolean filtered = false;
-        String value = (row.getValues().get(this.filterKeyInt)).getCellValue();
+        final String value =
+            (row.getValues().get(this.filterKeyInt)).getCellValue();
         for (String key : this.filterValues) {
           if (value.equals(key)) {
             filtered = true;
@@ -467,10 +474,10 @@ public class TableModel extends AbstractModel {
    * @see #filterKeyInt
    * @see #getFilterKey
    */
-  public void setFilterKey(String _filterkey) {
+  public void setFilterKey(final String _filterkey) {
     this.filterKey = _filterkey;
     for (int i = 0; i < getTable().getFields().size(); i++) {
-      Field field = getTable().getFields().get(i);
+      final Field field = getTable().getFields().get(i);
       if (field.getName().equals(_filterkey)) {
         this.filterKeyInt = i;
         break;
@@ -488,12 +495,12 @@ public class TableModel extends AbstractModel {
    * @throws EFapsException
    */
   public List<String> getFilterList() {
-    List<String> filterList = new ArrayList<String>();
+    final List<String> filterList = new ArrayList<String>();
     this.filterValues = filterList;
 
     for (RowModel rowmodel : this.values) {
-      CellModel cellmodel = rowmodel.getValues().get(this.filterKeyInt);
-      String value = cellmodel.getCellValue();
+      final CellModel cellmodel = rowmodel.getValues().get(this.filterKeyInt);
+      final String value = cellmodel.getCellValue();
       if (!filterList.contains(value)) {
         filterList.add(value);
       }
@@ -507,18 +514,18 @@ public class TableModel extends AbstractModel {
    * @see #getValues()
    */
   public void filter() {
-    if (this.filter != null) {
-      List<String> filterList = new ArrayList<String>();
-      for (int i = 0; i < this.filter.length; i++) {
-        Integer in = Integer.valueOf(this.filter[i].toString());
-        filterList.add(this.filterValues.get(in));
+    if (this.filterSequence != null) {
+      final List<String> filterList = new ArrayList<String>();
+      for (int i = 0; i < this.filterSequence.length; i++) {
+        final Integer intpos = Integer.valueOf(this.filterSequence[i]);
+        filterList.add(this.filterValues.get(intpos));
       }
       this.filterValues = filterList;
     }
   }
 
-  public void setFilter(String[] _filter) {
-    this.filter = _filter;
+  public void setFilter(final String[] _filter) {
+    this.filterSequence = _filter;
   }
 
   /**
@@ -558,6 +565,7 @@ public class TableModel extends AbstractModel {
      *                string with all oids for this row
      */
     public RowModel(final String _oids) {
+      super();
       this.oids = _oids;
     }
 

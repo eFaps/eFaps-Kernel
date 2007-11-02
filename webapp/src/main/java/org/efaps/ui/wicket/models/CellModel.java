@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.models;
 
 import org.apache.wicket.model.Model;
 
+import org.efaps.admin.ui.Field;
+
 /**
  * @author jmo
- * @version $Id$
- *
+ * @version $Id:CellModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class CellModel extends Model {
 
@@ -33,7 +34,7 @@ public class CellModel extends Model {
 
   private final String oid;
 
-  private final String reference;
+  private String reference;
 
   private final String cellValue;
 
@@ -41,14 +42,17 @@ public class CellModel extends Model {
 
   private final int target;
 
-  public CellModel(final String _oid, final String _reference,
-                   final String _cellvalue, final String _icon,
-                   final int _target) {
+  private final int width;
+
+  public CellModel(final Field _field, final String _oid,
+                   final String _cellvalue, final String _icon) {
+    super();
+    this.reference = _field.getReference();
+    this.target = _field.getTarget();
+    this.width = _field.getWidth();
     this.oid = _oid;
-    this.reference = _reference;
     this.cellValue = _cellvalue;
     this.icon = _icon;
-    this.target = _target;
   }
 
   /**
@@ -69,6 +73,16 @@ public class CellModel extends Model {
 
   public String getReference() {
     return this.reference;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #reference}.
+   *
+   * @param _reference
+   *                the reference to set
+   */
+  public void setReference(final String _reference) {
+    this.reference = _reference;
   }
 
   /**
@@ -99,6 +113,15 @@ public class CellModel extends Model {
 
   public int getTarget() {
     return this.target;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #width}.
+   *
+   * @return value of instance variable {@link #width}
+   */
+  public int getWidth() {
+    return this.width;
   }
 
 }

@@ -62,7 +62,8 @@ public class RowPanel extends Panel {
       cellpanel.setOutputMarkupId(true);
       cellpanel.add(new SimpleAttributeModifier("class", "eFapsTableCell"));
 
-      int width = 100 / _model.getValues().size();
+      int width = 100 / _tablemodel.getWidthWeight() * cellmodel.getWidth();
+
       if (i == _model.getValues().size()) {
         width = width - (1);
       } else {

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.models;
@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.model.Model;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -41,12 +41,12 @@ import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Image;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-import org.efaps.util.EFapsException;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmo
- * @version $Id$
+ * @version $Id:FormModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class FormModel extends AbstractModel {
 
@@ -54,7 +54,7 @@ public class FormModel extends AbstractModel {
 
   /**
    * The instance variable stores the result list of the execution of the query.
-   *
+   * 
    * @see #getValues
    * @see #setValues
    */
@@ -62,18 +62,18 @@ public class FormModel extends AbstractModel {
 
   /**
    * The instance variable stores the form which must be shown.
-   *
+   * 
    * @see #getForm
    */
   private UUID formuuid;
 
   public FormModel(PageParameters _parameters) {
     super(_parameters);
-    CommandAbstract command = super.getCommand();
-    if (command != null && command.getTargetForm() != null) {
-      this.formuuid = command.getTargetForm().getUUID();
-    } else {
+    final CommandAbstract command = super.getCommand();
+    if (command == null) {
       this.formuuid = null;
+    } else if (command.getTargetForm() != null) {
+      this.formuuid = command.getTargetForm().getUUID();
     }
   }
 
@@ -89,7 +89,7 @@ public class FormModel extends AbstractModel {
 
   /**
    * This is the getter method for the instance variable {@link #values}.
-   *
+   * 
    * @return value of instance variable {@link #values}
    * @see #values
    * @see #setValues
@@ -99,7 +99,7 @@ public class FormModel extends AbstractModel {
   }
 
   public Form getForm() {
-    return (Form.get(this.formuuid));
+    return Form.get(this.formuuid);
   }
 
   public void execute() {
@@ -111,16 +111,16 @@ public class FormModel extends AbstractModel {
     SearchQuery query = null;
     boolean queryhasresult = false;
     try {
-      Form form = Form.get(this.formuuid);
+      final Form form = Form.get(this.formuuid);
 
       if (super.isCreateMode() || super.isSearchMode()) {
         if (super.isCreateMode()) {
           type = super.getCommand().getTargetCreateType();
         } else if (super.isSearchMode()) {
-          List<EventDefinition> events =
+          final List<EventDefinition> events =
               getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
           for (EventDefinition eventDef : events) {
-            String tmp = eventDef.getProperty("Types");
+            final String tmp = eventDef.getProperty("Types");
             if (tmp != null) {
               type = Type.get(tmp);
             }
@@ -146,7 +146,7 @@ public class FormModel extends AbstractModel {
       }
       if (queryhasresult || type != null) {
         for (int i = 0; i < form.getFields().size(); i++) {
-          Field field = form.getFields().get(i);
+          final Field field = form.getFields().get(i);
           Object value = null;
           Attribute attr;
           Instance instance = null;
@@ -167,14 +167,14 @@ public class FormModel extends AbstractModel {
             }
 
             String label;
-            if (field.getLabel() != null) {
-              label = field.getLabel();
-            } else {
+            if (field.getLabel() == null) {
               label =
                   attr.getParent().getName() + "/" + attr.getName() + ".Label";
+            } else {
+              label = field.getLabel();
             }
 
-            FieldValue fieldvalue =
+            final FieldValue fieldvalue =
                 new FieldValue(new FieldDefinition("egal", field), attr, value,
                     instance);
 
@@ -193,24 +193,24 @@ public class FormModel extends AbstractModel {
               oid = instance.getOid();
               if (field.isShowTypeIcon() && instance.getType() != null) {
                 final Image image = Image.getTypeIcon(instance.getType());
-                if (image != null)  {
+                if (image != null) {
                   icon = image.getUrl();
                 }
               }
             }
 
             if (queryhasresult) {
-              FormCellModel cell =
-                  new FormCellModel(oid, strValue, icon,
-                      super.isEditMode() ? field.isRequired() : false, label,
-                      field.getReference(), field.getTarget(), field.getName());
+              final FormCellModel cell =
+                  new FormCellModel(field, oid, strValue, icon, super
+                      .isEditMode() ? field.isRequired() : false, label);
               row.add(cell);
             } else if (strValue != null && !strValue.equals("")) {
-              FormCellModel cell =
-                  new FormCellModel(oid, strValue, icon,
-                      super.isSearchMode() ? false : field.isRequired(), label,
-                      super.isSearchMode() ? null : field.getReference(), field
-                          .getTarget(), field.getName());
+              final FormCellModel cell =
+                  new FormCellModel(field, oid, strValue, icon, super
+                      .isSearchMode() ? false : field.isRequired(), label);
+              if (super.isSearchMode()) {
+                cell.setReference(null);
+              }
               row.add(cell);
             }
 
@@ -242,17 +242,17 @@ public class FormModel extends AbstractModel {
     super.setInitialised(true);
   }
 
-  public void setFormUUID(UUID _uuid) {
+  public void setFormUUID(final UUID _uuid) {
     this.formuuid = _uuid;
   }
 
-  public class FormRowModel implements IClusterable {
+  public class FormRowModel extends Model {
 
     private static final long serialVersionUID = 1L;
 
     private final List<FormCellModel> values = new ArrayList<FormCellModel>();
 
-    public void add(FormCellModel _cellmodel) {
+    public void add(final FormCellModel _cellmodel) {
       this.values.add(_cellmodel);
     }
 
@@ -275,14 +275,13 @@ public class FormModel extends AbstractModel {
 
     private final String name;
 
-    public FormCellModel(final String _oid, final String _cellValue,
-                         final String _icon, final boolean _required,
-                         final String _label, final String _reference,
-                         final int _target, final String _name) {
-      super(_oid, _reference, _cellValue, _icon, _target);
+    public FormCellModel(final Field _field, final String _oid,
+                         final String _cellValue, final String _icon,
+                         final boolean _required, final String _label) {
+      super(_field, _oid, _cellValue, _icon);
       this.required = _required;
       this.cellLabel = DBProperties.getProperty(_label);
-      this.name = _name;
+      this.name = _field.getName();
     }
 
     public boolean isRequired() {
@@ -295,7 +294,7 @@ public class FormModel extends AbstractModel {
 
     /**
      * This is the getter method for the instance variable {@link #name}.
-     *
+     * 
      * @return value of instance variable {@link #name}
      */
 
