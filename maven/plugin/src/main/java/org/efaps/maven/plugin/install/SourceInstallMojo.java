@@ -22,11 +22,11 @@ package org.efaps.maven.plugin.install;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import org.efaps.maven.plugin.goal.efaps.install.Application;
-import org.efaps.util.EFapsException;
-
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
 import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
+
+import org.efaps.maven.plugin.goal.efaps.install.Application;
+import org.efaps.util.EFapsException;
 
 /**
  * Installs an eFaps application.

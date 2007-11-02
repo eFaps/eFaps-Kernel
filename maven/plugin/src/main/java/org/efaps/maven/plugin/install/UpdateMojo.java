@@ -18,16 +18,15 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven.plugin.goal.efaps;
+package org.efaps.maven.plugin.install;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import org.efaps.maven.plugin.goal.efaps.install.Application;
-import org.efaps.maven.plugin.install.AbstractEFapsInstallMojo;
-import org.efaps.util.EFapsException;
-
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
 import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
+
+import org.efaps.maven.plugin.goal.efaps.install.Application;
+import org.efaps.util.EFapsException;
 
 /**
  * Makes an update of an eFaps application for the last version of the

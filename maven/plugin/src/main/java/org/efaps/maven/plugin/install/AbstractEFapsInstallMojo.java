@@ -25,9 +25,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.tools.ant.DirectoryScanner;
 import org.jfrog.maven.annomojo.annotations.MojoParameter;
 
-import org.apache.tools.ant.DirectoryScanner;
 import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
 
