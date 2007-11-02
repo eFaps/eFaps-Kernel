@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.models;
@@ -28,7 +28,7 @@ import org.efaps.ui.wicket.models.TableModel.SortDirection;
 
 /**
  * @author jmo
- * @version $Id$
+ * @version $Id:HeaderModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class HeaderModel extends Model {
 
@@ -44,14 +44,16 @@ public class HeaderModel extends Model {
 
   private SortDirection sortDirection;
 
+  private final int width;
+
   public HeaderModel(final Field _field, final SortDirection _sortdirection) {
     this.label = _field.getLabel();
     this.sortable = _field.isSortAble();
     this.name = _field.getName();
     this.filterable = _field.isFilterable();
     this.sortDirection = _sortdirection;
+    this.width = _field.getWidth();
   }
-
 
   public String getLabel() {
     if (this.label != null) {
@@ -101,16 +103,23 @@ public class HeaderModel extends Model {
     return this.sortDirection;
   }
 
-
   /**
-   * This is the setter method for the instance variable
-   * {@link #sortDirection}.
+   * This is the setter method for the instance variable {@link #sortDirection}.
    *
    * @param sortDirection
    *                the sortDirection to set
    */
   public void setSortDirection(SortDirection sortDirection) {
     this.sortDirection = sortDirection;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #width}.
+   *
+   * @return value of instance variable {@link #width}
+   */
+  public int getWidth() {
+    return this.width;
   }
 
 }

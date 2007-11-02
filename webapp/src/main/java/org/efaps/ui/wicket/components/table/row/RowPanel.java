@@ -32,27 +32,24 @@ import org.efaps.ui.wicket.models.TableModel.RowModel;
 /**
  * @author jmox
  * @version $Id$
- *
  */
 public class RowPanel extends Panel {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = 1L;
 
   public RowPanel(final String _id, final RowModel _model,
                   final TableModel _tablemodel, final boolean _updateListMenu) {
     super(_id, _model);
     int i = 0;
-    RepeatingView cellRepeater = new RepeatingView("cellRepeater");
+    final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
     add(cellRepeater);
 
     if (_tablemodel.isShowCheckBoxes()) {
       final CellPanel cellpanel =
           new CellPanel(cellRepeater.newChildId(), _model.getOids());
       cellpanel.setOutputMarkupId(true);
-      cellpanel.add(new SimpleAttributeModifier("class", "eFapsTableCheckBoxCell"));
+      cellpanel.add(new SimpleAttributeModifier("class",
+          "eFapsTableCheckBoxCell"));
       cellRepeater.add(cellpanel);
     }
 
@@ -67,10 +64,13 @@ public class RowPanel extends Panel {
 
       int width = 100 / _model.getValues().size();
       if (i == _model.getValues().size()) {
-        width = width - (i * 2);
+        width = width - (1);
+      } else {
+        cellpanel.add(new SimpleAttributeModifier("style", "width:"
+            + width
+            + "%"));
       }
-      cellpanel
-          .add(new SimpleAttributeModifier("style", "width:" + width + "%"));
+
       cellRepeater.add(cellpanel);
     }
 

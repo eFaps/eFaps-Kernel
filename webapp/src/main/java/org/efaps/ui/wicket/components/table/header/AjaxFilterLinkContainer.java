@@ -30,11 +30,9 @@ import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.pages.content.table.filter.FilterPage;
 
-
 /**
  * @author jmox
  * @version $Id$
- *
  */
 public class AjaxFilterLinkContainer extends AjaxLink {
 
@@ -47,14 +45,14 @@ public class AjaxFilterLinkContainer extends AjaxLink {
 
   @Override
   public void onClick(final AjaxRequestTarget _target) {
-    TableHeaderPanel tableheaderpanel =
-        (TableHeaderPanel) this.findParent(TableHeaderPanel.class);
+    final HeaderPanel tableheaderpanel =
+        (HeaderPanel) this.findParent(HeaderPanel.class);
 
-    TableModel tablemodel =
-        (TableModel) this.findParent(TableHeaderPanel.class).getModel();
+    final TableModel tablemodel =
+        (TableModel) this.findParent(HeaderPanel.class).getModel();
     tablemodel.setFilterKey(((HeaderModel) super.getModel()).getName());
 
-    FilterPageCreator pagecreator =
+    final FilterPageCreator pagecreator =
         new FilterPageCreator(tablemodel, tableheaderpanel.getModal());
 
     tableheaderpanel.getModal().setPageCreator(pagecreator);

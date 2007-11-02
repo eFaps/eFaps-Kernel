@@ -14,7 +14,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  
-  Author:          jmo
+  Author:          jmox
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -54,26 +54,9 @@
 </script>
 </wicket:head>
 <body>
-<wicket:panel>
-  <div width="1%" wicket:id="checkbox">
-    <input type="checkbox" onClick="var cb=document.getElementsByName('selectedRow'); if(!isNaN(cb.length)) {for(var i=0;i<cb.length;i++){cb[i].checked=this.checked;}}else{cb.checked=this.checked;}"/>
-  </div>
-   <span wicket:id="repeating">
-     <div>
-        <table width="100%">
-          <tr>
-            <td wicket:id="sortlink">
-              <span wicket:id="label"></span>
-              <img wicket:id="iconsort"/>
-            </td>
-            <td wicket:id="filterlink" width="1%" class="eFapsHeaderFilterTD">
-              <img wicket:id="iconfilter"/>
-            </td>
-          </tr>  
-        </table>     
-     </div>
-   </span>  
-   <div wicket:id="eFapsModal"></div>
-</wicket:panel>
+  <wicket:panel>
+    <div wicket:id="cellRepeater"></div>
+    <div wicket:id="eFapsModal"></div>
+  </wicket:panel>
 </body>
 </html>

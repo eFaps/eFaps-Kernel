@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.table.header;
@@ -27,25 +27,24 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.SortDirection;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
-
 /**
  * @author jmox
- * @version $Id$
+ * @version $Id:SortLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class SortLinkContainer extends Link {
+public class SortLink extends Link {
 
   private static final long serialVersionUID = 1L;
 
-  public SortLinkContainer(final String _id, final HeaderModel _model) {
+  public SortLink(final String _id, final HeaderModel _model) {
     super(_id, _model);
   }
 
   @Override
   public void onClick() {
 
-    TableModel tablemodel =
-        (TableModel) this.findParent(TableHeaderPanel.class).getModel();
-    HeaderModel model = (HeaderModel) super.getModel();
+    final TableModel tablemodel =
+        (TableModel) this.findParent(HeaderPanel.class).getModel();
+    final HeaderModel model = (HeaderModel) super.getModel();
     tablemodel.setSortKey(model.getName());
 
     for (HeaderModel headermodel : tablemodel.getHeaders()) {

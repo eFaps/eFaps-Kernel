@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.models;
@@ -46,12 +46,12 @@ import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Table;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
-import org.efaps.util.EFapsException;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmox
- * @version $Id$
+ * @version $Id:TableModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class TableModel extends AbstractModel {
 
@@ -134,6 +134,8 @@ public class TableModel extends AbstractModel {
    */
   private String[] filter;
 
+  private int widthWeight;
+
   public TableModel(PageParameters _parameters) {
     super(_parameters);
     initialise();
@@ -213,6 +215,7 @@ public class TableModel extends AbstractModel {
           sortdirection = this.getSortDirection();
         }
         this.headers.add(new HeaderModel(field, sortdirection));
+        this.widthWeight += field.getWidth();
       }
       query.execute();
 
@@ -516,6 +519,15 @@ public class TableModel extends AbstractModel {
 
   public void setFilter(String[] _filter) {
     this.filter = _filter;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #widthWeight}.
+   *
+   * @return value of instance variable {@link #widthWeight}
+   */
+  public int getWidthWeight() {
+    return this.widthWeight;
   }
 
   /**

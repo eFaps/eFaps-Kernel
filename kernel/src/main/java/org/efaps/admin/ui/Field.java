@@ -24,7 +24,6 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
@@ -34,11 +33,12 @@ import org.efaps.util.cache.CacheReloadException;
 
 /**
  * This class represents the Fields of the UserInterface.
- * 
+ *
  * @author tmo
  * @version $Id$
  */
 public class Field extends UserInterfaceObject {
+
   /**
    * Logger for this class
    */
@@ -48,7 +48,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the expression to get a field from the database.
-   * 
+   *
    * @see #setExpression
    * @see #getExpression
    */
@@ -57,7 +57,7 @@ public class Field extends UserInterfaceObject {
   /**
    * This is the expression to get the alternate id of a field from the
    * database.
-   * 
+   *
    * @see #setAlternateOID
    * @see #getAlternateOID
    */
@@ -65,7 +65,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the value in the create process. Default value is <i>null</i>.
-   * 
+   *
    * @see #setCreateValue
    * @see #getCreateValue
    */
@@ -73,7 +73,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * Instance variable to hold the label.
-   * 
+   *
    * @see #setLabel
    * @see #getLabel
    */
@@ -82,7 +82,7 @@ public class Field extends UserInterfaceObject {
   /**
    * Is a field multiline? If yes, the value must be higher than the default
    * value <i>1</i>. The value is only used for a create or a modify form.
-   * 
+   *
    * @see #setRows
    * @see #getRows
    */
@@ -92,7 +92,7 @@ public class Field extends UserInterfaceObject {
    * Number of columns for a field. It is used only for a create or a modify
    * form. Default value is <i>20</i>. The column size is not the size of a
    * field in the database!
-   * 
+   *
    * @see #setCols
    * @see #getCols
    */
@@ -100,7 +100,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * Is a field creatable? Default value is <i>true</i>.
-   * 
+   *
    * @see #setCreatable
    * @see #isCreatable
    */
@@ -108,7 +108,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * Is a field editable? Default value is <i>true</i>.
-   * 
+   *
    * @see #setEditable
    * @see #isEditable
    */
@@ -116,7 +116,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * Is a field editable? Default value is <i>true</i>.
-   * 
+   *
    * @see #setSearchable
    * @see #isSearchable
    */
@@ -124,7 +124,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * Is a field required? Default value is <i>false</i>.
-   * 
+   *
    * @see #setRequired
    * @see #isRequired
    */
@@ -133,7 +133,7 @@ public class Field extends UserInterfaceObject {
   /**
    * Is a field hidden? Default value is <i>false</i>. It used to store some
    * values in the form in the modifcation and creating forms.
-   * 
+   *
    * @see #setHidden
    * @see #isHidden
    */
@@ -141,7 +141,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * Instance variable to hold the reference to call.
-   * 
+   *
    * @see #setReference
    * @see #getReference
    */
@@ -149,7 +149,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * Instance variable to hold the selected index.
-   * 
+   *
    * @see #setSelIndex
    * @see #getSelIndex
    */
@@ -157,7 +157,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * The field is represented by a radio button, if the field is editable.
-   * 
+   *
    * @see #setRadioButton
    * @see #isRadioButton
    */
@@ -165,7 +165,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * The field is represented by an program value.
-   * 
+   *
    * @see #setProgramValue
    * @see #getProgramValue
    */
@@ -173,7 +173,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * The field has an icon..
-   * 
+   *
    * @see #setIcon
    * @see #getIcon
    */
@@ -181,7 +181,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * The target of the field href is the content frame.
-   * 
+   *
    * @set #getTarget
    * @see #setTarget
    */
@@ -189,7 +189,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * The type icon for this field is shown if value is set to true.
-   * 
+   *
    * @see #setShowTypeIcon
    * @see #isShowTypeIcon
    */
@@ -198,7 +198,7 @@ public class Field extends UserInterfaceObject {
   /**
    * Group Count if in a row / columnd must be shown more than one value. The
    * default value is <code>-1</code> meaning no group count is set.
-   * 
+   *
    * @see #setGroupCount
    * @see #getGroupCount
    */
@@ -206,37 +206,42 @@ public class Field extends UserInterfaceObject {
 
   /**
    * The class is used to generate for a field user specific field values.
-   * 
+   *
    * @see #setClassUI
    * @see #getClassUI
    */
   private UIInterface classUI = null;
 
   /**
-   * This field can bes sorted in a Webtable
-   * 
+   * This field can be sorted in a Webtable
+   *
    * @see #isSortAble()
    */
   private boolean sortAble = true;
 
   /**
    * This field can be filtered in a Webtable
-   * 
+   *
    * @see #isFilterable()
    * @see #setFilterable(boolean)
    */
   private boolean filterable = false;
 
   /**
+   * The width of the field as weighted int
+   */
+  private int width;
+
+  /**
    * Standart-Constructor
    */
   public Field() {
-    super(0, null,null);
+    super(0, null, null);
   }
 
   /**
    * This is the constructor of the field class.
-   * 
+   *
    * @param _id
    *                id of the field instance
    * @param _name
@@ -249,7 +254,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Field}.
-   * 
+   *
    * @param _id
    *                id to search in the cache
    * @return instance of class {@link Field}
@@ -258,7 +263,7 @@ public class Field extends UserInterfaceObject {
     Collection col = null;
 
     try {
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setQueryTypes(EFapsClassName.FIELD.name);
       query.addSelect("Collection");
       query.addWhereExprEqValue("ID", _id);
@@ -281,20 +286,19 @@ public class Field extends UserInterfaceObject {
    * The instance method returns the label for this field. If no special label
    * is defined, the viewable name of the attribute is returned (method
    * {@link Attribute.getViewableName} is used).
-   * 
+   *
    * @param _context
    *                context for this request
    * @return label of the field
    */
   public String getViewableName(final Context _context) {
-    String ret = getLabel();
-    return ret;
+    return getLabel();
   }
 
   /**
    * Test, if the value of instance variable {@link CommandAbstract.target} is
    * equal to {@link CommandAbstract.TARGET_CONTENT}.
-   * 
+   *
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
@@ -306,7 +310,7 @@ public class Field extends UserInterfaceObject {
   /**
    * Test, if the value of instance variable {@link CommandAbstract.target} is
    * equal to {@link CommandAbstract.TARGET_POPUP}.
-   * 
+   *
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
@@ -318,7 +322,7 @@ public class Field extends UserInterfaceObject {
   /**
    * Test, if the value of instance variable {@link CommandAbstract.target} is
    * equal to {@link CommandAbstract.TARGET_HIDDEN}.
-   * 
+   *
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
@@ -330,9 +334,10 @@ public class Field extends UserInterfaceObject {
   /**
    * The method overrides the original method 'toString' and returns the
    * information of the field user interface object.
-   * 
+   *
    * @return name of the user interface object
    */
+  @Override
   public String toString() {
     return new ToStringBuilder(this).appendSuper(super.toString()).append(
         "expression", getExpression())
@@ -353,23 +358,25 @@ public class Field extends UserInterfaceObject {
    * @param _toName
    *                to name
    */
+  @Override
   protected void setLinkProperty(final EFapsClassName _linkType,
-      final long _toId, final EFapsClassName _toType, final String _toName)
-      throws Exception {
+                                 final long _toId,
+                                 final EFapsClassName _toType,
+                                 final String _toName) throws Exception {
     switch (_linkType) {
       case LINK_ICON:
         setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/"
             + _toName));
-      break;
+        break;
       default:
         super.setLinkProperty(_linkType, _toId, _toType, _toName);
-      break;
+        break;
     }
   }
 
   /**
    * The instance method sets a new property value.
-   * 
+   *
    * @param _context
    *                eFaps context for this request
    * @param _name
@@ -377,87 +384,100 @@ public class Field extends UserInterfaceObject {
    * @param _value
    *                value of the property
    */
+  @Override
   protected void setProperty(final String _name, final String _value)
-      throws CacheReloadException {
-    if (_name.equals("AlternateOID")) {
+                                                                     throws CacheReloadException {
+    if ("AlternateOID".equals(_name)) {
       setAlternateOID(_value);
-    } else if (_name.equals("ClassNameUI")) {
+    } else if ("ClassNameUI".equals(_name)) {
       try {
         setClassUI((UIInterface) Class.forName(_value).newInstance());
       } catch (ClassNotFoundException e) {
-        throw new CacheReloadException("could not found class " + "'" + _value
-            + "' for " + "'" + getName() + "'", e);
+        throw new CacheReloadException("could not found class '"
+            + _value
+            + "' for '"
+            + getName()
+            + "'", e);
       } catch (InstantiationException e) {
-        throw new CacheReloadException("could not instantiate class " + "'"
-            + _value + "' for " + "'" + getName() + "'", e);
+        throw new CacheReloadException("could not instantiate class '"
+            + _value
+            + "' for '"
+            + getName()
+            + "'", e);
       } catch (IllegalAccessException e) {
-        throw new CacheReloadException("could not access class " + "'" + _value
-            + "' for " + "'" + getName() + "'", e);
+        throw new CacheReloadException("could not access class '"
+            + _value
+            + "' for '"
+            + getName()
+            + "'", e);
       }
-    } else if (_name.equals("Columns")) {
+    } else if ("Columns".equals(_name)) {
       setCols(Integer.parseInt(_value));
-    } else if (_name.equals("Creatable")) {
-      setCreatable(_value.equals("true"));
-    } else if (_name.equals("CreateValue")) {
+    } else if ("Creatable".equals(_name)) {
+      setCreatable("true".equals(_value));
+    } else if ("CreateValue".equals(_name)) {
       setCreateValue(_value);
-    } else if (_name.equals("Editable")) {
-      setEditable(_value.equals("true"));
-    } else if (_name.equals("Expression")) {
+    } else if ("Editable".equals(_name)) {
+      setEditable("true".equals(_value));
+    } else if ("Expression".equals(_name)) {
       setExpression(_value);
-    } else if (_name.equals("GroupCount")) {
+    } else if ("Width".equals(_name)) {
+      this.setWidth(_value);
+    } else if ("GroupCount".equals(_name)) {
       setGroupCount(Integer.parseInt(_value));
-    } else if (_name.equals("SortAble")) {
-      setSortAble(!_value.equals("false"));
-    } else if (_name.equals("Filterable")) {
-      setFilterable(_value.equals("true"));
-    } else if (_name.equals("Hidden")) {
-      setHidden(_value.equals("true"));
-    } else if (_name.equals("HRef")) {
+    } else if ("SortAble".equals(_name)) {
+      setSortAble(!"false".equals(_value));
+    } else if ("Filterable".equals(_name)) {
+      setFilterable("true".equals(_value));
+    } else if ("Hidden".equals(_name)) {
+      setHidden("true".equals(_value));
+    } else if ("HRef".equals(_name)) {
       setReference(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.equals("Icon")) {
+    } else if ("Icon".equals(_name)) {
       setIcon(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.equals("Label")) {
+    } else if ("Label".equals(_name)) {
       setLabel(_value);
-    } else if (_name.equals("ProgramValue")) {
+    } else if ("ProgramValue".equals(_name)) {
       try {
-        Class<?> programValueClass = Class.forName(_value);
+        final Class<?> programValueClass = Class.forName(_value);
         setProgramValue((FieldProgramValueInterface) programValueClass
             .newInstance());
       } catch (ClassNotFoundException e) {
-        throw new CacheReloadException("could not found class " + "'" + _value
-            + "' for " + "'" + getName() + "'", e);
+        throw new CacheReloadException("could not found class '"
+            + _value
+            + "' for '"
+            + getName()
+            + "'", e);
       } catch (InstantiationException e) {
-        throw new CacheReloadException("could not instantiate class " + "'"
-            + _value + "' for " + "'" + getName() + "'", e);
+        throw new CacheReloadException("could not instantiate class '"
+            + _value
+            + "' for '"
+            + getName()
+            + "'", e);
       } catch (IllegalAccessException e) {
-        throw new CacheReloadException("could not access class " + "'" + _value
-            + "' for " + "'" + getName() + "'", e);
+        throw new CacheReloadException("could not access class '"
+            + _value
+            + "' for '"
+            + getName()
+            + "'", e);
       }
-      // try {
-      // } catch (ClassNotFoundException e) {
-      // } catch (InstantiationException e) {
-      // throw new RequestException(getClass(),
-      // "newInstance.InstantiationException", e);
-      // } catch (IllegalAccessException e) {
-      // throw new RequestException(getClass(),
-      // "newInstance.IllegalAccessException", e);
-      // }
-    } else if (_name.equals("Required")) {
-      if (_value.equals("true")) {
+
+    } else if ("Required".equals(_name)) {
+      if ("true".equals(_value)) {
         setRequired(true);
       }
-    } else if (_name.equals("Rows")) {
+    } else if ("Rows".equals(_name)) {
       setRows(Integer.parseInt(_value));
-    } else if (_name.equals("Searchable")) {
-      setSearchable(_value.equals("true"));
-    } else if (_name.equals("ShowTypeIcon")) {
-      setShowTypeIcon(_value.equals("true"));
-    } else if (_name.equals("Target")) {
-      if (_value.equals("content")) {
+    } else if ("Searchable".equals(_name)) {
+      setSearchable("true".equals(_value));
+    } else if ("ShowTypeIcon".equals(_name)) {
+      setShowTypeIcon("true".equals(_value));
+    } else if ("Target".equals(_name)) {
+      if ("content".equals(_value)) {
         setTarget(CommandAbstract.TARGET_CONTENT);
-      } else if (_value.equals("hidden")) {
+      } else if ("hidden".equals(_value)) {
         setTarget(CommandAbstract.TARGET_HIDDEN);
-      } else if (_value.equals("popup")) {
+      } else if ("popup".equals(_value)) {
         setTarget(CommandAbstract.TARGET_POPUP);
       }
     } else {
@@ -469,7 +489,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #expression}.
-   * 
+   *
    * @param _expression
    *                new value for instance variable {@link #expression}
    * @see #expression
@@ -481,7 +501,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #expression}.
-   * 
+   *
    * @return the value of the instance variable {@link #expression}.
    * @see #expression
    * @see #setExpression
@@ -492,7 +512,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #alternateOID}.
-   * 
+   *
    * @param _alternateOID
    *                new value for instance variable {@link #alternateOID}
    * @see #alternateOID
@@ -504,7 +524,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #alternateOID}.
-   * 
+   *
    * @return the value of the instance variable {@link #alternateOID}.
    * @see #alternateOID
    * @see #setAlternateOID
@@ -515,7 +535,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #createValue}.
-   * 
+   *
    * @param _createValue
    *                new value for instance variable {@link #createValue}
    * @see #createValue
@@ -527,7 +547,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #createValue}.
-   * 
+   *
    * @return the value of the instance variable {@link #createValue}.
    * @see #createValue
    * @see #setCreateValue
@@ -538,7 +558,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #label}.
-   * 
+   *
    * @param _label
    *                new value for instance variable {@link #label}
    * @see #label
@@ -550,7 +570,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #label}.
-   * 
+   *
    * @return the value of the instance variable {@link #label}.
    * @see #label
    * @see #setLabel
@@ -561,7 +581,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #rows}.
-   * 
+   *
    * @param _rows
    *                new value for instance variable {@link #rows}
    * @see #rows
@@ -573,7 +593,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #rows}.
-   * 
+   *
    * @return the value of the instance variable {@link #rows}.
    * @see #rows
    * @see #setRows
@@ -584,7 +604,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #cols}.
-   * 
+   *
    * @param _cols
    *                new value for instance variable {@link #cols}
    * @see #cols
@@ -596,7 +616,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #cols}.
-   * 
+   *
    * @return the value of the instance variable {@link #cols}.
    * @see #cols
    * @see #setCols
@@ -607,7 +627,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #creatable}.
-   * 
+   *
    * @param _creatable
    *                new value for instance variable {@link #creatable}
    * @see #creatable
@@ -619,7 +639,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #creatable}.
-   * 
+   *
    * @return the value of the instance variable {@link #creatable}.
    * @see #creatable
    * @see #setCreatable
@@ -630,7 +650,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #editable}.
-   * 
+   *
    * @param _editable
    *                new value for instance variable {@link #editable}
    * @see #editable
@@ -642,7 +662,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #editable}.
-   * 
+   *
    * @return the value of the instance variable {@link #editable}.
    * @see #editable
    * @see #setEditable
@@ -653,7 +673,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #filterable}
-   * 
+   *
    * @return the value of the instance variable {@link #filterable}
    * @see #filterable
    * @see #setFilterable
@@ -664,17 +684,17 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #filterable}
-   * 
+   *
    * @see #filterable
    * @see #setFilterable
    */
-  private void setFilterable(boolean _filterable) {
+  private void setFilterable(final boolean _filterable) {
     this.filterable = _filterable;
   }
 
   /**
    * This is the setter method for instance variable {@link #searchable}.
-   * 
+   *
    * @param _searchable
    *                new value for instance variable {@link #searchable}
    * @see #searchable
@@ -686,7 +706,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #searchable}.
-   * 
+   *
    * @return the value of the instance variable {@link #searchable}.
    * @see #searchable
    * @see #setSearchable
@@ -697,7 +717,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #required}.
-   * 
+   *
    * @param _required
    *                new value for instance variable {@link #required}
    * @see #required
@@ -709,7 +729,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #required}.
-   * 
+   *
    * @return the value of the instance variable {@link #required}.
    * @see #required
    * @see #setRequired
@@ -720,7 +740,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #hidden}.
-   * 
+   *
    * @param _hidden
    *                new value for instance variable {@link #hidden}
    * @see #hidden
@@ -732,7 +752,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #hidden}.
-   * 
+   *
    * @return the value of the instance variable {@link #hidden}.
    * @see #hidden
    * @see #setHidden
@@ -743,7 +763,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #reference}.
-   * 
+   *
    * @param _reference
    *                new value for instance variable {@link #reference}
    * @see #reference
@@ -755,7 +775,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #reference}.
-   * 
+   *
    * @return the value of the instance variable {@link #reference}.
    * @see #reference
    * @see #setReference
@@ -766,7 +786,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #selIndex}.
-   * 
+   *
    * @param _selIndex
    *                new value for instance variable {@link #selIndex}
    * @see #selIndex
@@ -778,7 +798,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #selIndex}.
-   * 
+   *
    * @return the value of the instance variable {@link #selIndex}.
    * @see #selIndex
    * @see #setSelIndex
@@ -789,7 +809,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #radioButton}.
-   * 
+   *
    * @param _radioButton
    *                new value for instance variable {@link #radioButton}
    * @see #radioButton
@@ -801,7 +821,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #radioButton}.
-   * 
+   *
    * @return the value of the instance variable {@link #radioButton}.
    * @see #radioButton
    * @see #setRadioButton
@@ -812,7 +832,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #sortAble}.
-   * 
+   *
    * @return the value of the instance variable {@link #sortAble}.
    * @see #sortAble
    * @see #setSortAble
@@ -823,7 +843,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #sortAble}.
-   * 
+   *
    * @param _sortable
    *                the value of the instance variable {@link #sortAble}.
    * @see #sortAble
@@ -835,7 +855,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #programValue}.
-   * 
+   *
    * @param _programValue
    *                new value for instance variable {@link #programValue}
    * @see #programValue
@@ -847,7 +867,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #programValue}.
-   * 
+   *
    * @return the value of the instance variable {@link #programValue}.
    * @see #programValue
    * @see #setProgramValue
@@ -858,7 +878,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #icon}.
-   * 
+   *
    * @param _icon
    *                new value for instance variable {@link #icon}
    * @see #icon
@@ -870,7 +890,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the getter method for instance variable {@link #icon}.
-   * 
+   *
    * @return the value of the instance variable {@link #icon}.
    * @see #icon
    * @see #setIcon
@@ -881,7 +901,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #target}.
-   * 
+   *
    * @return value of instance variable {@link #target}
    * @see #target
    * @see #setTarget
@@ -892,7 +912,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #target}.
-   * 
+   *
    * @param _target
    *                new value for instance variable {@link #target}
    * @see #target
@@ -904,7 +924,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #showTypeIcon}.
-   * 
+   *
    * @return value of instance variable {@link #showTypeIcon}
    * @see #showTypeIcon
    * @see #setShowTypeIcon
@@ -915,7 +935,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #showTypeIcon}.
-   * 
+   *
    * @param _showTypeIcon
    *                new value for instance variable {@link #showTypeIcon}
    * @see #showTypeIcon
@@ -927,7 +947,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #groupCount}.
-   * 
+   *
    * @return value of instance variable {@link #groupCount}
    * @see #groupCount
    * @see #setGroupCount
@@ -938,7 +958,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #groupCount}.
-   * 
+   *
    * @param _groupCount
    *                new value for instance variable {@link #groupCount}
    * @see #groupCount
@@ -950,7 +970,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #classUI}.
-   * 
+   *
    * @return value of instance variable {@link #classUI}
    * @see #classUI
    * @see #setClassUI
@@ -961,7 +981,7 @@ public class Field extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #classUI}.
-   * 
+   *
    * @param _classUI
    *                new value for instance variable {@link #classUI}
    * @see #classUI
@@ -969,5 +989,27 @@ public class Field extends UserInterfaceObject {
    */
   private void setClassUI(final UIInterface _classUI) {
     this.classUI = _classUI;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #width}.
+   *
+   * @return value of instance variable {@link #width}
+   */
+  public int getWidth() {
+    if (this.width == 0) {
+      this.width = 1;
+    }
+    return this.width;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #width}.
+   *
+   * @param _value
+   *                the width to set
+   */
+  public void setWidth(final String _value) {
+    this.width = Integer.parseInt(_value);
   }
 }

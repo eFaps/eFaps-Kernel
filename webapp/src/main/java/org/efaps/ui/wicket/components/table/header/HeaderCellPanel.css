@@ -1,0 +1,18 @@
+.eFapsHeaderSort,.eFapsHeaderSortAscending,.eFapsHeaderSortDescending {
+  cursor: pointer;
+  float: left;
+  width: 100%;
+}
+
+.eFapsHeaderSortAscending,.eFapsHeaderSortDescending {
+  background-repeat: no-repeat;
+  background-position: right;
+}
+
+.eFapsHeaderFilterActive,.eFapsHeaderFilter {
+  background-position: center;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  width: 18px;
+  float: right;
+}

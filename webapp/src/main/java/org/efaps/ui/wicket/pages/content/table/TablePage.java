@@ -27,7 +27,7 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.table.TablePanel;
-import org.efaps.ui.wicket.components.table.header.TableHeaderPanel;
+import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 
@@ -60,13 +60,13 @@ public class TablePage extends AbstractContentPage {
   protected void addComponents() {
     this
         .add(new StyleSheetReference("webtablecss", getClass(), "TablePage.css"));
-    TableModel model = (TableModel) super.getModel();
+    final TableModel model = (TableModel) super.getModel();
     if (!model.isInitialised()) {
       model.execute();
     }
-    this.add(new TableHeaderPanel("header", model));
+    this.add(new HeaderPanel("header", model));
 
-    FormContainer form = new FormContainer("form");
+    final FormContainer form = new FormContainer("form");
     this.add(form);
     super.addComponents(form);
 

@@ -1,15 +1,27 @@
-.eFapsTableRowOdd,.eFapsTableRowEven {
-  background-color: white;
+.eFapsTableBody {
+  line-height: 1.6em;
+}
+
+.eFapsTableHeader,.eFapsTableRowOdd,.eFapsTableRowEven {
   line-height: 1, 6 em;
   overflow: hidden;
   min-height: 18px;
+  height: 18px;
   width: auto;
+}
+
+.eFapsTableHeader {
+  background-color: #008800;
+}
+
+.eFapsTableRowOdd,.eFapsTableRowEven {
+  background-color: white;
   background-image: url("dotted-line.png");
   background-repeat: repeat-x;
   background-position: bottom;
 }
 
-.eFapsTableCell {
+.eFapsTableHeaderCell,.eFapsTableCell {
   background-color: transparent;
   border-left: 1px solid #ddd;
   float: left;
@@ -22,6 +34,15 @@
   white-space: nowrap;
 }
 
+.eFapsTableHeaderCell {
+  line-height: 1.6em;
+  color: white;
+}
+
+.eFapsTableCell {
+  
+}
+
 .eFapsTableCell img {
   border: 0;
   vertical-align: top;
@@ -32,4 +53,9 @@
   float: left;
   height: 18px;
   width: 14px;
+}
+
+.eFapsTableNoData {
+  left: 30px;
+  position: absolute;
 }
