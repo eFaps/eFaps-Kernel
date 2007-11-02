@@ -39,8 +39,7 @@ public class TablePanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public TablePanel(final String _id, final TableModel _model,
-                        final Page _page) {
+  public TablePanel(final String _id, final TableModel _model, final Page _page) {
     super(_id, _model);
 
     if (!_model.isInitialised()) {
@@ -53,7 +52,8 @@ public class TablePanel extends Panel {
 
     if (_model.getValues().isEmpty()) {
       final Label nodata =
-          new Label("test", DBProperties.getProperty("WebTable.NoData"));
+          new Label(rowsRepeater.newChildId(), DBProperties
+              .getProperty("WebTable.NoData"));
       nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
       rowsRepeater.add(nodata);
     } else {
