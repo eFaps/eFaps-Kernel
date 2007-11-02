@@ -23,12 +23,23 @@
  */
 
 div.wicket-tree-table {
-  white-space: nowrap;  
-  border: 1px solid #ccc;
-  overflow: auto;
-  margin: 0px;
   background-color: white;
+  border: 1px solid #ccc;
+  white-space: nowrap;  
+  position:absolute;
+  margin: 0px;
+  top:50px;
   line-height: 1.6em;
+  bottom:0px;
+  width:100%;
+}
+
+div.wicket-tree-table-body {
+  background-color: white;
+  position:absolute;
+  overflow:auto;
+  top:19px;
+  bottom:0px;
 }
 
 div.wicket-tree-table a {
@@ -229,6 +240,11 @@ div.wicket-tree-table div.header {
   color:white;
 }
 
-div.wicket-tree-table div.wicket-tree-table-body {
-  background-color: white;
+div.wicket-tree-table div.row:hover{
+  background-color: #D0EDB8;
+}
+
+.eFapsCheckboxCell{
+ margin-left:-9px;
+ margin-top:1px;
 }

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.tree;
@@ -36,6 +36,10 @@ import org.apache.wicket.markup.html.panel.Panel;
 
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 
+/**
+ * @author jmox
+ * @version $Id$
+ */
 public class StructurBrowserTreeTablePanel extends Panel {
 
   private static final long serialVersionUID = 1L;
@@ -49,7 +53,7 @@ public class StructurBrowserTreeTablePanel extends Panel {
                                        StructurBrowserModel _model) {
     super(_id, _model);
 
-    StructurBrowserModel model = (StructurBrowserModel) super.getModel();
+    final StructurBrowserModel model = (StructurBrowserModel) super.getModel();
     if (!model.isInitialised()) {
       model.execute();
     }
@@ -57,7 +61,7 @@ public class StructurBrowserTreeTablePanel extends Panel {
     IColumn[] columns = new IColumn[model.getHeaders().size() + 1];
 
     columns[0] =
-        new SelectColumn(new ColumnLocation(Alignment.LEFT, 30, Unit.PX), "");
+        new SelectColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "");
 
     for (int i = 0; i < model.getHeaders().size(); i++) {
 
@@ -74,7 +78,7 @@ public class StructurBrowserTreeTablePanel extends Panel {
 
     }
 
-    StructurBrowserTreeTable tree =
+    final StructurBrowserTreeTable tree =
         new StructurBrowserTreeTable("treeTable", model.getTreeModel(), columns);
     add(tree);
 
@@ -129,14 +133,25 @@ public class StructurBrowserTreeTablePanel extends Panel {
     }
 
     @Override
-    public IRenderable newCell(TreeNode node, int level) {
+    public IRenderable newCell(final TreeNode _node, final int _level) {
       return new IRenderable() {
 
         private static final long serialVersionUID = 1L;
 
-        public void render(TreeNode node, Response response) {
-          response.write("<span><input type=\"checkbox\"/>");
-          response.write("</span>");
+        public void render(final TreeNode _node, final Response _response) {
+          final String oid =
+              ((StructurBrowserModel) ((DefaultMutableTreeNode) _node)
+                  .getUserObject()).getOid();
+          final String checkbox =
+              "<input "
+                  + "type=\"checkbox\""
+                  + "name=\"selectedRow\""
+                  + "class=\"eFapsCheckboxCell\""
+                  + "value=\""
+                  + oid
+                  + "\"/>";
+
+          _response.write(checkbox);
         }
       };
     }

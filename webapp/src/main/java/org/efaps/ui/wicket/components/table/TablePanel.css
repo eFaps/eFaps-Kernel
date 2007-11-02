@@ -21,6 +21,10 @@
   background-position: bottom;
 }
 
+.eFapsTableRowOdd:hover,.eFapsTableRowEven:hover {
+  background-color: #D0EDB8;
+}
+
 .eFapsTableHeaderCell,.eFapsTableCell {
   background-color: transparent;
   border-left: 1px solid #ddd;
@@ -37,10 +41,7 @@
 .eFapsTableHeaderCell {
   line-height: 1.6em;
   color: white;
-}
-
-.eFapsTableCell {
-  
+  font-weight: bold;
 }
 
 .eFapsTableCell img {

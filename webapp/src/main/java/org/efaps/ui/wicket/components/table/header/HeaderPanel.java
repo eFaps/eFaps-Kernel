@@ -21,8 +21,10 @@
 package org.efaps.ui.wicket.components.table.header;
 
 import org.apache.wicket.behavior.SimpleAttributeModifier;
+import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
+import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
@@ -43,16 +45,19 @@ public class HeaderPanel extends Panel {
   public HeaderPanel(final String _id, final TableModel _model) {
     super(_id, _model);
 
-    final   RepeatingView cellRepeater = new RepeatingView("cellRepeater");
+    this.add(new StringHeaderContributor(getScript()));
+
+    final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
     add(cellRepeater);
 
     if (_model.isShowCheckBoxes()) {
-      final    HeaderCellPanel cell = new HeaderCellPanel(cellRepeater.newChildId());
+      final HeaderCellPanel cell =
+          new HeaderCellPanel(cellRepeater.newChildId());
       cellRepeater.add(cell);
     }
     int i = 0;
     for (HeaderModel headermodel : _model.getHeaders()) {
-      final   HeaderCellPanel cell =
+      final HeaderCellPanel cell =
           new HeaderCellPanel(cellRepeater.newChildId(), headermodel, _model);
       int width = 100 / _model.getWidthWeight() * headermodel.getWidth();
       i++;
@@ -74,4 +79,21 @@ public class HeaderPanel extends Panel {
     return this.modal;
   }
 
+  private String getScript() {
+
+    final String ret =
+        JavascriptUtils.SCRIPT_OPEN_TAG
+            + "  window.onresize = eFapsPositionTableHeader;\n"
+            + "  window.onload = eFapsPositionTableHeader;\n"
+            + "  function eFapsPositionTableHeader() {\n"
+            + "    var header = document.getElementById(\"eFapsTableHeader\");\n"
+            + "    var tablebody = document.getElementById(\"eFapsTableBody\");\n"
+            + "    var w = (tablebody.clientWidth ) + \"px\";\n"
+            + "    if (w != \"0px\") {\n"
+            + "      header.style.width = w;\n"
+            + "    }\n"
+            + "  }\n"
+            + JavascriptUtils.SCRIPT_CLOSE_TAG;
+    return ret;
+  }
 }
