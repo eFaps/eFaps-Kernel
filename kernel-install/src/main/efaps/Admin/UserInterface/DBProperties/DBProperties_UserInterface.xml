@@ -23,7 +23,7 @@
 
 -->
 
-<eFaps-DBProperties>
+<eFaps-DBProperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>f7e7b135-a22b-4f5c-ada2-ed529f9ec2d1</uuid>
   <bundle name="efaps_UserInterface" sequence="1"/>
   <resource>

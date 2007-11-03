@@ -23,7 +23,7 @@
 
 -->
 
-<ui-command>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>b14d41e5-95ff-4b4d-870a-3889da56823d</uuid>
 
   <!-- ************************************************************************
@@ -55,8 +55,8 @@
     
     <!-- target definitions -->
     <target>
-      <table>ContactWork_AbstractTable</table>
       <menu>ContactWork_AbstractMyDesk_Menu</menu>
+      <table>ContactWork_AbstractTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">ContactWork_Abstract</property>
         <property name="ExpandChildTypes">true</property> 

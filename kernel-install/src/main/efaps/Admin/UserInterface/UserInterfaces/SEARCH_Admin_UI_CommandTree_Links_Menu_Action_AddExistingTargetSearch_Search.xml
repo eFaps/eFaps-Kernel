@@ -23,7 +23,7 @@
 
 -->
 
-<ui-search>
+<ui-search  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>cf8dec4b-f8f7-420f-b6bd-379e2a657663</uuid>
 
   <!-- ************************************************************************

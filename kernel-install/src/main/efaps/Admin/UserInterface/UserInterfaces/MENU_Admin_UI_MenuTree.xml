@@ -23,7 +23,7 @@
 
 -->
 
-<ui-menu>
+<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>e333fffe-9223-4af0-bffa-7d0adce91da5</uuid>
 
   <!-- ************************************************************************
@@ -52,13 +52,13 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_UI_MenuTree</name>
-    <!-- type tree for -->
-    <type>Admin_UI_Menu</type>
     <!-- targets -->
     <target>
-      <form>Admin_UI_AbstractForm</form>         
       <menu>Admin_UI_MenuTree_Menu</menu>
+      <form>Admin_UI_AbstractForm</form>         
     </target>
+    <!-- type tree for -->
+    <type>Admin_UI_Menu</type>
     <!-- childs -->
     <childs>
       <child>Admin_UI_MenuTree_Childs</child>

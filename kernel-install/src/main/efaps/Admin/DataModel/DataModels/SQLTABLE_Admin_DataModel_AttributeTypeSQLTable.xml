@@ -23,7 +23,8 @@
 
 -->
 
-<datamodel-sqltable>
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>30152cda-e5a3-418d-ad1e-ad44be1307c2</uuid>
 
   <!-- attribute types -->
@@ -69,6 +70,7 @@
             from T_DMATTRIBUTETYPE,T_CMABSTRACT
             where T_CMABSTRACT.ID=T_DMATTRIBUTETYPE.ID
       </sql>
+      <table-name>T_DMATTRIBUTETYPE</table-name>
     </database>
   </definition>
 

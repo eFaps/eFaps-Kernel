@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-sqltable>
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>5e047326-1490-4651-b11b-ef8a16393b6c</uuid>
 
   <definition>
@@ -79,9 +79,11 @@
       <local>$Rev$</local>
       <mode>(version>=3)</mode>
     </version>
-
     <name>TeamWork_AbstractSQLTable</name>
     <typeid-column>TYPEID</typeid-column>
+    <database>
+      <table-name>T_TWABSTRACT</table-name>
+    </database>  
   </definition>
 
 </datamodel-sqltable>

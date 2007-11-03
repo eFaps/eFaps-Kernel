@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-
- Copyright 2003-2007 The eFaps Team
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-
- Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
-
+  
+  Copyright 2003-2007 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          tmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+  
 -->
 
-<datamodel-sqltable>
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
+>
   <uuid>62f66541-4005-4071-b99f-b5cbc266f0a9</uuid>
 
   <!-- Connection between Abstract User and Abstract User -->
@@ -41,16 +43,16 @@
       <create>true</create>
       <update>true</update>
       <!-- columns -->
-      <column name="TYPEID"             type="INTEGER"  not-null="true"/>
-      <column name="CREATOR"            type="INTEGER"  not-null="true"/>
-      <column name="CREATED"            type="DATETIME" not-null="true"/>
-      <column name="MODIFIER"           type="INTEGER"  not-null="true"/>
-      <column name="MODIFIED"           type="DATETIME" not-null="true"/>
-      <column name="USERABSTRACTFROM"   type="INTEGER"  not-null="true"/>
-      <column name="USERABSTRACTTO"     type="INTEGER"  not-null="true"/>
-      <column name="USERJAASSYSTEM"     type="INTEGER"  not-null="true"/>
+      <column name="TYPEID"           type="INTEGER"  not-null="true" />
+      <column name="CREATOR"          type="INTEGER"  not-null="true" />
+      <column name="CREATED"          type="DATETIME" not-null="true" />
+      <column name="MODIFIER"         type="INTEGER"  not-null="true" />
+      <column name="MODIFIED"         type="DATETIME" not-null="true" />
+      <column name="USERABSTRACTFROM" type="INTEGER"  not-null="true" />
+      <column name="USERABSTRACTTO"   type="INTEGER"  not-null="true" />
+      <column name="USERJAASSYSTEM"   type="INTEGER"  not-null="true" />
       <!-- constraints -->
-      <unique name="USRABS2ABS_UK_FRTO" columns="USERABSTRACTFROM,USERABSTRACTTO,USERJAASSYSTEM"/>
+      <unique name="USRABS2ABS_UK_FRTO" columns="USERABSTRACTFROM,USERABSTRACTTO,USERJAASSYSTEM" />
     </database>
   </definition>
 
@@ -66,11 +68,11 @@
       <table-name>T_USERABSTRACT2ABSTRACT</table-name>
       <update>true</update>
       <!-- constraints -->
-      <foreign name="USRABS2ABS_FK_CRTR"    key="CREATOR"           reference="T_USERABSTRACT(ID)"/>
-      <foreign name="USRABS2ABS_FK_MDFR"    key="MODIFIER"          reference="T_USERABSTRACT(ID)"/>
-      <foreign name="USRABS2ABS_FK_FROM"    key="USERABSTRACTFROM"  reference="T_USERABSTRACT(ID)"/>
-      <foreign name="USRABS2ABS_FK_TO"      key="USERABSTRACTTO"    reference="T_USERABSTRACT(ID)"/>
-      <foreign name="USRABS2ABS_FK_SYSTM"   key="USERJAASSYSTEM"    reference="T_USERJAASSYSTEM(ID)"/>
+      <foreign name="USRABS2ABS_FK_CRTR"  key="CREATOR"          reference="T_USERABSTRACT(ID)" />
+      <foreign name="USRABS2ABS_FK_MDFR"  key="MODIFIER"         reference="T_USERABSTRACT(ID)" />
+      <foreign name="USRABS2ABS_FK_FROM"  key="USERABSTRACTFROM" reference="T_USERABSTRACT(ID)" />
+      <foreign name="USRABS2ABS_FK_TO"    key="USERABSTRACTTO"   reference="T_USERABSTRACT(ID)" />
+      <foreign name="USRABS2ABS_FK_SYSTM" key="USERJAASSYSTEM"   reference="T_USERJAASSYSTEM(ID)" />
     </database>
   </definition>
 

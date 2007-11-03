@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-type>
+<datamodel-type  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>518a9802-cf0e-4359-9b3c-880f71e1387f</uuid>
 
   <!-- define type (is already defined) -->
@@ -46,30 +46,30 @@
     <attribute>
       <name>Table</name>
       <type>Link</type>
+      <typelink>Admin_DataModel_SQLTable</typelink>
       <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
       <sqlcolumn>DMTABLE</sqlcolumn>
-      <typelink>Admin_DataModel_SQLTable</typelink>
     </attribute>
     <attribute>
       <name>ParentType</name>
       <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
       <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
       <sqlcolumn>DMTYPE</sqlcolumn>
-      <typelink>Admin_DataModel_Type</typelink>
     </attribute>
     <attribute>
       <name>AttributeType</name>
       <type>Link</type>
+      <typelink>Admin_DataModel_AttributeType</typelink>
       <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
       <sqlcolumn>DMATTRIBUTETYPE</sqlcolumn>
-      <typelink>Admin_DataModel_AttributeType</typelink>
     </attribute>
     <attribute>
       <name>TypeLink</name>
       <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
       <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
       <sqlcolumn>DMTYPELINK</sqlcolumn>
-      <typelink>Admin_DataModel_Type</typelink>
     </attribute>
     <attribute>
       <name>DefaultValue</name>

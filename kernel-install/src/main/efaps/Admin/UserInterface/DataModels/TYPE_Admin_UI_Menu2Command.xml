@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-type>
+<datamodel-type  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>1d101fd6-5b28-485b-b2d3-300b7729e2f1</uuid>
 
   <!-- create type -->
@@ -51,16 +51,16 @@
     <attribute>
       <name>FromMenu</name>
       <type>Link</type>
+      <typelink>Admin_UI_Menu</typelink>
       <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
       <sqlcolumn>FROMID</sqlcolumn>
-      <typelink>Admin_UI_Menu</typelink>
     </attribute>
     <attribute>
       <name>ToCommand</name>
       <type>Link</type>
+      <typelink>Admin_UI_Command</typelink>
       <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
       <sqlcolumn>TOID</sqlcolumn>
-      <typelink>Admin_UI_Command</typelink>
     </attribute>
   </definition>
 

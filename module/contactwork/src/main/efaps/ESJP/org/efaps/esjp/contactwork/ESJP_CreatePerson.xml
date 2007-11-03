@@ -23,7 +23,7 @@
 
 -->
 
-<esjp>
+<esjp  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>e365b273-31a6-4305-8ac6-291c3b78e191</uuid>
 
   <!-- ************************************************************************

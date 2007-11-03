@@ -1,68 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-
- Copyright 2003-2007 The eFaps Team
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-
- Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
-
+  
+  Copyright 2003-2007 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          tmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+  
 -->
 
-<install>
+<install xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
+>
   <application>efaps</application>
 
-  <version number="1" reloadCache="false" login="false"/>
-  <version number="2" reloadCache="false" login="false"/>
+  <version number="1" reloadCache="false" login="false" />
+  <version number="2" reloadCache="false" login="false" />
   <version number="3" reloadCache="false" login="false">
-    <script name="org/efaps/installations/efaps/CreateAll.js" function="eFapsCreateAll()"/>
+    <script name="org/efaps/installations/efaps/CreateAll.js" function="eFapsCreateAll()" />
   </version>
-  <version number="4" reloadCache="false" login="false"/>
-  <version number="5" reloadCache="true"/>
-  <version number="6" reloadCache="true"/>
+  <version number="4" reloadCache="false" login="false" />
+  <version number="5" reloadCache="true" />
+  <version number="6" reloadCache="true" />
   <version number="7" reloadCache="false" />
-  <version number="8" reloadCache="true"/>
+  <version number="8" reloadCache="true" />
   <version number="9" reloadCache="false" />
   <version number="10" reloadCache="false" />
-  <version number="11" reloadCache="true" compile="true"/>
+  <version number="11" reloadCache="true" compile="true" />
 
   <version number="12" reloadCache="false" login="false">
-    <description>
-      Update Password of Administrator and Activate Administrator and
-      Administration Role.
-    </description>
+    <description>Update Password of Administrator and Activate Administrator and Administration Role.</description>
     <script>
-      importClass(Packages.org.efaps.admin.datamodel.Type);
-      importClass(Packages.org.efaps.db.Context);
-      importClass(Packages.org.efaps.db.Update);
+      importClass(Packages.org.efaps.admin.datamodel.Type); importClass(Packages.org.efaps.db.Context); importClass(Packages.org.efaps.db.Update);
 
       var c = Context.begin(EFAPS_USERNAME);
 
-      EFAPS_LOGGER.info("Update '" + EFAPS_USERNAME + "' Password");
-      c.getPerson().setPassword(c, EFAPS_PASSWORD);
+      EFAPS_LOGGER.info("Update '" + EFAPS_USERNAME + "' Password"); c.getPerson().setPassword(c, EFAPS_PASSWORD);
 
-      EFAPS_LOGGER.info("Activate Person '" + EFAPS_USERNAME + "'");
-      var update = new Update(Type.get("Admin_User_Abstract"), "1");
-      update.add("Status","true");
-      update.executeWithoutAccessCheck();
+      EFAPS_LOGGER.info("Activate Person '" + EFAPS_USERNAME + "'"); var update = new Update(Type.get("Admin_User_Abstract"), "1");
+      update.add("Status","true"); update.executeWithoutAccessCheck();
 
-      EFAPS_LOGGER.info("Activate Role 'Administration'");
-      var update = new Update(Type.get("Admin_User_Abstract"), "2");
-      update.add("Status","true");
+      EFAPS_LOGGER.info("Activate Role 'Administration'"); var update = new Update(Type.get("Admin_User_Abstract"), "2"); update.add("Status","true");
       update.executeWithoutAccessCheck();
 
       Context.commit();

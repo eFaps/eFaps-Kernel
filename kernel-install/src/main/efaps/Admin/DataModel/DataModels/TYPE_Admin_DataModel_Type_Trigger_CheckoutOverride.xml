@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-type>
+<datamodel-type  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>fd57a6de-cd61-465e-ab0b-179eff13ef9b</uuid>
 
   <!-- create type -->

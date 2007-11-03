@@ -23,7 +23,7 @@
 
 -->
 
-<ui-form>
+<ui-form  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>642b34e7-8c0a-43c9-b049-1151ca56f5b1</uuid>
 
   <!-- ************************************************************************

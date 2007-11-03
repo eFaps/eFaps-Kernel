@@ -23,7 +23,7 @@
 
 -->
 
-<ui-menu>
+<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>3c886ff6-8602-4385-b1a1-58856e9f39c2</uuid>
 
   <!-- ************************************************************************
@@ -53,13 +53,13 @@
     </version>
     <name>TeamWork_SourceTree</name>
     <icon>TeamWork_SourceImage</icon>
-    <!-- type tree for -->
-    <type>TeamWork_Source</type>
     <!-- targets -->
     <target>
-      <form>TeamWork_SourceForm</form>
       <menu>TeamWork_SourceTree_Menu</menu>
+      <form>TeamWork_SourceForm</form>
     </target>
+    <!-- type tree for -->
+    <type>TeamWork_Source</type>
     <!-- childs -->
     <childs>
       <child>TeamWork_SourceTree_Versions</child>

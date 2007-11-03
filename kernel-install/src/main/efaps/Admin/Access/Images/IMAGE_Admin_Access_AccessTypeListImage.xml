@@ -23,7 +23,8 @@
 
 -->
 
-<ui-image>
+<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>dd998aff-9be2-4fc2-99dc-9e43d9efe9c0</uuid>
 
   <!-- ************************************************************************

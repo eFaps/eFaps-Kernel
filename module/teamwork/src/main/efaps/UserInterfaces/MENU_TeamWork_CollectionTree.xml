@@ -23,7 +23,7 @@
 
 -->
 
-<ui-menu>
+<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>7ddd5cac-f9f8-4b90-bba8-e612a4bbd43a</uuid>
 
   <!-- ************************************************************************
@@ -53,17 +53,17 @@
     </version>
     <name>TeamWork_CollectionTree</name>
     <icon>TeamWork_CollectionImage</icon>
-    <!-- type tree for -->
-    <type>TeamWork_Collection</type>
     <!-- targets -->
     <target>
-      <form>TeamWork_CollectionForm</form>
       <menu>TeamWork_CollectionTree_Menu</menu>
+      <form>TeamWork_CollectionForm</form>
       <evaluate program="org.efaps.esjp.teamwork.StructurBrowser">
         <property name="Types">TeamWork_RootCollection</property>
         <property name="checkForChildren">TeamWork_Abstract\ParentCollectionLink</property>
       </evaluate>
     </target>
+    <!-- type tree for -->
+    <type>TeamWork_Collection</type>
     <!-- childs -->
     <childs>
       <child>TeamWork_CollectionTree_SubCollections</child>

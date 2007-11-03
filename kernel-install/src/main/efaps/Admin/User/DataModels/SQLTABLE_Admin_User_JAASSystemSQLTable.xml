@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-sqltable>
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>1f84b7ce-cc40-4453-a58c-97a3aca0e5a8</uuid>
 
 <!-- JAAS systems -->
@@ -73,13 +73,7 @@
       <mode>(version==4)</mode>
     </version>
     <database>
-      <table-name>T_USERJAASSYSTEM</table-name>
-      <update>true</update>
-       <!-- constraints -->
-      <foreign name="USERJAASSYS_FK_CRTR"   key="CREATOR"       reference="T_USERPERSON(ID)"/>
-      <foreign name="USERJAASSYS_FK_MDFR"   key="MODIFIER"      reference="T_USERPERSON(ID)"/>
-      <!-- create view representing all JAAS systems -->
-      <sql>
+       <sql>
         create view V_USERJAASSYSTEM as
            select
                ID,
@@ -96,7 +90,13 @@
                METHODGROUPKEY
            from T_USERJAASSYSTEM
       </sql>
-    </database>
+      <table-name>T_USERJAASSYSTEM</table-name>
+      <update>true</update>
+       <!-- constraints -->
+      <foreign name="USERJAASSYS_FK_CRTR"   key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="USERJAASSYS_FK_MDFR"   key="MODIFIER"      reference="T_USERPERSON(ID)"/>
+      <!-- create view representing all JAAS systems -->
+     </database>
   </definition>
 
   <!-- define data model -->

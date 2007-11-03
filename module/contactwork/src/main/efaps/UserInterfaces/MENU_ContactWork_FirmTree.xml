@@ -23,7 +23,7 @@
 
 -->
 
-<ui-menu>
+<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>518b17b5-73c1-4081-a750-90b654804aa4</uuid>
 
   <!-- ************************************************************************
@@ -52,13 +52,13 @@
       <mode>(version>=3)</mode>
     </version>
     <name>ContactWork_FirmTree</name>
-    <!-- type tree for -->
-    <type>ContactWork_Person</type>
     <!-- targets -->
     <target>
-      <form>ContactWork_FirmForm</form>
       <menu>ContactWork_FirmTree_Menu</menu>
+      <form>ContactWork_FirmForm</form>
     </target>
+    <!-- type tree for -->
+    <type>ContactWork_Person</type>
     <!-- childs -->
     <childs>
       <child>ContactWork_AbstractTree_Email</child>

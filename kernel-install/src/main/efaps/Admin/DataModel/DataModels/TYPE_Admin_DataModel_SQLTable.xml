@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-type>
+<datamodel-type  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>ebf29cc2-cf42-4cd0-9b6e-92d9b644062b</uuid>
 
   <!-- define type (is already defined) -->
@@ -58,10 +58,10 @@
     <attribute>
       <name>DMTableMain</name>
       <type>Link</type>
-      <sqltable>Admin_DataModel_SQLTableSQLTable</sqltable>
-      <sqlcolumn>DMTABLEMAIN</sqlcolumn>
       <typelink>Admin_DataModel_SQLTable</typelink>
-    </attribute>
+       <sqltable>Admin_DataModel_SQLTableSQLTable</sqltable>
+      <sqlcolumn>DMTABLEMAIN</sqlcolumn>
+   </attribute>
    </definition>
 
 </datamodel-type>

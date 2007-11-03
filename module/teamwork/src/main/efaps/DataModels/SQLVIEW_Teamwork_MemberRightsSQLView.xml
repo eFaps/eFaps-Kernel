@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-sqltable>
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>06032b97-d1c2-4bd9-9d17-075a0fcbe47f</uuid>
 
   <definition>

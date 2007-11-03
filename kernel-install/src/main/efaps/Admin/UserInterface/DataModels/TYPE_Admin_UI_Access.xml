@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-type>
+<datamodel-type  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>7e59cebf-21ff-4ee1-8140-44139c90a658</uuid>
 
   <!-- create type -->
@@ -62,16 +62,16 @@
     <attribute>
       <name>UILink</name>
       <type>Link</type>
+      <typelink>Admin_UI_Direct</typelink>
       <sqltable>Admin_UI_AccessSQLTable</sqltable>
       <sqlcolumn>UIABSTRACT</sqlcolumn>
-      <typelink>Admin_UI_Direct</typelink>
     </attribute>
     <attribute>
       <name>UserLink</name>
       <type>Link</type>
+      <typelink>Admin_User_Abstract</typelink>
       <sqltable>Admin_UI_AccessSQLTable</sqltable>
       <sqlcolumn>USERABSTRACT</sqlcolumn>
-      <typelink>Admin_User_Abstract</typelink>
     </attribute>
     <attribute>
       <name>Creator</name>

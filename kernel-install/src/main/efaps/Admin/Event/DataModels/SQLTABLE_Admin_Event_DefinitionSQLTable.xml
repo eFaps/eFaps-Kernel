@@ -21,7 +21,7 @@
  Last Changed By: $Author$
 
 -->
-<datamodel-sqltable>
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>1238f647-9cf5-4d9f-883e-c6d24db538f5</uuid>
 
   <!-- Definition of Events (e.g. Triggers) -->

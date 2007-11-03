@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-
- Copyright 2003-2007 The eFaps Team
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-
- Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
-
+  
+  Copyright 2003-2007 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          tmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+  
 -->
 
-<datamodel-type>
+<datamodel-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
+>
   <uuid>9b61948f-fabe-482a-bbc7-d3beb2346bef</uuid>
 
   <definition>
@@ -99,11 +101,11 @@
     <attribute>
       <name>ParentSourceLink</name>
       <type>Link</type>
+      <typelink>TeamWork_Source</typelink>
       <sqltable>TeamWork_SourceVersionSQLTable</sqltable>
       <sqlcolumn>PARENT</sqlcolumn>
-      <typelink>TeamWork_Source</typelink>
     </attribute>
-    
+
     <attribute>
       <name>FileLength</name>
       <type>Integer</type>
@@ -111,6 +113,25 @@
       <sqlcolumn>FILELENGTH</sqlcolumn>
     </attribute>
 
+
+    <!-- triggers -->
+    <trigger name="TeamWork_SourceVersion_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnSourceVersion"
+      method="execute" index="1"
+    />
+
+    <trigger name="TeamWork_SourceVersion_INSERT_POST" event="INSERT_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
+      <property name="Type">Common_History_AddChild</property>
+    </trigger>
+    <trigger name="TeamWork_SourceVersion_CHECKIN_POST" event="CHECKIN_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
+      <property name="Type">Common_History_Checkin</property>
+    </trigger>
+    <trigger name="TeamWork_SourceVersion_CHECKOUT_POST" event="CHECKOUT_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
+      <property name="Type">Common_History_Checkout</property>
+    </trigger>
+    <trigger name="TeamWork_SourceVersion_DELETE_POST" event="DELETE_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
+      <property name="Type">Common_History_RemoveChild</property>
+    </trigger>
+    
     <!-- property definitions -->
     <property name="Icon">${ROOTURL}/servlet/image/TeamWork_SourceVersionImage</property>
     <property name="StoreAttributeFileLength">FileLength</property>
@@ -119,20 +140,5 @@
     <property name="StoreResource">org.efaps.db.transaction.VFSStoreResource</property>
     <property name="StoreVFSName">eFaps/store/documents</property>
 
-    <!-- triggers -->
-    <trigger name="TeamWork_SourceVersion_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnSourceVersion" method="execute" index="1"/>
-    
-    <trigger name="TeamWork_SourceVersion_INSERT_POST" event="INSERT_POST" program="org.efaps.esjp.common.history.HistoryTrigger" >
-      <property name="Type">Common_History_AddChild</property>
-    </trigger>
-    <trigger name="TeamWork_SourceVersion_CHECKIN_POST" event="CHECKIN_POST" program="org.efaps.esjp.common.history.HistoryTrigger" >
-      <property name="Type">Common_History_Checkin</property>
-    </trigger>
-    <trigger name="TeamWork_SourceVersion_CHECKOUT_POST" event="CHECKOUT_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
-      <property name="Type">Common_History_Checkout</property>
-    </trigger>
-    <trigger name="TeamWork_SourceVersion_DELETE_POST" event="DELETE_POST" program="org.efaps.esjp.common.history.HistoryTrigger" >
-      <property name="Type">Common_History_RemoveChild</property>
-    </trigger>
   </definition>
 </datamodel-type>

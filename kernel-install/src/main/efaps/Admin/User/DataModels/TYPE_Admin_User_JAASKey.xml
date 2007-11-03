@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-type>
+<datamodel-type  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>0e7650c6-8ec3-4c63-b377-f3eb5fb85f16</uuid>
 
   <!-- create type -->
@@ -92,16 +92,16 @@
     <attribute>
       <name>JAASSystemLink</name>
       <type>Link</type>
+      <typelink>Admin_User_JAASSystem</typelink>
       <sqltable>Admin_User_JAASKeySQLTable</sqltable>
       <sqlcolumn>USERJAASSYSTEM</sqlcolumn>
-      <typelink>Admin_User_JAASSystem</typelink>
     </attribute>
     <attribute>
       <name>UserLink</name>
       <type>Link</type>
+      <typelink>Admin_User_Abstract</typelink>
       <sqltable>Admin_User_JAASKeySQLTable</sqltable>
       <sqlcolumn>USERABSTRACT</sqlcolumn>
-      <typelink>Admin_User_Abstract</typelink>
     </attribute>
   </definition>
 

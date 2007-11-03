@@ -23,7 +23,8 @@
 
 -->
 
-<access-type>
+<access-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd" >
   <uuid>b55491d8-49be-44af-860c-6dd4cc28a8ca</uuid>
 
   <definition>

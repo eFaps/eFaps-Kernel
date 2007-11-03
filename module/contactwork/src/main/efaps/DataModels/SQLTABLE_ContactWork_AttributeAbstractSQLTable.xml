@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-sqltable>
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>1a5be94f-edf7-4735-bf34-a0192efa7951</uuid>
 
   <definition>
@@ -53,17 +53,11 @@
       <local>$Rev$</local>
       <mode>(version==2)</mode>
     </version>
-
     <name>ContactWork_AttributeAbstractSQLTable</name>
-
+    <typeid-column>TYPEID</typeid-column>
     <database>
       <table-name>T_CWATTABSTRACT</table-name>
       <update>true</update>
     </database>
-     
-    <typeid-column>TYPEID</typeid-column>
   </definition>
-
-  
-
 </datamodel-sqltable>

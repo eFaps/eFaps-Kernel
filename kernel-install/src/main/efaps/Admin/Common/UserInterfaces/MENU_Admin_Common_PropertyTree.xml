@@ -23,7 +23,7 @@
 
 -->
 
-<ui-menu>
+<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>ff583ed7-1fca-43b4-a494-3d84967d72f6</uuid>
 
   <!-- ************************************************************************
@@ -52,13 +52,13 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Common_PropertyTree</name>
-    <!-- type tree for -->
-    <type>Admin_Common_Property</type>
     <!-- targets -->
     <target>
-      <form>Admin_Common_PropertyForm</form>
       <menu>Admin_Common_PropertyTree_Menu</menu>
+      <form>Admin_Common_PropertyForm</form>
     </target>
+    <!-- type tree for -->
+    <type>Admin_Common_Property</type>
     <!-- properties -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>

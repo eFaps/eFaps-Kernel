@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-sqltable>
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>5cf99cd6-06d6-4322-a344-55d206666c9c</uuid>
 
   <!-- Common Properties -->
@@ -37,9 +37,9 @@
       <mode>(version==1)</mode>
     </version>
     <database>
+      <table-name>T_CMPROPERTY</table-name>
       <create>true</create>
       <update>true</update>
-      <table-name>T_CMPROPERTY</table-name>
       <!-- columns -->
       <column name="ABSTRACT"   type="INTEGER"                    not-null="true"/>
       <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
@@ -58,9 +58,9 @@
       <mode>(version==4)</mode>
     </version>
     <database>
+      <table-name>T_CMPROPERTY</table-name>
       <create>false</create>
       <update>false</update>
-      <table-name>T_CMPROPERTY</table-name>
       <!-- constraints -->
       <foreign name="T_CMPROPERTY_FK_ABSTR"     key="ABSTRACT"      reference="T_CMABSTRACT(ID)"/>
 <!-- on delete cascade -->

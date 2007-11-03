@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-sqltable>
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>e76ff99d-0d3d-4154-b2ef-d65633d357c3</uuid>
 
   <!-- create the SQL Table -->
@@ -35,9 +35,9 @@
       <mode>(version==1)</mode>
     </version>
     <database>
+       <table-name>T_CMABSTRACT</table-name>
       <create>true</create>
       <update>true</update>
-      <table-name>T_CMABSTRACT</table-name>
       <!-- columns -->
       <column name="TYPEID"     type="INTEGER"                    not-null="true"/>
       <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
@@ -79,9 +79,9 @@
             where TYPEID=-22000
       </sql>
       <!-- update of the sql table -->
+      <table-name>T_CMABSTRACT</table-name>
       <create>false</create>
       <update>false</update>
-      <table-name>T_CMABSTRACT</table-name>
       <!-- constraints -->
       <foreign name="ABSTR_FK_TYPEID"       key="TYPEID"        reference="T_DMTYPE(ID)"/>
       <foreign name="ABSTR_FK_CRTR"         key="CREATOR"       reference="T_USERPERSON(ID)"/>

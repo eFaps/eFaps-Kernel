@@ -1,29 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-
- Copyright 2003-2007 The eFaps Team
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-
- Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
-
+  
+  Copyright 2003-2007 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          tmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+  
 -->
 
-<datamodel-type>
+<datamodel-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
+>
   <uuid>ac4bda36-c87e-4a71-92e4-c62a3464747b</uuid>
 
   <definition>
@@ -47,7 +49,7 @@
 
     <name>TeamWork_Collection</name>
     <parent>TeamWork_Abstract</parent>
-   
+
     <attribute>
       <name>ParentCollectionLink</name>
       <type>Link</type>
@@ -55,29 +57,29 @@
       <sqltable>TeamWork_AbstractSQLTable</sqltable>
       <sqlcolumn>PARENT</sqlcolumn>
     </attribute>
-    
-    
-    <!-- property definitions -->
-    <property name="Icon">${ROOTURL}/servlet/image/TeamWork_CollectionImage</property>
+
     <!-- triggers -->
-    <trigger name="TeamWork_Collection_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnTypeInstance"  index="1"/>
-	
-    <trigger name="TeamWork_Collection_INSERT_POST_1" event="INSERT_POST" program="org.efaps.esjp.teamwork.Abstract2Abstract"  index="1">
-		<property name="PropertyName">PropertyValue</property>
+    <trigger name="TeamWork_Collection_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnTypeInstance" index="1" />
+
+    <trigger name="TeamWork_Collection_INSERT_POST_1" event="INSERT_POST" program="org.efaps.esjp.teamwork.Abstract2Abstract" index="1">
+      <property name="PropertyName">PropertyValue</property>
     </trigger>
     <trigger name="TeamWork_Collection_INSERT_POST_2" event="INSERT_POST" program="org.efaps.esjp.common.history.HistoryTrigger" index="2">
       <property name="Type">Common_History_AddChild</property>
     </trigger>
-    
+
     <trigger name="TeamWork_Collection_UPDATE_POST" event="UPDATE_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
       <property name="Type">Common_History_Update</property>
     </trigger>
-    
-    <trigger name="TeamWork_Collection_DELETE_PRE" event="DELETE_PRE" program="org.efaps.esjp.teamwork.CascadeDelete"  index="1"/>
-    
+
+    <trigger name="TeamWork_Collection_DELETE_PRE" event="DELETE_PRE" program="org.efaps.esjp.teamwork.CascadeDelete" index="1" />
+
     <trigger name="TeamWork_Collection_DELETE_POST" event="DELETE_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
       <property name="Type">Common_History_RemoveChild</property>
     </trigger>
-    
+
+    <!-- property definitions -->
+    <property name="Icon">${ROOTURL}/servlet/image/TeamWork_CollectionImage</property>
+
   </definition>
 </datamodel-type>

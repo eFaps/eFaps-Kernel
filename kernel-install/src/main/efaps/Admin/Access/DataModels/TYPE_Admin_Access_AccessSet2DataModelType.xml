@@ -23,7 +23,8 @@
 
 -->
 
-<datamodel-type>
+<datamodel-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>2f05dbd6-1798-46b9-a13a-f279bff26219</uuid>
 
   <!-- create type -->
@@ -86,16 +87,16 @@
     <attribute>
       <name>AccessSetLink</name>
       <type>Link</type>
+      <typelink>Admin_Access_AccessSet</typelink>
       <sqltable>Admin_Access_AccessSet2DataModelTypeSQLTable</sqltable>
       <sqlcolumn>ACCESSSET</sqlcolumn>
-      <typelink>Admin_Access_AccessSet</typelink>
     </attribute>
     <attribute>
       <name>DataModelTypeLink</name>
       <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
       <sqltable>Admin_Access_AccessSet2DataModelTypeSQLTable</sqltable>
       <sqlcolumn>DMTYPE</sqlcolumn>
-      <typelink>Admin_DataModel_Type</typelink>
     </attribute>
    </definition>
 

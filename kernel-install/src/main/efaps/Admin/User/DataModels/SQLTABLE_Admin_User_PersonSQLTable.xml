@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-sqltable>
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>a3a1ab4b-f3c3-49ad-a5cf-fc776ba1990c</uuid>
 
   <!-- Person object -->
@@ -78,6 +78,7 @@
              join T_USERPERSON 
                on T_USERABSTRACT.ID=T_USERPERSON.ID
       </sql>
+      <table-name>T_USERPERSON</table-name>
     </database>
   </definition>
 

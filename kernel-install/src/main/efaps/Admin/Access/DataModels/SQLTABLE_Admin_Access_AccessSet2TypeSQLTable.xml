@@ -23,7 +23,8 @@
 
 -->
 
-<datamodel-sqltable>
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>97064ce1-bf52-4bb6-bc97-86ce0ec5af1b</uuid>
 
   <!-- Link from Access Sets to Access Types object -->

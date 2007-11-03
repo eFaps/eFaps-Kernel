@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-sqltable>
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>1d2fa262-b4bf-41a2-b0d4-5bfe46468278</uuid>
 
   <definition>
@@ -57,17 +57,16 @@
     </version>
 
     <name>ContactWork_ComAbstractSQLTable</name>
-
+    <typeid-column>TYPEID</typeid-column>
+   
     <database>
       <table-name>T_CWCOMABSTRACT</table-name>
       <update>true</update>
       <!-- contraints -->
       <foreign name="T_CWCOMABSTRACT_FK_ABST"    key="ABSTRACTID"   reference="T_CWABSTRACT(ID)"/>
       <foreign name="T_CWCOMABSTRACT_FK_ATTR"    key="ATTRIBUTEID"  reference="T_CWATTABSTRACT(ID)"/>
-      
     </database>
      
-    <typeid-column>TYPEID</typeid-column>
   </definition>
 
   

@@ -23,13 +23,13 @@
   
 -->
 
-<common-systemattribute>
+<common-systemattribute xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
+>
   <uuid>acf2b19b-f7c4-4e4a-a724-fb2d9ed30079</uuid>
   <description>
-    This Attribute defines the time in Minutes wich must elapse after 
-    trying n-times to login with the wrong passwird,before the User has 
-    again the possibilty to try to login. To deactivate this mechanism 
-    set the value to 0.
+    This Attribute defines the time in Minutes wich must elapse after trying n-times to login with the wrong passwird,before the User has again the
+    possibilty to try to login. To deactivate this mechanism set the value to 0.
   </description>
   <definition>
     <version>

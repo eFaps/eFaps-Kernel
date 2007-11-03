@@ -30,7 +30,7 @@
 
 -->
 
-<ui-image>
+<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>5c92cb92-98d2-4df1-8bfa-b5026b5fbe13</uuid>
 
   <!-- ************************************************************************

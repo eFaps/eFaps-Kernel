@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-type>
+<datamodel-type  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>fec64148-a39b-4f69-bedd-9c3bcfe8e1602</uuid>
 
   <!-- define type (is already defined) -->
@@ -40,16 +40,16 @@
     <attribute>
       <name>UserFromLink</name>
       <type>Link</type>
+      <typelink>Admin_User_Person</typelink>
       <sqltable>Admin_User_Abstract2AbstractSQLTable</sqltable>
       <sqlcolumn>USERABSTRACTFROM</sqlcolumn>
-      <typelink>Admin_User_Person</typelink>
     </attribute>
     <attribute>
       <name>UserToLink</name>
       <type>Link</type>
+      <typelink>Admin_User_Group</typelink>
       <sqltable>Admin_User_Abstract2AbstractSQLTable</sqltable>
       <sqlcolumn>USERABSTRACTTO</sqlcolumn>
-      <typelink>Admin_User_Group</typelink>
     </attribute>
    </definition>
 

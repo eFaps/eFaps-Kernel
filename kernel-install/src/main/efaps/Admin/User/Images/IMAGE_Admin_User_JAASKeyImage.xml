@@ -28,7 +28,7 @@
                   [ http://creativecommons.org/licenses/by/2.5/ ]
 -->
 
-<ui-image>
+<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>28c2f78e-c686-494e-81ca-702e7f28d16d</uuid>
 
   <!-- ************************************************************************

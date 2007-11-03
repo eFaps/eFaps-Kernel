@@ -23,7 +23,7 @@
 
 -->
 
-<ui-menu>
+<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>beabae59-7086-4f6c-b1a4-0c129461c98f</uuid>
 
   <!-- ************************************************************************
@@ -52,13 +52,13 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_User_JAASSystemTree</name>
-    <!-- type tree for -->
-    <type>Admin_User_JAASSystem</type>
     <!-- targets -->
     <target>
-      <form>Admin_User_JAASSystemForm</form>
       <menu>Admin_User_JAASSystemTree_Menu</menu>
+      <form>Admin_User_JAASSystemForm</form>
     </target>
+    <!-- type tree for -->
+    <type>Admin_User_JAASSystem</type>
     <!-- childs -->
     <childs>
       <child>Admin_User_JAASSystemTree_Keys</child>

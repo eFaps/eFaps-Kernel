@@ -23,7 +23,7 @@
 
 -->
 
-<datamodel-type>
+<datamodel-type  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>f3d54a86-c323-43d8-9c78-284d61d955b3</uuid>
 
   <!-- define type -->
@@ -62,9 +62,9 @@
     <attribute>
       <name>Abstract</name>
       <type>Link</type>
+      <typelink>Admin_Abstract</typelink>
       <sqltable>Admin_Common_PropertySQLTable</sqltable>
       <sqlcolumn>ABSTRACT</sqlcolumn>
-      <typelink>Admin_Abstract</typelink>
     </attribute>
   </definition>
 
