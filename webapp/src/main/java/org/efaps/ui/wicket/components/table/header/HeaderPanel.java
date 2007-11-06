@@ -23,14 +23,18 @@ package org.efaps.ui.wicket.components.table.header;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.behavior.StringHeaderContributor;
+import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
 
+import org.efaps.ui.wicket.components.dojo.DojoReference;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.HeaderModel;
@@ -74,6 +78,9 @@ public class HeaderPanel extends Panel {
       cell.add(new SimpleAttributeModifier("class",
           "eFapsTableHeaderCell eFapsCellWidth" + i));
       cellRepeater.add(cell);
+      if (i + 1 < _model.getHeaders().size()) {
+        cellRepeater.add(new Seperator(cellRepeater.newChildId(), i));
+      }
       i++;
     }
 
@@ -84,6 +91,8 @@ public class HeaderPanel extends Panel {
 
     this.add(new StringHeaderContributor(getWidthStyle(widths)));
     this.add(new StringHeaderContributor(getScript()));
+    this.add(new HeaderContributor(HeaderContributor
+        .forJavaScript(DojoReference.JS_DOJO)));
   }
 
   public final ModalWindowContainer getModal() {
@@ -102,24 +111,22 @@ public class HeaderPanel extends Panel {
             + "    var celldivs= header.getElementsByTagName(\"div\");\n"
             + "    var widthWeight=0;"
             + "    var widthCor=0;"
+            + "    var leftshift=0;"
+            + "    var addCell=0;"
             + "    for(i = 0;i<celldivs.length;i++){\n"
             + "      var cell = celldivs[i];"
             + "      var checkbox = cell.className.indexOf(\"eFapsTableCheckBoxCell\");\n"
             + "      if(checkbox > -1){\n"
-            + "        widthCor += celldivs[i].clientWidth;\n"
+            + "        var addwith = getAdditionalWidth(cell);\n"
+            + "        widthCor += cell.clientWidth + addwith;\n"
+            + "        leftshift += cell.clientWidth + addwith;\n"
             + "      }\n"
             + "      var f = cell.className.indexOf(\"eFapsCellWidth\");\n"
             + "      if (f>-1){\n"
-            + "        cells.push(cell.clientWidth);\n"
+            + "        var addwith = getAdditionalWidth(cell);\n"
+            + "        cells.push(new Array(cell.clientWidth, addwith));\n"
             + "        widthWeight += cell.clientWidth;\n"
-            + "      }\n"
-            + "      if (f>-1 || checkbox > -1){\n"
-            + "        widthCor += parseInt(window.getComputedStyle(cell,null).getPropertyValue(\"margin-left\"));\n"
-            + "        widthCor += parseInt(window.getComputedStyle(cell,null).getPropertyValue(\"margin-right\"));\n"
-            + "        widthCor += parseInt(window.getComputedStyle(cell,null).getPropertyValue(\"padding-left\"));\n"
-            + "        widthCor += parseInt(window.getComputedStyle(cell,null).getPropertyValue(\"margin-right\"));\n"
-            + "        widthCor += parseInt(window.getComputedStyle(cell,null).getPropertyValue(\"border-left-width\"));\n"
-            + "        widthCor += parseInt(window.getComputedStyle(cell,null).getPropertyValue(\"border-right-width\"));\n"
+            + "        widthCor+= addwith;"
             + "      }\n"
             + "    }\n"
             + "    var tablebody = document.getElementById(\"eFapsTableBody\");\n"
@@ -128,8 +135,12 @@ public class HeaderPanel extends Panel {
             + "      header.style.width = w + \"px\";\n"
             + "        for(j=0;j<cells.length;j++){\n"
             + "          var rule = getStyleRule(j);\n"
-            + "          var cw = ((100/widthWeight * cells[j])/100)* (w-widthCor);\n"
+            + "          var cw = ((100/widthWeight * cells[j][0])/100)* (w-widthCor-10);\n"
             + "          rule.style.width= cw + \"px\";\n"
+            + "          if(j+1<cells.length){\n"
+            + "            document.getElementById(j+\"eFapsHeaderSeperator\").style.left= cw + leftshift  + cells[j][1]+ \"px\";\n"
+            + "            leftshift+=cw + cells[j][1]\n;"
+            + "          }\n"
             + "        }\n"
             + "      }\n"
             + "}\n"
@@ -144,6 +155,53 @@ public class HeaderPanel extends Panel {
             + "        }\n"
             + "      }\n"
             + "    }\n"
+            + "  }\n"
+            + "  function getAdditionalWidth(_cell){"
+            + "    var compu = window.getComputedStyle(_cell,null); "
+            + "    var width=0;"
+            + "    width += parseInt(compu.getPropertyValue(\"margin-left\"));\n"
+            + "    width += parseInt(compu.getPropertyValue(\"margin-right\"));\n"
+            + "    width += parseInt(compu.getPropertyValue(\"padding-left\"));\n"
+            + "    width += parseInt(compu.getPropertyValue(\"margin-right\"));\n"
+            + "    width += parseInt(compu.getPropertyValue(\"border-left-width\"));\n"
+            + "    width += parseInt(compu.getPropertyValue(\"border-right-width\"));\n"
+            + "    return width;\n"
+            + "  }\n"
+            + "  var lastpos=0;"
+            + "var startpos=0;"
+            + "  var seperatorOffset=0;"
+            + "  var connections = [];\n"
+            + "  var seperator;"
+            + "  function beginColumnSize(_seperator,_event){\n"
+            + "    sizing=true;"
+            + "    lastpos=_event.screenX;"
+            + "startpos=lastpos;"
+            + "    seperator=_seperator;"
+            + "    seperatorOffset=_event.screenX- parseInt(_seperator.style.left);\n"
+            + "    _seperator.style.width = parseInt(window.getComputedStyle(_seperator,null).getPropertyValue(\"width\")) + 200 +\"px\";"
+            + "    _seperator.style.left = parseInt(_seperator.style.left)-100+\"px\";"
+            + "    _seperator.style.backgroundPosition=\"top center\";"
+            + "     connections[0] = dojo.connect(_seperator,\"onmousemove\",this,  \"doColumnSize\" );\n"
+            + "     connections[1] = dojo.connect(_seperator,\"onmouseout\",this,  \"cancelColumnSize\" );\n"
+            + "  }\n"
+            + "  function doColumnSize(_event){\n"
+            + "      seperator.style.left= (_event.screenX-seperatorOffset)-100 +\"px\";"
+            + "      lastpos=_event.screenX;"
+            + "  }\n"
+            + "  function endColumnSize(_seperator,_event){\n"
+            + "    dojo.forEach(connections,dojo.disconnect); "
+            + "    var dif =lastpos- startpos  ;"
+            + "    _seperator.style.width =parseInt(_seperator.style.width)-200 +\"px\";"
+            + "    _seperator.style.left=parseInt(_seperator.style.left)+100+\"px\";"
+            + "    var i = parseInt(seperator.id);"
+            + "    var rule = getStyleRule(i);\n"
+            + "    rule.style.width = parseInt(rule.style.width)+dif+\"px\";"
+            + "    rule = getStyleRule(i+1);\n"
+            + "    rule.style.width = parseInt(rule.style.width)-dif+\"px\";"
+            + "    _seperator.style.backgroundPosition=\"-200px 0\";"
+            + "  }\n"
+            + "  function cancelColumnSize(_event){"
+            + "    endColumnSize(seperator,_event);"
             + "  }\n"
             + JavascriptUtils.SCRIPT_CLOSE_TAG;
 
@@ -163,5 +221,38 @@ public class HeaderPanel extends Panel {
 
     ret.append(CssUtils.INLINE_CLOSE_TAG);
     return ret.toString();
+  }
+
+  public class Seperator extends WebComponent {
+
+    private static final long serialVersionUID = 1L;
+
+    private final int id;
+
+    public Seperator(final String _wicketId, final int _outputid) {
+      super(_wicketId);
+      this.id = _outputid;
+      this
+          .add(new SimpleAttributeModifier("class", "eFapsTableHeaderSeperator"));
+      this.add(new SimpleAttributeModifier("onmousedown",
+          "beginColumnSize(this,event)"));
+
+      this.add(new SimpleAttributeModifier("onmouseup",
+          "endColumnSize(this,event)"));
+
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
+     */
+    @Override
+    protected void onComponentTag(final ComponentTag _tag) {
+      super.onComponentTag(_tag);
+      _tag.put("id", this.id + "eFapsHeaderSeperator");
+      _tag.setName("span");
+    }
+
   }
 }

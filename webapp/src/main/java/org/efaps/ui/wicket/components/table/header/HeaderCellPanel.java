@@ -63,7 +63,7 @@ public class HeaderCellPanel extends Panel {
     this.add(new WebMarkupContainer("sortlink").setVisible(false));
     this.add(new WebComponent("label").setVisible(false));
     this.add(new WebComponent("filterlink").setVisible(false));
-  }
+    }
 
   public HeaderCellPanel(final String _id, final HeaderModel _model,
                          final TableModel _tablemodel) {
@@ -125,7 +125,6 @@ public class HeaderCellPanel extends Panel {
     } else {
       this.add(new WebComponent("filterlink").setVisible(false));
     }
-
   }
 
   public class Checkbox extends WebComponent {
