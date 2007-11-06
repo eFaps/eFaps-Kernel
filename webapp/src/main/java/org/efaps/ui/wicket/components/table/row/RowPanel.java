@@ -54,25 +54,27 @@ public class RowPanel extends Panel {
     }
 
     for (CellModel cellmodel : _model.getValues()) {
-      i++;
+
 
       final CellPanel cellpanel =
           new CellPanel(cellRepeater.newChildId(), cellmodel, _updateListMenu,
               _tablemodel);
       cellpanel.setOutputMarkupId(true);
-      cellpanel.add(new SimpleAttributeModifier("class", "eFapsTableCell"));
+      cellpanel.add(new SimpleAttributeModifier("class", "eFapsTableCell eFapsCellWidth"
+          + i));
 
       int width = 100 / _tablemodel.getWidthWeight() * cellmodel.getWidth();
 
       if (i == _model.getValues().size()) {
         width = width - (1);
       } else {
-        cellpanel.add(new SimpleAttributeModifier("style", "width:"
-            + width
-            + "%"));
+        // cellpanel.add(new SimpleAttributeModifier("style", "width:"
+        // + width
+        // + "%"));
       }
 
       cellRepeater.add(cellpanel);
+      i++;
     }
 
   }

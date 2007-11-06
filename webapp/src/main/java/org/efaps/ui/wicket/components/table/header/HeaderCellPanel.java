@@ -68,7 +68,6 @@ public class HeaderCellPanel extends Panel {
   public HeaderCellPanel(final String _id, final HeaderModel _model,
                          final TableModel _tablemodel) {
     super(_id, _model);
-    this.add(new SimpleAttributeModifier("class", "eFapsTableHeaderCell"));
 
     add(HeaderContributor.forCss(getClass(), "HeaderCellPanel.css"));
 
