@@ -23,7 +23,7 @@
 
 -->
 
-<eFaps-DBProperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<dbproperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>4637107b-b0de-49a4-afa8-b78d3ee4295c</uuid>
   <bundle name="efaps_Integration" sequence="1"/>
   <resource>
@@ -36,4 +36,4 @@
     <language>de</language> 
     <file>Integration_de.properties</file>
   </resource>
-</eFaps-DBProperties>
+</dbproperties>

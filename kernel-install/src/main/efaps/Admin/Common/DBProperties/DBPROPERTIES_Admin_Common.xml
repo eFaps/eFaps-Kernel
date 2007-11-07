@@ -23,7 +23,7 @@
 
 -->
 
-<eFaps-DBProperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<dbproperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>7b49184a-f758-484a-a5d5-3cdb0b54e7c0</uuid>
   <bundle name="efaps_Common" sequence="1"/>
   <resource>
@@ -31,4 +31,4 @@
     <language></language> 
     <file>Admin_Common.properties</file>
   </resource>
-</eFaps-DBProperties>
+</dbproperties>

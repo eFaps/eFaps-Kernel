@@ -23,7 +23,7 @@
 
 -->
 
-<eFaps-DBProperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<dbproperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>8a7d9743-c0d1-49b9-9252-d1e56cf921bd</uuid>
   <bundle name="ContactWork" sequence="1"/>
   <resource>
@@ -32,4 +32,4 @@
     <file>ContactWork.properties</file>
   </resource>
   
-</eFaps-DBProperties>
+</dbproperties>

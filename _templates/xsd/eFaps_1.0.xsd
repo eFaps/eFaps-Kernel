@@ -87,7 +87,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="eFaps-DBProperties">
+  <xsd:element name="dbproperties">
     <xsd:complexType>
       <xsd:complexContent>
         <xsd:extension base="eFaps:AbstractBase">

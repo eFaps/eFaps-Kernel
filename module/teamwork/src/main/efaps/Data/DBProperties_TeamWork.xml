@@ -23,7 +23,7 @@
 
 -->
 
-<eFaps-DBProperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<dbproperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>39b64664-2b25-45b6-9d3b-a236a4f4480b</uuid>
   <bundle name="TeamWork" sequence="1"/>
   <resource>
@@ -31,4 +31,4 @@
     <language></language> 
     <file>TeamWork.properties</file>
   </resource>
-</eFaps-DBProperties>
+</dbproperties>

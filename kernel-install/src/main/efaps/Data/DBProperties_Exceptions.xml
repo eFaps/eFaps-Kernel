@@ -23,7 +23,7 @@
 
 -->
 
-<eFaps-DBProperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<dbproperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>bd3c0d5b-86bb-4a5e-8127-044088726576</uuid>
   <bundle name="eFaps-kernel exception" sequence="1"/>
   <resource>
@@ -36,4 +36,4 @@
     <language>de</language> 
     <file>Exceptions_de.properties</file>
   </resource>
-</eFaps-DBProperties>
+</dbproperties>

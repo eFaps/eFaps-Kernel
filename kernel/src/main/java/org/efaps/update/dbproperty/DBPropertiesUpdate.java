@@ -48,7 +48,7 @@ import org.efaps.util.EFapsException;
  * Properties must be unique within a Bundle. Therefore the import will update a
  * key, if it is allready existing inside this bundle. The Bundle will allways
  * be idendified by the UUID and not by the name.
- * 
+ *
  * @author jmo
  * @version $Id$
  */
@@ -97,7 +97,7 @@ public class DBPropertiesUpdate {
 
   /**
    * find out the Id of the language used for this properties
-   * 
+   *
    * @return ID of the Language
    */
   private String getLanguageId(final String _language) {
@@ -125,7 +125,7 @@ public class DBPropertiesUpdate {
 
   /**
    * inserts a new language into the Database
-   * 
+   *
    * @param _language
    *          language to be inserted
    * @return ID of the new language
@@ -152,7 +152,7 @@ public class DBPropertiesUpdate {
 
   /**
    * set the Name of the Bundle
-   * 
+   *
    * @param _Name
    */
   private void setBundleName(String _Name) {
@@ -161,7 +161,7 @@ public class DBPropertiesUpdate {
 
   /**
    * get the Name of the Bundle
-   * 
+   *
    * @return
    */
   private String getBundleName() {
@@ -170,7 +170,7 @@ public class DBPropertiesUpdate {
 
   /**
    * set the UUID of the Bundle
-   * 
+   *
    * @param _UUID
    */
   public void setBundleUUID(String _UUID) {
@@ -179,7 +179,7 @@ public class DBPropertiesUpdate {
 
   /**
    * get the UUID of the Bundle
-   * 
+   *
    * @return
    */
   private String getBundleUUID() {
@@ -188,7 +188,7 @@ public class DBPropertiesUpdate {
 
   /**
    * Insert a new Bundle into the Database
-   * 
+   *
    * @return ID of the new Bundle
    */
   private String insertNewBundle() {
@@ -216,7 +216,7 @@ public class DBPropertiesUpdate {
 
   /**
    * get the Sequence of the Bundle
-   * 
+   *
    * @return
    */
   private String getSequence() {
@@ -225,7 +225,7 @@ public class DBPropertiesUpdate {
 
   /**
    * set the Sequence of the Bundel
-   * 
+   *
    * @param _Sequence
    */
   private void setSequence(String _Sequence) {
@@ -235,7 +235,7 @@ public class DBPropertiesUpdate {
   /**
    * Import Properties from a Properties-File as default, if the key is already
    * existing, the default will be replaced with the new default
-   * 
+   *
    * @param _url  Complete Path/Name of the property file to import
    */
   private void importFromProperties(final URL _url) {
@@ -264,7 +264,7 @@ public class DBPropertiesUpdate {
 
   /**
    * set the ID of the Bundel
-   * 
+   *
    * @param _ID
    */
   private void setBundleID(String _ID) {
@@ -274,7 +274,7 @@ public class DBPropertiesUpdate {
 
   /**
    * get the ID of the Bundle
-   * 
+   *
    * @return ID
    */
   private String getBundleID() {
@@ -285,7 +285,7 @@ public class DBPropertiesUpdate {
    * Import Properties from a Properties-File as language-specific value, if the
    * key is not existing, a new default(=value) will also be created. If the
    * language is not existing it will be created also.
-   * 
+   *
    * @param _url      Complete Path/Name of the File to import
    * @param _language Language to use for the Import
    */
@@ -329,7 +329,7 @@ public class DBPropertiesUpdate {
 
   /**
    * Is a localized value already existing
-   * 
+   *
    * @param _propertyid
    *          ID of the Property, the localized value is related to
    * @return OID of the value, otherwise null
@@ -360,7 +360,7 @@ public class DBPropertiesUpdate {
 
   /**
    * Insert a new localized Value
-   * 
+   *
    * @param _propertyid
    *          ID of the Property, the localized value is related to
    * @param _value
@@ -388,7 +388,7 @@ public class DBPropertiesUpdate {
 
   /**
    * Update a localized Value
-   * 
+   *
    * @param _OID
    *          OID, of the localized Value
    * @param _value
@@ -412,8 +412,8 @@ public class DBPropertiesUpdate {
 
   /**
    * Is a key already existing
-   * 
-   * 
+   *
+   *
    * @param _key
    *          Key to search for
    * @return OID of the key, otherwise null
@@ -442,7 +442,7 @@ public class DBPropertiesUpdate {
 
   /**
    * Update a Default
-   * 
+   *
    * @param _OID
    *          OID of the value to update
    * @param _value
@@ -466,7 +466,7 @@ public class DBPropertiesUpdate {
 
   /**
    * Insert a new Property
-   * 
+   *
    * @param _key
    *          Key to insert
    * @param _value
@@ -497,7 +497,7 @@ public class DBPropertiesUpdate {
 
   /**
    * Find out the ID for the OID
-   * 
+   *
    * @param OID
    * @return ID
    */
@@ -514,22 +514,22 @@ public class DBPropertiesUpdate {
 
     digester.setValidating(false);
 
-    digester.addObjectCreate("eFaps-DBProperties", DBPropertiesUpdate.class);
+    digester.addObjectCreate("dbproperties", DBPropertiesUpdate.class);
 
-    digester.addCallMethod("eFaps-DBProperties/uuid", "setBundleUUID", 0);
+    digester.addCallMethod("dbproperties/uuid", "setBundleUUID", 0);
 
-    digester.addCallMethod("eFaps-DBProperties/bundle", "setBundle", 2);
-    digester.addCallParam("eFaps-DBProperties/bundle", 0, "name");
-    digester.addCallParam("eFaps-DBProperties/bundle", 1, "sequence");
+    digester.addCallMethod("dbproperties/bundle", "setBundle", 2);
+    digester.addCallParam("dbproperties/bundle", 0, "name");
+    digester.addCallParam("dbproperties/bundle", 1, "sequence");
 
-    digester.addObjectCreate("eFaps-DBProperties/resource", Resource.class);
+    digester.addObjectCreate("dbproperties/resource", Resource.class);
 
-    digester.addCallMethod("eFaps-DBProperties/resource", "setResource", 3);
-    digester.addCallParam("eFaps-DBProperties/resource/type", 0);
-    digester.addCallParam("eFaps-DBProperties/resource/language", 1);
-    digester.addCallParam("eFaps-DBProperties/resource/file", 2);
+    digester.addCallMethod("dbproperties/resource", "setResource", 3);
+    digester.addCallParam("dbproperties/resource/type", 0);
+    digester.addCallParam("dbproperties/resource/language", 1);
+    digester.addCallParam("dbproperties/resource/file", 2);
 
-    digester.addSetNext("eFaps-DBProperties/resource", "addResource");
+    digester.addSetNext("dbproperties/resource", "addResource");
 
     try {
       propimport = (DBPropertiesUpdate) digester.parse(_url);
@@ -549,7 +549,7 @@ public class DBPropertiesUpdate {
 
   /**
    * set the Bundle
-   * 
+   *
    * @param _Name
    *          Name of the Bundle
    * @param _Sequence
@@ -562,7 +562,7 @@ public class DBPropertiesUpdate {
 
   /**
    * add a Resource to the Properties
-   * 
+   *
    * @param _resource
    *          Resource to be added
    */
@@ -572,7 +572,7 @@ public class DBPropertiesUpdate {
 
   /**
    * Import a Bundle of Properties into the database
-   * 
+   *
    */
   public void updateInDB() throws MalformedURLException  {
     if (LOG.isInfoEnabled()) {
@@ -601,7 +601,7 @@ public class DBPropertiesUpdate {
 
   /**
    * Is the Bundle allready existing
-   * 
+   *
    * @param _UUID
    *          UUID of the Bundle
    * @return ID of the Bundle if existing, else null
@@ -616,7 +616,7 @@ public class DBPropertiesUpdate {
       query.addWhereExprEqValue("UUID", _UUID);
       query.executeWithoutAccessCheck();
       if (query.next()) {
-        BundleID = (String) query.get("ID").toString();
+        BundleID = query.get("ID").toString();
       }
       query.close();
       return BundleID;
@@ -630,10 +630,10 @@ public class DBPropertiesUpdate {
 
   /**
    * Class to store the diffrent Resources witch can come with one bundle
-   * 
+   *
    * @author jmo
    * @version $Id$
-   * 
+   *
    */
   public static class Resource {
     /**
@@ -653,7 +653,7 @@ public class DBPropertiesUpdate {
 
     /**
      * set the Resource
-     * 
+     *
      * @param _type
      *          type of the Properties
      * @param _language
