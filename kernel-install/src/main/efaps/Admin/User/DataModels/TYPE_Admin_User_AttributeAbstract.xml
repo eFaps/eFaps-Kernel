@@ -70,52 +70,40 @@
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
     <attribute>
-      <name>Name</name>
-      <type>String</type>
-      <sqltable>Admin_User_AbstractSQLTable</sqltable>
-      <sqlcolumn>NAME</sqlcolumn>
+      <name>UserLink</name>
+      <type>Link</type>
+      <typelink>Admin_User_Abstract</typelink>
+      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
+      <sqlcolumn>USERABSTRACTID</sqlcolumn>
     </attribute>
     <attribute>
-      <name>UUID</name>
+      <name>Key</name>
       <type>String</type>
-      <sqltable>Admin_User_AbstractSQLTable</sqltable>
-      <sqlcolumn>UUID</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Revision</name>
-      <type>String</type>
-      <sqltable>Admin_User_AbstractSQLTable</sqltable>
-      <sqlcolumn>REVISION</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Status</name>
-      <type>Boolean</type>
-      <sqltable>Admin_User_AbstractSQLTable</sqltable>
-      <sqlcolumn>STATUS</sqlcolumn>
-      <defaultvalue>false</defaultvalue>
+      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
+      <sqlcolumn>ATTRIBUTEKEY</sqlcolumn>
     </attribute>
     <attribute>
       <name>Creator</name>
       <type>CreatorLink</type>
-      <sqltable>Admin_User_AbstractSQLTable</sqltable>
+      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
       <sqlcolumn>CREATOR</sqlcolumn>
     </attribute>
     <attribute>
       <name>Created</name>
       <type>Created</type>
-      <sqltable>Admin_User_AbstractSQLTable</sqltable>
+      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
       <sqlcolumn>CREATED</sqlcolumn>
     </attribute>
     <attribute>
       <name>Modifier</name>
       <type>ModifierLink</type>
-      <sqltable>Admin_User_AbstractSQLTable</sqltable>
+      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
       <sqlcolumn>MODIFIER</sqlcolumn>
     </attribute>
     <attribute>
       <name>Modified</name>
       <type>Modified</type>
-      <sqltable>Admin_User_AbstractSQLTable</sqltable>
+      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
       <sqlcolumn>MODIFIED</sqlcolumn>
     </attribute>
   </definition>
