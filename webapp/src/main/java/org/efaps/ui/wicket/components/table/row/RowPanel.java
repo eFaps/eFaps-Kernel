@@ -51,28 +51,22 @@ public class RowPanel extends Panel {
       cellpanel.add(new SimpleAttributeModifier("class",
           "eFapsTableCheckBoxCell"));
       cellRepeater.add(cellpanel);
+      i++;
     }
 
     for (CellModel cellmodel : _model.getValues()) {
-
 
       final CellPanel cellpanel =
           new CellPanel(cellRepeater.newChildId(), cellmodel, _updateListMenu,
               _tablemodel);
       cellpanel.setOutputMarkupId(true);
-      cellpanel.add(new SimpleAttributeModifier("class", "eFapsTableCell eFapsCellWidth"
-          + i));
-
-      int width = 100 / _tablemodel.getWidthWeight() * cellmodel.getWidth();
-
-      if (i == _model.getValues().size()) {
-        width = width - (1);
+      if (cellmodel.isFixedWidth()) {
+        cellpanel.add(new SimpleAttributeModifier("class",
+            "eFapsTableCell eFapsCellFixedWidth" + i));
       } else {
-        // cellpanel.add(new SimpleAttributeModifier("style", "width:"
-        // + width
-        // + "%"));
+        cellpanel.add(new SimpleAttributeModifier("class",
+            "eFapsTableCell eFapsCellWidth" + i));
       }
-
       cellRepeater.add(cellpanel);
       i++;
     }

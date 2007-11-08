@@ -25,7 +25,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.Field;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id:CellModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class CellModel extends Model {
@@ -44,6 +44,8 @@ public class CellModel extends Model {
 
   private final int width;
 
+  private final boolean fixedWidth;
+
   public CellModel(final Field _field, final String _oid,
                    final String _cellvalue, final String _icon) {
     super();
@@ -53,6 +55,7 @@ public class CellModel extends Model {
     this.oid = _oid;
     this.cellValue = _cellvalue;
     this.icon = _icon;
+    this.fixedWidth = _field.isFixedWidth();
   }
 
   /**
@@ -122,6 +125,16 @@ public class CellModel extends Model {
    */
   public int getWidth() {
     return this.width;
+  }
+
+
+  /**
+   * This is the getter method for the instance variable {@link #fixedWidth}.
+   *
+   * @return value of instance variable {@link #fixedWidth}
+   */
+  public boolean isFixedWidth() {
+    return this.fixedWidth;
   }
 
 }

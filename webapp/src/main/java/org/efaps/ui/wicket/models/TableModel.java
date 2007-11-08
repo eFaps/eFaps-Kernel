@@ -218,7 +218,9 @@ public class TableModel extends AbstractModel {
           sortdirection = this.getSortDirection();
         }
         this.headers.add(new HeaderModel(field, sortdirection));
-        this.widthWeight += field.getWidth();
+        if (!field.isFixedWidth()) {
+          this.widthWeight += field.getWidth();
+        }
       }
       query.execute();
 

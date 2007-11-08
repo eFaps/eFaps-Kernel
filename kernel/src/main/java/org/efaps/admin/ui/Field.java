@@ -233,6 +233,11 @@ public class Field extends UserInterfaceObject {
   private int width;
 
   /**
+   * is the width of this field fixed or or weighted
+   */
+  private boolean fixedWidth = false;
+
+  /**
    * Standart-Constructor
    */
   public Field() {
@@ -1010,6 +1015,20 @@ public class Field extends UserInterfaceObject {
    *                the width to set
    */
   public void setWidth(final String _value) {
-    this.width = Integer.parseInt(_value);
+    String strwidth = _value;
+    if (strwidth.endsWith("px")) {
+      this.fixedWidth = true;
+      strwidth = _value.substring(0, strwidth.length() - 2);
+    }
+    this.width = Integer.parseInt(strwidth);
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #fixedWidth}.
+   *
+   * @return value of instance variable {@link #fixedWidth}
+   */
+  public boolean isFixedWidth() {
+    return this.fixedWidth;
   }
 }

@@ -41,7 +41,7 @@ import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id:TableHeaderPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class HeaderPanel extends Panel {
@@ -60,26 +60,55 @@ public class HeaderPanel extends Panel {
 
     final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
     add(cellRepeater);
-
+    int i = 0;
     if (_model.isShowCheckBoxes()) {
       final HeaderCellPanel cell =
           new HeaderCellPanel(cellRepeater.newChildId());
       cellRepeater.add(cell);
+      i++;
     }
-    List<Long> widths = new ArrayList<Long>();
-    int i = 0;
-    for (HeaderModel headermodel : _model.getHeaders()) {
+    List<String> widths = new ArrayList<String>();
+
+    int fixed = 0;
+    for (int j = 0; j < _model.getHeaders().size(); j++) {
+      final HeaderModel headermodel = _model.getHeaders().get(j);
 
       final HeaderCellPanel cell =
           new HeaderCellPanel(cellRepeater.newChildId(), headermodel, _model);
-      long width =
-          browserWidth / _model.getWidthWeight() * headermodel.getWidth();
-      widths.add(width);
-      cell.add(new SimpleAttributeModifier("class",
-          "eFapsTableHeaderCell eFapsCellWidth" + i));
+
+      if (headermodel.isFixedWidth()) {
+        widths.add("div.eFapsCellFixedWidth"
+            + i
+            + "{width: "
+            + headermodel.getWidth()
+            + "px;}\n");
+        cell.add(new SimpleAttributeModifier("class",
+            "eFapsTableHeaderCell eFapsCellFixedWidth" + i));
+        fixed += headermodel.getWidth();
+      } else {
+        Integer width =
+            browserWidth / _model.getWidthWeight() * headermodel.getWidth();
+        widths.add("div.eFapsCellWidth"
+            + i
+            + "{width: "
+            + width.toString()
+            + "px;}\n");
+        cell.add(new SimpleAttributeModifier("class",
+            "eFapsTableHeaderCell eFapsCellWidth" + i));
+      }
       cellRepeater.add(cell);
-      if (i + 1 < _model.getHeaders().size()) {
-        cellRepeater.add(new Seperator(cellRepeater.newChildId(), i));
+
+      if (j + 1 < _model.getHeaders().size() && !headermodel.isFixedWidth()) {
+        boolean add = false;
+        for (int k = j + 1; k < _model.getHeaders().size(); k++) {
+          if (!_model.getHeaders().get(k).isFixedWidth()) {
+            add = true;
+            break;
+          }
+        }
+        if (add) {
+          cellRepeater.add(new Seperator(cellRepeater.newChildId(), i));
+        }
       }
       i++;
     }
@@ -90,7 +119,7 @@ public class HeaderPanel extends Panel {
         this.modal, false));
 
     this.add(new StringHeaderContributor(getWidthStyle(widths)));
-    this.add(new StringHeaderContributor(getScript()));
+    this.add(new StringHeaderContributor(getScript(fixed)));
     this.add(new HeaderContributor(HeaderContributor
         .forJavaScript(DojoReference.JS_DOJO)));
   }
@@ -99,7 +128,7 @@ public class HeaderPanel extends Panel {
     return this.modal;
   }
 
-  private String getScript() {
+  private String getScript(final int _fixedWidth) {
 
     final String ret =
         JavascriptUtils.SCRIPT_OPEN_TAG
@@ -111,38 +140,47 @@ public class HeaderPanel extends Panel {
             + "    var celldivs = header.getElementsByTagName(\"div\");\n"
             + "    var widthWeight = 0;\n"
             + "    var widthCor = 0;\n"
-            + "    var leftshift = 0;\n"
             + "    var addCell = 0;\n"
             + "    for(i = 0;i<celldivs.length;i++){\n"
             + "      var cell = celldivs[i];"
-            + "      var checkbox = cell.className.indexOf(\"eFapsTableCheckBoxCell\");\n"
-            + "      if(checkbox > -1){\n"
+            + "      var fixed = cell.className.indexOf(\"eFapsCellFixedWidth\");\n"
+            + "      if(fixed > -1){\n"
             + "        var addwith = getAdditionalWidth(cell);\n"
+            + "        cells.push(new Array(cell.clientWidth, addwith,false));\n"
             + "        widthCor += cell.clientWidth + addwith;\n"
-            + "        leftshift += cell.clientWidth + addwith;\n"
             + "      }\n"
             + "      var f = cell.className.indexOf(\"eFapsCellWidth\");\n"
             + "      if (f>-1){\n"
             + "        var addwith = getAdditionalWidth(cell);\n"
-            + "        cells.push(new Array(cell.clientWidth, addwith));\n"
+            + "        cells.push(new Array(cell.clientWidth, addwith,true));\n"
             + "        widthWeight += cell.clientWidth;\n"
             + "        widthCor+= addwith;"
             + "      }\n"
             + "    }\n"
             + "    var tablebody = document.getElementById(\"eFapsTableBody\");\n"
-            + "    var w = (tablebody.clientWidth ) ;\n"
-            + "    if (w != 0) {\n"
-            + "      header.style.width = w + \"px\";\n"
-            + "        for(j=0;j<cells.length;j++){\n"
-            + "          var rule = getStyleRule(j);\n"
-            + "          var cw = ((100/widthWeight * cells[j][0])/100)* (w-widthCor-10);\n"
-            + "          rule.style.width= cw + \"px\";\n"
-            + "          if(j+1<cells.length){\n"
-            + "            document.getElementById(j+\"eFapsHeaderSeperator\").style.left= cw + leftshift  + cells[j][1]+ \"px\";\n"
-            + "            leftshift+=cw + cells[j][1];\n"
+            + "    var completeWidth = (tablebody.clientWidth ) ;\n"
+            + "    if (completeWidth != 0) {\n"
+            + "      header.style.width = completeWidth + \"px\";\n"
+            + "      var cellWidth;\n"
+            + "      var rightshift = 0;\n"
+            + "      for(k = 0;k < cells.length; k++){\n"
+            + "        if(cells[k][2]==true){\n"
+            + "          var rule = getStyleRule(k);\n"
+            + "          cellWidth = ((100/widthWeight * cells[k][0])/100)* (completeWidth - widthCor - 5);\n"
+            + "          rule.style.width= cellWidth + \"px\";\n"
+            + "        }else {\n"
+            + "          cellWidth = cells[k][0];\n"
+            + "        }\n"
+            + "        if(k+1 < cells.length){\n"
+            + "          rightshift += cellWidth + cells[k][1];\n"
+            + "          if(cells[k][2]==true ){\n"
+            + "            if(document.getElementById(k+\"eFapsHeaderSeperator\")){\n"
+            + "              document.getElementById(k+\"eFapsHeaderSeperator\").style.left = rightshift + \"px\";\n"
+            + "            }\n"
             + "          }\n"
             + "        }\n"
             + "      }\n"
+            + "    }\n"
             + "  }\n"
             + "  function getStyleRule(_styleIndex) {\n"
             + "    var selectorName = \"div.eFapsCellWidth\" + _styleIndex;\n"
@@ -182,8 +220,8 @@ public class HeaderPanel extends Panel {
             + "    _seperator.style.width = parseInt(window.getComputedStyle(_seperator,null).getPropertyValue(\"width\")) + 200 +\"px\";\n"
             + "    _seperator.style.left = parseInt(_seperator.style.left)-100+\"px\";\n"
             + "    _seperator.style.backgroundPosition=\"top center\";\n"
-            + "     connections[0] = dojo.connect(_seperator,\"onmousemove\",this,  \"doColumnSize\" );\n"
-            + "     connections[1] = dojo.connect(_seperator,\"onmouseout\",this,  \"cancelColumnSize\" );\n"
+            + "    connections[0] = dojo.connect(_seperator,\"onmousemove\",this,  \"doColumnSize\" );\n"
+            + "    connections[1] = dojo.connect(_seperator,\"onmouseout\",this,  \"cancelColumnSize\" );\n"
             + "  }\n"
             + "  function doColumnSize(_event){\n"
             + "    seperator.style.left= (_event.screenX-seperatorOffset)-100 +\"px\";\n"
@@ -205,7 +243,7 @@ public class HeaderPanel extends Panel {
             + "      if(dif < 0){\n"
             + "        leftrule.style.width = minWidth +\"px\";\n"
             + "        rightrule.style.width = rightWidth + leftWidth - minWidth + \"px\";\n"
-            + "        move = (leftWidth + dif-minWidth);"
+            + "        move = (leftWidth + dif-minWidth);\n"
             + "      } else {\n"
             + "        rightrule.style.width = minWidth +\"px\";\n"
             + "        leftrule.style.width = leftWidth + rightWidth - minWidth + \"px\";\n"
@@ -224,15 +262,14 @@ public class HeaderPanel extends Panel {
     return ret;
   }
 
-  private String getWidthStyle(List<Long> _widths) {
+  private String getWidthStyle(List<String> _widths) {
 
     final StringBuilder ret = new StringBuilder();
     ret
         .append("<style type=\"text/css\" title=\"eFapsTableWidthStyles\"><!--\n");
 
-    for (int i = 0; i < _widths.size(); i++) {
-      ret.append("div.eFapsCellWidth").append(i).append("{width: ").append(
-          _widths.get(i)).append("px;}\n");
+    for (String width : _widths) {
+      ret.append(width);
     }
 
     ret.append(CssUtils.INLINE_CLOSE_TAG);

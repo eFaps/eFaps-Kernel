@@ -27,7 +27,7 @@ import org.efaps.admin.ui.Field;
 import org.efaps.ui.wicket.models.TableModel.SortDirection;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id:HeaderModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class HeaderModel extends Model {
@@ -46,6 +46,8 @@ public class HeaderModel extends Model {
 
   private final int width;
 
+  private final boolean fixedWidth;
+
   public HeaderModel(final Field _field, final SortDirection _sortdirection) {
     this.label = _field.getLabel();
     this.sortable = _field.isSortAble();
@@ -53,6 +55,7 @@ public class HeaderModel extends Model {
     this.filterable = _field.isFilterable();
     this.sortDirection = _sortdirection;
     this.width = _field.getWidth();
+    this.fixedWidth = _field.isFixedWidth();
   }
 
   public String getLabel() {
@@ -120,6 +123,16 @@ public class HeaderModel extends Model {
    */
   public int getWidth() {
     return this.width;
+  }
+
+
+  /**
+   * This is the getter method for the instance variable {@link #fixedWidth}.
+   *
+   * @return value of instance variable {@link #fixedWidth}
+   */
+  public boolean isFixedWidth() {
+    return this.fixedWidth;
   }
 
 }

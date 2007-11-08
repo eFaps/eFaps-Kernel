@@ -57,13 +57,14 @@ public class HeaderCellPanel extends Panel {
 
   public HeaderCellPanel(final String _id) {
     super(_id);
-    this.add(new SimpleAttributeModifier("class", "eFapsTableCheckBoxCell"));
+    this.add(new SimpleAttributeModifier("class",
+        "eFapsTableCheckBoxCell eFapsCellFixedWidth0"));
     this.add(new Checkbox("checkBox"));
 
     this.add(new WebMarkupContainer("sortlink").setVisible(false));
     this.add(new WebComponent("label").setVisible(false));
     this.add(new WebComponent("filterlink").setVisible(false));
-    }
+  }
 
   public HeaderCellPanel(final String _id, final HeaderModel _model,
                          final TableModel _tablemodel) {
@@ -73,9 +74,8 @@ public class HeaderCellPanel extends Panel {
 
     this.add(new WebComponent("checkBox").setVisible(false));
 
-
     if (_model.isSortable()) {
-      final   SortLink sortlink = new SortLink("sortlink", _model);
+      final SortLink sortlink = new SortLink("sortlink", _model);
 
       if (_model.getSortDirection() == SortDirection.NONE) {
         sortlink.add(new SimpleAttributeModifier("class", "eFapsHeaderSort"));
@@ -92,7 +92,8 @@ public class HeaderCellPanel extends Panel {
       }
 
       if (_model.isFilterable()) {
-        sortlink.add(new AttributeAppender("style", new Model("width:80%"), ";"));
+        sortlink
+            .add(new AttributeAppender("style", new Model("width:80%"), ";"));
       }
 
       this.add(sortlink);
@@ -105,7 +106,7 @@ public class HeaderCellPanel extends Panel {
 
     if (_model.isFilterable()) {
 
-      final   AjaxFilterLinkContainer filterlink =
+      final AjaxFilterLinkContainer filterlink =
           new AjaxFilterLinkContainer("filterlink", _model);
 
       if (_model.getName().equals(_tablemodel.getFilterKey())
