@@ -26,7 +26,7 @@
 <datamodel-sqltable xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
-  <uuid>68d6f94e-74d8-40c7-82c7-77f33840ffa6</uuid>
+  <uuid>33f6c958-5561-4592-8841-17a6dc46b2e6</uuid>
 
   <!-- create table -->
   <definition>
@@ -37,12 +37,17 @@
       <mode>(version==1)</mode>
     </version>
     <database>
-      <table-name>T_USERATTR</table-name>
+      <table-name>T_USERATTRABSTRACT</table-name>
       <create>true</create>
       <update>true</update>
-      <column name="ATTRIBUTEKEY"   type="STRING_SHORT" not-null="true" length="128" />
-      <column name="VALUE"          type="STRING_LONG"                  length="2048" />
-      </database>
+      <column name="TYPEID"         type="INTEGER"      not-null="true" />
+      <column name="USERABSTRACTID" type="INTEGER"      not-null="true" />
+      <column name="CREATOR"        type="INTEGER"      not-null="true" />
+      <column name="CREATED"        type="DATETIME"     not-null="true" />
+      <column name="MODIFIER"       type="INTEGER"      not-null="true" />
+      <column name="MODIFIED"       type="DATETIME"     not-null="true" />
+     
+    </database>
   </definition>
 
   <!-- define constraints -->
@@ -54,21 +59,12 @@
       <mode>(version==4)</mode>
     </version>
     <database>
-      <sql>
-        create view V_USERATTRIBUTES as
-             select
-                    T_USERATTRABSTRACT.ID,
-                    T_USERATTRABSTRACT.USERABSTRACTID,
-                    T_USERATTR.ATTRIBUTEKEY,
-                    T_USERATTR.VALUE
-               from T_USERATTR
-               join T_USERATTRABSTRACT
-                 on T_USERATTR.ID = T_USERATTRABSTRACT.ID
-      </sql>
-      <table-name>T_USERATTR</table-name>
-      <parent-table>T_USERATTRABSTRACT</parent-table>
+      <table-name>T_USERATTRABSTRACT</table-name>
       <update>true</update>
-     </database>
+      <!-- constraints -->
+      <foreign name="T_USERATT_FK_CRTR" key="CREATOR" reference="T_USERPERSON(ID)" />
+      <foreign name="T_USERATT_FK_MDFR" key="MODIFIER" reference="T_USERPERSON(ID)" />
+    </database>
   </definition>
 
   <!-- define datamodel -->
@@ -79,9 +75,10 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_User_Attribute_SQLTable</name>
+    <name>Admin_User_AttributeAbstract_SQLTable</name>
+    <typeid-column>TYPEID</typeid-column>
     <database>
-      <table-name>T_USERATTR</table-name>
+      <table-name>T_USERATTRABSTRACT</table-name>
     </database>
   </definition>
 </datamodel-sqltable>

@@ -54,56 +54,50 @@
     <attribute>
       <name>Type</name>
       <type>Type</type>
-      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
       <sqlcolumn>TYPEID</sqlcolumn>
     </attribute>
     <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
       <sqlcolumn>TYPEID,ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>UserLink</name>
       <type>Link</type>
       <typelink>Admin_User_Abstract</typelink>
-      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
       <sqlcolumn>USERABSTRACTID</sqlcolumn>
-    </attribute>
-    <attribute>
-      <name>Key</name>
-      <type>String</type>
-      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
-      <sqlcolumn>ATTRIBUTEKEY</sqlcolumn>
     </attribute>
     <attribute>
       <name>Creator</name>
       <type>CreatorLink</type>
-      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
       <sqlcolumn>CREATOR</sqlcolumn>
     </attribute>
     <attribute>
       <name>Created</name>
       <type>Created</type>
-      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
       <sqlcolumn>CREATED</sqlcolumn>
     </attribute>
     <attribute>
       <name>Modifier</name>
       <type>ModifierLink</type>
-      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
       <sqlcolumn>MODIFIER</sqlcolumn>
     </attribute>
     <attribute>
       <name>Modified</name>
       <type>Modified</type>
-      <sqltable>Admin_User_Attribute_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
       <sqlcolumn>MODIFIED</sqlcolumn>
     </attribute>
   </definition>

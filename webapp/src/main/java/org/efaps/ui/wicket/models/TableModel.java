@@ -44,6 +44,7 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Table;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -174,8 +175,19 @@ public class TableModel extends AbstractModel {
         }
       }
       this.showCheckBoxes = showCheckBoxes;
-
+      try {
+        if (Context.getThreadContext().hasUserAtribute(
+            command.getUUID().toString() + "-sortKey")) {
+          this.sortKey =
+              Context.getThreadContext().getUserAttribute(
+                  command.getUUID().toString() + "-sortKey");
+        }
+      } catch (EFapsException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
+
   }
 
   @Override
@@ -370,6 +382,14 @@ public class TableModel extends AbstractModel {
    */
   public void setSortKey(final String _sortKey) {
     this.sortKey = _sortKey;
+    try {
+      Context.getThreadContext().setUserAttribute(
+          super.getCommandUUID().toString() + "-sortKey", _sortKey);
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
   }
 
   /**

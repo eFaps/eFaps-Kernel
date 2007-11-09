@@ -38,6 +38,7 @@ import org.apache.wicket.protocol.http.WebSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -85,7 +86,9 @@ public class EFapsSession extends WebSession {
    * @see #checkin()
    * @see #checkout()
    */
-  private String username;
+  private String userName;
+
+  private Map<String, Object> sessionAttributes = new HashMap<String, Object>();
 
   /**
    * Standart Constructor from Wicket
@@ -190,10 +193,10 @@ public class EFapsSession extends WebSession {
    * Method to check ia a user is checked in
    *
    * @return true if a user is checked in, else false
-   * @see #username
+   * @see #userName
    */
   public boolean isLogedIn() {
-    if (this.username != null) {
+    if (this.userName != null) {
       return true;
     } else {
       return false;
@@ -210,9 +213,10 @@ public class EFapsSession extends WebSession {
     String[] name = (String[]) parameter.get("name");
     String[] pwd = (String[]) parameter.get("password");
     if (checkLogin(name[0], pwd[0])) {
-      this.username = name[0];
+      this.userName = name[0];
     } else {
-      this.username = null;
+      this.userName = null;
+      this.sessionAttributes = null;
     }
 
   }
@@ -221,7 +225,9 @@ public class EFapsSession extends WebSession {
    * logs a user out
    */
   public final void logout() {
-    this.username = null;
+    this.userName = null;
+    ((UserAttributesSet) this.sessionAttributes.get(UserAttributesSet.CONTEXTMAPKEY))
+        .storeInDb();
     closeContext();
     super.invalidate();
   }
@@ -229,7 +235,8 @@ public class EFapsSession extends WebSession {
   /**
    * method to check the LoginInformation (Name and Password) against the
    * eFapsDatabase. To check the Information a Context is opened an afterwards
-   * closed.
+   * closed. It also puts a new Instance of UserAttributes into the instance map
+   * {@link #sessionAttributes}
    *
    * @param _name
    *                Name of the User to be checked in
@@ -251,6 +258,8 @@ public class EFapsSession extends WebSession {
             new LoginHandler(super.getApplication().getApplicationKey());
         if (loginHandler.checkLogin(_name, _passwd) != null) {
           loginOk = true;
+          this.sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY,
+              new UserAttributesSet(_name));
         }
         ok = true;
       }
@@ -299,7 +308,8 @@ public class EFapsSession extends WebSession {
         Map<String, String[]> parameter =
             RequestCycle.get().getRequest().getParameterMap();
 
-        Context.begin(this.username, super.getLocale(), null, parameter, null);
+        Context.begin(this.userName, super.getLocale(), this.sessionAttributes,
+            parameter, null);
       }
     } catch (EFapsException e) {
       LOG.error("could not initialise the context", e);

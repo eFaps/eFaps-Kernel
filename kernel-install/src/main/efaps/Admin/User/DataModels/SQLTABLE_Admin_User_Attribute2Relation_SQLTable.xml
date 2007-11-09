@@ -26,7 +26,7 @@
 <datamodel-sqltable xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
-  <uuid>68d6f94e-74d8-40c7-82c7-77f33840ffa6</uuid>
+  <uuid>1c8bc95e-1c4d-4605-a003-22c0af1d3d10</uuid>
 
   <!-- create table -->
   <definition>
@@ -37,11 +37,10 @@
       <mode>(version==1)</mode>
     </version>
     <database>
-      <table-name>T_USERATTR</table-name>
+      <table-name>T_USERATTR2REL</table-name>
       <create>true</create>
       <update>true</update>
-      <column name="ATTRIBUTEKEY"   type="STRING_SHORT" not-null="true" length="128" />
-      <column name="VALUE"          type="STRING_LONG"                  length="2048" />
+      <column name="RELATIONID"   type="INTEGER" not-null="true" />
       </database>
   </definition>
 
@@ -54,18 +53,7 @@
       <mode>(version==4)</mode>
     </version>
     <database>
-      <sql>
-        create view V_USERATTRIBUTES as
-             select
-                    T_USERATTRABSTRACT.ID,
-                    T_USERATTRABSTRACT.USERABSTRACTID,
-                    T_USERATTR.ATTRIBUTEKEY,
-                    T_USERATTR.VALUE
-               from T_USERATTR
-               join T_USERATTRABSTRACT
-                 on T_USERATTR.ID = T_USERATTRABSTRACT.ID
-      </sql>
-      <table-name>T_USERATTR</table-name>
+      <table-name>T_USERATTR2REL</table-name>
       <parent-table>T_USERATTRABSTRACT</parent-table>
       <update>true</update>
      </database>
@@ -79,9 +67,9 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_User_Attribute_SQLTable</name>
+    <name>Admin_User_Attribute2Relation_SQLTable</name>
     <database>
-      <table-name>T_USERATTR</table-name>
+      <table-name>T_USERATTRIBUTE2REL</table-name>
     </database>
   </definition>
 </datamodel-sqltable>
