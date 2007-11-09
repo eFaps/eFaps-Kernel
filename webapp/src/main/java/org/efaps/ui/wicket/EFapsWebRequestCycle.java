@@ -40,7 +40,7 @@ import org.efaps.ui.wicket.pages.login.LoginPage;
  * {@link org.apache.wicket.protocol.http.WebRequestCycle} only to throw a own
  * ErrorPage.
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class EFapsWebRequestCycle extends WebRequestCycle {

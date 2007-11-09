@@ -45,7 +45,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class EFapsSession extends WebSession {
@@ -88,6 +88,12 @@ public class EFapsSession extends WebSession {
    */
   private String userName;
 
+  /**
+   * This instance map stores the Attributes wich are valid for the whole
+   * session. It is passed on to the Context while opening it.
+   *
+   * @see #openContext()
+   */
   private Map<String, Object> sessionAttributes = new HashMap<String, Object>();
 
   /**
@@ -222,12 +228,15 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * logs a user out
+   * logs a user out and stores the UserAttribues in the eFapsDataBase
    */
+  // TODO maybe we should store the UserAttributes elsewhere, because what
+  // happens if the User does not log out?
   public final void logout() {
     this.userName = null;
-    ((UserAttributesSet) this.sessionAttributes.get(UserAttributesSet.CONTEXTMAPKEY))
-        .storeInDb();
+    ((UserAttributesSet) this.sessionAttributes
+        .get(UserAttributesSet.CONTEXTMAPKEY)).storeInDb();
+    this.sessionAttributes.clear();
     closeContext();
     super.invalidate();
   }
@@ -296,8 +305,9 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * method that opens a new Context in eFaps, setting the User, Locale an the
-   * RequessParamters
+   * method that opens a new Context in eFaps, setting the User, the Locale, the
+   * Attributes of this Session {@link #sessionAttributes} and the
+   * RequestParameters for the Context.
    *
    * @see #attach()
    */
@@ -324,7 +334,10 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * method to close the opened Context, and commit or rollback it
+   * method that closes the opened Context {@link #openContext()}, by commiting
+   * or rollback it
+   *
+   * @see #detach()
    */
   private void closeContext() {
     try {
