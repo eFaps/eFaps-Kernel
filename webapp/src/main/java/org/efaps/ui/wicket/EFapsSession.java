@@ -40,8 +40,8 @@ import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
-import org.efaps.util.EFapsException;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmo
@@ -201,11 +201,11 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * method to check a user with the Parameters from the Request in
+   * method to log a user with the Parameters from the Request in
    *
    * @see #checkLogin(String, String)
    */
-  public final void checkin() {
+  public final void login() {
     Map<?, ?> parameter = RequestCycle.get().getRequest().getParameterMap();
     String[] name = (String[]) parameter.get("name");
     String[] pwd = (String[]) parameter.get("password");
@@ -218,11 +218,12 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * checks a user out
+   * logs a user out
    */
-  public final void checkout() {
+  public final void logout() {
     this.username = null;
     closeContext();
+    super.invalidate();
   }
 
   /**
@@ -317,7 +318,7 @@ public class EFapsSession extends WebSession {
    */
   private void closeContext() {
     try {
-      if (Context.isTMActive())  {
+      if (Context.isTMActive()) {
         Context.commit();
       } else {
         Context.rollback();

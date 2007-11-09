@@ -40,7 +40,7 @@ public class LogOutLink extends StandardLink {
 
   @Override
   public void onClick() {
-    ((EFapsSession) this.getSession()).checkout();
+    ((EFapsSession) this.getSession()).logout();
     this.getRequestCycle().setResponsePage(LoginPage.class);
   }
 }

@@ -25,7 +25,7 @@ import org.efaps.ui.wicket.pages.main.MainPage;
  * Message is shwon to the User.
  *
  * @author jmox
- * @version $Id$
+ * @version $Id:LoginPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class LoginPage extends WebPage implements
     EFapsNoAuthorizationNeededInterface {
@@ -66,7 +66,7 @@ public class LoginPage extends WebPage implements
       protected void onSubmit() {
         super.onSubmit();
         EFapsSession session = ((EFapsSession) this.getSession());
-        session.checkin();
+        session.login();
         if (session.isLogedIn()) {
           this.getRequestCycle().setResponsePage(MainPage.class);
         } else {
