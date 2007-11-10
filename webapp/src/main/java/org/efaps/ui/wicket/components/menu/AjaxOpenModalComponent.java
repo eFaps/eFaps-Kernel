@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 /*
  * Copyright 2003-2007 The eFaps Team
@@ -32,9 +32,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.menu;
@@ -50,7 +50,7 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
  * @author jmox
- * @version $Id$
+ * @version $Id:AjaxOpenModalComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
 
@@ -58,25 +58,25 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
 
   public AjaxOpenModalComponent(final String _id, final MenuItemModel _menuItem) {
     super(_id, _menuItem);
-    this.add(new AjaxOpenModalBehaviour());
+    this.add(new AjaxOpenModalBehavior());
   }
 
   @Override
   public String getJavaScript() {
-    return ((AjaxOpenModalBehaviour) super.getBehaviors().get(0))
+    return ((AjaxOpenModalBehavior) super.getBehaviors().get(0))
         .getJavaScript();
   }
 
-  public class AjaxOpenModalBehaviour extends AjaxEventBehavior {
+  public class AjaxOpenModalBehavior extends AjaxEventBehavior {
 
     private static final long serialVersionUID = 1L;
 
-    public AjaxOpenModalBehaviour() {
+    public AjaxOpenModalBehavior() {
       super("onclick");
     }
 
     public String getJavaScript() {
-      String script = super.getCallbackScript().toString();
+      final String script = super.getCallbackScript().toString();
       return "javascript:" + script.replace("'", "\"");
     }
 
@@ -86,10 +86,11 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
       if (super.getComponent().getPage() instanceof MainPage) {
         modal = ((MainPage) super.getComponent().getPage()).getModal();
       } else {
-        modal = ((AbstractContentPage) super.getComponent().getPage()).getModal();
+        modal =
+            ((AbstractContentPage) super.getComponent().getPage()).getModal();
       }
       modal.reset();
-      ModalWindowAjaxPageCreator pageCreator =
+      final ModalWindowAjaxPageCreator pageCreator =
           new ModalWindowAjaxPageCreator((MenuItemModel) super.getComponent()
               .getModel(), modal);
       modal.setPageCreator(pageCreator);
