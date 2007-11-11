@@ -42,6 +42,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.TableModel.UserAttributeKey;
 import org.efaps.util.EFapsException;
 
 /**
@@ -367,8 +368,8 @@ public class HeaderPanel extends Panel {
           this.getComponent().getRequest().getParameter(COLUMNW_PARAMETERNAME);
       try {
         Context.getThreadContext().setUserAttribute(
-            ((TableModel) this.getComponent().getModel()).getCommandUUID()
-                + "-columnWidths", widths);
+            ((TableModel) this.getComponent().getModel())
+                .getUserAttributeKey(UserAttributeKey.COLUMNWIDTH), widths);
       } catch (EFapsException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

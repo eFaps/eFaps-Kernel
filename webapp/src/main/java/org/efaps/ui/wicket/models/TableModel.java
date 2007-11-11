@@ -66,6 +66,17 @@ public class TableModel extends AbstractModel {
     NONE;
   }
 
+  public static enum UserAttributeKey {
+    SORTKEY("sortKey"),
+    COLUMNWIDTH("columnWidths");
+
+    public String value;
+
+    private UserAttributeKey(String _value) {
+      this.value = _value;
+    }
+  }
+
   private static final long serialVersionUID = 1L;
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -181,7 +192,7 @@ public class TableModel extends AbstractModel {
             command.getUUID().toString() + "-sortKey")) {
           this.sortKey =
               Context.getThreadContext().getUserAttribute(
-                  command.getUUID().toString() + "-sortKey");
+                  getUserAttributeKey(UserAttributeKey.SORTKEY));
         }
       } catch (EFapsException e) {
         // TODO Auto-generated catch block
@@ -261,10 +272,10 @@ public class TableModel extends AbstractModel {
 
   private List<Integer> getUserWidths() throws EFapsException {
     if (Context.getThreadContext().containsUserAtribute(
-        getCommandUUID() + "-columnWidths")) {
+        getUserAttributeKey(UserAttributeKey.COLUMNWIDTH))) {
       String widths =
           Context.getThreadContext().getUserAttribute(
-              getCommandUUID() + "-columnWidths");
+              getUserAttributeKey(UserAttributeKey.COLUMNWIDTH));
 
       final StringTokenizer tokens = new StringTokenizer(widths, ";");
 
@@ -427,7 +438,7 @@ public class TableModel extends AbstractModel {
     this.sortKey = _sortKey;
     try {
       Context.getThreadContext().setUserAttribute(
-          super.getCommandUUID().toString() + "-sortKey", _sortKey);
+          getUserAttributeKey(UserAttributeKey.SORTKEY), _sortKey);
     } catch (EFapsException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -600,6 +611,10 @@ public class TableModel extends AbstractModel {
    */
   public int getWidthWeight() {
     return this.widthWeight;
+  }
+
+  public String getUserAttributeKey(UserAttributeKey _key) {
+    return super.getCommandUUID() + "-" + _key.value;
   }
 
   /**
