@@ -97,8 +97,13 @@ public class HeaderPanel extends Panel {
             "eFapsTableHeaderCell eFapsCellFixedWidth" + i));
         fixed += headermodel.getWidth();
       } else {
-        Integer width =
-            browserWidth / _model.getWidthWeight() * headermodel.getWidth();
+        Integer width = 0;
+        if (_model.isUserSetWidth()) {
+          width = headermodel.getWidth();
+        } else {
+          width =
+              browserWidth / _model.getWidthWeight() * headermodel.getWidth();
+        }
         widths.add("div.eFapsCellWidth"
             + i
             + "{width: "
@@ -370,6 +375,7 @@ public class HeaderPanel extends Panel {
         Context.getThreadContext().setUserAttribute(
             ((TableModel) this.getComponent().getModel())
                 .getUserAttributeKey(UserAttributeKey.COLUMNWIDTH), widths);
+        ((TableModel) this.getComponent().getModel()).resetModel();
       } catch (EFapsException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

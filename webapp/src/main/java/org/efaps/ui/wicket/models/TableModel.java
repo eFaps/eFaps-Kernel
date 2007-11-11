@@ -153,6 +153,8 @@ public class TableModel extends AbstractModel {
    */
   private int widthWeight;
 
+  private boolean userWidths = false;
+
   public TableModel(PageParameters _parameters) {
     super(_parameters);
     initialise();
@@ -273,28 +275,24 @@ public class TableModel extends AbstractModel {
   private List<Integer> getUserWidths() throws EFapsException {
     if (Context.getThreadContext().containsUserAtribute(
         getUserAttributeKey(UserAttributeKey.COLUMNWIDTH))) {
-      String widths =
+      this.userWidths = true;
+      final String widths =
           Context.getThreadContext().getUserAttribute(
               getUserAttributeKey(UserAttributeKey.COLUMNWIDTH));
 
       final StringTokenizer tokens = new StringTokenizer(widths, ";");
 
       final List<Integer> wList = new ArrayList<Integer>();
-      int widthTotal = 0;
+
       while (tokens.hasMoreTokens()) {
         String token = tokens.nextToken();
         for (int i = 0; i < token.length(); i++) {
           if (!Character.isDigit(token.charAt(i))) {
             int width = Integer.parseInt(token.substring(0, i));
             wList.add(width);
-            widthTotal += width;
             break;
           }
         }
-      }
-
-      for (int i = 0; i < wList.size(); i++) {
-        wList.set(i, 100 / (widthTotal / wList.get(i)));
       }
       return wList;
     }
@@ -615,6 +613,10 @@ public class TableModel extends AbstractModel {
 
   public String getUserAttributeKey(UserAttributeKey _key) {
     return super.getCommandUUID() + "-" + _key.value;
+  }
+
+  public boolean isUserSetWidth() {
+    return this.userWidths;
   }
 
   /**
