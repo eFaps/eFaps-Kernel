@@ -42,8 +42,6 @@ public class CellModel extends Model {
 
   private final int target;
 
-  private final int width;
-
   private final boolean fixedWidth;
 
   public CellModel(final Field _field, final String _oid,
@@ -51,7 +49,6 @@ public class CellModel extends Model {
     super();
     this.reference = _field.getReference();
     this.target = _field.getTarget();
-    this.width = _field.getWidth();
     this.oid = _oid;
     this.cellValue = _cellvalue;
     this.icon = _icon;
@@ -117,16 +114,6 @@ public class CellModel extends Model {
   public int getTarget() {
     return this.target;
   }
-
-  /**
-   * This is the getter method for the instance variable {@link #width}.
-   *
-   * @return value of instance variable {@link #width}
-   */
-  public int getWidth() {
-    return this.width;
-  }
-
 
   /**
    * This is the getter method for the instance variable {@link #fixedWidth}.

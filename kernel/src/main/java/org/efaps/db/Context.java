@@ -594,7 +594,7 @@ public class Context {
    * @return true if found, else false
    * @throws EFapsException
    */
-  public boolean hasUserAtribute(final String _key) throws EFapsException {
+  public boolean containsUserAtribute(final String _key) throws EFapsException {
     if (containsSessionAttribute(UserAttributesSet.CONTEXTMAPKEY)) {
       return ((UserAttributesSet) getSessionAttribute(UserAttributesSet.CONTEXTMAPKEY))
           .containsKey(_key);

@@ -23,6 +23,8 @@ package org.efaps.ui.wicket.components.table.header;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.behavior.StringHeaderContributor;
@@ -34,11 +36,13 @@ import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
 
+import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.dojo.DojoReference;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmox
@@ -51,9 +55,15 @@ public class HeaderPanel extends Panel {
   private final ModalWindowContainer modal =
       new ModalWindowContainer("eFapsModal");
 
+  AjaxStoreColumnWidth ajaxstore;
+
   public HeaderPanel(final String _id, final TableModel _model) {
     super(_id, _model);
 
+    this.ajaxstore = new AjaxStoreColumnWidth();
+
+    this.setMarkupId("eFapsTableHeader");
+    this.add(this.ajaxstore);
     final int browserWidth =
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
             .getBrowserWidth();
@@ -119,7 +129,7 @@ public class HeaderPanel extends Panel {
         this.modal, false));
 
     this.add(new StringHeaderContributor(getWidthStyle(widths)));
-    this.add(new StringHeaderContributor(getScript(fixed)));
+
     this.add(new HeaderContributor(HeaderContributor
         .forJavaScript(DojoReference.JS_DOJO)));
   }
@@ -128,7 +138,7 @@ public class HeaderPanel extends Panel {
     return this.modal;
   }
 
-  private String getScript(final int _fixedWidth) {
+  private String getScript(final AjaxStoreColumnWidth _ajaxstore) {
 
     final String ret =
         JavascriptUtils.SCRIPT_OPEN_TAG
@@ -137,12 +147,12 @@ public class HeaderPanel extends Panel {
             + "  function eFapsPositionTableHeader() {\n"
             + "    var header = document.getElementById(\"eFapsTableHeader\");\n"
             + "    var cells = new Array();\n"
-            + "    var celldivs = header.getElementsByTagName(\"div\");\n"
             + "    var widthWeight = 0;\n"
             + "    var widthCor = 0;\n"
             + "    var addCell = 0;\n"
+            + "    var celldivs = header.getElementsByTagName(\"div\");\n"
             + "    for(i = 0;i<celldivs.length;i++){\n"
-            + "      var cell = celldivs[i];"
+            + "      var cell = celldivs[i];\n"
             + "      var fixed = cell.className.indexOf(\"eFapsCellFixedWidth\");\n"
             + "      if(fixed > -1){\n"
             + "        var addwith = getAdditionalWidth(cell);\n"
@@ -154,7 +164,7 @@ public class HeaderPanel extends Panel {
             + "        var addwith = getAdditionalWidth(cell);\n"
             + "        cells.push(new Array(cell.clientWidth, addwith,true));\n"
             + "        widthWeight += cell.clientWidth;\n"
-            + "        widthCor+= addwith;"
+            + "        widthCor+= addwith;\n"
             + "      }\n"
             + "    }\n"
             + "    var tablebody = document.getElementById(\"eFapsTableBody\");\n"
@@ -206,6 +216,7 @@ public class HeaderPanel extends Panel {
             + "    return width;\n"
             + "  }\n"
             + "  var minWidth = 20;\n"
+            + "  var seperatorWidth = 200;\n"
             + "  var lastpos= 0;\n"
             + "  var startpos= 0;\n"
             + "  var seperatorOffset= 0;\n"
@@ -217,14 +228,14 @@ public class HeaderPanel extends Panel {
             + "    startpos=lastpos;\n"
             + "    seperator=_seperator;\n"
             + "    seperatorOffset=_event.screenX- parseInt(_seperator.style.left);\n"
-            + "    _seperator.style.width = parseInt(window.getComputedStyle(_seperator,null).getPropertyValue(\"width\")) + 200 +\"px\";\n"
-            + "    _seperator.style.left = parseInt(_seperator.style.left)-100+\"px\";\n"
+            + "    _seperator.style.width = parseInt(window.getComputedStyle(_seperator,null).getPropertyValue(\"width\")) + seperatorWidth +\"px\";\n"
+            + "    _seperator.style.left = parseInt(_seperator.style.left) - seperatorWidth/2 +\"px\";\n"
             + "    _seperator.style.backgroundPosition=\"top center\";\n"
             + "    connections[0] = dojo.connect(_seperator,\"onmousemove\",this,  \"doColumnSize\" );\n"
             + "    connections[1] = dojo.connect(_seperator,\"onmouseout\",this,  \"cancelColumnSize\" );\n"
             + "  }\n"
             + "  function doColumnSize(_event){\n"
-            + "    seperator.style.left= (_event.screenX-seperatorOffset)-100 +\"px\";\n"
+            + "    seperator.style.left= (_event.screenX-seperatorOffset) - seperatorWidth/2 +\"px\";\n"
             + "    lastpos=_event.screenX;\n"
             + "  }\n"
             + "  function endColumnSize(_seperator,_event){\n"
@@ -250,13 +261,26 @@ public class HeaderPanel extends Panel {
             + "        move = -(rightWidth - dif - minWidth);"
             + "      }\n"
             + "    }\n"
-            + "    _seperator.style.width = parseInt(_seperator.style.width) - 200 +\"px\";\n"
-            + "    _seperator.style.left = parseInt(_seperator.style.left) - move + 100 +\"px\";\n"
+            + "    _seperator.style.width = parseInt(_seperator.style.width) - seperatorWidth +\"px\";\n"
+            + "    _seperator.style.left = parseInt(_seperator.style.left) - move + seperatorWidth/2 +\"px\";\n"
             + "    _seperator.style.backgroundPosition=\"-200px 0\";\n"
+            + "storeColumnWidths(getColumnWidths());\n"
             + "  }\n"
             + "  function cancelColumnSize(_event){\n"
             + "    endColumnSize(seperator,_event);\n"
             + "  }\n"
+            + "  function getColumnWidths(){\n"
+            + "    var header = document.getElementById(\"eFapsTableHeader\");\n"
+            + "    var celldivs = header.getElementsByTagName(\"div\");\n"
+            + "    var widths=\"\";\n"
+            + "    for(i = 0;i<celldivs.length;i++){\n"
+            + "      if(celldivs[i].className.indexOf(\"eFapsCellFixedWidth\")>-1 || celldivs[i].className.indexOf(\"eFapsCellWidth\")>-1){\n"
+            + "        widths += window.getComputedStyle(celldivs[i],null).getPropertyValue(\"width\") +\";\";\n"
+            + "      }\n"
+            + "    }\n"
+            + "    return widths;\n"
+            + "  }\n"
+            + _ajaxstore.getJavaScript()
             + JavascriptUtils.SCRIPT_CLOSE_TAG;
 
     return ret;
@@ -274,6 +298,17 @@ public class HeaderPanel extends Panel {
 
     ret.append(CssUtils.INLINE_CLOSE_TAG);
     return ret.toString();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.Component#onBeforeRender()
+   */
+  @Override
+  protected void onBeforeRender() {
+    this.add(new StringHeaderContributor(getScript(this.ajaxstore)));
+    super.onBeforeRender();
   }
 
   public class Seperator extends WebComponent {
@@ -305,6 +340,40 @@ public class HeaderPanel extends Panel {
       super.onComponentTag(_tag);
       _tag.put("id", this.id + "eFapsHeaderSeperator");
       _tag.setName("span");
+    }
+
+  }
+
+  public class AjaxStoreColumnWidth extends AbstractDefaultAjaxBehavior {
+
+    private static final long serialVersionUID = 1L;
+
+    public final static String COLUMNW_PARAMETERNAME = "eFapsColumnWidths";
+
+    public String getJavaScript() {
+      StringBuilder ret = new StringBuilder();
+      ret.append("function storeColumnWidths(_widths){\n").append(
+          generateCallbackScript("wicketAjaxPost('"
+              + getCallbackUrl(false)
+              + "','"
+              + COLUMNW_PARAMETERNAME
+              + "=' + _widths")).append("\n " + "}\n");
+      return ret.toString();
+    }
+
+    @Override
+    protected void respond(final AjaxRequestTarget arg0) {
+      String widths =
+          this.getComponent().getRequest().getParameter(COLUMNW_PARAMETERNAME);
+      try {
+        Context.getThreadContext().setUserAttribute(
+            ((TableModel) this.getComponent().getModel()).getCommandUUID()
+                + "-columnWidths", widths);
+      } catch (EFapsException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+
     }
 
   }

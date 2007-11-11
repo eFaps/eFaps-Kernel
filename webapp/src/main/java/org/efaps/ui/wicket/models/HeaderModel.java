@@ -42,11 +42,11 @@ public class HeaderModel extends Model {
 
   private final boolean filterable;
 
+  private final boolean fixedWidth;
+
   private SortDirection sortDirection;
 
-  private final int width;
-
-  private final boolean fixedWidth;
+  private int width;
 
   public HeaderModel(final Field _field, final SortDirection _sortdirection) {
     this.label = _field.getLabel();
@@ -125,6 +125,15 @@ public class HeaderModel extends Model {
     return this.width;
   }
 
+  /**
+   * This is the setter method for the instance variable {@link #width}.
+   *
+   * @param width
+   *                the width to set
+   */
+  public void setWidth(int width) {
+    this.width = width;
+  }
 
   /**
    * This is the getter method for the instance variable {@link #fixedWidth}.

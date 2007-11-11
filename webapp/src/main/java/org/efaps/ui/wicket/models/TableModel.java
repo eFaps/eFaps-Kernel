@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.UUID;
 
 import org.apache.wicket.PageParameters;
@@ -176,7 +177,7 @@ public class TableModel extends AbstractModel {
       }
       this.showCheckBoxes = showCheckBoxes;
       try {
-        if (Context.getThreadContext().hasUserAtribute(
+        if (Context.getThreadContext().containsUserAtribute(
             command.getUUID().toString() + "-sortKey")) {
           this.sortKey =
               Context.getThreadContext().getUserAttribute(
@@ -218,7 +219,10 @@ public class TableModel extends AbstractModel {
 
       // evaluate for all expressions in the table
       final ListQuery query = new ListQuery(instances);
-      for (Field field : this.getTable().getFields()) {
+      final List<Integer> userWidths = getUserWidths();
+
+      for (int i = 0; i < this.getTable().getFields().size(); i++) {
+        final Field field = this.getTable().getFields().get(i);
         if (field.getExpression() != null) {
           query.addSelect(field.getExpression());
         }
@@ -229,8 +233,16 @@ public class TableModel extends AbstractModel {
         if (field.getName().equals(this.sortKey)) {
           sortdirection = this.getSortDirection();
         }
-        this.headers.add(new HeaderModel(field, sortdirection));
+        HeaderModel headermodel = new HeaderModel(field, sortdirection);
+        this.headers.add(headermodel);
         if (!field.isFixedWidth()) {
+          if (userWidths != null) {
+            if (this.isShowCheckBoxes()) {
+              headermodel.setWidth(userWidths.get(i + 1));
+            } else {
+              headermodel.setWidth(userWidths.get(i));
+            }
+          }
           this.widthWeight += field.getWidth();
         }
       }
@@ -245,6 +257,37 @@ public class TableModel extends AbstractModel {
     } catch (Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
+  }
+
+  private List<Integer> getUserWidths() throws EFapsException {
+    if (Context.getThreadContext().containsUserAtribute(
+        getCommandUUID() + "-columnWidths")) {
+      String widths =
+          Context.getThreadContext().getUserAttribute(
+              getCommandUUID() + "-columnWidths");
+
+      final StringTokenizer tokens = new StringTokenizer(widths, ";");
+
+      final List<Integer> wList = new ArrayList<Integer>();
+      int widthTotal = 0;
+      while (tokens.hasMoreTokens()) {
+        String token = tokens.nextToken();
+        for (int i = 0; i < token.length(); i++) {
+          if (!Character.isDigit(token.charAt(i))) {
+            int width = Integer.parseInt(token.substring(0, i));
+            wList.add(width);
+            widthTotal += width;
+            break;
+          }
+        }
+      }
+
+      for (int i = 0; i < wList.size(); i++) {
+        wList.set(i, 100 / (widthTotal / wList.get(i)));
+      }
+      return wList;
+    }
+    return null;
   }
 
   public List<HeaderModel> getHeaders() {

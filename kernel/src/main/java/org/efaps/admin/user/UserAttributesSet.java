@@ -73,7 +73,11 @@ public class UserAttributesSet {
   }
 
   public String getString(final String _key) {
-    return this.attributes.get(_key).getValue();
+    String ret = null;
+    if (this.attributes.containsKey(_key)) {
+      ret = this.attributes.get(_key).getValue();
+    }
+    return ret;
   }
 
   public void set(final String _key, final String _value) {
