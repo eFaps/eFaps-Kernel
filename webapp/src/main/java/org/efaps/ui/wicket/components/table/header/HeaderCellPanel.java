@@ -72,6 +72,8 @@ public class HeaderCellPanel extends Panel {
 
     add(HeaderContributor.forCss(getClass(), "HeaderCellPanel.css"));
 
+    this.add(new SimpleAttributeModifier("title", _model.getLabel()));
+
     this.add(new WebComponent("checkBox").setVisible(false));
 
     if (_model.isSortable()) {

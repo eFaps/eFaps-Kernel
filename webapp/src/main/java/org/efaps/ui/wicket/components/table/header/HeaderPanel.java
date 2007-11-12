@@ -62,7 +62,7 @@ public class HeaderPanel extends Panel {
   public static final JavascriptResourceReference JAVASCRIPT =
       new JavascriptResourceReference(HeaderPanel.class, "HeaderPanel.js");
 
-  AjaxStoreColumnWidth ajaxstore;
+  private final AjaxStoreColumnWidth ajaxstore;
 
   public HeaderPanel(final String _id, final TableModel _model) {
     super(_id, _model);
@@ -84,7 +84,7 @@ public class HeaderPanel extends Panel {
       cellRepeater.add(cell);
       i++;
     }
-    List<String> widths = new ArrayList<String>();
+    final List<String> widths = new ArrayList<String>();
 
     int fixed = 0;
     for (int j = 0; j < _model.getHeaders().size(); j++) {
@@ -164,7 +164,7 @@ public class HeaderPanel extends Panel {
     return ret;
   }
 
-  private String getWidthStyle(List<String> _widths) {
+  private String getWidthStyle(final List<String> _widths) {
 
     final StringBuilder ret = new StringBuilder();
     ret
@@ -232,7 +232,7 @@ public class HeaderPanel extends Panel {
     public final static String COLUMNW_PARAMETERNAME = "eFapsColumnWidths";
 
     public String getJavaScript() {
-      StringBuilder ret = new StringBuilder();
+      final StringBuilder ret = new StringBuilder();
       ret.append("  function storeColumnWidths(_widths){\n    ").append(
           generateCallbackScript("wicketAjaxPost('"
               + getCallbackUrl(false)
