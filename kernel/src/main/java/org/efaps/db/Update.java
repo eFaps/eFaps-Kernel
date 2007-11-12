@@ -58,7 +58,7 @@ public class Update {
   // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
-  private static Status STATUSOK = new Status();
+  private final static Status STATUSOK = new Status();
 
   /**
    * Logging instance used in this class.
@@ -128,12 +128,12 @@ public class Update {
    *                data model type
    */
   protected void addAlwaysUpdateAttributes() throws EFapsException {
-    Iterator<?> iter =
+    final Iterator<?> iter =
         getInstance().getType().getAttributes().entrySet().iterator();
     while (iter.hasNext()) {
-      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
-      Attribute attr = (Attribute) entry.getValue();
-      AttributeType attrType = attr.getAttributeType();
+      final Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
+      final Attribute attr = (Attribute) entry.getValue();
+      final AttributeType attrType = attr.getAttributeType();
       if (attrType.isAlwaysUpdate()) {
         add(attr, null, false);
       }
@@ -166,10 +166,10 @@ public class Update {
    */
   protected boolean executeEvents(final EventType eventtype)
                                                             throws EFapsException {
-    List<EventDefinition> triggers =
+    final List<EventDefinition> triggers =
         getInstance().getType().getEvents(eventtype);
     if (triggers != null) {
-      Parameter parameter = new Parameter();
+      final Parameter parameter = new Parameter();
       parameter.put(ParameterValues.NEW_VALUES, this.values);
       parameter.put(ParameterValues.INSTANCE, getInstance());
       for (EventDefinition evenDef : triggers) {
@@ -188,7 +188,7 @@ public class Update {
    */
   public Status add(final String _attr, final String _value)
                                                             throws EFapsException {
-    Attribute attr = getInstance().getType().getAttribute(_attr);
+    final Attribute attr = getInstance().getType().getAttribute(_attr);
     if (attr == null) {
       throw new EFapsException(getClass(), "add.UnknownAttributeName");
     }
@@ -223,7 +223,7 @@ public class Update {
 
   public Status add(final String _attr, final Timestamp _value)
                                                                throws EFapsException {
-    Attribute attr = getInstance().getType().getAttribute(_attr);
+    final Attribute attr = getInstance().getType().getAttribute(_attr);
     if (attr == null) {
       throw new EFapsException(getClass(), "add.UnknownAttributeName");
     }
@@ -248,7 +248,7 @@ public class Update {
                      final boolean _triggerRelevant) throws EFapsException {
 
     if (_attr.hasEvents(EventType.VALIDATE)) {
-      List<Return> returns =
+      final List<Return> returns =
           _attr.executeEvents(EventType.VALIDATE, ParameterValues.NEW_VALUES,
               _value);
       for (Return ret : returns) {
@@ -267,7 +267,7 @@ public class Update {
       getExpr4Tables().put(_attr.getTable(), expressions);
     }
 
-    AttributeTypeInterface attrType = _attr.newInstance();
+    final AttributeTypeInterface attrType = _attr.newInstance();
     attrType.setAttribute(_attr);
     attrType.set(_value);
     // TODO: was, wenn ein attribute mehr als ein SQL Column hat?
@@ -284,24 +284,25 @@ public class Update {
     return STATUSOK;
   }
 
-  protected boolean test4Unique(Context _context) throws EFapsException {
+  protected boolean test4Unique(final Context _context) throws EFapsException {
     return test4Unique(_context, getType());
   }
 
-  private boolean test4Unique(Context _context, Type _type)
-                                                           throws EFapsException {
+  private boolean test4Unique(final Context _context, final Type _type)
+                                                                       throws EFapsException {
     boolean ret = false;
 
     if (_type.getUniqueKeys() != null) {
       for (org.efaps.admin.datamodel.UniqueKey uk : _type.getUniqueKeys()) {
 
-        SearchQuery query = new SearchQuery();
+        final SearchQuery query = new SearchQuery();
         query.setQueryTypes(_type.getName());
         query.setExpandChildTypes(true);
 
         boolean testNeeded = false;
         for (Attribute attr : uk.getAttributes()) {
-          AttributeTypeInterface value = this.mapAttr2Value.get(attr.getName());
+          final AttributeTypeInterface value =
+              this.mapAttr2Value.get(attr.getName());
           if (value != null) {
             query.addWhereAttrEqValue(attr, value.toString());
             testNeeded = true;
@@ -312,7 +313,7 @@ public class Update {
           query.executeWithoutAccessCheck();
 
           while (query.next()) {
-            long id = (Long) query.get("ID");
+            final long id = (Long) query.get("ID");
             if (id != getInstance().getId()) {
               ret = true;
               break;
@@ -333,7 +334,7 @@ public class Update {
    * @see #executeWithoutAccessCheck
    */
   public void execute() throws EFapsException {
-    boolean hasAccess =
+    final boolean hasAccess =
         getType().hasAccess(getInstance(),
             AccessTypeEnums.MODIFY.getAccessType());
 
@@ -384,7 +385,7 @@ public class Update {
   public void executeWithoutTrigger() throws EFapsException {
     if (STATUSOK.getStati().isEmpty()) {
 
-      Context context = Context.getThreadContext();
+      final Context context = Context.getThreadContext();
       ConnectionResource con = null;
       try {
         con = context.getConnectionResource();
@@ -396,13 +397,13 @@ public class Update {
 
         for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
             .entrySet()) {
-          SQLTable table = entry.getKey();
-          Map<?, ?> expressions = entry.getValue();
+          final SQLTable table = entry.getKey();
+          final Map<?, ?> expressions = entry.getValue();
 
           PreparedStatement stmt = null;
           try {
-            stmt = createOneStatement(context, con, table, expressions);
-            int rows = stmt.executeUpdate();
+            stmt = createOneStatement(con, table, expressions);
+            final int rows = stmt.executeUpdate();
             if (rows == 0) {
               throw new EFapsException(getClass(),
                   "executeWithoutTrigger.ObjectDoesNotExists", this.instance);
@@ -430,19 +431,19 @@ public class Update {
 
   }
 
-  private PreparedStatement createOneStatement(final Context _context,
-                                               final ConnectionResource _con,
+  private PreparedStatement createOneStatement(final ConnectionResource _con,
                                                final SQLTable _table,
                                                final Map<?, ?> _expressions)
                                                                             throws SQLException,
                                                                             EFapsException {
-    List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
-    StringBuilder cmd = new StringBuilder();
+    final List<AttributeTypeInterface> list =
+        new ArrayList<AttributeTypeInterface>();
+    final StringBuilder cmd = new StringBuilder();
     cmd.append("update ").append(_table.getSqlTable()).append(" set ");
-    Iterator<?> iter = _expressions.entrySet().iterator();
+    final Iterator<?> iter = _expressions.entrySet().iterator();
     boolean command = false;
     while (iter.hasNext()) {
-      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
+      final Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
 
       if (command) {
         cmd.append(",");
@@ -451,7 +452,8 @@ public class Update {
       }
       cmd.append(entry.getKey()).append("=");
 
-      AttributeTypeInterface attr = (AttributeTypeInterface) entry.getValue();
+      final AttributeTypeInterface attr =
+          (AttributeTypeInterface) entry.getValue();
       if (!attr.prepareUpdate(cmd)) {
         list.add(attr);
       }
@@ -463,15 +465,15 @@ public class Update {
       LOG.trace(cmd.toString());
     }
 
-    PreparedStatement stmt =
+    final PreparedStatement stmt =
         _con.getConnection().prepareStatement(cmd.toString());
     for (int i = 0, j = 1; i < list.size(); i++, j++) {
-      AttributeTypeInterface attr = list.get(i);
+      final AttributeTypeInterface attr = list.get(i);
       if (LOG.isTraceEnabled()) {
         LOG.trace(attr.toString());
       }
 
-      List<Integer> x = new ArrayList<Integer>();
+      final List<Integer> x = new ArrayList<Integer>();
       x.add(j);
       attr.update(null, stmt, x);
     }
@@ -520,7 +522,7 @@ public class Update {
    * @see #instance
    * @see #getInstance
    */
-  protected void setInstance(Instance _instance) {
+  protected void setInstance(final Instance _instance) {
     this.instance = _instance;
   }
 

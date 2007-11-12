@@ -63,7 +63,7 @@ public class Insert extends Update {
 
   /**
    * @param _type
-   *          type of instance to insert
+   *                type of instance to insert
    * @see #addCreateUpdateAttributes
    * @see #addTables
    */
@@ -75,25 +75,11 @@ public class Insert extends Update {
   }
 
   /**
-   * @deprecated
-   */
-  public Insert(Context _context, Type _type) throws EFapsException {
-    this(_type);
-  }
-
-  /**
    * @param _type
-   *          type of instance to insert
+   *                type of instance to insert
    * @see #Insert(Type)
    */
   public Insert(final String _type) throws EFapsException {
-    this(Type.get(_type));
-  }
-
-  /**
-   * @deprecated
-   */
-  public Insert(Context _context, String _type) throws EFapsException {
     this(Type.get(_type));
   }
 
@@ -116,16 +102,16 @@ public class Insert extends Update {
 
   /**
    * Add all attributes of the type which must be always updated.
-   * 
+   *
    * @throws EFapsException
-   *           from called method
+   *                 from called method
    */
   private void addCreateUpdateAttributes() throws EFapsException {
-    Iterator<?> iter = getType().getAttributes().entrySet().iterator();
+    final Iterator<?> iter = getType().getAttributes().entrySet().iterator();
     while (iter.hasNext()) {
-      Map.Entry<?,?> entry = (Map.Entry<?,?>) iter.next();
-      Attribute attr = (Attribute) entry.getValue();
-      AttributeType attrType = attr.getAttributeType();
+      final Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
+      final Attribute attr = (Attribute) entry.getValue();
+      final AttributeType attrType = attr.getAttributeType();
       if (attrType.isCreateUpdate()) {
         add(attr, null, false);
       }
@@ -134,8 +120,9 @@ public class Insert extends Update {
 
   /**
    */
+  @Override
   public void execute() throws EFapsException {
-    boolean hasAccess =
+    final boolean hasAccess =
         getType().hasAccess(new Instance(getType()),
             AccessTypeEnums.CREATE.getAccessType());
 
@@ -146,41 +133,67 @@ public class Insert extends Update {
   }
 
   /**
+   * Executes the insert without checking the access rights (but with triggers):
+   * <ol>
+   * <li>executes the pre insert trigger (if exists)</li>
+   * <li>executes the insert trigger (if exists)</li>
+   * <li>executes if no insert trigger exists or the insert trigger is not
+   * executed the update ({@see #executeWithoutTrigger})</li>
+   * <li>executes the post insert trigger (if exists)</li>
+   * </ol>
+   *
+   * @throws EFapsException
+   *                 thrown from {@link #executeWithoutTrigger} or when the
+   *                 Status is invalid
+   * @see #executeWithoutTrigger
    */
+  @Override
   public void executeWithoutAccessCheck() throws EFapsException {
-    Context context = Context.getThreadContext();
+    executeEvents(EventType.INSERT_PRE);
+    if (!executeEvents(EventType.INSERT_OVERRIDE)) {
+      executeWithoutTrigger();
+    }
+    executeEvents(EventType.INSERT_POST);
+  }
+
+  /**
+   * The insert is done without calling triggers and check of access rights.
+   *
+   * @throws EFapsException
+   *                 if update not possible (unique key, object does not exists,
+   *                 etc...)
+   */
+  @Override
+  public void executeWithoutTrigger() throws EFapsException {
+    final Context context = Context.getThreadContext();
     ConnectionResource con = null;
     try {
-      executeEvents(EventType.INSERT_PRE);
 
-      if (!executeEvents(EventType.INSERT_OVERRIDE)) {
-        con = context.getConnectionResource();
+      con = context.getConnectionResource();
 
-        if (test4Unique(context)) {
-          throw new EFapsException(getClass(),
-              "executeWithoutAccessCheck.UniqueKeyError");
-        }
-
-        SQLTable mainTable = getType().getMainTable();
-
-        long id =
-            executeOneStatement(context, con, mainTable, getExpr4Tables().get(
-                mainTable), 0);
-
-        setInstance(new Instance(getInstance().getType(), id));
-
-        for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
-            .entrySet()) {
-          SQLTable table = entry.getKey();
-          if ((table != mainTable) && !table.isReadOnly()) {
-            executeOneStatement(context, con, table, entry.getValue(), id);
-          }
-        }
-
-        con.commit();
+      if (test4Unique(context)) {
+        throw new EFapsException(getClass(),
+            "executeWithoutAccessCheck.UniqueKeyError");
       }
 
-      executeEvents(EventType.INSERT_POST);
+      final SQLTable mainTable = getType().getMainTable();
+
+      final long id =
+          executeOneStatement(context, con, mainTable, getExpr4Tables().get(
+              mainTable), 0);
+
+      setInstance(new Instance(getInstance().getType(), id));
+
+      for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
+          .entrySet()) {
+        final SQLTable table = entry.getKey();
+        if ((table != mainTable) && !table.isReadOnly()) {
+          executeOneStatement(context, con, table, entry.getValue(), id);
+        }
+      }
+
+      con.commit();
+
     } catch (EFapsException e) {
       if (con != null) {
         con.abort();
@@ -201,22 +214,24 @@ public class Insert extends Update {
    * driver supports method <code>getGeneratedKeys</code>, this method is
    * used, otherwise method {@link org.efaps.db.databases#getNewId} is used to
    * retrieve a new id value.
-   * 
+   *
    * @param _context
-   *          context for this request
+   *                context for this request
    * @param _con
-   *          connection resource
+   *                connection resource
    * @param _table
-   *          sql table used to insert
+   *                sql table used to insert
    * @param _expressions
    * @param _id
-   *          new created id
+   *                new created id
    * @return new created id if parameter <i>_id</i> is set to <code>0</code>
    * @see #createOneStatement
    */
   private long executeOneStatement(final Context _context,
-      final ConnectionResource _con, final SQLTable _table,
-      final Map<?, ?> _expressions, final long _id) throws EFapsException {
+                                   final ConnectionResource _con,
+                                   final SQLTable _table,
+                                   final Map<?, ?> _expressions, final long _id)
+                                                                                throws EFapsException {
 
     long ret = _id;
     PreparedStatement stmt = null;
@@ -227,18 +242,19 @@ public class Insert extends Update {
                 _table.getSqlTable(), _table.getSqlColId());
       }
 
-      stmt = createOneStatement(_context, _con, _table, _expressions, ret);
+      stmt = createOneStatement(_con, _table, _expressions, ret);
 
-      int rows = stmt.executeUpdate();
+      final int rows = stmt.executeUpdate();
       if (rows == 0) {
         throw new EFapsException(getClass(), "executeOneStatement.NotInserted",
             _table.getName());
       }
       if (ret == 0) {
-        ResultSet rs = stmt.getGeneratedKeys();
-        if (rs.next()) {
-          ret = rs.getLong(1);
+        final ResultSet resultset = stmt.getGeneratedKeys();
+        if (resultset.next()) {
+          ret = resultset.getLong(1);
         }
+        resultset.close();
       }
     } catch (EFapsException e) {
       throw e;
@@ -256,39 +272,41 @@ public class Insert extends Update {
   }
 
   /**
-   * @param _context
-   *          context for this request
    * @param _id
-   *          new created id, if null, the table is an autoincrement SQL table
-   *          and the id is not set
+   *                new created id, if null, the table is an autoincrement SQL
+   *                table and the id is not set
    * @return new created prepared statement
    */
-  private PreparedStatement createOneStatement(final Context _context,
-      final ConnectionResource _con, final SQLTable _table,
-      final Map<?, ?> _expressions, final long _id) throws SQLException {
+  private PreparedStatement createOneStatement(final ConnectionResource _con,
+                                               final SQLTable _table,
+                                               final Map<?, ?> _expressions,
+                                               final long _id)
+                                                              throws SQLException {
 
-    List<AttributeTypeInterface> list = new ArrayList<AttributeTypeInterface>();
-    StringBuilder cmd = new StringBuilder();
-    StringBuilder val = new StringBuilder();
+    final List<AttributeTypeInterface> list =
+        new ArrayList<AttributeTypeInterface>();
+    final StringBuilder cmd = new StringBuilder();
+    final StringBuilder val = new StringBuilder();
     boolean first = true;
     cmd.append("insert into ").append(_table.getSqlTable()).append("(");
     if (_id != 0) {
       cmd.append(_table.getSqlColId());
       first = false;
     }
-    Iterator<?> iter = _expressions.entrySet().iterator();
+    final Iterator<?> iter = _expressions.entrySet().iterator();
     while (iter.hasNext()) {
-      Map.Entry<?,?> entry = (Map.Entry<?,?>) iter.next();
+      final Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
 
-      if (!first) {
+      if (first) {
+        first = false;
+      } else {
         cmd.append(",");
         val.append(",");
-      } else {
-        first = false;
       }
       cmd.append(entry.getKey());
 
-      AttributeTypeInterface attr = (AttributeTypeInterface) entry.getValue();
+      final AttributeTypeInterface attr =
+          (AttributeTypeInterface) entry.getValue();
       if (!attr.prepareUpdate(val)) {
         list.add(attr);
       }
@@ -322,13 +340,13 @@ public class Insert extends Update {
       stmt = _con.getConnection().prepareStatement(cmd.toString());
     }
     for (int i = 0, j = 1; i < list.size(); i++, j++) {
-      AttributeTypeInterface attr = (AttributeTypeInterface) list.get(i);
+      final AttributeTypeInterface attr = list.get(i);
 
       if (LOG.isTraceEnabled()) {
         LOG.trace(attr.toString());
       }
       // TODO remove List
-      List<Integer> x = new ArrayList<Integer>();
+      final List<Integer> x = new ArrayList<Integer>();
       x.add(j);
       attr.update(null, stmt, x);
     }

@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
-import org.efaps.util.EFapsException;
 import org.efaps.db.transaction.StoreResource;
+import org.efaps.util.EFapsException;
 
 /**
  * The class is used to checkin a file to a given attribute of an object.
@@ -57,9 +57,9 @@ public class Checkin extends AbstractAction {
 
   /**
    * Constructor with a string as object id.
-   * 
+   *
    * @param _oid
-   *          oid of object on which the checkin is made
+   *                oid of object on which the checkin is made
    */
   public Checkin(final String _oid) {
     this(new Instance(_oid));
@@ -67,9 +67,9 @@ public class Checkin extends AbstractAction {
 
   /**
    * Constructor with an instance object as object id.
-   * 
+   *
    * @param _instance
-   *          instance on which the checkin is made
+   *                instance on which the checkin is made
    */
   public Checkin(final Instance _instance) {
     super.setInstance(_instance);
@@ -77,18 +77,18 @@ public class Checkin extends AbstractAction {
 
   /**
    * @param _fileName
-   *          file name to checkin (could include also the path)
+   *                file name to checkin (could include also the path)
    * @param _in
-   *          input stream with the binary data
+   *                input stream with the binary data
    * @param _size
-   *          size of file in stream to check in (negative size means that all
-   *          from the stream must be written)
+   *                size of file in stream to check in (negative size means that
+   *                all from the stream must be written)
    * @see #executeWithoutAccessCheck
    * @todo description
    */
   public void execute(final String _fileName, final InputStream _in,
-      final int _size) throws EFapsException {
-    boolean hasAccess =
+                      final int _size) throws EFapsException {
+    final boolean hasAccess =
         super.getInstance().getType().hasAccess(super.getInstance(),
             AccessTypeEnums.CHECKIN.getAccessType());
     if (!hasAccess) {
@@ -98,73 +98,104 @@ public class Checkin extends AbstractAction {
   }
 
   /**
+   * Executes the checkin without checking the access rights (but with
+   * triggers):
+   * <ol>
+   * <li>executes the pre checkin trigger (if exists)</li>
+   * <li>executes the checkin trigger (if exists)</li>
+   * <li>executes if no checkin trigger exists or the checkin trigger is not
+   * executed the update ({@see #executeWithoutTrigger})</li>
+   * <li>executes the post checkin trigger (if exists)</li>
+   * </ol>
+   *
+   * @param _fileName
+   *                file name to checkin (could include also the path)
+   * @param _in
+   *                input stream with the binary data
+   * @param _size
+   *                size of file in stream to check in (negative size means that
+   *                all from the stream must be written)
+   * @throws EFapsException
+   *                 if checkout action fails
+   * @todo history entries
+   */
+  public void executeWithoutAccessCheck(final String _fileName,
+                                        final InputStream _in, final int _size)
+                                                                               throws EFapsException {
+    executeEvents(EventType.CHECKIN_PRE);
+    if (!executeEvents(EventType.CHECKIN_OVERRIDE)) {
+      executeWithoutTrigger(_fileName, _in, _size);
+    }
+    executeEvents(EventType.CHECKIN_POST);
+  }
+
+  /**
+   * The checkin is done without calling triggers and check of access rights.
    * Executes the checkin:
    * <ul>
    * <li>the file is checked in</li>
    * <li>the file name and file length is stored in with
    * {@link org.efaps.db.Update} (complete filename without path)</li>
    * </ul>
-   * If this method is used, the checkin access is not tested!
-   * 
+   *
    * @param _fileName
-   *          file name to checkin (could include also the path)
+   *                file name to checkin (could include also the path)
    * @param _in
-   *          input stream with the binary data
+   *                input stream with the binary data
    * @param _size
-   *          size of file in stream to check in (negative size means that all
-   *          from the stream must be written)
+   *                size of file in stream to check in (negative size means that
+   *                all from the stream must be written)
    * @throws EFapsException
-   *           if checkout action fails
-   * @todo history entries
+   *                 if checkout action fails
    */
-  public void executeWithoutAccessCheck(final String _fileName,
-      final InputStream _in, final int _size) throws EFapsException {
 
-    Context context = Context.getThreadContext();
+  public void executeWithoutTrigger(final String _fileName,
+                                    final InputStream _in, final int _size)
+                                                                           throws EFapsException {
+    final Context context = Context.getThreadContext();
     StoreResource storeRsrc = null;
     boolean ok = false;
     try {
-      executeEvents(EventType.CHECKIN_PRE);
-      if (!executeEvents(EventType.CHECKIN_OVERRIDE)) {
-        Type type = super.getInstance().getType();
 
-        String attrFileName = type.getProperty(PROPERTY_STORE_ATTR_FILE_NAME);
-        String attrFileLength =
-            type.getProperty(PROPERTY_STORE_ATTR_FILE_LENGTH);
+      final Type type = super.getInstance().getType();
 
-        storeRsrc = context.getStoreResource(type, super.getInstance().getId());
-        int size = storeRsrc.write(_in, _size);
-        storeRsrc.commit();
-        storeRsrc = null;
+      final String attrFileName =
+          type.getProperty(PROPERTY_STORE_ATTR_FILE_NAME);
+      final String attrFileLength =
+          type.getProperty(PROPERTY_STORE_ATTR_FILE_LENGTH);
 
-        File file = new File(_fileName);
-        String fileName = file.getName();
+      storeRsrc = context.getStoreResource(type, super.getInstance().getId());
+      final int size = storeRsrc.write(_in, _size);
+      storeRsrc.commit();
+      storeRsrc = null;
 
-        // remove the path from the filename
-        int lastSeperatorPosX = fileName.lastIndexOf("/");
-        int lastSeperatorPosWin = fileName.lastIndexOf("\\");
-        int lastSeperatorPosMac = fileName.lastIndexOf(":");
+      final File file = new File(_fileName);
+      String fileName = file.getName();
 
-        int lastSeperatorPos = lastSeperatorPosX;
-        if (lastSeperatorPos < lastSeperatorPosWin) {
-          lastSeperatorPos = lastSeperatorPosWin;
-        }
-        if (lastSeperatorPos < lastSeperatorPosMac) {
-          lastSeperatorPos = lastSeperatorPosMac;
-        }
+      // remove the path from the filename
+      final int lastSeperatorPosX = fileName.lastIndexOf("/");
+      final int lastSeperatorPosWin = fileName.lastIndexOf("\\");
+      final int lastSeperatorPosMac = fileName.lastIndexOf(":");
 
-        if (lastSeperatorPos > -1 && lastSeperatorPos < fileName.length() - 1) {
-          fileName = fileName.substring(lastSeperatorPos + 1);
-        }
-
-        // set file name and length in the eFaps object
-        Update update = new Update(super.getInstance());
-        update.add(attrFileName, fileName);
-        update.add(attrFileLength, "" + size);
-        update.executeWithoutAccessCheck();
-        ok = true;
+      int lastSeperatorPos = lastSeperatorPosX;
+      if (lastSeperatorPos < lastSeperatorPosWin) {
+        lastSeperatorPos = lastSeperatorPosWin;
       }
-      executeEvents(EventType.CHECKIN_POST);
+      if (lastSeperatorPos < lastSeperatorPosMac) {
+        lastSeperatorPos = lastSeperatorPosMac;
+      }
+
+      if (lastSeperatorPos > -1 && lastSeperatorPos < fileName.length() - 1) {
+        fileName = fileName.substring(lastSeperatorPos + 1);
+      }
+
+      // set file name and length in the eFaps object
+      final Update update = new Update(super.getInstance());
+      update.add(attrFileName, fileName);
+      update.add(attrFileLength, "" + size);
+      update.executeWithoutAccessCheck();
+      ok = true;
+
     } catch (EFapsException e) {
       LOG.error("could not checkin " + super.getInstance(), e);
       throw e;

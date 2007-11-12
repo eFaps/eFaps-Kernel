@@ -31,8 +31,8 @@ import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
-import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.transaction.StoreResource;
@@ -40,7 +40,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * The class is used as interface to the eFaps kernel to delete one object.
- * 
+ *
  * @author tmo
  * @version $Rev$
  */
@@ -59,7 +59,7 @@ public class Delete {
 
   /**
    * The instance variable stores the instance for which this update is made.
-   * 
+   *
    * @see #getInstance
    * @see #setInstance
    */
@@ -110,14 +110,14 @@ public class Delete {
    * defined in {@link #instance}. If no access, an exception is thrown. If the
    * context user has access. the delete is made with
    * {@link #executeWithoutAccessCheck}.
-   * 
+   *
    * @throws EFapsException
-   *           if the current context user has no delete access on given eFaps
-   *           object.
+   *                 if the current context user has no delete access on given
+   *                 eFaps object.
    * @see #executeWithoutAccessCheck
    */
   public void execute() throws EFapsException {
-    boolean hasAccess =
+    final  boolean hasAccess =
         this.instance.getType().hasAccess(this.instance,
             AccessTypeEnums.DELETE.getAccessType());
     if (!hasAccess) {
@@ -127,6 +127,31 @@ public class Delete {
   }
 
   /**
+   * Executes the delete without checking the access rights (but with triggers):
+   * <ol>
+   * <li>executes the pre delete trigger (if exists)</li>
+   * <li>executes the delete trigger (if exists)</li>
+   * <li>executes if no delete trigger exists or the delete trigger is not
+   * executed the update ({@see #executeWithoutTrigger})</li>
+   * <li>executes the post delete trigger (if exists)</li>
+   * </ol>
+   *
+   * @throws EFapsException
+   *                 thrown from {@link #executeWithoutTrigger} or when the
+   *                 Status is invalid
+   * @see #executeWithoutTrigger
+   */
+  public void executeWithoutAccessCheck() throws EFapsException {
+    executeEvents(EventType.DELETE_PRE);
+
+    if (!executeEvents(EventType.DELETE_OVERRIDE)) {
+      executeWithoutTrigger();
+    }
+    executeEvents(EventType.DELETE_POST);
+  }
+
+  /**
+   * The executes is done without calling triggers and check of access rights.
    * The method executes the delete. For the object, a delete is made in all SQL
    * tables from the type (if the SQL table is not read only!). If a store is
    * defined for the type, the checked in file is also deleted (with the help of
@@ -134,83 +159,79 @@ public class Delete {
    * not implemented the delete, the file is not deleted!).<br/> It is not
    * checked if the current context user has access to delete the eFaps object
    * defined in {@link #instance}.
-   * 
+   *
    * @see SQLTable#readOnly
    */
-  public void executeWithoutAccessCheck() throws EFapsException {
-    Context context = Context.getThreadContext();
+  public void executeWithoutTrigger() throws EFapsException {
+    final   Context context = Context.getThreadContext();
     ConnectionResource con = null;
-    executeEvents(EventType.DELETE_PRE);
-    if (!executeEvents(EventType.DELETE_OVERRIDE)) {
+
+    try {
+
+      con = context.getConnectionResource();
+
+      Statement stmt = null;
       try {
+        stmt = con.getConnection().createStatement();
 
-        con = context.getConnectionResource();
+        final   SQLTable mainTable = getInstance().getType().getMainTable();
+        for (SQLTable curTable : getInstance().getType().getTables()) {
+          if ((curTable != mainTable) && !curTable.isReadOnly()) {
+            final     StringBuilder buf = new StringBuilder();
+            buf.append("delete from ").append(curTable.getSqlTable()).append(
+                " ");
+            buf.append("where ").append(curTable.getSqlColId()).append("=")
+                .append(getInstance().getId()).append("");
+            if (LOG.isTraceEnabled()) {
+              LOG.trace(buf.toString());
+            }
+            stmt.addBatch(buf.toString());
+          }
+        }
+        final    StringBuilder buf = new StringBuilder();
+        buf.append("delete from ").append(mainTable.getSqlTable()).append(" ");
+        buf.append("where ").append(mainTable.getSqlColId()).append("=")
+            .append(getInstance().getId()).append("");
+        if (LOG.isTraceEnabled()) {
+          LOG.trace(buf.toString());
+        }
+        stmt.addBatch(buf.toString());
 
-        Statement stmt = null;
+        stmt.executeBatch();
+      } catch (SQLException e) {
+        throw new EFapsException(getClass(),
+            "executeWithoutAccessCheck.SQLException", e, this.instance);
+      }
+      finally {
         try {
-          stmt = con.getConnection().createStatement();
-
-          SQLTable mainTable = getInstance().getType().getMainTable();
-          for (SQLTable curTable : getInstance().getType().getTables()) {
-            if ((curTable != mainTable) && !curTable.isReadOnly()) {
-              StringBuilder buf = new StringBuilder();
-              buf.append("delete from ").append(curTable.getSqlTable()).append(
-                  " ");
-              buf.append("where ").append(curTable.getSqlColId()).append("=")
-                  .append(getInstance().getId()).append("");
-              if (LOG.isTraceEnabled()) {
-                LOG.trace(buf.toString());
-              }
-              stmt.addBatch(buf.toString());
-            }
+          if (stmt != null) {
+            stmt.close();
           }
-          StringBuilder buf = new StringBuilder();
-          buf.append("delete from ").append(mainTable.getSqlTable())
-              .append(" ");
-          buf.append("where ").append(mainTable.getSqlColId()).append("=")
-              .append(getInstance().getId()).append("");
-          if (LOG.isTraceEnabled()) {
-            LOG.trace(buf.toString());
-          }
-          stmt.addBatch(buf.toString());
-
-          stmt.executeBatch();
-        } catch (SQLException e) {
-          throw new EFapsException(getClass(),
-              "executeWithoutAccessCheck.SQLException", e, this.instance);
-        }
-        finally {
-          try {
-            if (stmt != null) {
-              stmt.close();
-            }
-          } catch (java.sql.SQLException e) {
-          }
-        }
-
-        con.commit();
-      }
-      finally {
-        if ((con != null) && con.isOpened()) {
-          con.abort();
+        } catch (java.sql.SQLException e) {
         }
       }
 
-      StoreResource store = null;
-      try {
-        if (getInstance().getType().hasStoreResource()) {
-          store = context.getStoreResource(getInstance());
-          store.delete();
-          store.commit();
-        }
-      }
-      finally {
-        if ((store != null) && store.isOpened()) {
-          store.abort();
-        }
+      con.commit();
+    }
+    finally {
+      if ((con != null) && con.isOpened()) {
+        con.abort();
       }
     }
-    executeEvents(EventType.DELETE_POST);
+
+    StoreResource store = null;
+    try {
+      if (getInstance().getType().hasStoreResource()) {
+        store = context.getStoreResource(getInstance());
+        store.delete();
+        store.commit();
+      }
+    }
+    finally {
+      if ((store != null) && store.isOpened()) {
+        store.abort();
+      }
+    }
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -218,7 +239,7 @@ public class Delete {
 
   /**
    * This is the getter method for instance variable {@link #instance}.
-   * 
+   *
    * @return value of instance variable {@link #instance}
    * @see #instance
    * @see #setInstance
@@ -231,19 +252,20 @@ public class Delete {
    * The method gets all events for the given EventType and executes them in the
    * given order. If no events are defined, nothing is done. The method return
    * TRUE if a event was found, otherwise FALSE.
-   * 
+   *
    * @param _context
-   *          eFaps context for this request
+   *                eFaps context for this request
    * @param _eventtype
-   *          EventType to execute
+   *                EventType to execute
    * @return true if a trigger was found and executed, otherwise false
-   * @throws EFapsException 
+   * @throws EFapsException
    */
-  private boolean executeEvents(final EventType _eventtype) throws EFapsException {
-    List<EventDefinition> triggers =
+  private boolean executeEvents(final EventType _eventtype)
+                                                           throws EFapsException {
+    final  List<EventDefinition> triggers =
         getInstance().getType().getEvents(_eventtype);
     if (triggers != null) {
-      Parameter parameter = new Parameter();
+      final   Parameter parameter = new Parameter();
 
       parameter.put(ParameterValues.INSTANCE, getInstance());
       for (EventDefinition evenDef : triggers) {
