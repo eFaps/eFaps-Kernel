@@ -58,6 +58,7 @@
       <property name="Label">Admin_Event_Definition/Type.Label</property>
       <property name="ShowTypeIcon">true</property>
       <property name="Filterable">true</property>
+      <property name="Width">3</property>
     </field>
     <field name="abstract">
       <property name="Expression">Abstract.Name</property>
@@ -65,12 +66,14 @@
       <property name="ShowTypeIcon">true</property>
       <property name="AlternateOID">Abstract.OID</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Width">3</property>
     </field>
     <field name="name">
       <property name="Expression">Name</property>
       <property name="Label">Admin_Event_Definition/Name.Label</property>
       <property name="AlternateOID">OID</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Width">3</property>
     </field>
     <field name="index">
       <property name="Expression">IndexPosition</property>
@@ -79,10 +82,12 @@
     <field name="javaprog">
       <property name="Expression">JavaProg.Name</property>
       <property name="Label">Admin_Event_Definition/JavaProg.Label</property>
+      <property name="Width">3</property>
     </field>
     <field name="method">
       <property name="Expression">Method</property>
       <property name="Label">Admin_Event_Definition/Method.Label</property>
+      <property name="Width">2</property>
     </field>
   </definition>
 

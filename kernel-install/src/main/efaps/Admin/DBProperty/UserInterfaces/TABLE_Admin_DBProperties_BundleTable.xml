@@ -57,10 +57,12 @@
       <property name="Expression">Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_DBProperties_Bundle/Name.Label</property>
+      <property name="Width">3</property>
     </field>
     <field name="uuid">
       <property name="Expression">UUID</property>
       <property name="Label">Admin_DBProperties_Bundle/UUID.Label</property>
+      <property name="Width">3</property>
     </field>
     <field name="sequence">
       <property name="Expression">Sequence</property>
@@ -71,6 +73,7 @@
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Target">popup</property>
       <property name="SortAble">false</property>
+      <property name="Width">15px</property>
     </field>
   </definition>
 

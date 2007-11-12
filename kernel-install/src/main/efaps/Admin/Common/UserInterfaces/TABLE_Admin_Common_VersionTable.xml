@@ -56,14 +56,17 @@
     <field name="name">
       <property name="Expression">Name</property>
       <property name="Label">Admin_Common_Version/Name.Label</property>
+      <property name="Width">2</property>
     </field>
     <field name="revision">
       <property name="Expression">Revision</property>
       <property name="Label">Admin_Common_Version/Revision.Label</property>
+      <property name="Width">1</property>
     </field>
     <field name="created">
       <property name="Expression">Created</property>
       <property name="Label">Admin_Common_Version/Created.Label</property>
+      <property name="Width">3</property>
     </field>
   </definition>
 

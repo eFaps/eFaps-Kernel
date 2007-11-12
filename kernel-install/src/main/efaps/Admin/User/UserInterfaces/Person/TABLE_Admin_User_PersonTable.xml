@@ -81,6 +81,7 @@
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Target">popup</property>
       <property name="SortAble">false</property>
+      <property name="Width">15px</property>
     </field>
   </definition>
 
