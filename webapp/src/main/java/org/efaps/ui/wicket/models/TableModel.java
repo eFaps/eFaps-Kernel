@@ -32,6 +32,8 @@ import java.util.UUID;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.model.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
@@ -58,15 +60,58 @@ import org.efaps.util.EFapsException;
 public class TableModel extends AbstractModel {
 
   /**
-   * enum holding the different directions a column can be sorted
+   * Logging instance used in this class.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(TableModel.class);
+
+  /**
+   * enum holding the different directions a column can be sorted. The value is
+   * used as value for storing the direction as a UserAttribute.
    */
   public static enum SortDirection {
-    DESCENDING,
-    ASCENDING,
-    NONE;
+    DESCENDING("desc"),
+    ASCENDING("asc"),
+    NONE("");
+
+    public final String value;
+
+    /**
+     * private constructor setting the value for the enum
+     *
+     * @param _value
+     */
+    private SortDirection(String _value) {
+      this.value = _value;
+      mapper.put(this.value, this);
+    }
+
+    /**
+     * method to get a SortDirection by his value
+     *
+     * @param _value
+     * @return SortDirection
+     */
+    public static SortDirection getEnum(final String _value) {
+      return mapper.get(_value);
+    }
   }
 
+  /**
+   * this map is used as a store by the enum SortDirection for the method
+   * getEnum
+   */
+  private static final Map<String, SortDirection> mapper =
+      new HashMap<String, SortDirection>();
+
+  /**
+   * this enum holds the Values used as part of the key for the UserAttributes
+   * wich belong to a TableModel
+   *
+   * @author jmox
+   * @version $Id$
+   */
   public static enum UserAttributeKey {
+    SORTDIRECTION("sortDirection"),
     SORTKEY("sortKey"),
     COLUMNWIDTH("columnWidths");
 
@@ -88,6 +133,11 @@ public class TableModel extends AbstractModel {
    * @see #getValues
    */
   private final List<RowModel> values = new ArrayList<RowModel>();
+
+  /**
+   * The instance Array holds the Label for the Columns
+   */
+  private final List<HeaderModel> headers = new ArrayList<HeaderModel>();
 
   /**
    * The instance variable stores the string of the sort key.
@@ -138,11 +188,6 @@ public class TableModel extends AbstractModel {
   private List<String> filterValues = new ArrayList<String>();
 
   /**
-   * The instance Array holds the Label for the Columns
-   */
-  private final List<HeaderModel> headers = new ArrayList<HeaderModel>();
-
-  /**
    * contains the sequential numbers of the filter
    */
   private String[] filterSequence;
@@ -153,13 +198,25 @@ public class TableModel extends AbstractModel {
    */
   private int widthWeight;
 
+  /**
+   * This instance variable stores if the Widths of the Columns are set by
+   * UserAttributes
+   */
   private boolean userWidths = false;
 
+  /**
+   * Constructor
+   *
+   * @param _parameters
+   */
   public TableModel(PageParameters _parameters) {
     super(_parameters);
     initialise();
   }
 
+  /**
+   * method that initialises the TableModel
+   */
   private void initialise() {
     final CommandAbstract command = getCommand();
     if (command == null) {
@@ -189,21 +246,34 @@ public class TableModel extends AbstractModel {
         }
       }
       this.showCheckBoxes = showCheckBoxes;
+      // get the User spesific Attributes if exist overwrite the defaults
       try {
         if (Context.getThreadContext().containsUserAtribute(
-            command.getUUID().toString() + "-sortKey")) {
+            getUserAttributeKey(UserAttributeKey.SORTKEY))) {
           this.sortKey =
               Context.getThreadContext().getUserAttribute(
                   getUserAttributeKey(UserAttributeKey.SORTKEY));
         }
+        if (Context.getThreadContext().containsUserAtribute(
+            getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
+          this.sortDirection =
+              SortDirection
+                  .getEnum((Context.getThreadContext()
+                      .getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION))));
+        }
       } catch (EFapsException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        // we don't throw an error because this are only Usersettings
+        LOG.error("error during the retrieve of UserAttributes", e);
       }
     }
 
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.efaps.ui.wicket.models.AbstractModel#resetModel()
+   */
   @Override
   public void resetModel() {
     super.setInitialised(false);
@@ -211,6 +281,11 @@ public class TableModel extends AbstractModel {
     this.headers.clear();
   }
 
+  /**
+   * this method executes the TableModel, that means this method has to be
+   * called so that this model contains actual data from the eFaps-DataBase. The
+   * method works in conjunction with {@link #executeRowResult(Map, ListQuery)}.
+   */
   @SuppressWarnings("unchecked")
   public void execute() {
     try {
@@ -246,7 +321,7 @@ public class TableModel extends AbstractModel {
         if (field.getName().equals(this.sortKey)) {
           sortdirection = this.getSortDirection();
         }
-        HeaderModel headermodel = new HeaderModel(field, sortdirection);
+        final HeaderModel headermodel = new HeaderModel(field, sortdirection);
         this.headers.add(headermodel);
         if (!field.isFixedWidth()) {
           if (userWidths != null) {
@@ -272,37 +347,13 @@ public class TableModel extends AbstractModel {
     }
   }
 
-  private List<Integer> getUserWidths() throws EFapsException {
-    if (Context.getThreadContext().containsUserAtribute(
-        getUserAttributeKey(UserAttributeKey.COLUMNWIDTH))) {
-      this.userWidths = true;
-      final String widths =
-          Context.getThreadContext().getUserAttribute(
-              getUserAttributeKey(UserAttributeKey.COLUMNWIDTH));
-
-      final StringTokenizer tokens = new StringTokenizer(widths, ";");
-
-      final List<Integer> wList = new ArrayList<Integer>();
-
-      while (tokens.hasMoreTokens()) {
-        String token = tokens.nextToken();
-        for (int i = 0; i < token.length(); i++) {
-          if (!Character.isDigit(token.charAt(i))) {
-            int width = Integer.parseInt(token.substring(0, i));
-            wList.add(width);
-            break;
-          }
-        }
-      }
-      return wList;
-    }
-    return null;
-  }
-
-  public List<HeaderModel> getHeaders() {
-    return this.headers;
-  }
-
+  /**
+   * this method works together with {@link #execute()} to fill this Model with
+   * Data
+   *
+   * @param _instMapper
+   * @param _query
+   */
   private void executeRowResult(
                                 final Map<Instance, List<Instance>> _instMapper,
                                 final ListQuery _query) {
@@ -379,6 +430,49 @@ public class TableModel extends AbstractModel {
   }
 
   /**
+   * this method retieves the UserAttribute for the ColumnWidths and evaluates
+   * the string
+   *
+   * @return List with the values of the columns in Pixel
+   */
+  private List<Integer> getUserWidths() {
+    try {
+      if (Context.getThreadContext().containsUserAtribute(
+          getUserAttributeKey(UserAttributeKey.COLUMNWIDTH))) {
+        this.userWidths = true;
+        final String widths =
+            Context.getThreadContext().getUserAttribute(
+                getUserAttributeKey(UserAttributeKey.COLUMNWIDTH));
+
+        final StringTokenizer tokens = new StringTokenizer(widths, ";");
+
+        final List<Integer> wList = new ArrayList<Integer>();
+
+        while (tokens.hasMoreTokens()) {
+          final String token = tokens.nextToken();
+          for (int i = 0; i < token.length(); i++) {
+            if (!Character.isDigit(token.charAt(i))) {
+              final int width = Integer.parseInt(token.substring(0, i));
+              wList.add(width);
+              break;
+            }
+          }
+        }
+        return wList;
+      }
+    } catch (NumberFormatException e) {
+      // we don't throw an error because this are only Usersettings
+      LOG.error(
+          "error during the retrieve of UserAttributes in getUserWidths()", e);
+    } catch (EFapsException e) {
+      // we don't throw an error because this are only Usersettings
+      LOG.error(
+          "error during the retrieve of UserAttributes in getUserWidths()", e);
+    }
+    return null;
+  }
+
+  /**
    * The instance method sorts the table values depending on the sort key in
    * {@link #sortKey} and the sort direction in {@link #sortDirection}.
    */
@@ -414,6 +508,28 @@ public class TableModel extends AbstractModel {
   }
 
   /**
+   * This method generates the Key for a UserAttribute by using the UUID of the
+   * Command and the given UserAttributeKey, so that for every Tabel a unique
+   * key for sorting etc, is created
+   *
+   * @param _key
+   *                UserAttributeKey the Key is wanted
+   * @return
+   */
+  public String getUserAttributeKey(final UserAttributeKey _key) {
+    return super.getCommandUUID() + "-" + _key.value;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #headers}.
+   *
+   * @return value of instance variable {@link #headers}
+   */
+  public List<HeaderModel> getHeaders() {
+    return this.headers;
+  }
+
+  /**
    * This is the getter method for the instance variable {@link #sortKey}.
    *
    * @return value of instance variable {@link #sortKey}
@@ -438,8 +554,8 @@ public class TableModel extends AbstractModel {
       Context.getThreadContext().setUserAttribute(
           getUserAttributeKey(UserAttributeKey.SORTKEY), _sortKey);
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      // we don't throw an error because this are only Usersettings
+      LOG.error("error during the retrieve of UserAttributes", e);
     }
 
   }
@@ -457,6 +573,14 @@ public class TableModel extends AbstractModel {
 
   public void setSortDirection(final SortDirection _sortdirection) {
     this.sortDirection = _sortdirection;
+    try {
+      Context.getThreadContext().setUserAttribute(
+          getUserAttributeKey(UserAttributeKey.SORTDIRECTION),
+          _sortdirection.value);
+    } catch (EFapsException e) {
+      // we don't throw an error because this are only Usersettings
+      LOG.error("error during the retrieve of UserAttributes", e);
+    }
   }
 
   /**
@@ -583,7 +707,7 @@ public class TableModel extends AbstractModel {
   }
 
   /**
-   * prepares the filter to bes used in getValues
+   * prepares the filter to be used in getValues
    *
    * @see #getValues()
    */
@@ -611,10 +735,11 @@ public class TableModel extends AbstractModel {
     return this.widthWeight;
   }
 
-  public String getUserAttributeKey(UserAttributeKey _key) {
-    return super.getCommandUUID() + "-" + _key.value;
-  }
-
+  /**
+   * This is the getter method for the instance variable {@link #userWidths}.
+   *
+   * @return value of instance variable {@link #userWidths}
+   */
   public boolean isUserSetWidth() {
     return this.userWidths;
   }
