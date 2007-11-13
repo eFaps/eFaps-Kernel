@@ -23,12 +23,11 @@
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>a762f4fe-deb5-46e4-89ce-708bb3e78942</uuid>
+<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  <uuid>bcc09fe4-7b6a-4bdd-bbba-6829c5f3175a</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the command 
+    version definition used to create the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -38,11 +37,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_User_PersonTree_User_Attribute</name>
+    <name>Admin_User_PersonTree_User_Attribute_Menu</name>
   </definition>
-
+    
   <!-- ************************************************************************
-    version definition used to define the command 
+    version definition used to define the menu 
   ************************************************************************* -->
   <definition>
     <version>
@@ -52,19 +51,11 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_User_PersonTree_User_Attribute</name>
-    <!-- target definitions -->
-    <target>
-      <menu>Admin_User_PersonTree_User_Attribute_Menu</menu>
-      <table>Admin_User_AttributeTable</table>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">Admin_User_Attribute\UserLink</property>
-      </evaluate>
-    </target>
-    <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
-    <property name="TargetShowCheckBoxes">true</property>
+    <name>Admin_User_PersonTree_User_Attribute_Menu</name>
+    <!-- childs -->
+    <childs>
+      <child>Admin_User_PersonTree_User_Attribute_Menu_Action</child>
+    </childs>
   </definition>
 
-</ui-command>
+</ui-menu>

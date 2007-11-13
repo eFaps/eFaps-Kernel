@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.menu;
@@ -32,7 +32,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.util.EFapsException;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.FormModel;
@@ -44,10 +43,11 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmox
- * @version $Id$
+ * @version $Id:AjaxSubmitComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
 
@@ -82,6 +82,13 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
     }
 
     @Override
+    protected CharSequence getPreconditionScript() {
+      // we have to override the original Script, because it breaks the eval in
+      // the eFapsScript
+      return null;
+    }
+
+    @Override
     protected void onSubmit(final AjaxRequestTarget _target) {
       final MenuItemModel model =
           (MenuItemModel) super.getComponent().getModel();
@@ -93,15 +100,15 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
         if (super.getComponent().getPage() instanceof MainPage) {
           modal = ((MainPage) super.getComponent().getPage()).getModal();
         } else {
-          modal = ((AbstractContentPage) super.getComponent().getPage()).getModal();
+          modal =
+              ((AbstractContentPage) super.getComponent().getPage()).getModal();
         }
         modal.setPageCreator(new ModalWindow.PageCreator() {
 
           private static final long serialVersionUID = 1L;
 
           public Page createPage() {
-            return new DialogPage(modal, model, para,
-                AjaxSubmitComponent.this);
+            return new DialogPage(modal, model, para, AjaxSubmitComponent.this);
           }
         });
         modal.setInitialHeight(150);

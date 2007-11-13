@@ -25,7 +25,7 @@
 
 <ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>a762f4fe-deb5-46e4-89ce-708bb3e78942</uuid>
+  <uuid>4309dae7-ccdd-468f-aeeb-279dd41322bf</uuid>
 
   <!-- ************************************************************************
     version definition used to create the command 
@@ -38,7 +38,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_User_PersonTree_User_Attribute</name>
+    <name>Admin_User_PersonTree_User_Attribute_Menu_Action_Delete</name>
   </definition>
 
   <!-- ************************************************************************
@@ -52,19 +52,14 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_User_PersonTree_User_Attribute</name>
+    <name>Admin_User_PersonTree_User_Attribute_Menu_Action_Delete</name>
     <!-- target definitions -->
     <target>
-      <menu>Admin_User_PersonTree_User_Attribute_Menu</menu>
-      <table>Admin_User_AttributeTable</table>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">Admin_User_Attribute\UserLink</property>
-      </evaluate>
+      <execute program="org.efaps.esjp.common.uitable.CommonDelete"></execute>
     </target>
     <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
-    <property name="TargetShowCheckBoxes">true</property>
+    <property name="AskUser">true</property>
+    <property name="Submit">true</property>
   </definition>
 
 </ui-command>
