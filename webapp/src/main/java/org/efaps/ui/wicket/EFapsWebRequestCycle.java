@@ -48,7 +48,8 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
   /**
    * Logger for this class
    */
-  private static final Logger LOG = LoggerFactory.getLogger(EFapsWebRequestCycle.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(EFapsWebRequestCycle.class);
 
   public EFapsWebRequestCycle(WebApplication application, WebRequest request,
                               Response response) {
@@ -68,10 +69,11 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
     if (_exception instanceof AuthorizationException) {
       return super.onRuntimeException(_page, _exception);
     } else if (_exception instanceof PageExpiredException) {
-      EFapsSession session = (EFapsSession) Session.get();
+      final EFapsSession session = (EFapsSession) Session.get();
       if (session.isTemporary() || !session.isLogedIn()) {
-        // this was an actual session expiry
-        LOG.info("session expired and request cannot be honored, cycleId: ");
+        // this was an actual session expiry or the user has loged out
+        LOG
+            .info("session expired and request cannot be honored, redirected to LoginPage");
         return new LoginPage();
       } else {
         LOG.error("unable to find page for an active session!");

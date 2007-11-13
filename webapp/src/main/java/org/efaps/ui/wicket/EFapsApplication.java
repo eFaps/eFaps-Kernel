@@ -33,12 +33,13 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
 
 import org.efaps.ui.wicket.pages.login.LoginPage;
-import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
- * TODO description
+ * This Class presents the WebApplication for eFaps usinf the Wicket-Framework.<br/>
+ * It is the first class wich is instanciated from the WicketServlet. Here the
+ * Sessioins for each user a created and basic Settings are set.
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class EFapsApplication extends WebApplication {
@@ -50,35 +51,61 @@ public class EFapsApplication extends WebApplication {
    *      org.apache.wicket.Response)
    */
   @Override
-  public RequestCycle newRequestCycle(Request request, Response response) {
-    return new EFapsWebRequestCycle(this, (WebRequest) request, response);
+  public RequestCycle newRequestCycle(final Request _request,
+                                      final Response _response) {
+    return new EFapsWebRequestCycle(this, (WebRequest) _request, _response);
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.Application#getHomePage()
+   */
   @Override
-  public Class<MainPage> getHomePage() {
-    return MainPage.class;
+  public Class<LoginPage> getHomePage() {
+    return LoginPage.class;
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.protocol.http.WebApplication#init()
+   */
   @Override
   protected void init() {
     super.init();
     getMarkupSettings().setStripWicketTags(true);
     getMarkupSettings().setStripComments(true);
     getRequestCycleSettings().setGatherExtendedBrowserInfo(true);
-//     getDebugSettings().setAjaxDebugModeEnabled(false);
+    // getDebugSettings().setAjaxDebugModeEnabled(false);
     super.getSecuritySettings().setAuthorizationStrategy(
         new EFapsFormBasedAuthorizationStartegy());
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.protocol.http.WebApplication#newSession(org.apache.wicket.Request,
+   *      org.apache.wicket.Response)
+   */
   @Override
   public Session newSession(final Request _request, final Response _response) {
     return new EFapsSession(_request);
 
   }
 
+  /**
+   * the Class presents the Strategy to authorize pages in this WebApplication
+   */
   private class EFapsFormBasedAuthorizationStartegy implements
       IAuthorizationStrategy {
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.wicket.authorization.IAuthorizationStrategy#isActionAuthorized(org.apache.wicket.Component,
+     *      org.apache.wicket.authorization.Action)
+     */
     public boolean isActionAuthorized(final Component _component,
                                       final Action _action) {
       return true;
@@ -92,13 +119,12 @@ public class EFapsApplication extends WebApplication {
      * @see org.apache.wicket.authorization.IAuthorizationStrategy#isInstantiationAuthorized(java.lang.Class)
      */
     @SuppressWarnings("unchecked")
-    public boolean isInstantiationAuthorized(Class _componentClass) {
+    public boolean isInstantiationAuthorized(final Class _componentClass) {
 
       if (Page.class.isAssignableFrom(_componentClass)) {
-        if (((EFapsSession) Session.get()).isLogedIn()) {
-          return true;
-        } else if (EFapsNoAuthorizationNeededInterface.class
-            .isAssignableFrom(_componentClass)) {
+        if (((EFapsSession) Session.get()).isLogedIn()
+            || EFapsNoAuthorizationNeededInterface.class
+                .isAssignableFrom(_componentClass)) {
           return true;
         }
         throw new RestartResponseAtInterceptPageException(LoginPage.class);

@@ -94,7 +94,8 @@ public class EFapsSession extends WebSession {
    *
    * @see #openContext()
    */
-  private Map<String, Object> sessionAttributes = new HashMap<String, Object>();
+  private final Map<String, Object> sessionAttributes =
+      new HashMap<String, Object>();
 
   /**
    * Standart Constructor from Wicket
@@ -191,7 +192,7 @@ public class EFapsSession extends WebSession {
    * @param openerModel
    *                the openerModel to set
    */
-  public void setOpenerModel(IModel openerModel) {
+  public void setOpenerModel(final IModel openerModel) {
     this.openerModel = openerModel;
   }
 
@@ -202,11 +203,12 @@ public class EFapsSession extends WebSession {
    * @see #userName
    */
   public boolean isLogedIn() {
+    boolean ret = false;
     if (this.userName != null) {
-      return true;
-    } else {
-      return false;
+      ret = true;
     }
+    return ret;
+
   }
 
   /**
@@ -215,14 +217,15 @@ public class EFapsSession extends WebSession {
    * @see #checkLogin(String, String)
    */
   public final void login() {
-    Map<?, ?> parameter = RequestCycle.get().getRequest().getParameterMap();
-    String[] name = (String[]) parameter.get("name");
-    String[] pwd = (String[]) parameter.get("password");
+    final Map<?, ?> parameter =
+        RequestCycle.get().getRequest().getParameterMap();
+    final String[] name = (String[]) parameter.get("name");
+    final String[] pwd = (String[]) parameter.get("password");
     if (checkLogin(name[0], pwd[0])) {
       this.userName = name[0];
     } else {
       this.userName = null;
-      this.sessionAttributes = null;
+      this.sessionAttributes.clear();
     }
 
   }
@@ -234,11 +237,12 @@ public class EFapsSession extends WebSession {
   // happens if the User does not log out?
   public final void logout() {
     this.userName = null;
-    ((UserAttributesSet) this.sessionAttributes
-        .get(UserAttributesSet.CONTEXTMAPKEY)).storeInDb();
-    this.sessionAttributes.clear();
+    if (this.sessionAttributes.containsKey(UserAttributesSet.CONTEXTMAPKEY)) {
+      ((UserAttributesSet) this.sessionAttributes
+          .get(UserAttributesSet.CONTEXTMAPKEY)).storeInDb();
+      this.sessionAttributes.clear();
+    }
     closeContext();
-    super.invalidate();
   }
 
   /**
@@ -263,10 +267,11 @@ public class EFapsSession extends WebSession {
       boolean ok = false;
 
       try {
-        LoginHandler loginHandler =
+        final LoginHandler loginHandler =
             new LoginHandler(super.getApplication().getApplicationKey());
         if (loginHandler.checkLogin(_name, _passwd) != null) {
           loginOk = true;
+
           this.sessionAttributes.put(UserAttributesSet.CONTEXTMAPKEY,
               new UserAttributesSet(_name));
         }
@@ -315,7 +320,7 @@ public class EFapsSession extends WebSession {
   private void openContext() {
     try {
       if (!Context.isTMActive()) {
-        Map<String, String[]> parameter =
+        final Map<String, String[]> parameter =
             RequestCycle.get().getRequest().getParameterMap();
 
         Context.begin(this.userName, super.getLocale(), this.sessionAttributes,
@@ -362,4 +367,5 @@ public class EFapsSession extends WebSession {
       throw new RestartResponseException(new ErrorPage(e));
     }
   }
+
 }

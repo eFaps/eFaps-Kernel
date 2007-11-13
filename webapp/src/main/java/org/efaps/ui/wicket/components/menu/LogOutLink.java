@@ -24,11 +24,9 @@ import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 
-
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
- *
  */
 public class LogOutLink extends StandardLink {
 
@@ -40,7 +38,7 @@ public class LogOutLink extends StandardLink {
 
   @Override
   public void onClick() {
+    this.setResponsePage(new LoginPage());
     ((EFapsSession) this.getSession()).logout();
-    this.getRequestCycle().setResponsePage(LoginPage.class);
   }
 }
