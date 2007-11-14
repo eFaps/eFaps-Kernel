@@ -88,6 +88,7 @@
           <passWord>Administrator</passWord>
           <!-- used from the generateUUID goal -->
           <count>${count}</count>
+          <file>${esjpfile}</file>
         </configuration>
         <dependencies>
           <!-- Connection Pooling -->

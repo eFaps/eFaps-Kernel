@@ -27,11 +27,15 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
+import org.efaps.db.Insert;
 import org.efaps.db.Instance;
+import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
@@ -51,6 +55,12 @@ public class ESJPImporter {
    * Defines the encoding of the ESJP source code within eFaps.
    */
   private final static String ENCODING = "UTF8";
+
+  /**
+   * UUID of the ESJP Type.
+   */
+  private final static UUID UUID_ESJPTYPE
+          = UUID.fromString("11043a35-f73c-481c-8c77-00306dbce824");
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -75,6 +85,14 @@ public class ESJPImporter {
   /////////////////////////////////////////////////////////////////////////////
   // constructor / destructor
 
+  /**
+   * Constructor used to read the source code from given URL and extract the
+   * class name.
+   *
+   * @param _url    url to the ESJP source code
+   * @see #readCode
+   * @see #evalClassName
+   */
   public ESJPImporter(final URL _url) throws EFapsException  {
     this.url = _url;
     readCode();
@@ -103,6 +121,63 @@ public class ESJPImporter {
                                "updateDB.UnsupportedEncodingException",
                                e);
     }
+  }
+
+  /**
+   * Searches for the given Java class name in eFaps. If exists, the instance
+   * is returned.
+   *
+   * @return found instance (or null if not found)
+   * @throws EFapsException if search query could not be executed
+   * @see #className
+   */
+  public Instance searchInstance() throws EFapsException  {
+    Instance instance = null;
+
+    final Type esjpType = Type.get(UUID_ESJPTYPE);
+    final SearchQuery query = new SearchQuery();
+    query.setQueryTypes(esjpType.getName());
+    query.addWhereExprEqValue("Name", this.className);
+    query.addSelect("OID");
+    query.executeWithoutAccessCheck();
+    if (query.next()) {
+      instance = new Instance((String) query.get("OID"));
+    }
+    query.close();
+
+    return instance;
+  }
+
+  /**
+   * 
+   * @throws EFapsException
+   * @see #searchInstance
+   * @see #createInstance
+   * @see #updateDB
+   */
+  public void execute() throws EFapsException  {
+    Instance instance = searchInstance();
+
+    if (instance == null)  {
+      instance = createInstance();
+    }
+
+    updateDB(instance);
+  }
+
+  /**
+   * Creates an instance of an ESJP in eFaps for given name.
+   *
+   * @return new created instance
+   * @throws EFapsException
+   */
+  protected Instance createInstance() throws EFapsException  {
+    final Type esjpType = Type.get(UUID_ESJPTYPE);
+    final Insert insert = new Insert(esjpType);
+    insert.add("Name", this.className);
+    insert.execute();
+
+    return insert.getInstance();
   }
 
   /**
