@@ -237,10 +237,8 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new SlideTransactionMan
 
   /**
    * Reloads the internal eFaps cache.
-   * 
-   * @todo remove Exception
    */
-  protected void reloadCache() throws EFapsException, Exception {
+  protected void reloadCache() throws EFapsException  {
     startTransaction();
     RunLevel.init("shell");
     RunLevel.execute();
@@ -250,26 +248,23 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new SlideTransactionMan
   /**
    * 
    * 
-   * @todo remove Exception
    * @todo description
    */
-  protected void startTransaction() throws EFapsException, Exception {
+  protected void startTransaction() throws EFapsException {
     Context.begin(this.userName);
   }
 
   /**
-   * @todo remove Exception
    * @todo description
    */
-  protected void abortTransaction() throws EFapsException, Exception {
+  protected void abortTransaction() throws EFapsException  {
     Context.rollback();
   }
 
   /**
-   * @todo remove Exception
    * @todo description
    */
-  protected void commitTransaction() throws EFapsException, Exception {
+  protected void commitTransaction() throws EFapsException {
     Context.commit();
   }
   

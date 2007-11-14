@@ -33,11 +33,6 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.NotSupportedException;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 
 import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
@@ -220,12 +215,6 @@ String uri = httpRequest.getRequestURI();
     } catch (EFapsException e)  {
       LOG.error("could not initialise the context", e);
       throw new ServletException(e);
-    } catch (SystemException e)  {
-      LOG.error("could not initialise the context", e);
-      throw new ServletException(e);
-    } catch (NotSupportedException e)  {
-      LOG.error("could not initialise the context", e);
-      throw new ServletException(e);
     }
   
     // TODO: is a open sql connection in the context returned automatically?
@@ -254,18 +243,6 @@ String uri = httpRequest.getRequestURI();
     } catch (EFapsException e)  {
       LOG.error("", e);
       throw new ServletException(e);
-    } catch (RollbackException e)  {
-      LOG.error("", e);
-      throw new ServletException(e);
-    } catch (HeuristicRollbackException e)  {
-      LOG.error("", e);
-      throw new ServletException(e);
-    } catch (HeuristicMixedException e)  {
-      LOG.error("", e);
-      throw new ServletException(e);
-    } catch (javax.transaction.SystemException e)  {
-      LOG.error("", e);
-      throw new ServletException(e);
     }
   }
 
@@ -276,9 +253,8 @@ String uri = httpRequest.getRequestURI();
    * @return map of session attributes used for the context object
    */
   protected Map < String, Object > getContextSessionAttributes(final HttpServletRequest _request)  {
-    Map < String, Object > map 
-                      = (Map < String, Object > ) _request.getSession()
-                         .getAttribute(SESSION_CONTEXT_ATTRIBUTES);
+    Map<String, Object> map 
+        = (Map<String, Object>) _request.getSession().getAttribute(SESSION_CONTEXT_ATTRIBUTES);
     if (map == null)  {
       map = new HashMap < String, Object > ();
       _request.getSession().setAttribute(SESSION_CONTEXT_ATTRIBUTES, map);

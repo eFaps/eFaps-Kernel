@@ -27,11 +27,6 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.NotSupportedException;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -168,16 +163,6 @@ public abstract class AbstractAuthenticationFilter extends AbstractFilter  {
       }
     } catch (EFapsException e)  {
       LOG.error("could not check name and password", e);
-    } catch (NotSupportedException e)  {
-      LOG.error("could not initialise the context", e);
-    } catch (RollbackException e)  {
-      LOG.error("", e);
-    } catch (HeuristicRollbackException e)  {
-      LOG.error("", e);
-    } catch (HeuristicMixedException e)  {
-      LOG.error("", e);
-    } catch (javax.transaction.SystemException e)  {
-      LOG.error("", e);
     } finally  {
       context.close();
     }

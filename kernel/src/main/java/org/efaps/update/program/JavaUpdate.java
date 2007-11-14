@@ -34,7 +34,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.ESJPImporter;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
 
@@ -174,21 +173,9 @@ public class JavaUpdate extends AbstractUpdate {
       final ESJPImporter javaCode = new ESJPImporter(new URL(this.root + this.file));
       setName(javaCode.getClassName());
 
-      Instance instance = null;
-      Insert insert = null;
-
-      // search for the instance
-      final SearchQuery query = new SearchQuery();
-      query.setQueryTypes(_dataModelType.getName());
-      query.addWhereExprEqValue("Name", javaCode.getClassName());
-      query.addSelect("OID");
-      query.executeWithoutAccessCheck();
-      if (query.next()) {
-        instance = new Instance((String) query.get("OID"));
-      }
-      query.close();
-
       // if no instance exists, a new insert must be done
+      Instance instance = javaCode.searchInstance();
+      Insert insert = null;
       if (instance == null) {
         insert = new Insert(_dataModelType);
         insert.add("Name", javaCode.getClassName());

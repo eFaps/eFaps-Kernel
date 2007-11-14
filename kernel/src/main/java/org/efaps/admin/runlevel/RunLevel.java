@@ -99,7 +99,7 @@ public class RunLevel {
    * @param _runLevel   name of run level to initialise
    * @todo exception handling
    */
-  public static void init(final String _runLevel) throws Exception {
+  public static void init(final String _runLevel) throws EFapsException {
     ALL_RUNLEVELS.clear();
     RUNLEVEL = new RunLevel(_runLevel);
   }

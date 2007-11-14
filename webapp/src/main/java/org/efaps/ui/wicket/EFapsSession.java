@@ -23,12 +23,6 @@ package org.efaps.ui.wicket;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
@@ -133,7 +127,7 @@ public class EFapsSession extends WebSession {
       if (this.isLogedIn() && !Context.isTMNoTransaction()) {
         closeContext();
       }
-    } catch (SystemException e) {
+    } catch (EFapsException e) {
       LOG.error("could not read the Status of the TransactionManager", e);
     }
 
@@ -294,16 +288,6 @@ public class EFapsSession extends WebSession {
       }
     } catch (EFapsException e) {
       LOG.error("could not check name and password", e);
-    } catch (NotSupportedException e) {
-      LOG.error("could not initialise the context", e);
-    } catch (RollbackException e) {
-      LOG.error("", e);
-    } catch (HeuristicRollbackException e) {
-      LOG.error("", e);
-    } catch (HeuristicMixedException e) {
-      LOG.error("", e);
-    } catch (javax.transaction.SystemException e) {
-      LOG.error("", e);
     }
 
     return loginOk;
@@ -329,12 +313,6 @@ public class EFapsSession extends WebSession {
     } catch (EFapsException e) {
       LOG.error("could not initialise the context", e);
       throw new RestartResponseException(new ErrorPage(e));
-    } catch (NotSupportedException e) {
-      LOG.error("could not initialise the context", e);
-      throw new RestartResponseException(new ErrorPage(e));
-    } catch (SystemException e) {
-      LOG.error("could not initialise the context", e);
-      throw new RestartResponseException(new ErrorPage(e));
     }
   }
 
@@ -356,14 +334,6 @@ public class EFapsSession extends WebSession {
     } catch (IllegalStateException e) {
       throw new RestartResponseException(new ErrorPage(e));
     } catch (EFapsException e) {
-      throw new RestartResponseException(new ErrorPage(e));
-    } catch (RollbackException e) {
-      throw new RestartResponseException(new ErrorPage(e));
-    } catch (HeuristicMixedException e) {
-      throw new RestartResponseException(new ErrorPage(e));
-    } catch (HeuristicRollbackException e) {
-      throw new RestartResponseException(new ErrorPage(e));
-    } catch (SystemException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
   }
