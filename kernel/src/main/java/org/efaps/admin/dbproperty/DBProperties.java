@@ -42,11 +42,12 @@ import org.efaps.util.EFapsException;
  * The value returned for a key is searched first in the localised version, if
  * no Value can be found or no localised version for this language is existing
  * than the default value will be returned.
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
  */
 public class DBProperties {
+
   /**
    * Logger for this class
    */
@@ -71,12 +72,12 @@ public class DBProperties {
   /**
    * Method to find out if a specified key is existing.<br>
    * It is only checked in the default.
-   * 
+   *
    * @param _key
    *                Key to search for
    * @return true if the key exists
    */
-  public static boolean hasProperty(String _key) {
+  public static boolean hasProperty(final String _key) {
 
     if (!isInitialised()) {
       initialise();
@@ -90,7 +91,7 @@ public class DBProperties {
    * for the given key. <br>
    * The Search for the key, first searches for a localized Version and if not
    * found for a Default. If no value can be found, the key will be returned.
-   * 
+   *
    * @param _key
    *                Key to Search for
    * @return if key exists, the value for the key, otherwise the key
@@ -116,7 +117,7 @@ public class DBProperties {
    * the given key. <br>
    * The Search for the key, first searches for a localized Version and if not
    * found for a Default. If no value can be found, the key will be returned.
-   * 
+   *
    * @param _key
    *                Key to Search for
    * @param _language
@@ -130,13 +131,13 @@ public class DBProperties {
 
     String value = null;
 
-    Map<String, String> map = PROPERTIESCACHE.get(_language);
+    final Map<String, String> map = PROPERTIESCACHE.get(_language);
     if (map != null) {
-      value = (String) map.get(_key);
+      value = map.get(_key);
     }
 
     if (value == null) {
-      Map<String, String> defaultProps = PROPERTIESCACHE.get(DEFAULT);
+      final Map<String, String> defaultProps = PROPERTIESCACHE.get(DEFAULT);
       if (defaultProps != null) {
         value = PROPERTIESCACHE.get(DEFAULT).get(_key);
       }
@@ -148,7 +149,7 @@ public class DBProperties {
 
   /**
    * For getting all Properties in a Map
-   * 
+   *
    * @return Map with all Properties
    */
   public Map<String, Map<String, String>> getProperties() {
@@ -165,8 +166,10 @@ public class DBProperties {
     }
 
     final String sqlStmt =
-        " select distinct PROPKEY, DEFAULTV,'" + DEFAULT
-            + "' as LANG, SEQUENCE " + " from T_ADPROP "
+        " select distinct PROPKEY, DEFAULTV,'"
+            + DEFAULT
+            + "' as LANG, SEQUENCE "
+            + " from T_ADPROP "
             + " inner join T_ADPROPBUN on T_ADPROPBUN.ID = T_ADPROP.BUNDLEID  "
             + " order by SEQUENCE";
 
@@ -185,7 +188,7 @@ public class DBProperties {
 
   /**
    * Returns, if the properties are initialised
-   * 
+   *
    * @return true if initilised, otherwise false
    */
   public static boolean isInitialised() {
@@ -194,7 +197,7 @@ public class DBProperties {
 
   /**
    * This method is initialising the cache
-   * 
+   *
    * @param _SQLStmt
    *                SQl-Statment to access the database
    */
@@ -205,25 +208,26 @@ public class DBProperties {
 
     Map<String, String> map = null;
     try {
-      ConnectionResource con =
+      final ConnectionResource con =
           Context.getThreadContext().getConnectionResource();
-      Statement stmt = con.getConnection().createStatement();
+      final Statement stmt = con.getConnection().createStatement();
 
-      ResultSet rs = stmt.executeQuery(_sqlstmt);
-      while (rs.next()) {
-        value = rs.getString(2);
-        if (!language.equals(rs.getString(3))) {
-          language = rs.getString(3);
+      final ResultSet resultset = stmt.executeQuery(_sqlstmt);
+      while (resultset.next()) {
+        value = resultset.getString(2);
+        if (!language.equals(resultset.getString(3).trim())) {
+          language = resultset.getString(3).trim();
           map = PROPERTIESCACHE.get(language);
           if (map == null) {
             map = new HashMap<String, String>();
-            PROPERTIESCACHE.put(language, (HashMap<String, String>) map);
+            PROPERTIESCACHE.put(language, map);
           }
         }
 
-        map.put(rs.getString("PROPKEY").trim(), value.trim());
+        map.put(resultset.getString("PROPKEY").trim(), value.trim());
       }
       INITIALISED = true;
+      resultset.close();
     } catch (EFapsException e) {
 
       LOG.error("initialiseCache()", e);

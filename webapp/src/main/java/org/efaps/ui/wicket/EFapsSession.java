@@ -21,6 +21,7 @@
 package org.efaps.ui.wicket;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.apache.wicket.Component;
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.user.UserAttributesSet;
+import org.efaps.admin.user.UserAttributesSet.UserAttributesDefinition;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -309,6 +311,15 @@ public class EFapsSession extends WebSession {
 
         Context.begin(this.userName, super.getLocale(), this.sessionAttributes,
             parameter, null);
+
+        if (Context.getThreadContext().containsUserAtribute(
+            UserAttributesDefinition.LOCALE.name)) {
+          Locale locale =
+              new Locale(Context.getThreadContext().getUserAttribute(
+                  UserAttributesDefinition.LOCALE.name));
+          Context.getThreadContext().setLocale(locale);
+        }
+
       }
     } catch (EFapsException e) {
       LOG.error("could not initialise the context", e);

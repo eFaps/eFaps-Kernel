@@ -69,7 +69,7 @@ public abstract class AdminObject implements CacheObjectInterface {
     USER_JAASSYSTEM("Admin_User_JAASSystem", null),
 
     USER_ABSTRACT2ABSTRACT("Admin_User_Abstract2Abstract", null),
-    USER_ATTRIBUTE("Admin_User_Attribute", null),
+    USER_ATTRIBUTEABSTRACT("Admin_User_AttributeAbstract", null),
     USER_PERSON2ROLE("Admin_User_Person2Role", null),
     USER_PERSON2GROUP("Admin_User_Person2Group", null),
 

@@ -54,17 +54,6 @@
       <mode>(version==4)</mode>
     </version>
     <database>
-      <sql>
-        create view V_USERATTRIBUTES as
-             select
-                    T_USERATTRABSTRACT.ID,
-                    T_USERATTRABSTRACT.USERABSTRACTID,
-                    T_USERATTR.ATTRIBUTEKEY,
-                    T_USERATTR.VALUE
-               from T_USERATTR
-               join T_USERATTRABSTRACT
-                 on T_USERATTR.ID = T_USERATTRABSTRACT.ID
-      </sql>
       <table-name>T_USERATTR</table-name>
       <parent-table>T_USERATTRABSTRACT</parent-table>
       <update>true</update>

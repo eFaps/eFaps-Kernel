@@ -23,13 +23,13 @@
   
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<ui-form xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
-  <uuid>f84814f4-1bc5-481e-b37c-6ae782b25a00</uuid>
+  <uuid>4d59a9ad-6899-4793-bba8-6a1f0c4c8ebe</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the table 
     ************************************************************************* -->
   <definition>
     <version>
@@ -39,11 +39,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Common_Main_Preferences</name>
+    <name>Admin_User_LocaleChgForm</name>
   </definition>
 
   <!-- ************************************************************************
-    version definition used to update the menu 
+    version definition used to define the table 
     ************************************************************************* -->
   <definition>
     <version>
@@ -53,10 +53,14 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Common_Main_Preferences</name>
-    <childs>
-      <child>Admin_User_PwdChg</child>
-      <child>Admin_User_LocaleChg</child>
-    </childs>
+    <name>Admin_User_LocaleChgForm</name>
+    <!-- fields -->
+    <field name="locale">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Expression">Locale</property>
+      <property name="Required">true</property>
+      <property name="Label">Admin_User_LocaleChgForm/Locale.Label</property>
+    </field>
   </definition>
-</ui-menu>
+</ui-form>

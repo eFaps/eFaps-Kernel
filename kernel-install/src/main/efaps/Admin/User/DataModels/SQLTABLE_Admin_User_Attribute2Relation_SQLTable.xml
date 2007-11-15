@@ -69,7 +69,7 @@
     </version>
     <name>Admin_User_Attribute2Relation_SQLTable</name>
     <database>
-      <table-name>T_USERATTRIBUTE2REL</table-name>
+      <table-name>T_USERATTR2REL</table-name>
     </database>
   </definition>
 </datamodel-sqltable>
