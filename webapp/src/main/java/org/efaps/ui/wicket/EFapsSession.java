@@ -256,10 +256,14 @@ public class EFapsSession extends WebSession {
   private boolean checkLogin(final String _name, final String _passwd) {
 
     boolean loginOk = false;
-
-    Context context = null;
     try {
-      context = Context.begin();
+      Context context = null;
+
+      if (Context.isTMActive()) {
+        context = Context.getThreadContext();
+      } else {
+        context = Context.begin();
+      }
       boolean ok = false;
 
       try {

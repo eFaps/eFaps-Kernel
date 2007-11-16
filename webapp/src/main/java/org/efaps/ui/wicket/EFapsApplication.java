@@ -33,6 +33,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
 
 import org.efaps.ui.wicket.pages.login.LoginPage;
+import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
  * This Class presents the WebApplication for eFaps usinf the Wicket-Framework.<br/>
@@ -62,8 +63,8 @@ public class EFapsApplication extends WebApplication {
    * @see org.apache.wicket.Application#getHomePage()
    */
   @Override
-  public Class<LoginPage> getHomePage() {
-    return LoginPage.class;
+  public Class<MainPage> getHomePage() {
+    return MainPage.class;
   }
 
   /*

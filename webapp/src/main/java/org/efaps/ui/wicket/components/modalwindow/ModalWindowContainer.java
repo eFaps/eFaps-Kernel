@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.modalwindow;
@@ -37,7 +37,7 @@ import org.efaps.ui.wicket.pages.main.MainPage;
 
 /**
  * @author jmox
- * @version $Id$
+ * @version $Id:ModalWindowContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ModalWindowContainer extends ModalWindow {
 
@@ -100,7 +100,7 @@ public class ModalWindowContainer extends ModalWindow {
           javascript = "top.frames[0].frames[0].location.href = '";
         }
         javascript += url + "';";
-        _target.appendJavascript(javascript);
+        _target.prependJavascript(javascript);
       }
     }
 
