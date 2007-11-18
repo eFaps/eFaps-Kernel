@@ -22,6 +22,7 @@ package org.efaps.ui.wicket.components.listmenu;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -52,8 +53,9 @@ public class AjaxGoUpLink extends AjaxLink {
   @Override
   public void onClick(final AjaxRequestTarget _target) {
     MenuTree menutree = (MenuTree) findParent(MenuTree.class);
+    TreeNode selected =
+        (TreeNode) menutree.getTreeState().getSelectedNodes().iterator().next();
 
-    // update the Content
     MenuItemModel model = (MenuItemModel) this.node.getUserObject();
     model.setStepInto(false);
     MenuTree newMenuTree =
@@ -62,43 +64,8 @@ public class AjaxGoUpLink extends AjaxLink {
 
     menutree.replaceWith(newMenuTree);
 
+    newMenuTree.getTreeState().selectNode(selected, true);
     newMenuTree.updateTree(_target);
-    // MenuItemModel rootModel =
-    // (MenuItemModel) ((List<?>) model.getAncestor().getObject()).get(0);
-    // CommandAbstract cmd = rootModel.getCommand();
-    // PageParameters para = new PageParameters();
-    // para.add("oid", rootModel.getOid());
-    // para.add("command", cmd.getUUID().toString());
-    //
-    // InlineFrame page;
-    // if (cmd.getTargetTable() != null) {
-    // page =
-    // new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-    // .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-    // TablePage.class, para);
-    // } else {
-    // page =
-    // new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-    // .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-    // FormPage.class, para);
-    // }
-    //
-    // InlineFrame component =
-    // (InlineFrame) getPage().get(
-    // ((ContentContainerPage) getPage()).getInlinePath());
-    // page.setOutputMarkupId(true);
-    //
-    // component.replaceWith(page);
-    // _target.addComponent(page.getParent());
-    //
-    // Rows row = (Rows) this.findParent(Rows.class);
-    //
-    // row.removeAll();
-    //
-    // row.setModel(model.getAncestor());
-    //
-    // _target.addComponent(listmenupanel);
-    // model.setAncestor(null);
-  }
 
+  }
 }

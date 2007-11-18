@@ -102,7 +102,7 @@ public class AjaxGoIntoLink extends AjaxLink {
     model.setAncestor((DefaultMutableTreeNode) ((DefaultTreeModel) menutree
         .getModelObject()).getRoot());
     menutree.replaceWith(newMenuTree);
-
+    newMenuTree.getTreeState().selectNode(this.node, true);
     newMenuTree.updateTree(_target);
 
   }
