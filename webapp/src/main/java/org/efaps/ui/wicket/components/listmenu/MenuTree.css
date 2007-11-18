@@ -1,0 +1,65 @@
+.eFapsMenuTreeRow,.eFapsMenuTreeRowSelected {
+  font-family: arial, verdana, helvetica, sans-serif;
+  font-size: 9pt;
+  height: 18px;
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+  border-bottom: 2px solid #fff;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.eFapsMenuTreeRow {
+  color: #008800;
+  background-color: #d0edb8;
+}
+
+.eFapsMenuTreeRow:hover {
+  background-color: #96d265;
+  cursor: pointer;
+  color: #FFF;
+}
+
+.eFapsMenuTreeRowSelected {
+  background-color: #008800;
+  color: #FFF;
+  font-weight: bold;
+}
+
+.eFapsMenuTreeRowSelected:hover {
+  cursor: pointer;
+}
+
+.eFapsMenuTreeIntend { /*makes the max width*/
+  width: 18px;
+}
+
+.eFapsMenuTreeIntend div { /*makes the min width*/
+  width: 18px;
+}
+
+.eFapsMenuTreeExpand {
+  width: 5px;
+}
+
+.eFapsMenuTreeIcon {
+  width: 16px;
+}
+
+.eFapsMenuTreeRemove,.eFapsMenuTreeGoInto,.eFapsMenuTreeGoUp {
+  width: 15px;
+  padding-top: 3px;
+}
+
+.eFapsMenuTreeHeader {
+  font-weight: bold;
+}
+
+.eFapsMenuTreeItem {
+  font-weight: normal;
+}
+
+.eFapsMenuTreeLink img {
+  vertical-align: bottom;
+}

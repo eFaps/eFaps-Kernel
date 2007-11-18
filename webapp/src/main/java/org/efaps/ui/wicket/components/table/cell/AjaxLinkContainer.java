@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.table.cell;
@@ -32,8 +32,9 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.AbstractAjaxCallBackBehavior;
-import org.efaps.ui.wicket.components.listmenu.ListMenuUpdate;
+import org.efaps.ui.wicket.components.listmenu.MenuTree;
 import org.efaps.ui.wicket.models.CellModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -43,7 +44,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 
 /**
  * @author jmox
- * @version $Id$
+ * @version $Id:AjaxLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class AjaxLinkContainer extends WebMarkupContainer {
 
@@ -94,9 +95,14 @@ public class AjaxLinkContainer extends WebMarkupContainer {
         para.add("oid", cellmodel.getOid());
 
         String listMenuKey =
-            ((AbstractContentPage) this.getComponent().getPage()).getListMenuKey();
-        ListMenuUpdate.update(_target, listMenuKey, menu, para,
-            ((CellModel) super.getComponent().getModel()).getOid());
+            ((AbstractContentPage) this.getComponent().getPage())
+                .getListMenuKey();
+        MenuTree menutree =
+            (MenuTree) ((EFapsSession) this.getComponent().getSession())
+                .getFromCache(listMenuKey);
+
+        menutree.addChildMenu(para,_target);
+
       }
     }
   }
@@ -148,8 +154,8 @@ public class AjaxLinkContainer extends WebMarkupContainer {
               new FormPage(parameters, null, PageMap
                   .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
         }
-        page.setListMenuKey(((AbstractContentPage) this.getComponent().getPage())
-            .getListMenuKey());
+        page.setListMenuKey(((AbstractContentPage) this.getComponent()
+            .getPage()).getListMenuKey());
         super.getComponent().getRequestCycle().setResponsePage(page);
       }
     }

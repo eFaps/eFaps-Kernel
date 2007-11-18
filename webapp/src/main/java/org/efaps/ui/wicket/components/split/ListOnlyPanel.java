@@ -25,7 +25,7 @@ import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.panel.Panel;
 
 import org.efaps.ui.wicket.components.dojo.ContentPaneBehavior;
-import org.efaps.ui.wicket.components.listmenu.ListMenuPanel;
+import org.efaps.ui.wicket.components.listmenu.MenuTree;
 
 /**
  * @author jmo
@@ -40,7 +40,7 @@ public class ListOnlyPanel extends Panel {
     super(_id);
     this.add(HeaderContributor.forCss(SplitHeaderPanel.class,
         "ListOnlyPanel.css"));
-    this.add(new ListMenuPanel("menu", _listmenukey, _parameters, true)
+    this.add(new MenuTree("menu", _parameters, _listmenukey)
         .setOutputMarkupId(true));
     this.add(new ContentPaneBehavior(20, 20));
     this.add(new SplitHeaderPanel("header", false));

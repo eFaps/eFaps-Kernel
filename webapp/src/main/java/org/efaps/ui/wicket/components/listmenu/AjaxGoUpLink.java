@@ -13,97 +13,92 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.listmenu;
 
-import java.util.List;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
-import org.apache.wicket.PageMap;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.link.InlineFrame;
-import org.apache.wicket.model.IModel;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 
-import org.efaps.admin.ui.CommandAbstract;
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.components.listmenu.ListMenuPanel.Rows;
-import org.efaps.ui.wicket.components.listmenu.ListMenuPanel.StyleClassName;
 import org.efaps.ui.wicket.models.MenuItemModel;
-import org.efaps.ui.wicket.pages.content.form.FormPage;
-import org.efaps.ui.wicket.pages.content.table.TablePage;
-import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
 /**
  * @author jmox
- * @version $Id$
- *
+ * @version $Id:AjaxGoUpLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxGoUpLink extends AbstractAjaxLink {
+public class AjaxGoUpLink extends AjaxLink {
 
   private static final long serialVersionUID = 1L;
 
-  public AjaxGoUpLink(String id, IModel model) {
-    super(id, model);
+  private final DefaultMutableTreeNode node;
+
+  /**
+   * Construtor setting the ID and the Node of this Component
+   *
+   * @param _id
+   * @param _model
+   */
+  public AjaxGoUpLink(final String _id, final DefaultMutableTreeNode _node) {
+    super(_id);
+    this.node = _node;
   }
 
   @Override
   public void onClick(final AjaxRequestTarget _target) {
-    ListMenuPanel listmenupanel =
-        (ListMenuPanel) this.findParent(ListMenuPanel.class);
-    ((EFapsSession) this.getSession()).removeFromCache(listmenupanel
-        .getMenuKey());
-    listmenupanel.setOutputMarkupId(true);
+    MenuTree menutree = (MenuTree) findParent(MenuTree.class);
+
     // update the Content
-    MenuItemModel model = (MenuItemModel) super.getModel();
-    MenuItemModel rootModel =
-        (MenuItemModel) ((List<?>) model.getAncestor().getObject()).get(0);
-    CommandAbstract cmd = rootModel.getCommand();
-    PageParameters para = new PageParameters();
-    para.add("oid", rootModel.getOid());
-    para.add("command", cmd.getUUID().toString());
+    MenuItemModel model = (MenuItemModel) this.node.getUserObject();
+    model.setStepInto(false);
+    MenuTree newMenuTree =
+        new MenuTree(menutree.getId(),
+            new DefaultTreeModel(model.getAncestor()), menutree.getMenuKey());
 
-    InlineFrame page;
-    if (cmd.getTargetTable() != null) {
-      page =
-          new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-              .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-              TablePage.class, para);
-    } else {
-      page =
-          new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
-              .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
-              FormPage.class, para);
-    }
+    menutree.replaceWith(newMenuTree);
 
-    InlineFrame component =
-        (InlineFrame) getPage().get(
-            ((ContentContainerPage) getPage()).getInlinePath());
-    page.setOutputMarkupId(true);
-
-    component.replaceWith(page);
-    _target.addComponent(page.getParent());
-
-    Rows row = (Rows) this.findParent(Rows.class);
-
-    row.removeAll();
-
-    row.setModel(model.getAncestor());
-
-    _target.addComponent(listmenupanel);
-    model.setAncestor(null);
+    newMenuTree.updateTree(_target);
+    // MenuItemModel rootModel =
+    // (MenuItemModel) ((List<?>) model.getAncestor().getObject()).get(0);
+    // CommandAbstract cmd = rootModel.getCommand();
+    // PageParameters para = new PageParameters();
+    // para.add("oid", rootModel.getOid());
+    // para.add("command", cmd.getUUID().toString());
+    //
+    // InlineFrame page;
+    // if (cmd.getTargetTable() != null) {
+    // page =
+    // new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+    // .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+    // TablePage.class, para);
+    // } else {
+    // page =
+    // new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+    // .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+    // FormPage.class, para);
+    // }
+    //
+    // InlineFrame component =
+    // (InlineFrame) getPage().get(
+    // ((ContentContainerPage) getPage()).getInlinePath());
+    // page.setOutputMarkupId(true);
+    //
+    // component.replaceWith(page);
+    // _target.addComponent(page.getParent());
+    //
+    // Rows row = (Rows) this.findParent(Rows.class);
+    //
+    // row.removeAll();
+    //
+    // row.setModel(model.getAncestor());
+    //
+    // _target.addComponent(listmenupanel);
+    // model.setAncestor(null);
   }
 
-  @Override
-  public StyleClassName getSelectedStyleClass() {
-    return StyleClassName.GOUP_SELECTED;
-  }
-
-  @Override
-  public StyleClassName getStyleClass() {
-    return StyleClassName.GOUP;
-  }
 }

@@ -27,12 +27,13 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 
 /**
- * This Class renders a Link wich removes a Child from a MenuTree
+ * This class renders a Link wich is used to collapse and expand the ChildItems
+ * of a Header inside a MenuTree.
  *
  * @author jmox
- * @version $Id:AjaxRemoveLink.java 1510 2007-10-18 14:35:40Z jmox $
+ * @version $Id:AjaxCollapseLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxRemoveLink extends AjaxLink {
+public class AjaxExpandLink extends AjaxLink {
 
   private static final long serialVersionUID = 1L;
 
@@ -44,7 +45,7 @@ public class AjaxRemoveLink extends AjaxLink {
    * @param _id
    * @param _model
    */
-  public AjaxRemoveLink(final String _id, final DefaultMutableTreeNode _node) {
+  public AjaxExpandLink(final String _id, final DefaultMutableTreeNode _node) {
     super(_id);
     this.node = _node;
   }
@@ -52,11 +53,17 @@ public class AjaxRemoveLink extends AjaxLink {
   @Override
   public void onClick(final AjaxRequestTarget _target) {
     MenuTree menutree = (MenuTree) findParent(MenuTree.class);
-    menutree.getTreeState().selectNode(this.node.getParent(), true);
-    ((DefaultTreeModel) menutree.getModelObject())
-        .removeNodeFromParent(this.node);
-    menutree.updateTree(_target);
+    if (menutree.getTreeState().isNodeExpanded(this.node)) {
+      menutree.getTreeState().collapseNode(this.node);
+      menutree.nodeCollapsed(this.node);
+    } else {
+      menutree.getTreeState().expandNode(this.node);
+      menutree.nodeExpanded(this.node);
+    }
 
+    ((DefaultTreeModel) menutree.getModelObject()).nodeChanged(this.node);
+
+    menutree.updateTree(_target);
   }
 
 }

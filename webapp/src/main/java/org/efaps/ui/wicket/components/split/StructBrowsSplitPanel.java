@@ -28,7 +28,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.efaps.ui.wicket.components.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.components.dojo.SplitContainerBehavior;
 import org.efaps.ui.wicket.components.dojo.SplitContainerBehavior.Orientation;
-import org.efaps.ui.wicket.components.listmenu.ListMenuPanel;
+import org.efaps.ui.wicket.components.listmenu.MenuTree;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
 
 /**
@@ -64,7 +64,7 @@ public class StructBrowsSplitPanel extends Panel {
     final WebMarkupContainer menuact = new WebMarkupContainer("menuact");
     menuact.setOutputMarkupId(true);
     bottom.add(menuact);
-    menuact.add(new ListMenuPanel("menu", _listmenukey, _parameters, true));
+    menuact.add(new MenuTree("menu", _parameters, _listmenukey));
 
   }
 

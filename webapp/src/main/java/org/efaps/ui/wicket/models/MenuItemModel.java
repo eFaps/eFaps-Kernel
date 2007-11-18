@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.models;
@@ -25,8 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeModel;
+
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.CommandAbstract;
@@ -40,7 +43,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 
 /**
  * @author tmo
- * @version $Id$
+ * @version $Id:MenuItemModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class MenuItemModel extends AbstractModel {
 
@@ -68,19 +71,38 @@ public class MenuItemModel extends AbstractModel {
   /** Url of this menu item. */
   private String url;
 
-  private int level = 0;
-
-  private IModel ancestor;
-
   private boolean header = false;
 
-  private boolean selected = false;
+  private boolean defaultSelected = false;
 
   private boolean askUser = false;
 
   private int windowWidth;
 
   private int windowHeight;
+
+  private boolean stepInto;
+
+  private DefaultMutableTreeNode ancestor;
+
+  /**
+   * This is the getter method for the instance variable {@link #stepInto}.
+   *
+   * @return value of instance variable {@link #stepInto}
+   */
+  public boolean isStepInto() {
+    return this.stepInto;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #stepInto}.
+   *
+   * @param stepInto
+   *                the stepInto to set
+   */
+  public void setStepInto(boolean stepInto) {
+    this.stepInto = stepInto;
+  }
 
   public MenuItemModel(final UUID _uuid) {
     this(_uuid, null);
@@ -101,7 +123,7 @@ public class MenuItemModel extends AbstractModel {
     this.askUser = _command.isAskUser();
     this.windowHeight = _command.getWindowHeight();
     this.windowWidth = _command.getWindowWidth();
-    this.selected = _command.isDefaultSelected();
+    this.defaultSelected = _command.isDefaultSelected();
     this.description = "";
     this.label = "";
 
@@ -137,23 +159,16 @@ public class MenuItemModel extends AbstractModel {
     }
   }
 
-  public void setLevel(final int _level) {
-    this.level = _level;
-  }
-
-  public int getLevel() {
-    return this.level;
-  }
-
   public String getImage() {
     return this.image;
   }
 
   public String getTypeImage() {
     String ret = null;
-    if (super.getOid() != null)  {
-      final Image image = Image.getTypeIcon(new Instance(super.getOid()).getType());
-      if (image != null)  {
+    if (super.getOid() != null) {
+      final Image image =
+          Image.getTypeIcon(new Instance(super.getOid()).getType());
+      if (image != null) {
         ret = image.getUrl();
       }
     }
@@ -207,26 +222,6 @@ public class MenuItemModel extends AbstractModel {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #ancestor}.
-   *
-   * @return value of instance variable {@link #ancestor}
-   */
-
-  public IModel getAncestor() {
-    return this.ancestor;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #ancestor}.
-   *
-   * @param ancestor
-   *                the ancestor to set
-   */
-  public void setAncestor(IModel ancestor) {
-    this.ancestor = ancestor;
-  }
-
-  /**
    * This is the getter method for the instance variable {@link #description}.
    *
    * @return value of instance variable {@link #description}
@@ -257,23 +252,13 @@ public class MenuItemModel extends AbstractModel {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #selected}.
+   * This is the getter method for the instance variable
+   * {@link #defaultSelected}.
    *
-   * @return value of instance variable {@link #selected}
+   * @return value of instance variable {@link #defaultSelected}
    */
-
-  public boolean isSelected() {
-    return this.selected;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #selected}.
-   *
-   * @param selected
-   *                the selected to set
-   */
-  public void setSelected(boolean selected) {
-    this.selected = selected;
+  public boolean isDefaultSelected() {
+    return this.defaultSelected;
   }
 
   /**
@@ -309,6 +294,60 @@ public class MenuItemModel extends AbstractModel {
   @Override
   public void resetModel() {
 
+  }
+
+  /**
+   * get the TreeModel used in the Component to construct the actuall tree
+   *
+   * @see #addNode(DefaultMutableTreeNode, List)
+   * @return TreeModel of this StructurBrowseModel
+   */
+  public TreeModel getTreeModel() {
+    DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
+    this.setHeader(true);
+    addNode(rootNode, this.childs);
+    TreeModel model = new DefaultTreeModel(rootNode);
+    return model;
+  }
+
+  public DefaultMutableTreeNode getNode() {
+    DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
+    this.setHeader(true);
+    addNode(rootNode, this.childs);
+    return rootNode;
+  }
+
+  /**
+   * recursive method used to fill the TreeModel
+   *
+   * @see #getTreeModel()
+   * @param parent
+   *                ParentNode children schould be added
+   * @param childs
+   *                List<StructurBrowserModel>to be added as childs
+   */
+  private void addNode(DefaultMutableTreeNode parent, List<MenuItemModel> childs) {
+    for (int i = 0; i < childs.size(); i++) {
+      DefaultMutableTreeNode childNode =
+          new DefaultMutableTreeNode(childs.get(i));
+      parent.add(childNode);
+      if (childs.get(i).hasChilds()) {
+        addNode(childNode, childs.get(i).childs);
+      }
+    }
+  }
+
+  public void setAncestor(final DefaultMutableTreeNode _node) {
+    this.ancestor = _node;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #ancestor}.
+   *
+   * @return value of instance variable {@link #ancestor}
+   */
+  public DefaultMutableTreeNode getAncestor() {
+    return this.ancestor;
   }
 
   // ///////////////////////////////////////////////////////////////////////////

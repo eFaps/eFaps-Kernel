@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.tree;
@@ -40,7 +40,8 @@ import org.apache.wicket.markup.html.tree.ITreeState;
 
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
-import org.efaps.ui.wicket.components.listmenu.ListMenuUpdate;
+import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.components.listmenu.MenuTree;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -48,8 +49,7 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
 /**
  * @author jmox
- * @version $Id$
- *
+ * @version $Id:StructurBrowserTree.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class StructurBrowserTree extends Tree {
 
@@ -187,8 +187,16 @@ public class StructurBrowserTree extends Tree {
         final PageParameters parameter2 = new PageParameters();
         parameter2.add("oid", model.getOid());
         parameter2.put("command", model.getCommand().getUUID().toString());
-        ListMenuUpdate.newMenu(_target, ((ContentContainerPage) getPage())
-            .getListMenuKey(), parameter2);
+
+        MenuTree menutree =
+            (MenuTree) ((EFapsSession) getSession())
+                .getFromCache(StructurBrowserTree.this.listMenuKey);
+
+        MenuTree newmenutree =
+            new MenuTree(menutree.getId(), parameter2, menutree.getMenuKey());
+
+        menutree.replaceWith(newmenutree);
+        newmenutree.updateTree(_target);
 
       }
 
