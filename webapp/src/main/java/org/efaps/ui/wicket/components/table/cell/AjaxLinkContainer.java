@@ -34,7 +34,7 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.AbstractAjaxCallBackBehavior;
-import org.efaps.ui.wicket.components.listmenu.MenuTree;
+import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.models.CellModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;

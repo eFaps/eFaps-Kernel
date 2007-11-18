@@ -41,7 +41,7 @@ import org.apache.wicket.markup.html.tree.ITreeState;
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.components.listmenu.MenuTree;
+import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;

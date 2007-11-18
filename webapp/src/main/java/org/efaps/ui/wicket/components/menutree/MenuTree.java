@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components.listmenu;
+package org.efaps.ui.wicket.components.menutree;
 
 import java.io.Serializable;
 import java.util.Enumeration;

@@ -18,22 +18,21 @@
  * Last Changed By: $Author:jmox $
  */
 
-package org.efaps.ui.wicket.components.listmenu;
+package org.efaps.ui.wicket.components.menutree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 
-import org.efaps.ui.wicket.models.MenuItemModel;
-
 /**
+ * This Class renders a Link wich removes a Child from a MenuTree
+ *
  * @author jmox
- * @version $Id:AjaxGoUpLink.java 1510 2007-10-18 14:35:40Z jmox $
+ * @version $Id:AjaxRemoveLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxGoUpLink extends AjaxLink {
+public class AjaxRemoveLink extends AjaxLink {
 
   private static final long serialVersionUID = 1L;
 
@@ -45,7 +44,7 @@ public class AjaxGoUpLink extends AjaxLink {
    * @param _id
    * @param _model
    */
-  public AjaxGoUpLink(final String _id, final DefaultMutableTreeNode _node) {
+  public AjaxRemoveLink(final String _id, final DefaultMutableTreeNode _node) {
     super(_id);
     this.node = _node;
   }
@@ -53,19 +52,11 @@ public class AjaxGoUpLink extends AjaxLink {
   @Override
   public void onClick(final AjaxRequestTarget _target) {
     MenuTree menutree = (MenuTree) findParent(MenuTree.class);
-    TreeNode selected =
-        (TreeNode) menutree.getTreeState().getSelectedNodes().iterator().next();
-
-    MenuItemModel model = (MenuItemModel) this.node.getUserObject();
-    model.setStepInto(false);
-    MenuTree newMenuTree =
-        new MenuTree(menutree.getId(),
-            new DefaultTreeModel(model.getAncestor()), menutree.getMenuKey());
-
-    menutree.replaceWith(newMenuTree);
-
-    newMenuTree.getTreeState().selectNode(selected, true);
-    newMenuTree.updateTree(_target);
+    menutree.getTreeState().selectNode(this.node.getParent(), true);
+    ((DefaultTreeModel) menutree.getModelObject())
+        .removeNodeFromParent(this.node);
+    menutree.updateTree(_target);
 
   }
+
 }

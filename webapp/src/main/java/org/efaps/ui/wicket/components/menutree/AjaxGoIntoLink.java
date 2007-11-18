@@ -18,7 +18,7 @@
  * Last Changed By: $Author:jmox $
  */
 
-package org.efaps.ui.wicket.components.listmenu;
+package org.efaps.ui.wicket.components.menutree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;

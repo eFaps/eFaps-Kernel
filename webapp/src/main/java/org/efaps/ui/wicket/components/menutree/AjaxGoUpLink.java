@@ -18,22 +18,22 @@
  * Last Changed By: $Author:jmox $
  */
 
-package org.efaps.ui.wicket.components.listmenu;
+package org.efaps.ui.wicket.components.menutree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 
+import org.efaps.ui.wicket.models.MenuItemModel;
+
 /**
- * This class renders a Link wich is used to collapse and expand the ChildItems
- * of a Header inside a MenuTree.
- *
  * @author jmox
- * @version $Id:AjaxCollapseLink.java 1510 2007-10-18 14:35:40Z jmox $
+ * @version $Id:AjaxGoUpLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxExpandLink extends AjaxLink {
+public class AjaxGoUpLink extends AjaxLink {
 
   private static final long serialVersionUID = 1L;
 
@@ -45,7 +45,7 @@ public class AjaxExpandLink extends AjaxLink {
    * @param _id
    * @param _model
    */
-  public AjaxExpandLink(final String _id, final DefaultMutableTreeNode _node) {
+  public AjaxGoUpLink(final String _id, final DefaultMutableTreeNode _node) {
     super(_id);
     this.node = _node;
   }
@@ -53,17 +53,19 @@ public class AjaxExpandLink extends AjaxLink {
   @Override
   public void onClick(final AjaxRequestTarget _target) {
     MenuTree menutree = (MenuTree) findParent(MenuTree.class);
-    if (menutree.getTreeState().isNodeExpanded(this.node)) {
-      menutree.getTreeState().collapseNode(this.node);
-      menutree.nodeCollapsed(this.node);
-    } else {
-      menutree.getTreeState().expandNode(this.node);
-      menutree.nodeExpanded(this.node);
-    }
+    TreeNode selected =
+        (TreeNode) menutree.getTreeState().getSelectedNodes().iterator().next();
 
-    ((DefaultTreeModel) menutree.getModelObject()).nodeChanged(this.node);
+    MenuItemModel model = (MenuItemModel) this.node.getUserObject();
+    model.setStepInto(false);
+    MenuTree newMenuTree =
+        new MenuTree(menutree.getId(),
+            new DefaultTreeModel(model.getAncestor()), menutree.getMenuKey());
 
-    menutree.updateTree(_target);
+    menutree.replaceWith(newMenuTree);
+
+    newMenuTree.getTreeState().selectNode(selected, true);
+    newMenuTree.updateTree(_target);
+
   }
-
 }
