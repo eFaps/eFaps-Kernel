@@ -13,3 +13,14 @@ tr.eFapsTableRowOdd {
   background-color: #ffffff;
 }
 
+.eFapsFilterSubmit {
+  float: left;
+}
+
+.eFapsFilterSubmit:hover {
+  cursor: pointer;
+}
+
+.eFapsFilterCancel {
+  float: left;
+}

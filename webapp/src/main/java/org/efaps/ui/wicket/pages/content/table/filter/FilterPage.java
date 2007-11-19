@@ -39,6 +39,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.TableModel;
 
@@ -53,11 +54,10 @@ public class FilterPage extends WebPage {
   private static String CHECKBOXNAME = "eFapsFilterSelection";
 
   public FilterPage(final TableModel _model,
-                         final ModalWindowContainer _modalwindow) {
+                    final ModalWindowContainer _modalwindow) {
     super(_model);
 
-    add(new StyleSheetReference("filtercss", getClass(),
-        "FilterPage.css"));
+    add(new StyleSheetReference("filtercss", getClass(), "FilterPage.css"));
 
     FormContainer form = new FormContainer("eFapsForm");
     this.add(form);
@@ -67,7 +67,7 @@ public class FilterPage extends WebPage {
 
     form.add(checksList);
 
-    AjaxButton ajaxbutton = new AjaxButton("submit", form) {
+    AjaxButton ajaxbutton = new AjaxButton(Button.LINKID, form) {
 
       private static final long serialVersionUID = 1L;
 
@@ -92,9 +92,11 @@ public class FilterPage extends WebPage {
 
       }
     };
-    form.add(ajaxbutton);
-    ajaxbutton.add(new Label("submitlabel", new Model("send")));
-    AjaxLink ajaxcancel = new AjaxLink("cancel") {
+
+    form
+        .add(new Button("submitButton", ajaxbutton, "send", Button.ICON_ACCEPT));
+
+    AjaxLink ajaxcancel = new AjaxLink(Button.LINKID) {
 
       private static final long serialVersionUID = 1L;
 
@@ -105,8 +107,9 @@ public class FilterPage extends WebPage {
 
       }
     };
-    form.add(ajaxcancel);
-    ajaxcancel.add(new Label("cancellabel", new Model("cancel")));
+
+    form
+        .add(new Button("closeButton", ajaxcancel, "cancel", Button.ICON_CANCEL));
   }
 
   public class ValueCheckBox extends FormComponent {
