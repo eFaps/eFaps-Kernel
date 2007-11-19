@@ -26,7 +26,7 @@ import org.apache.wicket.ResourceReference;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.markup.html.IHeaderResponse;
 
-public class AbstractDojoBehavior extends AbstractBehavior {
+public abstract class AbstractDojoBehavior extends AbstractBehavior {
 
   private static final long serialVersionUID = 1L;
 
@@ -38,7 +38,7 @@ public class AbstractDojoBehavior extends AbstractBehavior {
     response.renderCSSReference(DojoReference.CSS_TUNDRA);
   }
 
-  private String getConfigJavaScript(ResourceReference reference) {
+  protected String getConfigJavaScript(ResourceReference reference) {
     StringBuilder ret = new StringBuilder();
     ret.append("<script type=\"text/javascript\" ");
     ret.append("src=\"");
@@ -49,7 +49,9 @@ public class AbstractDojoBehavior extends AbstractBehavior {
     return ret.toString();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   *
    * @see org.apache.wicket.behavior.AbstractBehavior#beforeRender(org.apache.wicket.Component)
    */
   @Override

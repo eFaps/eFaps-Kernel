@@ -31,6 +31,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 
+import org.efaps.ui.wicket.components.dojo.ToolTip;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.SortDirection;
@@ -124,9 +125,10 @@ public class HeaderCellPanel extends Panel {
             " background-image: url(" + this.urlFor(ICON_FILTER) + ");"));
       }
       this.add(filterlink);
-
+      this.add(new ToolTip("tooltip"));
     } else {
       this.add(new WebComponent("filterlink").setVisible(false));
+      this.add(new WebComponent("tooltip").setVisible(false));
     }
   }
 
