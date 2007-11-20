@@ -35,3 +35,7 @@
 .dojoDndItemAfter {
   border-right: 4px solid red;
 }
+
+.dojoDndHandle {
+  cursor: pointer;
+}

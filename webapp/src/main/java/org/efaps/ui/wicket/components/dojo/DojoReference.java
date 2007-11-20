@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.dojo;
@@ -24,6 +24,13 @@ import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.html.resources.CompressedResourceReference;
 import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 
+/**
+ * This class provides static access to the ResourceReferences needed to use the
+ * DojoToolKit
+ *
+ * @author jmox
+ * @version $Id$
+ */
 public class DojoReference {
 
   public static final ResourceReference CSS_TUNDRA =

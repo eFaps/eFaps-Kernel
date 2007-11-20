@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.dojo;
@@ -23,8 +23,19 @@ package org.efaps.ui.wicket.components.dojo;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 
+/**
+ * This class turns a Component into a dojo SplitContainer.
+ *
+ * @author jmox
+ * @version $Id$
+ */
 public class SplitContainerBehavior extends AbstractDojoBehavior {
 
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * This enum is used to set the Orientation of this Splitcontainer
+   */
   public enum Orientation {
     HORIZONTAL("horizontal"),
     VERTICAL("vertical");
@@ -37,14 +48,24 @@ public class SplitContainerBehavior extends AbstractDojoBehavior {
 
   }
 
-  private static final long serialVersionUID = 1L;
-
+  /**
+   * This instance variable contains the Orientation of the Splitcontainer
+   */
   private Orientation orientation = Orientation.HORIZONTAL;
 
+  /**
+   * This instance variable contains the width of the sizer in Pixel
+   */
   private int sizerWidth = 5;
 
+  /**
+   * this instance variable sets, if activeSizingis activated or not
+   */
   private boolean activeSizing = false;
 
+  /**
+   * sets some additional Style
+   */
   private String style = "width: 100%; height: 100%;";
 
   @Override
@@ -63,7 +84,7 @@ public class SplitContainerBehavior extends AbstractDojoBehavior {
    * @param _orientation
    *                the orientation to set
    */
-  public void setOrientation(Orientation _orientation) {
+  public void setOrientation(final Orientation _orientation) {
     this.orientation = _orientation;
   }
 
@@ -73,7 +94,7 @@ public class SplitContainerBehavior extends AbstractDojoBehavior {
    * @param _sizerWidth
    *                the sizerWidth to set
    */
-  public void setSizerWidth(int _sizerWidth) {
+  public void setSizerWidth(final int _sizerWidth) {
     this.sizerWidth = _sizerWidth;
   }
 
@@ -83,7 +104,7 @@ public class SplitContainerBehavior extends AbstractDojoBehavior {
    * @param _activeSizing
    *                the activeSizing to set
    */
-  public void setActiveSizing(Boolean _activeSizing) {
+  public void setActiveSizing(final Boolean _activeSizing) {
     this.activeSizing = _activeSizing;
   }
 
@@ -93,7 +114,7 @@ public class SplitContainerBehavior extends AbstractDojoBehavior {
    * @param _style
    *                the style to set
    */
-  public void setStyle(String _style) {
+  public void setStyle(final String _style) {
     this.style = _style;
   }
 

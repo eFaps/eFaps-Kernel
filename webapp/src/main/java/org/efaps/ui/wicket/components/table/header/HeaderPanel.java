@@ -29,8 +29,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.behavior.StringHeaderContributor;
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -46,10 +44,13 @@ import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.UserAttributeKey;
+import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
+ * This class renders the Header of a Table
+ *
  * @author jmox
  * @version $Id:TableHeaderPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
@@ -66,12 +67,15 @@ public class HeaderPanel extends Panel {
   public HeaderPanel(final String _id, final TableModel _model) {
     super(_id, _model);
 
-    this.add(new AjaxStoreColumnWidth());
-    this.add(new AjaxStoreColumnOrder());
+    this.add(new AjaxStoreColumnWidthBehavior());
+    this.add(new AjaxStoreColumnOrderBehavior());
+    this.add(new AjaxReloadTableBehavior());
 
-    DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior();
+    final DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior();
     dndBehavior.setHorizontal(true);
     dndBehavior.setHandles(true);
+    dndBehavior
+        .setAppendJavaScript("storeColumnOrder(getColumnOrder());\n reloadTable();\n");
     this.add(dndBehavior);
 
     this.setMarkupId("eFapsTableHeader");
@@ -167,33 +171,12 @@ public class HeaderPanel extends Panel {
         JavascriptUtils.SCRIPT_OPEN_TAG
             + "  window.onresize = positionTableColumns;\n"
             + "  window.onload = positionTableColumns;\n"
-            + ((AjaxStoreColumnWidth) this.getBehaviors(
-                AjaxStoreColumnWidth.class).get(0)).getJavaScript()
-            + "  var subcription;"
-            + "  dojo.subscribe(\"/dnd/start\", function(source,nodes,iscopy){"
-            + "    source.copyState=function(keyPressed){return false};"
-            + "    subcription = dojo.subscribe(\"/dnd/drop\", function(source,nodes,iscopy){"
-            + "     getColumnOrder();"
-            + "      dojo.unsubscribe(subcription);"
-            + "    });"
-            + "  });"
-            + "  dojo.subscribe(\"/dnd/cancel\", function(){"
-            + "    dojo.unsubscribe(subcription);"
-            + "  });"
-            + "  function getColumnOrder(){\n"
-            + "    var header = document.getElementById(\"eFapsTableHeader\");\n"
-            + "    var celldivs = header.getElementsByTagName(\"div\");\n"
-            + "var ids=\"\";"
-            + "    for(i = 0;i<celldivs.length;i++){"
-            + "      if(celldivs[i].className.indexOf(\"eFapsCellFixedWidth\") > -1 || "
-            + "              celldivs[i].className.indexOf(\"eFapsCellWidth\") > -1){"
-            + "      ids+=celldivs[i].id + \";\";"
-            + "      }"
-            + "    }"
-            + "storeColumnOrder(ids);"
-            + "  }"
-            + ((AjaxStoreColumnOrder) this.getBehaviors(
-                AjaxStoreColumnOrder.class).get(0)).getJavaScript()
+            + ((AjaxStoreColumnWidthBehavior) this.getBehaviors(
+                AjaxStoreColumnWidthBehavior.class).get(0)).getJavaScript()
+            + ((AjaxStoreColumnOrderBehavior) this.getBehaviors(
+                AjaxStoreColumnOrderBehavior.class).get(0)).getJavaScript()
+            + ((AjaxReloadTableBehavior) this.getBehaviors(
+                AjaxReloadTableBehavior.class).get(0)).getJavaScript()
             + JavascriptUtils.SCRIPT_CLOSE_TAG;
 
     return ret;
@@ -225,40 +208,7 @@ public class HeaderPanel extends Panel {
 
   }
 
-  public class Seperator extends WebComponent {
-
-    private static final long serialVersionUID = 1L;
-
-    private final int id;
-
-    public Seperator(final String _wicketId, final int _outputid) {
-      super(_wicketId);
-      this.id = _outputid;
-      this
-          .add(new SimpleAttributeModifier("class", "eFapsTableHeaderSeperator"));
-      this.add(new SimpleAttributeModifier("onmousedown",
-          "beginColumnSize(this,event)"));
-
-      this.add(new SimpleAttributeModifier("onmouseup",
-          "endColumnSize(this,event)"));
-
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.wicket.Component#onComponentTag(org.apache.wicket.markup.ComponentTag)
-     */
-    @Override
-    protected void onComponentTag(final ComponentTag _tag) {
-      super.onComponentTag(_tag);
-      _tag.put("id", this.id + "eFapsHeaderSeperator");
-      _tag.setName("span");
-    }
-
-  }
-
-  public class AjaxStoreColumnWidth extends AbstractDefaultAjaxBehavior {
+  public class AjaxStoreColumnWidthBehavior extends AbstractDefaultAjaxBehavior {
 
     private static final long serialVersionUID = 1L;
 
@@ -293,7 +243,7 @@ public class HeaderPanel extends Panel {
     }
   }
 
-  public class AjaxStoreColumnOrder extends AbstractDefaultAjaxBehavior {
+  public class AjaxStoreColumnOrderBehavior extends AbstractDefaultAjaxBehavior {
 
     private static final long serialVersionUID = 1L;
 
@@ -320,6 +270,26 @@ public class HeaderPanel extends Panel {
               COLUMNORDER_PARAMETERNAME);
 
       ((TableModel) this.getComponent().getModel()).setColumnOrder(order);
+
+    }
+  }
+
+  public class AjaxReloadTableBehavior extends AbstractDefaultAjaxBehavior {
+
+    private static final long serialVersionUID = 1L;
+
+    public String getJavaScript() {
+      final StringBuilder ret = new StringBuilder();
+      ret.append("  function reloadTable(){\n    ").append(getCallbackScript())
+          .append("\n  }\n");
+      return ret.toString();
+    }
+
+    @Override
+    protected void respond(final AjaxRequestTarget _target) {
+      final TableModel model = (TableModel) this.getComponent().getModel();
+      model.resetModel();
+      this.getComponent().setResponsePage(new TablePage(model));
 
     }
   }

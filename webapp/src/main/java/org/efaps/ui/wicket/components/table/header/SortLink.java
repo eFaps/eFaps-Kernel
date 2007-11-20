@@ -28,6 +28,8 @@ import org.efaps.ui.wicket.models.TableModel.SortDirection;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
 /**
+ * This class renders the SortLink for the Header
+ *
  * @author jmox
  * @version $Id:SortLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */

@@ -26,23 +26,42 @@ import org.apache.wicket.ResourceReference;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.markup.html.IHeaderResponse;
 
+/**
+ * This class renders the Links for the JavaScripts in the Head for Behaviors
+ * using Dojo.
+ *
+ * @author jmox
+ * @version $Id$
+ */
 public abstract class AbstractDojoBehavior extends AbstractBehavior {
 
   private static final long serialVersionUID = 1L;
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.behavior.AbstractBehavior#renderHead(org.apache.wicket.markup.html.IHeaderResponse)
+   */
   @Override
-  public void renderHead(IHeaderResponse response) {
-    super.renderHead(response);
-    response.renderString(getConfigJavaScript(DojoReference.JS_DOJO));
-    response.renderString(getConfigJavaScript(DojoReference.JS_EFAPSDOJO));
-    response.renderCSSReference(DojoReference.CSS_TUNDRA);
+  public void renderHead(final IHeaderResponse _response) {
+    super.renderHead(_response);
+    _response.renderString(getConfigJavaScript(DojoReference.JS_DOJO));
+    _response.renderString(getConfigJavaScript(DojoReference.JS_EFAPSDOJO));
+    _response.renderCSSReference(DojoReference.CSS_TUNDRA);
   }
 
-  protected String getConfigJavaScript(ResourceReference reference) {
-    StringBuilder ret = new StringBuilder();
+  /**
+   * method to create the tag for linking JavaScript
+   *
+   * @param _reference
+   *                ResourceReference to be linked
+   * @return scriptLink width extension djConfig="parseOnLoad:true"
+   */
+  protected String getConfigJavaScript(final ResourceReference _reference) {
+    final StringBuilder ret = new StringBuilder();
     ret.append("<script type=\"text/javascript\" ");
     ret.append("src=\"");
-    ret.append(RequestCycle.get().urlFor(reference));
+    ret.append(RequestCycle.get().urlFor(_reference));
     ret.append("\"");
     ret.append(" djConfig=\"parseOnLoad: true\"");
     ret.append("></script>\n");
@@ -55,8 +74,8 @@ public abstract class AbstractDojoBehavior extends AbstractBehavior {
    * @see org.apache.wicket.behavior.AbstractBehavior#beforeRender(org.apache.wicket.Component)
    */
   @Override
-  public void beforeRender(Component component) {
-    component.setOutputMarkupId(true);
-    super.beforeRender(component);
+  public void beforeRender(final Component _component) {
+    super.beforeRender(_component);
+    _component.setOutputMarkupId(true);
   }
 }

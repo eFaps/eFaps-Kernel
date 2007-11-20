@@ -37,6 +37,8 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.SortDirection;
 
 /**
+ * This class renders the Cells inside a Header, providing all necessary Links
+ *
  * @author jmox
  * @version $Id$
  */
@@ -112,13 +114,13 @@ public class HeaderCellPanel extends Panel {
             .add(new AttributeAppender("style", new Model("width:80%"), ";"));
       }
       this.add(sortlink);
-      Label sortlabel = new Label("sortlabel", _model.getLabel());
+      final Label sortlabel = new Label("sortlabel", _model.getLabel());
       sortlabel.add(DnDBehavior.getHandleBehavior());
       sortlink.add(sortlabel);
       this.add(new WebComponent("label").setVisible(false));
     } else {
       this.add(new WebMarkupContainer("sortlink").setVisible(false));
-      Label label = new Label("label", _model.getLabel());
+      final Label label = new Label("label", _model.getLabel());
       label.add(DnDBehavior.getHandleBehavior());
       this.add(label);
     }
@@ -157,7 +159,7 @@ public class HeaderCellPanel extends Panel {
   protected void onAfterRender() {
     super.onAfterRender();
     if (this.getModel() != null) {
-      HeaderModel headermodel = (HeaderModel) this.getModel();
+      final HeaderModel headermodel = (HeaderModel) this.getModel();
       headermodel.setMarkupId(this.getMarkupId());
     }
   }

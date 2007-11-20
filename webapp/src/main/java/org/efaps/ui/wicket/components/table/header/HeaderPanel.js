@@ -169,3 +169,16 @@ function endColumnSize(_seperator,_event){
 function cancelColumnSize(_event){
   endColumnSize(seperator,_event);
 }
+
+function getColumnOrder(){
+  var header = document.getElementById("eFapsTableHeader");
+  var celldivs = header.getElementsByTagName("div");
+  var ids="";
+  for(i = 0;i<celldivs.length;i++){
+    if(celldivs[i].className.indexOf("eFapsCellFixedWidth") > -1 || 
+              celldivs[i].className.indexOf("eFapsCellWidth") > -1){
+      ids += celldivs[i].id + ";";
+    }
+  }
+  return ids;
+}

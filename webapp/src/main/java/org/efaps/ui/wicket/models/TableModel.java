@@ -350,6 +350,16 @@ public class TableModel extends AbstractModel {
     }
   }
 
+  /**
+   * this method looks if for this TableModel a UserAttribute for the sorting of
+   * the Columns exist. If they exist the Fields will be sorted as defined by
+   * the User. If no definition of the User exist the Original default sorting
+   * of the columns will be used. In the Case that the Definition of the Table
+   * was altered Field wich are not sorted yet will be sorted in at the last
+   * position.
+   *
+   * @return
+   */
   private List<Field> getUserSortedColumns() {
     List<Field> fields = this.getTable().getFields();
     List<Field> ret = new ArrayList<Field>();
@@ -801,8 +811,8 @@ public class TableModel extends AbstractModel {
           getUserAttributeKey(UserAttributeKey.COLUMNORDER),
           columnOrder.toString());
     } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      // we don't throw an error because this are only Usersettings
+      LOG.error("error during the setting of UserAttributes", e);
     }
   }
 
