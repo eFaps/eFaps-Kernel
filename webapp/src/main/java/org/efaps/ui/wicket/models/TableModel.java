@@ -113,7 +113,8 @@ public class TableModel extends AbstractModel {
   public static enum UserAttributeKey {
     SORTDIRECTION("sortDirection"),
     SORTKEY("sortKey"),
-    COLUMNWIDTH("columnWidths");
+    COLUMNWIDTH("columnWidths"),
+    COLUMNORDER("columnOrder");
 
     public String value;
 
@@ -309,8 +310,10 @@ public class TableModel extends AbstractModel {
       final ListQuery query = new ListQuery(instances);
       final List<Integer> userWidths = getUserWidths();
 
-      for (int i = 0; i < this.getTable().getFields().size(); i++) {
-        final Field field = this.getTable().getFields().get(i);
+      List<Field> fields = getUserSortedColumns();
+
+      for (int i = 0; i < fields.size(); i++) {
+        final Field field = fields.get(i);
         if (field.getExpression() != null) {
           query.addSelect(field.getExpression());
         }
@@ -336,7 +339,7 @@ public class TableModel extends AbstractModel {
       }
       query.execute();
 
-      this.executeRowResult(instMapper, query);
+      this.executeRowResult(instMapper, query, fields);
 
       if (this.sortKey != null) {
         this.sort();
@@ -345,6 +348,43 @@ public class TableModel extends AbstractModel {
     } catch (Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
+  }
+
+  private List<Field> getUserSortedColumns() {
+    List<Field> fields = this.getTable().getFields();
+    List<Field> ret = new ArrayList<Field>();
+    try {
+      if (Context.getThreadContext().containsUserAtribute(
+          getUserAttributeKey(UserAttributeKey.COLUMNORDER))) {
+
+        String columnOrder =
+            Context.getThreadContext().getUserAttribute(
+                getUserAttributeKey(UserAttributeKey.COLUMNORDER));
+
+        final StringTokenizer tokens = new StringTokenizer(columnOrder, ";");
+        while (tokens.hasMoreTokens()) {
+          String fieldname = tokens.nextToken();
+          for (int i = 0; i < fields.size(); i++) {
+            if (fieldname.equals(fields.get(i).getName())) {
+              ret.add(fields.get(i));
+              fields.remove(i);
+            }
+          }
+        }
+        if (!fields.isEmpty()) {
+          for (Field field : fields) {
+            ret.add(field);
+          }
+        }
+
+      } else {
+        ret = fields;
+      }
+      return ret;
+    } catch (EFapsException e) {
+      e.printStackTrace();
+    }
+    return fields;
   }
 
   /**
@@ -356,7 +396,7 @@ public class TableModel extends AbstractModel {
    */
   private void executeRowResult(
                                 final Map<Instance, List<Instance>> _instMapper,
-                                final ListQuery _query) {
+                                final ListQuery _query, List<Field> _fields) {
     try {
       while (_query.next()) {
 
@@ -377,7 +417,7 @@ public class TableModel extends AbstractModel {
 
         String strValue = "";
         String oid = "";
-        for (Field field : this.getTable().getFields()) {
+        for (Field field : _fields) {
           Object value = null;
 
           if (field.getExpression() != null) {
@@ -742,6 +782,28 @@ public class TableModel extends AbstractModel {
    */
   public boolean isUserSetWidth() {
     return this.userWidths;
+  }
+
+  public void setColumnOrder(final String _markupsIds) {
+    final StringTokenizer tokens = new StringTokenizer(_markupsIds, ";");
+    StringBuilder columnOrder = new StringBuilder();
+    while (tokens.hasMoreTokens()) {
+      String markupId = tokens.nextToken();
+      for (HeaderModel header : this.headers) {
+        if (markupId.equals(header.getMarkupId())) {
+          columnOrder.append(header.getName()).append(";");
+          break;
+        }
+      }
+    }
+    try {
+      Context.getThreadContext().setUserAttribute(
+          getUserAttributeKey(UserAttributeKey.COLUMNORDER),
+          columnOrder.toString());
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   /**

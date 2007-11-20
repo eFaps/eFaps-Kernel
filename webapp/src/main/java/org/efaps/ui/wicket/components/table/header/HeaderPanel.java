@@ -39,6 +39,7 @@ import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.db.Context;
+import org.efaps.ui.wicket.components.dojo.DnDBehavior;
 import org.efaps.ui.wicket.components.dojo.DojoReference;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
@@ -62,15 +63,19 @@ public class HeaderPanel extends Panel {
   public static final JavascriptResourceReference JAVASCRIPT =
       new JavascriptResourceReference(HeaderPanel.class, "HeaderPanel.js");
 
-  private final AjaxStoreColumnWidth ajaxstore;
-
   public HeaderPanel(final String _id, final TableModel _model) {
     super(_id, _model);
 
-    this.ajaxstore = new AjaxStoreColumnWidth();
+    this.add(new AjaxStoreColumnWidth());
+    this.add(new AjaxStoreColumnOrder());
+
+    DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior();
+    dndBehavior.setHorizontal(true);
+    dndBehavior.setHandles(true);
+    this.add(dndBehavior);
 
     this.setMarkupId("eFapsTableHeader");
-    this.add(this.ajaxstore);
+
     final int browserWidth =
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
             .getBrowserWidth();
@@ -81,6 +86,7 @@ public class HeaderPanel extends Panel {
     if (_model.isShowCheckBoxes()) {
       final HeaderCellPanel cell =
           new HeaderCellPanel(cellRepeater.newChildId());
+      cell.setOutputMarkupId(true);
       cellRepeater.add(cell);
       i++;
     }
@@ -117,7 +123,10 @@ public class HeaderPanel extends Panel {
             + "px;}\n");
         cell.add(new SimpleAttributeModifier("class",
             "eFapsTableHeaderCell eFapsCellWidth" + i));
+
+        cell.add(DnDBehavior.getItemBehavior());
       }
+      cell.setOutputMarkupId(true);
       cellRepeater.add(cell);
 
       if (j + 1 < _model.getHeaders().size() && !headermodel.isFixedWidth()) {
@@ -152,13 +161,39 @@ public class HeaderPanel extends Panel {
     return this.modal;
   }
 
-  private String getScript(final AjaxStoreColumnWidth _ajaxstore) {
+  private String getScript() {
 
     final String ret =
         JavascriptUtils.SCRIPT_OPEN_TAG
             + "  window.onresize = positionTableColumns;\n"
             + "  window.onload = positionTableColumns;\n"
-            + _ajaxstore.getJavaScript()
+            + ((AjaxStoreColumnWidth) this.getBehaviors(
+                AjaxStoreColumnWidth.class).get(0)).getJavaScript()
+            + "  var subcription;"
+            + "  dojo.subscribe(\"/dnd/start\", function(source,nodes,iscopy){"
+            + "    source.copyState=function(keyPressed){return false};"
+            + "    subcription = dojo.subscribe(\"/dnd/drop\", function(source,nodes,iscopy){"
+            + "     getColumnOrder();"
+            + "      dojo.unsubscribe(subcription);"
+            + "    });"
+            + "  });"
+            + "  dojo.subscribe(\"/dnd/cancel\", function(){"
+            + "    dojo.unsubscribe(subcription);"
+            + "  });"
+            + "  function getColumnOrder(){\n"
+            + "    var header = document.getElementById(\"eFapsTableHeader\");\n"
+            + "    var celldivs = header.getElementsByTagName(\"div\");\n"
+            + "var ids=\"\";"
+            + "    for(i = 0;i<celldivs.length;i++){"
+            + "      if(celldivs[i].className.indexOf(\"eFapsCellFixedWidth\") > -1 || "
+            + "              celldivs[i].className.indexOf(\"eFapsCellWidth\") > -1){"
+            + "      ids+=celldivs[i].id + \";\";"
+            + "      }"
+            + "    }"
+            + "storeColumnOrder(ids);"
+            + "  }"
+            + ((AjaxStoreColumnOrder) this.getBehaviors(
+                AjaxStoreColumnOrder.class).get(0)).getJavaScript()
             + JavascriptUtils.SCRIPT_CLOSE_TAG;
 
     return ret;
@@ -185,8 +220,9 @@ public class HeaderPanel extends Panel {
    */
   @Override
   protected void onBeforeRender() {
-    this.add(new StringHeaderContributor(getScript(this.ajaxstore)));
+    this.add(new StringHeaderContributor(getScript()));
     super.onBeforeRender();
+
   }
 
   public class Seperator extends WebComponent {
@@ -254,6 +290,37 @@ public class HeaderPanel extends Panel {
       } catch (EFapsException e) {
         throw new RestartResponseException(new ErrorPage(e));
       }
+    }
+  }
+
+  public class AjaxStoreColumnOrder extends AbstractDefaultAjaxBehavior {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * String used as Variablename in the Javascript
+     */
+    public final static String COLUMNORDER_PARAMETERNAME = "eFapsColumnOrder";
+
+    public String getJavaScript() {
+      final StringBuilder ret = new StringBuilder();
+      ret.append("  function storeColumnOrder(_columnOrder){\n    ").append(
+          generateCallbackScript("wicketAjaxPost('"
+              + getCallbackUrl(false)
+              + "','"
+              + COLUMNORDER_PARAMETERNAME
+              + "=' + _columnOrder")).append("\n" + "  }\n");
+      return ret.toString();
+    }
+
+    @Override
+    protected void respond(final AjaxRequestTarget _target) {
+      final String order =
+          this.getComponent().getRequest().getParameter(
+              COLUMNORDER_PARAMETERNAME);
+
+      ((TableModel) this.getComponent().getModel()).setColumnOrder(order);
+
     }
   }
 }

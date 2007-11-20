@@ -17,3 +17,21 @@
   float: right;
 }
 
+.dojoDndAvatar {
+  border: 2px solid #ccc;
+  font-size: 75%;
+  -moz-border-radius: 8pt 8pt;
+  radius: 8pt;
+}
+
+.dojoDndAvatarHeader {
+  display: none;
+}
+
+.dojoDndAvatarItem {
+  background: #008800;
+}
+
+.dojoDndItemAfter {
+  border-right: 4px solid red;
+}

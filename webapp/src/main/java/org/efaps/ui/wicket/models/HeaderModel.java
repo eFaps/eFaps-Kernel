@@ -48,6 +48,9 @@ public class HeaderModel extends Model {
 
   private int width;
 
+  private String markupId;
+
+
   public HeaderModel(final Field _field, final SortDirection _sortdirection) {
     this.label = _field.getLabel();
     this.sortable = _field.isSortAble();
@@ -142,6 +145,28 @@ public class HeaderModel extends Model {
    */
   public boolean isFixedWidth() {
     return this.fixedWidth;
+  }
+
+
+  /**
+   * This is the getter method for the instance variable {@link #markupId}.
+   *
+   * @return value of instance variable {@link #markupId}
+   */
+  public String getMarkupId() {
+    return this.markupId;
+  }
+
+
+  /**
+   * This is the setter method for the instance variable
+   * {@link #markupId}.
+   *
+   * @param _markupId
+   *                the markupId to set
+   */
+  public void setMarkupId(final String _markupId) {
+    this.markupId = _markupId;
   }
 
 }

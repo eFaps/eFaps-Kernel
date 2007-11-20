@@ -31,7 +31,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 
-import org.efaps.ui.wicket.components.dojo.ToolTip;
+import org.efaps.ui.wicket.components.dojo.DnDBehavior;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.SortDirection;
@@ -56,6 +56,11 @@ public class HeaderCellPanel extends Panel {
   public static final ResourceReference ICON_SORTASC =
       new ResourceReference(HeaderPanel.class, "eFapsSortAscending.gif");
 
+  /**
+   * Constructor used to render only a CheckBoxCell
+   *
+   * @param _id
+   */
   public HeaderCellPanel(final String _id) {
     super(_id);
     this.add(new SimpleAttributeModifier("class",
@@ -67,6 +72,14 @@ public class HeaderCellPanel extends Panel {
     this.add(new WebComponent("filterlink").setVisible(false));
   }
 
+  /**
+   * Constructor used to render a Cell for the Header with (depending on the
+   * model) SortLink, Filterlink etc.
+   *
+   * @param _id
+   * @param _model
+   * @param _tablemodel
+   */
   public HeaderCellPanel(final String _id, final HeaderModel _model,
                          final TableModel _tablemodel) {
     super(_id, _model);
@@ -98,13 +111,16 @@ public class HeaderCellPanel extends Panel {
         sortlink
             .add(new AttributeAppender("style", new Model("width:80%"), ";"));
       }
-
       this.add(sortlink);
-      sortlink.add(new Label("sortlabel", _model.getLabel()));
+      Label sortlabel = new Label("sortlabel", _model.getLabel());
+      sortlabel.add(DnDBehavior.getHandleBehavior());
+      sortlink.add(sortlabel);
       this.add(new WebComponent("label").setVisible(false));
     } else {
       this.add(new WebMarkupContainer("sortlink").setVisible(false));
-      this.add(new Label("label", _model.getLabel()));
+      Label label = new Label("label", _model.getLabel());
+      label.add(DnDBehavior.getHandleBehavior());
+      this.add(label);
     }
 
     if (_model.isFilterable()) {
@@ -125,10 +141,24 @@ public class HeaderCellPanel extends Panel {
             " background-image: url(" + this.urlFor(ICON_FILTER) + ");"));
       }
       this.add(filterlink);
-      this.add(new ToolTip("tooltip"));
+
     } else {
       this.add(new WebComponent("filterlink").setVisible(false));
-      this.add(new WebComponent("tooltip").setVisible(false));
+
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.Component#onAfterRender()
+   */
+  @Override
+  protected void onAfterRender() {
+    super.onAfterRender();
+    if (this.getModel() != null) {
+      HeaderModel headermodel = (HeaderModel) this.getModel();
+      headermodel.setMarkupId(this.getMarkupId());
     }
   }
 

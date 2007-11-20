@@ -3991,6 +3991,563 @@ dojo.dnd.isFormElement = function(/*Event*/ e){
 
 }
 
+if(!dojo._hasResource["dojo.dnd.Container"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojo.dnd.Container"] = true;
+dojo.provide("dojo.dnd.Container");
+
+
+
+
+/*
+	Container states:
+		""		- normal state
+		"Over"	- mouse over a container
+	Container item states:
+		""		- normal state
+		"Over"	- mouse over a container item
+*/
+
+dojo.declare("dojo.dnd.Container", null, {
+	// summary: a Container object, which knows when mouse hovers over it, 
+	//	and know over which element it hovers
+	
+	// object attributes (for markup)
+	skipForm: false,
+	
+	constructor: function(node, params){
+		// summary: a constructor of the Container
+		// node: Node: node or node's id to build the container on
+		// params: Object: a dict of parameters, recognized parameters are:
+		//	creator: Function: a creator function, which takes a data item, and returns an object like that:
+		//		{node: newNode, data: usedData, type: arrayOfStrings}
+		//	skipForm: Boolean: don't start the drag operation, if clicked on form elements
+		//	_skipStartup: Boolean: skip startup(), which collects children, for deferred initialization
+		//		(this is used in the markup mode)
+		this.node = dojo.byId(node);
+		if(!params){ params = {}; }
+		this.creator = params.creator || null;
+		this.skipForm = params.skipForm;
+		this.defaultCreator = dojo.dnd._defaultCreator(this.node);
+
+		// class-specific variables
+		this.map = {};
+		this.current = null;
+
+		// states
+		this.containerState = "";
+		dojo.addClass(this.node, "dojoDndContainer");
+		
+		// mark up children
+		if(!(params && params._skipStartup)){
+			this.startup();
+		}
+
+		// set up events
+		this.events = [
+			dojo.connect(this.node, "onmouseover", this, "onMouseOver"),
+			dojo.connect(this.node, "onmouseout",  this, "onMouseOut"),
+			// cancel text selection and text dragging
+			dojo.connect(this.node, "ondragstart",   this, "onSelectStart"),
+			dojo.connect(this.node, "onselectstart", this, "onSelectStart")
+		];
+	},
+	
+	// object attributes (for markup)
+	creator: function(){},	// creator function, dummy at the moment
+	
+	// abstract access to the map
+	getItem: function(/*String*/ key){
+		// summary: returns a data item by its key (id)
+		return this.map[key];	// Object
+	},
+	setItem: function(/*String*/ key, /*Object*/ data){
+		// summary: associates a data item with its key (id)
+		this.map[key] = data;
+	},
+	delItem: function(/*String*/ key){
+		// summary: removes a data item from the map by its key (id)
+		delete this.map[key];
+	},
+	forInItems: function(/*Function*/ f, /*Object?*/ o){
+		// summary: iterates over a data map skipping members, which 
+		//	are present in the empty object (IE and/or 3rd-party libraries).
+		o = o || dojo.global;
+		var m = this.map, e = dojo.dnd._empty;
+		for(var i in this.map){
+			if(i in e){ continue; }
+			f.call(o, m[i], i, m);
+		}
+	},
+	clearItems: function(){
+		// summary: removes all data items from the map
+		this.map = {};
+	},
+	
+	// methods
+	getAllNodes: function(){
+		// summary: returns a list (an array) of all valid child nodes
+		return dojo.query("> .dojoDndItem", this.parent);	// NodeList
+	},
+	insertNodes: function(data, before, anchor){
+		// summary: inserts an array of new nodes before/after an anchor node
+		// data: Array: a list of data items, which should be processed by the creator function
+		// before: Boolean: insert before the anchor, if true, and after the anchor otherwise
+		// anchor: Node: the anchor node to be used as a point of insertion
+		if(!this.parent.firstChild){
+			anchor = null;
+		}else if(before){
+			if(!anchor){
+				anchor = this.parent.firstChild;
+			}
+		}else{
+			if(anchor){
+				anchor = anchor.nextSibling;
+			}
+		}
+		if(anchor){
+			for(var i = 0; i < data.length; ++i){
+				var t = this._normalizedCreator(data[i]);
+				this.setItem(t.node.id, {data: t.data, type: t.type});
+				this.parent.insertBefore(t.node, anchor);
+			}
+		}else{
+			for(var i = 0; i < data.length; ++i){
+				var t = this._normalizedCreator(data[i]);
+				this.setItem(t.node.id, {data: t.data, type: t.type});
+				this.parent.appendChild(t.node);
+			}
+		}
+		return this;	// self
+	},
+	destroy: function(){
+		// summary: prepares the object to be garbage-collected
+		dojo.forEach(this.events, dojo.disconnect);
+		this.clearItems();
+		this.node = this.parent = this.current;
+	},
+
+	// markup methods
+	markupFactory: function(params, node){
+		params._skipStartup = true;
+		return new dojo.dnd.Container(node, params);
+	},
+	startup: function(){
+		// summary: collects valid child items and populate the map
+		
+		// set up the real parent node
+		this.parent = this.node;
+		if(this.parent.tagName.toLowerCase() == "table"){
+			var c = this.parent.getElementsByTagName("tbody");
+			if(c && c.length){ this.parent = c[0]; }
+		}
+
+		// process specially marked children
+		dojo.query("> .dojoDndItem", this.parent).forEach(function(node){
+			if(!node.id){ node.id = dojo.dnd.getUniqueId(); }
+			var type = node.getAttribute("dndType"),
+				data = node.getAttribute("dndData");
+			this.setItem(node.id, {
+				data: data ? data : node.innerHTML,
+				type: type ? type.split(/\s*,\s*/) : ["text"]
+			});
+		}, this);
+	},
+
+	// mouse events
+	onMouseOver: function(e){
+		// summary: event processor for onmouseover
+		// e: Event: mouse event
+		var n = e.relatedTarget;
+		while(n){
+			if(n == this.node){ break; }
+			try{
+				n = n.parentNode;
+			}catch(x){
+				n = null;
+			}
+		}
+		if(!n){
+			this._changeState("Container", "Over");
+			this.onOverEvent();
+		}
+		n = this._getChildByEvent(e);
+		if(this.current == n){ return; }
+		if(this.current){ this._removeItemClass(this.current, "Over"); }
+		if(n){ this._addItemClass(n, "Over"); }
+		this.current = n;
+	},
+	onMouseOut: function(e){
+		// summary: event processor for onmouseout
+		// e: Event: mouse event
+		for(var n = e.relatedTarget; n;){
+			if(n == this.node){ return; }
+			try{
+				n = n.parentNode;
+			}catch(x){
+				n = null;
+			}
+		}
+		if(this.current){
+			this._removeItemClass(this.current, "Over");
+			this.current = null;
+		}
+		this._changeState("Container", "");
+		this.onOutEvent();
+	},
+	onSelectStart: function(e){
+		// summary: event processor for onselectevent and ondragevent
+		// e: Event: mouse event
+		if(!this.skipForm || !dojo.dnd.isFormElement(e)){
+			dojo.stopEvent(e);
+		}
+	},
+	
+	// utilities
+	onOverEvent: function(){
+		// summary: this function is called once, when mouse is over our container
+	},
+	onOutEvent: function(){
+		// summary: this function is called once, when mouse is out of our container
+	},
+	_changeState: function(type, newState){
+		// summary: changes a named state to new state value
+		// type: String: a name of the state to change
+		// newState: String: new state
+		var prefix = "dojoDnd" + type;
+		var state  = type.toLowerCase() + "State";
+		//dojo.replaceClass(this.node, prefix + newState, prefix + this[state]);
+		dojo.removeClass(this.node, prefix + this[state]);
+		dojo.addClass(this.node, prefix + newState);
+		this[state] = newState;
+	},
+	_addItemClass: function(node, type){
+		// summary: adds a class with prefix "dojoDndItem"
+		// node: Node: a node
+		// type: String: a variable suffix for a class name
+		dojo.addClass(node, "dojoDndItem" + type);
+	},
+	_removeItemClass: function(node, type){
+		// summary: removes a class with prefix "dojoDndItem"
+		// node: Node: a node
+		// type: String: a variable suffix for a class name
+		dojo.removeClass(node, "dojoDndItem" + type);
+	},
+	_getChildByEvent: function(e){
+		// summary: gets a child, which is under the mouse at the moment, or null
+		// e: Event: a mouse event
+		var node = e.target;
+		if(node){
+			for(var parent = node.parentNode; parent; node = parent, parent = node.parentNode){
+				if(parent == this.parent && dojo.hasClass(node, "dojoDndItem")){ return node; }
+			}
+		}
+		return null;
+	},
+	_normalizedCreator: function(item, hint){
+		// summary: adds all necessary data to the output of the user-supplied creator function
+		var t = (this.creator ? this.creator : this.defaultCreator)(item, hint);
+		if(!dojo.isArray(t.type)){ t.type = ["text"]; }
+		if(!t.node.id){ t.node.id = dojo.dnd.getUniqueId(); }
+		dojo.addClass(t.node, "dojoDndItem");
+		return t;
+	}
+});
+
+dojo.dnd._createNode = function(tag){
+	// summary: returns a function, which creates an element of given tag 
+	//	(SPAN by default) and sets its innerHTML to given text
+	// tag: String: a tag name or empty for SPAN
+	if(!tag){ return dojo.dnd._createSpan; }
+	return function(text){	// Function
+		var n = dojo.doc.createElement(tag);
+		n.innerHTML = text;
+		return n;
+	};
+};
+
+dojo.dnd._createTrTd = function(text){
+	// summary: creates a TR/TD structure with given text as an innerHTML of TD
+	// text: String: a text for TD
+	var tr = dojo.doc.createElement("tr");
+	var td = dojo.doc.createElement("td");
+	td.innerHTML = text;
+	tr.appendChild(td);
+	return tr;	// Node
+};
+
+dojo.dnd._createSpan = function(text){
+	// summary: creates a SPAN element with given text as its innerHTML
+	// text: String: a text for SPAN
+	var n = dojo.doc.createElement("span");
+	n.innerHTML = text;
+	return n;	// Node
+};
+
+// dojo.dnd._defaultCreatorNodes: Object: a dicitionary, which maps container tag names to child tag names
+dojo.dnd._defaultCreatorNodes = {ul: "li", ol: "li", div: "div", p: "div"};
+
+dojo.dnd._defaultCreator = function(node){
+	// summary: takes a container node, and returns an appropriate creator function
+	// node: Node: a container node
+	var tag = node.tagName.toLowerCase();
+	var c = tag == "table" ? dojo.dnd._createTrTd : dojo.dnd._createNode(dojo.dnd._defaultCreatorNodes[tag]);
+	return function(item, hint){	// Function
+		var isObj = dojo.isObject(item) && item;
+		var data = (isObj && item.data) ? item.data : item;
+		var type = (isObj && item.type) ? item.type : ["text"];
+		var t = String(data), n = (hint == "avatar" ? dojo.dnd._createSpan : c)(t);
+		n.id = dojo.dnd.getUniqueId();
+		return {node: n, data: data, type: type};
+	};
+};
+
+}
+
+if(!dojo._hasResource["dojo.dnd.Selector"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojo.dnd.Selector"] = true;
+dojo.provide("dojo.dnd.Selector");
+
+
+
+
+/*
+	Container item states:
+		""			- an item is not selected
+		"Selected"	- an item is selected
+		"Anchor"	- an item is selected, and is an anchor for a "shift" selection
+*/
+
+dojo.declare("dojo.dnd.Selector", dojo.dnd.Container, {
+	// summary: a Selector object, which knows how to select its children
+	
+	constructor: function(node, params){
+		// summary: a constructor of the Selector
+		// node: Node: node or node's id to build the selector on
+		// params: Object: a dict of parameters, recognized parameters are:
+		//	singular: Boolean: allows selection of only one element, if true
+		//	the rest of parameters are passed to the container
+		if(!params){ params = {}; }
+		this.singular = params.singular;
+		// class-specific variables
+		this.selection = {};
+		this.anchor = null;
+		this.simpleSelection = false;
+		// set up events
+		this.events.push(
+			dojo.connect(this.node, "onmousedown", this, "onMouseDown"),
+			dojo.connect(this.node, "onmouseup",   this, "onMouseUp"));
+	},
+	
+	// object attributes (for markup)
+	singular: false,	// is singular property
+	
+	// methods
+	getSelectedNodes: function(){
+		// summary: returns a list (an array) of selected nodes
+		var t = new dojo.NodeList();
+		var e = dojo.dnd._empty;
+		for(var i in this.selection){
+			if(i in e){ continue; }
+			t.push(dojo.byId(i));
+		}
+		return t;	// Array
+	},
+	selectNone: function(){
+		// summary: unselects all items
+		return this._removeSelection()._removeAnchor();	// self
+	},
+	selectAll: function(){
+		// summary: selects all items
+		this.forInItems(function(data, id){
+			this._addItemClass(dojo.byId(id), "Selected");
+			this.selection[id] = 1;
+		}, this);
+		return this._removeAnchor();	// self
+	},
+	deleteSelectedNodes: function(){
+		// summary: deletes all selected items
+		var e = dojo.dnd._empty;
+		for(var i in this.selection){
+			if(i in e){ continue; }
+			var n = dojo.byId(i);
+			this.delItem(i);
+			dojo._destroyElement(n);
+		}
+		this.anchor = null;
+		this.selection = {};
+		return this;	// self
+	},
+	insertNodes: function(addSelected, data, before, anchor){
+		// summary: inserts new data items (see Container's insertNodes method for details)
+		// addSelected: Boolean: all new nodes will be added to selected items, if true, no selection change otherwise
+		// data: Array: a list of data items, which should be processed by the creator function
+		// before: Boolean: insert before the anchor, if true, and after the anchor otherwise
+		// anchor: Node: the anchor node to be used as a point of insertion
+		var oldCreator = this._normalizedCreator;
+		this._normalizedCreator = function(item, hint){
+			var t = oldCreator.call(this, item, hint);
+			if(addSelected){
+				if(!this.anchor){
+					this.anchor = t.node;
+					this._removeItemClass(t.node, "Selected");
+					this._addItemClass(this.anchor, "Anchor");
+				}else if(this.anchor != t.node){
+					this._removeItemClass(t.node, "Anchor");
+					this._addItemClass(t.node, "Selected");
+				}
+				this.selection[t.node.id] = 1;
+			}else{
+				this._removeItemClass(t.node, "Selected");
+				this._removeItemClass(t.node, "Anchor");
+			}
+			return t;
+		};
+		dojo.dnd.Selector.superclass.insertNodes.call(this, data, before, anchor);
+		this._normalizedCreator = oldCreator;
+		return this;	// self
+	},
+	destroy: function(){
+		// summary: prepares the object to be garbage-collected
+		dojo.dnd.Selector.superclass.destroy.call(this);
+		this.selection = this.anchor = null;
+	},
+
+	// markup methods
+	markupFactory: function(params, node){
+		params._skipStartup = true;
+		return new dojo.dnd.Selector(node, params);
+	},
+
+	// mouse events
+	onMouseDown: function(e){
+		// summary: event processor for onmousedown
+		// e: Event: mouse event
+		if(!this.current){ return; }
+		if(!this.singular && !dojo.dnd.getCopyKeyState(e) && !e.shiftKey && (this.current.id in this.selection)){
+			this.simpleSelection = true;
+			dojo.stopEvent(e);
+			return;
+		}
+		if(!this.singular && e.shiftKey){
+			if(!dojo.dnd.getCopyKeyState(e)){
+				this._removeSelection();
+			}
+			var c = dojo.query("> .dojoDndItem", this.parent);
+			if(c.length){
+				if(!this.anchor){
+					this.anchor = c[0];
+					this._addItemClass(this.anchor, "Anchor");
+				}
+				this.selection[this.anchor.id] = 1;
+				if(this.anchor != this.current){
+					var i = 0;
+					for(; i < c.length; ++i){
+						var node = c[i];
+						if(node == this.anchor || node == this.current){ break; }
+					}
+					for(++i; i < c.length; ++i){
+						var node = c[i];
+						if(node == this.anchor || node == this.current){ break; }
+						this._addItemClass(node, "Selected");
+						this.selection[node.id] = 1;
+					}
+					this._addItemClass(this.current, "Selected");
+					this.selection[this.current.id] = 1;
+				}
+			}
+		}else{
+			if(this.singular){
+				if(this.anchor == this.current){
+					if(dojo.dnd.getCopyKeyState(e)){
+						this.selectNone();
+					}
+				}else{
+					this.selectNone();
+					this.anchor = this.current;
+					this._addItemClass(this.anchor, "Anchor");
+					this.selection[this.current.id] = 1;
+				}
+			}else{
+				if(dojo.dnd.getCopyKeyState(e)){
+					if(this.anchor == this.current){
+						delete this.selection[this.anchor.id];
+						this._removeAnchor();
+					}else{
+						if(this.current.id in this.selection){
+							this._removeItemClass(this.current, "Selected");
+							delete this.selection[this.current.id];
+						}else{
+							if(this.anchor){
+								this._removeItemClass(this.anchor, "Anchor");
+								this._addItemClass(this.anchor, "Selected");
+							}
+							this.anchor = this.current;
+							this._addItemClass(this.current, "Anchor");
+							this.selection[this.current.id] = 1;
+						}
+					}
+				}else{
+					if(!(this.current.id in this.selection)){
+						this.selectNone();
+						this.anchor = this.current;
+						this._addItemClass(this.current, "Anchor");
+						this.selection[this.current.id] = 1;
+					}
+				}
+			}
+		}
+		dojo.stopEvent(e);
+	},
+	onMouseUp: function(e){
+		// summary: event processor for onmouseup
+		// e: Event: mouse event
+		if(!this.simpleSelection){ return; }
+		this.simpleSelection = false;
+		this.selectNone();
+		if(this.current){
+			this.anchor = this.current;
+			this._addItemClass(this.anchor, "Anchor");
+			this.selection[this.current.id] = 1;
+		}
+	},
+	onMouseMove: function(e){
+		// summary: event processor for onmousemove
+		// e: Event: mouse event
+		this.simpleSelection = false;
+	},
+	
+	// utilities
+	onOverEvent: function(){
+		// summary: this function is called once, when mouse is over our container
+		this.onmousemoveEvent = dojo.connect(this.node, "onmousemove", this, "onMouseMove");
+	},
+	onOutEvent: function(){
+		// summary: this function is called once, when mouse is out of our container
+		dojo.disconnect(this.onmousemoveEvent);
+		delete this.onmousemoveEvent;
+	},
+	_removeSelection: function(){
+		// summary: unselects all items
+		var e = dojo.dnd._empty;
+		for(var i in this.selection){
+			if(i in e){ continue; }
+			var node = dojo.byId(i);
+			if(node){ this._removeItemClass(node, "Selected"); }
+		}
+		this.selection = {};
+		return this;	// self
+	},
+	_removeAnchor: function(){
+		if(this.anchor){
+			this._removeItemClass(this.anchor, "Anchor");
+			this.anchor = null;
+		}
+		return this;	// self
+	}
+});
+
+}
+
 if(!dojo._hasResource["dojo.dnd.autoscroll"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
 dojo._hasResource["dojo.dnd.autoscroll"] = true;
 dojo.provide("dojo.dnd.autoscroll");
@@ -4095,1645 +4652,630 @@ dojo.dnd.autoScrollNodes = function(e){
 
 }
 
-if(!dojo._hasResource["dojo.dnd.Mover"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojo.dnd.Mover"] = true;
-dojo.provide("dojo.dnd.Mover");
+if(!dojo._hasResource["dojo.dnd.Avatar"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojo.dnd.Avatar"] = true;
+dojo.provide("dojo.dnd.Avatar");
 
 
 
+dojo.dnd.Avatar = function(manager){
+	// summary: an object, which represents transferred DnD items visually
+	// manager: Object: a DnD manager object
+	this.manager = manager;
+	this.construct();
+};
 
-dojo.declare("dojo.dnd.Mover", null, {
-	constructor: function(node, e, host){
-		// summary: an object, which makes a node follow the mouse, 
-		//	used as a default mover, and as a base class for custom movers
-		// node: Node: a node (or node's id) to be moved
-		// e: Event: a mouse event, which started the move;
-		//	only pageX and pageY properties are used
-		// host: Object?: object which implements the functionality of the move,
-		//	 and defines proper events (onMoveStart and onMoveStop)
-		this.node = dojo.byId(node);
-		this.marginBox = {l: e.pageX, t: e.pageY};
-		this.mouseButton = e.button;
-		var h = this.host = host, d = node.ownerDocument, 
-			firstEvent = dojo.connect(d, "onmousemove", this, "onFirstMove");
-		this.events = [
-			dojo.connect(d, "onmousemove", this, "onMouseMove"),
-			dojo.connect(d, "onmouseup",   this, "onMouseUp"),
-			// cancel text selection and text dragging
-			dojo.connect(d, "ondragstart",   dojo, "stopEvent"),
-			dojo.connect(d, "onselectstart", dojo, "stopEvent"),
-			firstEvent
-		];
-		// notify that the move has started
-		if(h && h.onMoveStart){
-			h.onMoveStart(this);
+dojo.extend(dojo.dnd.Avatar, {
+	construct: function(){
+		// summary: a constructor function;
+		//	it is separate so it can be (dynamically) overwritten in case of need
+		var a = dojo.doc.createElement("table");
+		a.className = "dojoDndAvatar";
+		a.style.position = "absolute";
+		a.style.zIndex = 1999;
+		a.style.margin = "0px"; // to avoid dojo.marginBox() problems with table's margins
+		var b = dojo.doc.createElement("tbody");
+		var tr = dojo.doc.createElement("tr");
+		tr.className = "dojoDndAvatarHeader";
+		var td = dojo.doc.createElement("td");
+		td.innerHTML = this._generateText();
+		tr.appendChild(td);
+		dojo.style(tr, "opacity", 0.9);
+		b.appendChild(tr);
+		var k = Math.min(5, this.manager.nodes.length);
+		var source = this.manager.source;
+		for(var i = 0; i < k; ++i){
+			tr = dojo.doc.createElement("tr");
+			tr.className = "dojoDndAvatarItem";
+			td = dojo.doc.createElement("td");
+			var node = source.creator ?
+				// create an avatar representation of the node
+				node = source._normalizedCreator(source.getItem(this.manager.nodes[i].id).data, "avatar").node :
+				// or just clone the node and hope it works
+				node = this.manager.nodes[i].cloneNode(true);
+			node.id = "";
+			td.appendChild(node);
+			tr.appendChild(td);
+			dojo.style(tr, "opacity", (9 - i) / 10);
+			b.appendChild(tr);
 		}
+		a.appendChild(b);
+		this.node = a;
+	},
+	destroy: function(){
+		// summary: a desctructor for the avatar, called to remove all references so it can be garbage-collected
+		dojo._destroyElement(this.node);
+		this.node = false;
+	},
+	update: function(){
+		// summary: updates the avatar to reflect the current DnD state
+		dojo[(this.manager.canDropFlag ? "add" : "remove") + "Class"](this.node, "dojoDndAvatarCanDrop");
+		// replace text
+		var t = this.node.getElementsByTagName("td");
+		for(var i = 0; i < t.length; ++i){
+			var n = t[i];
+			if(dojo.hasClass(n.parentNode, "dojoDndAvatarHeader")){
+				n.innerHTML = this._generateText();
+				break;
+			}
+		}
+	},
+	_generateText: function(){
+		// summary: generates a proper text to reflect copying or moving of items
+		return this.manager.nodes.length.toString();
+	}
+});
+
+}
+
+if(!dojo._hasResource["dojo.dnd.Manager"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojo.dnd.Manager"] = true;
+dojo.provide("dojo.dnd.Manager");
+
+
+
+
+
+dojo.dnd.Manager = function(){
+	// summary: the manager of DnD operations (usually a singleton)
+	this.avatar  = null;
+	this.source = null;
+	this.nodes = [];
+	this.copy  = true;
+	this.target = null;
+	this.canDropFlag = false;
+	this.events = [];
+};
+
+dojo.extend(dojo.dnd.Manager, {
+	// avatar's offset from the mouse
+	OFFSET_X: 16,
+	OFFSET_Y: 16,
+	// methods
+	overSource: function(source){
+		// summary: called when a source detected a mouse-over conditiion
+		// source: Object: the reporter
+		if(this.avatar){
+			this.target = (source && source.targetState != "Disabled") ? source : null;
+			this.avatar.update();
+		}
+		dojo.publish("/dnd/source/over", [source]);
+	},
+	outSource: function(source){
+		// summary: called when a source detected a mouse-out conditiion
+		// source: Object: the reporter
+		if(this.avatar){
+			if(this.target == source){
+				this.target = null;
+				this.canDropFlag = false;
+				this.avatar.update();
+				dojo.publish("/dnd/source/over", [null]);
+			}
+		}else{
+			dojo.publish("/dnd/source/over", [null]);
+		}
+	},
+	startDrag: function(source, nodes, copy){
+		// summary: called to initiate the DnD operation
+		// source: Object: the source which provides items
+		// nodes: Array: the list of transferred items
+		// copy: Boolean: copy items, if true, move items otherwise
+		this.source = source;
+		this.nodes  = nodes;
+		this.copy   = Boolean(copy); // normalizing to true boolean
+		this.avatar = this.makeAvatar();
+		dojo.body().appendChild(this.avatar.node);
+		dojo.publish("/dnd/start", [source, nodes, this.copy]);
+		this.events = [
+			dojo.connect(dojo.doc, "onmousemove", this, "onMouseMove"),
+			dojo.connect(dojo.doc, "onmouseup",   this, "onMouseUp"),
+			dojo.connect(dojo.doc, "onkeydown",   this, "onKeyDown"),
+			dojo.connect(dojo.doc, "onkeyup",     this, "onKeyUp")
+		];
+		var c = "dojoDnd" + (copy ? "Copy" : "Move");
+		dojo.addClass(dojo.body(), c); 
+	},
+	canDrop: function(flag){
+		// summary: called to notify if the current target can accept items
+		var canDropFlag = this.target && flag;
+		if(this.canDropFlag != canDropFlag){
+			this.canDropFlag = canDropFlag;
+			this.avatar.update();
+		}
+	},
+	stopDrag: function(){
+		// summary: stop the DnD in progress
+		dojo.removeClass(dojo.body(), "dojoDndCopy");
+		dojo.removeClass(dojo.body(), "dojoDndMove");
+		dojo.forEach(this.events, dojo.disconnect);
+		this.events = [];
+		this.avatar.destroy();
+		this.avatar = null;
+		this.source = null;
+		this.nodes = [];
+	},
+	makeAvatar: function(){
+		// summary: makes the avatar, it is separate to be overwritten dynamically, if needed
+		return new dojo.dnd.Avatar(this);
+	},
+	updateAvatar: function(){
+		// summary: updates the avatar, it is separate to be overwritten dynamically, if needed
+		this.avatar.update();
 	},
 	// mouse event processors
 	onMouseMove: function(e){
 		// summary: event processor for onmousemove
 		// e: Event: mouse event
-		dojo.dnd.autoScroll(e);
-		var m = this.marginBox;
-		this.host.onMove(this, {l: m.l + e.pageX, t: m.t + e.pageY});
+		var a = this.avatar;
+		if(a){
+			//dojo.dnd.autoScrollNodes(e);
+			dojo.dnd.autoScroll(e);
+			dojo.marginBox(a.node, {l: e.pageX + this.OFFSET_X, t: e.pageY + this.OFFSET_Y});
+			var copy = Boolean(this.source.copyState(dojo.dnd.getCopyKeyState(e)));
+			if(this.copy != copy){ 
+				this._setCopyStatus(copy);
+			}
+		}
 	},
 	onMouseUp: function(e){
-		if(this.mouseButton == e.button){
-			this.destroy();
+		// summary: event processor for onmouseup
+		// e: Event: mouse event
+		if(this.avatar && this.source.mouseButton == e.button){
+			if(this.target && this.canDropFlag){
+				dojo.publish("/dnd/drop", [this.source, this.nodes, Boolean(this.source.copyState(dojo.dnd.getCopyKeyState(e)))]);
+			}else{
+				dojo.publish("/dnd/cancel");
+			}
+			this.stopDrag();
+		}
+	},
+	// keyboard event processors
+	onKeyDown: function(e){
+		// summary: event processor for onkeydown:
+		//	watching for CTRL for copy/move status, watching for ESCAPE to cancel the drag
+		// e: Event: keyboard event
+		if(this.avatar){
+			switch(e.keyCode){
+				case dojo.keys.CTRL:
+					var copy = Boolean(this.source.copyState(true));
+					if(this.copy != copy){ 
+						this._setCopyStatus(copy);
+					}
+					break;
+				case dojo.keys.ESCAPE:
+					dojo.publish("/dnd/cancel");
+					this.stopDrag();
+					break;
+			}
+		}
+	},
+	onKeyUp: function(e){
+		// summary: event processor for onkeyup, watching for CTRL for copy/move status
+		// e: Event: keyboard event
+		if(this.avatar && e.keyCode == dojo.keys.CTRL){
+			var copy = Boolean(this.source.copyState(false));
+			if(this.copy != copy){ 
+				this._setCopyStatus(copy);
+			}
 		}
 	},
 	// utilities
-	onFirstMove: function(){
-		// summary: makes the node absolute; it is meant to be called only once
-		this.node.style.position = "absolute";	// enforcing the absolute mode
-		var m = dojo.marginBox(this.node);
-		m.l -= this.marginBox.l;
-		m.t -= this.marginBox.t;
-		this.marginBox = m;
-		this.host.onFirstMove(this);
-		dojo.disconnect(this.events.pop());
-	},
-	destroy: function(){
-		// summary: stops the move, deletes all references, so the object can be garbage-collected
-		dojo.forEach(this.events, dojo.disconnect);
-		// undo global settings
-		var h = this.host;
-		if(h && h.onMoveStop){
-			h.onMoveStop(this);
-		}
-		// destroy objects
-		this.events = this.node = null;
+	_setCopyStatus: function(copy){
+		// summary: changes the copy status
+		// copy: Boolean: the copy status
+		this.copy = copy;
+		this.source._markDndStatus(this.copy);
+		this.updateAvatar();
+		dojo.removeClass(dojo.body(), "dojoDnd" + (this.copy ? "Move" : "Copy"));
+		dojo.addClass(dojo.body(), "dojoDnd" + (this.copy ? "Copy" : "Move"));
 	}
 });
 
+// summary: the manager singleton variable, can be overwritten, if needed
+dojo.dnd._manager = null;
+
+dojo.dnd.manager = function(){
+	// summary: returns the current DnD manager, creates one if it is not created yet
+	if(!dojo.dnd._manager){
+		dojo.dnd._manager = new dojo.dnd.Manager();
+	}
+	return dojo.dnd._manager;	// Object
+};
+
 }
 
-if(!dojo._hasResource["dojo.dnd.Moveable"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojo.dnd.Moveable"] = true;
-dojo.provide("dojo.dnd.Moveable");
+if(!dojo._hasResource["dojo.dnd.Source"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
+dojo._hasResource["dojo.dnd.Source"] = true;
+dojo.provide("dojo.dnd.Source");
 
 
 
-dojo.declare("dojo.dnd.Moveable", null, {
+
+/*
+	Container property:
+		"Horizontal"- if this is the horizontal container
+	Source states:
+		""			- normal state
+		"Moved"		- this source is being moved
+		"Copied"	- this source is being copied
+	Target states:
+		""			- normal state
+		"Disabled"	- the target cannot accept an avatar
+	Target anchor state:
+		""			- item is not selected
+		"Before"	- insert point is before the anchor
+		"After"		- insert point is after the anchor
+*/
+
+dojo.declare("dojo.dnd.Source", dojo.dnd.Selector, {
+	// summary: a Source object, which can be used as a DnD source, or a DnD target
+	
 	// object attributes (for markup)
-	handle: "",
-	delay: 0,
-	skip: false,
+	isSource: true,
+	horizontal: false,
+	copyOnly: false,
+	skipForm: false,
+	withHandles: false,
+	accept: ["text"],
 	
 	constructor: function(node, params){
-		// summary: an object, which makes a node moveable
-		// node: Node: a node (or node's id) to be moved
-		// params: Object: an optional object with additional parameters;
-		//	following parameters are recognized:
-		//		handle: Node: a node (or node's id), which is used as a mouse handle
-		//			if omitted, the node itself is used as a handle
-		//		delay: Number: delay move by this number of pixels
-		//		skip: Boolean: skip move of form elements
-		//		mover: Object: a constructor of custom Mover
-		this.node = dojo.byId(node);
+		// summary: a constructor of the Source
+		// node: Node: node or node's id to build the source on
+		// params: Object: a dict of parameters, recognized parameters are:
+		//	isSource: Boolean: can be used as a DnD source, if true; assumed to be "true" if omitted
+		//	accept: Array: list of accepted types (text strings) for a target; assumed to be ["text"] if omitted
+		//	horizontal: Boolean: a horizontal container, if true, vertical otherwise or when omitted
+		//	copyOnly: Boolean: always copy items, if true, use a state of Ctrl key otherwise
+		//	withHandles: Boolean: allows dragging only by handles
+		//	the rest of parameters are passed to the selector
 		if(!params){ params = {}; }
-		this.handle = params.handle ? dojo.byId(params.handle) : null;
-		if(!this.handle){ this.handle = this.node; }
-		this.delay = params.delay > 0 ? params.delay : 0;
-		this.skip  = params.skip;
-		this.mover = params.mover ? params.mover : dojo.dnd.Mover;
-		this.events = [
-			dojo.connect(this.handle, "onmousedown", this, "onMouseDown"),
-			// cancel text selection and text dragging
-			dojo.connect(this.handle, "ondragstart",   this, "onSelectStart"),
-			dojo.connect(this.handle, "onselectstart", this, "onSelectStart")
+		this.isSource = typeof params.isSource == "undefined" ? true : params.isSource;
+		var type = params.accept instanceof Array ? params.accept : ["text"];
+		this.accept = null;
+		if(type.length){
+			this.accept = {};
+			for(var i = 0; i < type.length; ++i){
+				this.accept[type[i]] = 1;
+			}
+		}
+		this.horizontal = params.horizontal;
+		this.copyOnly = params.copyOnly;
+		this.withHandles = params.withHandles;
+		// class-specific variables
+		this.isDragging = false;
+		this.mouseDown = false;
+		this.targetAnchor = null;
+		this.targetBox = null;
+		this.before = true;
+		// states
+		this.sourceState  = "";
+		if(this.isSource){
+			dojo.addClass(this.node, "dojoDndSource");
+		}
+		this.targetState  = "";
+		if(this.accept){
+			dojo.addClass(this.node, "dojoDndTarget");
+		}
+		if(this.horizontal){
+			dojo.addClass(this.node, "dojoDndHorizontal");
+		}
+		// set up events
+		this.topics = [
+			dojo.subscribe("/dnd/source/over", this, "onDndSourceOver"),
+			dojo.subscribe("/dnd/start",  this, "onDndStart"),
+			dojo.subscribe("/dnd/drop",   this, "onDndDrop"),
+			dojo.subscribe("/dnd/cancel", this, "onDndCancel")
 		];
 	},
+	
+	// methods
+	checkAcceptance: function(source, nodes){
+		// summary: checks, if the target can accept nodes from this source
+		// source: Object: the source which provides items
+		// nodes: Array: the list of transferred items
+		if(this == source){ return true; }
+		for(var i = 0; i < nodes.length; ++i){
+			var type = source.getItem(nodes[i].id).type;
+			// type instanceof Array
+			var flag = false;
+			for(var j = 0; j < type.length; ++j){
+				if(type[j] in this.accept){
+					flag = true;
+					break;
+				}
+			}
+			if(!flag){
+				return false;	// Boolean
+			}
+		}
+		return true;	// Boolean
+	},
+	copyState: function(keyPressed){
+		// summary: Returns true, if we need to copy items, false to move.
+		//		It is separated to be overwritten dynamically, if needed.
+		// keyPressed: Boolean: the "copy" was pressed
+		return this.copyOnly || keyPressed;	// Boolean
+	},
+	destroy: function(){
+		// summary: prepares the object to be garbage-collected
+		dojo.dnd.Source.superclass.destroy.call(this);
+		dojo.forEach(this.topics, dojo.unsubscribe);
+		this.targetAnchor = null;
+	},
 
 	// markup methods
 	markupFactory: function(params, node){
-		return new dojo.dnd.Moveable(node, params);
+		params._skipStartup = true;
+		return new dojo.dnd.Source(node, params);
 	},
 
-	// methods
-	destroy: function(){
-		// summary: stops watching for possible move, deletes all references, so the object can be garbage-collected
-		dojo.forEach(this.events, dojo.disconnect);
-		this.events = this.node = this.handle = null;
-	},
-	
 	// mouse event processors
-	onMouseDown: function(e){
-		// summary: event processor for onmousedown, creates a Mover for the node
-		// e: Event: mouse event
-		if(this.skip && dojo.dnd.isFormElement(e)){ return; }
-		if(this.delay){
-			this.events.push(dojo.connect(this.handle, "onmousemove", this, "onMouseMove"));
-			this.events.push(dojo.connect(this.handle, "onmouseup", this, "onMouseUp"));
-			this._lastX = e.pageX;
-			this._lastY = e.pageY;
-		}else{
-			new this.mover(this.node, e, this);
-		}
-		dojo.stopEvent(e);
-	},
 	onMouseMove: function(e){
-		// summary: event processor for onmousemove, used only for delayed drags
+		// summary: event processor for onmousemove
 		// e: Event: mouse event
-		if(Math.abs(e.pageX - this._lastX) > this.delay || Math.abs(e.pageY - this._lastY) > this.delay){
-			this.onMouseUp(e);
-			new this.mover(this.node, e, this);
+		if(this.isDragging && this.targetState == "Disabled"){ return; }
+		dojo.dnd.Source.superclass.onMouseMove.call(this, e);
+		var m = dojo.dnd.manager();
+		if(this.isDragging){
+			// calculate before/after
+			var before = false;
+			if(this.current){
+				if(!this.targetBox || this.targetAnchor != this.current){
+					this.targetBox = {
+						xy: dojo.coords(this.current, true),
+						w: this.current.offsetWidth,
+						h: this.current.offsetHeight
+					};
+				}
+				if(this.horizontal){
+					before = (e.pageX - this.targetBox.xy.x) < (this.targetBox.w / 2);
+				}else{
+					before = (e.pageY - this.targetBox.xy.y) < (this.targetBox.h / 2);
+				}
+			}
+			if(this.current != this.targetAnchor || before != this.before){
+				this._markTargetAnchor(before);
+				m.canDrop(!this.current || m.source != this || !(this.current.id in this.selection));
+			}
+		}else{
+			if(this.mouseDown && this.isSource){
+				var nodes = this.getSelectedNodes();
+				if(nodes.length){
+					m.startDrag(this, nodes, this.copyState(dojo.dnd.getCopyKeyState(e)));
+				}
+			}
 		}
-		dojo.stopEvent(e);
+	},
+	onMouseDown: function(e){
+		// summary: event processor for onmousedown
+		// e: Event: mouse event
+		if(this._legalMouseDown(e) && (!this.skipForm || !dojo.dnd.isFormElement(e))){
+			this.mouseDown = true;
+			this.mouseButton = e.button;
+			dojo.dnd.Source.superclass.onMouseDown.call(this, e);
+		}
 	},
 	onMouseUp: function(e){
-		// summary: event processor for onmouseup, used only for delayed delayed drags
+		// summary: event processor for onmouseup
 		// e: Event: mouse event
-		dojo.disconnect(this.events.pop());
-		dojo.disconnect(this.events.pop());
-	},
-	onSelectStart: function(e){
-		// summary: event processor for onselectevent and ondragevent
-		// e: Event: mouse event
-		if(!this.skip || !dojo.dnd.isFormElement(e)){
-			dojo.stopEvent(e);
+		if(this.mouseDown){
+			this.mouseDown = false;
+			dojo.dnd.Source.superclass.onMouseUp.call(this, e);
 		}
 	},
 	
-	// local events
-	onMoveStart: function(/* dojo.dnd.Mover */ mover){
-		// summary: called before every move operation
-		dojo.publish("/dnd/move/start", [mover]);
-		dojo.addClass(dojo.body(), "dojoMove"); 
-		dojo.addClass(this.node, "dojoMoveItem"); 
+	// topic event processors
+	onDndSourceOver: function(source){
+		// summary: topic event processor for /dnd/source/over, called when detected a current source
+		// source: Object: the source which has the mouse over it
+		if(this != source){
+			this.mouseDown = false;
+			if(this.targetAnchor){
+				this._unmarkTargetAnchor();
+			}
+		}else if(this.isDragging){
+			var m = dojo.dnd.manager();
+			m.canDrop(this.targetState != "Disabled" && (!this.current || m.source != this || !(this.current.id in this.selection)));
+		}
 	},
-	onMoveStop: function(/* dojo.dnd.Mover */ mover){
-		// summary: called after every move operation
-		dojo.publish("/dnd/move/stop", [mover]);
-		dojo.removeClass(dojo.body(), "dojoMove");
-		dojo.removeClass(this.node, "dojoMoveItem");
+	onDndStart: function(source, nodes, copy){
+		// summary: topic event processor for /dnd/start, called to initiate the DnD operation
+		// source: Object: the source which provides items
+		// nodes: Array: the list of transferred items
+		// copy: Boolean: copy items, if true, move items otherwise
+		if(this.isSource){
+			this._changeState("Source", this == source ? (copy ? "Copied" : "Moved") : "");
+		}
+		var accepted = this.accept && this.checkAcceptance(source, nodes);
+		this._changeState("Target", accepted ? "" : "Disabled");
+		if(accepted){
+			dojo.dnd.manager().overSource(this);
+		}
+		this.isDragging = true;
 	},
-	onFirstMove: function(/* dojo.dnd.Mover */ mover){
-		// summary: called during the very first move notification,
-		//	can be used to initialize coordinates, can be overwritten.
-		
-		// default implementation does nothing
-	},
-	onMove: function(/* dojo.dnd.Mover */ mover, /* Object */ leftTop){
-		// summary: called during every move notification,
-		//	should actually move the node, can be overwritten.
-		this.onMoving(mover, leftTop);
-		dojo.marginBox(mover.node, leftTop);
-		this.onMoved(mover, leftTop);
-	},
-	onMoving: function(/* dojo.dnd.Mover */ mover, /* Object */ leftTop){
-		// summary: called before every incremental move,
-		//	can be overwritten.
-		
-		// default implementation does nothing
-	},
-	onMoved: function(/* dojo.dnd.Mover */ mover, /* Object */ leftTop){
-		// summary: called after every incremental move,
-		//	can be overwritten.
-		
-		// default implementation does nothing
-	}
-});
-
-}
-
-if(!dojo._hasResource["dojo.dnd.move"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojo.dnd.move"] = true;
-dojo.provide("dojo.dnd.move");
-
-
-
-
-dojo.declare("dojo.dnd.move.constrainedMoveable", dojo.dnd.Moveable, {
-	// object attributes (for markup)
-	constraints: function(){},
-	within: false,
-	
-	// markup methods
-	markupFactory: function(params, node){
-		return new dojo.dnd.move.constrainedMoveable(node, params);
-	},
-
-	constructor: function(node, params){
-		// summary: an object, which makes a node moveable
-		// node: Node: a node (or node's id) to be moved
-		// params: Object: an optional object with additional parameters;
-		//	following parameters are recognized:
-		//		constraints: Function: a function, which calculates a constraint box,
-		//			it is called in a context of the moveable object.
-		//		within: Boolean: restrict move within boundaries.
-		//	the rest is passed to the base class
-		if(!params){ params = {}; }
-		this.constraints = params.constraints;
-		this.within = params.within;
-	},
-	onFirstMove: function(/* dojo.dnd.Mover */ mover){
-		// summary: called during the very first move notification,
-		//	can be used to initialize coordinates, can be overwritten.
-		var c = this.constraintBox = this.constraints.call(this, mover), m = mover.marginBox;
-		c.r = c.l + c.w - (this.within ? m.w : 0);
-		c.b = c.t + c.h - (this.within ? m.h : 0);
-	},
-	onMove: function(/* dojo.dnd.Mover */ mover, /* Object */ leftTop){
-		// summary: called during every move notification,
-		//	should actually move the node, can be overwritten.
-		var c = this.constraintBox;
-		leftTop.l = leftTop.l < c.l ? c.l : c.r < leftTop.l ? c.r : leftTop.l;
-		leftTop.t = leftTop.t < c.t ? c.t : c.b < leftTop.t ? c.b : leftTop.t;
-		dojo.marginBox(mover.node, leftTop);
-	}
-});
-
-dojo.declare("dojo.dnd.move.boxConstrainedMoveable", dojo.dnd.move.constrainedMoveable, {
-	// object attributes (for markup)
-	box: {},
-	
-	// markup methods
-	markupFactory: function(params, node){
-		return new dojo.dnd.move.boxConstrainedMoveable(node, params);
-	},
-
-	constructor: function(node, params){
-		// summary: an object, which makes a node moveable
-		// node: Node: a node (or node's id) to be moved
-		// params: Object: an optional object with additional parameters;
-		//	following parameters are recognized:
-		//		box: Object: a constraint box
-		//	the rest is passed to the base class
-		var box = params && params.box;
-		this.constraints = function(){ return box; };
-	}
-});
-
-dojo.declare("dojo.dnd.move.parentConstrainedMoveable", dojo.dnd.move.constrainedMoveable, {
-	// object attributes (for markup)
-	area: "content",
-
-	// markup methods
-	markupFactory: function(params, node){
-		return new dojo.dnd.move.parentConstrainedMoveable(node, params);
-	},
-
-	constructor: function(node, params){
-		// summary: an object, which makes a node moveable
-		// node: Node: a node (or node's id) to be moved
-		// params: Object: an optional object with additional parameters;
-		//	following parameters are recognized:
-		//		area: String: a parent's area to restrict the move,
-		//			can be "margin", "border", "padding", or "content".
-		//	the rest is passed to the base class
-		var area = params && params.area;
-		this.constraints = function(){
-			var n = this.node.parentNode, 
-				s = dojo.getComputedStyle(n), 
-				mb = dojo._getMarginBox(n, s);
-			if(area == "margin"){
-				return mb;	// Object
-			}
-			var t = dojo._getMarginExtents(n, s);
-			mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
-			if(area == "border"){
-				return mb;	// Object
-			}
-			t = dojo._getBorderExtents(n, s);
-			mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
-			if(area == "padding"){
-				return mb;	// Object
-			}
-			t = dojo._getPadExtents(n, s);
-			mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
-			return mb;	// Object
-		};
-	}
-});
-
-// WARNING: below are obsolete objects, instead of custom movers use custom moveables (above)
-
-dojo.dnd.move.constrainedMover = function(fun, within){
-	// summary: returns a constrained version of dojo.dnd.Mover
-	// description: this function produces n object, which will put a constraint on 
-	//	the margin box of dragged object in absolute coordinates
-	// fun: Function: called on drag, and returns a constraint box
-	// within: Boolean: if true, constraints the whole dragged object withtin the rectangle, 
-	//	otherwise the constraint is applied to the left-top corner
-	var mover = function(node, e, notifier){
-		dojo.dnd.Mover.call(this, node, e, notifier);
-	};
-	dojo.extend(mover, dojo.dnd.Mover.prototype);
-	dojo.extend(mover, {
-		onMouseMove: function(e){
-			// summary: event processor for onmousemove
-			// e: Event: mouse event
-			dojo.dnd.autoScroll(e);
-			var m = this.marginBox, c = this.constraintBox,
-				l = m.l + e.pageX, t = m.t + e.pageY;
-			l = l < c.l ? c.l : c.r < l ? c.r : l;
-			t = t < c.t ? c.t : c.b < t ? c.b : t;
-			this.host.onMove(this, {l: l, t: t});
-		},
-		onFirstMove: function(){
-			// summary: called once to initialize things; it is meant to be called only once
-			dojo.dnd.Mover.prototype.onFirstMove.call(this);
-			var c = this.constraintBox = fun.call(this), m = this.marginBox;
-			c.r = c.l + c.w - (within ? m.w : 0);
-			c.b = c.t + c.h - (within ? m.h : 0);
-		}
-	});
-	return mover;	// Object
-};
-
-dojo.dnd.move.boxConstrainedMover = function(box, within){
-	// summary: a specialization of dojo.dnd.constrainedMover, which constrains to the specified box
-	// box: Object: a constraint box (l, t, w, h)
-	// within: Boolean: if true, constraints the whole dragged object withtin the rectangle, 
-	//	otherwise the constraint is applied to the left-top corner
-	return dojo.dnd.move.constrainedMover(function(){ return box; }, within);	// Object
-};
-
-dojo.dnd.move.parentConstrainedMover = function(area, within){
-	// summary: a specialization of dojo.dnd.constrainedMover, which constrains to the parent node
-	// area: String: "margin" to constrain within the parent's margin box, "border" for the border box,
-	//	"padding" for the padding box, and "content" for the content box; "content" is the default value.
-	// within: Boolean: if true, constraints the whole dragged object withtin the rectangle, 
-	//	otherwise the constraint is applied to the left-top corner
-	var fun = function(){
-		var n = this.node.parentNode, 
-			s = dojo.getComputedStyle(n), 
-			mb = dojo._getMarginBox(n, s);
-		if(area == "margin"){
-			return mb;	// Object
-		}
-		var t = dojo._getMarginExtents(n, s);
-		mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
-		if(area == "border"){
-			return mb;	// Object
-		}
-		t = dojo._getBorderExtents(n, s);
-		mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
-		if(area == "padding"){
-			return mb;	// Object
-		}
-		t = dojo._getPadExtents(n, s);
-		mb.l += t.l, mb.t += t.t, mb.w -= t.w, mb.h -= t.h;
-		return mb;	// Object
-	};
-	return dojo.dnd.move.constrainedMover(fun, within);	// Object
-};
-
-// patching functions one level up for compatibility
-
-dojo.dnd.constrainedMover = dojo.dnd.move.constrainedMover;
-dojo.dnd.boxConstrainedMover = dojo.dnd.move.boxConstrainedMover;
-dojo.dnd.parentConstrainedMover = dojo.dnd.move.parentConstrainedMover;
-
-}
-
-if(!dojo._hasResource["dojo.fx"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojo.fx"] = true;
-dojo.provide("dojo.fx");
-dojo.provide("dojo.fx.Toggler");
-
-dojo.fx.chain = function(/*dojo._Animation[]*/ animations){
-	// summary: Chain a list of dojo._Animation s to run in sequence
-	// example:
-	//	|	dojo.fx.chain([
-	//	|		dojo.fadeIn({ node:node }),
-	//	|		dojo.fadeOut({ node:otherNode })
-	//	|	]).play();
-	//
-	var first = animations.shift();
-	var previous = first;
-	dojo.forEach(animations, function(current){
-		dojo.connect(previous, "onEnd", current, "play");
-		previous = current;
-	});
-	return first; // dojo._Animation
-};
-
-dojo.fx.combine = function(/*dojo._Animation[]*/ animations){
-	// summary: Combine a list of dojo._Animation s to run in parallel
-	// example:
-	//	|	dojo.fx.combine([
-	//	|		dojo.fadeIn({ node:node }),
-	//	|		dojo.fadeOut({ node:otherNode })
-	//	|	]).play();
-	var ctr = new dojo._Animation({ curve: [0, 1] });
-	if(!animations.length){ return ctr; }
-	// animations.sort(function(a, b){ return a.duration-b.duration; });
-	ctr.duration = animations[0].duration;
-	dojo.forEach(animations, function(current){
-		dojo.forEach([ "play", "pause", "stop" ],
-			function(e){
-				if(current[e]){
-					dojo.connect(ctr, e, current, e);
-				}
-			}
-		);
-	});
-	return ctr; // dojo._Animation
-};
-
-dojo.declare("dojo.fx.Toggler", null, {
-	// summary:
-	//		class constructor for an animation toggler. It accepts a packed
-	//		set of arguments about what type of animation to use in each
-	//		direction, duration, etc.
-	//
-	// example:
-	//	|	var t = new dojo.fx.Toggler({
-	//	|		node: "nodeId",
-	//	|		showDuration: 500,
-	//	|		// hideDuration will default to "200"
-	//	|		showFunc: dojo.wipeIn, 
-	//	|		// hideFunc will default to "fadeOut"
-	//	|	});
-	//	|	t.show(100); // delay showing for 100ms
-	//	|	// ...time passes...
-	//	|	t.hide();
-
-	// FIXME: need a policy for where the toggler should "be" the next
-	// time show/hide are called if we're stopped somewhere in the
-	// middle.
-
-	constructor: function(args){
-		var _t = this;
-
-		dojo.mixin(_t, args);
-		_t.node = args.node;
-		_t._showArgs = dojo.mixin({}, args);
-		_t._showArgs.node = _t.node;
-		_t._showArgs.duration = _t.showDuration;
-		_t.showAnim = _t.showFunc(_t._showArgs);
-
-		_t._hideArgs = dojo.mixin({}, args);
-		_t._hideArgs.node = _t.node;
-		_t._hideArgs.duration = _t.hideDuration;
-		_t.hideAnim = _t.hideFunc(_t._hideArgs);
-
-		dojo.connect(_t.showAnim, "beforeBegin", dojo.hitch(_t.hideAnim, "stop", true));
-		dojo.connect(_t.hideAnim, "beforeBegin", dojo.hitch(_t.showAnim, "stop", true));
-	},
-
-	// node: DomNode
-	//	the node to toggle
-	node: null,
-
-	// showFunc: Function
-	//	The function that returns the dojo._Animation to show the node
-	showFunc: dojo.fadeIn,
-
-	// hideFunc: Function	
-	//	The function that returns the dojo._Animation to hide the node
-	hideFunc: dojo.fadeOut,
-
-	// showDuration:
-	//	Time in milliseconds to run the show Animation
-	showDuration: 200,
-
-	// hideDuration:
-	//	Time in milliseconds to run the hide Animation
-	hideDuration: 200,
-
-	/*=====
-	_showArgs: null,
-	_showAnim: null,
-
-	_hideArgs: null,
-	_hideAnim: null,
-
-	_isShowing: false,
-	_isHiding: false,
-	=====*/
-
-	show: function(delay){
-		// summary: Toggle the node to showing
-		return this.showAnim.play(delay || 0);
-	},
-
-	hide: function(delay){
-		// summary: Toggle the node to hidden
-		return this.hideAnim.play(delay || 0);
-	}
-});
-
-dojo.fx.wipeIn = function(/*Object*/ args){
-	// summary
-	//		Returns an animation that will expand the
-	//		node defined in 'args' object from it's current height to
-	//		it's natural height (with no scrollbar).
-	//		Node must have no margin/border/padding.
-	args.node = dojo.byId(args.node);
-	var node = args.node, s = node.style;
-
-	var anim = dojo.animateProperty(dojo.mixin({
-		properties: {
-			height: {
-				// wrapped in functions so we wait till the last second to query (in case value has changed)
-				start: function(){
-					// start at current [computed] height, but use 1px rather than 0
-					// because 0 causes IE to display the whole panel
-					s.overflow="hidden";
-					if(s.visibility=="hidden"||s.display=="none"){
-						s.height="1px";
-						s.display="";
-						s.visibility="";
-						return 1;
-					}else{
-						var height = dojo.style(node, "height");
-						return Math.max(height, 1);
-					}
-				},
-				end: function(){
-					return node.scrollHeight;
-				}
-			}
-		}
-	}, args));
-
-	dojo.connect(anim, "onEnd", function(){ 
-		s.height = "auto";
-	});
-
-	return anim; // dojo._Animation
-}
-
-dojo.fx.wipeOut = function(/*Object*/ args){
-	// summary
-	//		Returns an animation that will shrink node defined in "args"
-	//		from it's current height to 1px, and then hide it.
-	var node = args.node = dojo.byId(args.node);
-	var s = node.style;
-
-	var anim = dojo.animateProperty(dojo.mixin({
-		properties: {
-			height: {
-				end: 1 // 0 causes IE to display the whole panel
-			}
-		}
-	}, args));
-
-	dojo.connect(anim, "beforeBegin", function(){
-		s.overflow = "hidden";
-		s.display = "";
-	});
-	dojo.connect(anim, "onEnd", function(){
-		s.height = "auto";
-		s.display = "none";
-	});
-
-	return anim; // dojo._Animation
-}
-
-dojo.fx.slideTo = function(/*Object?*/ args){
-	// summary
-	//		Returns an animation that will slide "node" 
-	//		defined in args Object from its current position to
-	//		the position defined by (args.left, args.top).
-	// example:
-	//	|	dojo.fx.slideTo({ node: node, left:"40", top:"50", unit:"px" }).play()
-
-	var node = (args.node = dojo.byId(args.node));
-	
-	var top = null;
-	var left = null;
-	
-	var init = (function(n){
-		return function(){
-			var cs = dojo.getComputedStyle(n);
-			var pos = cs.position;
-			top = (pos == 'absolute' ? n.offsetTop : parseInt(cs.top) || 0);
-			left = (pos == 'absolute' ? n.offsetLeft : parseInt(cs.left) || 0);
-			if(pos != 'absolute' && pos != 'relative'){
-				var ret = dojo.coords(n, true);
-				top = ret.y;
-				left = ret.x;
-				n.style.position="absolute";
-				n.style.top=top+"px";
-				n.style.left=left+"px";
-			}
-		};
-	})(node);
-	init();
-
-	var anim = dojo.animateProperty(dojo.mixin({
-		properties: {
-			top: { end: args.top||0 },
-			left: { end: args.left||0 }
-		}
-	}, args));
-	dojo.connect(anim, "beforeBegin", anim, init);
-
-	return anim; // dojo._Animation
-}
-
-}
-
-if(!dojo._hasResource["dijit._Templated"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dijit._Templated"] = true;
-dojo.provide("dijit._Templated");
-
-
-
-
-
-dojo.declare("dijit._Templated",
-	null,
-	{
-		// summary: Mixin for widgets that are instantiated from a template
-
-		// templateNode: DomNode
-		//		a node that represents the widget template. Pre-empts both templateString and templatePath.
-		templateNode: null,
-
-		// templateString: String
-		//		a string that represents the widget template. Pre-empts the
-		//		templatePath. In builds that have their strings "interned", the
-		//		templatePath is converted to an inline templateString, thereby
-		//		preventing a synchronous network call.
-		templateString: null,
-
-		// templatePath: String
-		//	Path to template (HTML file) for this widget
-		templatePath: null,
-
-		// widgetsInTemplate: Boolean
-		//		should we parse the template to find widgets that might be
-		//		declared in markup inside it? false by default.
-		widgetsInTemplate: false,
-
-		// containerNode: DomNode
-		//		holds child elements. "containerNode" is generally set via a
-		//		dojoAttachPoint assignment and it designates where children of
-		//		the src dom node will be placed
-		containerNode: null,
-
-		// skipNodeCache: Boolean
-		//		if using a cached widget template node poses issues for a
-		//		particular widget class, it can set this property to ensure
-		//		that its template is always re-built from a string
-		_skipNodeCache: false,
-
-		// method over-ride
-		buildRendering: function(){
-			// summary:
-			//		Construct the UI for this widget from a template, setting this.domNode.
-
-			// Lookup cached version of template, and download to cache if it
-			// isn't there already.  Returns either a DomNode or a string, depending on
-			// whether or not the template contains ${foo} replacement parameters.
-			var cached = dijit._Templated.getCachedTemplate(this.templatePath, this.templateString, this._skipNodeCache);
-
-			var node;
-			if(dojo.isString(cached)){
-				var className = this.declaredClass, _this = this;
-				// Cache contains a string because we need to do property replacement
-				// do the property replacement
-				var tstr = dojo.string.substitute(cached, this, function(value, key){
-					if(key.charAt(0) == '!'){ value = _this[key.substr(1)]; }
-					if(typeof value == "undefined"){ throw new Error(className+" template:"+key); } // a debugging aide
-					if(!value){ return ""; }
-
-					// Substitution keys beginning with ! will skip the transform step,
-					// in case a user wishes to insert unescaped markup, e.g. ${!foo}
-					return key.charAt(0) == "!" ? value :
-						// Safer substitution, see heading "Attribute values" in
-						// http://www.w3.org/TR/REC-html40/appendix/notes.html#h-B.3.2
-						value.toString().replace(/"/g,"&quot;"); //TODO: add &amp? use encodeXML method?
-				}, this);
-
-				node = dijit._Templated._createNodesFromText(tstr)[0];
-			}else{
-				// if it's a node, all we have to do is clone it
-				node = cached.cloneNode(true);
-			}
-
-			// recurse through the node, looking for, and attaching to, our
-			// attachment points which should be defined on the template node.
-			this._attachTemplateNodes(node);
-
-			var source = this.srcNodeRef;
-			if(source && source.parentNode){
-				source.parentNode.replaceChild(node, source);
-			}
-
-			this.domNode = node;
-			if(this.widgetsInTemplate){
-				var childWidgets = dojo.parser.parse(node);
-				this._attachTemplateNodes(childWidgets, function(n,p){
-					return n[p];
-				});
-			}
-
-			this._fillContent(source);
-		},
-
-		_fillContent: function(/*DomNode*/ source){
-			// summary:
-			//		relocate source contents to templated container node
-			//		this.containerNode must be able to receive children, or exceptions will be thrown
-			var dest = this.containerNode;
-			if(source && dest){
-				while(source.hasChildNodes()){
-					dest.appendChild(source.firstChild);
-				}
-			}
-		},
-
-		_attachTemplateNodes: function(rootNode, getAttrFunc){
-			// summary: Iterate through the template and attach functions and nodes accordingly.	
-			// description:		
-			//		Map widget properties and functions to the handlers specified in
-			//		the dom node and it's descendants. This function iterates over all
-			//		nodes and looks for these properties:
-			//			* dojoAttachPoint
-			//			* dojoAttachEvent	
-			//			* waiRole
-			//			* waiState
-			// rootNode: DomNode|Array[Widgets]
-			//		the node to search for properties. All children will be searched.
-			// getAttrFunc: function?
-			//		a function which will be used to obtain property for a given
-			//		DomNode/Widget
-
-			getAttrFunc = getAttrFunc || function(n,p){ return n.getAttribute(p); };
-
-			var nodes = dojo.isArray(rootNode) ? rootNode : (rootNode.all || rootNode.getElementsByTagName("*"));
-			var x=dojo.isArray(rootNode)?0:-1;
-			for(; x<nodes.length; x++){
-				var baseNode = (x == -1) ? rootNode : nodes[x];
-				if(this.widgetsInTemplate && getAttrFunc(baseNode,'dojoType')){
-					continue;
-				}
-				// Process dojoAttachPoint
-				var attachPoint = getAttrFunc(baseNode, "dojoAttachPoint");
-				if(attachPoint){
-					var point, points = attachPoint.split(/\s*,\s*/);
-					while(point=points.shift()){
-						if(dojo.isArray(this[point])){
-							this[point].push(baseNode);
-						}else{
-							this[point]=baseNode;
-						}
-					}
-				}
-
-				// Process dojoAttachEvent
-				var attachEvent = getAttrFunc(baseNode, "dojoAttachEvent");
-				if(attachEvent){
-					// NOTE: we want to support attributes that have the form
-					// "domEvent: nativeEvent; ..."
-					var event, events = attachEvent.split(/\s*,\s*/);
-					var trim = dojo.trim;
-					while(event=events.shift()){
-						if(event){
-							var thisFunc = null;
-							if(event.indexOf(":") != -1){
-								// oh, if only JS had tuple assignment
-								var funcNameArr = event.split(":");
-								event = trim(funcNameArr[0]);
-								thisFunc = trim(funcNameArr[1]);
-							}else{
-								event = trim(event);
-							}
-							if(!thisFunc){
-								thisFunc = event;
-							}
-							this.connect(baseNode, event, thisFunc);
-						}
-					}
-				}
-
-				// waiRole, waiState
-				var role = getAttrFunc(baseNode, "waiRole");
-				if(role){
-					dijit.setWaiRole(baseNode, role);
-				}
-				var values = getAttrFunc(baseNode, "waiState");
-				if(values){
-					dojo.forEach(values.split(/\s*,\s*/), function(stateValue){
-						if(stateValue.indexOf('-') != -1){
-							var pair = stateValue.split('-');
-							dijit.setWaiState(baseNode, pair[0], pair[1]);
-						}
-					});
-				}
-
-			}
-		}
-	}
-);
-
-// key is either templatePath or templateString; object is either string or DOM tree
-dijit._Templated._templateCache = {};
-
-dijit._Templated.getCachedTemplate = function(templatePath, templateString, alwaysUseString){
-	// summary:
-	//		Static method to get a template based on the templatePath or
-	//		templateString key
-	// templatePath: String
-	//		The URL to get the template from. dojo.uri.Uri is often passed as well.
-	// templateString: String?
-	//		a string to use in lieu of fetching the template from a URL. Takes precedence
-	//		over templatePath
-	// Returns: Mixed
-	//	Either string (if there are ${} variables that need to be replaced) or just
-	//	a DOM tree (if the node can be cloned directly)
-
-	// is it already cached?
-	var tmplts = dijit._Templated._templateCache;
-	var key = templateString || templatePath;
-	var cached = tmplts[key];
-	if(cached){
-		return cached;
-	}
-
-	// If necessary, load template string from template path
-	if(!templateString){
-		templateString = dijit._Templated._sanitizeTemplateString(dojo._getText(templatePath));
-	}
-
-	templateString = dojo.string.trim(templateString);
-
-	if(templateString.match(/\$\{([^\}]+)\}/g) || alwaysUseString){
-		// there are variables in the template so all we can do is cache the string
-		return (tmplts[key] = templateString); //String
-	}else{
-		// there are no variables in the template so we can cache the DOM tree
-		return (tmplts[key] = dijit._Templated._createNodesFromText(templateString)[0]); //Node
-	}
-};
-
-dijit._Templated._sanitizeTemplateString = function(/*String*/tString){
-	// summary: 
-	//		Strips <?xml ...?> declarations so that external SVG and XML
-	// 		documents can be added to a document without worry. Also, if the string
-	//		is an HTML document, only the part inside the body tag is returned.
-	if(tString){
-		tString = tString.replace(/^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im, "");
-		var matches = tString.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
-		if(matches){
-			tString = matches[1];
-		}
-	}else{
-		tString = "";
-	}
-	return tString; //String
-};
-
-
-if(dojo.isIE){
-	dojo.addOnUnload(function(){
-		var cache = dijit._Templated._templateCache;
-		for(var key in cache){
-			var value = cache[key];
-			if(!isNaN(value.nodeType)){ // isNode equivalent
-				dojo._destroyElement(value);
-			}
-			delete cache[key];
-		}
-	});
-}
-
-(function(){
-	var tagMap = {
-		cell: {re: /^<t[dh][\s\r\n>]/i, pre: "<table><tbody><tr>", post: "</tr></tbody></table>"},
-		row: {re: /^<tr[\s\r\n>]/i, pre: "<table><tbody>", post: "</tbody></table>"},
-		section: {re: /^<(thead|tbody|tfoot)[\s\r\n>]/i, pre: "<table>", post: "</table>"}
-	};
-
-	// dummy container node used temporarily to hold nodes being created
-	var tn;
-
-	dijit._Templated._createNodesFromText = function(/*String*/text){
-		// summary:
-		//	Attempts to create a set of nodes based on the structure of the passed text.
-
-		if(!tn){
-			tn = dojo.doc.createElement("div");
-			tn.style.display="none";
-			dojo.body().appendChild(tn);
-		}
-		var tableType = "none";
-		var rtext = text.replace(/^\s+/, "");
-		for(var type in tagMap){
-			var map = tagMap[type];
-			if(map.re.test(rtext)){
-				tableType = type;
-				text = map.pre + text + map.post;
-				break;
-			}
-		}
-
-		tn.innerHTML = text;
-		if(tn.normalize){
-			tn.normalize();
-		}
-
-		var tag = { cell: "tr", row: "tbody", section: "table" }[tableType];
-		var _parent = (typeof tag != "undefined") ?
-						tn.getElementsByTagName(tag)[0] :
-						tn;
-
-		var nodes = [];
-		while(_parent.firstChild){
-			nodes.push(_parent.removeChild(_parent.firstChild));
-		}
-		tn.innerHTML="";
-		return nodes;	//	Array
-	}
-})();
-
-// These arguments can be specified for widgets which are used in templates.
-// Since any widget can be specified as sub widgets in template, mix it
-// into the base widget class.  (This is a hack, but it's effective.)
-dojo.extend(dijit._Widget,{
-	dojoAttachEvent: "",
-	dojoAttachPoint: "",
-	waiRole: "",
-	waiState:""
-})
-
-}
-
-if(!dojo._hasResource["dijit.form.Form"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dijit.form.Form"] = true;
-dojo.provide("dijit.form.Form");
-
-
-
-
-dojo.declare("dijit.form._FormMixin", null,
-	{
-		/*
-		summary:
-			Widget corresponding to <form> tag, for validation and serialization
-
-		usage:
-			<form dojoType="dijit.form.Form" id="myForm">
-				Name: <input type="text" name="name" />
-			</form>
-			myObj={name: "John Doe"};
-			dijit.byId('myForm').setValues(myObj);
-
-			myObj=dijit.byId('myForm').getValues();
-		TODO:
-		* Repeater
-		* better handling for arrays.  Often form elements have names with [] like
-		* people[3].sex (for a list of people [{name: Bill, sex: M}, ...])
-
-		*/
-
-		// HTML <FORM> attributes
-
-		action: "",
-		method: "",
-		enctype: "",
-		name: "",
-		"accept-charset": "",
-		accept: "",
-		target: "",
-
-		attributeMap: dojo.mixin(dojo.clone(dijit._Widget.prototype.attributeMap),
-			{action: "", method: "", enctype: "", "accept-charset": "", accept: "", target: ""}),
-
-		// execute: Function
-		//	User defined function to do stuff when the user hits the submit button
-		execute: function(/*Object*/ formContents){},
-
-		// onCancel: Function
-		//	Callback when user has canceled dialog, to notify container
-		//	(user shouldn't override)
-		onCancel: function(){},
-
-		// onExecute: Function
-		//	Callback when user is about to execute dialog, to notify container
-		//	(user shouldn't override)
-		onExecute: function(){},
-
-		templateString: "<form dojoAttachPoint='containerNode' dojoAttachEvent='onsubmit:_onSubmit' name='${name}' enctype='multipart/form-data'></form>",
-
-		_onSubmit: function(/*event*/e) {
-			// summary: callback when user hits submit button
-			dojo.stopEvent(e);
-			this.onExecute();	// notify container that we are about to execute
-			this.execute(this.getValues());
-		},
-
-		submit: function() {
-			// summary: programatically submit form
-			this.containerNode.submit();
-		},
-
-		setValues: function(/*object*/obj) {
-			// summary: fill in form values from a JSON structure
-
-			// generate map from name --> [list of widgets with that name]
-			var map = {};
-			dojo.forEach(this.getDescendants(), function(widget){
-				if(!widget.name){ return; }
-				var entry = map[widget.name] || (map[widget.name] = [] );
-				entry.push(widget);
-			});
-
-			// call setValue() or setChecked() for each widget, according to obj
-			for(var name in map){
-				var widgets = map[name],						// array of widgets w/this name
-					values = dojo.getObject(name, false, obj);	// list of values for those widgets
-				if(!dojo.isArray(values)){
-					values = [ values ];
-				}
-				if(widgets[0].setChecked){
-					// for checkbox/radio, values is a list of which widgets should be checked
-					dojo.forEach(widgets, function(w, i){
-						w.setChecked(dojo.indexOf(values, w.value) != -1);
-					});
-				}else{
-					// otherwise, values is a list of values to be assigned sequentially to each widget
-					dojo.forEach(widgets, function(w, i){
-						w.setValue(values[i]);
-					});					
-				}
-			}
-
-			/***
-			 * 	TODO: code for plain input boxes (this shouldn't run for inputs that are part of widgets
-
-			dojo.forEach(this.containerNode.elements, function(element){
-				if (element.name == ''){return};	// like "continue"	
-				var namePath = element.name.split(".");
-				var myObj=obj;
-				var name=namePath[namePath.length-1];
-				for(var j=1,len2=namePath.length;j<len2;++j) {
-					var p=namePath[j - 1];
-					// repeater support block
-					var nameA=p.split("[");
-					if (nameA.length > 1) {
-						if(typeof(myObj[nameA[0]]) == "undefined") {
-							myObj[nameA[0]]=[ ];
-						} // if
-
-						nameIndex=parseInt(nameA[1]);
-						if(typeof(myObj[nameA[0]][nameIndex]) == "undefined") {
-							myObj[nameA[0]][nameIndex]={};
-						}
-						myObj=myObj[nameA[0]][nameIndex];
-						continue;
-					} // repeater support ends
-
-					if(typeof(myObj[p]) == "undefined") {
-						myObj=undefined;
-						break;
+	onDndDrop: function(source, nodes, copy){
+		// summary: topic event processor for /dnd/drop, called to finish the DnD operation
+		// source: Object: the source which provides items
+		// nodes: Array: the list of transferred items
+		// copy: Boolean: copy items, if true, move items otherwise
+		do{ //break box
+			if(this.containerState != "Over"){ break; }
+			var oldCreator = this._normalizedCreator;
+			if(this != source){
+				// transferring nodes from the source to the target
+				if(this.creator){
+					// use defined creator
+					this._normalizedCreator = function(node, hint){
+						return oldCreator.call(this, source.getItem(node.id).data, hint);
 					};
-					myObj=myObj[p];
-				}
-
-				if (typeof(myObj) == "undefined") {
-					return;		// like "continue"
-				}
-				if (typeof(myObj[name]) == "undefined" && this.ignoreNullValues) {
-					return;		// like "continue"
-				}
-
-				// TODO: widget values (just call setValue() on the widget)
-
-				switch(element.type) {
-					case "checkbox":
-						element.checked = (name in myObj) &&
-							dojo.some(myObj[name], function(val){ return val==element.value; });
-						break;
-					case "radio":
-						element.checked = (name in myObj) && myObj[name]==element.value;
-						break;
-					case "select-multiple":
-						element.selectedIndex=-1;
-						dojo.forEach(element.options, function(option){
-							option.selected = dojo.some(myObj[name], function(val){ return option.value == val; });
-						});
-						break;
-					case "select-one":
-						element.selectedIndex="0";
-						dojo.forEach(element.options, function(option){
-							option.selected = option.value == myObj[name];
-						});
-						break;
-					case "hidden":
-					case "text":
-					case "textarea":
-					case "password":
-						element.value = myObj[name] || "";
-						break;
-				}
-	  		});
-	  		*/
-		},
-
-		getValues: function() {
-			// summary: generate JSON structure from form values
-
-			// get widget values
-			var obj = {};
-			dojo.forEach(this.getDescendants(), function(widget){
-				var value = widget.getValue ? widget.getValue() : widget.value;
-				var name = widget.name;
-				if(!name){ return; }
-
-				// Store widget's value(s) as a scalar, except for checkboxes which are automatically arrays
-				if(widget.setChecked){
-					if(/Radio/.test(widget.declaredClass)){
-						// radio button
-						if(widget.checked){
-							dojo.setObject(name, value, obj);
-						}
+				}else{
+					// we have no creator defined => move/clone nodes
+					if(copy){
+						// clone nodes
+						this._normalizedCreator = function(node, hint){
+							var t = source.getItem(node.id);
+							var n = node.cloneNode(true);
+							n.id = dojo.dnd.getUniqueId();
+							return {node: n, data: t.data, type: t.type};
+						};
 					}else{
-						// checkbox/toggle button
-						var ary=dojo.getObject(name, false, obj);
-						if(!ary){
-							ary=[];
-							dojo.setObject(name, ary, obj);
-						}
-						if(widget.checked){
-							ary.push(value);
-						}
+						// move nodes
+						this._normalizedCreator = function(node, hint){
+							var t = source.getItem(node.id);
+							source.delItem(node.id);
+							return {node: node, data: t.data, type: t.type};
+						};
+					}
+				}
+			}else{
+				// transferring nodes within the single source
+				if(this.current && this.current.id in this.selection){ break; }
+				if(this.creator){
+					// use defined creator
+					if(copy){
+						// create new copies of data items
+						this._normalizedCreator = function(node, hint){
+							return oldCreator.call(this, source.getItem(node.id).data, hint);
+						};
+					}else{
+						// move nodes
+						if(!this.current){ break; }
+						this._normalizedCreator = function(node, hint){
+							var t = source.getItem(node.id);
+							return {node: node, data: t.data, type: t.type};
+						};
 					}
 				}else{
-					// plain input
-					dojo.setObject(name, value, obj);
+					// we have no creator defined => move/clone nodes
+					if(copy){
+						// clone nodes
+						this._normalizedCreator = function(node, hint){
+							var t = source.getItem(node.id);
+							var n = node.cloneNode(true);
+							n.id = dojo.dnd.getUniqueId();
+							return {node: n, data: t.data, type: t.type};
+						};
+					}else{
+						// move nodes
+						if(!this.current){ break; }
+						this._normalizedCreator = function(node, hint){
+							var t = source.getItem(node.id);
+							return {node: node, data: t.data, type: t.type};
+						};
+					}
 				}
-			});
-
-			/***
-			 * code for plain input boxes (see also dojo.formToObject, can we use that instead of this code?
-			 * but it doesn't understand [] notation, presumably)
-			var obj = { };
-			dojo.forEach(this.containerNode.elements, function(elm){
-				if (!elm.name)	{
-					return;		// like "continue"
-				}
-				var namePath = elm.name.split(".");
-				var myObj=obj;
-				var name=namePath[namePath.length-1];
-				for(var j=1,len2=namePath.length;j<len2;++j) {
-					var nameIndex = null;
-					var p=namePath[j - 1];
-					var nameA=p.split("[");
-					if (nameA.length > 1) {
-						if(typeof(myObj[nameA[0]]) == "undefined") {
-							myObj[nameA[0]]=[ ];
-						} // if
-						nameIndex=parseInt(nameA[1]);
-						if(typeof(myObj[nameA[0]][nameIndex]) == "undefined") {
-							myObj[nameA[0]][nameIndex]={};
-						}
-					} else if(typeof(myObj[nameA[0]]) == "undefined") {
-						myObj[nameA[0]]={}
-					} // if
-
-					if (nameA.length == 1) {
-						myObj=myObj[nameA[0]];
-					} else {
-						myObj=myObj[nameA[0]][nameIndex];
-					} // if
-				} // for
-
-				if ((elm.type != "select-multiple" && elm.type != "checkbox" && elm.type != "radio") || (elm.type=="radio" && elm.checked)) {
-					if(name == name.split("[")[0]) {
-						myObj[name]=elm.value;
-					} else {
-						// can not set value when there is no name
-					}
-				} else if (elm.type == "checkbox" && elm.checked) {
-					if(typeof(myObj[name]) == 'undefined') {
-						myObj[name]=[ ];
-					}
-					myObj[name].push(elm.value);
-				} else if (elm.type == "select-multiple") {
-					if(typeof(myObj[name]) == 'undefined') {
-						myObj[name]=[ ];
-					}
-					for (var jdx=0,len3=elm.options.length; jdx<len3; ++jdx) {
-						if (elm.options[jdx].selected) {
-							myObj[name].push(elm.options[jdx].value);
-						}
-					}
-				} // if
-				name=undefined;
-			}); // forEach
-			***/
-			return obj;
-		},
-
-	 	isValid: function() {
-	 		// TODO: ComboBox might need time to process a recently input value.  This should be async?
-	 		// make sure that every widget that has a validator function returns true
-	 		return dojo.every(this.getDescendants(), function(widget){
-	 			return !widget.isValid || widget.isValid();
-	 		});
+			}
+			this._removeSelection();
+			if(this != source){
+				this._removeAnchor();
+			}
+			if(this != source && !copy && !this.creator){
+				source.selectNone();
+			}
+			this.insertNodes(true, nodes, this.before, this.current);
+			if(this != source && !copy && this.creator){
+				source.deleteSelectedNodes();
+			}
+			this._normalizedCreator = oldCreator;
+		}while(false);
+		this.onDndCancel();
+	},
+	onDndCancel: function(){
+		// summary: topic event processor for /dnd/cancel, called to cancel the DnD operation
+		if(this.targetAnchor){
+			this._unmarkTargetAnchor();
+			this.targetAnchor = null;
 		}
-	});
-
-dojo.declare(
-	"dijit.form.Form",
-	[dijit._Widget, dijit._Templated, dijit.form._FormMixin],
-	null
-);
-
-}
-
-if(!dojo._hasResource["dijit.Dialog"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dijit.Dialog"] = true;
-dojo.provide("dijit.Dialog");
-
-
-
-
-
-
-
-
-
-dojo.declare(
-	"dijit.DialogUnderlay",
-	[dijit._Widget, dijit._Templated],
-	{
-		// summary: The component that grays out the screen behind the dialog
+		this.before = true;
+		this.isDragging = false;
+		this.mouseDown = false;
+		this._changeState("Source", "");
+		this._changeState("Target", "");
+	},
 	
-		// Template has two divs; outer div is used for fade-in/fade-out, and also to hold background iframe.
-		// Inner div has opacity specified in CSS file.
-		templateString: "<div class=dijitDialogUnderlayWrapper id='${id}_underlay'><div class=dijitDialogUnderlay dojoAttachPoint='node'></div></div>",
-
-		postCreate: function(){
-			// summary: Append the underlay to the body
-			dojo.body().appendChild(this.domNode);
-			this.bgIframe = new dijit.BackgroundIframe(this.domNode);
-		},
-
-		layout: function(){
-			// summary: Sets he background to the size of the viewport
-			//
-			// description:
-			//	Sets the background to the size of the viewport (rather than the size
-			//	of the document) since we need to cover the whole browser window, even
-			//	if the document is only a few lines long.
-
-			var viewport = dijit.getViewport();
-			var is = this.node.style,
-				os = this.domNode.style;
-
-			os.top = viewport.t + "px";
-			os.left = viewport.l + "px";
-			is.width = viewport.w + "px";
-			is.height = viewport.h + "px";
-
-			// process twice since the scroll bar may have been removed
-			// by the previous resizing
-			var viewport2 = dijit.getViewport();
-			if(viewport.w != viewport2.w){ is.width = viewport2.w + "px"; }
-			if(viewport.h != viewport2.h){ is.height = viewport2.h + "px"; }
-		},
-
-		show: function(){
-			// summary: Show the dialog underlay
-			this.domNode.style.display = "block";
-			this.layout();
-			if(this.bgIframe.iframe){
-				this.bgIframe.iframe.style.display = "block";
-			}
-			this._resizeHandler = this.connect(window, "onresize", "layout");
-		},
-
-		hide: function(){
-			// summary: hides the dialog underlay
-			this.domNode.style.display = "none";
-			if(this.bgIframe.iframe){
-				this.bgIframe.iframe.style.display = "none";
-			}
-			this.disconnect(this._resizeHandler);
-		},
-
-		uninitialize: function(){
-			if(this.bgIframe){
-				this.bgIframe.destroy();
-			}
+	// utilities
+	onOverEvent: function(){
+		// summary: this function is called once, when mouse is over our container
+		dojo.dnd.Source.superclass.onOverEvent.call(this);
+		dojo.dnd.manager().overSource(this);
+	},
+	onOutEvent: function(){
+		// summary: this function is called once, when mouse is out of our container
+		dojo.dnd.Source.superclass.onOutEvent.call(this);
+		dojo.dnd.manager().outSource(this);
+	},
+	_markTargetAnchor: function(before){
+		// summary: assigns a class to the current target anchor based on "before" status
+		// before: Boolean: insert before, if true, after otherwise
+		if(this.current == this.targetAnchor && this.before == before){ return; }
+		if(this.targetAnchor){
+			this._removeItemClass(this.targetAnchor, this.before ? "Before" : "After");
 		}
+		this.targetAnchor = this.current;
+		this.targetBox = null;
+		this.before = before;
+		if(this.targetAnchor){
+			this._addItemClass(this.targetAnchor, this.before ? "Before" : "After");
+		}
+	},
+	_unmarkTargetAnchor: function(){
+		// summary: removes a class of the current target anchor based on "before" status
+		if(!this.targetAnchor){ return; }
+		this._removeItemClass(this.targetAnchor, this.before ? "Before" : "After");
+		this.targetAnchor = null;
+		this.targetBox = null;
+		this.before = true;
+	},
+	_markDndStatus: function(copy){
+		// summary: changes source's state based on "copy" status
+		this._changeState("Source", copy ? "Copied" : "Moved");
+	},
+	_legalMouseDown: function(e){
+		// summary: checks if user clicked on "approved" items
+		// e: Event: mouse event
+		if(!this.withHandles){ return true; }
+		for(var node = e.target; node && !dojo.hasClass(node, "dojoDndItem"); node = node.parentNode){
+			if(dojo.hasClass(node, "dojoDndHandle")){ return true; }
+		}
+		return false;	// Boolean
 	}
-);
+});
 
-dojo.declare(
-	"dijit.Dialog",
-	[dijit.layout.ContentPane, dijit._Templated, dijit.form._FormMixin],
-	{
-		// summary: A modal dialog Widget
-		//
-		// description:
-		//	Pops up a modal dialog window, blocking access to the screen
-		//	and also graying out the screen Dialog is extended from
-		//	ContentPane so it supports all the same parameters (href, etc.)
-		//
-		// example:
-		// |	<div dojoType="dijit.Dialog" href="test.html"></div>
-		//
-		// example:
-		// |	<div id="test">test content</div>
-		// |	...
-		// |	var foo = new dijit.Dialog({ title: "test dialog" },dojo.byId("test"));
-		// |	foo.startup();
-		
-		templateString: null,
-		templateString:"<div class=\"dijitDialog\">\n\t<div dojoAttachPoint=\"titleBar\" class=\"dijitDialogTitleBar\" tabindex=\"0\" waiRole=\"dialog\">\n\t<span dojoAttachPoint=\"titleNode\" class=\"dijitDialogTitle\">${title}</span>\n\t<span dojoAttachPoint=\"closeButtonNode\" class=\"dijitDialogCloseIcon\" dojoAttachEvent=\"onclick: hide\">\n\t\t<span dojoAttachPoint=\"closeText\" class=\"closeText\">x</span>\n\t</span>\n\t</div>\n\t\t<div dojoAttachPoint=\"containerNode\" class=\"dijitDialogPaneContent\"></div>\n\t<span dojoAttachPoint=\"tabEnd\" dojoAttachEvent=\"onfocus:_cycleFocus\" tabindex=\"0\"></span>\n</div>\n",
+dojo.declare("dojo.dnd.Target", dojo.dnd.Source, {
+	// summary: a Target object, which can be used as a DnD target
+	
+	constructor: function(node, params){
+		// summary: a constructor of the Target --- see the Source constructor for details
+		this.isSource = false;
+		dojo.removeClass(this.node, "dojoDndSource");
+	},
 
-		// open: Boolean
-		//		is True or False depending on state of dialog
-		open: false,
-
-		// duration: Integer
-		//		The time in milliseconds it takes the dialog to fade in and out
-		duration: 400,
-
-		// _lastFocusItem: DomNode
-		//		The pointer to which node has focus prior to our dialog
-		_lastFocusItem:null,
-
-		attributeMap: dojo.mixin(dojo.clone(dijit._Widget.prototype.attributeMap),
-			{title: "titleBar"}),
-
-		postCreate: function(){
-			dojo.body().appendChild(this.domNode);
-			this.inherited("postCreate",arguments);
-			this.domNode.style.display="none";
-			this.connect(this, "onExecute", "hide");
-			this.connect(this, "onCancel", "hide");
-		},
-
-		onLoad: function(){
-			// summary: when href is specified we need to reposition the dialog after the data is loaded
-			this._position();
-			this.inherited("onLoad",arguments);
-		},
-
-		_setup: function(){
-			// summary: 
-			//		stuff we need to do before showing the Dialog for the first
-			//		time (but we defer it until right beforehand, for
-			//		performance reasons)
-
-			this._modalconnects = [];
-
-			if(this.titleBar){
-				this._moveable = new dojo.dnd.Moveable(this.domNode, { handle: this.titleBar });
-			}
-
-			this._underlay = new dijit.DialogUnderlay();
-
-			var node = this.domNode;
-			this._fadeIn = dojo.fx.combine(
-				[dojo.fadeIn({
-					node: node,
-					duration: this.duration
-				 }),
-				 dojo.fadeIn({
-					node: this._underlay.domNode,
-					duration: this.duration,
-					onBegin: dojo.hitch(this._underlay, "show")
-				 })
-				]
-			);
-
-			this._fadeOut = dojo.fx.combine(
-				[dojo.fadeOut({
-					node: node,
-					duration: this.duration,
-					onEnd: function(){
-						node.style.display="none";
-					}
-				 }),
-				 dojo.fadeOut({
-					node: this._underlay.domNode,
-					duration: this.duration,
-					onEnd: dojo.hitch(this._underlay, "hide")
-				 })
-				]
-			);
-		},
-
-		uninitialize: function(){
-			if(this._fadeIn.status() == "playing"){
-				this._fadeIn.stop();
-			}
-			if(this._fadeOut.status() == "playing"){
-				this._fadeOut.stop();
-			}
-			if(this._underlay){
-				this._underlay.destroy();
-			}
-		},
-
-		_position: function(){
-			// summary: position modal dialog in center of screen
-			
-			if(dojo.hasClass(dojo.body(),"dojoMove")){ return; }
-			var viewport = dijit.getViewport();
-			var mb = dojo.marginBox(this.domNode);
-
-			var style = this.domNode.style;
-			style.left = Math.floor((viewport.l + (viewport.w - mb.w)/2)) + "px";
-			style.top = Math.floor((viewport.t + (viewport.h - mb.h)/2)) + "px";
-		},
-
-		_findLastFocus: function(/*Event*/ evt){
-			// summary:  called from onblur of dialog container to determine the last focusable item
-			this._lastFocused = evt.target;
-		},
-
-		_cycleFocus: function(/*Event*/ evt){
-			// summary: when tabEnd receives focus, advance focus around to titleBar
-
-			// on first focus to tabEnd, store the last focused item in dialog
-			if(!this._lastFocusItem){
-				this._lastFocusItem = this._lastFocused;
-			}
-			this.titleBar.focus();
-		},
-
-		_onKey: function(/*Event*/ evt){
-			// summary: handles the keyboard events for accessibility reasons
-			if(evt.keyCode){
-				var node = evt.target;
-				// see if we are shift-tabbing from titleBar
-				if(node == this.titleBar && evt.shiftKey && evt.keyCode == dojo.keys.TAB){
-					if(this._lastFocusItem){
-						this._lastFocusItem.focus(); // send focus to last item in dialog if known
-					}
-					dojo.stopEvent(evt);
-				}else{
-					// see if the key is for the dialog
-					while(node){
-						if(node == this.domNode){
-							if(evt.keyCode == dojo.keys.ESCAPE){
-								this.hide(); 
-							}else{
-								return; // just let it go
-							}
-						}
-						node = node.parentNode;
-					}
-					// this key is for the disabled document window
-					if(evt.keyCode != dojo.keys.TAB){ // allow tabbing into the dialog for a11y
-						dojo.stopEvent(evt);
-					// opera won't tab to a div
-					}else if (!dojo.isOpera){
-						try{
-							this.titleBar.focus();
-						}catch(e){/*squelch*/}
-					}
-				}
-			}
-		},
-
-		show: function(){
-			// summary: display the dialog
-
-			// first time we show the dialog, there's some initialization stuff to do			
-			if(!this._alreadyInitialized){
-				this._setup();
-				this._alreadyInitialized=true;
-			}
-
-			if(this._fadeOut.status() == "playing"){
-				this._fadeOut.stop();
-			}
-
-			this._modalconnects.push(dojo.connect(window, "onscroll", this, "layout"));
-			this._modalconnects.push(dojo.connect(document.documentElement, "onkeypress", this, "_onKey"));
-
-			// IE doesn't bubble onblur events - use ondeactivate instead
-			var ev = typeof(document.ondeactivate) == "object" ? "ondeactivate" : "onblur";
-			this._modalconnects.push(dojo.connect(this.containerNode, ev, this, "_findLastFocus"));
-
-			dojo.style(this.domNode, "opacity", 0);
-			this.domNode.style.display="block";
-			this.open = true;
-			this._loadCheck(); // lazy load trigger
-
-			this._position();
-
-			this._fadeIn.play();
-
-			this._savedFocus = dijit.getFocus(this);
-
-			// set timeout to allow the browser to render dialog
-			setTimeout(dojo.hitch(this, function(){
-				dijit.focus(this.titleBar);
-			}), 50);
-		},
-
-		hide: function(){
-			// summary: Hide the dialog
-
-			// if we haven't been initialized yet then we aren't showing and we can just return		
-			if(!this._alreadyInitialized){
-				return;
-			}
-
-			if(this._fadeIn.status() == "playing"){
-				this._fadeIn.stop();
-			}
-			this._fadeOut.play();
-
-			if (this._scrollConnected){
-				this._scrollConnected = false;
-			}
-			dojo.forEach(this._modalconnects, dojo.disconnect);
-			this._modalconnects = [];
-
-			this.connect(this._fadeOut,"onEnd",dojo.hitch(this,function(){
-				dijit.focus(this._savedFocus);
-			}));
-			this.open = false;
-		},
-
-		layout: function() {
-			// summary: position the Dialog and the underlay
-			if(this.domNode.style.display == "block"){
-				this._underlay.layout();
-				this._position();
-			}
-		}
+	// markup methods
+	markupFactory: function(params, node){
+		params._skipStartup = true;
+		return new dojo.dnd.Target(node, params);
 	}
-);
-
-dojo.declare(
-	"dijit.TooltipDialog",
-	[dijit.layout.ContentPane, dijit._Templated, dijit.form._FormMixin],
-	{
-		// summary:
-		//		Pops up a dialog that appears like a Tooltip
-		//
-		// title: String
-		// 		Description of tooltip dialog (required for a11Y)
-		title: "",
-
-		// _lastFocusItem: DomNode
-		//		The domNode that had focus before we took it.
-		_lastFocusItem: null,
-
-		templateString: null,
-		templateString:"<div class=\"dijitTooltipDialog\" >\n\t<div class=\"dijitTooltipContainer\">\n\t\t<div class =\"dijitTooltipContents dijitTooltipFocusNode\" dojoAttachPoint=\"containerNode\" tabindex=\"0\" waiRole=\"dialog\"></div>\n\t</div>\n\t<span dojoAttachPoint=\"tabEnd\" tabindex=\"0\" dojoAttachEvent=\"focus:_cycleFocus\"></span>\n\t<div class=\"dijitTooltipConnector\" ></div>\n</div>\n",
-
-		postCreate: function(){
-			this.inherited("postCreate",arguments);
-			this.connect(this.containerNode, "onkeypress", "_onKey");
-
-			// IE doesn't bubble onblur events - use ondeactivate instead
-			var ev = typeof(document.ondeactivate) == "object" ? "ondeactivate" : "onblur";
-			this.connect(this.containerNode, ev, "_findLastFocus");
-			this.containerNode.title=this.title;
-		},
-
-		orient: function(/*Object*/ corner){
-			// summary: configure widget to be displayed in given position relative to the button
-			this.domNode.className="dijitTooltipDialog " +" dijitTooltipAB"+(corner.charAt(1)=='L'?"Left":"Right")+" dijitTooltip"+(corner.charAt(0)=='T' ? "Below" : "Above");
-		},
-
-		onOpen: function(/*Object*/ pos){
-			// summary: called when dialog is displayed
-			this.orient(pos.corner);
-			this._loadCheck(); // lazy load trigger
-			this.containerNode.focus();
-		},
-
-		_onKey: function(/*Event*/ evt){
-			// summary: keep keyboard focus in dialog; close dialog on escape key
-			if(evt.keyCode == dojo.keys.ESCAPE){
-				this.onCancel();
-			}else if(evt.target == this.containerNode && evt.shiftKey && evt.keyCode == dojo.keys.TAB){
-				if (this._lastFocusItem){
-					this._lastFocusItem.focus();
-				}
-				dojo.stopEvent(evt);
-			}else if(evt.keyCode == dojo.keys.TAB){
-				// we want the browser's default tab handling to move focus
-				// but we don't want the tab to propagate upwards
-				evt.stopPropagation();
-			}
-		},
-
-		_findLastFocus: function(/*Event*/ evt){
-			// summary: called from onblur of dialog container to determine the last focusable item
-			this._lastFocused = evt.target;
-		},
-
-		_cycleFocus: function(/*Event*/ evt){
-			// summary: when tabEnd receives focus, advance focus around to containerNode
-
-			// on first focus to tabEnd, store the last focused item in dialog
-			if(!this._lastFocusItem){
-				this._lastFocusItem = this._lastFocused;
-			}
-			this.containerNode.focus();
-		}
-	}	
-);
-
+});
 
 }
 
