@@ -29,6 +29,11 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
 
+/**
+ * @author jmox
+ * @version $Id$
+ *
+ */
 public class UserAttribute2Locale implements EventExecution {
 
   public Return execute(final Parameter _parameter) throws EFapsException {

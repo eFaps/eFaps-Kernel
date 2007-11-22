@@ -26,6 +26,8 @@ import javax.swing.tree.DefaultTreeModel;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 
+import org.efaps.ui.wicket.models.MenuItemModel;
+
 /**
  * This Class renders a Link wich removes a Child from a MenuTree
  *
@@ -51,10 +53,29 @@ public class AjaxRemoveLink extends AjaxLink {
 
   @Override
   public void onClick(final AjaxRequestTarget _target) {
-    MenuTree menutree = (MenuTree) findParent(MenuTree.class);
-    menutree.getTreeState().selectNode(this.node.getParent(), true);
+    final MenuTree menutree = (MenuTree) findParent(MenuTree.class);
+    final DefaultMutableTreeNode parent =
+        (DefaultMutableTreeNode) this.node.getParent();
+    final DefaultMutableTreeNode selected =
+        (DefaultMutableTreeNode) menutree.getTreeState().getSelectedNodes()
+            .iterator().next();
+    boolean selectParent = false;
+    if (this.node.isNodeDescendant(selected)) {
+      selectParent = true;
+    }
+    menutree.getTreeState().selectNode(parent, true);
+
     ((DefaultTreeModel) menutree.getModelObject())
         .removeNodeFromParent(this.node);
+
+    if (selectParent) {
+      menutree.getTreeState().selectNode(parent, true);
+      menutree.changeContent((MenuItemModel) parent.getUserObject(), _target);
+    } else {
+      menutree.getTreeState().selectNode(selected, true);
+      _target.addComponent(menutree.getNodeComponent(parent));
+    }
+
     menutree.updateTree(_target);
 
   }

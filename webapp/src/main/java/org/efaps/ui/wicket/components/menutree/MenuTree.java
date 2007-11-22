@@ -29,6 +29,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
+import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.ResourceReference;
@@ -42,12 +44,18 @@ import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.image.Image;
+import org.apache.wicket.markup.html.link.IPageLink;
+import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.AbstractTree;
 import org.apache.wicket.model.Model;
 
+import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.StaticImageComponent;
 import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.pages.content.form.FormPage;
+import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
 /**
  * @author jmox
@@ -271,6 +279,63 @@ public class MenuTree extends AbstractTree {
     updateTree(_target);
   }
 
+  public void changeContent(final MenuItemModel _model,
+                            final AjaxRequestTarget _target) {
+
+    final CommandAbstract cmd = _model.getCommand();
+    final PageParameters para = new PageParameters();
+    para.add("oid", _model.getOid());
+    para.add("command", cmd.getUUID().toString());
+
+    InlineFrame page = null;
+    if (cmd.getTargetTable() != null) {
+      page =
+          new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+              .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+              new IPageLink() {
+
+                private static final long serialVersionUID = 1L;
+
+                public Page getPage() {
+                  TablePage page = new TablePage(para);
+                  page.setListMenuKey(getMenuKey());
+                  return page;
+                }
+
+                public Class<TablePage> getPageIdentity() {
+                  return TablePage.class;
+                }
+              });
+    } else {
+      page =
+          new InlineFrame(ContentContainerPage.IFRAME_WICKETID, PageMap
+              .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME),
+              new IPageLink() {
+
+                private static final long serialVersionUID = 1L;
+
+                public Page getPage() {
+                  FormPage page = new FormPage(para);
+                  page.setListMenuKey(getMenuKey());
+                  return page;
+                }
+
+                public Class<FormPage> getPageIdentity() {
+                  return FormPage.class;
+                }
+              });
+    }
+
+    InlineFrame component =
+        (InlineFrame) getPage().get(
+            ((ContentContainerPage) getPage()).getInlinePath());
+    page.setOutputMarkupId(true);
+
+    component.replaceWith(page);
+    _target.addComponent(page.getParent());
+
+  }
+
   public class Intendation extends WebMarkupContainer {
 
     private static final long serialVersionUID = 1L;
@@ -295,4 +360,5 @@ public class MenuTree extends AbstractTree {
     }
 
   }
+
 }
