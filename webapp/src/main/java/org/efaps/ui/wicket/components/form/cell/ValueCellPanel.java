@@ -39,7 +39,7 @@ public class ValueCellPanel extends Panel {
   private static final long serialVersionUID = 1L;
 
   public ValueCellPanel(final String _wicketId, final FormCellModel _model,
-                   final boolean _ajaxLink) {
+                        final boolean _ajaxLink) {
     super(_wicketId, _model);
     if (_model.getReference() != null) {
       this.add(new WebComponent("icon").setVisible(false));
@@ -55,13 +55,22 @@ public class ValueCellPanel extends Panel {
           ((ContentContainerLink) link).setPopupSettings(popup);
         }
       }
-      link.add(new StaticImageComponent("linkIcon", new Model(_model
-          .getIcon())));
-      link.add(new LabelComponent("linkLabel", new Model(_model
-          .getCellValue())));
+      if (_model.getIcon() == null) {
+        this.add(new WebComponent("icon").setVisible(false));
+      } else {
+        link.add(new StaticImageComponent("linkIcon", new Model(_model
+            .getIcon())));
+      }
+      link
+          .add(new LabelComponent("linkLabel", new Model(_model.getCellValue())));
       this.add(link);
     } else {
-      this.add(new StaticImageComponent("icon", new Model(_model.getIcon())));
+      if (_model.getIcon() == null) {
+        this.add(new WebComponent("icon").setVisible(false));
+      } else {
+        this.add(new StaticImageComponent("icon", new Model(_model.getIcon())));
+      }
+
       this.add(new LabelComponent("label", new Model(_model.getCellValue())));
       this.add(new WebMarkupContainer("link").setVisible(false));
     }
