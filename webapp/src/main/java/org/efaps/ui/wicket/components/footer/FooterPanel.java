@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.footer;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -36,6 +37,7 @@ import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.PopupCloseLink;
@@ -50,12 +52,10 @@ import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
+import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.components.table.WebFormContainer;
-import org.efaps.ui.wicket.components.table.cell.formcell.FormCellPanel;
 import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.FormModel.FormCellModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -371,15 +371,15 @@ public class FooterPanel extends Panel {
       }
 
       final Iterator<?> iterator = this.getComponent().getPage().iterator();
-      WebFormContainer container = null;
+      FormPanel container = null;
       while (iterator.hasNext()) {
         final Object object = iterator.next();
         if (object instanceof FormContainer) {
           final Iterator<?> iterator2 = ((FormContainer) object).iterator();
           while (iterator2.hasNext()) {
             final Object object2 = iterator2.next();
-            if (object2 instanceof WebFormContainer) {
-              container = (WebFormContainer) object2;
+            if (object2 instanceof FormPanel) {
+              container = (FormPanel) object2;
               break;
             }
           }
@@ -389,17 +389,16 @@ public class FooterPanel extends Panel {
 
       final Map<?, ?> map =
           this.getComponent().getRequestCycle().getRequest().getParameterMap();
-      for (FormCellPanel cellpanel : container.getRequiredComponents()) {
-        final String[] values =
-            (String[]) map
-                .get(((FormCellModel) cellpanel.getModel()).getName());
+      for (Entry<String, Label> entry : container.getRequiredComponents()
+          .entrySet()) {
+
+        final String[] values = (String[]) map.get(entry.getKey());
         final String value = values[0];
         if (value == null || value.length() == 0) {
-          final WebMarkupContainer cellcontainer =
-              (WebMarkupContainer) cellpanel.iterator().next();
-          cellcontainer.add(new SimpleAttributeModifier("class",
+          Label label = entry.getValue();
+          label.add(new SimpleAttributeModifier("class",
               "eFapsFormLabelRequiredForce"));
-          _target.addComponent(cellcontainer);
+          _target.addComponent(label);
           ret = false;
         }
       }

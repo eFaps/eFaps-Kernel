@@ -27,9 +27,8 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.components.table.WebFormContainer;
-import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 
@@ -46,7 +45,7 @@ public class FormPage extends AbstractContentPage {
   }
 
   public FormPage(final PageParameters _parameters,
-                     final ModalWindowContainer _modalWindow) {
+                  final ModalWindowContainer _modalWindow) {
     this(new FormModel(_parameters), _modalWindow);
   }
 
@@ -54,34 +53,31 @@ public class FormPage extends AbstractContentPage {
     this(_model, null);
   }
 
-  public FormPage(final IModel _model,
-                     final ModalWindowContainer _modalWindow) {
+  public FormPage(final IModel _model, final ModalWindowContainer _modalWindow) {
     super(_model, _modalWindow);
     this.addComponents();
   }
 
   public FormPage(final PageParameters _parameters,
-                     final ModalWindowContainer _modalWindow,
-                     final IPageMap _pagemap) {
+                  final ModalWindowContainer _modalWindow,
+                  final IPageMap _pagemap) {
     this(new FormModel(_parameters), _modalWindow, _pagemap);
   }
 
-  public FormPage(final IModel _model,
-                     final ModalWindowContainer _modalWindow,
-                     final IPageMap _pagemap) {
+  public FormPage(final IModel _model, final ModalWindowContainer _modalWindow,
+                  final IPageMap _pagemap) {
     super(_model, _modalWindow, _pagemap);
     this.addComponents();
   }
 
   protected void addComponents() {
-    add(new StyleSheetReference("webformcss", getClass(),
-        "FormPage.css"));
+    add(new StyleSheetReference("webformcss", getClass(), "FormPage.css"));
     FormContainer form = new FormContainer("form");
     add(form);
     super.addComponents(form);
 
-    AbstractModel model = (AbstractModel) super.getModel();
-    form.add(new WebFormContainer("formtable", model, this));
+    FormModel model = (FormModel) super.getModel();
+    form.add(new FormPanel("formtable", model, this));
 
     WebMarkupContainer script = new WebMarkupContainer("selectscript");
     this.add(script);

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
-package org.efaps.ui.wicket.components.table.cell;
+package org.efaps.ui.wicket.components;
 
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
@@ -26,21 +26,20 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
 
 /**
- * @author jmo
- * @version $Id$
- * 
+ * @author jmox
+ * @version $Id:LabelComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class LabelComponent extends WebComponent {
 
   private static final long serialVersionUID = 1L;
 
-  public LabelComponent(String id, IModel model) {
-    super(id, model);
+  public LabelComponent(final String _wicketId, final IModel _model) {
+    super(_wicketId, _model);
   }
 
   @Override
-  protected void onComponentTagBody(MarkupStream _markupStream,
-                                    ComponentTag _openTag) {
+  protected void onComponentTagBody(final MarkupStream _markupStream,
+                                    final ComponentTag _openTag) {
     super.replaceComponentTagBody(_markupStream, _openTag, (String) super
         .getModelObject());
   }

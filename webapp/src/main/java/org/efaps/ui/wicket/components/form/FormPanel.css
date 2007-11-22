@@ -1,0 +1,53 @@
+.eFapsForm {
+  
+}
+
+.eFapsFormRow {
+  height: 24px;
+}
+
+.eFapsFormCell {
+  white-space: nowrap;
+}
+
+.eFapsFormLabel,.eFapsFormLabelRequired,.eFapsFormLabelRequiredForce {
+  background-color: #008800;
+  font-weight: bold;
+  padding-left: 4px;
+  padding-right: 4px;
+  width: 150px;
+  white-space: nowrap;
+}
+
+.eFapsFormLabel {
+  color: white;
+}
+
+.eFapsFormLabelRequired {
+  color: yellow;
+  font-style: italic;
+}
+
+.eFapsFormLabelRequiredForce {
+  background-color: red;
+  color: black;
+  font-style: italic;
+}
+
+.eFapsFormValue {
+  padding-left: 4px;
+  padding-right: 4px;
+  width: 150px;
+  white-space: nowrap;
+  background-color: white;
+  background-image: url("dotted-line.png");
+  background-repeat: repeat-x;
+  background-position: bottom;
+  border-right: 1px solid #ddd;
+}
+
+/* Input Field Appearance */
+.eFapsFormInputField {
+  background-color: #eeeeee;
+  font-size: 12px;
+}
