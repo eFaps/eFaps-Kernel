@@ -37,6 +37,7 @@ import org.efaps.util.cache.CacheReloadException;
  * Buttons in the UserInterface a represented by this Class.
  *
  * @author tmo
+ * @author jmox
  * @version $Id$
  */
 public abstract class AbstractCommand extends AbstractUserInterfaceObject {
@@ -83,47 +84,36 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
       new HashMap<String, SortDirection>();
 
   /**
-   * The target of the href is the content frame.
-   *
-   * @see #target
+   * This enum id used to define the different Targets a Command can have
    */
-  static public final int TARGET_CONTENT = 1;
+  public static enum Target {
+    /** The target of the href is the content frame */
+    CONTENT,
+    /** The target of the href is the hidden frame */
+    HIDDEN,
+    /** The target of the href is a Modal Window */
+    MODAL,
+    /** The target of the href is a new Popup Window */
+    POPUP,
+    /**
+     * The target of the href is not known. This is maybe, if a javascript
+     * function is directly called.
+     */
+    UNKNOWN;
+  }
 
   /**
-   * The target of the href is the hidden frame.
-   *
-   * @see #target
+   * This enum id used to define the different Modes a Target of a Command can
+   * have, like create, edit etc.
    */
-  static public final int TARGET_HIDDEN = 3;
-
-  static public final int TARGET_MODAL = 4;
-
-  static public final int TARGET_MODE_CONNECT = 4;
-
-  static public final int TARGET_MODE_CREATE = 3;
-
-  static public final int TARGET_MODE_EDIT = 2;
-
-  static public final int TARGET_MODE_SEARCH = 5;
-
-  static public final int TARGET_MODE_UNKNOWN = 0;
-
-  static public final int TARGET_MODE_VIEW = 1;
-
-  /**
-   * The target of the href is a new window popped up.
-   *
-   * @see #target
-   */
-  static public final int TARGET_POPUP = 2;
-
-  /**
-   * The target of the href is not known. This is maybe, if a javascript
-   * function is directly called.
-   *
-   * @see #target
-   */
-  static public final int TARGET_UNKNOWN = 0;
+  public static enum TargetMode {
+    CONNECT,
+    CREATE,
+    EDIT,
+    SEARCH,
+    UNKNOWN,
+    VIEW
+  }
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance Variables
@@ -189,7 +179,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @set #getTarget
    * @see #setTarget
    */
-  private int target = TARGET_UNKNOWN;
+  private Target target = Target.UNKNOWN;
 
   /**
    * The instance variable stores the height for the target bottom. Only a is
@@ -242,7 +232,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #getTargetMode
    * @see #setTargetMode
    */
-  private int targetMode = TARGET_MODE_UNKNOWN;
+  private TargetMode targetMode = TargetMode.UNKNOWN;
 
   /**
    * The instance variable stores the search of target user interface object.
@@ -443,7 +433,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #target
    * @see #setTarget
    */
-  public int getTarget() {
+  public Target getTarget() {
     return this.target;
   }
 
@@ -455,7 +445,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #target
    * @see #getTarget
    */
-  public void setTarget(final int _target) {
+  public void setTarget(final Target _target) {
     this.target = _target;
   }
 
@@ -588,7 +578,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #targetMode
    * @see #setTargetMode
    */
-  public int getTargetMode() {
+  public TargetMode getTargetMode() {
     return this.targetMode;
   }
 
@@ -600,7 +590,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #targetMode
    * @see #getTargetMode
    */
-  public void setTargetMode(final int _targetMode) {
+  public void setTargetMode(final TargetMode _targetMode) {
     this.targetMode = _targetMode;
   }
 
@@ -646,7 +636,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #targetTable
    * @see #getTargetTable
    */
-  public void setTargetTable(Table _targetTable) {
+  public void setTargetTable(final Table _targetTable) {
     this.targetTable = _targetTable;
   }
 
@@ -893,7 +883,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #getTarget
    */
   public boolean isTargetContent() {
-    return getTarget() == TARGET_CONTENT;
+    return getTarget() == Target.CONTENT;
   }
 
   /**
@@ -905,7 +895,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #getTarget
    */
   public boolean isTargetHidden() {
-    return getTarget() == TARGET_HIDDEN;
+    return getTarget() == Target.HIDDEN;
   }
 
   /**
@@ -917,7 +907,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #getTarget
    */
   public boolean isTargetPopup() {
-    return getTarget() == TARGET_POPUP;
+    return getTarget() == Target.POPUP;
   }
 
   /**
@@ -1022,13 +1012,13 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
       }
     } else if ("Target".equals(_name)) {
       if ("content".equals(_value)) {
-        setTarget(TARGET_CONTENT);
+        setTarget(Target.CONTENT);
       } else if ("hidden".equals(_value)) {
-        setTarget(TARGET_HIDDEN);
+        setTarget(Target.HIDDEN);
       } else if ("popup".equals(_value)) {
-        setTarget(TARGET_POPUP);
+        setTarget(Target.POPUP);
       } else if ("modal".equals(_value)) {
-        setTarget(TARGET_MODAL);
+        setTarget(Target.MODAL);
       }
     } else if ("TargetBottomHeight".equals(_name)) {
       setTargetBottomHeight(Integer.parseInt(_value));
@@ -1038,15 +1028,15 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
       setTargetCreateType(Type.get(_value));
     } else if ("TargetMode".equals(_name)) {
       if ("create".equals(_value)) {
-        setTargetMode(TARGET_MODE_CREATE);
+        setTargetMode(TargetMode.CREATE);
       } else if ("edit".equals(_value)) {
-        setTargetMode(TARGET_MODE_EDIT);
+        setTargetMode(TargetMode.EDIT);
       } else if ("connect".equals(_value)) {
-        setTargetMode(TARGET_MODE_CONNECT);
+        setTargetMode(TargetMode.CONNECT);
       } else if ("search".equals(_value)) {
-        setTargetMode(TARGET_MODE_SEARCH);
+        setTargetMode(TargetMode.SEARCH);
       } else if ("view".equals(_value)) {
-        setTargetMode(TARGET_MODE_VIEW);
+        setTargetMode(TargetMode.VIEW);
       }
     } else if ("TargetShowCheckBoxes".equals(_name)) {
       if ("true".equalsIgnoreCase(_value)) {

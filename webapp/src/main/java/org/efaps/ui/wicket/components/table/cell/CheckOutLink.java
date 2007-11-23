@@ -23,7 +23,7 @@ package org.efaps.ui.wicket.components.table.cell;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 
-import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.models.CellModel;
 
 /**
@@ -52,7 +52,7 @@ public class CheckOutLink extends WebMarkupContainer {
     href.append(model.getReference()).append("oid=").append(model.getOid());;
     _tag.put("href", href);
 
-    if (model.getTarget() == AbstractCommand.TARGET_POPUP) {
+    if (model.getTarget() == Target.POPUP) {
       _tag.put("target", "_blank");
     }
   }

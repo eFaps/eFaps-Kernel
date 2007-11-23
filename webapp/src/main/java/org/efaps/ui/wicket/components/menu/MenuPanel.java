@@ -24,14 +24,14 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.models.SearchItemModel;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id:MenuPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class MenuPanel extends Panel {
@@ -46,16 +46,16 @@ public class MenuPanel extends Panel {
     super(_id, _model);
 
     if (_model instanceof AbstractModel) {
-      AbstractModel model = (AbstractModel) _model;
+      final AbstractModel model = (AbstractModel) _model;
 
       if (model.getCommand().getTargetMenu() != null) {
-        MenuContainer menu =
+        final MenuContainer menu =
             new MenuContainer("eFapsMenu", new MenuItemModel(model.getCommand()
                 .getTargetMenu().getUUID(), model.getOid()), _form);
         add(menu);
-      } else if (model.getMode() == AbstractCommand.TARGET_MODE_SEARCH
+      } else if (model.getMode() == TargetMode.SEARCH
           && model.getCallingCommandUUID() != null) {
-        MenuContainer menu =
+        final MenuContainer menu =
             new MenuContainer("eFapsMenu", new SearchItemModel(model
                 .getCallingCommand().getTargetSearch().getUUID()), _form);
 

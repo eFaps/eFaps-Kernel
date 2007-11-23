@@ -27,13 +27,17 @@ import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 
-import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.StaticImageComponent;
 import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.FormModel.FormCellModel;
 
+/**
+ * @author jmox
+ * @version $Id$
+ */
 public class ValueCellPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
@@ -41,17 +45,28 @@ public class ValueCellPanel extends Panel {
   public ValueCellPanel(final String _wicketId, final FormCellModel _model,
                         final boolean _ajaxLink) {
     super(_wicketId, _model);
-    if (_model.getReference() != null) {
+    if (_model.getReference() == null) {
+      if (_model.getIcon() == null) {
+        this.add(new WebComponent("icon").setVisible(false));
+      } else {
+        this.add(new StaticImageComponent("icon", new Model(_model.getIcon())));
+      }
+
+      this.add(new LabelComponent("label", new Model(_model.getCellValue())));
+      this.add(new WebMarkupContainer("link").setVisible(false));
+
+    } else {
       this.add(new WebComponent("icon").setVisible(false));
       this.add(new WebComponent("label").setVisible(false));
 
       WebMarkupContainer link;
-      if (_ajaxLink && _model.getTarget() != AbstractCommand.TARGET_POPUP) {
+      if (_ajaxLink && _model.getTarget() != Target.POPUP) {
         link = new AjaxLinkContainer("link", _model);
       } else {
         link = new ContentContainerLink("link", _model);
-        if (_model.getTarget() == AbstractCommand.TARGET_POPUP) {
-          PopupSettings popup = new PopupSettings(PageMap.forName("popup"));
+        if (_model.getTarget() == Target.POPUP) {
+          final PopupSettings popup =
+              new PopupSettings(PageMap.forName("popup"));
           ((ContentContainerLink) link).setPopupSettings(popup);
         }
       }
@@ -64,15 +79,6 @@ public class ValueCellPanel extends Panel {
       link
           .add(new LabelComponent("linkLabel", new Model(_model.getCellValue())));
       this.add(link);
-    } else {
-      if (_model.getIcon() == null) {
-        this.add(new WebComponent("icon").setVisible(false));
-      } else {
-        this.add(new StaticImageComponent("icon", new Model(_model.getIcon())));
-      }
-
-      this.add(new LabelComponent("label", new Model(_model.getCellValue())));
-      this.add(new WebMarkupContainer("link").setVisible(false));
     }
 
   }

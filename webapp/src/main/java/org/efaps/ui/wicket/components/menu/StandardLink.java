@@ -27,7 +27,7 @@ import org.apache.wicket.markup.html.link.InlineFrame;
 
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.AbstractCommand;
-import org.efaps.util.EFapsException;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -35,6 +35,7 @@ import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmox
@@ -50,30 +51,30 @@ public class StandardLink extends AbstractMenuItemLink {
 
   @Override
   public void onClick() {
-    MenuItemModel model = (MenuItemModel) super.getModel();
+    final MenuItemModel model = (MenuItemModel) super.getModel();
 
-    AbstractCommand command = model.getCommand();
-    if (command.getTarget() == AbstractCommand.TARGET_POPUP) {
+    final AbstractCommand command = model.getCommand();
+    if (command.getTarget() == Target.POPUP) {
       ((EFapsSession) this.getSession()).setOpenerModel(this.getPage()
           .getModel());
     }
-    PageParameters para = new PageParameters("command=" + command.getUUID());
+    final PageParameters para =
+        new PageParameters("command=" + command.getUUID());
     para.add("oid", model.getOid());
     if (command.getTargetTable() != null) {
       if (command.getProperty("TargetStructurBrowserField") != null) {
-        InlineFrame c =
+        final InlineFrame iframe =
             new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
                 .forName(MainPage.IFRAME_PAGEMAP_NAME),
                 StructurBrowserPage.class, para);
-        this.getPage().addOrReplace(c);
+        this.getPage().addOrReplace(iframe);
       } else {
         if (this.getPage() instanceof MainPage) {
-          InlineFrame c =
+          final InlineFrame iframe =
               new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
-                  .forName(MainPage.IFRAME_PAGEMAP_NAME), TablePage.class,
-                  para);
+                  .forName(MainPage.IFRAME_PAGEMAP_NAME), TablePage.class, para);
 
-          this.getPage().addOrReplace(c);
+          this.getPage().addOrReplace(iframe);
         } else {
           this.setResponsePage(TablePage.class, para);
         }
@@ -82,10 +83,10 @@ public class StandardLink extends AbstractMenuItemLink {
         || command.getTargetSearch() != null) {
       if (this.getPage() instanceof MainPage
           && command.getTargetSearch() == null) {
-        InlineFrame c =
+        final InlineFrame iframe =
             new InlineFrame(MainPage.IFRAME_WICKETID, PageMap
                 .forName(MainPage.IFRAME_PAGEMAP_NAME), FormPage.class, para);
-        this.getPage().addOrReplace(c);
+        this.getPage().addOrReplace(iframe);
       } else {
         this.setResponsePage(FormPage.class, para);
       }

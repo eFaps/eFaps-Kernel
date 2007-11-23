@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.servlet.RequestHandler;
@@ -190,7 +191,7 @@ public class Field extends AbstractUserInterfaceObject {
    * @set #getTarget
    * @see #setTarget
    */
-  private int target = AbstractCommand.TARGET_UNKNOWN;
+  private Target target = Target.UNKNOWN;
 
   /**
    * The type icon for this field is shown if value is set to true.
@@ -314,7 +315,7 @@ public class Field extends AbstractUserInterfaceObject {
    * @see #getTarget
    */
   public boolean isTargetContent() {
-    return getTarget() == AbstractCommand.TARGET_CONTENT;
+    return getTarget() == Target.CONTENT;
   }
 
   /**
@@ -326,7 +327,7 @@ public class Field extends AbstractUserInterfaceObject {
    * @see #getTarget
    */
   public boolean isTargetPopup() {
-    return getTarget() == AbstractCommand.TARGET_POPUP;
+    return getTarget() == Target.POPUP;
   }
 
   /**
@@ -338,7 +339,7 @@ public class Field extends AbstractUserInterfaceObject {
    * @see #getTarget
    */
   public boolean isTargetHidden() {
-    return getTarget() == AbstractCommand.TARGET_HIDDEN;
+    return getTarget() == Target.HIDDEN;
   }
 
   /**
@@ -484,11 +485,11 @@ public class Field extends AbstractUserInterfaceObject {
       setShowTypeIcon("true".equals(_value));
     } else if ("Target".equals(_name)) {
       if ("content".equals(_value)) {
-        setTarget(AbstractCommand.TARGET_CONTENT);
+        setTarget(Target.CONTENT);
       } else if ("hidden".equals(_value)) {
-        setTarget(AbstractCommand.TARGET_HIDDEN);
+        setTarget(Target.HIDDEN);
       } else if ("popup".equals(_value)) {
-        setTarget(AbstractCommand.TARGET_POPUP);
+        setTarget(Target.POPUP);
       }
     } else {
       super.setProperty(_name, _value);
@@ -916,7 +917,7 @@ public class Field extends AbstractUserInterfaceObject {
    * @see #target
    * @see #setTarget
    */
-  public int getTarget() {
+  public Target getTarget() {
     return this.target;
   }
 
@@ -928,7 +929,7 @@ public class Field extends AbstractUserInterfaceObject {
    * @see #target
    * @see #getTarget
    */
-  public void setTarget(final int _target) {
+  public void setTarget(final Target _target) {
     this.target = _target;
   }
 

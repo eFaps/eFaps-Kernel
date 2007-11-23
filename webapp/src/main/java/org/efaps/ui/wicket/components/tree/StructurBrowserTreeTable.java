@@ -39,17 +39,17 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 
-import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * @author jmox
  * @version $Id:StructurBrowserTreeTable.java 1510 2007-10-18 14:35:40Z jmox $
- *
  */
 public class StructurBrowserTreeTable extends TreeTable {
 
@@ -64,7 +64,7 @@ public class StructurBrowserTreeTable extends TreeTable {
     super(_id, _treeModel, _columns);
     this.setRootLess(true);
 
-    ITreeState treeState = this.getTreeState();
+    final ITreeState treeState = this.getTreeState();
     treeState.collapseAll();
     treeState.addTreeStateListener(new AsyncronTreeUpdateListener());
   }
@@ -86,13 +86,13 @@ public class StructurBrowserTreeTable extends TreeTable {
    *      java.lang.String, javax.swing.tree.TreeNode)
    */
   @Override
-  protected Component newNodeIcon(MarkupContainer parent, String id,
-                                  TreeNode node) {
+  protected Component newNodeIcon(final MarkupContainer _parent,
+                                  final String _wicketId, final TreeNode _node) {
     final StructurBrowserModel model =
-        (StructurBrowserModel) ((DefaultMutableTreeNode) node).getUserObject();
+        (StructurBrowserModel) ((DefaultMutableTreeNode) _node).getUserObject();
     if (model.getImage() != null) {
 
-      return new WebMarkupContainer(id) {
+      return new WebMarkupContainer(_wicketId) {
 
         private static final long serialVersionUID = 1L;
 
@@ -103,7 +103,7 @@ public class StructurBrowserTreeTable extends TreeTable {
         }
       };
     } else {
-      return super.newNodeIcon(parent, id, node);
+      return super.newNodeIcon(_parent, _wicketId, _node);
     }
   }
 
@@ -115,11 +115,11 @@ public class StructurBrowserTreeTable extends TreeTable {
    *      org.apache.wicket.extensions.markup.html.tree.table.TreeTable.IRenderNodeCallback)
    */
   @Override
-  protected Component newTreePanel(MarkupContainer parent, String id,
-                                   TreeNode node, int level,
-                                   IRenderNodeCallback renderNodeCallback) {
+  protected Component newTreePanel(final MarkupContainer _parent, final String _wicketId,
+                                   final TreeNode _node, final int _level,
+                                   final IRenderNodeCallback _renderNodeCallback) {
 
-    return new StructurBrowserTreeFragment(id, node, level, renderNodeCallback);
+    return new StructurBrowserTreeFragment(_wicketId, _node, _level, _renderNodeCallback);
 
   }
 
@@ -139,7 +139,7 @@ public class StructurBrowserTreeTable extends TreeTable {
 
       public void onClick(AjaxRequestTarget target) {
         Instance instance = null;
-        StructurBrowserModel model =
+        final   StructurBrowserModel model =
             (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
                 .getUserObject();
 
@@ -152,16 +152,16 @@ public class StructurBrowserTreeTable extends TreeTable {
             throw new RestartResponseException(new ErrorPage(e));
           }
           if (menu == null) {
-            Exception ex =
-                new Exception("no tree menu defined for type "
-                    + instance.getType().getName());
-            throw new RestartResponseException(new ErrorPage(ex));
+            EFapsException excep =
+                new EFapsException(this.getClass(), "newNodeLink.noTreeMenu",
+                    instance.getType().getName());
+            throw new RestartResponseException(new ErrorPage(excep));
           }
-          PageParameters parameters = new PageParameters();
+          final  PageParameters parameters = new PageParameters();
           parameters.add("command", menu.getUUID().toString());
           parameters.add("oid", model.getOid());
           ContentContainerPage page;
-          if (model.getTarget() == AbstractCommand.TARGET_POPUP) {
+          if (model.getTarget() == Target.POPUP) {
             page = new ContentContainerPage(parameters);
           } else {
             page =
@@ -181,20 +181,20 @@ public class StructurBrowserTreeTable extends TreeTable {
     private static final long serialVersionUID = 1L;
 
     public StructurBrowserTreeFragment(
-                                       String id,
-                                       final TreeNode node,
-                                       int level,
-                                       final IRenderNodeCallback renderNodeCallback) {
-      super(id);
+                                       final String _wicketId,
+                                       final TreeNode _node,
+                                       int _level,
+                                       final IRenderNodeCallback _renderNodeCallback) {
+      super(_wicketId);
 
-      add(newIndentation(this, "indent", node, level));
+      add(newIndentation(this, "indent", _node, _level));
 
-      add(newJunctionLink(this, "link", "image", node));
+      add(newJunctionLink(this, "link", "image", _node));
 
-      MarkupContainer nodeLink = newNodeLink(this, "nodeLink", node);
+      MarkupContainer nodeLink = newNodeLink(this, "nodeLink", _node);
       add(nodeLink);
 
-      nodeLink.add(newNodeIcon(nodeLink, "icon", node));
+      nodeLink.add(newNodeIcon(nodeLink, "icon", _node));
 
       nodeLink.add(new Label("label", new AbstractReadOnlyModel() {
 
@@ -205,7 +205,7 @@ public class StructurBrowserTreeTable extends TreeTable {
          */
         @Override
         public Object getObject() {
-          return renderNodeCallback.renderNode(node);
+          return _renderNodeCallback.renderNode(_node);
         }
       }));
     }

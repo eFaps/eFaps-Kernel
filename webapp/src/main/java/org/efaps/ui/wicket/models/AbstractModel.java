@@ -33,10 +33,12 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
-import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Search;
+import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
@@ -94,7 +96,7 @@ public abstract class AbstractModel extends Model {
    * @see #getMode
    * @see #setMode
    */
-  private int mode = AbstractCommand.TARGET_MODE_UNKNOWN;
+  private TargetMode mode = TargetMode.UNKNOWN;
 
   /**
    * This instance variable stores the OID of the Instance
@@ -118,7 +120,6 @@ public abstract class AbstractModel extends Model {
    * @see #isSubmit()
    * @see #setSubmit(boolean)
    */
-
   private boolean submit = false;
 
   /**
@@ -126,8 +127,7 @@ public abstract class AbstractModel extends Model {
    *
    * @see #getTarget()
    */
-
-  private int target = AbstractCommand.TARGET_UNKNOWN;
+  private Target target = Target.UNKNOWN;
 
   /**
    * Constructor
@@ -164,7 +164,7 @@ public abstract class AbstractModel extends Model {
       this.callingCommandUUID = this.commandUUID;
       this.commandUUID =
           command.getTargetSearch().getDefaultCommand().getUUID();
-      this.setMode(AbstractCommand.TARGET_MODE_SEARCH);
+      this.setMode(TargetMode.SEARCH);
       if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
         this.submit = true;
       }
@@ -300,7 +300,7 @@ public abstract class AbstractModel extends Model {
    * @see #mode
    * @see #setMode
    */
-  public int getMode() {
+  public TargetMode getMode() {
     return this.mode;
   }
 
@@ -312,7 +312,7 @@ public abstract class AbstractModel extends Model {
    * @see #mode
    * @see #getMode
    */
-  protected void setMode(final int _mode) {
+  protected void setMode(final TargetMode _mode) {
     this.mode = _mode;
   }
 
@@ -375,7 +375,7 @@ public abstract class AbstractModel extends Model {
    *
    * @return value of instance variable {@link #target}
    */
-  public int getTarget() {
+  public Target getTarget() {
     return this.target;
   }
 
@@ -420,29 +420,28 @@ public abstract class AbstractModel extends Model {
    * @see #mode
    */
   public boolean isCreateMode() {
-    return getMode() == AbstractCommand.TARGET_MODE_CREATE;
+    return getMode() == TargetMode.CREATE;
   }
 
   /**
    * @see #mode
    */
   public boolean isEditMode() {
-    return getMode() == AbstractCommand.TARGET_MODE_EDIT;
+    return getMode() == TargetMode.EDIT;
   }
 
   /**
    * @see #mode
    */
   public boolean isSearchMode() {
-    return getMode() == AbstractCommand.TARGET_MODE_SEARCH;
+    return getMode() == TargetMode.SEARCH;
   }
 
   /**
    * @see #mode
    */
   public boolean isViewMode() {
-    return getMode() == AbstractCommand.TARGET_MODE_VIEW
-        || getMode() == AbstractCommand.TARGET_MODE_UNKNOWN;
+    return getMode() == TargetMode.VIEW || getMode() == TargetMode.UNKNOWN;
   }
 
   /**
@@ -501,7 +500,8 @@ public abstract class AbstractModel extends Model {
    *                ParameterValues.OTHERS
    * @throws EFapsException
    */
-  public List<Return> executeEvents(final String[] _others) throws EFapsException {
+  public List<Return> executeEvents(final String[] _others)
+                                                           throws EFapsException {
     List<Return> ret = new ArrayList<Return>();
     AbstractCommand command;
     if (this.callingCommandUUID == null) {

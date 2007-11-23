@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.models;
 import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.Field;
+import org.efaps.admin.ui.AbstractCommand.Target;
 
 /**
  * @author jmox
@@ -40,7 +41,7 @@ public class CellModel extends Model {
 
   private final String icon;
 
-  private final int target;
+  private final Target target;
 
   private final boolean fixedWidth;
 
@@ -111,7 +112,7 @@ public class CellModel extends Model {
    * @return value of instance variable {@link #target}
    */
 
-  public int getTarget() {
+  public Target getTarget() {
     return this.target;
   }
 

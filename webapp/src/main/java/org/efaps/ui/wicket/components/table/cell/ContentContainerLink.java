@@ -24,8 +24,8 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.Link;
 
-import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.CellModel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -46,7 +46,7 @@ public class ContentContainerLink extends Link {
   @Override
   public void onClick() {
     Instance instance = null;
-    CellModel cellmodel = (CellModel) super.getModel();
+    final   CellModel cellmodel = (CellModel) super.getModel();
     if (cellmodel.getOid() != null) {
       instance = new Instance(cellmodel.getOid());
       Menu menu = null;
@@ -56,16 +56,16 @@ public class ContentContainerLink extends Link {
         throw new RestartResponseException(new ErrorPage(e));
       }
       if (menu == null) {
-        Exception ex =
+        final  Exception ex =
             new Exception("no tree menu defined for type "
                 + instance.getType().getName());
         throw new RestartResponseException(new ErrorPage(ex));
       }
-      PageParameters parameters = new PageParameters();
+      final   PageParameters parameters = new PageParameters();
       parameters.add("command", menu.getUUID().toString());
       parameters.add("oid", cellmodel.getOid());
       ContentContainerPage page;
-      if (cellmodel.getTarget() == AbstractCommand.TARGET_POPUP) {
+      if (cellmodel.getTarget() == Target.POPUP) {
         page = new ContentContainerPage(parameters);
       } else {
         page =

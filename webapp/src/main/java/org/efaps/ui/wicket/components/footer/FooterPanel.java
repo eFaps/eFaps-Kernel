@@ -48,7 +48,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
@@ -153,18 +153,18 @@ public class FooterPanel extends Panel {
 
     if ((model.isSubmit() && model instanceof TableModel)
         || !model.isSearchMode()) {
-      Button button =
+      final Button button =
           new Button("createeditsearch", new AjaxSubmitAndCloseLink(
               Button.LINKID, model, _form), label, Button.ICON_ACCEPT);
       this.add(button);
     } else if (model.isSearchMode() && model.getCallingCommandUUID() != null) {
-      Button button =
+      final Button button =
           new Button("createeditsearch", new SearchSubmitLink(Button.LINKID,
               model, _form), label, Button.ICON_NEXT);
       this.add(button);
     } else {
       closelabelkey = "Close";
-      Component invisible =
+      final Component invisible =
           new WebMarkupContainer("createeditsearch").setVisible(false);
       add(invisible);
     }
@@ -271,7 +271,7 @@ public class FooterPanel extends Panel {
 
         final AbstractModel model = (AbstractModel) this.imodel;
 
-        if (model.getCommand().getTarget() == AbstractCommand.TARGET_MODAL) {
+        if (model.getCommand().getTarget() == Target.MODAL) {
           FooterPanel.this.modalWindow.setReloadChild(true);
           FooterPanel.this.modalWindow.close(_target);
         } else {
@@ -395,7 +395,7 @@ public class FooterPanel extends Panel {
         final String[] values = (String[]) map.get(entry.getKey());
         final String value = values[0];
         if (value == null || value.length() == 0) {
-          Label label = entry.getValue();
+          final Label label = entry.getValue();
           label.add(new SimpleAttributeModifier("class",
               "eFapsFormLabelRequiredForce"));
           _target.addComponent(label);
