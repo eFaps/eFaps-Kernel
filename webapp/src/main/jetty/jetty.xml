@@ -43,5 +43,12 @@
           name="eFapsImageServlet"
           displayname="eFapsImageServlet"
           classname="org.efaps.ui.servlet.ImageServlet"/>
+  
+  <servlet path="/servlet/checkout/*"
+          name="eFapsCheckOutServlet"
+          displayname="eFapsCheckOutServlet"
+          classname="org.efaps.ui.servlet.CheckoutServlet"/>
+                  
+          
 
 </server>

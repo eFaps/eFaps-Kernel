@@ -124,4 +124,7 @@ public class CellModel extends Model {
     return this.fixedWidth;
   }
 
+  public boolean isCheckOut() {
+    return this.reference.contains("/servlet/checkout");
+  }
 }

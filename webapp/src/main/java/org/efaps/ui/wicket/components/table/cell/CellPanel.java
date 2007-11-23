@@ -64,20 +64,24 @@ public class CellPanel extends Panel {
           && cellmodel.getTarget() != CommandAbstract.TARGET_POPUP) {
         celllink = new AjaxLinkContainer("link", cellmodel);
       } else {
-        if (_tablemodel.isSearchMode()
-            && cellmodel.getTarget() != CommandAbstract.TARGET_POPUP) {
-          // do we have "connectmode",then we don't want a link in a popup
-          if (_tablemodel.isSubmit()) {
-            celllink = new WebMarkupContainer("link");
-            celllink.setVisible(false);
-          } else {
-            celllink = new AjaxOpenerLink("link", cellmodel);
-          }
+        if (cellmodel.isCheckOut()) {
+          celllink = new CheckOutLink("link", cellmodel);
         } else {
-          celllink = new ContentContainerLink("link", cellmodel);
-          if (cellmodel.getTarget() == CommandAbstract.TARGET_POPUP) {
-            PopupSettings popup = new PopupSettings(PageMap.forName("popup"));
-            ((ContentContainerLink) celllink).setPopupSettings(popup);
+          if (_tablemodel.isSearchMode()
+              && cellmodel.getTarget() != CommandAbstract.TARGET_POPUP) {
+            // do we have "connectmode",then we don't want a link in a popup
+            if (_tablemodel.isSubmit()) {
+              celllink = new WebMarkupContainer("link");
+              celllink.setVisible(false);
+            } else {
+              celllink = new AjaxOpenerLink("link", cellmodel);
+            }
+          } else {
+            celllink = new ContentContainerLink("link", cellmodel);
+            if (cellmodel.getTarget() == CommandAbstract.TARGET_POPUP) {
+              PopupSettings popup = new PopupSettings(PageMap.forName("popup"));
+              ((ContentContainerLink) celllink).setPopupSettings(popup);
+            }
           }
         }
       }

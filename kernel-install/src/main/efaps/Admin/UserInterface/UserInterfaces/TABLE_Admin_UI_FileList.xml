@@ -85,6 +85,7 @@
       <property name="HRef">${ROOTURL}/servlet/checkout</property>
       <property name="Target">popup</property>
       <property name="SortAble">false</property>
+      <property name="Width">15px</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>

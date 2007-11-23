@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.table.cell;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.Link;
-import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.CommandAbstract;
 import org.efaps.admin.ui.Menu;
@@ -40,8 +39,8 @@ public class ContentContainerLink extends Link {
 
   private static final long serialVersionUID = 1L;
 
-  public ContentContainerLink(String id, IModel object) {
-    super(id, object);
+  public ContentContainerLink(final String _wicketId, final CellModel _model) {
+    super(_wicketId, _model);
   }
 
   @Override
