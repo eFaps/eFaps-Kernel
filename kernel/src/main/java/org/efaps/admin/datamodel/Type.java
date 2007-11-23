@@ -397,7 +397,7 @@ public class Type extends DataModelObject {
    * the value of the property of the parent type (see {@link #getParentType})
    * is returned (if a parent type exists).
    *
-   * @see org.efaps.admin.AdminObject#getProperty
+   * @see org.efaps.admin.AbstractAdminObject#getProperty
    * @param _name
    *                name of the property (key)
    * @return value of the property with the given name / key.

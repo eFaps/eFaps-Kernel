@@ -35,7 +35,7 @@ import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Image;
@@ -69,7 +69,7 @@ public class FormModel extends AbstractModel {
 
   public FormModel(PageParameters _parameters) {
     super(_parameters);
-    final CommandAbstract command = super.getCommand();
+    final AbstractCommand command = super.getCommand();
     if (command == null) {
       this.formuuid = null;
     } else if (command.getTargetForm() != null) {

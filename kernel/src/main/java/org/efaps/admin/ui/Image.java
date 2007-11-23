@@ -24,17 +24,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.efaps.admin.datamodel.Type;
-import org.efaps.servlet.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.efaps.admin.datamodel.Type;
+import org.efaps.servlet.RequestHandler;
 
 /**
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class Image extends UserInterfaceObject  {
+public class Image extends AbstractUserInterfaceObject  {
 
   /**
    * The static variable defines the class name in eFaps.
@@ -63,7 +64,7 @@ public class Image extends UserInterfaceObject  {
 
   /**
    * Sets the link properties for this object.
-   * 
+   *
    * @param _linkType type of the link property
    * @param _toId     to id
    * @param _toType   to type
@@ -76,7 +77,7 @@ public class Image extends UserInterfaceObject  {
                                  final String _toName)  throws Exception {
     switch (_linkType) {
       case LINK_ICONISTYPEICONFOR:
-        Type type = Type.get(_toId);
+        final Type type = Type.get(_toId);
         if (type == null)  {
           LOG.error("Image '" + this.getName() + "' could not defined as type "
                     + "icon for type '" + _toName + "'! Type does not exists!");

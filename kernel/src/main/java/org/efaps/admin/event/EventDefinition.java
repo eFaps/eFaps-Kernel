@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.AdminObject;
+import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.Parameter.ParameterValues;
@@ -50,7 +50,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @author jmo
  * @version $Id$
  */
-public class EventDefinition extends AdminObject implements EventExecution {
+public class EventDefinition extends AbstractAdminObject implements EventExecution {
   /**
    * Logger for this class
    */

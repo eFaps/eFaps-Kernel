@@ -21,7 +21,7 @@
 package org.efaps.admin.ui;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -37,25 +37,64 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  * @todo description
  */
-public abstract class Collection extends UserInterfaceObject {
+public abstract class AbstractCollection extends AbstractUserInterfaceObject {
 
   /**
-   * Constructor to set the id of the collection object.
-   * 
-   * @param _id
-   *                id to set
+   * Instance variable for all field expressions.
+   *
+   * @see #addFieldExpr
+   * @see #getFieldExprIndex
+   * @see #getAllFieldExpr
    */
-  protected Collection(final long _id, final String _uuid, final String _name) {
+  private final Map<String, Integer> allFieldExpr =
+      new HashMap<String, Integer>();
+
+  /**
+   * All fields of the collection are stored sorted belonging to the id of the
+   * field in a tree map.
+   *
+   * @see #getFields
+   * @see #add(Field)
+   */
+  private final Map<Long, Field> fields = new TreeMap<Long, Field>();
+
+  /**
+   * Instance variable for the length of the field expression list.
+   *
+   * @see #allFieldExpr
+   */
+  private int selIndexLen = 1;
+
+  /**
+   * Select string for the statement.
+   *
+   * @see #setSelect
+   * @see #getSelect
+   */
+  private String select = null;
+
+  /**
+   * Constructor passing on to the superconstructor
+   *
+   * @param _id
+   * @param _uuid
+   * @param _name
+   */
+  protected AbstractCollection(final long _id, final String _uuid,
+                               final String _name) {
     super(_id, _uuid, _name);
   }
 
-  public void add(Field _field) {
+  /**
+   * method to add a Field to this Collection
+   *
+   * @param _field
+   */
+  public void add(final Field _field) {
     this.fields.put(_field.getId(), _field);
-    // if (_field.getExpression()!=null && _field.getExpression().length()>0) {
-    // _field.setSelIndex(addFieldExpr(_field.getExpression()));
-    // }
+
     if (_field.getReference() != null && _field.getReference().length() > 0) {
-      String ref = _field.getReference();
+      final String ref = _field.getReference();
       int index, end = 0;
       while ((index = ref.indexOf("$<", end)) > 0) {
         index += 2;
@@ -71,7 +110,7 @@ public abstract class Collection extends UserInterfaceObject {
    * field expressions. The method returns the index of the field expression. If
    * the field expression is already added, the old index is returned, so a
    * expression is only added once.
-   * 
+   *
    * @param _expr
    *                field expression to add
    * @return index of the field expression
@@ -79,12 +118,12 @@ public abstract class Collection extends UserInterfaceObject {
    * @see #getAllFieldExpr
    * @see #allFieldExpr
    */
-  protected int addFieldExpr(String _expr) {
+  protected int addFieldExpr(final String _expr) {
     int ret = -1;
     if (getAllFieldExpr().containsKey(_expr)) {
       ret = getFieldExprIndex(_expr);
     } else {
-      getAllFieldExpr().put(_expr, new Integer(getSelIndexLen()));
+      getAllFieldExpr().put(_expr, Integer.valueOf(getSelIndexLen()));
       if (getSelect() == null) {
         setSelect(_expr);
       } else {
@@ -99,7 +138,7 @@ public abstract class Collection extends UserInterfaceObject {
   /**
    * For the parameter <i>_expr</i> the index in the list of all field
    * expressions is returned.
-   * 
+   *
    * @param _expr
    *                expression for which the index is searched
    * @return index of the field expression
@@ -107,59 +146,23 @@ public abstract class Collection extends UserInterfaceObject {
    * @see #getAllFieldExpr
    * @see #allFieldExpr
    */
-  public int getFieldExprIndex(String _expr) {
+  public int getFieldExprIndex(final String _expr) {
     int ret = -1;
     if (getAllFieldExpr().containsKey(_expr)) {
-      Integer ident = (Integer) getAllFieldExpr().get(_expr);
+      final Integer ident = getAllFieldExpr().get(_expr);
       ret = ident.intValue();
     }
     return ret;
   }
 
-  /**
-   * The instance method clones this collection object. Following instance
-   * variables are also cloned:<br/> - The array of fields {@link #fields} is
-   * also cloned, but not the fields itself!<br/> - {@link #allFieldExpr} -
-   * {@link #expandAttributes}
-   */
-  /*
-   * protected Object clone() throws CloneNotSupportedException { Collection
-   * collection = (Collection)super.clone(); collection.fields =
-   * getFields().clone(); collection.allFieldExpr =
-   * (Hashtable)getAllFieldExpr().clone(); if (getExpandAttributes()!=null) {
-   * collection.setExpandAttributes((Vector)getExpandAttributes().clone()); }
-   * return collection; }
-   */
-
-  // ///////////////////////////////////////////////////////////////////////////
-  /**
-   * The instance method sets a new property value.
-   * 
-   * @param _name
-   *                name of the property
-   * @param _value
-   *                value of the property
-   * @param _toId
-   *                id of the to object
-   */
-  /*
-   * protected void setProperty(String _name, String _value) throws
-   * EFapsException { if (_name.startsWith("ExpandAttribute")) { int index =
-   * Integer.parseInt(_name.substring(15)); if (getExpandAttributes()==null) {
-   * setExpandAttributes(new Vector()); } if (getExpandAttributes().size()<index) {
-   * getExpandAttributes().setSize(index); } getExpandAttributes().set(index-1,
-   * Attribute.get(_context, _value)); } else if (_name.equals("FooterMenu")) {
-   * setFooterMenu(Menu.get(_context, _value)); } else if
-   * (_name.equals("HeaderMenu")) { setHeaderMenu(Menu.get(_context, _value)); } }
-   */
-
   // ///////////////////////////////////////////////////////////////////////////
   /**
    * The instance method reads all needed information for this user interface
    * object.
-   * 
+   *
    * @see #readFromDB4Fields
    */
+  @Override
   protected void readFromDB() throws CacheReloadException {
     super.readFromDB();
     readFromDB4Fields();
@@ -170,75 +173,38 @@ public abstract class Collection extends UserInterfaceObject {
    */
   private void readFromDB4Fields() throws CacheReloadException {
     try {
-      Instance instance =
+      final Instance instance =
           new Instance(Type.get(EFapsClassName.COLLECTION.name), getId());
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setExpand(instance, EFapsClassName.FIELD.name + "\\Collection");
       query.addSelect("ID");
       query.addSelect("Name");
       query.executeWithoutAccessCheck();
 
       while (query.next()) {
-        long id = (Long) query.get("ID");
-        String name = (String) query.get("Name");
-        Field field = new Field(id, null, name);
+        final long id = (Long) query.get("ID");
+        final String name = (String) query.get("Name");
+        final Field field = new Field(id, null, name);
         field.readFromDB();
         add(field);
       }
     } catch (EFapsException e) {
-      throw new CacheReloadException("could not read fields for " + "'"
-          + getName() + "'", e);
+      throw new CacheReloadException("could not read fields for '"
+          + getName()
+          + "'", e);
     }
   }
 
   /**
    * The method takes values of the {@link #fields} and returnes them as
    * {@link java.util.ArrayList}.
-   * 
+   *
    * @return the values of the {@link #fields} map instance as array list
    * @see #fields
    */
   public List<Field> getFields() {
     return new ArrayList<Field>(this.fields.values());
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * All fields of the collection are stored sorted belonging to the id of the
-   * field in a tree map.
-   * 
-   * @see #getFields
-   * @see #add(Field)
-   */
-  private Map<Long, Field> fields = new TreeMap<Long, Field>();
-
-  /**
-   * Instance variable for all field expressions.
-   * 
-   * @see #addFieldExpr
-   * @see #getFieldExprIndex
-   * @see #getAllFieldExpr
-   */
-  private Hashtable<String, Integer> allFieldExpr =
-      new Hashtable<String, Integer>();
-
-  /**
-   * Instance variable for the length of the field expression list.
-   * 
-   * @see #allFieldExpr
-   */
-  private int selIndexLen = 1;
-
-  /**
-   * Select string for the statement.
-   * 
-   * @see #setSelect
-   * @see #getSelect
-   */
-  private String select = null;
-
-  private String hRefBottom = null;
 
   // ///////////////////////////////////////////////////////////////////////////
 
@@ -252,7 +218,7 @@ public abstract class Collection extends UserInterfaceObject {
 
   /**
    * Get the value of the attribute {@link #selIndexLen}.
-   * 
+   *
    * @return the value of the attribute {@link #selIndexLen}
    * @see #selIndexLen
    */
@@ -262,19 +228,19 @@ public abstract class Collection extends UserInterfaceObject {
 
   /**
    * This is the setter method for instance variable {@link #select}.
-   * 
+   *
    * @param _select
    *                new value for instance variable {@link #select}
    * @see #select
    * @see #getSelect
    */
-  protected void setSelect(String _select) {
+  protected void setSelect(final String _select) {
     this.select = _select;
   }
 
   /**
    * Get the value of the {@link #select} clause.
-   * 
+   *
    * @return the value of the {@link #select} clause
    * @see #select
    * @see #setSelect
@@ -283,31 +249,7 @@ public abstract class Collection extends UserInterfaceObject {
     return this.select;
   }
 
-  /**
-   * Get the value of the {@link #hRefBottom}.
-   * 
-   * @return the value of the {@link #hRefBottom}
-   * @see #hRefBottom
-   * @see #setHRefBottom
-   */
-  public String getHRefBottom() {
-    return this.hRefBottom;
-  }
-
-  /**
-   * Set the new value for the {@link #hRefBottom}.
-   * 
-   * @param _select
-   *                new value for the {@link #hRefBottom}
-   * @see #hRefBottom
-   * @see #getHRefBottom
-   */
-  public void setHRefBottom(String _hRefBottom) {
-    this.hRefBottom = _hRefBottom;
-  }
-
   public Map<Long, Field> getFieldsMap() {
-
     return this.fields;
   }
 

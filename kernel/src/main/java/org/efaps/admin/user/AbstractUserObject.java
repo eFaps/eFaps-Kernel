@@ -27,7 +27,7 @@ import java.sql.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.AdminObject;
+import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -38,7 +38,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public abstract class AbstractUserObject extends AdminObject {
+public abstract class AbstractUserObject extends AbstractAdminObject {
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables

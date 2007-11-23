@@ -32,7 +32,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -57,15 +57,15 @@ public class QuerySearch implements EventExecution {
     Return ret = new Return();
 
     Context context = Context.getThreadContext();
-    CommandAbstract command =
-        (CommandAbstract) _parameter.get(ParameterValues.UIOBJECT);
+    AbstractCommand command =
+        (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
     Map<?, ?> properties =
         (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
     String types = (String) properties.get("Types");
 
     boolean expandChildTypes =
-        "true".equals((String) properties.get("ExpandChildTypes"));
+        "true".equals(properties.get("ExpandChildTypes"));
 
     if (LOG.isDebugEnabled()) {
       LOG.debug("types=" + types);

@@ -24,7 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.efaps.admin.AdminObject;
+import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -33,7 +33,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @author tmo
  * @version $Id$
  */
-public abstract class DataModelObject extends AdminObject  {
+public abstract class DataModelObject extends AbstractAdminObject  {
 
   /**
    * Constructor to set the id and name of the data model object.

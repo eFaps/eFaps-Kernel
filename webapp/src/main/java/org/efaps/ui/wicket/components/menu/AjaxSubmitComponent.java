@@ -31,7 +31,7 @@ import org.apache.wicket.markup.html.form.Form;
 
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.FormModel;
@@ -115,7 +115,7 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
         modal.setInitialWidth(350);
         modal.show(_target);
       } else {
-        CommandAbstract command =
+        AbstractCommand command =
             ((MenuItemModel) super.getComponent().getModel()).getCommand();
 
         if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {

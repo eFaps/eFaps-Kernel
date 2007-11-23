@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.modalwindow;
@@ -24,14 +24,14 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
 /**
  * @author jmox
- * @version $Id$
+ * @version $Id:ModalWindowAjaxPageCreator.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
 
@@ -50,7 +50,7 @@ public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
   public Page createPage() {
     Page ret = null;
     MenuItemModel model = this.imodel;
-    CommandAbstract command = model.getCommand();
+    AbstractCommand command = model.getCommand();
     PageParameters para = new PageParameters("command=" + command.getUUID());
     para.add("oid", model.getOid());
 

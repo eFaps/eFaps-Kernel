@@ -29,14 +29,12 @@ import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
 
-
 /**
- *
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class Menu extends MenuAbstract  {
+public class Menu extends AbstractMenu {
 
   /**
    * The static variable defines the class name in eFaps.
@@ -54,10 +52,20 @@ public class Menu extends MenuAbstract  {
   private final static Map<Type, Menu> TYPE2MENUS = new HashMap<Type, Menu>();
 
   /**
+   * Stores all instances of class {@link Menu}.
+   *
+   * @see #getCache
+   */
+  static final private UserInterfaceObjectCache<Menu> cache =
+      new UserInterfaceObjectCache<Menu>(Menu.class);
+
+  /**
    * Constructor to set the id and name of the menu object.
    *
-   * @param _id   id  of the command to set
-   * @param _name name of the command to set
+   * @param _id
+   *                id of the command to set
+   * @param _name
+   *                name of the command to set
    */
   public Menu(final Long _id, final String _uuid, final String _name) {
     super(_id, _uuid, _name);
@@ -66,42 +74,53 @@ public class Menu extends MenuAbstract  {
   /**
    * An sub command or menu with the given id is added to this menu.
    *
-   * @param _context  eFaps context for this request
-   * @param _sortId   id used to sort
-   * @param _id       command / menu id
+   * @param _context
+   *                eFaps context for this request
+   * @param _sortId
+   *                id used to sort
+   * @param _id
+   *                command / menu id
    */
   @Override
-  protected void add(long _sortId, long _id)  {
-    Command command = Command.get(_id);
-    if (command != null)  {
-      add(_sortId, command);
-    } else  {
-      Menu subMenu = Menu.get(_id);
+  protected void add(final long _sortId, final long _id) {
+    final Command command = Command.get(_id);
+    if (command == null) {
+      final Menu subMenu = Menu.get(_id);
       add(_sortId, subMenu);
+    } else {
+      add(_sortId, command);
     }
   }
 
   /**
    * Sets the link properties for this object.
-   * 
-   * @param _linkType type of the link property
-   * @param _toId     to id
-   * @param _toType   to type
-   * @param _toName   to name
+   *
+   * @param _linkType
+   *                type of the link property
+   * @param _toId
+   *                to id
+   * @param _toType
+   *                to type
+   * @param _toName
+   *                to name
    */
   @Override
   protected void setLinkProperty(final EFapsClassName _linkType,
                                  final long _toId,
                                  final EFapsClassName _toType,
-                                 final String _toName)  throws Exception {
+                                 final String _toName) throws Exception {
     switch (_linkType) {
       case LINK_MENUISTYPETREEFOR:
-        Type type = Type.get(_toId);
-        if (type == null)  {
-          LOG.error("Menu '" + this.getName() + "' could not defined as type "
-                    + "tree menu for type '" + _toName + "'! Type does not "
-                    + "exists!");
-        } else  {
+        final Type type = Type.get(_toId);
+        if (type == null) {
+          LOG.error("Menu '"
+              + this.getName()
+              + "' could not defined as type "
+              + "tree menu for type '"
+              + _toName
+              + "'! Type does not "
+              + "exists!");
+        } else {
           TYPE2MENUS.put(type, this);
         }
         break;
@@ -110,16 +129,17 @@ public class Menu extends MenuAbstract  {
     }
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Menu}.
    *
-   * @param _id id to search in the cache
+   * @param _id
+   *                id to search in the cache
    * @return instance of class {@link Menu}
    * @see #getCache
    */
-  static public Menu get(final long _id)  {
+  static public Menu get(final long _id) {
     return getCache().get(_id);
   }
 
@@ -127,58 +147,50 @@ public class Menu extends MenuAbstract  {
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Menu}.
    *
-   * @param _name name to search in the cache
+   * @param _name
+   *                name to search in the cache
    * @return instance of class {@link Menu}
    * @see #getCache
    */
-  static public Menu get(final String _name)  {
+  static public Menu get(final String _name) {
     return getCache().get(_name);
   }
-  
+
   /**
-   * Returns for given parameter <i>UUID</i> the instance of class
-   * {@link Menu}.
+   * Returns for given parameter <i>UUID</i> the instance of class {@link Menu}.
    *
-   * @param _uuid UUID to search in the cache
+   * @param _uuid
+   *                UUID to search in the cache
    * @return instance of class {@link Menu}
    * @see #getCache
    */
-  static public Menu get(final UUID _uuid){
+  static public Menu get(final UUID _uuid) {
     return getCache().get(_uuid);
   }
-  
+
   /**
    * Returns for given type the type tree menu. If no type tree menu is defined
    * for the type, it is searched if for parent type a menu is defined.
    *
-   * @param _type   type for which the type tree menu is searched
-   * @return type tree menu for given type if found; otherwise
-   *         <code>null</code>.
+   * @param _type
+   *                type for which the type tree menu is searched
+   * @return type tree menu for given type if found; otherwise <code>null</code>.
    */
-  public static Menu getTypeTreeMenu(final Type _type)  {
+  public static Menu getTypeTreeMenu(final Type _type) {
     Menu ret = TYPE2MENUS.get(_type);
-    if ((ret == null) && (_type.getParentType() != null))  {
+    if ((ret == null) && (_type.getParentType() != null)) {
       ret = getTypeTreeMenu(_type.getParentType());
     }
     return ret;
   }
-  
+
   /**
    * Static getter method for the type hashtable {@link #cache}.
    *
    * @return value of static variable {@link #cache}
    */
-  static UserInterfaceObjectCache<Menu> getCache()  {
+  protected static UserInterfaceObjectCache<Menu> getCache() {
     return cache;
   }
 
-  
-  
-  /**
-   * Stores all instances of class {@link Menu}.
-   *
-   * @see #getCache
-   */
-  static final private UserInterfaceObjectCache<Menu> cache
-          = new UserInterfaceObjectCache<Menu>(Menu.class);
 }

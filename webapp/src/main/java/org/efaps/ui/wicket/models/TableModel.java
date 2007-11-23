@@ -43,7 +43,7 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Table;
@@ -219,7 +219,7 @@ public class TableModel extends AbstractModel {
    * method that initialises the TableModel
    */
   private void initialise() {
-    final CommandAbstract command = getCommand();
+    final AbstractCommand command = getCommand();
     if (command == null) {
       this.showCheckBoxes = false;
     } else {
@@ -229,7 +229,7 @@ public class TableModel extends AbstractModel {
       // set default sort
       if (command.getTargetTableSortKey() != null) {
         this.sortKey = getCommand().getTargetTableSortKey();
-        if (command.getTargetTableSortDirection() == CommandAbstract.TABLE_SORT_DIRECTION_DESC) {
+        if (command.getTargetTableSortDirection() == AbstractCommand.TABLE_SORT_DIRECTION_DESC) {
           this.sortDirection = SortDirection.DESCENDING;
         } else {
           this.sortDirection = SortDirection.ASCENDING;
@@ -241,7 +241,7 @@ public class TableModel extends AbstractModel {
       if (!showCheckBoxes) {
         final UUID cldUUID = UUID.fromString(getParameter("command"));
         if (cldUUID != null) {
-          final CommandAbstract cmd = getCommand(cldUUID);
+          final AbstractCommand cmd = getCommand(cldUUID);
           showCheckBoxes =
               (cmd != null) && cmd.hasEvents(EventType.UI_COMMAND_EXECUTE);
         }

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.models;
@@ -42,7 +42,7 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Table;
@@ -76,7 +76,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
  * will be passed to the esjp when calling it.
  *
  * @author jmox
- * @version $Id$
+ * @version $Id:StructurBrowserModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class StructurBrowserModel extends AbstractModel {
 
@@ -183,7 +183,7 @@ public class StructurBrowserModel extends AbstractModel {
    * method used to initialise this StructurBrowserModel
    */
   private void initialise() {
-    CommandAbstract command = getCommand();
+    AbstractCommand command = getCommand();
     if (command != null && command.getTargetTable() != null) {
       this.tableuuid = command.getTargetTable().getUUID();
       this.browserFieldName = command.getProperty("TargetStructurBrowserField");

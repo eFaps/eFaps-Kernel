@@ -33,7 +33,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.AdminObject;
+import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -47,7 +47,7 @@ import org.efaps.util.cache.CacheReloadInterface;
  *          2007) tmo $
  * @todo description
  */
-public class JAASSystem extends AdminObject {
+public class JAASSystem extends AbstractAdminObject {
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables

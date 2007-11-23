@@ -32,9 +32,9 @@ import javax.swing.tree.TreeModel;
 import org.apache.wicket.RestartResponseException;
 
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Image;
-import org.efaps.admin.ui.MenuAbstract;
+import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
@@ -117,7 +117,7 @@ public class MenuItemModel extends AbstractModel {
   }
 
   private void initialise() {
-    CommandAbstract _command = super.getCommand();
+    AbstractCommand _command = super.getCommand();
     this.image = _command.getIcon();
     this.reference = _command.getReference();
     this.askUser = _command.isAskUser();
@@ -146,8 +146,8 @@ public class MenuItemModel extends AbstractModel {
       }
       this.label = label;
 
-      if (_command instanceof MenuAbstract) {
-        for (CommandAbstract subCmd : ((MenuAbstract) _command).getCommands()) {
+      if (_command instanceof AbstractMenu) {
+        for (AbstractCommand subCmd : ((AbstractMenu) _command).getCommands()) {
           if (subCmd.hasAccess()) {
             this.childs
                 .add(new MenuItemModel(subCmd.getUUID(), super.getOid()));

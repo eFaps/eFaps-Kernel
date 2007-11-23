@@ -33,7 +33,7 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
-import org.efaps.admin.ui.UserInterfaceObject;
+import org.efaps.admin.ui.AbstractUserInterfaceObject;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
@@ -42,7 +42,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @author tmo
  * @version $Id$
  */
-public abstract class AdminObject implements CacheObjectInterface {
+public abstract class AbstractAdminObject implements CacheObjectInterface {
 
   /**
    *
@@ -178,7 +178,7 @@ public abstract class AdminObject implements CacheObjectInterface {
    * @see #uuid
    * @see #name
    */
-  protected AdminObject(final long _id, final String _uuid, final String _name) {
+  protected AbstractAdminObject(final long _id, final String _uuid, final String _name) {
     this.id = _id;
     this.uuid = (_uuid == null) ? null : UUID.fromString(_uuid.trim());
     setName(_name);
@@ -307,7 +307,7 @@ public abstract class AdminObject implements CacheObjectInterface {
           }
         }
       }
-      if (this instanceof UserInterfaceObject) {
+      if (this instanceof AbstractUserInterfaceObject) {
         // add ui object to parameter
         param.put(ParameterValues.UIOBJECT, this);
       }

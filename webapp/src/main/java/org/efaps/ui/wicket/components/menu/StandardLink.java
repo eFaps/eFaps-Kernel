@@ -26,7 +26,7 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.InlineFrame;
 
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.util.EFapsException;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.models.MenuItemModel;
@@ -52,8 +52,8 @@ public class StandardLink extends AbstractMenuItemLink {
   public void onClick() {
     MenuItemModel model = (MenuItemModel) super.getModel();
 
-    CommandAbstract command = model.getCommand();
-    if (command.getTarget() == CommandAbstract.TARGET_POPUP) {
+    AbstractCommand command = model.getCommand();
+    if (command.getTarget() == AbstractCommand.TARGET_POPUP) {
       ((EFapsSession) this.getSession()).setOpenerModel(this.getPage()
           .getModel());
     }

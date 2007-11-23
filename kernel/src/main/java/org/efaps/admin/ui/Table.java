@@ -29,12 +29,11 @@ import org.efaps.db.Context;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
- *
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class Table extends Collection implements Cloneable  {
+public class Table extends AbstractCollection implements Cloneable {
 
   /**
    * The static variable defines the class name in eFaps.
@@ -42,63 +41,25 @@ public class Table extends Collection implements Cloneable  {
   static public EFapsClassName EFAPS_CLASSNAME = EFapsClassName.TABLE;
 
   /**
-   * This is the constructor to set the id and the name.
-   *
-   * @param _id     id of the new table
-   * @param _name   name of the new table
+   * @see #getPageStyle
+   * @see #isMultiPageStyle
+   * @see #isSinglePageStyle
+   * @see #setMultiPageStyle
+   * @see #setPageStyle
+   * @see #setSinglePageStyle
    */
-  public Table(final Long _id, final String _uuid, final String _name) {
-    super(_id, _uuid, _name);
-  }
+  private enum PageStyle {
+    SINGLE,
+    MULTI
+  };
 
   /**
-   * The instance  method returns the title of the table.
+   * Stores all instances of class {@link Table}.
    *
-   * @param _context  context for this request
-   * @return title of the form
+   * @see #getCache
    */
-  public String getViewableName(Context _context)  {
-    String title = "";
-    ResourceBundle msgs = ResourceBundle.getBundle("org.efaps.properties.AttributeRessource", _context.getLocale());
-    try  {
-      title = msgs.getString("Table.Title."+getName());
-    } catch (MissingResourceException e)  {
-    }
-    return title;
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The instance method sets a new property value.
-   *
-   * @param _name   name of the property
-   * @param _value  value of the property
-   * @param _toId   id of the to object
-   */
-  protected void setProperty(final String _name, 
-                             final String _value) throws CacheReloadException  {
-    if (_name.equals("SelectionColRef"))  {
-      setSelectableColRef(Attribute.get(_value));
-    } else  {
-      super.setProperty(_name, _value);
-    }
-  }
-
-  /**
-   * Creates and returns a copy of this table object.
-   */
-  public Table cloneTable()   {
-    Table ret = null;
-    try  {
-      ret = (Table)super.clone();
-    } catch (CloneNotSupportedException e)  {
-e.printStackTrace();
-    }
-    return ret;
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
+  static private UserInterfaceObjectCache<Table> cache =
+      new UserInterfaceObjectCache<Table>(Table.class);
 
   /**
    * This is the instance variable for the selectable column reference. If the
@@ -109,67 +70,125 @@ e.printStackTrace();
    */
   private Attribute selectableColRef = null;
 
-  /**
-   * @see #getPageStyle
-   * @see #isMultiPageStyle
-   * @see #isSinglePageStyle
-   * @see #setMultiPageStyle
-   * @see #setPageStyle
-   * @see #setSinglePageStyle
-   */
-  private enum PageStyle {SINGLE, MULTI};
+  private String eventOnLoad = null;
 
   /**
    * This is the instance variable for the style of the page of the table.
    * Values defined in {@link #PageStyle} are possible. Default value is
-   * {@link #PageStyle,MULTI}.
-   *
-   *
+   * {@link  #PageStyle,MULTI} .
    */
   private PageStyle pageStyle = PageStyle.MULTI;
 
-private String eventOnLoad = null;
+  private String javaScriptCode = null;
 
-public void setEventOnLoad(String _eventOnLoad)  {
-  this.eventOnLoad = _eventOnLoad;
-}
+  private int selectableColRefIndex = -1;
 
-public String getEventOnLoad()  {
-  return this.eventOnLoad;
-}
+  /**
+   * This is the constructor to set the id and the name.
+   *
+   * @param _id
+   *                id of the new table
+   * @param _name
+   *                name of the new table
+   */
+  public Table(final Long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
+  }
 
-private String javaScriptCode = null;
+  /**
+   * The instance method returns the title of the table.
+   *
+   * @param _context
+   *                context for this request
+   * @return title of the form
+   */
+  public String getViewableName(Context _context) {
+    String title = "";
+    ResourceBundle msgs =
+        ResourceBundle.getBundle("org.efaps.properties.AttributeRessource",
+            _context.getLocale());
+    try {
+      title = msgs.getString("Table.Title." + getName());
+    } catch (MissingResourceException e) {
+    }
+    return title;
+  }
 
-public void setJavaScriptCode(String _javaScriptCode)  {
-  this.javaScriptCode = _javaScriptCode;
-}
+  // ///////////////////////////////////////////////////////////////////////////
 
-public String getJavaScriptCode()  {
-  return this.javaScriptCode;
-}
+  /**
+   * The instance method sets a new property value.
+   *
+   * @param _name
+   *                name of the property
+   * @param _value
+   *                value of the property
+   * @param _toId
+   *                id of the to object
+   */
+  @Override
+  protected void setProperty(final String _name, final String _value)
+                                                                     throws CacheReloadException {
+    if (_name.equals("SelectionColRef")) {
+      setSelectableColRef(Attribute.get(_value));
+    } else {
+      super.setProperty(_name, _value);
+    }
+  }
 
-  /////////////////////////////////////////////////////////////////////////////
+  /**
+   * Creates and returns a copy of this table object.
+   */
+  public Table cloneTable() {
+    Table ret = null;
+    try {
+      ret = (Table) super.clone();
+    } catch (CloneNotSupportedException e) {
+      e.printStackTrace();
+    }
+    return ret;
+  }
+
+  // ///////////////////////////////////////////////////////////////////////////
+
+  public void setEventOnLoad(String _eventOnLoad) {
+    this.eventOnLoad = _eventOnLoad;
+  }
+
+  public String getEventOnLoad() {
+    return this.eventOnLoad;
+  }
+
+  public void setJavaScriptCode(String _javaScriptCode) {
+    this.javaScriptCode = _javaScriptCode;
+  }
+
+  public String getJavaScriptCode() {
+    return this.javaScriptCode;
+  }
+
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * This is the setter method for instance variable {@link #selectableColRef}.
    *
-   * @param _selectableColRef new value for instance variable
-   *                          {@link #selectableColRef}
+   * @param _selectableColRef
+   *                new value for instance variable {@link #selectableColRef}
    * @see #selectableColRef
    * @see #getSelectableColRef
    */
-  public void setSelectableColRef(Attribute _selectableColRef)  {
+  public void setSelectableColRef(Attribute _selectableColRef) {
     this.selectableColRef = _selectableColRef;
 
-    this.selectableColRefIndex= addFieldExpr(
-      getSelectableColRef().getTable().getSqlTable()+"."+getSelectableColRef().getName()
-    );
+    this.selectableColRefIndex =
+        addFieldExpr(getSelectableColRef().getTable().getSqlTable()
+            + "."
+            + getSelectableColRef().getName());
   }
 
-private int selectableColRefIndex = -1;
-public int getSelectableColRefIndex()  {
-  return this.selectableColRefIndex;
-}
+  public int getSelectableColRefIndex() {
+    return this.selectableColRefIndex;
+  }
 
   /**
    * This is the getter method for instance variable {@link #selectableColRef}.
@@ -177,18 +196,19 @@ public int getSelectableColRefIndex()  {
    * @see #selectableColRef
    * @see #setSelectableColRef
    */
-  public Attribute getSelectableColRef()  {
+  public Attribute getSelectableColRef() {
     return this.selectableColRef;
   }
 
   /**
    * This is the setter method for instance variable {@link #pageStyle}.
    *
-   * @param _pageStyle new value for instance variable {@link #pageStyle}.
+   * @param _pageStyle
+   *                new value for instance variable {@link #pageStyle}.
    * @see #pageStyle
    * @see #getPageStyle
    */
-  private void setPageStyle(PageStyle _pageStyle)  {
+  private void setPageStyle(PageStyle _pageStyle) {
     this.pageStyle = _pageStyle;
   }
 
@@ -198,7 +218,7 @@ public int getSelectableColRefIndex()  {
    * @see #pageStyle
    * @see #setPageStyle
    */
-  private PageStyle getPageStyle()  {
+  private PageStyle getPageStyle() {
     return this.pageStyle;
   }
 
@@ -211,21 +231,20 @@ public int getSelectableColRefIndex()  {
    * @see #setPageStyle
    * @see #isSinglePageStyle
    */
-  public void setSinglePageStyle()  {
+  public void setSinglePageStyle() {
     setPageStyle(PageStyle.SINGLE);
   }
 
   /**
-   * If instance variable {@link #pageStyle} is set to
-   * {@link #PageStyle.SINGLE}, a <i>true</i> is returned, otherwise a
-   * <i>false</i> is returned.
+   * If instance variable {@link #pageStyle} is set to {@link #PageStyle.SINGLE},
+   * a <i>true</i> is returned, otherwise a <i>false</i> is returned.
    *
    * @return <i>true</i> / <i>false</i>
    * @see #pageStyle
    * @see #getPageStyle
    * @see #setSinglePageStyle
    */
-  public boolean isSinglePageStyle()  {
+  public boolean isSinglePageStyle() {
     return (getPageStyle() == PageStyle.SINGLE);
   }
 
@@ -238,34 +257,34 @@ public int getSelectableColRefIndex()  {
    * @see #setPageStyle
    * @see #isMultiPageStyle
    */
-  public void setMultiPageStyle()  {
+  public void setMultiPageStyle() {
     setPageStyle(PageStyle.MULTI);
   }
 
   /**
-   * If instance variable {@link #pageStyle} is set to
-   * {@link #PageStyle.MULTI}, a <i>true</i> is returned, otherwise a
-   * <i>false</i> is returned.
+   * If instance variable {@link #pageStyle} is set to {@link #PageStyle.MULTI},
+   * a <i>true</i> is returned, otherwise a <i>false</i> is returned.
    *
    * @return <i>true</i> / <i>false</i>
    * @see #pageStyle
    * @see #getPageStyle
    * @see #setMultiPageStyle
    */
-  public boolean isMultiPageStyle()  {
+  public boolean isMultiPageStyle() {
     return (getPageStyle() == PageStyle.MULTI);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Table}.
    *
-   * @param _id id to search in the cache
+   * @param _id
+   *                id to search in the cache
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  static public Table get(long _id)  {
+  static public Table get(long _id) {
     return getCache().get(_id);
   }
 
@@ -273,11 +292,12 @@ public int getSelectableColRefIndex()  {
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Table}.
    *
-   * @param _name name to search in the cache
+   * @param _name
+   *                name to search in the cache
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  static public Table get(String _name)  {
+  static public Table get(String _name) {
     return getCache().get(_name);
   }
 
@@ -285,30 +305,24 @@ public int getSelectableColRefIndex()  {
    * Returns for given parameter <i>UUID</i> the instance of class
    * {@link Table}.
    *
-   * @param _uuid UUID to search in the cache
+   * @param _uuid
+   *                UUID to search in the cache
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  static public Table get(UUID _uuid)  {
+  public static Table get(UUID _uuid) {
     return getCache().get(_uuid);
   }
-  
+
   /**
    * Static getter method for the type hashtable {@link #cache}.
    *
    * @return value of static variable {@link #cache}
    */
-  static UserInterfaceObjectCache<Table> getCache()  {
+  protected static UserInterfaceObjectCache<Table> getCache() {
     return cache;
   }
 
-  /**
-   * Stores all instances of class {@link Table}.
-   *
-   * @see #getCache
-   */
-  static private UserInterfaceObjectCache < Table > cache = new UserInterfaceObjectCache < Table > (Table.class);
-
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
 }

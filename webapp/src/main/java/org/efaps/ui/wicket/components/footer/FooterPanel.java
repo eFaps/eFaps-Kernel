@@ -48,7 +48,7 @@ import org.apache.wicket.model.IModel;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
@@ -271,7 +271,7 @@ public class FooterPanel extends Panel {
 
         final AbstractModel model = (AbstractModel) this.imodel;
 
-        if (model.getCommand().getTarget() == CommandAbstract.TARGET_MODAL) {
+        if (model.getCommand().getTarget() == AbstractCommand.TARGET_MODAL) {
           FooterPanel.this.modalWindow.setReloadChild(true);
           FooterPanel.this.modalWindow.close(_target);
         } else {

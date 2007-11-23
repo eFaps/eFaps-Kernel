@@ -34,7 +34,7 @@ import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.Command;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Search;
 import org.efaps.beans.ValueList;
@@ -94,7 +94,7 @@ public abstract class AbstractModel extends Model {
    * @see #getMode
    * @see #setMode
    */
-  private int mode = CommandAbstract.TARGET_MODE_UNKNOWN;
+  private int mode = AbstractCommand.TARGET_MODE_UNKNOWN;
 
   /**
    * This instance variable stores the OID of the Instance
@@ -127,7 +127,7 @@ public abstract class AbstractModel extends Model {
    * @see #getTarget()
    */
 
-  private int target = CommandAbstract.TARGET_UNKNOWN;
+  private int target = AbstractCommand.TARGET_UNKNOWN;
 
   /**
    * Constructor
@@ -154,7 +154,7 @@ public abstract class AbstractModel extends Model {
    */
   private void initialise() {
     this.oid = getParameter("oid");
-    final CommandAbstract command =
+    final AbstractCommand command =
         getCommand(UUID.fromString(getParameter("command")));
     this.commandUUID = command.getUUID();
     this.mode = command.getTargetMode();
@@ -164,7 +164,7 @@ public abstract class AbstractModel extends Model {
       this.callingCommandUUID = this.commandUUID;
       this.commandUUID =
           command.getTargetSearch().getDefaultCommand().getUUID();
-      this.setMode(CommandAbstract.TARGET_MODE_SEARCH);
+      this.setMode(AbstractCommand.TARGET_MODE_SEARCH);
       if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
         this.submit = true;
       }
@@ -186,8 +186,8 @@ public abstract class AbstractModel extends Model {
    * @see #callingCommandUUID
    * @return the calling CommandAbstract
    */
-  public CommandAbstract getCallingCommand() {
-    CommandAbstract cmd = Command.get(this.callingCommandUUID);
+  public AbstractCommand getCallingCommand() {
+    AbstractCommand cmd = Command.get(this.callingCommandUUID);
     if (cmd == null) {
       cmd = Menu.get(this.callingCommandUUID);
     }
@@ -221,8 +221,8 @@ public abstract class AbstractModel extends Model {
    * @return CommandAbstract for the instance variable {@link #commandUUID}
    * @see #command
    */
-  public CommandAbstract getCommand() {
-    CommandAbstract cmd = Command.get(this.commandUUID);
+  public AbstractCommand getCommand() {
+    AbstractCommand cmd = Command.get(this.commandUUID);
     if (cmd == null) {
       cmd = Menu.get(this.commandUUID);
     }
@@ -240,8 +240,8 @@ public abstract class AbstractModel extends Model {
    *                name of searched command object
    * @return found command / menu instance, or <code>null</null> if not found
    */
-  protected CommandAbstract getCommand(final UUID _uuid) {
-    CommandAbstract cmd = Command.get(_uuid);
+  protected AbstractCommand getCommand(final UUID _uuid) {
+    AbstractCommand cmd = Command.get(_uuid);
     if (cmd == null) {
       cmd = Menu.get(_uuid);
       if (cmd == null) {
@@ -420,29 +420,29 @@ public abstract class AbstractModel extends Model {
    * @see #mode
    */
   public boolean isCreateMode() {
-    return getMode() == CommandAbstract.TARGET_MODE_CREATE;
+    return getMode() == AbstractCommand.TARGET_MODE_CREATE;
   }
 
   /**
    * @see #mode
    */
   public boolean isEditMode() {
-    return getMode() == CommandAbstract.TARGET_MODE_EDIT;
+    return getMode() == AbstractCommand.TARGET_MODE_EDIT;
   }
 
   /**
    * @see #mode
    */
   public boolean isSearchMode() {
-    return getMode() == CommandAbstract.TARGET_MODE_SEARCH;
+    return getMode() == AbstractCommand.TARGET_MODE_SEARCH;
   }
 
   /**
    * @see #mode
    */
   public boolean isViewMode() {
-    return getMode() == CommandAbstract.TARGET_MODE_VIEW
-        || getMode() == CommandAbstract.TARGET_MODE_UNKNOWN;
+    return getMode() == AbstractCommand.TARGET_MODE_VIEW
+        || getMode() == AbstractCommand.TARGET_MODE_UNKNOWN;
   }
 
   /**
@@ -503,7 +503,7 @@ public abstract class AbstractModel extends Model {
    */
   public List<Return> executeEvents(final String[] _others) throws EFapsException {
     List<Return> ret = new ArrayList<Return>();
-    CommandAbstract command;
+    AbstractCommand command;
     if (this.callingCommandUUID == null) {
       command = this.getCommand();
     } else {
@@ -534,7 +534,7 @@ public abstract class AbstractModel extends Model {
    * @return List with Return from the esjp
    */
   public List<Return> validate() {
-    final CommandAbstract command = this.getCommand();
+    final AbstractCommand command = this.getCommand();
     try {
       return command.executeEvents(EventType.UI_VALIDATE, (Object) null);
     } catch (EFapsException e) {

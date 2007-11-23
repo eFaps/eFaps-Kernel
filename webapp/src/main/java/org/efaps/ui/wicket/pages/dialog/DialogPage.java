@@ -34,7 +34,7 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter.ParameterValues;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
@@ -130,7 +130,7 @@ public class DialogPage extends WebPage {
     @Override
     public void onClick(final AjaxRequestTarget _target) {
 
-      final CommandAbstract command = ((MenuItemModel) getModel()).getCommand();
+      final AbstractCommand command = ((MenuItemModel) getModel()).getCommand();
 
       if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
         try {

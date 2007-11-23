@@ -37,7 +37,12 @@ import org.efaps.util.cache.CacheReloadException;
  * @author tmo
  * @version $Id$
  */
-public class Field extends UserInterfaceObject {
+public class Field extends AbstractUserInterfaceObject {
+
+  /**
+   * The static variable defines the class name in eFaps.
+   */
+  public final static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.FIELD;
 
   /**
    * Logger for this class
@@ -185,7 +190,7 @@ public class Field extends UserInterfaceObject {
    * @set #getTarget
    * @see #setTarget
    */
-  private int target = CommandAbstract.TARGET_UNKNOWN;
+  private int target = AbstractCommand.TARGET_UNKNOWN;
 
   /**
    * The type icon for this field is shown if value is set to true.
@@ -265,7 +270,7 @@ public class Field extends UserInterfaceObject {
    * @return instance of class {@link Field}
    */
   static public Field get(final long _id) {
-    Collection col = null;
+    AbstractCollection col = null;
 
     try {
       final SearchQuery query = new SearchQuery();
@@ -301,39 +306,39 @@ public class Field extends UserInterfaceObject {
   }
 
   /**
-   * Test, if the value of instance variable {@link CommandAbstract.target} is
-   * equal to {@link CommandAbstract.TARGET_CONTENT}.
+   * Test, if the value of instance variable {@link AbstractCommand.target} is
+   * equal to {@link AbstractCommand.TARGET_CONTENT}.
    *
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
    */
   public boolean isTargetContent() {
-    return getTarget() == CommandAbstract.TARGET_CONTENT;
+    return getTarget() == AbstractCommand.TARGET_CONTENT;
   }
 
   /**
-   * Test, if the value of instance variable {@link CommandAbstract.target} is
-   * equal to {@link CommandAbstract.TARGET_POPUP}.
+   * Test, if the value of instance variable {@link AbstractCommand.target} is
+   * equal to {@link AbstractCommand.TARGET_POPUP}.
    *
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
    */
   public boolean isTargetPopup() {
-    return getTarget() == CommandAbstract.TARGET_POPUP;
+    return getTarget() == AbstractCommand.TARGET_POPUP;
   }
 
   /**
-   * Test, if the value of instance variable {@link CommandAbstract.target} is
-   * equal to {@link CommandAbstract.TARGET_HIDDEN}.
+   * Test, if the value of instance variable {@link AbstractCommand.target} is
+   * equal to {@link AbstractCommand.TARGET_HIDDEN}.
    *
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
    */
   public boolean isTargetHidden() {
-    return getTarget() == CommandAbstract.TARGET_HIDDEN;
+    return getTarget() == AbstractCommand.TARGET_HIDDEN;
   }
 
   /**
@@ -479,11 +484,11 @@ public class Field extends UserInterfaceObject {
       setShowTypeIcon("true".equals(_value));
     } else if ("Target".equals(_name)) {
       if ("content".equals(_value)) {
-        setTarget(CommandAbstract.TARGET_CONTENT);
+        setTarget(AbstractCommand.TARGET_CONTENT);
       } else if ("hidden".equals(_value)) {
-        setTarget(CommandAbstract.TARGET_HIDDEN);
+        setTarget(AbstractCommand.TARGET_HIDDEN);
       } else if ("popup".equals(_value)) {
-        setTarget(CommandAbstract.TARGET_POPUP);
+        setTarget(AbstractCommand.TARGET_POPUP);
       }
     } else {
       super.setProperty(_name, _value);

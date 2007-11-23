@@ -27,18 +27,15 @@ import java.util.UUID;
 import org.efaps.db.Context;
 
 /**
- *
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class Form extends Collection  {
-
+public class Form extends AbstractCollection {
   /**
    * The static variable defines the class name in eFaps.
    */
-  static public EFapsClassName EFAPS_CLASSNAME = EFapsClassName.FORM;
-
+  public final static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.FORM;
   /**
    *
    */
@@ -47,31 +44,35 @@ public class Form extends Collection  {
   }
 
   /**
-   * The instance  method returns the title of the form.
+   * The instance method returns the title of the form.
    *
-   * @param _context  context for this request
+   * @param _context
+   *                context for this request
    * @return title of the form
    */
-  public String getViewableName(Context _context)  {
+  public String getViewableName(final Context _context) {
     String title = "";
-    ResourceBundle msgs = ResourceBundle.getBundle("org.efaps.properties.AttributeRessource", _context.getLocale());
-    try  {
-      title = msgs.getString("Form.Title."+getName());
-    } catch (MissingResourceException e)  {
+    final ResourceBundle msgs =
+        ResourceBundle.getBundle("org.efaps.properties.AttributeRessource",
+            _context.getLocale());
+    try {
+      title = msgs.getString("Form.Title." + getName());
+    } catch (MissingResourceException e) {
     }
     return title;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Form}.
    *
-   * @param _id id to search in the cache
+   * @param _id
+   *                id to search in the cache
    * @return instance of class {@link Form}
    * @see #getCache
    */
-  static public Form get(final long _id)  {
+  static public Form get(final long _id) {
     return getCache().get(_id);
   }
 
@@ -79,34 +80,34 @@ public class Form extends Collection  {
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Form}.
    *
-   * @param _name name to search in the cache
+   * @param _name
+   *                name to search in the cache
    * @return instance of class {@link Form}
    * @see #getCache
    */
-  static public Form get(final String _name)  {
+  static public Form get(final String _name) {
     return getCache().get(_name);
   }
 
-  
   /**
    * Returns for given parameter <i>_uuid</i> the instance of class
    * {@link Form}.
    *
-   * @param _uuid UUID to search in the cache
+   * @param _uuid
+   *                UUID to search in the cache
    * @return instance of class {@link Form}
    * @see #getCache
    */
-  static public Form get(final UUID _uuid)  {
+  static public Form get(final UUID _uuid) {
     return getCache().get(_uuid);
   }
-  
-  
+
   /**
    * Static getter method for the type hashtable {@link #cache}.
    *
    * @return value of static variable {@link #cache}
    */
-  static UserInterfaceObjectCache < Form > getCache()  {
+  static UserInterfaceObjectCache<Form> getCache() {
     return cache;
   }
 
@@ -115,6 +116,6 @@ public class Form extends Collection  {
    *
    * @see #getCache
    */
-  static private UserInterfaceObjectCache < Form > cache 
-                         = new UserInterfaceObjectCache < Form > (Form.class);
+  static private UserInterfaceObjectCache<Form> cache =
+      new UserInterfaceObjectCache<Form>(Form.class);
 }

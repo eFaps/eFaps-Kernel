@@ -23,7 +23,7 @@ package org.efaps.esjp.admin.user;
 import java.util.Map;
 import java.util.UUID;
 
-import org.efaps.admin.AdminObject.EFapsClassName;
+import org.efaps.admin.AbstractAdminObject.EFapsClassName;
 import org.efaps.admin.common.SystemAttribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldValue;

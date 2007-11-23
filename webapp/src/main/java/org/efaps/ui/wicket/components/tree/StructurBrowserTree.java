@@ -38,7 +38,7 @@ import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.ITreeState;
 
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
@@ -122,10 +122,10 @@ public class StructurBrowserTree extends Tree {
             (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
                 .getUserObject();
 
-        CommandAbstract cmd = model.getCommand();
+        AbstractCommand cmd = model.getCommand();
 
         if (cmd instanceof Menu) {
-          for (CommandAbstract childcmd : ((Menu) cmd).getCommands()) {
+          for (AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
             if (childcmd.isDefaultSelected()) {
               cmd = childcmd;
               break;

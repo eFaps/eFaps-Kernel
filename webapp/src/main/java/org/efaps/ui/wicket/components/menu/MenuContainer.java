@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.menu;
@@ -34,7 +34,7 @@ import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.event.EventType;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.components.AbstractParentMarkupContainer;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
@@ -42,7 +42,7 @@ import org.efaps.ui.wicket.models.SearchItemModel;
 
 /**
  * @author tmo
- * @version $Id$
+ * @version $Id:MenuContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class MenuContainer extends AbstractParentMarkupContainer {
 
@@ -118,8 +118,8 @@ public class MenuContainer extends AbstractParentMarkupContainer {
 
   private void addLink(final MenuItemModel _menuItemModel) {
     if (!_menuItemModel.hasChilds()) {
-      if (_menuItemModel.getTarget() != CommandAbstract.TARGET_UNKNOWN) {
-        if (_menuItemModel.getTarget() == CommandAbstract.TARGET_MODAL) {
+      if (_menuItemModel.getTarget() != AbstractCommand.TARGET_UNKNOWN) {
+        if (_menuItemModel.getTarget() == AbstractCommand.TARGET_MODAL) {
           AjaxOpenModalComponent item =
               new AjaxOpenModalComponent(getNewChildId(), _menuItemModel);
           this.add(item);
@@ -168,8 +168,8 @@ public class MenuContainer extends AbstractParentMarkupContainer {
         MenuItemModel childModel = (MenuItemModel) item.getModel();
 
         String url = (String) item.urlFor(ILinkListener.INTERFACE);
-        if (childModel.getTarget() == CommandAbstract.TARGET_POPUP) {
-          CommandAbstract command = childModel.getCommand();
+        if (childModel.getTarget() == AbstractCommand.TARGET_POPUP) {
+          AbstractCommand command = childModel.getCommand();
 
           PopupSettings popup =
               new PopupSettings(PageMap.forName("popup")).setHeight(
@@ -267,9 +267,9 @@ public class MenuContainer extends AbstractParentMarkupContainer {
     if (_menuItem.getUrl() != null) {
       _html.append(_menuItem.getUrl());
     }
-    if (_menuItem.getTarget() == CommandAbstract.TARGET_HIDDEN) {
+    if (_menuItem.getTarget() == AbstractCommand.TARGET_HIDDEN) {
       _html.append("', 'eFapsFrameHidden', '");
-    } else if (_menuItem.getTarget() == CommandAbstract.TARGET_MODAL) {
+    } else if (_menuItem.getTarget() == AbstractCommand.TARGET_MODAL) {
       _html.append("', 'top', '");
     } else {
       _html.append("', '_self', '");

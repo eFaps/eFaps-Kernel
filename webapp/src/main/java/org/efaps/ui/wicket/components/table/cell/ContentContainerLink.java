@@ -24,7 +24,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.Link;
 
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.CellModel;
@@ -65,7 +65,7 @@ public class ContentContainerLink extends Link {
       parameters.add("command", menu.getUUID().toString());
       parameters.add("oid", cellmodel.getOid());
       ContentContainerPage page;
-      if (cellmodel.getTarget() == CommandAbstract.TARGET_POPUP) {
+      if (cellmodel.getTarget() == AbstractCommand.TARGET_POPUP) {
         page = new ContentContainerPage(parameters);
       } else {
         page =

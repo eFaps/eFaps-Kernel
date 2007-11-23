@@ -27,7 +27,7 @@ import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.StaticImageComponent;
 import org.efaps.ui.wicket.models.CellModel;
@@ -61,14 +61,14 @@ public class CellPanel extends Panel {
     WebMarkupContainer celllink;
     if (cellmodel.getReference() != null) {
       if (_updateListMenu
-          && cellmodel.getTarget() != CommandAbstract.TARGET_POPUP) {
+          && cellmodel.getTarget() != AbstractCommand.TARGET_POPUP) {
         celllink = new AjaxLinkContainer("link", cellmodel);
       } else {
         if (cellmodel.isCheckOut()) {
           celllink = new CheckOutLink("link", cellmodel);
         } else {
           if (_tablemodel.isSearchMode()
-              && cellmodel.getTarget() != CommandAbstract.TARGET_POPUP) {
+              && cellmodel.getTarget() != AbstractCommand.TARGET_POPUP) {
             // do we have "connectmode",then we don't want a link in a popup
             if (_tablemodel.isSubmit()) {
               celllink = new WebMarkupContainer("link");
@@ -78,7 +78,7 @@ public class CellPanel extends Panel {
             }
           } else {
             celllink = new ContentContainerLink("link", cellmodel);
-            if (cellmodel.getTarget() == CommandAbstract.TARGET_POPUP) {
+            if (cellmodel.getTarget() == AbstractCommand.TARGET_POPUP) {
               PopupSettings popup = new PopupSettings(PageMap.forName("popup"));
               ((ContentContainerLink) celllink).setPopupSettings(popup);
             }

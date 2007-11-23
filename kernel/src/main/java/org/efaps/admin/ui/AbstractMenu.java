@@ -38,35 +38,35 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id: MenuAbstract.java 466 2006-10-20 15:15:42 +0000 (Fri, 20 Oct
  *          2006) tmo $
  */
-abstract public class MenuAbstract extends CommandAbstract {
+abstract public class AbstractMenu extends AbstractCommand {
 
   /**
    * All sub commands or menus are store in the tree map. The tree map is used
    * to sort the commands / menus belonging to their id.
-   * 
+   *
    * @see #getCommands
    * @add
    */
-  private Map<Long, CommandAbstract> commands = new TreeMap<Long, CommandAbstract>();
+  private final Map<Long, AbstractCommand> commands = new TreeMap<Long, AbstractCommand>();
 
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Constructor to set the id,uuid and  name of the menu object.
-   * 
+   *
    * @param _id
    *          id of the command to set
    * @param _name
    *          name of the command to set
    */
-  protected MenuAbstract(final long _id, final String _uuid, final String _name) {
+  protected AbstractMenu(final long _id, final String _uuid, final String _name) {
     super(_id, _uuid, _name);
   }
 
   /**
    * Adds a command or menu to this menu instance. The method must be specific
    * implemented by all menu implementations.
-   * 
+   *
    * @param _sortId
    *          id used to sort
    * @param _id
@@ -76,23 +76,23 @@ abstract public class MenuAbstract extends CommandAbstract {
 
   /**
    * Add a command to the menu structure.
-   * 
+   *
    * @param _sortId
    *          id used to sort
    * @param _command
    *          command to add
    */
-  public void add(final long _sortId, final CommandAbstract _command) {
+  public void add(final long _sortId, final AbstractCommand _command) {
     this.commands.put(_sortId, _command);
   }
 
   /**
    * Add all sub commands and menus of the given menu to this menu structure.
-   * 
+   *
    * @param _menu
    *          menu with sub structure
    */
-  public void addAll(final MenuAbstract _menu) {
+  public void addAll(final AbstractMenu _menu) {
     this.commands.putAll(_menu.commands);
   }
 
@@ -103,18 +103,19 @@ abstract public class MenuAbstract extends CommandAbstract {
    * test, if the context user has access to minimum one sub command command /
    * menu. If yes, the user is allowed to access this menu instance, other the
    * user is not allowed to access this menu.
-   * 
-   * 
+   *
+   *
    * @return <i>true</i>if context user has access, otherwise <i>false</i> is
    *         returned
-   * @throws EFapsException 
+   * @throws EFapsException
    */
+  @Override
   public boolean hasAccess() throws EFapsException {
     boolean ret = super.hasAccess();
 
     if (ret && getCommands().size() > 0) {
       ret = false;
-      for (CommandAbstract cmd : getCommands()) {
+      for (AbstractCommand cmd : getCommands()) {
         if (cmd.hasAccess()) {
           ret = true;
           break;
@@ -123,16 +124,17 @@ abstract public class MenuAbstract extends CommandAbstract {
     }
     return ret;
   }
-  
- 
+
+
   /**
    * Returns all information from the menu as string.
    */
+  @Override
   public String toString() {
-    ToStringBuilder buf = new ToStringBuilder(this).appendSuper(super
+ final   ToStringBuilder buf = new ToStringBuilder(this).appendSuper(super
         .toString());
 
-    for (CommandAbstract cmd : getCommands()) {
+    for (AbstractCommand cmd : getCommands()) {
       buf.append(" ").append(cmd);
     }
     return buf.toString();
@@ -141,14 +143,14 @@ abstract public class MenuAbstract extends CommandAbstract {
   /**
    * The method takes values of the {@link #commands} and returnes them as
    * {@link java.util.ArrayList}.
-   * 
+   *
    * @return the values of the {@link #commands} map instance as array list
    * @see #commands
    * @see #add(Command)
    * @see #add(Menu)
    */
-  public List<CommandAbstract> getCommands() {
-    return new ArrayList<CommandAbstract>(this.commands.values());
+  public List<AbstractCommand> getCommands() {
+    return new ArrayList<AbstractCommand>(this.commands.values());
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -157,11 +159,12 @@ abstract public class MenuAbstract extends CommandAbstract {
    * The instance method reads all needed information for this user interface
    * object. The method extends the original method, because the sub menus and
    * commands must be read.
-   * 
+   *
    * @param _context
    *          eFaps context for this request
    * @see #readFromDB4Childs
    */
+  @Override
   protected void readFromDB() throws CacheReloadException {
     super.readFromDB();
     readFromDB4Childs();
@@ -170,7 +173,7 @@ abstract public class MenuAbstract extends CommandAbstract {
   /**
    * The instance method gets all sub menus and commands and adds them to this
    * menu instance via method {@link #add(long)}.
-   * 
+   *
    * @param _context
    *          eFaps context for this request
    * @see #readFromDB
@@ -178,17 +181,17 @@ abstract public class MenuAbstract extends CommandAbstract {
    */
   private void readFromDB4Childs() throws CacheReloadException {
     try {
-      Instance menuInst = new Instance(Type.get(EFapsClassName.MENU.name),
+      final   Instance menuInst = new Instance(Type.get(EFapsClassName.MENU.name),
           getId());
-      SearchQuery query = new SearchQuery();
+      final   SearchQuery query = new SearchQuery();
       query.setExpand(menuInst, "Admin_UI_Menu2Command\\FromMenu");
       query.addSelect("ID");
       query.addSelect("ToCommand");
       query.executeWithoutAccessCheck();
 
       while (query.next()) {
-        long commandId = ((Number) query.get("ToCommand")).longValue();
-        long sortId = (Long) query.get("ID");
+        final     long commandId = ((Number) query.get("ToCommand")).longValue();
+        final  long sortId = (Long) query.get("ID");
         add(sortId, commandId);
       }
     } catch (EFapsException e) {

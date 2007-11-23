@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.efaps.admin.AdminObject.EFapsClassName;
+import org.efaps.admin.AbstractAdminObject.EFapsClassName;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;

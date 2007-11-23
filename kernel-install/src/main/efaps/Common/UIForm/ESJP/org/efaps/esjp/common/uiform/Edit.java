@@ -29,7 +29,7 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Field;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -53,8 +53,8 @@ public class Edit implements EventExecution {
   public Return execute(final Parameter _parameter) throws EFapsException {
     Return ret = new Return();
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    CommandAbstract command =
-        (CommandAbstract) _parameter.get(ParameterValues.UIOBJECT);
+    AbstractCommand command =
+        (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
 
     Context context = Context.getThreadContext();
 

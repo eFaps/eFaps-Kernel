@@ -49,7 +49,7 @@ import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.AbstractTree;
 import org.apache.wicket.model.Model;
 
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.StaticImageComponent;
 import org.efaps.ui.wicket.models.MenuItemModel;
@@ -282,7 +282,7 @@ public class MenuTree extends AbstractTree {
   public void changeContent(final MenuItemModel _model,
                             final AjaxRequestTarget _target) {
 
-    final CommandAbstract cmd = _model.getCommand();
+    final AbstractCommand cmd = _model.getCommand();
     final PageParameters para = new PageParameters();
     para.add("oid", _model.getOid());
     para.add("command", cmd.getUUID().toString());

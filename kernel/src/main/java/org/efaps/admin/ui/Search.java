@@ -30,7 +30,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public class Search extends MenuAbstract  {
+public class Search extends AbstractMenu  {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
@@ -40,7 +40,7 @@ public class Search extends MenuAbstract  {
    */
   public static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.SEARCH;
 
-  
+
   /**
    * Stores all instances of class {@link Search}.
    *
@@ -55,7 +55,7 @@ public class Search extends MenuAbstract  {
   /**
    * Stores the default search command used when the search is called.
    */
-  private CommandAbstract defaultCommand = null;
+  private AbstractCommand defaultCommand = null;
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors / destructors
@@ -83,13 +83,14 @@ public class Search extends MenuAbstract  {
    * @param _sortId   id used to sort
    * @param _id       command / menu id
    */
-  protected void add(long _sortId, long _id)  {
-    Command command = Command.get(_id);
+  @Override
+  protected void add(final long _sortId, final long _id)  {
+    final  Command command = Command.get(_id);
     if (command != null)  {
-      add(_sortId, command);
-    } else  {
-      Menu subMenu = Menu.get(_id);
+      final   Menu subMenu = Menu.get(_id);
       add(_sortId, subMenu);
+    } else  {
+      add(_sortId, command);
     }
   }
 
@@ -100,6 +101,7 @@ public class Search extends MenuAbstract  {
    * @param _toType   to type
    * @param _toName   to name
    */
+  @Override
   protected void setLinkProperty(final EFapsClassName _linkType,
                                  final long _toId,
                                  final EFapsClassName _toType,
@@ -123,11 +125,11 @@ public class Search extends MenuAbstract  {
   /**
    * This is the getter method for the instance variable
    * {@link #defaultCommand}.
-   * 
+   *
    * @return value of instance variable {@link #defaultCommand}
    * @see #defaultCommand
    */
-  public CommandAbstract getDefaultCommand() {
+  public AbstractCommand getDefaultCommand() {
     return this.defaultCommand;
   }
 
@@ -143,15 +145,15 @@ public class Search extends MenuAbstract  {
    * @return instance of class {@link Command}
    * @see #getCache
    */
-  static public Search get(String _name) throws EFapsException  {
-    Search search = (Search) getCache().get(_name);
+  static public Search get(final String _name) throws EFapsException  {
+    Search search = getCache().get(_name);
     if (search==null)  {
       search = getCache().read(_name);
     }
     return search;
   }
-  
-  static public Search get(UUID _uuid)  {
+
+  static public Search get(final UUID _uuid)  {
     return getCache().get(_uuid);
   }
   /**

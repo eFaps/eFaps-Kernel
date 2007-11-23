@@ -30,7 +30,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.AdminObject;
+import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -44,7 +44,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  * @todo description
  */
-public class AccessSet extends AdminObject  {
+public class AccessSet extends AbstractAdminObject  {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables

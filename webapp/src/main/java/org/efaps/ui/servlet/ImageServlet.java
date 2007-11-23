@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.servlet;
@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.AdminObject;
+import org.efaps.admin.AbstractAdminObject;
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -47,7 +47,7 @@ import org.efaps.util.cache.CacheReloadInterface;
  * <code>/efaps/servlet/image/Admin_UI_Image</code>.
  *
  * @author tmo
- * @version $Id$
+ * @version $Id:ImageServlet.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ImageServlet extends HttpServlet  {
 
@@ -137,7 +137,7 @@ public class ImageServlet extends HttpServlet  {
     try  {
       synchronized(cache)  {
         SearchQuery query = new SearchQuery();
-        query.setQueryTypes(AdminObject.EFapsClassName.IMAGE.name);
+        query.setQueryTypes(AbstractAdminObject.EFapsClassName.IMAGE.name);
         query.addSelect("Name");
         query.addSelect("FileName");
         query.addSelect("OID");

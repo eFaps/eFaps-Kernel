@@ -33,11 +33,11 @@ import org.efaps.util.cache.CacheReloadException;
 /**
  * This class represents the Commands wich enable the interaction with a User.<br>
  * Buttons in the UserInterface a represented by this Class.
- * 
+ *
  * @author tmo
  * @version $Id$
  */
-public abstract class CommandAbstract extends UserInterfaceObject {
+public abstract class AbstractCommand extends AbstractUserInterfaceObject {
 
   // ///////////////////////////////////////////////////////////////////////////
   // static Variables
@@ -48,14 +48,14 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * The target of the href is the content frame.
-   * 
+   *
    * @see #target
    */
   static public final int TARGET_CONTENT = 1;
 
   /**
    * The target of the href is the hidden frame.
-   * 
+   *
    * @see #target
    */
   static public final int TARGET_HIDDEN = 3;
@@ -76,7 +76,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * The target of the href is a new window popped up.
-   * 
+   *
    * @see #target
    */
   static public final int TARGET_POPUP = 2;
@@ -84,7 +84,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The target of the href is not known. This is maybe, if a javascript
    * function is directly called.
-   * 
+   *
    * @see #target
    */
   static public final int TARGET_UNKNOWN = 0;
@@ -95,7 +95,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The instance variable stores if the execution of the command needs a
    * confirmation of the user. The default value is <i>false</i>.
-   * 
+   *
    * @see #isAskUser
    * @see #setAskUser
    */
@@ -104,7 +104,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * If the instance variable is set to <i>tree</i>, the command is selected as
    * default command in the navigation tree.
-   * 
+   *
    * @see #isDefaultSelected
    * @see #setDefaultSelected
    */
@@ -112,7 +112,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * Instance variable to hold the reference to the icon file.
-   * 
+   *
    * @see #setIcon
    * @see #getIcon
    */
@@ -122,7 +122,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * The instance variable stores the label of this command instance. The
    * default value is set from the constructor to the name plus extension
    * '.Label'.
-   * 
+   *
    * @see #getLabel
    * @see #setLabel
    */
@@ -130,7 +130,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * Instance variable to hold the reference to call.
-   * 
+   *
    * @see #setReference
    * @see #getReference
    */
@@ -139,7 +139,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * If the value is set to <i>true</i>. the commands submits the current form
    * to the given href url and the given target. The default value is <i>false</i>.
-   * 
+   *
    * @see #isSubmit
    * @see #setSubmit
    */
@@ -147,7 +147,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * The target of the command is the content frame.
-   * 
+   *
    * @see #isTargetContent
    * @see #isTargetPopup
    * @set #getTarget
@@ -158,7 +158,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The instance variable stores the height for the target bottom. Only a is
    * set, the value is used from the JSP pages.
-   * 
+   *
    * @see #getTargetBottomHeight
    * @see #setTargetBottomHeight
    */
@@ -167,7 +167,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The instance variable stores the target connect attribute used for the
    * connect in a form.
-   * 
+   *
    * @see #getTargetConnectAttribute
    * @see #setTargetConnectAttribute
    */
@@ -176,7 +176,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The instance variable stores the create type for the target user interface
    * object.
-   * 
+   *
    * @see #getTargetCreateType
    * @see #setTargetCreateType
    */
@@ -185,7 +185,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The instance variable stores the target user interface form object which is
    * shown by the this abstract commmand.
-   * 
+   *
    * @see #getTargetForm
    * @see #setTargetForm
    */
@@ -194,7 +194,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The instance method stores the complete menu. Default value is a null and
    * no menu is shown.
-   * 
+   *
    * @see #setTargetMenu
    * @see #getTargetMenu
    */
@@ -202,7 +202,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * The instance variable stores the mode of the target user interface object.
-   * 
+   *
    * @see #getTargetMode
    * @see #setTargetMode
    */
@@ -210,7 +210,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * The instance variable stores the search of target user interface object.
-   * 
+   *
    * @see #getTargetSearch
    * @see #setTargetSearch
    */
@@ -219,7 +219,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * Standard checkboxes for a table must be shown. The checkboxes are used e.g.
    * to delete selected.
-   * 
+   *
    * @see #isTargetShowCheckBoxes
    * @see #setTargetShowCheckBoxes
    */
@@ -228,7 +228,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The instance variable stores the target user interface table object which
    * is shown by the this abstract commmand.
-   * 
+   *
    * @see #getTargetTable
    * @see #setTargetTable
    */
@@ -236,7 +236,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * The instance variable store the filters for the targer table.
-   * 
+   *
    * @see #getTargetTableFilters
    * @see #setTargetTableFilters
    */
@@ -246,7 +246,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * The instance variable stores for target user interface table object the
    * default sort direction. The default value is
    * {@link #TABLE_SORT_DIRECTION_ASC}.
-   * 
+   *
    * @see #getTargetTableSortDirection
    * @see #setTargetTableSortDirection
    */
@@ -255,7 +255,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The instance variable stores for target user interface table object the
    * default sort key.
-   * 
+   *
    * @see #getTargetTableSortKey
    * @see #setTargetTableSortKey
    */
@@ -263,7 +263,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * Sets the title of the target window.
-   * 
+   *
    * @see #getTargetTitle
    * @see #setTargetTitle
    */
@@ -272,7 +272,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The instance variable stores the window height of the popup window ({@link #target}
    * is set to {@link #TARGET_POPUP}). The default value is <i>400</i>.
-   * 
+   *
    * @see #getWindowHeight
    * @see #setWindowHeight
    */
@@ -281,7 +281,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * The instance variable stores the window width of the popup window ({@link #target}
    * is set to {@link #TARGET_POPUP}). The default value is <i>600</i>.
-   * 
+   *
    * @see #getWindowWidth
    * @see #setWindowWidth
    */
@@ -292,7 +292,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * Constructor to set the id and name of the command object. The constructor
    * also sets the label of the command and the titel of the target.
-   * 
+   *
    * @param _id
    *                id of the command to set
    * @param _name
@@ -301,7 +301,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    *                uuid of the command to set
    * @see #label
    */
-  protected CommandAbstract(long _id, final String _uuid, final String _name) {
+  protected AbstractCommand(long _id, final String _uuid, final String _name) {
     super(_id, _uuid, _name);
     setLabel(_name + ".Label");
     setTargetTitle(_name + ".Title");
@@ -312,7 +312,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * Add a new role for access to this command.
-   * 
+   *
    * @param _role
    * @see #access
    * @see #getAccess
@@ -325,7 +325,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * Get the current icon reference value.
-   * 
+   *
    * @return the value of the instance variable {@link #icon}.
    * @see #icon
    * @see #setIcon
@@ -336,7 +336,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * Set the new icon reference value.
-   * 
+   *
    * @param _icon
    *                new icon reference to set
    * @see #icon
@@ -348,7 +348,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This method returns the Property of the Label and not the name
-   * 
+   *
    * @return String
    */
   public String getLabelProperty() {
@@ -357,7 +357,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #label}.
-   * 
+   *
    * @return value of instance variable {@link #label}
    * @see #label
    * @see #setLabel
@@ -368,7 +368,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #label}.
-   * 
+   *
    * @param _label
    *                new value for instance variable {@link #label}
    * @see #label
@@ -380,7 +380,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * Get the current reference value.
-   * 
+   *
    * @return the value of the instance variable {@link #reference}.
    * @see #reference
    * @see #setReference
@@ -391,7 +391,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * Set the new reference value.
-   * 
+   *
    * @param _reference
    *                new reference to set
    * @see #reference
@@ -403,7 +403,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #target}.
-   * 
+   *
    * @return value of instance variable {@link #target}
    * @see #target
    * @see #setTarget
@@ -414,7 +414,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #target}.
-   * 
+   *
    * @param _target
    *                new value for instance variable {@link #target}
    * @see #target
@@ -427,7 +427,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetBottomHeight}.
-   * 
+   *
    * @return value of instance variable {@link #targetBottomHeight}
    * @see #targetBottomHeight
    * @see #setTargetBottomHeight
@@ -439,7 +439,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetBottomHeight}.
-   * 
+   *
    * @param _targetBottomHeight
    *                new value for instance variable {@link #targetBottomHeight}
    * @see #targetBottomHeight
@@ -452,7 +452,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetConnectAttribute}.
-   * 
+   *
    * @return value of instance variable {@link #targetConnectAttribute}
    * @see #targetConnectAttribute
    * @see #setTargetConnectAttribute
@@ -464,7 +464,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetConnectAttribute}.
-   * 
+   *
    * @param _targetConnectAttribute
    *                new value for instance variable
    *                {@link #targetConnectAttribute}
@@ -478,7 +478,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetCreateType}.
-   * 
+   *
    * @return value of instance variable {@link #targetCreateType}
    * @see #targetCreateType
    * @see #setTargetCreateType
@@ -490,7 +490,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetCreateType}.
-   * 
+   *
    * @param _targetCreateType
    *                new value for instance variable {@link #targetCreateType}
    * @see #targetCreateType
@@ -502,7 +502,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetForm}.
-   * 
+   *
    * @return value of instance variable {@link #targetForm}
    * @see #targetForm
    * @see #setTargetForm
@@ -513,7 +513,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetForm}.
-   * 
+   *
    * @param _targetForm
    *                new value for instance variable {@link #targetForm}
    * @see #targetForm
@@ -525,7 +525,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetMenu}.
-   * 
+   *
    * @return value of instance variable {@link #targetMenu}
    * @see #targetMenu
    * @see #setTargetMenu
@@ -536,7 +536,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetMenu}.
-   * 
+   *
    * @param _targetMenu
    *                new value for instance variable {@link #targetMenu}
    * @see #targetMenu
@@ -548,7 +548,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetMode}.
-   * 
+   *
    * @return value of instance variable {@link #targetMode}
    * @see #targetMode
    * @see #setTargetMode
@@ -559,7 +559,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetMode}.
-   * 
+   *
    * @param _targetMode
    *                new value for instance variable {@link #targetMode}
    * @see #targetMode
@@ -571,7 +571,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetSearch}.
-   * 
+   *
    * @return value of instance variable {@link #targetSearch}
    * @see #targetSearch
    * @see #setTargetSearch
@@ -582,7 +582,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetSearch}.
-   * 
+   *
    * @param _targetSearch
    *                new value for instance variable {@link #targetSearch}
    * @see #targetSearch
@@ -594,7 +594,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetTable}.
-   * 
+   *
    * @return value of instance variable {@link #targetTable}
    * @see #targetTable
    * @see #setTargetTable
@@ -605,7 +605,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetTable}.
-   * 
+   *
    * @param _targetTable
    *                new value for instance variable {@link #targetTable}
    * @see #targetTable
@@ -618,7 +618,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableFilters}.
-   * 
+   *
    * @return value of instance variable {@link #targetTableFilters}
    * @see #targetTableFilters
    * @see #setTargetTableFilters
@@ -630,21 +630,21 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableFilters}.
-   * 
+   *
    * @param _targetTableFilters
    *                new value for instance variable {@link #targetTableFilters}
    * @see #targetTableFilters
    * @see #getTargetTableFilters
    */
   private void setTargetTableFilters(
-      final List<TargetTableFilter> _targetTableFilters) {
+                                     final List<TargetTableFilter> _targetTableFilters) {
     this.targetTableFilters = _targetTableFilters;
   }
 
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableSortDirection}.
-   * 
+   *
    * @return value of instance variable {@link #targetTableSortDirection}
    * @see #targetTableSortDirection
    * @see #setTargetTableSortDirection
@@ -656,7 +656,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableSortDirection}.
-   * 
+   *
    * @param _targetTableSortDirection
    *                new value for instance variable
    *                {@link #targetTableSortDirection}
@@ -670,7 +670,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableSortKey}.
-   * 
+   *
    * @return value of instance variable {@link #targetTableSortKey}
    * @see #targetTableSortKey
    * @see #setTargetTableSortKey
@@ -682,7 +682,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetTableSortKey}.
-   * 
+   *
    * @param _targetTableSortKey
    *                new value for instance variable {@link #targetTableSortKey}
    * @see #targetTableSortKey
@@ -694,7 +694,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetTitle}.
-   * 
+   *
    * @return value of instance variable {@link #targetTitle}
    * @see #targetTitle
    * @see #setTargetTitle
@@ -705,7 +705,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #targetTitle}.
-   * 
+   *
    * @param _targetTitle
    *                new value for instance variable {@link #targetTitle}
    * @see #targetTitle
@@ -720,7 +720,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * instance method looks in the DBProperties, if a property entry with prefix
    * <i>Command.</i> and name is found. This value is returned. If no entry is
    * found, the name of the command is returned.
-   * 
+   *
    * @return label of the command (or menu)
    */
   public String getViewableName() {
@@ -733,7 +733,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the getter method for the instance variable {@link #windowHeight}.
-   * 
+   *
    * @return value of instance variable {@link #windowHeight}
    * @see #windowHeight
    * @see #setWindowHeight
@@ -744,7 +744,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #windowHeight}.
-   * 
+   *
    * @param _windowHeight
    *                new value for instance variable {@link #windowHeight}
    * @see #windowHeight
@@ -756,7 +756,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the getter method for the instance variable {@link #windowWidth}.
-   * 
+   *
    * @return value of instance variable {@link #windowWidth}
    * @see #windowWidth
    * @see #setWindowWidth
@@ -767,7 +767,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #windowWidth}.
-   * 
+   *
    * @param _windowWidth
    *                new value for instance variable {@link #windowWidth}
    * @see #windowWidth
@@ -779,7 +779,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the getter method for the instance variable {@link #askUser}.
-   * 
+   *
    * @return value of instance variable {@link #askUser}
    * @see #askUser
    * @see #setAskUser
@@ -790,7 +790,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #askUser}.
-   * 
+   *
    * @param _askUser
    *                new value for instance variable {@link #askUser}
    * @see #askUser
@@ -803,7 +803,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #defaultSelected}.
-   * 
+   *
    * @return value of instance variable {@link #defaultSelected}
    * @see #defaultSelected
    * @see #setDefaultSelected
@@ -815,7 +815,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #defaultSelected}.
-   * 
+   *
    * @param _defaultSelected
    *                new value for instance variable {@link #defaultSelected}
    * @see #defaultSelected
@@ -827,7 +827,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #submit}.
-   * 
+   *
    * @return value of instance variable {@link #submit}
    * @see #submit
    * @see #setSubmit
@@ -838,7 +838,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * This is the setter method for the instance variable {@link #submit}.
-   * 
+   *
    * @param _submit
    *                new value for instance variable {@link #submit}
    * @see #submit
@@ -851,7 +851,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * Test, if the value of instance variable {@link #target} is equal to
    * {@link #TARGET_CONTENT}.
-   * 
+   *
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
@@ -863,7 +863,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * Test, if the value of instance variable {@link #target} is equal to
    * {@link #TARGET_HIDDEN}.
-   * 
+   *
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
@@ -875,7 +875,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * Test, if the value of instance variable {@link #target} is equal to
    * {@link #TARGET_POPUP}.
-   * 
+   *
    * @return <i>true</i> if value is equal, otherwise false
    * @see #target
    * @see #getTarget
@@ -887,7 +887,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetShowCheckBoxes}.
-   * 
+   *
    * @return value of instance variable {@link #targetShowCheckBoxes}
    * @see #targetShowCheckBoxes
    * @see #setTargetShowCheckBoxes
@@ -899,7 +899,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
   /**
    * This is the setter method for the instance variable
    * {@link #targetShowCheckBoxes}.
-   * 
+   *
    * @param _targetShowCheckBoxes
    *                new value for instance variable
    *                {@link #targetShowCheckBoxes}
@@ -922,26 +922,28 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @param _toName
    *                to name
    */
+  @Override
   protected void setLinkProperty(final EFapsClassName _linkType,
-      final long _toId, final EFapsClassName _toType, final String _toName)
-      throws Exception {
+                                 final long _toId,
+                                 final EFapsClassName _toType,
+                                 final String _toName) throws Exception {
     switch (_linkType) {
       case LINK_ICON:
         setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/"
             + _toName));
-      break;
+        break;
       case LINK_TARGET_FORM:
         setTargetForm(Form.get(_toId));
-      break;
+        break;
       case LINK_TARGET_MENU:
         setTargetMenu(Menu.get(_toId));
-      break;
+        break;
       case LINK_TARGET_SEARCH:
         setTargetSearch(Search.get(_toName));
-      break;
+        break;
       case LINK_TARGET_TABLE:
         setTargetTable(Table.get(_toId));
-      break;
+        break;
       default:
         super.setLinkProperty(_linkType, _toId, _toType, _toName);
     }
@@ -949,7 +951,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
   /**
    * The instance method sets a new property value.
-   * 
+   *
    * @param _context
    *                eFaps context for this request
    * @param _name
@@ -957,62 +959,63 @@ public abstract class CommandAbstract extends UserInterfaceObject {
    * @param _value
    *                value of the property
    */
+  @Override
   protected void setProperty(final String _name, final String _value)
       throws CacheReloadException {
-    if (_name.equals("AskUser")) {
+    if ("AskUser".equals(_name)) {
       if ("true".equalsIgnoreCase(_value)) {
         setAskUser(true);
       } else {
         setAskUser(false);
       }
-    } else if (_name.equals("DefaultSelected")) {
+    } else if ("DefaultSelected".equals(_name)) {
       if ("true".equalsIgnoreCase(_value)) {
         setDefaultSelected(true);
       } else {
         setDefaultSelected(false);
       }
-    } else if (_name.equals("HRef")) {
+    } else if ("HRef".equals(_name)) {
       setReference(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.equals("Icon")) {
+    } else if ("Icon".equals(_name)) {
       setIcon(RequestHandler.replaceMacrosInUrl(_value));
-    } else if (_name.equals("Label")) {
+    } else if ("Label".equals(_name)) {
       setLabel(_value);
-    } else if (_name.equals("Submit")) {
-      if (_value.equals("true")) {
+    } else if ("Submit".equals(_name)) {
+      if ("true".equals(_value)) {
         setSubmit(true);
       }
-    } else if (_name.equals("Target")) {
-      if (_value.equals("content")) {
+    } else if ("Target".equals(_name)) {
+      if ("content".equals(_value)) {
         setTarget(TARGET_CONTENT);
-      } else if (_value.equals("hidden")) {
+      } else if ("hidden".equals(_value)) {
         setTarget(TARGET_HIDDEN);
-      } else if (_value.equals("popup")) {
+      } else if ("popup".equals(_value)) {
         setTarget(TARGET_POPUP);
-      } else if (_value.equals("modal")) {
+      } else if ("modal".equals(_value)) {
         setTarget(TARGET_MODAL);
       }
-    } else if (_name.equals("TargetBottomHeight")) {
+    } else if ("TargetBottomHeight".equals(_name)) {
       setTargetBottomHeight(Integer.parseInt(_value));
-    } else if (_name.equals("TargetConnectAttribute")) {
+    } else if ("TargetConnectAttribute".equals(_name)) {
       setTargetConnectAttribute(Attribute.get(_value));
       // "TargetConnectChildAttribute"
       // "TargetConnectParentAttribute"
       // "TargetConnectType"
-    } else if (_name.equals("TargetCreateType")) {
+    } else if ("TargetCreateType".equals(_name)) {
       setTargetCreateType(Type.get(_value));
-    } else if (_name.equals("TargetMode")) {
-      if (_value.equals("create")) {
+    } else if ("TargetMode".equals(_name)) {
+      if ("create".equals(_value)) {
         setTargetMode(TARGET_MODE_CREATE);
-      } else if (_value.equals("edit")) {
+      } else if ("edit".equals(_value)) {
         setTargetMode(TARGET_MODE_EDIT);
-      } else if (_value.equals("connect")) {
+      } else if ("connect".equals(_value)){
         setTargetMode(TARGET_MODE_CONNECT);
-      } else if (_value.equals("search")) {
+      } else if ("search".equals(_value)) {
         setTargetMode(TARGET_MODE_SEARCH);
-      } else if (_value.equals("view")) {
+      } else if ("view".equals(_value)) {
         setTargetMode(TARGET_MODE_VIEW);
       }
-    } else if (_name.equals("TargetShowCheckBoxes")) {
+    } else if ("TargetShowCheckBoxes".equals(_name)) {
       if ("true".equalsIgnoreCase(_value)) {
         setTargetShowCheckBoxes(true);
       } else {
@@ -1023,19 +1026,19 @@ public abstract class CommandAbstract extends UserInterfaceObject {
         setTargetTableFilters(new Vector<TargetTableFilter>());
       }
       getTargetTableFilters().add(new TargetTableFilter(_value));
-    } else if (_name.equals("TargetTableSortKey")) {
+    } else if ("TargetTableSortKey".equals(_name)) {
       setTargetTableSortKey(_value);
-    } else if (_name.equals("TargetTableSortDirection")) {
-      if (_value.equals("desc")) {
+    } else if ("TargetTableSortDirection".equals(_name)) {
+      if ("desc".equals(_value)) {
         setTargetTableSortDirection(TABLE_SORT_DIRECTION_DESC);
       } else {
         setTargetTableSortDirection(TABLE_SORT_DIRECTION_ASC);
       }
-    } else if (_name.equals("TargetTitle")) {
+    } else if ("TargetTitle".equals(_name)) {
       setTargetTitle(_value);
-    } else if (_name.equals("WindowHeight")) {
+    } else if ("WindowHeight".equals(_name)) {
       setWindowHeight(Integer.parseInt(_value));
-    } else if (_name.equals("WindowWidth")) {
+    } else if ("WindowWidth".equals(_name)) {
       setWindowWidth(Integer.parseInt(_value));
     } else {
       super.setProperty(_name, _value);
@@ -1049,7 +1052,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
     /**
      * The instance variable stores the sql clause.
-     * 
+     *
      * @see #getClause
      * @see #setClause
      */
@@ -1059,7 +1062,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
     /**
      * Constructor to create a new target table filter instance.
-     * 
+     *
      * @param _clause
      *                sql where clause for this filter
      */
@@ -1071,7 +1074,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
     /**
      * This is the setter method for the instance variable {@link #clause}.
-     * 
+     *
      * @return value of instance variable {@link #clause}
      * @see #clause
      * @see #setClause
@@ -1082,7 +1085,7 @@ public abstract class CommandAbstract extends UserInterfaceObject {
 
     /**
      * This is the setter method for the instance variable {@link #clause}.
-     * 
+     *
      * @param _clause
      *                new value for instance variable {@link #clause}
      * @see #clause

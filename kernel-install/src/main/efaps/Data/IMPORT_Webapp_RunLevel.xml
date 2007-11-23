@@ -49,7 +49,7 @@
     <object type="Admin_RunLevel_Definition">
       <parentattribute name="RunLevelID" />
       <attribute name="Priority">3</attribute>
-      <attribute name="Class">org.efaps.admin.ui.UserInterfaceObject</attribute>
+      <attribute name="Class">org.efaps.admin.ui.AbstractUserInterfaceObject</attribute>
       <attribute name="Method">initialise</attribute>
     </object>
     <object type="Admin_RunLevel_Definition">

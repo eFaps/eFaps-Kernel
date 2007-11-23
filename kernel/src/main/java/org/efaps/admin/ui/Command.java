@@ -22,40 +22,42 @@ package org.efaps.admin.ui;
 
 import java.util.UUID;
 
-
-
 /**
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class Command extends CommandAbstract  {
+public class Command extends AbstractCommand {
 
   /**
    * The static variable defines the class name in eFaps.
    */
-  public static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.COMMAND;
+  public final static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.COMMAND;
 
   /**
    * Constructor to set the id and name of the command object.
    *
-   * @param _id   id  of the command to set
-   * @param _name name of the command to set
+   * @param _id
+   *                id of the command to set
+   * @param _name
+   *                name of the command to set
    */
-  public Command(final Long _id, final String _uuid, final String _name)  {
-    super(_id, _uuid, _name );
+  public Command(final Long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * Returns for given parameter <i>_id</i> the instance of class {@link Command}.
+   * Returns for given parameter <i>_id</i> the instance of class
+   * {@link Command}.
    *
-   * @param _id id to search in the cache
+   * @param _id
+   *                id to search in the cache
    * @return instance of class {@link Command}
    * @see #getCache
    */
-  static public Command get(final long _id)  {
+  static public Command get(final long _id) {
     return getCache().get(_id);
   }
 
@@ -63,11 +65,12 @@ public class Command extends CommandAbstract  {
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Command}.
    *
-   * @param _name name to search in the cache
+   * @param _name
+   *                name to search in the cache
    * @return instance of class {@link Command}
    * @see #getCache
    */
-  static public Command get(final String _name)  {
+  static public Command get(final String _name) {
     return getCache().get(_name);
   }
 
@@ -75,29 +78,29 @@ public class Command extends CommandAbstract  {
    * Returns for given parameter <i>UUID</i> the instance of class
    * {@link Command}.
    *
-   * @param _uuid UUID to search in the cache
+   * @param _uuid
+   *                UUID to search in the cache
    * @return instance of class {@link Command}
    * @see #getCache
    */
-  static public Command get(final UUID _uuid){
+  static public Command get(final UUID _uuid) {
     return getCache().get(_uuid);
   }
+
   /**
    * Static getter method for the type hashtable {@link #cache}.
    *
    * @return value of static variable {@link #cache}
    */
-  static UserInterfaceObjectCache<Command> getCache()  {
+  static UserInterfaceObjectCache<Command> getCache() {
     return cache;
   }
 
-  
-  
- 
   /**
    * Stores all instances of class {@link Command}.
    *
    * @see #getCache
    */
-  static private UserInterfaceObjectCache<Command> cache = new UserInterfaceObjectCache<Command>(Command.class);
+  static private UserInterfaceObjectCache<Command> cache =
+      new UserInterfaceObjectCache<Command>(Command.class);
 }

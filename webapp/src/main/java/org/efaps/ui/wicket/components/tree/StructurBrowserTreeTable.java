@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.components.tree;
@@ -39,7 +39,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
@@ -48,7 +48,7 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 
 /**
  * @author jmox
- * @version $Id$
+ * @version $Id:StructurBrowserTreeTable.java 1510 2007-10-18 14:35:40Z jmox $
  *
  */
 public class StructurBrowserTreeTable extends TreeTable {
@@ -161,7 +161,7 @@ public class StructurBrowserTreeTable extends TreeTable {
           parameters.add("command", menu.getUUID().toString());
           parameters.add("oid", model.getOid());
           ContentContainerPage page;
-          if (model.getTarget() == CommandAbstract.TARGET_POPUP) {
+          if (model.getTarget() == AbstractCommand.TARGET_POPUP) {
             page = new ContentContainerPage(parameters);
           } else {
             page =

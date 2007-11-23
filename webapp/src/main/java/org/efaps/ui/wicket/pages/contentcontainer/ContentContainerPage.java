@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 package org.efaps.ui.wicket.pages.contentcontainer;
 
@@ -36,7 +36,7 @@ import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.CssUtils;
 
 import org.efaps.admin.ui.Command;
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Search;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
@@ -50,7 +50,7 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 
 /**
  * @author jmox
- * @version $Id$
+ * @version $Id:ContentContainerPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class ContentContainerPage extends WebPage {
 
@@ -134,10 +134,10 @@ public class ContentContainerPage extends WebPage {
       uuid = (String) parametersForPage.get("command");
     }
 
-    CommandAbstract cmd = getCommand(UUID.fromString(uuid));
+    AbstractCommand cmd = getCommand(UUID.fromString(uuid));
     this.webForm = cmd.getTargetForm() != null;
     if (cmd instanceof Menu) {
-      for (CommandAbstract childcmd : ((Menu) cmd).getCommands()) {
+      for (AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
         if (childcmd.isDefaultSelected()) {
           parametersForPage.put("command", childcmd.getUUID().toString());
           this.webForm = childcmd.getTargetForm() != null;
@@ -208,8 +208,8 @@ public class ContentContainerPage extends WebPage {
     return this.splitPath;
   }
 
-  private CommandAbstract getCommand(final UUID _uuid) {
-    CommandAbstract cmd = Command.get(_uuid);
+  private AbstractCommand getCommand(final UUID _uuid) {
+    AbstractCommand cmd = Command.get(_uuid);
     if (cmd == null) {
       cmd = Menu.get(_uuid);
       if (cmd == null) {

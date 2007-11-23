@@ -27,7 +27,7 @@ import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 
-import org.efaps.admin.ui.CommandAbstract;
+import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.StaticImageComponent;
 import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
@@ -46,11 +46,11 @@ public class ValueCellPanel extends Panel {
       this.add(new WebComponent("label").setVisible(false));
 
       WebMarkupContainer link;
-      if (_ajaxLink && _model.getTarget() != CommandAbstract.TARGET_POPUP) {
+      if (_ajaxLink && _model.getTarget() != AbstractCommand.TARGET_POPUP) {
         link = new AjaxLinkContainer("link", _model);
       } else {
         link = new ContentContainerLink("link", _model);
-        if (_model.getTarget() == CommandAbstract.TARGET_POPUP) {
+        if (_model.getTarget() == AbstractCommand.TARGET_POPUP) {
           PopupSettings popup = new PopupSettings(PageMap.forName("popup"));
           ((ContentContainerLink) link).setPopupSettings(popup);
         }
