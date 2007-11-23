@@ -24,7 +24,7 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.Field;
-import org.efaps.ui.wicket.models.TableModel.SortDirection;
+import org.efaps.admin.ui.AbstractCommand.SortDirection;
 
 /**
  * @author jmox
@@ -49,7 +49,6 @@ public class HeaderModel extends Model {
   private int width;
 
   private String markupId;
-
 
   public HeaderModel(final Field _field, final SortDirection _sortdirection) {
     this.label = _field.getLabel();
@@ -147,7 +146,6 @@ public class HeaderModel extends Model {
     return this.fixedWidth;
   }
 
-
   /**
    * This is the getter method for the instance variable {@link #markupId}.
    *
@@ -157,10 +155,8 @@ public class HeaderModel extends Model {
     return this.markupId;
   }
 
-
   /**
-   * This is the setter method for the instance variable
-   * {@link #markupId}.
+   * This is the setter method for the instance variable {@link #markupId}.
    *
    * @param _markupId
    *                the markupId to set

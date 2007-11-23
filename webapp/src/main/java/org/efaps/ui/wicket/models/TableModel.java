@@ -47,6 +47,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Table;
+import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
@@ -63,45 +64,6 @@ public class TableModel extends AbstractModel {
    * Logging instance used in this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(TableModel.class);
-
-  /**
-   * enum holding the different directions a column can be sorted. The value is
-   * used as value for storing the direction as a UserAttribute.
-   */
-  public static enum SortDirection {
-    DESCENDING("desc"),
-    ASCENDING("asc"),
-    NONE("");
-
-    public final String value;
-
-    /**
-     * private constructor setting the value for the enum
-     *
-     * @param _value
-     */
-    private SortDirection(String _value) {
-      this.value = _value;
-      mapper.put(this.value, this);
-    }
-
-    /**
-     * method to get a SortDirection by his value
-     *
-     * @param _value
-     * @return SortDirection
-     */
-    public static SortDirection getEnum(final String _value) {
-      return mapper.get(_value);
-    }
-  }
-
-  /**
-   * this map is used as a store by the enum SortDirection for the method
-   * getEnum
-   */
-  private static final Map<String, SortDirection> mapper =
-      new HashMap<String, SortDirection>();
 
   /**
    * this enum holds the Values used as part of the key for the UserAttributes
@@ -229,11 +191,7 @@ public class TableModel extends AbstractModel {
       // set default sort
       if (command.getTargetTableSortKey() != null) {
         this.sortKey = getCommand().getTargetTableSortKey();
-        if (command.getTargetTableSortDirection() == AbstractCommand.TABLE_SORT_DIRECTION_DESC) {
-          this.sortDirection = SortDirection.DESCENDING;
-        } else {
-          this.sortDirection = SortDirection.ASCENDING;
-        }
+        this.sortDirection = command.getTargetTableSortDirection();
       }
 
       // set show check boxes

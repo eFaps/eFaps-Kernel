@@ -46,14 +46,14 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Table;
+import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.servlet.RequestHandler;
-import org.efaps.util.EFapsException;
-import org.efaps.ui.wicket.models.TableModel.SortDirection;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * This class is used to provide the Model for the StructurBrowser for eFpas.<br>

@@ -22,9 +22,9 @@ package org.efaps.ui.wicket.components.table.header;
 
 import org.apache.wicket.markup.html.link.Link;
 
+import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.TableModel.SortDirection;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
 /**

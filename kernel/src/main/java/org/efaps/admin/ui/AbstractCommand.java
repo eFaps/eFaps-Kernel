@@ -20,7 +20,9 @@
 
 package org.efaps.admin.ui;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.efaps.admin.datamodel.Attribute;
@@ -42,9 +44,43 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
   // ///////////////////////////////////////////////////////////////////////////
   // static Variables
 
-  static public final int TABLE_SORT_DIRECTION_DESC = 1;
+  /**
+   * This enum is used to define the Sortdirection of a Field
+   */
+  public static enum SortDirection {
+    DESCENDING("desc"),
+    ASCENDING("asc"),
+    NONE("");
 
-  static public final int TABLE_SORT_DIRECTION_ASC = 0;
+    public final String value;
+
+    /**
+     * private constructor setting the value for the enum
+     *
+     * @param _value
+     */
+    private SortDirection(String _value) {
+      this.value = _value;
+      mapper.put(this.value, this);
+    }
+
+    /**
+     * method to get a SortDirection by his value
+     *
+     * @param _value
+     * @return SortDirection
+     */
+    public static SortDirection getEnum(final String _value) {
+      return mapper.get(_value);
+    }
+  }
+
+  /**
+   * this map is used as a store by the enum SortDirection for the method
+   * getEnum
+   */
+  private static final Map<String, SortDirection> mapper =
+      new HashMap<String, SortDirection>();
 
   /**
    * The target of the href is the content frame.
@@ -244,13 +280,12 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
 
   /**
    * The instance variable stores for target user interface table object the
-   * default sort direction. The default value is
-   * {@link #TABLE_SORT_DIRECTION_ASC}.
+   * default sort direction. The default value is NONE. .
    *
    * @see #getTargetTableSortDirection
    * @see #setTargetTableSortDirection
    */
-  private int targetTableSortDirection = TABLE_SORT_DIRECTION_ASC;
+  private SortDirection targetTableSortDirection = SortDirection.NONE;
 
   /**
    * The instance variable stores for target user interface table object the
@@ -649,7 +684,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #targetTableSortDirection
    * @see #setTargetTableSortDirection
    */
-  public int getTargetTableSortDirection() {
+  public SortDirection getTargetTableSortDirection() {
     return this.targetTableSortDirection;
   }
 
@@ -663,7 +698,8 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #targetTableSortDirection
    * @see #getTargetTableSortDirection
    */
-  public void setTargetTableSortDirection(final int _targetTableSortDirection) {
+  public void setTargetTableSortDirection(
+                                          final SortDirection _targetTableSortDirection) {
     this.targetTableSortDirection = _targetTableSortDirection;
   }
 
@@ -961,7 +997,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    */
   @Override
   protected void setProperty(final String _name, final String _value)
-      throws CacheReloadException {
+                                                                     throws CacheReloadException {
     if ("AskUser".equals(_name)) {
       if ("true".equalsIgnoreCase(_value)) {
         setAskUser(true);
@@ -998,9 +1034,6 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
       setTargetBottomHeight(Integer.parseInt(_value));
     } else if ("TargetConnectAttribute".equals(_name)) {
       setTargetConnectAttribute(Attribute.get(_value));
-      // "TargetConnectChildAttribute"
-      // "TargetConnectParentAttribute"
-      // "TargetConnectType"
     } else if ("TargetCreateType".equals(_name)) {
       setTargetCreateType(Type.get(_value));
     } else if ("TargetMode".equals(_name)) {
@@ -1008,7 +1041,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
         setTargetMode(TARGET_MODE_CREATE);
       } else if ("edit".equals(_value)) {
         setTargetMode(TARGET_MODE_EDIT);
-      } else if ("connect".equals(_value)){
+      } else if ("connect".equals(_value)) {
         setTargetMode(TARGET_MODE_CONNECT);
       } else if ("search".equals(_value)) {
         setTargetMode(TARGET_MODE_SEARCH);
@@ -1028,11 +1061,12 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
       getTargetTableFilters().add(new TargetTableFilter(_value));
     } else if ("TargetTableSortKey".equals(_name)) {
       setTargetTableSortKey(_value);
+      setTargetTableSortDirection(SortDirection.ASCENDING);
     } else if ("TargetTableSortDirection".equals(_name)) {
-      if ("desc".equals(_value)) {
-        setTargetTableSortDirection(TABLE_SORT_DIRECTION_DESC);
+      if (SortDirection.DESCENDING.value.equals(_value)) {
+        setTargetTableSortDirection(SortDirection.DESCENDING);
       } else {
-        setTargetTableSortDirection(TABLE_SORT_DIRECTION_ASC);
+        setTargetTableSortDirection(SortDirection.ASCENDING);
       }
     } else if ("TargetTitle".equals(_name)) {
       setTargetTitle(_value);
