@@ -56,7 +56,7 @@ public class ValueCellPanel extends Panel {
         }
       }
       if (_model.getIcon() == null) {
-        this.add(new WebComponent("icon").setVisible(false));
+        link.add(new WebComponent("linkIcon").setVisible(false));
       } else {
         link.add(new StaticImageComponent("linkIcon", new Model(_model
             .getIcon())));
