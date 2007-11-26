@@ -24,6 +24,7 @@ import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 
+import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
 import org.efaps.ui.wicket.models.CellModel;
 import org.efaps.ui.wicket.models.TableModel;
@@ -38,13 +39,14 @@ public class RowPanel extends Panel {
   private static final long serialVersionUID = 1L;
 
   public RowPanel(final String _id, final RowModel _model,
-                  final TableModel _tablemodel, final boolean _updateListMenu) {
+                  final TablePanel _tablePanel, final boolean _updateListMenu) {
     super(_id, _model);
+    final TableModel tablemodel = (TableModel) _tablePanel.getModel();
     int i = 0;
     final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
     add(cellRepeater);
 
-    if (_tablemodel.isShowCheckBoxes()) {
+    if (tablemodel.isShowCheckBoxes()) {
       final CellPanel cellpanel =
           new CellPanel(cellRepeater.newChildId(), _model.getOids());
       cellpanel.setOutputMarkupId(true);
@@ -58,7 +60,7 @@ public class RowPanel extends Panel {
 
       final CellPanel cellpanel =
           new CellPanel(cellRepeater.newChildId(), cellmodel, _updateListMenu,
-              _tablemodel);
+              tablemodel);
       cellpanel.setOutputMarkupId(true);
       if (cellmodel.isFixedWidth()) {
         cellpanel.add(new SimpleAttributeModifier("class",

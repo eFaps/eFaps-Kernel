@@ -177,6 +177,11 @@ public class TableModel extends AbstractModel {
     initialise();
   }
 
+  public TableModel(final UUID _commandUUID, final String _oid) {
+    super(_commandUUID, _oid);
+    initialise();
+  }
+
   /**
    * method that initialises the TableModel
    */
@@ -614,6 +619,16 @@ public class TableModel extends AbstractModel {
       ret = this.showCheckBoxes;
     }
     return ret;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #showCheckBoxes}.
+   *
+   * @param showCheckBoxes
+   *                the showCheckBoxes to set
+   */
+  public void setShowCheckBoxes(boolean showCheckBoxes) {
+    this.showCheckBoxes = showCheckBoxes;
   }
 
   /**

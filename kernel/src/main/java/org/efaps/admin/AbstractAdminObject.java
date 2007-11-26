@@ -95,6 +95,9 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
     LINK_TARGET_MENU("Admin_UI_LinkTargetMenu", null),
     LINK_TARGET_SEARCH("Admin_UI_LinkTargetSearch", null),
     LINK_TARGET_TABLE("Admin_UI_LinkTargetTable", null),
+    LINK_TARGET_SUBCMD(
+                          "Admin_UI_LinkTargetSubCommand",
+                          "536eac99-dabd-4163-8b98-7ea83aaad5b8"),
     LINK_DEFAULT_SEARCHCOMMAND(
                                "Admin_UI_LinkDefaultSearchCommand",
                                "3f827900-eda2-409f-be92-497dcacb0eef");
@@ -178,7 +181,8 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * @see #uuid
    * @see #name
    */
-  protected AbstractAdminObject(final long _id, final String _uuid, final String _name) {
+  protected AbstractAdminObject(final long _id, final String _uuid,
+                                final String _name) {
     this.id = _id;
     this.uuid = (_uuid == null) ? null : UUID.fromString(_uuid.trim());
     setName(_name);

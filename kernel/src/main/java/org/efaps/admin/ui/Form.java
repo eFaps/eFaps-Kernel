@@ -20,11 +20,7 @@
 
 package org.efaps.admin.ui;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.UUID;
-
-import org.efaps.db.Context;
 
 /**
  * @author tmo
@@ -32,34 +28,17 @@ import org.efaps.db.Context;
  * @todo description
  */
 public class Form extends AbstractCollection {
+
   /**
    * The static variable defines the class name in eFaps.
    */
   public final static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.FORM;
+
   /**
    *
    */
   public Form(final Long _id, final String _uuid, final String _name) {
     super(_id, _uuid, _name);
-  }
-
-  /**
-   * The instance method returns the title of the form.
-   *
-   * @param _context
-   *                context for this request
-   * @return title of the form
-   */
-  public String getViewableName(final Context _context) {
-    String title = "";
-    final ResourceBundle msgs =
-        ResourceBundle.getBundle("org.efaps.properties.AttributeRessource",
-            _context.getLocale());
-    try {
-      title = msgs.getString("Form.Title." + getName());
-    } catch (MissingResourceException e) {
-    }
-    return title;
   }
 
   // ///////////////////////////////////////////////////////////////////////////

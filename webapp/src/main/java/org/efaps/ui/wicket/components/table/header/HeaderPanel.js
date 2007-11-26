@@ -28,8 +28,8 @@ var connections = [];
 var seperator;
 
 
-function positionTableColumns() {
-  var header = document.getElementById("eFapsTableHeader");
+function positionTableColumns(headerID, bodyID) {
+  var header = document.getElementById(headerID);
   var cells = new Array();
   var widthWeight = 0;
   var widthCor = 0;
@@ -51,7 +51,7 @@ function positionTableColumns() {
       widthCor+= addwith;
     }
   }
-  var tablebody = document.getElementById("eFapsTableBody");
+  var tablebody = document.getElementById(bodyID);
   var completeWidth = (tablebody.clientWidth ) ;
   if (completeWidth != 0) {
     header.style.width = completeWidth + "px";

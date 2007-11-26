@@ -54,7 +54,7 @@ public class FormModel extends AbstractModel {
 
   /**
    * The instance variable stores the result list of the execution of the query.
-   * 
+   *
    * @see #getValues
    * @see #setValues
    */
@@ -62,10 +62,12 @@ public class FormModel extends AbstractModel {
 
   /**
    * The instance variable stores the form which must be shown.
-   * 
+   *
    * @see #getForm
    */
   private UUID formuuid;
+
+  private final boolean subCommands;
 
   public FormModel(PageParameters _parameters) {
     super(_parameters);
@@ -75,6 +77,7 @@ public class FormModel extends AbstractModel {
     } else if (command.getTargetForm() != null) {
       this.formuuid = command.getTargetForm().getUUID();
     }
+    this.subCommands = command.hasSubCommand();
   }
 
   public UUID getUUID() {
@@ -89,7 +92,7 @@ public class FormModel extends AbstractModel {
 
   /**
    * This is the getter method for the instance variable {@link #values}.
-   * 
+   *
    * @return value of instance variable {@link #values}
    * @see #values
    * @see #setValues
@@ -246,6 +249,19 @@ public class FormModel extends AbstractModel {
     this.formuuid = _uuid;
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #subCommands}.
+   *
+   * @return value of instance variable {@link #subCommands}
+   */
+  public boolean hasSubCommands() {
+    return this.subCommands;
+  }
+
+  public List<AbstractCommand> getSubCommands() {
+    return getCommand().getSubCommands();
+  }
+
   public class FormRowModel extends Model {
 
     private static final long serialVersionUID = 1L;
@@ -294,7 +310,7 @@ public class FormModel extends AbstractModel {
 
     /**
      * This is the getter method for the instance variable {@link #name}.
-     * 
+     *
      * @return value of instance variable {@link #name}
      */
 
@@ -303,4 +319,5 @@ public class FormModel extends AbstractModel {
     }
 
   }
+
 }

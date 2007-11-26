@@ -108,7 +108,7 @@ public class MenuUpdate extends CommandUpdate  {
       digester.addCallParam("ui-menu/definition/version/global", 1);
       digester.addCallParam("ui-menu/definition/version/local", 2);
       digester.addCallParam("ui-menu/definition/version/mode", 3);
-      
+
       digester.addCallMethod("ui-menu/definition/name", "setName", 1);
       digester.addCallParam("ui-menu/definition/name", 0);
 
@@ -130,20 +130,23 @@ public class MenuUpdate extends CommandUpdate  {
       digester.addCallMethod("ui-menu/definition/target/search", "assignTargetSearch", 1);
       digester.addCallParam("ui-menu/definition/target/search", 0);
 
+      digester.addCallMethod("ui-menu/definition/target/subcmd", "assignTargetSubCommand", 1);
+      digester.addCallParam("ui-menu/definition/target/subcmd", 0);
+
       digester.addCallMethod("ui-menu/definition/childs/child", "assignChild", 1);
       digester.addCallParam("ui-menu/definition/childs/child", 0);
 
       digester.addCallMethod("ui-menu/definition/property", "addProperty", 2);
       digester.addCallParam("ui-menu/definition/property", 0, "name");
       digester.addCallParam("ui-menu/definition/property", 1);
-      
+
       digester.addFactoryCreate("ui-menu/definition/target/evaluate", new EventFactory("Admin_UI_TableEvaluateEvent"), false);
       digester.addCallMethod("ui-menu/definition/target/evaluate/property", "addProperty", 2);
       digester.addCallParam("ui-menu/definition/target/evaluate/property", 0, "name");
       digester.addCallParam("ui-menu/definition/target/evaluate/property", 1);
       digester.addSetNext("ui-menu/definition/target/evaluate", "addEvent", "org.efaps.update.event.Event");
 
-      
+
       ret = (MenuUpdate) digester.parse(_url);
 
       if (ret != null)  {
@@ -161,7 +164,7 @@ public class MenuUpdate extends CommandUpdate  {
   // class for the definitions
 
   public static class MenuDefinition extends CommandDefinition  {
-    
+
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
 

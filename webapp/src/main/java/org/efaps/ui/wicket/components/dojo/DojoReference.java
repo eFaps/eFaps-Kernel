@@ -20,7 +20,11 @@
 
 package org.efaps.ui.wicket.components.dojo;
 
+import org.apache.wicket.RequestCycle;
 import org.apache.wicket.ResourceReference;
+import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.markup.html.IHeaderContributor;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.resources.CompressedResourceReference;
 import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 
@@ -42,4 +46,33 @@ public class DojoReference {
 
   public static final JavascriptResourceReference JS_EFAPSDOJO =
       new JavascriptResourceReference(DojoReference.class, "dojo/eFapsDojo.js");
+
+  public static final HeaderContributor forDojo() {
+    return new HeaderContributor(new IHeaderContributor() {
+
+      private static final long serialVersionUID = 1L;
+
+      public void renderHead(IHeaderResponse response) {
+        response.renderString(getConfigJavaScript(JS_DOJO));
+      }
+    });
+  }
+
+  /**
+   * method to create the tag for linking JavaScript
+   *
+   * @param _reference
+   *                ResourceReference to be linked
+   * @return scriptLink width extension djConfig="parseOnLoad:true"
+   */
+  protected static String getConfigJavaScript(final ResourceReference _reference) {
+    final StringBuilder ret = new StringBuilder();
+    ret.append("<script type=\"text/javascript\" ");
+    ret.append("src=\"");
+    ret.append(RequestCycle.get().urlFor(_reference));
+    ret.append("\"");
+    ret.append(" djConfig=\"parseOnLoad: true\"");
+    ret.append("></script>\n");
+    return ret.toString();
+  }
 }

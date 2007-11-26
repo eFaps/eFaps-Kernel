@@ -64,14 +64,14 @@ public class TablePage extends AbstractContentPage {
     if (!model.isInitialised()) {
       model.execute();
     }
-    this.add(new HeaderPanel("header", model));
+    final TablePanel tablebody = new TablePanel("tablebody", model, this);
+    this.add(new HeaderPanel("header", tablebody));
 
     final FormContainer form = new FormContainer("form");
     this.add(form);
     super.addComponents(form);
 
-    form.add(new TablePanel("tablebody", model, this));
+    form.add(tablebody);
 
   }
-
 }

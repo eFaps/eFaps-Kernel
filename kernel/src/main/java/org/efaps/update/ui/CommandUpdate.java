@@ -85,6 +85,15 @@ public class CommandUpdate extends AbstractUpdate {
                                                          "Admin_UI_Search",
                                                          "To");
 
+
+  /** Link from command to search as target */
+  private final static Link LINK2TARGETSUBCMD = new OrderedLink("Admin_UI_LinkTargetSubCommand",
+                                                         "From",
+                                                         "Admin_UI_Command",
+                                                         "To");
+
+
+
   protected final static Set<Link> ALLLINKS          = new HashSet<Link>();
   {
     ALLLINKS.add(LINK2ACCESSROLE);
@@ -93,6 +102,7 @@ public class CommandUpdate extends AbstractUpdate {
     ALLLINKS.add(LINK2TARGETFORM);
     ALLLINKS.add(LINK2TARGETMENU);
     ALLLINKS.add(LINK2TARGETSEARCH);
+    ALLLINKS.add(LINK2TARGETSUBCMD);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -168,6 +178,9 @@ public class CommandUpdate extends AbstractUpdate {
 
       digester.addCallMethod("ui-command/definition/target/table", "assignTargetTable", 1);
       digester.addCallParam("ui-command/definition/target/table", 0);
+
+      digester.addCallMethod("ui-command/definition/target/subcmd", "assignTargetSubCommand", 1);
+      digester.addCallParam("ui-command/definition/target/subcmd", 0);
 
       digester.addFactoryCreate("ui-command/definition/target/evaluate", new EventFactory("Admin_UI_TableEvaluateEvent"), false);
       digester.addCallMethod("ui-command/definition/target/evaluate/property", "addProperty", 2);
@@ -284,6 +297,15 @@ public class CommandUpdate extends AbstractUpdate {
       addLink(LINK2TARGETSEARCH, _targetSearch);
     }
 
+    /**
+     * Assigns a search menu as target for this command definition.
+     *
+     * @param _targetSearch
+     *          name of the target search
+     */
+    public void assignTargetSubCommand(final String _targetSubCommand) {
+      addLink(LINK2TARGETSUBCMD, _targetSubCommand);
+    }
   }
 
 }

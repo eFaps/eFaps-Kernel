@@ -20,6 +20,7 @@
 
 package org.efaps.admin.ui;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +113,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
     EDIT,
     SEARCH,
     UNKNOWN,
-    VIEW
+    VIEW;
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -170,6 +171,9 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #setSubmit
    */
   private boolean submit = false;
+
+  private final List<AbstractCommand> subcommands =
+      new ArrayList<AbstractCommand>();
 
   /**
    * The target of the command is the content frame.
@@ -936,9 +940,19 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
     this.targetShowCheckBoxes = _targetShowCheckBoxes;
   }
 
+  private void addSubCommand(final AbstractCommand _command) {
+    this.subcommands.add(_command);
+  }
+
+  public List<AbstractCommand> getSubCommands() {
+    return this.subcommands;
+  }
+
+  public boolean hasSubCommand() {
+    return !this.subcommands.isEmpty();
+  }
+
   /**
-   * @param _context
-   *                eFaps context for this request
    * @param _linkType
    *                type of the link property
    * @param _toId
@@ -970,6 +984,8 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
       case LINK_TARGET_TABLE:
         setTargetTable(Table.get(_toId));
         break;
+      case LINK_TARGET_SUBCMD:
+        addSubCommand(Command.get(_toId));
       default:
         super.setLinkProperty(_linkType, _toId, _toType, _toName);
     }

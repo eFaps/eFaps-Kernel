@@ -45,7 +45,8 @@ public class TablePanel extends Panel {
     if (!_model.isInitialised()) {
       _model.execute();
     }
-
+    this.setOutputMarkupId(true);
+    this.add(new SimpleAttributeModifier("class", "eFapsTableBody"));
     add(HeaderContributor.forCss(getClass(), "TablePanel.css"));
     RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
     add(rowsRepeater);
@@ -63,7 +64,7 @@ public class TablePanel extends Panel {
           .hasNext(); odd = !odd) {
 
         RowPanel row =
-            new RowPanel(rowsRepeater.newChildId(), rowIter.next(), _model,
+            new RowPanel(rowsRepeater.newChildId(), rowIter.next(), this,
                 ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
                     .getPageMapName()));
         row.setOutputMarkupId(true);

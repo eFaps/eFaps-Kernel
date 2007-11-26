@@ -23,6 +23,7 @@ package org.efaps.ui.wicket.components.table.header;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -41,6 +42,7 @@ import org.efaps.ui.wicket.components.dojo.DnDBehavior;
 import org.efaps.ui.wicket.components.dojo.DojoReference;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
+import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.UserAttributeKey;
@@ -64,12 +66,17 @@ public class HeaderPanel extends Panel {
   public static final JavascriptResourceReference JAVASCRIPT =
       new JavascriptResourceReference(HeaderPanel.class, "HeaderPanel.js");
 
-  public HeaderPanel(final String _id, final TableModel _model) {
-    super(_id, _model);
+  private final Component tablepanel;
+
+  public HeaderPanel(final String _id, final TablePanel _tablePanel) {
+    super(_id, _tablePanel.getModel());
+    this.tablepanel = _tablePanel;
+    final TableModel model = (TableModel) super.getModel();
 
     this.add(new AjaxStoreColumnWidthBehavior());
     this.add(new AjaxStoreColumnOrderBehavior());
     this.add(new AjaxReloadTableBehavior());
+    this.add(new SimpleAttributeModifier("class", "eFapsTableHeader"));
 
     final DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior();
     dndBehavior.setHorizontal(true);
@@ -78,8 +85,6 @@ public class HeaderPanel extends Panel {
         .setAppendJavaScript("storeColumnOrder(getColumnOrder());\n reloadTable();\n");
     this.add(dndBehavior);
 
-    this.setMarkupId("eFapsTableHeader");
-
     final int browserWidth =
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
             .getBrowserWidth();
@@ -87,7 +92,7 @@ public class HeaderPanel extends Panel {
     final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
     add(cellRepeater);
     int i = 0;
-    if (_model.isShowCheckBoxes()) {
+    if (model.isShowCheckBoxes()) {
       final HeaderCellPanel cell =
           new HeaderCellPanel(cellRepeater.newChildId());
       cell.setOutputMarkupId(true);
@@ -97,11 +102,11 @@ public class HeaderPanel extends Panel {
     final List<String> widths = new ArrayList<String>();
 
     int fixed = 0;
-    for (int j = 0; j < _model.getHeaders().size(); j++) {
-      final HeaderModel headermodel = _model.getHeaders().get(j);
+    for (int j = 0; j < model.getHeaders().size(); j++) {
+      final HeaderModel headermodel = model.getHeaders().get(j);
 
       final HeaderCellPanel cell =
-          new HeaderCellPanel(cellRepeater.newChildId(), headermodel, _model);
+          new HeaderCellPanel(cellRepeater.newChildId(), headermodel, model);
 
       if (headermodel.isFixedWidth()) {
         widths.add("div.eFapsCellFixedWidth"
@@ -114,11 +119,11 @@ public class HeaderPanel extends Panel {
         fixed += headermodel.getWidth();
       } else {
         Integer width = 0;
-        if (_model.isUserSetWidth()) {
+        if (model.isUserSetWidth()) {
           width = headermodel.getWidth();
         } else {
           width =
-              browserWidth / _model.getWidthWeight() * headermodel.getWidth();
+              browserWidth / model.getWidthWeight() * headermodel.getWidth();
         }
         widths.add("div.eFapsCellWidth"
             + i
@@ -133,10 +138,10 @@ public class HeaderPanel extends Panel {
       cell.setOutputMarkupId(true);
       cellRepeater.add(cell);
 
-      if (j + 1 < _model.getHeaders().size() && !headermodel.isFixedWidth()) {
+      if (j + 1 < model.getHeaders().size() && !headermodel.isFixedWidth()) {
         boolean add = false;
-        for (int k = j + 1; k < _model.getHeaders().size(); k++) {
-          if (!_model.getHeaders().get(k).isFixedWidth()) {
+        for (int k = j + 1; k < model.getHeaders().size(); k++) {
+          if (!model.getHeaders().get(k).isFixedWidth()) {
             add = true;
             break;
           }
@@ -155,8 +160,7 @@ public class HeaderPanel extends Panel {
 
     this.add(new StringHeaderContributor(getWidthStyle(widths)));
 
-    this.add(new HeaderContributor(HeaderContributor
-        .forJavaScript(DojoReference.JS_DOJO)));
+    this.add(new HeaderContributor(DojoReference.forDojo()));
     this
         .add(new HeaderContributor(HeaderContributor.forJavaScript(JAVASCRIPT)));
   }
@@ -169,8 +173,16 @@ public class HeaderPanel extends Panel {
 
     final String ret =
         JavascriptUtils.SCRIPT_OPEN_TAG
-            + "  window.onresize = positionTableColumns;\n"
-            + "  window.onload = positionTableColumns;\n"
+            + "  window.onresize = function (){positionTableColumns(\""
+            + this.getMarkupId()
+            + "\",\""
+            + this.tablepanel.getMarkupId()
+            + "\");};\n"
+            + "  dojo.addOnLoad(function (){positionTableColumns(\""
+            + this.getMarkupId()
+            + "\",\""
+            + this.tablepanel.getMarkupId()
+            + "\");});\n"
             + ((AjaxStoreColumnWidthBehavior) this.getBehaviors(
                 AjaxStoreColumnWidthBehavior.class).get(0)).getJavaScript()
             + ((AjaxStoreColumnOrderBehavior) this.getBehaviors(
