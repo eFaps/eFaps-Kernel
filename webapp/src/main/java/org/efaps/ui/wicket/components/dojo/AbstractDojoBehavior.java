@@ -21,8 +21,6 @@
 package org.efaps.ui.wicket.components.dojo;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.RequestCycle;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.markup.html.IHeaderResponse;
 
@@ -45,27 +43,11 @@ public abstract class AbstractDojoBehavior extends AbstractBehavior {
   @Override
   public void renderHead(final IHeaderResponse _response) {
     super.renderHead(_response);
-    _response.renderString(getConfigJavaScript(DojoReference.JS_DOJO));
-    _response.renderString(getConfigJavaScript(DojoReference.JS_EFAPSDOJO));
+    _response.renderString(DojoReference
+        .getConfigJavaScript(DojoReference.JS_DOJO));
+    _response.renderString(DojoReference
+        .getConfigJavaScript(DojoReference.JS_EFAPSDOJO));
     _response.renderCSSReference(DojoReference.CSS_TUNDRA);
-  }
-
-  /**
-   * method to create the tag for linking JavaScript
-   *
-   * @param _reference
-   *                ResourceReference to be linked
-   * @return scriptLink width extension djConfig="parseOnLoad:true"
-   */
-  protected String getConfigJavaScript(final ResourceReference _reference) {
-    final StringBuilder ret = new StringBuilder();
-    ret.append("<script type=\"text/javascript\" ");
-    ret.append("src=\"");
-    ret.append(RequestCycle.get().urlFor(_reference));
-    ret.append("\"");
-    ret.append(" djConfig=\"parseOnLoad: true\"");
-    ret.append("></script>\n");
-    return ret.toString();
   }
 
   /*

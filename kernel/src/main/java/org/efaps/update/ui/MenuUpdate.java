@@ -130,9 +130,6 @@ public class MenuUpdate extends CommandUpdate  {
       digester.addCallMethod("ui-menu/definition/target/search", "assignTargetSearch", 1);
       digester.addCallParam("ui-menu/definition/target/search", 0);
 
-      digester.addCallMethod("ui-menu/definition/target/subcmd", "assignTargetSubCommand", 1);
-      digester.addCallParam("ui-menu/definition/target/subcmd", 0);
-
       digester.addCallMethod("ui-menu/definition/childs/child", "assignChild", 1);
       digester.addCallParam("ui-menu/definition/childs/child", 0);
 

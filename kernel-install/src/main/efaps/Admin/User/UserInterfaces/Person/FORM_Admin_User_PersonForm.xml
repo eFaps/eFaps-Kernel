@@ -152,13 +152,14 @@
       <property name="Expression">FirstName</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="Email">
+    <field name="Email" character="">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
       <property name="Editable">true</property>
       <property name="Expression">Email</property>
       <property name="Searchable">true</property>
     </field>
+    
   </definition>
 
 </ui-form>

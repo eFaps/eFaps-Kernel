@@ -67,8 +67,6 @@ public class FormModel extends AbstractModel {
    */
   private UUID formuuid;
 
-  private final boolean subCommands;
-
   public FormModel(PageParameters _parameters) {
     super(_parameters);
     final AbstractCommand command = super.getCommand();
@@ -77,7 +75,7 @@ public class FormModel extends AbstractModel {
     } else if (command.getTargetForm() != null) {
       this.formuuid = command.getTargetForm().getUUID();
     }
-    this.subCommands = command.hasSubCommand();
+
   }
 
   public UUID getUUID() {
@@ -247,19 +245,6 @@ public class FormModel extends AbstractModel {
 
   public void setFormUUID(final UUID _uuid) {
     this.formuuid = _uuid;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #subCommands}.
-   *
-   * @return value of instance variable {@link #subCommands}
-   */
-  public boolean hasSubCommands() {
-    return this.subCommands;
-  }
-
-  public List<AbstractCommand> getSubCommands() {
-    return getCommand().getSubCommands();
   }
 
   public class FormRowModel extends Model {

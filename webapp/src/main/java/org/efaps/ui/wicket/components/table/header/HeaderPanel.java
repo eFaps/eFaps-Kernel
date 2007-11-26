@@ -68,6 +68,9 @@ public class HeaderPanel extends Panel {
 
   private final Component tablepanel;
 
+  private final String headerproperties =
+      "eFaps" + ((Long) System.currentTimeMillis()).toString();
+
   public HeaderPanel(final String _id, final TablePanel _tablePanel) {
     super(_id, _tablePanel.getModel());
     this.tablepanel = _tablePanel;
@@ -81,8 +84,9 @@ public class HeaderPanel extends Panel {
     final DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior();
     dndBehavior.setHorizontal(true);
     dndBehavior.setHandles(true);
-    dndBehavior
-        .setAppendJavaScript("storeColumnOrder(getColumnOrder());\n reloadTable();\n");
+    dndBehavior.setAppendJavaScript("storeColumnOrder(getColumnOrder("
+        + this.headerproperties
+        + "));\n reloadTable();\n");
     this.add(dndBehavior);
 
     final int browserWidth =
@@ -147,7 +151,8 @@ public class HeaderPanel extends Panel {
           }
         }
         if (add) {
-          cellRepeater.add(new Seperator(cellRepeater.newChildId(), i));
+          cellRepeater.add(new Seperator(cellRepeater.newChildId(), i,
+              this.headerproperties));
         }
       }
       i++;
@@ -160,7 +165,8 @@ public class HeaderPanel extends Panel {
 
     this.add(new StringHeaderContributor(getWidthStyle(widths)));
 
-    this.add(new HeaderContributor(DojoReference.forDojo()));
+    this
+        .add(new HeaderContributor(DojoReference.getHeaderContributerforDojo()));
     this
         .add(new HeaderContributor(HeaderContributor.forJavaScript(JAVASCRIPT)));
   }
@@ -173,16 +179,23 @@ public class HeaderPanel extends Panel {
 
     final String ret =
         JavascriptUtils.SCRIPT_OPEN_TAG
-            + "  window.onresize = function (){positionTableColumns(\""
+            + "var "
+            + this.headerproperties
+            + " = new headerProperties();\n"
+            + this.headerproperties
+            + ".headerID = \""
             + this.getMarkupId()
-            + "\",\""
+            + "\";\n"
+            + this.headerproperties
+            + ".bodyID= \""
             + this.tablepanel.getMarkupId()
-            + "\");};\n"
-            + "  dojo.addOnLoad(function (){positionTableColumns(\""
-            + this.getMarkupId()
-            + "\",\""
-            + this.tablepanel.getMarkupId()
-            + "\");});\n"
+            + "\";\n"
+            + "  window.onresize = function (){positionTableColumns("
+            + this.headerproperties
+            + ");};\n"
+            + "  dojo.addOnLoad(function (){positionTableColumns("
+            + this.headerproperties
+            + ");});\n"
             + ((AjaxStoreColumnWidthBehavior) this.getBehaviors(
                 AjaxStoreColumnWidthBehavior.class).get(0)).getJavaScript()
             + ((AjaxStoreColumnOrderBehavior) this.getBehaviors(

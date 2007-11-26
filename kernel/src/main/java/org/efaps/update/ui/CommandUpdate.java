@@ -41,17 +41,17 @@ import org.efaps.update.event.EventFactory;
  *
  * @author tmo
  * @version $Id$
- *
  */
 public class CommandUpdate extends AbstractUpdate {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Logger LOG = LoggerFactory.getLogger(CommandUpdate.class);
+  private final static Logger LOG =
+      LoggerFactory.getLogger(CommandUpdate.class);
 
   /** Link from UI object to role */
   private final static Link LINK2ACCESSROLE   = new Link("Admin_UI_Access",
@@ -85,16 +85,7 @@ public class CommandUpdate extends AbstractUpdate {
                                                          "Admin_UI_Search",
                                                          "To");
 
-
-  /** Link from command to search as target */
-  private final static Link LINK2TARGETSUBCMD = new OrderedLink("Admin_UI_LinkTargetSubCommand",
-                                                         "From",
-                                                         "Admin_UI_Command",
-                                                         "To");
-
-
-
-  protected final static Set<Link> ALLLINKS          = new HashSet<Link>();
+  protected final static Set<Link> ALLLINKS = new HashSet<Link>();
   {
     ALLLINKS.add(LINK2ACCESSROLE);
     ALLLINKS.add(LINK2ICON);
@@ -102,10 +93,9 @@ public class CommandUpdate extends AbstractUpdate {
     ALLLINKS.add(LINK2TARGETFORM);
     ALLLINKS.add(LINK2TARGETMENU);
     ALLLINKS.add(LINK2TARGETSEARCH);
-    ALLLINKS.add(LINK2TARGETSUBCMD);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -122,7 +112,7 @@ public class CommandUpdate extends AbstractUpdate {
     super(_typeName, _allLinks);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
   /**
@@ -131,12 +121,12 @@ public class CommandUpdate extends AbstractUpdate {
    * invokes the Methods to Update a Command
    *
    * @param _file
-   *          XML-File to be read by the digester
+   *                XML-File to be read by the digester
    * @return Command Definition read by digester
    * @throws IOException
-   *           if file is not readable
+   *                 if file is not readable
    */
-  public static CommandUpdate readXMLFile(final URL _url)  {
+  public static CommandUpdate readXMLFile(final URL _url) {
     CommandUpdate ret = null;
 
     try {
@@ -147,72 +137,75 @@ public class CommandUpdate extends AbstractUpdate {
       digester.addCallMethod("ui-command/uuid", "setUUID", 1);
       digester.addCallParam("ui-command/uuid", 0);
 
-      digester
-          .addObjectCreate("ui-command/definition", CommandDefinition.class);
-      digester.addSetNext("ui-command/definition", "addDefinition");
+      final String def = "ui-command/definition";
 
-      digester.addCallMethod("ui-command/definition/version", "setVersion", 4);
-      digester.addCallParam("ui-command/definition/version/application", 0);
-      digester.addCallParam("ui-command/definition/version/global", 1);
-      digester.addCallParam("ui-command/definition/version/local", 2);
-      digester.addCallParam("ui-command/definition/version/mode", 3);
+      digester.addObjectCreate(def, CommandDefinition.class);
+      digester.addSetNext(def, "addDefinition");
 
-      digester.addCallMethod("ui-command/definition/name", "setName", 1);
-      digester.addCallParam("ui-command/definition/name", 0);
+      digester.addCallMethod(def + "/version", "setVersion", 4);
+      digester.addCallParam(def + "/version/application", 0);
+      digester.addCallParam(def + "/version/global", 1);
+      digester.addCallParam(def + "/version/local", 2);
+      digester.addCallParam(def + "/version/mode", 3);
 
-      digester.addCallMethod("ui-command/definition/icon", "assignIcon", 1);
-      digester.addCallParam("ui-command/definition/icon", 0);
+      digester.addCallMethod(def + "/name", "setName", 1);
+      digester.addCallParam(def + "/name", 0);
 
-      digester.addCallMethod("ui-command/definition/access/role", "assignAccessRole", 1);
-      digester.addCallParam("ui-command/definition/access/role", 0);
+      digester.addCallMethod(def + "/icon", "assignIcon", 1);
+      digester.addCallParam(def + "/icon", 0);
+
+      digester.addCallMethod(def + "/access/role", "assignAccessRole", 1);
+      digester.addCallParam(def + "/access/role", 0);
 
       // target definitions
-      digester.addCallMethod("ui-command/definition/target/form", "assignTargetForm", 1);
-      digester.addCallParam("ui-command/definition/target/form", 0);
+      digester.addCallMethod(def + "/target/form", "assignTargetForm", 1);
+      digester.addCallParam(def + "/target/form", 0);
 
-      digester.addCallMethod("ui-command/definition/target/menu", "assignTargetMenu", 1);
-      digester.addCallParam("ui-command/definition/target/menu", 0);
+      digester.addCallMethod(def + "/target/menu", "assignTargetMenu", 1);
+      digester.addCallParam(def + "/target/menu", 0);
 
-      digester.addCallMethod("ui-command/definition/target/search", "assignTargetSearch", 1);
-      digester.addCallParam("ui-command/definition/target/search", 0);
+      digester.addCallMethod(def + "/target/search", "assignTargetSearch", 1);
+      digester.addCallParam(def + "/target/search", 0);
 
-      digester.addCallMethod("ui-command/definition/target/table", "assignTargetTable", 1);
-      digester.addCallParam("ui-command/definition/target/table", 0);
+      digester.addCallMethod(def + "/target/table", "assignTargetTable", 1);
+      digester.addCallParam(def + "/target/table", 0);
 
-      digester.addCallMethod("ui-command/definition/target/subcmd", "assignTargetSubCommand", 1);
-      digester.addCallParam("ui-command/definition/target/subcmd", 0);
+      digester.addFactoryCreate(def + "/target/evaluate", new EventFactory(
+          "Admin_UI_TableEvaluateEvent"), false);
+      digester.addCallMethod(def + "/target/evaluate/property", "addProperty",2);
+      digester.addCallParam(def + "/target/evaluate/property", 0, "name");
+      digester.addCallParam(def + "/target/evaluate/property", 1);
+      digester.addSetNext(def + "/target/evaluate", "addEvent",
+          "org.efaps.update.event.Event");
 
-      digester.addFactoryCreate("ui-command/definition/target/evaluate", new EventFactory("Admin_UI_TableEvaluateEvent"), false);
-      digester.addCallMethod("ui-command/definition/target/evaluate/property", "addProperty", 2);
-      digester.addCallParam("ui-command/definition/target/evaluate/property", 0, "name");
-      digester.addCallParam("ui-command/definition/target/evaluate/property", 1);
-      digester.addSetNext("ui-command/definition/target/evaluate", "addEvent", "org.efaps.update.event.Event");
+      digester.addFactoryCreate(def + "/target/execute", new EventFactory(
+          "Admin_UI_CommandExecuteEvent"), false);
+      digester.addCallMethod(def + "/target/execute/property", "addProperty", 2);
+      digester.addCallParam(def + "/target/execute/property", 0, "name");
+      digester.addCallParam(def + "/target/execute/property", 1);
+      digester.addSetNext(def + "/target/execute", "addEvent",
+          "org.efaps.update.event.Event");
 
-      digester.addFactoryCreate("ui-command/definition/target/execute", new EventFactory("Admin_UI_CommandExecuteEvent"), false);
-      digester.addCallMethod("ui-command/definition/target/execute/property", "addProperty", 2);
-      digester.addCallParam("ui-command/definition/target/execute/property", 0, "name");
-      digester.addCallParam("ui-command/definition/target/execute/property", 1);
-      digester.addSetNext("ui-command/definition/target/execute", "addEvent", "org.efaps.update.event.Event");
-
-      digester.addFactoryCreate("ui-command/definition/target/validate", new EventFactory("Admin_UI_ValidateEvent"), false);
-      digester.addCallMethod("ui-command/definition/target/validate/property", "addProperty", 2);
-      digester.addCallParam("ui-command/definition/target/validate/property", 0, "name");
-      digester.addCallParam("ui-command/definition/target/validate/property", 1);
-      digester.addSetNext("ui-command/definition/target/validate", "addEvent", "org.efaps.update.event.Event");
-
+      digester.addFactoryCreate(def + "/target/validate", new EventFactory(
+          "Admin_UI_ValidateEvent"), false);
+      digester.addCallMethod(def + "/target/validate/property", "addProperty", 2);
+      digester.addCallParam(def + "/target/validate/property", 0, "name");
+      digester.addCallParam(def + "/target/validate/property", 1);
+      digester.addSetNext(def + "/target/validate", "addEvent",
+          "org.efaps.update.event.Event");
 
       // properties
-      digester
-          .addCallMethod("ui-command/definition/property", "addProperty", 2);
-      digester.addCallParam("ui-command/definition/property", 0, "name");
-      digester.addCallParam("ui-command/definition/property", 1);
+      digester.addCallMethod(def + "/property", "addProperty", 2);
+      digester.addCallParam(def + "/property", 0, "name");
+      digester.addCallParam(def + "/property", 1);
 
       // Trigger
-      digester.addFactoryCreate("ui-command/definition/trigger", new EventFactory(), false);
-      digester.addCallMethod("ui-command/definition/trigger/property", "addProperty", 2);
-      digester.addCallParam("ui-command/definition/trigger/property", 0, "name");
-      digester.addCallParam("ui-command/definition/trigger/property", 1);
-      digester.addSetNext("ui-command/definition/trigger", "addEvent", "org.efaps.update.event.Event");
+      digester.addFactoryCreate(def + "/trigger", new EventFactory(), false);
+      digester.addCallMethod(def + "/trigger/property", "addProperty", 2);
+      digester.addCallParam(def + "/trigger/property", 0, "name");
+      digester.addCallParam(def + "/trigger/property", 1);
+      digester.addSetNext(def + "/trigger", "addEvent",
+          "org.efaps.update.event.Event");
 
       ret = (CommandUpdate) digester.parse(_url);
 
@@ -227,21 +220,21 @@ public class CommandUpdate extends AbstractUpdate {
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
   public static class CommandDefinition extends DefinitionAbstract {
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // instance methods
 
     /**
      * Assigns a role for accessing this command.
      *
      * @param _role
-     *          name of the role
+     *                name of the role
      */
     public void assignAccessRole(final String _role) {
       addLink(LINK2ACCESSROLE, _role);
@@ -251,7 +244,7 @@ public class CommandUpdate extends AbstractUpdate {
      * Assigns a table as target for this command definition.
      *
      * @param _targetTable
-     *          name of the target table
+     *                name of the target table
      */
     public void assignIcon(final String _icon) {
       addLink(LINK2ICON, _icon);
@@ -261,7 +254,7 @@ public class CommandUpdate extends AbstractUpdate {
      * Assigns a table as target for this command definition.
      *
      * @param _targetTable
-     *          name of the target table
+     *                name of the target table
      */
     public void assignTargetTable(final String _targetTable) {
       addLink(LINK2TARGETTABLE, _targetTable);
@@ -271,7 +264,7 @@ public class CommandUpdate extends AbstractUpdate {
      * Assigns a form as target for this command definition.
      *
      * @param _targetForm
-     *          name of the target form
+     *                name of the target form
      */
     public void assignTargetForm(final String _targetForm) {
       addLink(LINK2TARGETFORM, _targetForm);
@@ -281,7 +274,7 @@ public class CommandUpdate extends AbstractUpdate {
      * Assigns a menu as target for this command definition.
      *
      * @param _targetMenu
-     *          name of the target menu
+     *                name of the target menu
      */
     public void assignTargetMenu(final String _targetMenu) {
       addLink(LINK2TARGETMENU, _targetMenu);
@@ -291,21 +284,12 @@ public class CommandUpdate extends AbstractUpdate {
      * Assigns a search menu as target for this command definition.
      *
      * @param _targetSearch
-     *          name of the target search
+     *                name of the target search
      */
     public void assignTargetSearch(final String _targetSearch) {
       addLink(LINK2TARGETSEARCH, _targetSearch);
     }
 
-    /**
-     * Assigns a search menu as target for this command definition.
-     *
-     * @param _targetSearch
-     *          name of the target search
-     */
-    public void assignTargetSubCommand(final String _targetSubCommand) {
-      addLink(LINK2TARGETSUBCMD, _targetSubCommand);
-    }
   }
 
 }

@@ -28,8 +28,14 @@ var connections = [];
 var seperator;
 
 
-function positionTableColumns(headerID, bodyID) {
-  var header = document.getElementById(headerID);
+
+function headerProperties(){
+ this.headerID = "";
+ this.bodyID = "";
+} 
+
+function positionTableColumns(_props) {
+  var header = document.getElementById(_props.headerID);
   var cells = new Array();
   var widthWeight = 0;
   var widthCor = 0;
@@ -51,7 +57,7 @@ function positionTableColumns(headerID, bodyID) {
       widthCor+= addwith;
     }
   }
-  var tablebody = document.getElementById(bodyID);
+  var tablebody = document.getElementById(_props.bodyID);
   var completeWidth = (tablebody.clientWidth ) ;
   if (completeWidth != 0) {
     header.style.width = completeWidth + "px";
@@ -105,8 +111,8 @@ function getAdditionalWidth(_cell){
   return width;
 }
 
-function getColumnWidths(){
-  var header = document.getElementById("eFapsTableHeader");
+function getColumnWidths(_props){
+  var header = document.getElementById(_props.headerID);
   var celldivs = header.getElementsByTagName("div");
   var widths="";
   for(i = 0;i<celldivs.length;i++){
@@ -136,7 +142,7 @@ function doColumnSize(_event){
   lastpos=_event.screenX;
 }
 
-function endColumnSize(_seperator,_event){
+function endColumnSize(_seperator,_event,_props){
   dojo.forEach(connections,dojo.disconnect);
   var dif = lastpos - startpos;
   var i = parseInt(seperator.id);
@@ -162,7 +168,7 @@ function endColumnSize(_seperator,_event){
   _seperator.style.width = parseInt(_seperator.style.width) - seperatorWidth +"px";
   _seperator.style.left = parseInt(_seperator.style.left) - move + seperatorWidth/2 +"px";
   _seperator.style.backgroundPosition = "-200px 0";
-  storeColumnWidths(getColumnWidths());
+  storeColumnWidths(getColumnWidths(_props));
 }
 
 
@@ -170,8 +176,8 @@ function cancelColumnSize(_event){
   endColumnSize(seperator,_event);
 }
 
-function getColumnOrder(){
-  var header = document.getElementById("eFapsTableHeader");
+function getColumnOrder(props){
+  var header = document.getElementById(props.headerID);
   var celldivs = header.getElementsByTagName("div");
   var ids="";
   for(i = 0;i<celldivs.length;i++){

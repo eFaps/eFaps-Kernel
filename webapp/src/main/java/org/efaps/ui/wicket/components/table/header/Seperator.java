@@ -37,7 +37,8 @@ public class Seperator extends WebComponent {
 
   private final int id;
 
-  public Seperator(final String _wicketId, final int _outputid) {
+  public Seperator(final String _wicketId, final int _outputid,
+                   final String _propId) {
     super(_wicketId);
     this.id = _outputid;
     this.add(new SimpleAttributeModifier("class", "eFapsTableHeaderSeperator"));
@@ -45,7 +46,7 @@ public class Seperator extends WebComponent {
         "beginColumnSize(this,event)"));
 
     this.add(new SimpleAttributeModifier("onmouseup",
-        "endColumnSize(this,event)"));
+        "endColumnSize(this,event," + _propId + ")"));
 
   }
 

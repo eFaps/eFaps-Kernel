@@ -47,7 +47,9 @@ public class DojoReference {
   public static final JavascriptResourceReference JS_EFAPSDOJO =
       new JavascriptResourceReference(DojoReference.class, "dojo/eFapsDojo.js");
 
-  public static final HeaderContributor forDojo() {
+
+
+  public static final HeaderContributor getHeaderContributerforDojo() {
     return new HeaderContributor(new IHeaderContributor() {
 
       private static final long serialVersionUID = 1L;
@@ -65,7 +67,7 @@ public class DojoReference {
    *                ResourceReference to be linked
    * @return scriptLink width extension djConfig="parseOnLoad:true"
    */
-  protected static String getConfigJavaScript(final ResourceReference _reference) {
+  public static String getConfigJavaScript(final ResourceReference _reference) {
     final StringBuilder ret = new StringBuilder();
     ret.append("<script type=\"text/javascript\" ");
     ret.append("src=\"");

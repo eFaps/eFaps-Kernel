@@ -24,9 +24,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
-import org.efaps.admin.datamodel.Attribute;
 import org.efaps.db.Context;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -41,47 +39,12 @@ public class Table extends AbstractCollection implements Cloneable {
   static public EFapsClassName EFAPS_CLASSNAME = EFapsClassName.TABLE;
 
   /**
-   * @see #getPageStyle
-   * @see #isMultiPageStyle
-   * @see #isSinglePageStyle
-   * @see #setMultiPageStyle
-   * @see #setPageStyle
-   * @see #setSinglePageStyle
-   */
-  private enum PageStyle {
-    SINGLE,
-    MULTI
-  };
-
-  /**
    * Stores all instances of class {@link Table}.
    *
    * @see #getCache
    */
   static private UserInterfaceObjectCache<Table> cache =
       new UserInterfaceObjectCache<Table>(Table.class);
-
-  /**
-   * This is the instance variable for the selectable column reference. If the
-   * variable is set, the table gets for each line a selectable check bottom.
-   *
-   * @see #setSelectableColRef
-   * @see #getSelectableColRef
-   */
-  private Attribute selectableColRef = null;
-
-  private String eventOnLoad = null;
-
-  /**
-   * This is the instance variable for the style of the page of the table.
-   * Values defined in {@link #PageStyle} are possible. Default value is
-   * {@link  #PageStyle,MULTI} .
-   */
-  private PageStyle pageStyle = PageStyle.MULTI;
-
-  private String javaScriptCode = null;
-
-  private int selectableColRefIndex = -1;
 
   /**
    * This is the constructor to set the id and the name.
@@ -117,26 +80,6 @@ public class Table extends AbstractCollection implements Cloneable {
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * The instance method sets a new property value.
-   *
-   * @param _name
-   *                name of the property
-   * @param _value
-   *                value of the property
-   * @param _toId
-   *                id of the to object
-   */
-  @Override
-  protected void setProperty(final String _name, final String _value)
-                                                                     throws CacheReloadException {
-    if (_name.equals("SelectionColRef")) {
-      setSelectableColRef(Attribute.get(_value));
-    } else {
-      super.setProperty(_name, _value);
-    }
-  }
-
-  /**
    * Creates and returns a copy of this table object.
    */
   public Table cloneTable() {
@@ -148,133 +91,6 @@ public class Table extends AbstractCollection implements Cloneable {
     }
     return ret;
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  public void setEventOnLoad(String _eventOnLoad) {
-    this.eventOnLoad = _eventOnLoad;
-  }
-
-  public String getEventOnLoad() {
-    return this.eventOnLoad;
-  }
-
-  public void setJavaScriptCode(String _javaScriptCode) {
-    this.javaScriptCode = _javaScriptCode;
-  }
-
-  public String getJavaScriptCode() {
-    return this.javaScriptCode;
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-
-  /**
-   * This is the setter method for instance variable {@link #selectableColRef}.
-   *
-   * @param _selectableColRef
-   *                new value for instance variable {@link #selectableColRef}
-   * @see #selectableColRef
-   * @see #getSelectableColRef
-   */
-  public void setSelectableColRef(Attribute _selectableColRef) {
-    this.selectableColRef = _selectableColRef;
-
-    this.selectableColRefIndex =
-        addFieldExpr(getSelectableColRef().getTable().getSqlTable()
-            + "."
-            + getSelectableColRef().getName());
-  }
-
-  public int getSelectableColRefIndex() {
-    return this.selectableColRefIndex;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #selectableColRef}.
-   *
-   * @see #selectableColRef
-   * @see #setSelectableColRef
-   */
-  public Attribute getSelectableColRef() {
-    return this.selectableColRef;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #pageStyle}.
-   *
-   * @param _pageStyle
-   *                new value for instance variable {@link #pageStyle}.
-   * @see #pageStyle
-   * @see #getPageStyle
-   */
-  private void setPageStyle(PageStyle _pageStyle) {
-    this.pageStyle = _pageStyle;
-  }
-
-  /**
-   * This is the getter method for instance variable {@link #pageStyle}.
-   *
-   * @see #pageStyle
-   * @see #setPageStyle
-   */
-  private PageStyle getPageStyle() {
-    return this.pageStyle;
-  }
-
-  /**
-   * The table is representated in single page style. The value is stored in
-   * instance variable {@link #pageStyle} with the value
-   * {@link #PageStyle.SINGLE}.
-   *
-   * @see #pageStyle
-   * @see #setPageStyle
-   * @see #isSinglePageStyle
-   */
-  public void setSinglePageStyle() {
-    setPageStyle(PageStyle.SINGLE);
-  }
-
-  /**
-   * If instance variable {@link #pageStyle} is set to {@link #PageStyle.SINGLE},
-   * a <i>true</i> is returned, otherwise a <i>false</i> is returned.
-   *
-   * @return <i>true</i> / <i>false</i>
-   * @see #pageStyle
-   * @see #getPageStyle
-   * @see #setSinglePageStyle
-   */
-  public boolean isSinglePageStyle() {
-    return (getPageStyle() == PageStyle.SINGLE);
-  }
-
-  /**
-   * The table is representated in multi page style. The value is stored in
-   * instance variable {@link #pageStyle} with the value
-   * {@link #PageStyle.MULTI}.
-   *
-   * @see #pageStyle
-   * @see #setPageStyle
-   * @see #isMultiPageStyle
-   */
-  public void setMultiPageStyle() {
-    setPageStyle(PageStyle.MULTI);
-  }
-
-  /**
-   * If instance variable {@link #pageStyle} is set to {@link #PageStyle.MULTI},
-   * a <i>true</i> is returned, otherwise a <i>false</i> is returned.
-   *
-   * @return <i>true</i> / <i>false</i>
-   * @see #pageStyle
-   * @see #getPageStyle
-   * @see #setMultiPageStyle
-   */
-  public boolean isMultiPageStyle() {
-    return (getPageStyle() == PageStyle.MULTI);
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Table}.
