@@ -124,7 +124,7 @@ public class WebDAVUpdate extends AbstractUpdate {
   /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition extends DefinitionAbstract {
+  public static class Definition extends AbstractDefinition {
 
     /**
      * 

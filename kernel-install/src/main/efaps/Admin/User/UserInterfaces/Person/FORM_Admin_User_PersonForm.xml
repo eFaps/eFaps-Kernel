@@ -152,14 +152,23 @@
       <property name="Expression">FirstName</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="Email" character="">
+    <field name="Email" character="Expression">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
       <property name="Editable">true</property>
       <property name="Expression">Email</property>
       <property name="Searchable">true</property>
     </field>
-    
+    <field name="rolesheader" character="Heading">
+      <property name="Level">1</property>
+      <property name="Label">Admin_User_Person/Roles.Heading</property>
+    </field>
+    <field name="rolestable" character="Target">
+      <table>Admin_User_AttributeTable</table>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
+        <property name="Expand">Admin_User_Attribute\UserLink</property>
+      </evaluate>
+    </field>
   </definition>
 
 </ui-form>

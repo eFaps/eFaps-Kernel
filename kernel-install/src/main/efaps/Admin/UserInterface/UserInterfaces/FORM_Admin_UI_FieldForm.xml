@@ -117,7 +117,7 @@
       <property name="AlternateOID">Collection.OID</property>
       <property name="Creatable">false</property>
       <property name="Editable">false</property>
-      <property name="Expression">Collection</property>
+      <property name="Expression">Collection.Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Searchable">false</property>
     </field>

@@ -95,9 +95,12 @@ public abstract class AbstractUpdate {
   /**
    * All definitions of versions are added to this list.
    */
-  private final List<DefinitionAbstract> definitions =
-      new ArrayList<DefinitionAbstract>();
+  private final List<AbstractDefinition> definitions =
+      new ArrayList<AbstractDefinition>();
 
+  /**
+   * This instance variable stores if the Type to be updated is abstract or not
+   */
   private boolean abstractType = false;
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -130,7 +133,7 @@ public abstract class AbstractUpdate {
    *                definition to add
    * @see #definitions
    */
-  public void addDefinition(final DefinitionAbstract _definition) {
+  public void addDefinition(final AbstractDefinition _definition) {
     this.definitions.add(_definition);
   }
 
@@ -147,7 +150,6 @@ public abstract class AbstractUpdate {
    * is first updates in the version definition.<br/> The new created object is
    * stored as instance information in {@link #instance}.
    *
-   * @todo description
    * @param _jexlContext
    *                expression context used to evaluate
    */
@@ -155,7 +157,7 @@ public abstract class AbstractUpdate {
                                                         Exception {
     try {
 
-      for (DefinitionAbstract def : this.definitions) {
+      for (AbstractDefinition def : this.definitions) {
 
         final Expression jexlExpr =
             ExpressionFactory.createExpression(def.mode);
@@ -229,7 +231,7 @@ public abstract class AbstractUpdate {
    * @return value of instance variable {@link #definitions}
    * @see #definitions
    */
-  protected List<DefinitionAbstract> getDefinitions() {
+  protected List<AbstractDefinition> getDefinitions() {
     return this.definitions;
   }
 
@@ -345,7 +347,7 @@ public abstract class AbstractUpdate {
   /**
    *
    */
-  protected abstract static class DefinitionAbstract {
+  protected abstract static class AbstractDefinition {
 
     /**
      * Name of the application for which this definition is defined.
@@ -698,6 +700,10 @@ public abstract class AbstractUpdate {
       addLink(_link, _name, valuesMap);
     }
 
+    public Map<String, Map<String, String>> getLinks(final Link _linkType) {
+      return this.links.get(_linkType);
+    }
+
     /**
      * @param _name
      *                name of the attribute
@@ -762,6 +768,25 @@ public abstract class AbstractUpdate {
     public void addEvent(final Event _event) {
       this.events.add(_event);
     }
+
+    /**
+     * This is the getter method for the instance variable {@link #events}.
+     *
+     * @return value of instance variable {@link #events}
+     */
+    public List<Event> getEvents() {
+      return this.events;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #properties}.
+     *
+     * @return value of instance variable {@link #properties}
+     */
+    public Map<String, String> getProperties() {
+      return this.properties;
+    }
+
   }
 
 }

@@ -83,7 +83,7 @@ public class ImageUpdate extends AbstractUpdate  {
    * @param _root   name of the path where the image file is located
    */
   protected void setRoot(final String _root) {
-    for (DefinitionAbstract def : getDefinitions()) {
+    for (AbstractDefinition def : getDefinitions()) {
       ((ImageDefinition) def).setRoot(_root);
     }
   }
@@ -145,7 +145,7 @@ public class ImageUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class ImageDefinition extends DefinitionAbstract {
+  public static class ImageDefinition extends AbstractDefinition {
 
     /** Name of the Image file (incl. the path) to import. */
     private String file = null;

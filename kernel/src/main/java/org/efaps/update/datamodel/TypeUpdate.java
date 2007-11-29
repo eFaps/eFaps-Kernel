@@ -205,7 +205,7 @@ public class TypeUpdate extends AbstractUpdate {
   /**
    * The class defines an attribute of a type.
    */
-  public static class Attribute extends DefinitionAbstract {
+  public static class Attribute extends AbstractDefinition {
 
     /** Name of the attribute. */
     private String name;
@@ -412,7 +412,7 @@ public class TypeUpdate extends AbstractUpdate {
   // ///////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition extends DefinitionAbstract {
+  public static class Definition extends AbstractDefinition {
 
     // /////////////////////////////////////////////////////////////////////////
     // instance variables

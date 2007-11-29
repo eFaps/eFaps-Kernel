@@ -225,7 +225,7 @@ public class CommandUpdate extends AbstractUpdate {
   // ///////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class CommandDefinition extends DefinitionAbstract {
+  public static class CommandDefinition extends AbstractDefinition {
 
     // /////////////////////////////////////////////////////////////////////////
     // instance methods

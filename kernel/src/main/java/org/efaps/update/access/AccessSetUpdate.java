@@ -154,7 +154,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition extends DefinitionAbstract {
+  public static class Definition extends AbstractDefinition {
     
     /**
      * @param _accessType access type to add (defined with the name of the

@@ -112,7 +112,7 @@ public class RoleUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class RoleDefinition extends DefinitionAbstract  {
+  public static class RoleDefinition extends AbstractDefinition  {
     
     public void setStatus(final String _status){
       addValue("Status", _status);

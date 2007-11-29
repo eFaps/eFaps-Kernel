@@ -74,7 +74,7 @@ public class JavaUpdate extends AbstractUpdate {
    * @param _root   name of the path where the image file is located
    */
   protected void setRoot(final String _root) {
-    for (DefinitionAbstract def : getDefinitions()) {
+    for (AbstractDefinition def : getDefinitions()) {
       ((JavaDefinition) def).setRoot(_root);
     }
   }
@@ -135,7 +135,7 @@ public class JavaUpdate extends AbstractUpdate {
   /**
    * The Java definition holds the code and the name of the Java class.
    */
-  public static class JavaDefinition extends DefinitionAbstract {
+  public static class JavaDefinition extends AbstractDefinition {
 
     ///////////////////////////////////////////////////////////////////////////
     // instance variables

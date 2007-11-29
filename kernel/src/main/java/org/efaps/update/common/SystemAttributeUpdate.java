@@ -107,7 +107,7 @@ public class SystemAttributeUpdate extends AbstractUpdate {
     return ret;
   }
 
-  public static class Definition extends DefinitionAbstract {
+  public static class Definition extends AbstractDefinition {
 
     public void addValue(final String _value) {
       super.addValue("Value", _value);
