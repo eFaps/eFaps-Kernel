@@ -77,6 +77,11 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
 
     COLLECTION("Admin_UI_Collection", null),
     FIELD("Admin_UI_Field", null),
+    FIELDHEADING(
+                 "Admin_UI_FieldHeading",
+                 "29e30382-63cd-44ac-91b6-ca1ca58ff434"),
+    FIELDTABLE("Admin_UI_FieldTable", "d72728e9-2878-47fd-9250-21b5a04ebadb"),
+
     FORM("Admin_UI_Form", null),
     TABLE("Admin_UI_Table", null),
     COMMAND("Admin_UI_Command", null),

@@ -28,7 +28,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.Field;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
 /**

@@ -182,7 +182,8 @@ public class ListQuery extends AbstractQuery {
 
   }
 
-  public Type getType() throws Exception {
+  @Override
+  public Type getType()  {
     return this.query.getType();
   }
 

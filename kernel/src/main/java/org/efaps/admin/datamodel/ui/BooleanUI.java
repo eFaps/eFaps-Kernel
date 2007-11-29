@@ -22,7 +22,7 @@ package org.efaps.admin.datamodel.ui;
 
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.Field;
+import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
 /**

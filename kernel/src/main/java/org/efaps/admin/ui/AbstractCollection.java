@@ -27,6 +27,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.FieldHeading;
+import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -177,6 +180,7 @@ public abstract class AbstractCollection extends AbstractUserInterfaceObject {
           new Instance(Type.get(EFapsClassName.COLLECTION.name), getId());
       final SearchQuery query = new SearchQuery();
       query.setExpand(instance, EFapsClassName.FIELD.name + "\\Collection");
+      query.addSelect("Type");
       query.addSelect("ID");
       query.addSelect("Name");
       query.executeWithoutAccessCheck();
@@ -184,7 +188,15 @@ public abstract class AbstractCollection extends AbstractUserInterfaceObject {
       while (query.next()) {
         final long id = (Long) query.get("ID");
         final String name = (String) query.get("Name");
-        final Field field = new Field(id, null, name);
+        Field field;
+        final Type type = (Type) query.get("Type");
+        if (EFapsClassName.FIELDHEADING.name.equals(type.getName())) {
+          field = new FieldHeading(id, null, name);
+        } else if (EFapsClassName.FIELDTABLE.name.equals(type.getName())) {
+          field = new FieldTable(id, null, name);
+        } else {
+          field = new Field(id, null, name);
+        }
         field.readFromDB();
         add(field);
       }

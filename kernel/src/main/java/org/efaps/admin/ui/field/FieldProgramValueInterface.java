@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.ui;
+package org.efaps.admin.ui.field;
 
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.db.AbstractQuery;

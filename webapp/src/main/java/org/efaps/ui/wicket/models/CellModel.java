@@ -22,8 +22,8 @@ package org.efaps.ui.wicket.models;
 
 import org.apache.wicket.model.Model;
 
-import org.efaps.admin.ui.Field;
 import org.efaps.admin.ui.AbstractCommand.Target;
+import org.efaps.admin.ui.field.Field;
 
 /**
  * @author jmox

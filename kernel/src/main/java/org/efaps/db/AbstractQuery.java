@@ -68,60 +68,60 @@ public abstract class AbstractQuery {
 
   private CachedResult cachedResult = null;
 
-  Type type = null;
+  protected Type type = null;
 
   ArrayList<Type> types = new ArrayList<Type>();
 
   /**
    * The instance variable stores the order of the select types.
-   * 
+   *
    * @see #getSelectTypesOrder
    */
-  private List<SelectType> selectTypesOrder = new ArrayList<SelectType>();
+  private final List<SelectType> selectTypesOrder = new ArrayList<SelectType>();
 
   /**
    * The instance variable stores all single join elements.
-   * 
+   *
    * @see #getJoinElements
    */
-  private List<JoinElement> joinElements = new ArrayList<JoinElement>();
+  private final List<JoinElement> joinElements = new ArrayList<JoinElement>();
 
   /**
    * The instance variable maps expressions to join elements.
    */
-  private Map<String, JoinElement> mapJoinElements =
+  private final Map<String, JoinElement> mapJoinElements =
       new HashMap<String, JoinElement>();
 
   /**
    * The instance variable stores the main instance of the join element. The
    * main join element is that join elment which stores the direct selectable
    * attribute values.
-   * 
+   *
    * @see #getMainJoinElement
    */
-  private JoinElement mainJoinElement = new JoinElement();
+  private final JoinElement mainJoinElement = new JoinElement();
 
   /**
    * The instance variable stores all main selected types. The key in this map
    * is the main table.
-   * 
+   *
    * @see #getSelectTypes
    */
-  private Map<Type, SelectType> mainSelectTypes =
+  private final Map<Type, SelectType> mainSelectTypes =
       new HashMap<Type, SelectType>();
 
   /**
    * The instance variable stores all main where clauses. This where clauses
    * must be used by all join elements! This is a different behaviour than the
    * where clauses for a join element.
-   * 
+   *
    * @see #getMainWhereClauses
    */
-  private List<WhereClause> mainWhereClauses = new ArrayList<WhereClause>();
+  private final List<WhereClause> mainWhereClauses = new ArrayList<WhereClause>();
 
   /**
    * Should the child types als be expanded?
-   * 
+   *
    * @see #isExpandChildTypes
    * @see #setExpandChildTypes
    */
@@ -130,19 +130,19 @@ public abstract class AbstractQuery {
   /**
    * The instance variable stores all select expressions and their relations to
    * attributes for this query.
-   * 
+   *
    * @see #getAllSelExprMap
    */
-  private Map<Object, SelExpr2Attr> allSelExprMap =
+  private final Map<Object, SelExpr2Attr> allSelExprMap =
       new HashMap<Object, SelExpr2Attr>();
 
   /**
    * The instance variable stores all OID select expressions and their relations
    * to attributes for this query.
-   * 
+   *
    * @see #getAllOIDSelExprMap
    */
-  private Map<Object, SelExpr2Attr> allOIDSelExprMap =
+  private final Map<Object, SelExpr2Attr> allOIDSelExprMap =
       new HashMap<Object, SelExpr2Attr>();
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -151,9 +151,10 @@ public abstract class AbstractQuery {
    * The instance destructor calls the instance method {@link #close} to close
    * the SQL statement if not happend till now. The exception thrown from method
    * {@link #close} is catched and no error is thrown from this destructor.
-   * 
+   *
    * @see #close
    */
+  @Override
   public void finalize() {
     try {
       close();
@@ -164,7 +165,7 @@ public abstract class AbstractQuery {
   /**
    * The method closes the SQL statement. The method must be always called to
    * close the query!
-   * 
+   *
    * @see #statement
    */
   public void close() throws EFapsException {
@@ -179,7 +180,7 @@ public abstract class AbstractQuery {
 
   /**
    * The method adds an expression to the selectstatement.
-   * 
+   *
    * @param _expression
    *          expression to add
    */
@@ -216,7 +217,7 @@ public abstract class AbstractQuery {
 
   /**
    * The instance method adds types in the order of the expand.
-   * 
+   *
    * @param _type
    *          type to add in the correct order
    * @see #addTypes4Order(Type,boolean)
@@ -227,7 +228,7 @@ public abstract class AbstractQuery {
 
   /**
    * The instance method adds types in the order of the expand.
-   * 
+   *
    * @param _type
    *          type to add in the correct order
    * @param _nullAllowed
@@ -247,7 +248,7 @@ public abstract class AbstractQuery {
   /**
    * The instance method returns for the given type the select type class
    * instance of {@link #SelectType}.
-   * 
+   *
    * @param _type
    *          type for which the instance of {@link #SelectType} is searched
    * @see #addTypes4Order
@@ -271,7 +272,7 @@ public abstract class AbstractQuery {
 
   /**
    * The method returns the size of the select expressions.
-   * 
+   *
    * @return size of the select expressions
    * @see #getExpressions
    */
@@ -287,7 +288,7 @@ public abstract class AbstractQuery {
 
   /**
    * The instance method returns for the given key the attribute value.
-   * 
+   *
    * @param _key
    *          key for which the attribute value must returned
    * @return atribute value for given key
@@ -329,7 +330,7 @@ public abstract class AbstractQuery {
 
   /**
    * The instance method returns for the given key the atribute.
-   * 
+   *
    * @param _key
    *          key for which the attribute value must returned
    * @return attribute for given key
@@ -346,12 +347,12 @@ public abstract class AbstractQuery {
   /**
    * All object ids for one row are returned. The objects id defined in the
    * expand are returned in the same order.
-   * 
+   *
    * @return list of instances from the expand
    */
   public List<Instance> getExpandInstances() throws EFapsException {
     final List<Instance> ret = new ArrayList<Instance>();
-    for (Type type : types) {
+    for (Type type : this.types) {
       ret.add(new Instance(getOID(type)));
     }
     return ret;
@@ -373,7 +374,7 @@ public abstract class AbstractQuery {
 
   /**
    * The instance method returns the instance for the current selected row.
-   * 
+   *
    * @param _type
    * @todo why is in this way implemented (other way than method getOID above)
    */
@@ -460,7 +461,7 @@ public abstract class AbstractQuery {
   /**
    * The instance method executes exact one complete statement and populates the
    * result in the cached result {@link #cachedResult}.
-   * 
+   *
    * @param _complStmt
    *          complete statement instance to execute
    * @param _matchColumn
@@ -513,7 +514,7 @@ public abstract class AbstractQuery {
 
   /**
    * This is the getter method for instance variable {@link #selectTypesOrder}.
-   * 
+   *
    * @return value of instance variable {@link #selectTypesOrder}
    * @see #selectTypesOrder
    */
@@ -522,8 +523,17 @@ public abstract class AbstractQuery {
   }
 
   /**
+   * This is the getter method for the instance variable {@link #type}.
+   *
+   * @return value of instance variable {@link #type}
+   */
+  public Type getType() {
+    return this.type;
+  }
+
+  /**
    * This is the getter method for instance variable {@link #joinElements}.
-   * 
+   *
    * @return value of instance variable {@link #joinElements}
    * @see #joinElements
    */
@@ -533,7 +543,7 @@ public abstract class AbstractQuery {
 
   /**
    * This is the getter method for instance variable {@link #mapJoinElements}.
-   * 
+   *
    * @return value of instance variable {@link #mapJoinElements}
    * @see #mapJoinElements
    */
@@ -543,7 +553,7 @@ public abstract class AbstractQuery {
 
   /**
    * This is the getter method for instance variable {@link #mainJoinElement}.
-   * 
+   *
    * @return value of instance variable {@link #mainJoinElement}
    * @see #mainJoinElement
    */
@@ -553,7 +563,7 @@ public abstract class AbstractQuery {
 
   /**
    * This is the getter method for instance variable {@link #mainSelectTypes}.
-   * 
+   *
    * @return value of instance variable {@link #mainSelectTypes}
    * @see #mainSelectTypes
    */
@@ -563,7 +573,7 @@ public abstract class AbstractQuery {
 
   /**
    * This is the getter method for instance variable {@link #mainWhereClauses}.
-   * 
+   *
    * @return value of instance variable {@link #mainWhereClauses}
    * @see #mainWhereClauses
    */
@@ -573,7 +583,7 @@ public abstract class AbstractQuery {
 
   /**
    * This is the getter method for instance variable {@link #expandChildTypes}.
-   * 
+   *
    * @return value of instance variable {@link #expandChildTypes}
    * @see #expandChildTypes
    * @see #setExpandChildTypes
@@ -584,7 +594,7 @@ public abstract class AbstractQuery {
 
   /**
    * This is the setter method for instance variable {@link #expandChildTypes}.
-   * 
+   *
    * @param _expandChildTypes
    *          new value for instance variable {@link #expandChildTypes}
    * @see #expandChildTypes
@@ -596,7 +606,7 @@ public abstract class AbstractQuery {
 
   /**
    * This is the getter method for instance variable {@link #allSelExprMap}.
-   * 
+   *
    * @return value of instance variable {@link #allSelExprMap}
    * @see #allSelExprMap
    */
@@ -606,7 +616,7 @@ public abstract class AbstractQuery {
 
   /**
    * This is the getter method for instance variable {@link #allOIDSelExprMap}.
-   * 
+   *
    * @return value of instance variable {@link #allOIDSelExprMap}
    * @see #allOIDSelExprMap
    */
@@ -656,7 +666,7 @@ public abstract class AbstractQuery {
     /**
      * Appends all select expressions from this one join element to the comlete
      * statement.
-     * 
+     *
      * @param _completeStatement
      *          complete SQL statement to select values
      * @param _orderIndex
@@ -699,7 +709,7 @@ public abstract class AbstractQuery {
         }
       }
 
-      for (WhereClause whereClause : whereClauses) {
+      for (WhereClause whereClause : this.whereClauses) {
         whereClause.appendWhereClause(_completeStatement, _orderIndex);
       }
 
@@ -710,7 +720,7 @@ public abstract class AbstractQuery {
 
     /**
      * The method returns the size of the select expressions.
-     * 
+     *
      * @return size of the select expressions
      * @see #getExpressions
      */
@@ -721,7 +731,7 @@ public abstract class AbstractQuery {
     /**
      * Returns for the given expression the select expression. The select
      * expression is tested for uniqueness (and if defined already reused).
-     * 
+     *
      * @param _selectType
      *          instance of SelectType
      * @param _expression
@@ -788,7 +798,7 @@ public abstract class AbstractQuery {
     /**
      * The instance method creates a new instance of {@link #SelectType} add
      * adds them to {@link #selectTypesOrder}.
-     * 
+     *
      * @param _type
      *          type to add in the correct order
      * @param _nullAllowed
@@ -809,7 +819,7 @@ public abstract class AbstractQuery {
 
     private void addWhere(SelectType _selectType1, Attribute _attr1,
         SelectType _selectType2, Attribute _attr2) throws EFapsException {
-      whereClauses.add(new WhereClauseAttrEqAttr(_selectType1, _attr1,
+      this.whereClauses.add(new WhereClauseAttrEqAttr(_selectType1, _attr1,
           _selectType2, _attr2));
     }
 
@@ -818,48 +828,48 @@ public abstract class AbstractQuery {
     }
 
     // /////////////////////////////////////////////////////////////////////////
-    private List<WhereClause> whereClauses = new ArrayList<WhereClause>();
+    private final List<WhereClause> whereClauses = new ArrayList<WhereClause>();
 
     /**
      * The instance variable stores all select types of the select statement.
-     * 
+     *
      * @see #getTableNames
      */
-    private Set<SelectType> selectTypes = new HashSet<SelectType>();
+    private final Set<SelectType> selectTypes = new HashSet<SelectType>();
 
     /**
      * This is the instance variable to hold all expressions. The SQL statement
      * is stores as key, the value is the index of the expression in the select
      * statement. This is used that an expression is only once in a select
      * statement (uniqueness)!.
-     * 
+     *
      * @see #getExpressions
      */
-    private Map<String, SelectExpression> expressions =
+    private final Map<String, SelectExpression> expressions =
         new HashMap<String, SelectExpression>();
 
     /**
      * The instance variable stores all select expressions.
-     * 
+     *
      * @see #getSelectExpressions
      */
-    private List<SelectExpression> selectExpressions =
+    private final List<SelectExpression> selectExpressions =
         new ArrayList<SelectExpression>();
 
     /**
      * The instance variable stores the order of the select types. The
      * information is needed if an expand is made (and in an expand a null value
      * is possible!).
-     * 
+     *
      * @see #getSelectTypesOrder
      */
-    private List<SelectType> selectTypesOrder = new ArrayList<SelectType>();
+    private final List<SelectType> selectTypesOrder = new ArrayList<SelectType>();
 
     /**
      * The instance variable stores the column index of this join element. The
      * index is the select expression used to join with other select statements.
      * The default value is <i>1</i> for the first column.
-     * 
+     *
      * @see #getMatchColumn
      * @see #setMatchColumn
      */
@@ -869,7 +879,7 @@ public abstract class AbstractQuery {
      * The instance variable stores the number of previous select epxressions
      * used to calculate the index of select expressions of this join element in
      * the complete join.
-     * 
+     *
      * @see #getIncSelIndex
      * @see #setIncSelIndex
      */
@@ -879,7 +889,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #selectTypes}.
-     * 
+     *
      * @return value of instance variable {@link #selectTypes}
      * @see #selectTypes
      */
@@ -889,7 +899,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #keys}.
-     * 
+     *
      * @return value of instance variable {@link #keys}
      * @see #keys
      */
@@ -898,7 +908,7 @@ public abstract class AbstractQuery {
     // }
     /**
      * This is the getter method for instance variable {@link #keysOID}.
-     * 
+     *
      * @return value of instance variable {@link #keysOID}
      * @see #keysOID
      */
@@ -907,7 +917,7 @@ public abstract class AbstractQuery {
     // }
     /**
      * This is the getter method for instance variable {@link #expressions}.
-     * 
+     *
      * @return value of instance variable {@link #expressions}
      * @see #expressions
      */
@@ -918,7 +928,7 @@ public abstract class AbstractQuery {
     /**
      * This is the getter method for instance variable
      * {@link #selectExpressions}.
-     * 
+     *
      * @return value of instance variable {@link #selectExpressions}
      * @see #selectExpressions
      */
@@ -928,7 +938,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #selectTypesOrder}.
-     * 
+     *
      * @return value of instance variable {@link #selectTypesOrder}
      * @see #selectTypesOrder
      */
@@ -938,7 +948,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #matchColumn}.
-     * 
+     *
      * @param _orderIndex
      *          new value for instance variable {@link #matchColumn}
      * @see #matchColumn
@@ -950,7 +960,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #matchColumn}.
-     * 
+     *
      * @return value of instance variable {@link #matchColumn}
      * @see #matchColumn
      * @see #setMatchColumn
@@ -961,7 +971,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #incSelIndex}.
-     * 
+     *
      * @param _orderIndex
      *          new value for instance variable {@link #incSelIndex}
      * @see #incSelIndex
@@ -973,7 +983,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #incSelIndex}.
-     * 
+     *
      * @return value of instance variable {@link #incSelIndex}
      * @see #incSelIndex
      * @see #setIncSelIndex
@@ -999,7 +1009,7 @@ public abstract class AbstractQuery {
 
     /**
      * Stores the attribute
-     * 
+     *
      * @see #getAttribute
      * @see #setAttribute
      */
@@ -1007,7 +1017,7 @@ public abstract class AbstractQuery {
 
     /**
      * Stores all select expression.
-     * 
+     *
      * @see #getSelExpr
      * @see #setSelExpr
      */
@@ -1017,16 +1027,16 @@ public abstract class AbstractQuery {
      * Stores all the indexes of the SQL select expression where the values of
      * the attribute are found (in the same order than defined in the
      * attribute).
-     * 
+     *
      * @see #getIndexes
      */
-    private ArrayList<Integer> indexes = new ArrayList<Integer>();
+    private final ArrayList<Integer> indexes = new ArrayList<Integer>();
 
     // /////////////////////////////////////////////////////////////////////////
 
     /**
      * Constructor
-     * 
+     *
      * @param _attr
      *          attribute
      * @param _selExprs
@@ -1064,7 +1074,7 @@ public abstract class AbstractQuery {
       AttributeTypeInterface attrInterf = getAttribute().newInstance();
       Object ret = null;
       try {
-        ret = attrInterf.readValue(cachedResult, getIndexes());
+        ret = attrInterf.readValue(AbstractQuery.this.cachedResult, getIndexes());
       } catch (Exception e) {
         throw new EFapsException(getClass(), "getAttrValue.CouldNotReadValue",
             e);
@@ -1076,7 +1086,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #attribute}.
-     * 
+     *
      * @return value of instance variable {@link #attribute}
      * @see #attribute
      * @see #setAttribute
@@ -1087,7 +1097,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #attribute}.
-     * 
+     *
      * @param _attribute
      *          new value for instance variable {@link #attribute}
      * @see #attribute
@@ -1099,7 +1109,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #selExprs}.
-     * 
+     *
      * @return value of instance variable {@link #selExprs}
      * @see #selExprs
      * @see #setSelExprs
@@ -1110,7 +1120,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #selExprs}.
-     * 
+     *
      * @param _selExpr
      *          new value for instance variable {@link #selExprs}
      * @see #selExprs
@@ -1122,7 +1132,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #indexes}.
-     * 
+     *
      * @return value of instance variable {@link #indexes}
      * @see #indexes
      */
@@ -1140,7 +1150,7 @@ public abstract class AbstractQuery {
   private class SelectExpression {
 
     /**
-     * 
+     *
      */
     protected SelectExpression(int _index, String _expression,
                                JoinElement _joinElement,
@@ -1156,27 +1166,27 @@ public abstract class AbstractQuery {
     // /////////////////////////////////////////////////////////////////////////
 
     /**
-     * 
+     *
      */
     private int index = 0;
 
     /**
-     * 
+     *
      */
     private String expression = null;
 
     /**
-     * 
+     *
      */
     private JoinElement joinElement = null;
 
     /**
-     * 
+     *
      */
     private SelectType selectType = null;
 
     /**
-     * 
+     *
      */
     private String nullString = null;
 
@@ -1184,7 +1194,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #index}.
-     * 
+     *
      * @return value of instance variable {@link #index}
      * @see #index
      * @see #setIndex
@@ -1195,7 +1205,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #index}.
-     * 
+     *
      * @param _index
      *          new value for instance variable {@link #index}
      * @see #index
@@ -1207,7 +1217,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #expression}.
-     * 
+     *
      * @return value of instance variable {@link #expression}
      * @see #expression
      * @see #setExpression
@@ -1218,7 +1228,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #expression}.
-     * 
+     *
      * @param _expression
      *          new value for instance variable {@link #expression}
      * @see #expression
@@ -1230,7 +1240,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #joinElement}.
-     * 
+     *
      * @return value of instance variable {@link #joinElement}
      * @see #joinElement
      * @see #setJoinElement
@@ -1241,7 +1251,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #joinElement}.
-     * 
+     *
      * @param _joinElement
      *          new value for instance variable {@link #joinElement}
      * @see #joinElement
@@ -1253,7 +1263,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #selectType}.
-     * 
+     *
      * @return value of instance variable {@link #selectType}
      * @see #selectType
      * @see #setSelectType
@@ -1264,7 +1274,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #selectType}.
-     * 
+     *
      * @param _selectType
      *          new value for instance variable {@link #selectType}
      * @see #selectType
@@ -1276,7 +1286,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #nullString}.
-     * 
+     *
      * @return value of instance variable {@link #nullString}
      * @see #nullString
      * @see #setNullString
@@ -1287,7 +1297,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #nullString}.
-     * 
+     *
      * @param _nullString
      *          new value for instance variable {@link #nullString}
      * @see #nullString
@@ -1500,7 +1510,7 @@ public abstract class AbstractQuery {
     /**
      * The instance variable stores the type this class instance is
      * representing.
-     * 
+     *
      * @see #getType
      * @see #setType
      */
@@ -1508,7 +1518,7 @@ public abstract class AbstractQuery {
 
     /**
      * The instance method stores the index of the type id of this type.
-     * 
+     *
      * @see #getIndexId
      * @see #setIndexId
      */
@@ -1516,7 +1526,7 @@ public abstract class AbstractQuery {
 
     /**
      * The instance method stores the index of the id of this type.
-     * 
+     *
      * @see #getIndexId
      * @see #setIndexId
      */
@@ -1525,15 +1535,15 @@ public abstract class AbstractQuery {
     /**
      * The string instance variable stores the table names of the select
      * statement of this selected type.
-     * 
+     *
      * @see #getTableNames
      */
-    private Set<SQLTable> typeTableNames = new HashSet<SQLTable>();
+    private final Set<SQLTable> typeTableNames = new HashSet<SQLTable>();
 
     /**
      * The instance variable stores the index of the type in the select
      * expressions of the table.
-     * 
+     *
      * @see #getTypeIndex
      * @see #setTypeIndex
      */
@@ -1541,7 +1551,7 @@ public abstract class AbstractQuery {
 
     /**
      * The instance variable stores the index of the order.
-     * 
+     *
      * @see #getOrderIndex
      * @see #setOrderIndex
      */
@@ -1549,7 +1559,7 @@ public abstract class AbstractQuery {
 
     /**
      * The instance variable stores if the type can be null.
-     * 
+     *
      * @see #isNullAllowed
      * @see #setNullAllowed
      */
@@ -1559,7 +1569,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #type}.
-     * 
+     *
      * @return value of instance variable {@link #type}
      * @see #type
      * @see #setType
@@ -1570,7 +1580,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #type}.
-     * 
+     *
      * @param _type
      *          new value for instance variable {@link #type}
      * @see #type
@@ -1582,7 +1592,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #indexType}.
-     * 
+     *
      * @return value of instance variable {@link #indexType}
      * @see #indexType
      * @see #setIndexType
@@ -1593,7 +1603,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #indexType}.
-     * 
+     *
      * @param _indexType
      *          new value for instance variable {@link #indexType}
      * @see #indexType
@@ -1605,7 +1615,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #indexId}.
-     * 
+     *
      * @return value of instance variable {@link #indexId}
      * @see #indexId
      * @see #setIndexId
@@ -1616,7 +1626,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #indexId}.
-     * 
+     *
      * @param _indexId
      *          new value for instance variable {@link #indexId}
      * @see #indexId
@@ -1628,7 +1638,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #typeTableNames}.
-     * 
+     *
      * @return value of instance variable {@link #typeTableNames}
      * @see #typeTableNames
      */
@@ -1638,7 +1648,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #typeIndex}.
-     * 
+     *
      * @return value of instance variable {@link #typeIndex}
      * @see #typeIndex
      * @see #setTypeIndex
@@ -1649,7 +1659,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #typeIndex}.
-     * 
+     *
      * @param _typeIndex
      *          new value for instance variable {@link #typeIndex}
      * @see #typeIndex
@@ -1661,7 +1671,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #nullAllowed}.
-     * 
+     *
      * @return value of instance variable {@link #nullAllowed}
      * @see #nullAllowed
      * @see #setNullAllowed
@@ -1672,7 +1682,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #nullAllowed}.
-     * 
+     *
      * @param _nullAllowed
      *          new value for instance variable {@link #nullAllowed}
      * @see #nullAllowed
@@ -1684,7 +1694,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the getter method for instance variable {@link #orderIndex}.
-     * 
+     *
      * @return value of instance variable {@link #orderIndex}
      * @see #orderIndex
      * @see #setOrderIndex
@@ -1695,7 +1705,7 @@ public abstract class AbstractQuery {
 
     /**
      * This is the setter method for instance variable {@link #orderIndex}.
-     * 
+     *
      * @param _orderIndex
      *          new value for instance variable {@link #orderIndex}
      * @see #orderIndex
@@ -1705,4 +1715,7 @@ public abstract class AbstractQuery {
       this.orderIndex = _orderIndex;
     }
   }
+
+
+
 }

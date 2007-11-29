@@ -18,13 +18,18 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.ui;
+package org.efaps.admin.ui.field;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.ui.UIInterface;
+import org.efaps.admin.ui.AbstractCollection;
+import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.AbstractUserInterfaceObject;
+import org.efaps.admin.ui.Form;
+import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
@@ -36,6 +41,7 @@ import org.efaps.util.cache.CacheReloadException;
  * This class represents the Fields of the UserInterface.
  *
  * @author tmo
+ * @author jmox
  * @version $Id$
  */
 public class Field extends AbstractUserInterfaceObject {
@@ -242,6 +248,8 @@ public class Field extends AbstractUserInterfaceObject {
    * is the width of this field fixed or or weighted
    */
   private boolean fixedWidth = false;
+
+
 
   /**
    * Standart-Constructor

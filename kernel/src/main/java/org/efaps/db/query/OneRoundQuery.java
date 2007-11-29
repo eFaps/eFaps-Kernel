@@ -23,12 +23,12 @@ package org.efaps.db.query;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collection;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -38,7 +38,6 @@ import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
-import org.efaps.db.query.CachedResult;
 import org.efaps.db.transaction.ConnectionResource;
 
 /**
@@ -135,7 +134,7 @@ public class OneRoundQuery {
     if (this.mainSQLTable.getSqlColType() != null) {
       SQLTableMapping2Attributes sqlTableMapping =
           this.sqlTableMappings.get(this.mainSQLTable);
-      colTypeId =
+      this.colTypeId =
           sqlTableMapping.col2index.get(this.mainSQLTable.getSqlColType());
     }
 
@@ -144,7 +143,7 @@ public class OneRoundQuery {
 
   /**
    * Adds one select statement to this query.
-   * 
+   *
    * @param _select
    *          select statement to add
    * @see #selects
@@ -171,7 +170,7 @@ public class OneRoundQuery {
 
   /**
    * The instance method returns for the given key the attribute value.
-   * 
+   *
    * @param _key
    *          key for which the attribute value must returned
    * @return atribute value for given key
@@ -180,10 +179,10 @@ public class OneRoundQuery {
     Object ret = null;
 
     Type type = getType();
-    TypeMapping2Instances typeMapping = typeMappings.get(type);
+    TypeMapping2Instances typeMapping = this.typeMappings.get(type);
     while ((type != null) && (typeMapping == null)) {
       type = type.getParentType();
-      typeMapping = typeMappings.get(type);
+      typeMapping = this.typeMappings.get(type);
     }
 
     ret = typeMapping.getValue(_expression);
@@ -195,11 +194,11 @@ public class OneRoundQuery {
     return ret;
   }
 
-  public Type getType() throws Exception {
+  public Type getType() {
     Type ret = this.type;
 
-    if (colTypeId > 0) {
-      ret = Type.get(this.cachedResult.getLong(colTypeId));
+    if (this.colTypeId > 0) {
+      ret = Type.get(this.cachedResult.getLong(this.colTypeId));
     }
     return ret;
   }
@@ -210,7 +209,7 @@ public class OneRoundQuery {
 
   /**
    * The instance method returns for the given key the atribute.
-   * 
+   *
    * @param _key
    *          key for which the attribute value must returned
    * @return attribute for given key
@@ -235,7 +234,7 @@ public class OneRoundQuery {
     /**
      * Defines the instances for which this type mapping to instances is
      * defined.
-     * 
+     *
      * @see #addInstance
      */
     final Set<Instance> instances = new HashSet<Instance>();
@@ -261,7 +260,7 @@ public class OneRoundQuery {
 
     /**
      * Adds an instance to the type mapping to instances.
-     * 
+     *
      * @param _instance
      * instance to add @
      * @see #instances
@@ -271,7 +270,7 @@ public class OneRoundQuery {
     }
 
     void evaluateSelects() {
-      for (String select : selects) {
+      for (String select : OneRoundQuery.this.selects) {
         Attribute attr = this.type.getAttribute(select);
         if (attr != null) {
           this.expr2Attr.put(select, attr);
@@ -281,11 +280,11 @@ public class OneRoundQuery {
         SQLTableMapping2Attributes sqlTable2Attr =
             this.sqlTable2Attrs.get(attribute.getTable());
         if (sqlTable2Attr == null) {
-          sqlTable2Attr = sqlTableMappings.get(attribute.getTable());
+          sqlTable2Attr = OneRoundQuery.this.sqlTableMappings.get(attribute.getTable());
           if (sqlTable2Attr == null) {
             sqlTable2Attr =
                 new SQLTableMapping2Attributes(attribute.getTable());
-            sqlTableMappings.put(attribute.getTable(), sqlTable2Attr);
+            OneRoundQuery.this.sqlTableMappings.put(attribute.getTable(), sqlTable2Attr);
           }
           this.sqlTable2Attrs.put(attribute.getTable(), sqlTable2Attr);
         }
@@ -320,9 +319,10 @@ public class OneRoundQuery {
 
     /**
      * Returns a string representation of this type mapping to instances.
-     * 
+     *
      * @return string representation of this type mapping to instances
      */
+    @Override
     public String toString() {
       return new ToStringBuilder(this).appendSuper(super.toString()).append(
           "type", this.type.toString()).append("instances",
@@ -364,11 +364,11 @@ public class OneRoundQuery {
      */
     SQLTableMapping2Attributes(final SQLTable _sqlTable) {
       this.sqlTable = _sqlTable;
-      this.col2index.put(this.sqlTable.getSqlColId(), index++);
+      this.col2index.put(this.sqlTable.getSqlColId(), this.index++);
       this.cols.add(this.sqlTable.getSqlColId());
 
       if (this.sqlTable.getSqlColType() != null) {
-        this.col2index.put(this.sqlTable.getSqlColType(), index++);
+        this.col2index.put(this.sqlTable.getSqlColType(), this.index++);
         this.cols.add(this.sqlTable.getSqlColType());
       }
     }
@@ -379,7 +379,7 @@ public class OneRoundQuery {
         for (String col : _attribute.getSqlColNames()) {
           Integer idx = this.col2index.get(col);
           if (idx == null) {
-            idx = index++;
+            idx = this.index++;
             this.col2index.put(col, idx);
             this.cols.add(col);
           }
@@ -396,8 +396,8 @@ public class OneRoundQuery {
 
     public Object getValue(final Attribute _attribute) throws Exception {
       AttributeTypeInterface attrInterf = _attribute.newInstance();
-      return attrInterf.readValue(cachedResult,
-          (ArrayList<Integer>) this.attr2index.get(_attribute));
+      return attrInterf.readValue(OneRoundQuery.this.cachedResult,
+          this.attr2index.get(_attribute));
     }
 
     int evaluateSQLStatement(final int _startIndex) {
@@ -488,7 +488,7 @@ public class OneRoundQuery {
         Statement stmt = con.getConnection().createStatement();
         ResultSet rs = stmt.executeQuery(sql.toString());
 
-        cachedResult.populate(rs, 1);
+        OneRoundQuery.this.cachedResult.populate(rs, 1);
 
         rs.close();
         stmt.close();
@@ -518,9 +518,10 @@ public class OneRoundQuery {
 
     /**
      * Returns a string representation of this .
-     * 
+     *
      * @return string representation of this
      */
+    @Override
     public String toString() {
       return new ToStringBuilder(this).appendSuper(super.toString()).append(
           "sqlTable", this.sqlTable.toString()).append("attributes",
