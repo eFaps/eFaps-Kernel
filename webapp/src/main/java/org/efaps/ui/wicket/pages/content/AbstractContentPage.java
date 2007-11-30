@@ -28,9 +28,9 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.footer.FooterPanel;
+import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.menu.MenuPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.components.titel.TitelPanel;
 import org.efaps.ui.wicket.models.AbstractModel;
 
 /**
@@ -75,7 +75,7 @@ public abstract class AbstractContentPage extends WebPage {
     this.modal.setPageMapName("modal");
 
     AbstractModel model = (AbstractModel) super.getModel();
-    add(new TitelPanel("titel", model.getTitle()));
+    add(new HeadingPanel("titel", model.getTitle()));
 
     add(new MenuPanel("menu", model, _form));
     WebMarkupContainer footerpanel;

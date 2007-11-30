@@ -32,7 +32,8 @@ import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.StaticImageComponent;
 import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
-import org.efaps.ui.wicket.models.FormModel.FormCellModel;
+import org.efaps.ui.wicket.models.cell.FormCellModel;
+
 
 /**
  * @author jmox

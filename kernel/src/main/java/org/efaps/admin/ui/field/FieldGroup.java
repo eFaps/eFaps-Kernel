@@ -25,17 +25,43 @@ import org.efaps.util.cache.CacheReloadException;
 /**
  * @author jmox
  * @version $Id$
- *
  */
-public class FieldHeading extends Field {
+public class FieldGroup extends Field {
 
   /**
-   * instance variable to store the level of the Heading
+   * Group Count if in a row / columnd must be shown more than one value. The
+   * default value is <code>-1</code> meaning no group count is set.
+   *
+   * @see #setGroupCount
+   * @see #getGroupCount
    */
-  private int level = 1;
+  private int groupCount = -1;
 
-  public FieldHeading(final long _id, final String _uuid, final String _name) {
+  public FieldGroup(final long _id, final String _uuid, final String _name) {
     super(_id, _uuid, _name);
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #groupCount}.
+   *
+   * @return value of instance variable {@link #groupCount}
+   * @see #groupCount
+   * @see #setGroupCount
+   */
+  public int getGroupCount() {
+    return this.groupCount;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #groupCount}.
+   *
+   * @param _groupCount
+   *                new value for instance variable {@link #groupCount}
+   * @see #groupCount
+   * @see #getGroupCount
+   */
+  public void setGroupCount(final int _groupCount) {
+    this.groupCount = _groupCount;
   }
 
   /*
@@ -47,21 +73,11 @@ public class FieldHeading extends Field {
   @Override
   protected void setProperty(String _name, String _value)
                                                          throws CacheReloadException {
-    if ("Level".equals(_name)) {
-      this.level = Integer.parseInt(_value);
+    if ("GroupCount".equals(_name)) {
+      setGroupCount(Integer.parseInt(_value));
     } else {
       super.setProperty(_name, _value);
     }
-  }
-
-
-  /**
-   * This is the getter method for the instance variable {@link #level}.
-   *
-   * @return value of instance variable {@link #level}
-   */
-  public int getLevel() {
-    return this.level;
   }
 
 }

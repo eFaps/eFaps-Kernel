@@ -17,23 +17,20 @@
  * Last Changed:    $Date$
  * Last Changed By: $Author$
  */
-package org.efaps.ui.wicket.components.titel;
 
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
+package org.efaps.ui.wicket.models.cell;
 
-/**
- * @author jmo
- * @version $Id$
- */
-public class TitelPanel extends Panel {
+import org.efaps.admin.ui.field.Field;
+
+public class CellTableModel extends FormCellModel {
 
   private static final long serialVersionUID = 1L;
 
-  public TitelPanel(String _id, String _titel) {
-    super(_id);
-    add(new Label("eFapsTitel", _titel));
-
+  public CellTableModel(final Field _field, final String _oid,
+                        final String value, final String _icon,
+                        final boolean _required, final String _label) {
+    super(_field, _oid, value, _icon, _required, _label);
+    // TODO Auto-generated constructor stub
   }
 
 }

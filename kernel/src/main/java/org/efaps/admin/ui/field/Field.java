@@ -208,15 +208,6 @@ public class Field extends AbstractUserInterfaceObject {
   private boolean showTypeIcon = false;
 
   /**
-   * Group Count if in a row / columnd must be shown more than one value. The
-   * default value is <code>-1</code> meaning no group count is set.
-   *
-   * @see #setGroupCount
-   * @see #getGroupCount
-   */
-  private int groupCount = -1;
-
-  /**
    * The class is used to generate for a field user specific field values.
    *
    * @see #setClassUI
@@ -248,8 +239,6 @@ public class Field extends AbstractUserInterfaceObject {
    * is the width of this field fixed or or weighted
    */
   private boolean fixedWidth = false;
-
-
 
   /**
    * Standart-Constructor
@@ -442,8 +431,6 @@ public class Field extends AbstractUserInterfaceObject {
       setExpression(_value);
     } else if ("Width".equals(_name)) {
       this.setWidth(_value);
-    } else if ("GroupCount".equals(_name)) {
-      setGroupCount(Integer.parseInt(_value));
     } else if ("SortAble".equals(_name)) {
       setSortAble(!"false".equals(_value));
     } else if ("Filterable".equals(_name)) {
@@ -962,29 +949,6 @@ public class Field extends AbstractUserInterfaceObject {
    */
   public void setShowTypeIcon(final boolean _showTypeIcon) {
     this.showTypeIcon = _showTypeIcon;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #groupCount}.
-   *
-   * @return value of instance variable {@link #groupCount}
-   * @see #groupCount
-   * @see #setGroupCount
-   */
-  public int getGroupCount() {
-    return this.groupCount;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #groupCount}.
-   *
-   * @param _groupCount
-   *                new value for instance variable {@link #groupCount}
-   * @see #groupCount
-   * @see #getGroupCount
-   */
-  public void setGroupCount(final int _groupCount) {
-    this.groupCount = _groupCount;
   }
 
   /**

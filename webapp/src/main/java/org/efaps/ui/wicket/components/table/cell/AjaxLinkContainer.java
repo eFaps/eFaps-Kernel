@@ -35,7 +35,7 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.AbstractAjaxCallBackBehavior;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
-import org.efaps.ui.wicket.models.CellModel;
+import org.efaps.ui.wicket.models.cell.TableCellModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -72,7 +72,7 @@ public class AjaxLinkContainer extends WebMarkupContainer {
 
     @Override
     protected void onEvent(final AjaxRequestTarget _target) {
-      CellModel cellmodel = (CellModel) super.getComponent().getModel();
+      TableCellModel cellmodel = (TableCellModel) super.getComponent().getModel();
       Instance instance = null;
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());
@@ -117,7 +117,7 @@ public class AjaxLinkContainer extends WebMarkupContainer {
 
     @Override
     protected void onEvent(AjaxRequestTarget arg0) {
-      CellModel cellmodel = (CellModel) super.getComponent().getModel();
+      TableCellModel cellmodel = (TableCellModel) super.getComponent().getModel();
       Instance instance = null;
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());

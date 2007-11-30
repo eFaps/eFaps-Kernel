@@ -20,16 +20,24 @@
 
 package org.efaps.ui.wicket.pages.content.form;
 
+import java.util.Map.Entry;
+
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.FormPanel;
+import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.FormModel;
+import org.efaps.ui.wicket.models.HeadingModel;
+import org.efaps.ui.wicket.models.FormModel.ElementType;
+import org.efaps.ui.wicket.models.FormModel.FormElementModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 
 /**
@@ -77,7 +85,10 @@ public class FormPage extends AbstractContentPage {
     super.addComponents(form);
 
     FormModel model = (FormModel) super.getModel();
-    form.add(new FormPanel("formtable", model, this));
+
+    if (!model.isInitialised()) {
+      model.execute();
+    }
 
     WebMarkupContainer script = new WebMarkupContainer("selectscript");
     this.add(script);
@@ -85,25 +96,19 @@ public class FormPage extends AbstractContentPage {
         || model.isEditMode()
         || model.isSearchMode());
 
-//    RepeatingView subTableFormRepeater =
-//        new RepeatingView("subTableFormRepeater");
-//    form.add(subTableFormRepeater);
-//    if (model.hasSubCommands()) {
-//      List<AbstractCommand> cmds = model.getSubCommands();
-//      for (AbstractCommand cmd : cmds) {
-//        TableModel submodel = new TableModel(cmd.getUUID(), model.getOid());
-//        submodel.setSubmit(false);
-//        submodel.setShowCheckBoxes(false);
-//        subTableFormRepeater.add(new TitelPanel(subTableFormRepeater
-//            .newChildId(), submodel.getTitle()));
-//        final TablePanel tablebody =
-//            new TablePanel(subTableFormRepeater.newChildId(), submodel, this);
-//        subTableFormRepeater.add(new HeaderPanel(subTableFormRepeater
-//            .newChildId(), tablebody));
-//        subTableFormRepeater.add(tablebody);
-//      }
-//    } else {
-//      subTableFormRepeater.setVisible(false);
-//    }
+    RepeatingView elementRepeater = new RepeatingView("elementRepeater");
+    form.add(elementRepeater);
+    for (Entry<ElementType, Model> element : model.getElements().entrySet()) {
+      if (element.getKey().equals(ElementType.FORM)) {
+        elementRepeater.add(new FormPanel(elementRepeater.newChildId(), this,
+            model, (FormElementModel) element.getValue()));
+      }
+      if (element.getKey().equals(ElementType.HEADING)) {
+        HeadingModel headingmodel = (HeadingModel) element.getValue();
+        elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(),
+            headingmodel.getLabel(), headingmodel.getLevel()));
+      }
+    }
+
   }
 }

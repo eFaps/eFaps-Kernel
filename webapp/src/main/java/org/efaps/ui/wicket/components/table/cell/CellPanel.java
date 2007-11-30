@@ -30,8 +30,8 @@ import org.apache.wicket.model.Model;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.StaticImageComponent;
-import org.efaps.ui.wicket.models.CellModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.cell.TableCellModel;
 
 /**
  * @author jmox
@@ -49,10 +49,10 @@ public class CellPanel extends Panel {
     this.add(new WebMarkupContainer("label").setVisible(false));
   }
 
-  public CellPanel(final String _wicketId, final CellModel _cellmodel,
+  public CellPanel(final String _wicketId, final TableCellModel _cellmodel,
                    final boolean _updateListMenu, final TableModel _tablemodel) {
     super(_wicketId, _cellmodel);
-    final CellModel cellmodel = (CellModel) super.getModel();
+    final TableCellModel cellmodel = (TableCellModel) super.getModel();
 
     // TODO add the titel only if wanted or??
     this.add(new SimpleAttributeModifier("title", cellmodel.getCellValue()));

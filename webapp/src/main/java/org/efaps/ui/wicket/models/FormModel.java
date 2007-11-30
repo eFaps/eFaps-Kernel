@@ -22,6 +22,8 @@ package org.efaps.ui.wicket.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import org.apache.wicket.PageParameters;
@@ -32,15 +34,18 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.FieldGroup;
+import org.efaps.admin.ui.field.FieldHeading;
+import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.ui.wicket.models.cell.FormCellModel;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -50,57 +55,53 @@ import org.efaps.util.EFapsException;
  */
 public class FormModel extends AbstractModel {
 
+  public enum ElementType {
+    FORM,
+    HEADING,
+    TABLE
+  }
+
   private static final long serialVersionUID = 3026168649146801622L;
 
   /**
-   * The instance variable stores the result list of the execution of the query.
+   * The instance variable stores the different elemnts of the Form
    *
    * @see #getValues
    * @see #setValues
    */
-  private final List<FormRowModel> values = new ArrayList<FormRowModel>();
+  private final Map<ElementType, Model> elements =
+      new TreeMap<ElementType, Model>();
 
   /**
    * The instance variable stores the form which must be shown.
    *
    * @see #getForm
    */
-  private UUID formuuid;
+  private UUID formUUID;
 
   public FormModel(PageParameters _parameters) {
     super(_parameters);
     final AbstractCommand command = super.getCommand();
     if (command == null) {
-      this.formuuid = null;
+      this.formUUID = null;
     } else if (command.getTargetForm() != null) {
-      this.formuuid = command.getTargetForm().getUUID();
+      this.formUUID = command.getTargetForm().getUUID();
     }
 
   }
 
   public UUID getUUID() {
-    return this.formuuid;
+    return this.formUUID;
   }
 
   @Override
   public void resetModel() {
     this.setInitialised(false);
-    this.values.clear();
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #values}.
-   *
-   * @return value of instance variable {@link #values}
-   * @see #values
-   * @see #setValues
-   */
-  public List<FormRowModel> getValues() {
-    return this.values;
+    this.elements.clear();
   }
 
   public Form getForm() {
-    return Form.get(this.formuuid);
+    return Form.get(this.formUUID);
   }
 
   public void execute() {
@@ -112,7 +113,7 @@ public class FormModel extends AbstractModel {
     SearchQuery query = null;
     boolean queryhasresult = false;
     try {
-      final Form form = Form.get(this.formuuid);
+      final Form form = Form.get(this.formUUID);
 
       if (super.isCreateMode() || super.isSearchMode()) {
         if (super.isCreateMode()) {
@@ -146,14 +147,36 @@ public class FormModel extends AbstractModel {
         }
       }
       if (queryhasresult || type != null) {
+        boolean addNew = true;
+        FormElementModel formelement = null;
         for (int i = 0; i < form.getFields().size(); i++) {
           final Field field = form.getFields().get(i);
           Object value = null;
-          Attribute attr;
+          Attribute attr = null;
           Instance instance = null;
 
-          if (field.getExpression() != null) {
+          if (field instanceof FieldGroup) {
+            final FieldGroup group = (FieldGroup) field;
+            if (getMaxGroupCount() < group.getGroupCount()) {
+              setMaxGroupCount(group.getGroupCount());
+            }
+            rowgroupcount = group.getGroupCount();
+          } else if (field instanceof FieldTable) {
+
+          } else if (field instanceof FieldHeading) {
+            final FieldHeading heading = (FieldHeading) field;
+            final HeadingModel cell = new HeadingModel(heading);
+            this.elements.put(ElementType.HEADING, cell);
+            addNew = true;
+          } else {
+            if (addNew) {
+              formelement = new FormElementModel();
+              this.elements.put(ElementType.FORM, formelement);
+              addNew = false;
+            }
+
             if (queryhasresult) {
+
               if (field.getAlternateOID() == null) {
                 instance = new Instance((String) query.get("OID"));
               } else {
@@ -219,19 +242,15 @@ public class FormModel extends AbstractModel {
             if (rowgroupcount < 1) {
               rowgroupcount = 1;
               if (row.getGroupCount() > 0) {
-                this.values.add(row);
+                formelement.addRowModel(row);
                 row = new FormRowModel();
               }
             }
-
-          } else if (field.getGroupCount() > 0) {
-            if (getMaxGroupCount() < field.getGroupCount()) {
-              setMaxGroupCount(field.getGroupCount());
-            }
-            rowgroupcount = field.getGroupCount();
           }
+
         }
       }
+
       if (query != null) {
         query.close();
       }
@@ -243,8 +262,32 @@ public class FormModel extends AbstractModel {
     super.setInitialised(true);
   }
 
-  public void setFormUUID(final UUID _uuid) {
-    this.formuuid = _uuid;
+  /**
+   * This is the getter method for the instance variable {@link #formUUID}.
+   *
+   * @return value of instance variable {@link #formUUID}
+   */
+  public UUID getFormUUID() {
+    return this.formUUID;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #formUUID}.
+   *
+   * @param formUUID
+   *                the formUUID to set
+   */
+  public void setFormUUID(UUID formUUID) {
+    this.formUUID = formUUID;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #elements}.
+   *
+   * @return value of instance variable {@link #elements}
+   */
+  public Map<ElementType, Model> getElements() {
+    return this.elements;
   }
 
   public class FormRowModel extends Model {
@@ -266,43 +309,24 @@ public class FormModel extends AbstractModel {
     }
   }
 
-  public class FormCellModel extends CellModel {
+  public class FormElementModel extends Model {
 
     private static final long serialVersionUID = 1L;
 
-    private final String cellLabel;
+    private final List<FormRowModel> rowModels = new ArrayList<FormRowModel>();
 
-    private final boolean required;
-
-    private final String name;
-
-    public FormCellModel(final Field _field, final String _oid,
-                         final String _cellValue, final String _icon,
-                         final boolean _required, final String _label) {
-      super(_field, _oid, _cellValue, _icon);
-      this.required = _required;
-      this.cellLabel = DBProperties.getProperty(_label);
-      this.name = _field.getName();
-    }
-
-    public boolean isRequired() {
-      return this.required;
-    }
-
-    public String getCellLabel() {
-      return this.cellLabel;
+    public void addRowModel(final FormRowModel _rowmodel) {
+      this.rowModels.add(_rowmodel);
     }
 
     /**
-     * This is the getter method for the instance variable {@link #name}.
+     * This is the getter method for the instance variable {@link #rowModels}.
      *
-     * @return value of instance variable {@link #name}
+     * @return value of instance variable {@link #rowModels}
      */
-
-    public String getName() {
-      return this.name;
+    public List<FormRowModel> getRowModels() {
+      return this.rowModels;
     }
 
   }
-
 }

@@ -18,42 +18,28 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.ui.field;
+package org.efaps.ui.wicket.models;
 
-import org.efaps.util.cache.CacheReloadException;
+import org.apache.wicket.model.Model;
 
-/**
- * @author jmox
- * @version $Id$
- *
- */
-public class FieldHeading extends Field {
+import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.ui.field.FieldHeading;
+
+public class HeadingModel extends Model {
+
+  private static final long serialVersionUID = 1L;
 
   /**
    * instance variable to store the level of the Heading
    */
   private int level = 1;
 
-  public FieldHeading(final long _id, final String _uuid, final String _name) {
-    super(_id, _uuid, _name);
-  }
+  private final String label;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.efaps.admin.ui.field.Field#setProperty(java.lang.String,
-   *      java.lang.String)
-   */
-  @Override
-  protected void setProperty(String _name, String _value)
-                                                         throws CacheReloadException {
-    if ("Level".equals(_name)) {
-      this.level = Integer.parseInt(_value);
-    } else {
-      super.setProperty(_name, _value);
-    }
+  public HeadingModel(final FieldHeading _heading) {
+    this.label = DBProperties.getProperty(_heading.getLabel());
+    this.level = _heading.getLevel();
   }
-
 
   /**
    * This is the getter method for the instance variable {@link #level}.
@@ -62,6 +48,15 @@ public class FieldHeading extends Field {
    */
   public int getLevel() {
     return this.level;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #label}.
+   *
+   * @return value of instance variable {@link #label}
+   */
+  public String getLabel() {
+    return this.label;
   }
 
 }

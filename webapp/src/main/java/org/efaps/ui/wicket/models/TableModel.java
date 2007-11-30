@@ -51,6 +51,7 @@ import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
+import org.efaps.ui.wicket.models.cell.TableCellModel;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -433,7 +434,7 @@ public class TableModel extends AbstractModel {
             }
 
           }
-          row.add(new CellModel(field, oid, strValue, icon));
+          row.add(new TableCellModel(field, oid, strValue, icon));
         }
         this.values.add(row);
       }
@@ -720,7 +721,7 @@ public class TableModel extends AbstractModel {
     this.filterValues = filterList;
 
     for (RowModel rowmodel : this.values) {
-      final CellModel cellmodel = rowmodel.getValues().get(this.filterKeyInt);
+      final TableCellModel cellmodel = rowmodel.getValues().get(this.filterKeyInt);
       final String value = cellmodel.getCellValue();
       if (!filterList.contains(value)) {
         filterList.add(value);
@@ -801,7 +802,7 @@ public class TableModel extends AbstractModel {
      *
      * @see #getValues
      */
-    private final List<CellModel> values = new ArrayList<CellModel>();
+    private final List<TableCellModel> values = new ArrayList<TableCellModel>();
 
     /**
      * The instance variable stores all oids in a string.
@@ -830,7 +831,7 @@ public class TableModel extends AbstractModel {
      *
      * @see #values
      */
-    public void add(final CellModel _cellmodel) {
+    public void add(final TableCellModel _cellmodel) {
 
       this.values.add(_cellmodel);
     }
@@ -852,7 +853,7 @@ public class TableModel extends AbstractModel {
      * @return value of values variable {@link #values}
      * @see #values
      */
-    public List<CellModel> getValues() {
+    public List<TableCellModel> getValues() {
       return this.values;
     }
 

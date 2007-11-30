@@ -29,8 +29,8 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
 import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.FormModel.FormCellModel;
 import org.efaps.ui.wicket.models.FormModel.FormRowModel;
+import org.efaps.ui.wicket.models.cell.FormCellModel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
 public class RowPanel extends Panel {
@@ -46,6 +46,7 @@ public class RowPanel extends Panel {
     add(cellRepeater);
 
     for (FormCellModel cellmodel : _model.getValues()) {
+
       Label labelCell =
           new Label(cellRepeater.newChildId(), cellmodel.getCellLabel());
       cellRepeater.add(labelCell);

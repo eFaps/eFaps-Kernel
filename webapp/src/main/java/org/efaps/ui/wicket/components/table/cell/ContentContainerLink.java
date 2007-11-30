@@ -27,7 +27,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.CellModel;
+import org.efaps.ui.wicket.models.cell.TableCellModel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 
@@ -39,14 +39,14 @@ public class ContentContainerLink extends Link {
 
   private static final long serialVersionUID = 1L;
 
-  public ContentContainerLink(final String _wicketId, final CellModel _model) {
+  public ContentContainerLink(final String _wicketId, final TableCellModel _model) {
     super(_wicketId, _model);
   }
 
   @Override
   public void onClick() {
     Instance instance = null;
-    final   CellModel cellmodel = (CellModel) super.getModel();
+    final   TableCellModel cellmodel = (TableCellModel) super.getModel();
     if (cellmodel.getOid() != null) {
       instance = new Instance(cellmodel.getOid());
       Menu menu = null;

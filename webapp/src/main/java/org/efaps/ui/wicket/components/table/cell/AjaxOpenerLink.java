@@ -28,7 +28,7 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.CellModel;
+import org.efaps.ui.wicket.models.cell.TableCellModel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 
@@ -48,7 +48,7 @@ public class AjaxOpenerLink extends AjaxLink {
   @Override
   public void onClick(final AjaxRequestTarget _target) {
     Instance instance = null;
-    CellModel cellmodel = (CellModel) super.getModel();
+    TableCellModel cellmodel = (TableCellModel) super.getModel();
     if (cellmodel.getOid() != null) {
       instance = new Instance(cellmodel.getOid());
       Menu menu = null;

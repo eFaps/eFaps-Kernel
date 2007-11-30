@@ -18,7 +18,7 @@
  * Last Changed By: $Author:jmox $
  */
 
-package org.efaps.ui.wicket.models;
+package org.efaps.ui.wicket.models.cell;
 
 import org.apache.wicket.model.Model;
 
@@ -26,27 +26,49 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.admin.ui.field.Field;
 
 /**
+ * This class represents the model wich is used for rendering the components of
+ * one cell inside a Table.It uses a {@link org.efaps.admin.ui.field.Field} as
+ * the base for the data.
+ *
  * @author jmox
  * @version $Id:CellModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class CellModel extends Model {
+public class TableCellModel extends Model {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * instance variable storing the oid for the model
+   */
   private final String oid;
 
+  /**
+   * instance variable storing the reference of the field
+   */
   private String reference;
 
+  /**
+   * instance variable storing the actual value of the field
+   */
   private final String cellValue;
 
+  /**
+   * instance variable storing the icon of the field
+   */
   private final String icon;
 
+  /**
+   * instance variable storing the target of the field
+   */
   private final Target target;
 
+  /**
+   * instance variable storing if the cell is fixed width
+   */
   private final boolean fixedWidth;
 
-  public CellModel(final Field _field, final String _oid,
-                   final String _cellvalue, final String _icon) {
+  public TableCellModel(final Field _field, final String _oid,
+                        final String _cellvalue, final String _icon) {
     super();
     this.reference = _field.getReference();
     this.target = _field.getTarget();
@@ -125,6 +147,11 @@ public class CellModel extends Model {
     return this.fixedWidth;
   }
 
+  /**
+   * This method returns if the field is a link which makes a checkout
+   *
+   * @return
+   */
   public boolean isCheckOut() {
     return this.reference.contains("/servlet/checkout");
   }

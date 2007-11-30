@@ -28,6 +28,7 @@ import java.util.TreeMap;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.FieldGroup;
 import org.efaps.admin.ui.field.FieldHeading;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
@@ -194,6 +195,8 @@ public abstract class AbstractCollection extends AbstractUserInterfaceObject {
           field = new FieldHeading(id, null, name);
         } else if (EFapsClassName.FIELDTABLE.name.equals(type.getName())) {
           field = new FieldTable(id, null, name);
+        } else if (EFapsClassName.FIELDGROUP.name.equals(type.getName())) {
+          field = new FieldGroup(id, null, name);
         } else {
           field = new Field(id, null, name);
         }

@@ -24,7 +24,7 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
-import org.efaps.ui.wicket.models.CellModel;
+import org.efaps.ui.wicket.models.cell.TableCellModel;
 
 /**
  * @author jmox
@@ -34,7 +34,7 @@ public class CheckOutLink extends WebMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
-  public CheckOutLink(final String _wicketId, final CellModel _model) {
+  public CheckOutLink(final String _wicketId, final TableCellModel _model) {
     super(_wicketId, _model);
   }
 
@@ -46,7 +46,7 @@ public class CheckOutLink extends WebMarkupContainer {
   @Override
   protected void onComponentTag(final ComponentTag _tag) {
     super.onComponentTag(_tag);
-    final CellModel model = (CellModel) getModel();
+    final TableCellModel model = (TableCellModel) getModel();
     final StringBuilder href = new StringBuilder();
 
     href.append(model.getReference()).append("oid=").append(model.getOid());;

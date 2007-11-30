@@ -26,9 +26,9 @@ import org.apache.wicket.markup.repeater.RepeatingView;
 
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
-import org.efaps.ui.wicket.models.CellModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.RowModel;
+import org.efaps.ui.wicket.models.cell.TableCellModel;
 
 /**
  * @author jmox
@@ -56,7 +56,7 @@ public class RowPanel extends Panel {
       i++;
     }
 
-    for (CellModel cellmodel : _model.getValues()) {
+    for (TableCellModel cellmodel : _model.getValues()) {
 
       final CellPanel cellpanel =
           new CellPanel(cellRepeater.newChildId(), cellmodel, _updateListMenu,

@@ -31,6 +31,7 @@ import java.util.Set;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import org.efaps.admin.AbstractAdminObject.EFapsClassName;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -95,7 +96,8 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
     digester.addObjectCreate(_xmlTagName + "/definition", Definition.class);
     digester.addSetNext(_xmlTagName + "/definition", "addDefinition");
     // set the Version
-    digester.addCallMethod(_xmlTagName + "/definition/version", "setVersion", 4);
+    digester
+        .addCallMethod(_xmlTagName + "/definition/version", "setVersion", 4);
     digester.addCallParam(_xmlTagName + "/definition/version/application", 0);
     digester.addCallParam(_xmlTagName + "/definition/version/global", 1);
     digester.addCallParam(_xmlTagName + "/definition/version/local", 2);
@@ -104,7 +106,8 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
     digester.addCallMethod(_xmlTagName + "/definition/name", "setName", 1);
     digester.addCallParam(_xmlTagName + "/definition/name", 0);
     // add a Property to the Definition
-    digester.addCallMethod(_xmlTagName + "/definition/property", "addProperty",2);
+    digester.addCallMethod(_xmlTagName + "/definition/property", "addProperty",
+        2);
     digester.addCallParam(_xmlTagName + "/definition/property", 0, "name");
     digester.addCallParam(_xmlTagName + "/definition/property", 1);
 
@@ -117,27 +120,35 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
     digester.addCallMethod(_xmlTagName + "/definition/field", "setName", 1);
     digester.addCallParam(_xmlTagName + "/definition/field", 0, "name");
     // set the character of the field
-    digester.addCallMethod(_xmlTagName + "/definition/field", "setCharacter", 1);
+    digester
+        .addCallMethod(_xmlTagName + "/definition/field", "setCharacter", 1);
     digester.addCallParam(_xmlTagName + "/definition/field", 0, "character");
     // set the icon for the field
-    digester.addCallMethod(_xmlTagName + "/definition/field/icon", "setIcon", 1);
+    digester
+        .addCallMethod(_xmlTagName + "/definition/field/icon", "setIcon", 1);
     digester.addCallParam(_xmlTagName + "/definition/field/icon", 0);
     // add a property to the field
-    digester.addCallMethod(_xmlTagName + "/definition/field/property", "addProperty", 2);
-    digester.addCallParam(_xmlTagName + "/definition/field/property", 0, "name");
+    digester.addCallMethod(_xmlTagName + "/definition/field/property",
+        "addProperty", 2);
+    digester
+        .addCallParam(_xmlTagName + "/definition/field/property", 0, "name");
     digester.addCallParam(_xmlTagName + "/definition/field/property", 1);
 
     // assign a table as target to the field
-    digester.addCallMethod(_xmlTagName + "/definition/field/table","assignTargetTable", 1);
+    digester.addCallMethod(_xmlTagName + "/definition/field/table",
+        "assignTargetTable", 1);
     digester.addCallParam(_xmlTagName + "/definition/field/table", 0);
 
     // assign the event (TableEvaluateEvent) to fill the Table with data
     digester.addFactoryCreate(_xmlTagName + "/definition/field/evaluate",
         new EventFactory("Admin_UI_TableEvaluateEvent"), false);
     // add Properties to the event
-    digester.addCallMethod(_xmlTagName + "/definition/field/evaluate/property","addProperty", 2);
-    digester.addCallParam(_xmlTagName + "/definition/field/evaluate/property",0, "name");
-    digester.addCallParam(_xmlTagName + "/definition/field/evaluate/property", 1);
+    digester.addCallMethod(_xmlTagName + "/definition/field/evaluate/property",
+        "addProperty", 2);
+    digester.addCallParam(_xmlTagName + "/definition/field/evaluate/property",
+        0, "name");
+    digester.addCallParam(_xmlTagName + "/definition/field/evaluate/property",
+        1);
     digester.addSetNext(_xmlTagName + "/definition/field/evaluate", "addEvent",
         "org.efaps.update.event.Event");
 
@@ -145,9 +156,12 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
     digester.addFactoryCreate(_xmlTagName + "/definition/field/trigger",
         new EventFactory());
     // add properties to the Trigger
-    digester.addCallMethod(_xmlTagName + "/definition/field/trigger/property","addProperty", 2);
-    digester.addCallParam(_xmlTagName + "/definition/field/trigger/property", 0, "name");
-    digester.addCallParam(_xmlTagName + "/definition/field/trigger/property", 1);
+    digester.addCallMethod(_xmlTagName + "/definition/field/trigger/property",
+        "addProperty", 2);
+    digester.addCallParam(_xmlTagName + "/definition/field/trigger/property",
+        0, "name");
+    digester
+        .addCallParam(_xmlTagName + "/definition/field/trigger/property", 1);
     digester.addSetNext(_xmlTagName + "/definition/field/trigger", "addEvent",
         "org.efaps.update.event.Event");
 
@@ -255,7 +269,8 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
                                final Insert _insert) throws EFapsException,
                                                     Exception {
 
-      final Instance instance = super.updateInDB(_instance, _allLinkTypes, _insert);
+      final Instance instance =
+          super.updateInDB(_instance, _allLinkTypes, _insert);
       setFieldsInDB(instance);
 
       return instance;
@@ -290,9 +305,11 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
       for (FieldDefinition field : this.fields) {
         Insert insert;
         if ("Target".equals(field.character)) {
-          insert = new Insert("Admin_UI_FieldTable");
+          insert = new Insert(EFapsClassName.FIELDTABLE.name);
         } else if ("Heading".equals(field.character)) {
-          insert = new Insert("Admin_UI_FieldHeading");
+          insert = new Insert(EFapsClassName.FIELDHEADING.name);
+        } else if ("Group".equals(field.character)) {
+          insert = new Insert(EFapsClassName.FIELDGROUP.name);
         } else {
           insert = new Insert("Admin_UI_Field");
         }

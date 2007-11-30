@@ -22,6 +22,11 @@ package org.efaps.admin.ui.field;
 
 import org.efaps.admin.ui.Table;
 
+/**
+ * @author jmox
+ * @version $Id$
+ *
+ */
 public class FieldTable extends Field {
 
   /**
