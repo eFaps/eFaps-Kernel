@@ -62,11 +62,6 @@ import org.efaps.util.EFapsException;
 public class TableModel extends AbstractModel {
 
   /**
-   * Logging instance used in this class.
-   */
-  private static final Logger LOG = LoggerFactory.getLogger(TableModel.class);
-
-  /**
    * this enum holds the Values used as part of the key for the UserAttributes
    * wich belong to a TableModel
    *
@@ -74,10 +69,10 @@ public class TableModel extends AbstractModel {
    * @version $Id$
    */
   public static enum UserAttributeKey {
-    SORTDIRECTION("sortDirection"),
-    SORTKEY("sortKey"),
+    COLUMNORDER("columnOrder"),
     COLUMNWIDTH("columnWidths"),
-    COLUMNORDER("columnOrder");
+    SORTDIRECTION("sortDirection"),
+    SORTKEY("sortKey");
 
     public String value;
 
@@ -86,50 +81,21 @@ public class TableModel extends AbstractModel {
     }
   }
 
-  private static final long serialVersionUID = 1L;
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(TableModel.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
-  /**
-   * All evaluated rows of this table are stored in this list.
-   *
-   * @see #getValues
-   */
-  private final List<RowModel> values = new ArrayList<RowModel>();
+  private static final long serialVersionUID = 1L;
 
   /**
-   * The instance Array holds the Label for the Columns
+   * The instance variable stores the current selected filterKey as the name of
+   * the field of this web table representation.
    */
-  private final List<HeaderModel> headers = new ArrayList<HeaderModel>();
-
-  /**
-   * The instance variable stores the string of the sort key.
-   *
-   * @see #getSortKey
-   * @see #setSortKey
-   */
-  private String sortKey = null;
-
-  /**
-   * The instance variable stores the string of the sort direction.
-   *
-   * @see #getSortDirection
-   * @see #setSortDirection
-   */
-  private SortDirection sortDirection = SortDirection.NONE;
-
-  /**
-   * The instance variable stores the UUID for the table which must be shown.
-   *
-   * @see #getTable
-   */
-  private UUID tableuuid;
-
-  /**
-   * This instance variable sores if the Table should show CheckBodes
-   */
-  private boolean showCheckBoxes;
+  private String filterKey;
 
   /**
    * The instance variable stores the current selected filterKey as the
@@ -141,10 +107,9 @@ public class TableModel extends AbstractModel {
   private int filterKeyInt = 0;
 
   /**
-   * The instance variable stores the current selected filterKey as the name of
-   * the field of this web table representation.
+   * contains the sequential numbers of the filter
    */
-  private String filterKey;
+  private String[] filterSequence;
 
   /**
    * The instance Map contains the Values to be filtered
@@ -152,21 +117,62 @@ public class TableModel extends AbstractModel {
   private List<String> filterValues = new ArrayList<String>();
 
   /**
-   * contains the sequential numbers of the filter
+   * The instance Array holds the Label for the Columns
    */
-  private String[] filterSequence;
+  private final List<HeaderModel> headers = new ArrayList<HeaderModel>();
 
   /**
-   * This instance variable stores the total weight of the widths of the Cells.
-   * (Sum of all widths)
+   * This instance variable sores if the Table should show CheckBodes
    */
-  private int widthWeight;
+  private boolean showCheckBoxes;
+
+  /**
+   * The instance variable stores the string of the sort direction.
+   *
+   * @see #getSortDirection
+   * @see #setSortDirection
+   */
+  private SortDirection sortDirection = SortDirection.NONE;
+
+  /**
+   * The instance variable stores the string of the sort key.
+   *
+   * @see #getSortKey
+   * @see #setSortKey
+   */
+  private String sortKey = null;
+
+  /**
+   * This instance variable stores the Id of the table. This int is used to
+   * distinguish tables in case that there are more than one table on one page.
+   */
+  private int tableId = 1;
+
+  /**
+   * The instance variable stores the UUID for the table which must be shown.
+   *
+   * @see #getTable
+   */
+  private UUID tableuuid;
 
   /**
    * This instance variable stores if the Widths of the Columns are set by
    * UserAttributes
    */
   private boolean userWidths = false;
+
+  /**
+   * All evaluated rows of this table are stored in this list.
+   *
+   * @see #getValues
+   */
+  private final List<RowModel> values = new ArrayList<RowModel>();
+
+  /**
+   * This instance variable stores the total weight of the widths of the Cells.
+   * (Sum of all widths)
+   */
+  private int widthWeight;
 
   /**
    * Constructor
@@ -181,69 +187,6 @@ public class TableModel extends AbstractModel {
   public TableModel(final UUID _commandUUID, final String _oid) {
     super(_commandUUID, _oid);
     initialise();
-  }
-
-  /**
-   * method that initialises the TableModel
-   */
-  private void initialise() {
-    final AbstractCommand command = getCommand();
-    if (command == null) {
-      this.showCheckBoxes = false;
-    } else {
-      // set target table
-      this.tableuuid = command.getTargetTable().getUUID();
-
-      // set default sort
-      if (command.getTargetTableSortKey() != null) {
-        this.sortKey = getCommand().getTargetTableSortKey();
-        this.sortDirection = command.getTargetTableSortDirection();
-      }
-
-      // set show check boxes
-      boolean showCheckBoxes = getCommand().isTargetShowCheckBoxes();
-      if (!showCheckBoxes) {
-        final UUID cldUUID = UUID.fromString(getParameter("command"));
-        if (cldUUID != null) {
-          final AbstractCommand cmd = getCommand(cldUUID);
-          showCheckBoxes =
-              (cmd != null) && cmd.hasEvents(EventType.UI_COMMAND_EXECUTE);
-        }
-      }
-      this.showCheckBoxes = showCheckBoxes;
-      // get the User spesific Attributes if exist overwrite the defaults
-      try {
-        if (Context.getThreadContext().containsUserAtribute(
-            getUserAttributeKey(UserAttributeKey.SORTKEY))) {
-          this.sortKey =
-              Context.getThreadContext().getUserAttribute(
-                  getUserAttributeKey(UserAttributeKey.SORTKEY));
-        }
-        if (Context.getThreadContext().containsUserAtribute(
-            getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
-          this.sortDirection =
-              SortDirection
-                  .getEnum((Context.getThreadContext()
-                      .getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION))));
-        }
-      } catch (EFapsException e) {
-        // we don't throw an error because this are only Usersettings
-        LOG.error("error during the retrieve of UserAttributes", e);
-      }
-    }
-
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.efaps.ui.wicket.models.AbstractModel#resetModel()
-   */
-  @Override
-  public void resetModel() {
-    super.setInitialised(false);
-    this.values.clear();
-    this.headers.clear();
   }
 
   /**
@@ -312,53 +255,6 @@ public class TableModel extends AbstractModel {
     } catch (Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
-  }
-
-  /**
-   * this method looks if for this TableModel a UserAttribute for the sorting of
-   * the Columns exist. If they exist the Fields will be sorted as defined by
-   * the User. If no definition of the User exist the Original default sorting
-   * of the columns will be used. In the Case that the Definition of the Table
-   * was altered Field wich are not sorted yet will be sorted in at the last
-   * position.
-   *
-   * @return
-   */
-  private List<Field> getUserSortedColumns() {
-    List<Field> fields = this.getTable().getFields();
-    List<Field> ret = new ArrayList<Field>();
-    try {
-      if (Context.getThreadContext().containsUserAtribute(
-          getUserAttributeKey(UserAttributeKey.COLUMNORDER))) {
-
-        String columnOrder =
-            Context.getThreadContext().getUserAttribute(
-                getUserAttributeKey(UserAttributeKey.COLUMNORDER));
-
-        final StringTokenizer tokens = new StringTokenizer(columnOrder, ";");
-        while (tokens.hasMoreTokens()) {
-          String fieldname = tokens.nextToken();
-          for (int i = 0; i < fields.size(); i++) {
-            if (fieldname.equals(fields.get(i).getName())) {
-              ret.add(fields.get(i));
-              fields.remove(i);
-            }
-          }
-        }
-        if (!fields.isEmpty()) {
-          for (Field field : fields) {
-            ret.add(field);
-          }
-        }
-
-      } else {
-        ret = fields;
-      }
-      return ret;
-    } catch (EFapsException e) {
-      e.printStackTrace();
-    }
-    return fields;
   }
 
   /**
@@ -444,6 +340,232 @@ public class TableModel extends AbstractModel {
   }
 
   /**
+   * prepares the filter to be used in getValues
+   *
+   * @see #getValues()
+   */
+  public void filter() {
+    if (this.filterSequence != null) {
+      final List<String> filterList = new ArrayList<String>();
+      for (int i = 0; i < this.filterSequence.length; i++) {
+        final Integer intpos = Integer.valueOf(this.filterSequence[i]);
+        filterList.add(this.filterValues.get(intpos));
+      }
+      this.filterValues = filterList;
+    }
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #filterKeyInt}.
+   *
+   * @return value of instance variable {@link #filterKeyInt}
+   * @see #filterKey
+   * @see #setFilterKey
+   */
+  public String getFilterKey() {
+    return this.filterKey;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #filterKeyInt}.
+   *
+   * @param _selectedFilter
+   *                new value for instance variable {@link #filterKeyInt}
+   * @see #filterKeyInt
+   * @see #getFilterKey
+   */
+  public void setFilterKey(final String _filterkey) {
+    this.filterKey = _filterkey;
+    for (int i = 0; i < getTable().getFields().size(); i++) {
+      final Field field = getTable().getFields().get(i);
+      if (field.getName().equals(_filterkey)) {
+        this.filterKeyInt = i;
+        break;
+      }
+    }
+
+  }
+
+  public void setFilter(final String[] _filter) {
+    this.filterSequence = _filter;
+  }
+
+  /**
+   * This Map is used for contruction of the items in a myfaces "<h:selectManyCheckbox>".
+   * It produces Selectboxes with a sequential number as value and the
+   * Fieldvalue as the Label.
+   *
+   * @return Map
+   * @throws EFapsException
+   */
+  public List<String> getFilterList() {
+    final List<String> filterList = new ArrayList<String>();
+    this.filterValues = filterList;
+
+    for (RowModel rowmodel : this.values) {
+      final TableCellModel cellmodel =
+          rowmodel.getValues().get(this.filterKeyInt);
+      final String value = cellmodel.getCellValue();
+      if (!filterList.contains(value)) {
+        filterList.add(value);
+      }
+    }
+    return filterList;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #headers}.
+   *
+   * @return value of instance variable {@link #headers}
+   */
+  public List<HeaderModel> getHeaders() {
+    return this.headers;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #sortDirection}.
+   *
+   * @return value of instance variable {@link #sortDirection}
+   * @see #sortDirection
+   * @see #setSortDirection
+   */
+  public SortDirection getSortDirection() {
+    return this.sortDirection;
+  }
+
+  public void setSortDirection(final SortDirection _sortdirection) {
+    this.sortDirection = _sortdirection;
+    try {
+      Context.getThreadContext().setUserAttribute(
+          getUserAttributeKey(UserAttributeKey.SORTDIRECTION),
+          _sortdirection.value);
+    } catch (EFapsException e) {
+      // we don't throw an error because this are only Usersettings
+      LOG.error("error during the retrieve of UserAttributes", e);
+    }
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #sortKey}.
+   *
+   * @return value of instance variable {@link #sortKey}
+   * @see #sortKey
+   * @see #setSortKey
+   */
+  public String getSortKey() {
+    return this.sortKey;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #sortKey}.
+   *
+   * @param _sortKey
+   *                new value for instance variable {@link #sortKey}
+   * @see #sortKey
+   * @see #getSortKey
+   */
+  public void setSortKey(final String _sortKey) {
+    this.sortKey = _sortKey;
+    try {
+      Context.getThreadContext().setUserAttribute(
+          getUserAttributeKey(UserAttributeKey.SORTKEY), _sortKey);
+    } catch (EFapsException e) {
+      // we don't throw an error because this are only Usersettings
+      LOG.error("error during the retrieve of UserAttributes", e);
+    }
+
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #table}.
+   *
+   * @return value of instance variable {@link #table}
+   * @see #table
+   */
+  public Table getTable() {
+    return Table.get(this.tableuuid);
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #tableId}.
+   *
+   * @return value of instance variable {@link #tableId}
+   */
+  public int getTableId() {
+    return this.tableId * 100;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #tableId}.
+   *
+   * @param tableId
+   *                the tableId to set
+   */
+  public void setTableId(int tableId) {
+    this.tableId = tableId;
+  }
+
+  /**
+   * This method generates the Key for a UserAttribute by using the UUID of the
+   * Command and the given UserAttributeKey, so that for every Tabel a unique
+   * key for sorting etc, is created
+   *
+   * @param _key
+   *                UserAttributeKey the Key is wanted
+   * @return
+   */
+  public String getUserAttributeKey(final UserAttributeKey _key) {
+    return super.getCommandUUID() + "-" + _key.value;
+  }
+
+  /**
+   * this method looks if for this TableModel a UserAttribute for the sorting of
+   * the Columns exist. If they exist the Fields will be sorted as defined by
+   * the User. If no definition of the User exist the Original default sorting
+   * of the columns will be used. In the Case that the Definition of the Table
+   * was altered Field wich are not sorted yet will be sorted in at the last
+   * position.
+   *
+   * @return
+   */
+  private List<Field> getUserSortedColumns() {
+    List<Field> fields = this.getTable().getFields();
+    List<Field> ret = new ArrayList<Field>();
+    try {
+      if (Context.getThreadContext().containsUserAtribute(
+          getUserAttributeKey(UserAttributeKey.COLUMNORDER))) {
+
+        String columnOrder =
+            Context.getThreadContext().getUserAttribute(
+                getUserAttributeKey(UserAttributeKey.COLUMNORDER));
+
+        final StringTokenizer tokens = new StringTokenizer(columnOrder, ";");
+        while (tokens.hasMoreTokens()) {
+          String fieldname = tokens.nextToken();
+          for (int i = 0; i < fields.size(); i++) {
+            if (fieldname.equals(fields.get(i).getName())) {
+              ret.add(fields.get(i));
+              fields.remove(i);
+            }
+          }
+        }
+        if (!fields.isEmpty()) {
+          for (Field field : fields) {
+            ret.add(field);
+          }
+        }
+
+      } else {
+        ret = fields;
+      }
+      return ret;
+    } catch (EFapsException e) {
+      e.printStackTrace();
+    }
+    return fields;
+  }
+
+  /**
    * this method retieves the UserAttribute for the ColumnWidths and evaluates
    * the string
    *
@@ -487,6 +609,179 @@ public class TableModel extends AbstractModel {
   }
 
   /**
+   * This is the getter method for the instance variable {@link #values}.
+   *
+   * @return value of instance variable {@link #values}
+   * @throws EFapsException
+   * @see #values
+   * @see #setValues
+   */
+  public List<RowModel> getValues() {
+    List<RowModel> ret = new ArrayList<RowModel>();
+    if (isFiltered()) {
+      for (RowModel row : this.values) {
+        boolean filtered = false;
+        final String value =
+            (row.getValues().get(this.filterKeyInt)).getCellValue();
+        for (String key : this.filterValues) {
+          if (value.equals(key)) {
+            filtered = true;
+          }
+        }
+        if (filtered) {
+          ret.add(row);
+        }
+      }
+    } else {
+      ret = this.values;
+    }
+    return ret;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #widthWeight}.
+   *
+   * @return value of instance variable {@link #widthWeight}
+   */
+  public int getWidthWeight() {
+    return this.widthWeight;
+  }
+
+  /**
+   * method that initialises the TableModel
+   */
+  private void initialise() {
+    final AbstractCommand command = getCommand();
+    if (command == null) {
+      this.showCheckBoxes = false;
+    } else {
+      // set target table
+      this.tableuuid = command.getTargetTable().getUUID();
+
+      // set default sort
+      if (command.getTargetTableSortKey() != null) {
+        this.sortKey = getCommand().getTargetTableSortKey();
+        this.sortDirection = command.getTargetTableSortDirection();
+      }
+
+      // set show check boxes
+      boolean showCheckBoxes = getCommand().isTargetShowCheckBoxes();
+      if (!showCheckBoxes) {
+        final UUID cldUUID = UUID.fromString(getParameter("command"));
+        if (cldUUID != null) {
+          final AbstractCommand cmd = getCommand(cldUUID);
+          showCheckBoxes =
+              (cmd != null) && cmd.hasEvents(EventType.UI_COMMAND_EXECUTE);
+        }
+      }
+      this.showCheckBoxes = showCheckBoxes;
+      // get the User spesific Attributes if exist overwrite the defaults
+      try {
+        if (Context.getThreadContext().containsUserAtribute(
+            getUserAttributeKey(UserAttributeKey.SORTKEY))) {
+          this.sortKey =
+              Context.getThreadContext().getUserAttribute(
+                  getUserAttributeKey(UserAttributeKey.SORTKEY));
+        }
+        if (Context.getThreadContext().containsUserAtribute(
+            getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
+          this.sortDirection =
+              SortDirection
+                  .getEnum((Context.getThreadContext()
+                      .getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION))));
+        }
+      } catch (EFapsException e) {
+        // we don't throw an error because this are only Usersettings
+        LOG.error("error during the retrieve of UserAttributes", e);
+      }
+    }
+
+  }
+
+  /**
+   * are the values of the Rows filtered or not
+   *
+   * @return true if filtered, else false
+   */
+  public boolean isFiltered() {
+    return !this.filterValues.isEmpty();
+  }
+
+  /**
+   * @return <i>true</i> if the check boxes must be shown, other <i>false</i>
+   *         is returned.
+   * @see #showCheckBoxes
+   */
+  public boolean isShowCheckBoxes() {
+    boolean ret;
+    if (super.isSubmit()) {
+      ret = true;
+    } else {
+      ret = this.showCheckBoxes;
+    }
+    return ret;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #showCheckBoxes}.
+   *
+   * @param showCheckBoxes
+   *                the showCheckBoxes to set
+   */
+  public void setShowCheckBoxes(boolean showCheckBoxes) {
+    this.showCheckBoxes = showCheckBoxes;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #userWidths}.
+   *
+   * @return value of instance variable {@link #userWidths}
+   */
+  public boolean isUserSetWidth() {
+    return this.userWidths;
+  }
+
+  public void removeFilter() {
+    this.filterSequence = null;
+    this.filterKey = null;
+    this.filterValues.clear();
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.efaps.ui.wicket.models.AbstractModel#resetModel()
+   */
+  @Override
+  public void resetModel() {
+    super.setInitialised(false);
+    this.values.clear();
+    this.headers.clear();
+  }
+
+  public void setColumnOrder(final String _markupsIds) {
+    final StringTokenizer tokens = new StringTokenizer(_markupsIds, ";");
+    StringBuilder columnOrder = new StringBuilder();
+    while (tokens.hasMoreTokens()) {
+      String markupId = tokens.nextToken();
+      for (HeaderModel header : this.headers) {
+        if (markupId.equals(header.getMarkupId())) {
+          columnOrder.append(header.getName()).append(";");
+          break;
+        }
+      }
+    }
+    try {
+      Context.getThreadContext().setUserAttribute(
+          getUserAttributeKey(UserAttributeKey.COLUMNORDER),
+          columnOrder.toString());
+    } catch (EFapsException e) {
+      // we don't throw an error because this are only Usersettings
+      LOG.error("error during the setting of UserAttributes", e);
+    }
+  }
+
+  /**
    * The instance method sorts the table values depending on the sort key in
    * {@link #sortKey} and the sort direction in {@link #sortDirection}.
    */
@@ -522,275 +817,6 @@ public class TableModel extends AbstractModel {
   }
 
   /**
-   * This method generates the Key for a UserAttribute by using the UUID of the
-   * Command and the given UserAttributeKey, so that for every Tabel a unique
-   * key for sorting etc, is created
-   *
-   * @param _key
-   *                UserAttributeKey the Key is wanted
-   * @return
-   */
-  public String getUserAttributeKey(final UserAttributeKey _key) {
-    return super.getCommandUUID() + "-" + _key.value;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #headers}.
-   *
-   * @return value of instance variable {@link #headers}
-   */
-  public List<HeaderModel> getHeaders() {
-    return this.headers;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #sortKey}.
-   *
-   * @return value of instance variable {@link #sortKey}
-   * @see #sortKey
-   * @see #setSortKey
-   */
-  public String getSortKey() {
-    return this.sortKey;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #sortKey}.
-   *
-   * @param _sortKey
-   *                new value for instance variable {@link #sortKey}
-   * @see #sortKey
-   * @see #getSortKey
-   */
-  public void setSortKey(final String _sortKey) {
-    this.sortKey = _sortKey;
-    try {
-      Context.getThreadContext().setUserAttribute(
-          getUserAttributeKey(UserAttributeKey.SORTKEY), _sortKey);
-    } catch (EFapsException e) {
-      // we don't throw an error because this are only Usersettings
-      LOG.error("error during the retrieve of UserAttributes", e);
-    }
-
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #sortDirection}.
-   *
-   * @return value of instance variable {@link #sortDirection}
-   * @see #sortDirection
-   * @see #setSortDirection
-   */
-  public SortDirection getSortDirection() {
-    return this.sortDirection;
-  }
-
-  public void setSortDirection(final SortDirection _sortdirection) {
-    this.sortDirection = _sortdirection;
-    try {
-      Context.getThreadContext().setUserAttribute(
-          getUserAttributeKey(UserAttributeKey.SORTDIRECTION),
-          _sortdirection.value);
-    } catch (EFapsException e) {
-      // we don't throw an error because this are only Usersettings
-      LOG.error("error during the retrieve of UserAttributes", e);
-    }
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #table}.
-   *
-   * @return value of instance variable {@link #table}
-   * @see #table
-   */
-  public Table getTable() {
-    return Table.get(this.tableuuid);
-  }
-
-  /**
-   * @return <i>true</i> if the check boxes must be shown, other <i>false</i>
-   *         is returned.
-   * @see #showCheckBoxes
-   */
-  public boolean isShowCheckBoxes() {
-    boolean ret;
-    if (super.isSubmit()) {
-      ret = true;
-    } else {
-      ret = this.showCheckBoxes;
-    }
-    return ret;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #showCheckBoxes}.
-   *
-   * @param showCheckBoxes
-   *                the showCheckBoxes to set
-   */
-  public void setShowCheckBoxes(boolean showCheckBoxes) {
-    this.showCheckBoxes = showCheckBoxes;
-  }
-
-  /**
-   * are the values of the Rows filtered or not
-   *
-   * @return true if filtered, else false
-   */
-  public boolean isFiltered() {
-    return !this.filterValues.isEmpty();
-  }
-
-  public void removeFilter() {
-    this.filterSequence = null;
-    this.filterKey = null;
-    this.filterValues.clear();
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #values}.
-   *
-   * @return value of instance variable {@link #values}
-   * @throws EFapsException
-   * @see #values
-   * @see #setValues
-   */
-  public List<RowModel> getValues() {
-    List<RowModel> ret = new ArrayList<RowModel>();
-    if (isFiltered()) {
-      for (RowModel row : this.values) {
-        boolean filtered = false;
-        final String value =
-            (row.getValues().get(this.filterKeyInt)).getCellValue();
-        for (String key : this.filterValues) {
-          if (value.equals(key)) {
-            filtered = true;
-          }
-        }
-        if (filtered) {
-          ret.add(row);
-        }
-      }
-    } else {
-      ret = this.values;
-    }
-    return ret;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #filterKeyInt}.
-   *
-   * @return value of instance variable {@link #filterKeyInt}
-   * @see #filterKey
-   * @see #setFilterKey
-   */
-  public String getFilterKey() {
-    return this.filterKey;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #filterKeyInt}.
-   *
-   * @param _selectedFilter
-   *                new value for instance variable {@link #filterKeyInt}
-   * @see #filterKeyInt
-   * @see #getFilterKey
-   */
-  public void setFilterKey(final String _filterkey) {
-    this.filterKey = _filterkey;
-    for (int i = 0; i < getTable().getFields().size(); i++) {
-      final Field field = getTable().getFields().get(i);
-      if (field.getName().equals(_filterkey)) {
-        this.filterKeyInt = i;
-        break;
-      }
-    }
-
-  }
-
-  /**
-   * This Map is used for contruction of the items in a myfaces "<h:selectManyCheckbox>".
-   * It produces Selectboxes with a sequential number as value and the
-   * Fieldvalue as the Label.
-   *
-   * @return Map
-   * @throws EFapsException
-   */
-  public List<String> getFilterList() {
-    final List<String> filterList = new ArrayList<String>();
-    this.filterValues = filterList;
-
-    for (RowModel rowmodel : this.values) {
-      final TableCellModel cellmodel = rowmodel.getValues().get(this.filterKeyInt);
-      final String value = cellmodel.getCellValue();
-      if (!filterList.contains(value)) {
-        filterList.add(value);
-      }
-    }
-    return filterList;
-  }
-
-  /**
-   * prepares the filter to be used in getValues
-   *
-   * @see #getValues()
-   */
-  public void filter() {
-    if (this.filterSequence != null) {
-      final List<String> filterList = new ArrayList<String>();
-      for (int i = 0; i < this.filterSequence.length; i++) {
-        final Integer intpos = Integer.valueOf(this.filterSequence[i]);
-        filterList.add(this.filterValues.get(intpos));
-      }
-      this.filterValues = filterList;
-    }
-  }
-
-  public void setFilter(final String[] _filter) {
-    this.filterSequence = _filter;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #widthWeight}.
-   *
-   * @return value of instance variable {@link #widthWeight}
-   */
-  public int getWidthWeight() {
-    return this.widthWeight;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #userWidths}.
-   *
-   * @return value of instance variable {@link #userWidths}
-   */
-  public boolean isUserSetWidth() {
-    return this.userWidths;
-  }
-
-  public void setColumnOrder(final String _markupsIds) {
-    final StringTokenizer tokens = new StringTokenizer(_markupsIds, ";");
-    StringBuilder columnOrder = new StringBuilder();
-    while (tokens.hasMoreTokens()) {
-      String markupId = tokens.nextToken();
-      for (HeaderModel header : this.headers) {
-        if (markupId.equals(header.getMarkupId())) {
-          columnOrder.append(header.getName()).append(";");
-          break;
-        }
-      }
-    }
-    try {
-      Context.getThreadContext().setUserAttribute(
-          getUserAttributeKey(UserAttributeKey.COLUMNORDER),
-          columnOrder.toString());
-    } catch (EFapsException e) {
-      // we don't throw an error because this are only Usersettings
-      LOG.error("error during the setting of UserAttributes", e);
-    }
-  }
-
-  /**
    * The inner class stores one row of the table.
    */
   public class RowModel extends Model {
@@ -798,18 +824,18 @@ public class TableModel extends AbstractModel {
     private static final long serialVersionUID = 1L;
 
     /**
-     * The instance variable stores the values for the table.
-     *
-     * @see #getValues
-     */
-    private final List<TableCellModel> values = new ArrayList<TableCellModel>();
-
-    /**
      * The instance variable stores all oids in a string.
      *
      * @see #getOids
      */
     private final String oids;
+
+    /**
+     * The instance variable stores the values for the table.
+     *
+     * @see #getValues
+     */
+    private final List<TableCellModel> values = new ArrayList<TableCellModel>();
 
     /**
      * The constructor creates a new instance of class Row.
@@ -837,6 +863,18 @@ public class TableModel extends AbstractModel {
     }
 
     /**
+     * This is the getter method for the instance variable {@link #oids}.
+     *
+     * @return value of instance variable {@link #oids}
+     * @see #oids
+     */
+    public String getOids() {
+      return this.oids;
+    }
+
+    // /////////////////////////////////////////////////////////////////////////
+
+    /**
      * The instance method returns the size of the array list {@link #values}.
      *
      * @see #values
@@ -844,8 +882,6 @@ public class TableModel extends AbstractModel {
     public int getSize() {
       return getValues().size();
     }
-
-    // /////////////////////////////////////////////////////////////////////////
 
     /**
      * This is the getter method for the values variable {@link #values}.
@@ -855,16 +891,6 @@ public class TableModel extends AbstractModel {
      */
     public List<TableCellModel> getValues() {
       return this.values;
-    }
-
-    /**
-     * This is the getter method for the instance variable {@link #oids}.
-     *
-     * @return value of instance variable {@link #oids}
-     * @see #oids
-     */
-    public String getOids() {
-      return this.oids;
     }
   }
 

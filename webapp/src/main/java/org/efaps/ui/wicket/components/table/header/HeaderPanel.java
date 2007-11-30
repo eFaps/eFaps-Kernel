@@ -68,13 +68,13 @@ public class HeaderPanel extends Panel {
 
   private final Component tablepanel;
 
-  private final String headerproperties =
-      "eFaps" + ((Long) System.currentTimeMillis()).toString();
+  private final String headerproperties;
 
   public HeaderPanel(final String _id, final TablePanel _tablePanel) {
     super(_id, _tablePanel.getModel());
     this.tablepanel = _tablePanel;
     final TableModel model = (TableModel) super.getModel();
+    this.headerproperties = "eFapsTable" + model.getTableId();
 
     this.add(new AjaxStoreColumnWidthBehavior());
     this.add(new AjaxStoreColumnOrderBehavior());
@@ -95,7 +95,7 @@ public class HeaderPanel extends Panel {
 
     final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
     add(cellRepeater);
-    int i = 0;
+    int i = model.getTableId();
     if (model.isShowCheckBoxes()) {
       final HeaderCellPanel cell =
           new HeaderCellPanel(cellRepeater.newChildId());
@@ -187,9 +187,13 @@ public class HeaderPanel extends Panel {
             + this.getMarkupId()
             + "\";\n"
             + this.headerproperties
-            + ".bodyID= \""
+            + ".bodyID = \""
             + this.tablepanel.getMarkupId()
             + "\";\n"
+            + this.headerproperties
+            + ".modelID = "
+            + ((TableModel) super.getModel()).getTableId()
+            + ";\n"
             + "  window.onresize = function (){positionTableColumns("
             + this.headerproperties
             + ");};\n"
@@ -210,8 +214,9 @@ public class HeaderPanel extends Panel {
   private String getWidthStyle(final List<String> _widths) {
 
     final StringBuilder ret = new StringBuilder();
-    ret
-        .append("<style type=\"text/css\" title=\"eFapsTableWidthStyles\"><!--\n");
+    ret.append("<style type=\"text/css\" title=\"eFapsTableWidthStyles")
+        .append(((TableModel) super.getModel()).getTableId()).append(
+            "\"><!--\n");
 
     for (String width : _widths) {
       ret.append(width);

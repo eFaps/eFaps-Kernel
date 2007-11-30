@@ -42,7 +42,7 @@ public class RowPanel extends Panel {
                   final TablePanel _tablePanel, final boolean _updateListMenu) {
     super(_id, _model);
     final TableModel tablemodel = (TableModel) _tablePanel.getModel();
-    int i = 0;
+    int i = tablemodel.getTableId();
     final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
     add(cellRepeater);
 

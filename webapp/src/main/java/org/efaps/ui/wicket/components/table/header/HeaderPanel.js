@@ -32,6 +32,7 @@ var seperator;
 function headerProperties(){
  this.headerID = "";
  this.bodyID = "";
+ this.modelID = "";
 } 
 
 function positionTableColumns(_props) {
@@ -46,7 +47,7 @@ function positionTableColumns(_props) {
     var fixed = cell.className.indexOf("eFapsCellFixedWidth");
     if(fixed > -1){
       var addwith = getAdditionalWidth(cell);
-      cells.push(new Array(cell.clientWidth, addwith,false));
+      cells.push(new Array(cell.clientWidth, addwith, false));
       widthCor += cell.clientWidth + addwith;
     }
     var f = cell.className.indexOf("eFapsCellWidth");
@@ -65,7 +66,7 @@ function positionTableColumns(_props) {
     var rightshift = 0;
     for(k = 0;k < cells.length; k++){
       if(cells[k][2]==true){
-        var rule = getStyleRule(k);
+        var rule = getStyleRule(k + _props.modelID, _props.modelID);
         cellWidth = ((100/widthWeight * cells[k][0])/100)* (completeWidth - widthCor - 5);
         rule.style.width= cellWidth + "px";
       }else {
@@ -74,8 +75,8 @@ function positionTableColumns(_props) {
       if(k+1 < cells.length){
         rightshift += cellWidth + cells[k][1];
         if(cells[k][2]==true ){
-          if(document.getElementById(k+"eFapsHeaderSeperator")){
-            document.getElementById(k+"eFapsHeaderSeperator").style.left = rightshift + "px";
+          if(document.getElementById((k + _props.modelID) + "eFapsHeaderSeperator")){
+            document.getElementById((k + _props.modelID) + "eFapsHeaderSeperator").style.left = rightshift + "px";
           }
         }
       }
@@ -85,10 +86,10 @@ function positionTableColumns(_props) {
 
  
 // function used to retrieve a Style Rule from a StyleSheet
-function getStyleRule(_styleIndex) {
+function getStyleRule(_styleIndex, _modelID) {
   var selectorName = "div.eFapsCellWidth" + _styleIndex;
   for (i = 0; i < document.styleSheets.length; i++) { 
-    if(document.styleSheets[i].title=="eFapsTableWidthStyles"){
+    if(document.styleSheets[i].title == ("eFapsTableWidthStyles" + _modelID)){
       for (j = 0; j < document.styleSheets[i].cssRules.length; j++) {
         if (document.styleSheets[i].cssRules[j].selectorText == selectorName) {
           return document.styleSheets[i].cssRules[j];
@@ -146,8 +147,8 @@ function endColumnSize(_seperator,_event,_props){
   dojo.forEach(connections,dojo.disconnect);
   var dif = lastpos - startpos;
   var i = parseInt(seperator.id);
-  var leftrule = getStyleRule(i);
-  var rightrule = getStyleRule(i+1);
+  var leftrule = getStyleRule(i, _props.modelID);
+  var rightrule = getStyleRule(i+1, _props.modelID);
   var leftWidth = parseInt(leftrule.style.width);
   var rightWidth = parseInt(rightrule.style.width);
   var move = 0;
