@@ -273,6 +273,7 @@ public class Field extends AbstractUserInterfaceObject {
     try {
       final SearchQuery query = new SearchQuery();
       query.setQueryTypes(EFapsClassName.FIELD.name);
+      query.setExpandChildTypes(true);
       query.addSelect("Collection");
       query.addWhereExprEqValue("ID", _id);
       query.executeWithoutAccessCheck();

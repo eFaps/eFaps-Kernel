@@ -42,7 +42,7 @@ function positionTableColumns(_props) {
   var widthCor = 0;
   var addCell = 0;
   var celldivs = header.getElementsByTagName("div");
-  for(i = 0;i<celldivs.length;i++){
+  for(i = 0; i < celldivs.length; i++){
     var cell = celldivs[i];
     var fixed = cell.className.indexOf("eFapsCellFixedWidth");
     if(fixed > -1){
@@ -69,6 +69,7 @@ function positionTableColumns(_props) {
         var rule = getStyleRule(k + _props.modelID, _props.modelID);
         cellWidth = ((100/widthWeight * cells[k][0])/100)* (completeWidth - widthCor - 5);
         rule.style.width= cellWidth + "px";
+       
       }else {
         cellWidth = cells[k][0];
       }
@@ -87,9 +88,10 @@ function positionTableColumns(_props) {
  
 // function used to retrieve a Style Rule from a StyleSheet
 function getStyleRule(_styleIndex, _modelID) {
-  var selectorName = "div.eFapsCellWidth" + _styleIndex;
+  var selectorName = ".eFapsCellWidth" + _styleIndex;
   for (i = 0; i < document.styleSheets.length; i++) { 
-    if(document.styleSheets[i].title == ("eFapsTableWidthStyles" + _modelID)){
+    var find = document.styleSheets[i].cssRules[0].cssText.indexOf("eFapsCSSId"+ _modelID)
+    if(find > -1){
       for (j = 0; j < document.styleSheets[i].cssRules.length; j++) {
         if (document.styleSheets[i].cssRules[j].selectorText == selectorName) {
           return document.styleSheets[i].cssRules[j];
@@ -188,4 +190,16 @@ function getColumnOrder(props){
     }
   }
   return ids;
+}
+
+function addOnResizeEvent(func) {
+  var oldonload = window.onresize;
+  if (typeof window.onresize != 'function') {
+    window.onresize = func;
+  } else {
+    window.onresize = function() {
+      oldonload();
+      func();
+    }
+  }
 }

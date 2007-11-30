@@ -14,9 +14,19 @@
 }
 
 .eFapsHeading1 {
-  margin-top: 20px;
+  margin-top: 15px;
+  margin-bottom: 3px;
+  color: #008800;
+  font-weight: bold;
+  font-size: 11pt;
+  padding: 3px;
 }
 
 .eFapsHeading2 {
-  
+  margin-top: 20px;
+  margin-bottom: 5px;
+  color: #008800;
+  font-weight: bold;
+  font-size: 9pt;
+  text-decoration: underline;
 }

@@ -188,30 +188,41 @@ public class DnDBehavior extends AbstractDojoBehavior {
   @Override
   public void renderHead(final IHeaderResponse _response) {
     super.renderHead(_response);
-    final StringBuilder builder = new StringBuilder();
-    if (this.allowCopy
-        || (this.appendJavaScript != null && this.appendJavaScript.length() > 0)) {
+    if (this.type == BehaviorType.SOURCE) {
 
-      builder.append("  var subcription;\n").append(
-          "  dojo.subscribe(\"/dnd/start\", function(source,nodes,iscopy){\n");
+      final String varName =
+          "subcription" + ((Long) System.currentTimeMillis()).toString();
+      final StringBuilder builder = new StringBuilder();
+      if (this.allowCopy
+          || (this.appendJavaScript != null && this.appendJavaScript.length() > 0)) {
 
-      if (!this.allowCopy) {
         builder
-            .append("    source.copyState = function(keyPressed){ return false};\n");
+            .append("  var ")
+            .append(varName)
+            .append(";\n")
+            .append(
+                "  dojo.subscribe(\"/dnd/start\", function(source,nodes,iscopy){\n");
+
+        if (!this.allowCopy) {
+          builder
+              .append("    source.copyState = function(keyPressed){ return false};\n");
+        }
+
+        builder
+            .append("    ")
+            .append(varName)
+            .append(
+                " = dojo.subscribe(\"/dnd/drop\", function(source,nodes,iscopy){\n")
+            .append(this.appendJavaScript).append(
+                "      dojo.unsubscribe(subcription);\n").append("    });\n")
+            .append("  });\n").append(
+                "  dojo.subscribe(\"/dnd/cancel\", function(){\n").append(
+                "    dojo.unsubscribe(").append(varName).append(");\n  });\n");
+
+        _response.renderJavascript(builder.toString(), DnDBehavior.class
+            .toString());
+
       }
-
-      builder
-          .append(
-              "    subcription = dojo.subscribe(\"/dnd/drop\", function(source,nodes,iscopy){\n")
-          .append(this.appendJavaScript).append(
-              "      dojo.unsubscribe(subcription);\n").append("    });\n")
-          .append("  });\n").append(
-              "  dojo.subscribe(\"/dnd/cancel\", function(){\n").append(
-              "    dojo.unsubscribe(subcription);\n  });\n");
-
-      _response.renderJavascript(builder.toString(), DnDBehavior.class
-          .toString());
-
     }
   }
 
@@ -247,4 +258,5 @@ public class DnDBehavior extends AbstractDojoBehavior {
   public static DnDBehavior getHandleBehavior() {
     return new DnDBehavior(BehaviorType.HANDLE);
   }
+
 }

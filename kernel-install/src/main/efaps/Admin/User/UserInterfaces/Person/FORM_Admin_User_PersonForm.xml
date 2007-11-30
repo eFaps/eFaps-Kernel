@@ -162,9 +162,19 @@
       <property name="Label">Admin_User_Person/Roles.Heading</property>
     </field>
     <field name="rolestable" character="Target">
-      <table>Admin_User_AttributeTable</table>
+      <table>Admin_User_AbstractTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">Admin_User_Attribute\UserLink</property>
+        <property name="Expand">Admin_User_Person2Role\UserFromLink.UserToLink</property>
+      </evaluate>
+    </field>
+    <field name="jaaskeyheader" character="Heading">
+      <property name="Level">1</property>
+      <property name="Label">Admin_User_Person/JaasKey.Heading</property>
+    </field>
+    <field name="jaaskeytable" character="Target">
+      <table>Admin_User_JAASKeyTable</table>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
+        <property name="Expand">Admin_User_JAASKey\UserLink</property>
       </evaluate>
     </field>
   </definition>

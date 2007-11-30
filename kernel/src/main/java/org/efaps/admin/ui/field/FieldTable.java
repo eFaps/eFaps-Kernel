@@ -25,7 +25,6 @@ import org.efaps.admin.ui.Table;
 /**
  * @author jmox
  * @version $Id$
- *
  */
 public class FieldTable extends Field {
 
@@ -61,6 +60,17 @@ public class FieldTable extends Field {
         super.setLinkProperty(_linkType, _toId, _toType, _toName);
         break;
     }
+  }
+
+  /**
+   * Returns for given parameter <i>_id</i> the instance of class {@link Field}.
+   *
+   * @param _id
+   *                id to search in the cache
+   * @return instance of class {@link Field}
+   */
+  static public FieldTable get(final long _id) {
+    return (FieldTable) Field.get(_id);
   }
 
   /**

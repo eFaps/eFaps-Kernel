@@ -20,22 +20,23 @@
 
 package org.efaps.ui.wicket.pages.content.form;
 
-import java.util.Map.Entry;
-
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
+import org.efaps.ui.wicket.components.table.TablePanel;
+import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.HeadingModel;
+import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.FormModel.Element;
 import org.efaps.ui.wicket.models.FormModel.ElementType;
 import org.efaps.ui.wicket.models.FormModel.FormElementModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
@@ -95,18 +96,29 @@ public class FormPage extends AbstractContentPage {
     script.setVisible(model.isCreateMode()
         || model.isEditMode()
         || model.isSearchMode());
-
+    int i = 3;
     RepeatingView elementRepeater = new RepeatingView("elementRepeater");
     form.add(elementRepeater);
-    for (Entry<ElementType, Model> element : model.getElements().entrySet()) {
-      if (element.getKey().equals(ElementType.FORM)) {
+    for (Element element : model.getElements()) {
+      if (element.getType().equals(ElementType.FORM)) {
         elementRepeater.add(new FormPanel(elementRepeater.newChildId(), this,
-            model, (FormElementModel) element.getValue()));
-      }
-      if (element.getKey().equals(ElementType.HEADING)) {
-        HeadingModel headingmodel = (HeadingModel) element.getValue();
+            model, (FormElementModel) element.getModel()));
+      } else if (element.getType().equals(ElementType.HEADING)) {
+        HeadingModel headingmodel = (HeadingModel) element.getModel();
         elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(),
             headingmodel.getLabel(), headingmodel.getLevel()));
+      } else if (element.getType().equals(ElementType.TABLE)) {
+        i++;
+
+        final TableModel tablemodel = (TableModel) element.getModel();
+        tablemodel.setTableId(i);
+        final TablePanel table =
+            new TablePanel(elementRepeater.newChildId(), tablemodel, this);
+        final HeaderPanel header =
+            new HeaderPanel(elementRepeater.newChildId(), table);
+        elementRepeater.add(header);
+        elementRepeater.add(table);
+
       }
     }
 

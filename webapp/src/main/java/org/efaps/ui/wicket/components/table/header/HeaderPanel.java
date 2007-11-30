@@ -113,7 +113,7 @@ public class HeaderPanel extends Panel {
           new HeaderCellPanel(cellRepeater.newChildId(), headermodel, model);
 
       if (headermodel.isFixedWidth()) {
-        widths.add("div.eFapsCellFixedWidth"
+        widths.add(".eFapsCellFixedWidth"
             + i
             + "{width: "
             + headermodel.getWidth()
@@ -129,7 +129,7 @@ public class HeaderPanel extends Panel {
           width =
               browserWidth / model.getWidthWeight() * headermodel.getWidth();
         }
-        widths.add("div.eFapsCellWidth"
+        widths.add(".eFapsCellWidth"
             + i
             + "{width: "
             + width.toString()
@@ -179,24 +179,24 @@ public class HeaderPanel extends Panel {
 
     final String ret =
         JavascriptUtils.SCRIPT_OPEN_TAG
-            + "var "
+            + "  var "
             + this.headerproperties
-            + " = new headerProperties();\n"
+            + " = new headerProperties();\n  "
             + this.headerproperties
             + ".headerID = \""
             + this.getMarkupId()
-            + "\";\n"
+            + "\";\n  "
             + this.headerproperties
             + ".bodyID = \""
             + this.tablepanel.getMarkupId()
-            + "\";\n"
+            + "\";\n  "
             + this.headerproperties
             + ".modelID = "
             + ((TableModel) super.getModel()).getTableId()
             + ";\n"
-            + "  window.onresize = function (){positionTableColumns("
+            + "  addOnResizeEvent(function (){positionTableColumns("
             + this.headerproperties
-            + ");};\n"
+            + ");});\n"
             + "  dojo.addOnLoad(function (){positionTableColumns("
             + this.headerproperties
             + ");});\n"
@@ -214,14 +214,12 @@ public class HeaderPanel extends Panel {
   private String getWidthStyle(final List<String> _widths) {
 
     final StringBuilder ret = new StringBuilder();
-    ret.append("<style type=\"text/css\" title=\"eFapsTableWidthStyles")
-        .append(((TableModel) super.getModel()).getTableId()).append(
-            "\"><!--\n");
 
+    ret.append(CssUtils.INLINE_OPEN_TAG).append(".eFapsCSSId").append(
+        ((TableModel) super.getModel()).getTableId()).append("{}\n");
     for (String width : _widths) {
       ret.append(width);
     }
-
     ret.append(CssUtils.INLINE_CLOSE_TAG);
     return ret.toString();
   }

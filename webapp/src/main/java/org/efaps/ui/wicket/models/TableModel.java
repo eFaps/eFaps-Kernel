@@ -153,7 +153,7 @@ public class TableModel extends AbstractModel {
    *
    * @see #getTable
    */
-  private UUID tableuuid;
+  private UUID tableUUID;
 
   /**
    * This instance variable stores if the Widths of the Columns are set by
@@ -189,21 +189,27 @@ public class TableModel extends AbstractModel {
     initialise();
   }
 
+  @SuppressWarnings("unchecked")
+  protected List<List<Instance>> getInstanceLists() throws EFapsException {
+    final List<Return> ret =
+        getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+            ParameterValues.INSTANCE, new Instance(super.getOid()));
+    final List<List<Instance>> lists =
+        (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
+    return lists;
+  }
+
   /**
    * this method executes the TableModel, that means this method has to be
    * called so that this model contains actual data from the eFaps-DataBase. The
    * method works in conjunction with {@link #executeRowResult(Map, ListQuery)}.
    */
-  @SuppressWarnings("unchecked")
   public void execute() {
     try {
       // first get list of object ids
-      final List<Return> ret =
-          getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-              ParameterValues.INSTANCE, new Instance(super.getOid()));
 
-      final List<List<Instance>> lists =
-          (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
+      List<List<Instance>> lists = getInstanceLists();
+
       final List<Instance> instances = new ArrayList<Instance>();
       final Map<Instance, List<Instance>> instMapper =
           new HashMap<Instance, List<Instance>>();
@@ -483,7 +489,7 @@ public class TableModel extends AbstractModel {
    * @see #table
    */
   public Table getTable() {
-    return Table.get(this.tableuuid);
+    return Table.get(this.tableUUID);
   }
 
   /**
@@ -656,8 +662,9 @@ public class TableModel extends AbstractModel {
       this.showCheckBoxes = false;
     } else {
       // set target table
-      this.tableuuid = command.getTargetTable().getUUID();
-
+      if (command.getTargetTable() != null) {
+        this.tableUUID = command.getTargetTable().getUUID();
+      }
       // set default sort
       if (command.getTargetTableSortKey() != null) {
         this.sortKey = getCommand().getTargetTableSortKey();
@@ -779,6 +786,16 @@ public class TableModel extends AbstractModel {
       // we don't throw an error because this are only Usersettings
       LOG.error("error during the setting of UserAttributes", e);
     }
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #tableUUID}.
+   *
+   * @param tableUUID
+   *                the tableUUID to set
+   */
+  protected void setTableUUID(UUID tableUUID) {
+    this.tableUUID = tableUUID;
   }
 
   /**

@@ -34,6 +34,7 @@ import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -45,21 +46,24 @@ import org.efaps.util.cache.CacheReloadException;
  * administrational type or command. On initialisation of a EventDefinition, for
  * faster access during runtime, the Class of the Program is instanciated and
  * the Method stored.
- * 
+ *
  * @author tmo
  * @author jmo
  * @version $Id$
  */
-public class EventDefinition extends AbstractAdminObject implements EventExecution {
+public class EventDefinition extends AbstractAdminObject implements
+    EventExecution {
+
   /**
    * Logger for this class
    */
-  private static final Logger LOG = LoggerFactory.getLogger(EventDefinition.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(EventDefinition.class);
 
   /**
    * The variable stores the position in a event pool (more than one event
    * definition for one thrown event.
-   * 
+   *
    * @see #getIndexPos
    */
   private final long indexPos;
@@ -100,9 +104,9 @@ public class EventDefinition extends AbstractAdminObject implements EventExecuti
 
   /**
    * set the properties in the superclass
-   * 
+   *
    * @param _oid
-   *          OID of thie EventDefenitoin
+   *                OID of thie EventDefenitoin
    */
   private void setProperties(final String _oid) {
     SearchQuery query = new SearchQuery();
@@ -130,7 +134,7 @@ public class EventDefinition extends AbstractAdminObject implements EventExecuti
 
   /**
    * This is the getter method for instance variable {@link #indexPos}.
-   * 
+   *
    * @return value of instance variable {@link #indexPos}
    * @see #indexPos
    */
@@ -140,7 +144,7 @@ public class EventDefinition extends AbstractAdminObject implements EventExecuti
 
   /**
    * This is the getter method for instance variable {@link #resourceName}.
-   * 
+   *
    * @return value of instance variable {@link #resourceName}
    * @see #resourceName
    */
@@ -165,8 +169,11 @@ public class EventDefinition extends AbstractAdminObject implements EventExecuti
     } catch (SecurityException e) {
       LOG.error("could not access Class: '" + this.resourceName + "'", e);
     } catch (NoSuchMethodException e) {
-      LOG.error("could not find method: '" + this.methodName + "' in class: '"
-          + this.resourceName + "'", e);
+      LOG.error("could not find method: '"
+          + this.methodName
+          + "' in class: '"
+          + this.resourceName
+          + "'", e);
 
     }
 
@@ -186,9 +193,11 @@ public class EventDefinition extends AbstractAdminObject implements EventExecuti
     } catch (IllegalAccessException e) {
       LOG.error("could not access class: '" + this.resourceName, e);
     } catch (InvocationTargetException e) {
-      LOG.error("could not invoke method: '" + this.methodName
-          + "' in class: '" + this.resourceName, e);
-     throw (EFapsException) e.getCause();
+      LOG.error("could not invoke method: '"
+          + this.methodName
+          + "' in class: '"
+          + this.resourceName, e);
+      throw (EFapsException) e.getCause();
     }
     return ret;
 
@@ -197,9 +206,9 @@ public class EventDefinition extends AbstractAdminObject implements EventExecuti
   /**
    * Loads all events from the database and assigns them to the specific
    * administrational type or command
-   * 
+   *
    * @param _context
-   *          eFaps context for this request
+   *                eFaps context for this request
    */
   public static void initialise() throws Exception {
     SearchQuery query = new SearchQuery();
@@ -304,7 +313,20 @@ public class EventDefinition extends AbstractAdminObject implements EventExecuti
         menu.addEvent(triggerEvent, new EventDefinition(eventId, eventName,
             eventPos, resName, method, eventOID));
 
-      } else if (LOG.isDebugEnabled()) {
+      } else if (eFapsClass == EFapsClassName.FIELDTABLE) {
+
+        FieldTable fieldtable = FieldTable.get(abstractID);
+
+        if (LOG.isDebugEnabled()) {
+          LOG.debug("       Field=" + fieldtable.getName());
+        }
+
+        fieldtable.addEvent(triggerEvent, new EventDefinition(eventId,
+            eventName, eventPos, resName, method, eventOID));
+
+      }
+
+      else if (LOG.isDebugEnabled()) {
         LOG.debug("initialise() - unknown event trigger connection");
       }
     }
@@ -313,9 +335,9 @@ public class EventDefinition extends AbstractAdminObject implements EventExecuti
 
   /**
    * get the ClassName from the Database
-   * 
+   *
    * @param _id
-   *          ID of the Program the ClassName is searched for
+   *                ID of the Program the ClassName is searched for
    * @return ClassName
    */
   private static String getClassName(final String _id) {
@@ -339,9 +361,9 @@ public class EventDefinition extends AbstractAdminObject implements EventExecuti
 
   /**
    * get the Name of the Type from the Database
-   * 
+   *
    * @param abstractID
-   *          ID the Typename must be resolved
+   *                ID the Typename must be resolved
    * @return NAem of the Type
    */
   private static String getTypeName(final long abstractID) {

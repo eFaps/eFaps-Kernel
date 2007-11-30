@@ -22,10 +22,9 @@ package org.efaps.ui.wicket.models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.UUID;
 
+import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.model.Model;
@@ -69,8 +68,7 @@ public class FormModel extends AbstractModel {
    * @see #getValues
    * @see #setValues
    */
-  private final Map<ElementType, Model> elements =
-      new TreeMap<ElementType, Model>();
+  private final List<Element> elements = new ArrayList<Element>();
 
   /**
    * The instance variable stores the form which must be shown.
@@ -162,16 +160,19 @@ public class FormModel extends AbstractModel {
             }
             rowgroupcount = group.getGroupCount();
           } else if (field instanceof FieldTable) {
-
+            final FieldTableModel tablemodel =
+                new FieldTableModel(this.getCommandUUID(), this.getOid(),
+                    ((FieldTable) field));
+            this.elements.add(new Element(ElementType.TABLE, tablemodel));
+            addNew = true;
           } else if (field instanceof FieldHeading) {
-            final FieldHeading heading = (FieldHeading) field;
-            final HeadingModel cell = new HeadingModel(heading);
-            this.elements.put(ElementType.HEADING, cell);
+            this.elements.add(new Element(ElementType.HEADING,
+                new HeadingModel((FieldHeading) field)));
             addNew = true;
           } else {
             if (addNew) {
               formelement = new FormElementModel();
-              this.elements.put(ElementType.FORM, formelement);
+              this.elements.add(new Element(ElementType.FORM, formelement));
               addNew = false;
             }
 
@@ -286,7 +287,7 @@ public class FormModel extends AbstractModel {
    *
    * @return value of instance variable {@link #elements}
    */
-  public Map<ElementType, Model> getElements() {
+  public List<Element> getElements() {
     return this.elements;
   }
 
@@ -326,6 +327,39 @@ public class FormModel extends AbstractModel {
      */
     public List<FormRowModel> getRowModels() {
       return this.rowModels;
+    }
+
+  }
+
+  public class Element implements IClusterable {
+
+    private static final long serialVersionUID = 1L;
+
+    private final ElementType type;
+
+    private final Model model;
+
+    public Element(final ElementType _type, final Model _model) {
+      this.type = _type;
+      this.model = _model;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #type}.
+     *
+     * @return value of instance variable {@link #type}
+     */
+    public ElementType getType() {
+      return this.type;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #model}.
+     *
+     * @return value of instance variable {@link #model}
+     */
+    public Model getModel() {
+      return this.model;
     }
 
   }
