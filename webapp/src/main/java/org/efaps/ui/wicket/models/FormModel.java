@@ -160,15 +160,19 @@ public class FormModel extends AbstractModel {
             }
             rowgroupcount = group.getGroupCount();
           } else if (field instanceof FieldTable) {
-            final FieldTableModel tablemodel =
-                new FieldTableModel(this.getCommandUUID(), this.getOid(),
-                    ((FieldTable) field));
-            this.elements.add(new Element(ElementType.TABLE, tablemodel));
-            addNew = true;
+            if (!isCreateMode() && !isEditMode() && !isSearchMode()) {
+              final FieldTableModel tablemodel =
+                  new FieldTableModel(this.getCommandUUID(), this.getOid(),
+                      ((FieldTable) field));
+              this.elements.add(new Element(ElementType.TABLE, tablemodel));
+              addNew = true;
+            }
           } else if (field instanceof FieldHeading) {
-            this.elements.add(new Element(ElementType.HEADING,
-                new HeadingModel((FieldHeading) field)));
-            addNew = true;
+            if (!isCreateMode() && !isEditMode() && !isSearchMode()) {
+              this.elements.add(new Element(ElementType.HEADING,
+                  new HeadingModel((FieldHeading) field)));
+              addNew = true;
+            }
           } else {
             if (addNew) {
               formelement = new FormElementModel();

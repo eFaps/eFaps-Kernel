@@ -370,12 +370,12 @@ public class FooterPanel extends Panel {
         return true;
       }
 
-      final Iterator<?> iterator = this.getComponent().getPage().iterator();
+      final Iterator<?> iterator = this.form.iterator();
       FormPanel container = null;
       while (iterator.hasNext()) {
         final Object object = iterator.next();
-        if (object instanceof FormContainer) {
-          final Iterator<?> iterator2 = ((FormContainer) object).iterator();
+        if (object instanceof WebMarkupContainer) {
+          final Iterator<?> iterator2 = ((WebMarkupContainer) object).iterator();
           while (iterator2.hasNext()) {
             final Object object2 = iterator2.next();
             if (object2 instanceof FormPanel) {
