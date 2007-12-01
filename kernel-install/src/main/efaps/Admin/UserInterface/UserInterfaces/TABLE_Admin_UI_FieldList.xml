@@ -53,10 +53,16 @@
     </version>
     <name>Admin_UI_FieldList</name>
     <!-- fields -->
+    <field name="type">
+      <property name="Expression">Type</property>
+      <property name="Label">Admin_UI_Field/Type.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
     <field name="name">
       <property name="Expression">Name</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
       <property name="Label">Admin_UI_Field/Name.Label</property>
+      <property name="Width">4</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>

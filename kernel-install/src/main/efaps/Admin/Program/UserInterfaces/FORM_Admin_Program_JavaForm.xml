@@ -84,7 +84,7 @@
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="createGroup">
+    <field name="createGroup" character="Group">
       <property name="Creatable">false</property>
       <property name="GroupCount">2</property>
     </field>
@@ -103,7 +103,7 @@
       <property name="Expression">Created</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="modifyGroup">
+    <field name="modifyGroup" character="Group">
       <property name="Creatable">false</property>
       <property name="GroupCount">2</property>
     </field>

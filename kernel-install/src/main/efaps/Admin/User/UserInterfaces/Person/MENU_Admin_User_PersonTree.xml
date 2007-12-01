@@ -58,10 +58,8 @@
     <target>
       <menu>Admin_User_PersonTree_Menu</menu>
       <form>Admin_User_PersonForm</form>
-      <subcmd>Admin_User_PersonTree_Roles</subcmd>
-      <subcmd>Admin_User_PersonTree_Groups</subcmd>
     </target>
-    
+
     <!-- type tree for -->
     <type>Admin_User_Person</type>
     <!-- childs -->

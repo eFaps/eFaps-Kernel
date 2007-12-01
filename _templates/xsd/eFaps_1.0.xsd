@@ -564,10 +564,22 @@
   <xsd:complexType name="field">
     <xsd:sequence>
       <xsd:element name="icon" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="property" type="eFaps:property_field" maxOccurs="unbounded" minOccurs="1"></xsd:element>
+      <xsd:element name="property" type="eFaps:property_field" maxOccurs="unbounded" minOccurs="0"></xsd:element>
       <xsd:element name="trigger" type="eFaps:trigger" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+      <xsd:element name="table" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      <xsd:element name="evaluate" type="eFaps:evaluate" maxOccurs="1" minOccurs="0"></xsd:element>
     </xsd:sequence>
-    <xsd:attribute name="name" type="xsd:string"></xsd:attribute>
+    <xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+    <xsd:attribute name="character" use="optional" default="Expression">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Expression" />
+          <xsd:enumeration value="Group" />
+          <xsd:enumeration value="Heading" />
+          <xsd:enumeration value="Target" />
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
   </xsd:complexType>
 
 
@@ -714,6 +726,7 @@
               <xsd:enumeration value="GroupCount" />
               <xsd:enumeration value="HRef" />
               <xsd:enumeration value="Label" />
+              <xsd:enumeration value="Level"></xsd:enumeration>
               <xsd:enumeration value="Required" />
               <xsd:enumeration value="Searchable" />
               <xsd:enumeration value="ShowTypeIcon" />
