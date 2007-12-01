@@ -42,7 +42,12 @@ import org.efaps.db.SearchQuery;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 
 /**
+ * This class provides the Model for rendering MenuComponents in
+ * {@link #org.efaps.ui.wicket.components.menu.MenuPanel} and in
+ * {@link #org.efaps.ui.wicket.components.menutree.MenuTree}
+ *
  * @author tmo
+ * @author jmox
  * @version $Id:MenuItemModel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class MenuItemModel extends AbstractModel {
@@ -52,117 +57,153 @@ public class MenuItemModel extends AbstractModel {
 
   private static final long serialVersionUID = 505704924081527139L;
 
-  /** Url to the image of this menu item. */
-  private String image;
+  /**
+   * this instance variable stores in the case that this MenuItem is part of a
+   * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it was steped
+   * into the ancestor of this menuitem
+   *
+   * @see #ancestor
+   */
+  private DefaultMutableTreeNode ancestor;
 
-  /** Label of this menu item. */
-  private String label;
-
-  /** Description of this menu item. */
-  private String description;
-
-  private String reference;
+  /**
+   * in the case that the MenuItem is used for a submit, setteing this to true
+   * opens a Dialog to ask the user "do you really want to..?"
+   */
+  private boolean askUser = false;
 
   /**
    * All childs of this menu item.
    */
   private final List<MenuItemModel> childs = new ArrayList<MenuItemModel>();
 
+  /**
+   * this instance variable stores in the case that this MenuItem is part of a
+   * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it is selected
+   * by default and therefor the Form or Tabel connected to this MenuItem must
+   * be opened.
+   */
+  private boolean defaultSelected = false;
+
+  /** Description of this menu item. */
+  private String description;
+
+  /**
+   * this instance variable stores in the case that this MenuItem is part of a
+   * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it is a
+   * header. This is needed beacuse the headers are displayed in a differen
+   * style.
+   */
+  private boolean header = false;
+
+  /** Url to the image of this menu item. */
+  private String image;
+
+  /** Label of this menu item. */
+  private String label;
+
+  /** Reference of this menu item. */
+  private String reference;
+
+  /**
+   * this instance variable stores in the case that this MenuItem is part of a
+   * {@link #org.efaps.ui.wicket.components.menutree.MenuTree} if it was steped
+   * into this MenuItem.
+   *
+   * @see #ancestor
+   */
+  private boolean stepInto;
+
   /** Url of this menu item. */
   private String url;
 
-  private boolean header = false;
-
-  private boolean defaultSelected = false;
-
-  private boolean askUser = false;
-
-  private int windowWidth;
-
+  /** height of the window which will be opened */
   private int windowHeight;
 
-  private boolean stepInto;
-
-  private DefaultMutableTreeNode ancestor;
-
-  /**
-   * This is the getter method for the instance variable {@link #stepInto}.
-   *
-   * @return value of instance variable {@link #stepInto}
-   */
-  public boolean isStepInto() {
-    return this.stepInto;
-  }
+  /** width of the window which will be opened */
+  private int windowWidth;
 
   /**
-   * This is the setter method for the instance variable {@link #stepInto}.
+   * Contructor setting the UUID of this MenuItem
    *
-   * @param stepInto
-   *                the stepInto to set
+   * @param _uuid
    */
-  public void setStepInto(boolean stepInto) {
-    this.stepInto = stepInto;
-  }
-
   public MenuItemModel(final UUID _uuid) {
     this(_uuid, null);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // constructors / destructors
-
+  /**
+   * Contructor setting the UUID and the OID of this MenuItem
+   *
+   * @param _uuid
+   * @param _oid
+   */
   public MenuItemModel(final UUID _uuid, final String _oid) {
     super(_uuid, _oid);
     initialise();
   }
 
-  private void initialise() {
-    AbstractCommand _command = super.getCommand();
-    this.image = _command.getIcon();
-    this.reference = _command.getReference();
-    this.askUser = _command.isAskUser();
-    this.windowHeight = _command.getWindowHeight();
-    this.windowWidth = _command.getWindowWidth();
-    this.defaultSelected = _command.isDefaultSelected();
-    this.description = "";
-    this.label = "";
-
-    try {
-      String label = DBProperties.getProperty(_command.getLabel());
-
-      if (super.getOid() != null) {
-        SearchQuery query = new SearchQuery();
-        query.setObject(super.getOid());
-        ValueParser parser = new ValueParser(new StringReader(label));
-        ValueList list = parser.ExpressionString();
-        list.makeSelect(query);
-        if (query.selectSize() > 0) {
-          query.execute();
-          if (query.next()) {
-            label = list.makeString(query);
-          }
-          query.close();
-        }
-      }
-      this.label = label;
-
-      if (_command instanceof AbstractMenu) {
-        for (AbstractCommand subCmd : ((AbstractMenu) _command).getCommands()) {
-          if (subCmd != null && subCmd.hasAccess()) {
-            this.childs
-                .add(new MenuItemModel(subCmd.getUUID(), super.getOid()));
-          }
-        }
-      }
-    } catch (Exception e) {
-      throw new RestartResponseException(new ErrorPage(e));
-    }
+  /**
+   * this method return if this MenuItem has childs
+   *
+   * @see #childs
+   * @see #getChilds()
+   * @return true if this MenuItem has childs, else false
+   */
+  public boolean hasChilds() {
+    return !this.childs.isEmpty();
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #childs}.
+   *
+   * @return value of instance variable {@link #childs}
+   */
+  public List<MenuItemModel> getChilds() {
+    return this.childs;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #description}.
+   *
+   * @return value of instance variable {@link #description}
+   */
+  public String getDescription() {
+    return this.description;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #image}.
+   *
+   * @return value of instance variable {@link #image}
+   */
   public String getImage() {
     return this.image;
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #label}.
+   *
+   * @return value of instance variable {@link #label}
+   */
+  public String getLabel() {
+    return this.label;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #reference}.
+   *
+   * @return value of instance variable {@link #reference}
+   */
+  public String getReference() {
+    return this.reference;
+  }
+
+  /**
+   * this method returns the URL to the Image of this MenuItem
+   *
+   * @return URL of the Image
+   */
   public String getTypeImage() {
     String ret = null;
     if (super.getOid() != null) {
@@ -173,32 +214,6 @@ public class MenuItemModel extends AbstractModel {
       }
     }
     return ret;
-  }
-
-  public void setURL(String _url) {
-    this.url = _url;
-  }
-
-  public List<MenuItemModel> getChilds() {
-    return this.childs;
-  }
-
-  public boolean hasChilds() {
-    return !this.childs.isEmpty();
-  }
-
-  public String getLabel() {
-    return this.label;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #reference}.
-   *
-   * @return value of instance variable {@link #reference}
-   */
-
-  public String getReference() {
-    return this.reference;
   }
 
   /**
@@ -217,18 +232,94 @@ public class MenuItemModel extends AbstractModel {
    * @param url
    *                the url to set
    */
-  public void setUrl(String url) {
-    this.url = url;
+  public void setURL(final String _url) {
+    this.url = _url;
   }
 
   /**
-   * This is the getter method for the instance variable {@link #description}.
+   * This is the getter method for the instance variable {@link #windowHeight}.
    *
-   * @return value of instance variable {@link #description}
+   * @return value of instance variable {@link #windowHeight}
    */
 
-  public String getDescription() {
-    return this.description;
+  public int getWindowHeight() {
+    return this.windowHeight;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #windowWidth}.
+   *
+   * @return value of instance variable {@link #windowWidth}
+   */
+
+  public int getWindowWidth() {
+    return this.windowWidth;
+  }
+
+  /**
+   * this method initialises this MenuItem
+   */
+  private void initialise() {
+    final AbstractCommand command = super.getCommand();
+    this.image = command.getIcon();
+    this.reference = command.getReference();
+    this.askUser = command.isAskUser();
+    this.windowHeight = command.getWindowHeight();
+    this.windowWidth = command.getWindowWidth();
+    this.defaultSelected = command.isDefaultSelected();
+    this.description = "";
+    this.label = "";
+
+    try {
+      String label = DBProperties.getProperty(command.getLabel());
+
+      if (super.getOid() != null) {
+        final SearchQuery query = new SearchQuery();
+        query.setObject(super.getOid());
+        final ValueParser parser = new ValueParser(new StringReader(label));
+        final ValueList list = parser.ExpressionString();
+        list.makeSelect(query);
+        if (query.selectSize() > 0) {
+          query.execute();
+          if (query.next()) {
+            label = list.makeString(query);
+          }
+          query.close();
+        }
+      }
+      this.label = label;
+
+      if (command instanceof AbstractMenu) {
+        for (AbstractCommand subCmd : ((AbstractMenu) command).getCommands()) {
+          if (subCmd != null && subCmd.hasAccess()) {
+            this.childs
+                .add(new MenuItemModel(subCmd.getUUID(), super.getOid()));
+          }
+        }
+      }
+    } catch (Exception e) {
+      throw new RestartResponseException(new ErrorPage(e));
+    }
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #askUser}.
+   *
+   * @return value of instance variable {@link #askUser}
+   */
+
+  public boolean isAskUser() {
+    return this.askUser;
+  }
+
+  /**
+   * This is the getter method for the instance variable
+   * {@link #defaultSelected}.
+   *
+   * @return value of instance variable {@link #defaultSelected}
+   */
+  public boolean isDefaultSelected() {
+    return this.defaultSelected;
   }
 
   /**
@@ -247,71 +338,53 @@ public class MenuItemModel extends AbstractModel {
    * @param header
    *                the header to set
    */
-  public void setHeader(boolean header) {
+  public void setHeader(final boolean header) {
     this.header = header;
   }
 
   /**
-   * This is the getter method for the instance variable
-   * {@link #defaultSelected}.
+   * This is the getter method for the instance variable {@link #stepInto}.
    *
-   * @return value of instance variable {@link #defaultSelected}
+   * @return value of instance variable {@link #stepInto}
    */
-  public boolean isDefaultSelected() {
-    return this.defaultSelected;
+  public boolean isStepInto() {
+    return this.stepInto;
   }
 
   /**
-   * This is the getter method for the instance variable {@link #askUser}.
+   * This is the setter method for the instance variable {@link #stepInto}.
    *
-   * @return value of instance variable {@link #askUser}
+   * @param stepInto
+   *                the stepInto to set
    */
-
-  public boolean isAskUser() {
-    return this.askUser;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #windowWidth}.
-   *
-   * @return value of instance variable {@link #windowWidth}
-   */
-
-  public int getWindowWidth() {
-    return this.windowWidth;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #windowHeight}.
-   *
-   * @return value of instance variable {@link #windowHeight}
-   */
-
-  public int getWindowHeight() {
-    return this.windowHeight;
+  public void setStepInto(final boolean stepInto) {
+    this.stepInto = stepInto;
   }
 
   @Override
   public void resetModel() {
-
+    // not neede here
   }
 
   /**
-   * get the TreeModel used in the Component to construct the actuall tree
+   * get a TreeModel which used in the Components to construct the actuall tree.
    *
-   * @see #addNode(DefaultMutableTreeNode, List)
-   * @return TreeModel of this StructurBrowseModel
+   * @see #getNode()
+   * @return TreeModel of this MenuItemModel including the ChildNodes
    */
   public TreeModel getTreeModel() {
-    DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
-    this.setHeader(true);
-    addNode(rootNode, this.childs);
-    TreeModel model = new DefaultTreeModel(rootNode);
-    return model;
+    return new DefaultTreeModel(getNode());
   }
 
+  /**
+   * get a Node of this MenuItemModel including the Childs
+   *
+   * @see #addNode(DefaultMutableTreeNode, List)
+   * @return DefaultMutableTreeNode of this MenuItemModel including the
+   *         ChildNodes
+   */
   public DefaultMutableTreeNode getNode() {
-    DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
+    final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
     this.setHeader(true);
     addNode(rootNode, this.childs);
     return rootNode;
@@ -326,19 +399,16 @@ public class MenuItemModel extends AbstractModel {
    * @param childs
    *                List<StructurBrowserModel>to be added as childs
    */
-  private void addNode(DefaultMutableTreeNode parent, List<MenuItemModel> childs) {
+  private void addNode(final DefaultMutableTreeNode parent,
+                       final List<MenuItemModel> childs) {
     for (int i = 0; i < childs.size(); i++) {
-      DefaultMutableTreeNode childNode =
+      final DefaultMutableTreeNode childNode =
           new DefaultMutableTreeNode(childs.get(i));
       parent.add(childNode);
       if (childs.get(i).hasChilds()) {
         addNode(childNode, childs.get(i).childs);
       }
     }
-  }
-
-  public void setAncestor(final DefaultMutableTreeNode _node) {
-    this.ancestor = _node;
   }
 
   /**
@@ -350,6 +420,14 @@ public class MenuItemModel extends AbstractModel {
     return this.ancestor;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * This is the setter method for the instance variable {@link #ancestor}.
+   *
+   * @param _node
+   *                the ancestor to set
+   */
+  public void setAncestor(final DefaultMutableTreeNode _node) {
+    this.ancestor = _node;
+  }
 
 }

@@ -51,7 +51,7 @@ public class Form extends AbstractCollection {
    * @return instance of class {@link Form}
    * @see #getCache
    */
-  static public Form get(final long _id) {
+  public static Form get(final long _id) {
     return getCache().get(_id);
   }
 
@@ -64,7 +64,7 @@ public class Form extends AbstractCollection {
    * @return instance of class {@link Form}
    * @see #getCache
    */
-  static public Form get(final String _name) {
+  public static Form get(final String _name) {
     return getCache().get(_name);
   }
 
@@ -77,7 +77,7 @@ public class Form extends AbstractCollection {
    * @return instance of class {@link Form}
    * @see #getCache
    */
-  static public Form get(final UUID _uuid) {
+  public static Form get(final UUID _uuid) {
     return getCache().get(_uuid);
   }
 
@@ -86,7 +86,7 @@ public class Form extends AbstractCollection {
    *
    * @return value of static variable {@link #cache}
    */
-  static UserInterfaceObjectCache<Form> getCache() {
+  protected static UserInterfaceObjectCache<Form> getCache() {
     return cache;
   }
 
@@ -95,6 +95,6 @@ public class Form extends AbstractCollection {
    *
    * @see #getCache
    */
-  static private UserInterfaceObjectCache<Form> cache =
+  private static UserInterfaceObjectCache<Form> cache =
       new UserInterfaceObjectCache<Form>(Form.class);
 }

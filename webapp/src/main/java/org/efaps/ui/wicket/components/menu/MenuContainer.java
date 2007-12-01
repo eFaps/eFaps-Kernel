@@ -152,7 +152,7 @@ public class MenuContainer extends AbstractParentMarkupContainer {
       this.add(item);
     }
     if (_menuItemModel.getReference() != null) {
-      _menuItemModel.setUrl(_menuItemModel.getReference());
+      _menuItemModel.setURL(_menuItemModel.getReference());
       if (_menuItemModel.getReference().equals("/eFaps/logout?")) {
         this.add(new LogOutLink(getNewChildId(), _menuItemModel));
       }
