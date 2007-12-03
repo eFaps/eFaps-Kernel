@@ -102,7 +102,7 @@ if(typeof dojo == "undefined"){
 	dojo.version = {
 		// summary: version number of this instance of dojo.
 		major: 0, minor: 0, patch: 0, flag: "dev",
-		revision: Number("$Rev$".match(/[0-9]+/)[0]),
+		revision: Number("$Rev: 11363 $".match(/[0-9]+/)[0]),
 		toString: function(){
 			with(d.version){
 				return major + "." + minor + "." + patch + flag + " (" + revision + ")";	// String
