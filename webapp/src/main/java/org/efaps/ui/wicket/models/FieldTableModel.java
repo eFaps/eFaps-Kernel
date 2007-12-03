@@ -36,6 +36,10 @@ import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
+/**
+ * @author jmox
+ * @version $Id$
+ */
 public class FieldTableModel extends TableModel {
 
   private static final long serialVersionUID = 1L;

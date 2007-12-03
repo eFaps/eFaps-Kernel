@@ -75,6 +75,8 @@ public class DnDBehavior extends AbstractDojoBehavior {
    */
   private String appendJavaScript;
 
+  private CharSequence dndType = "eFapsdnd";
+
   /**
    * Constuctor setting the Type of the DnDBehavior. Instead of using this
    * constructor it can be used on e of the static methods.
@@ -87,6 +89,11 @@ public class DnDBehavior extends AbstractDojoBehavior {
    */
   public DnDBehavior(BehaviorType _type) {
     this.type = _type;
+  }
+
+  public DnDBehavior(BehaviorType _type, final String _dndType) {
+    this.type = _type;
+    this.dndType = _dndType;
   }
 
   /*
@@ -105,6 +112,7 @@ public class DnDBehavior extends AbstractDojoBehavior {
         value += _tag.getString("class");
       }
       _tag.put("class", value);
+      _tag.put("dndType", this.dndType);
     } else if (this.type == BehaviorType.HANDLE) {
       String value = "dojoDndHandle ";
       if (_tag.getString("class") != null) {
@@ -119,6 +127,7 @@ public class DnDBehavior extends AbstractDojoBehavior {
       if (this.handles) {
         _tag.put("withHandles", "true");
       }
+      _tag.put("accept", this.dndType);
     }
 
   }
@@ -208,16 +217,16 @@ public class DnDBehavior extends AbstractDojoBehavior {
               .append("    source.copyState = function(keyPressed){ return false};\n");
         }
 
-        builder
-            .append("    ")
-            .append(varName)
-            .append(
-                " = dojo.subscribe(\"/dnd/drop\", function(source,nodes,iscopy){\n")
-            .append(this.appendJavaScript).append(
-                "      dojo.unsubscribe(subcription);\n").append("    });\n")
-            .append("  });\n").append(
-                "  dojo.subscribe(\"/dnd/cancel\", function(){\n").append(
-                "    dojo.unsubscribe(").append(varName).append(");\n  });\n");
+        builder.append("    ").append(varName).append(
+            " = dojo.subscribe(\"/dnd/drop\", function(source,nodes,iscopy){\n"
+                + "    var jsnode = source.getItem(nodes[0].id);\n"
+                + "    var dndType  = jsnode.type;\n"
+                + "    if(dndType ==\"").append(this.dndType).append(
+            "\" ){\n" + "").append(this.appendJavaScript).append(
+            "      dojo.unsubscribe(").append(varName).append(");\n").append(
+            "   }\n });\n").append("  });\n").append(
+            "  dojo.subscribe(\"/dnd/cancel\", function(){\n").append(
+            "    dojo.unsubscribe(").append(varName).append(");\n  });\n");
 
         _response.renderJavascript(builder.toString(), DnDBehavior.class
             .toString());
@@ -251,12 +260,39 @@ public class DnDBehavior extends AbstractDojoBehavior {
     return new DnDBehavior(BehaviorType.SOURCE);
   }
 
+  public static DnDBehavior getSourceBehavior(final String _dndType) {
+    return new DnDBehavior(BehaviorType.SOURCE, _dndType);
+  }
+
+  public static DnDBehavior getItemBehavior(final String _dndType) {
+    return new DnDBehavior(BehaviorType.ITEM, _dndType);
+  }
+
   public static DnDBehavior getItemBehavior() {
     return new DnDBehavior(BehaviorType.ITEM);
   }
 
   public static DnDBehavior getHandleBehavior() {
     return new DnDBehavior(BehaviorType.HANDLE);
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #dndType}.
+   *
+   * @return value of instance variable {@link #dndType}
+   */
+  public CharSequence getDndType() {
+    return this.dndType;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #dndType}.
+   *
+   * @param dndType
+   *                the dndType to set
+   */
+  public void setDndType(CharSequence dndType) {
+    this.dndType = dndType;
   }
 
 }

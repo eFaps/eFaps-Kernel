@@ -46,6 +46,7 @@ import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.UserAttributeKey;
+import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -81,12 +82,16 @@ public class HeaderPanel extends Panel {
     this.add(new AjaxReloadTableBehavior());
     this.add(new SimpleAttributeModifier("class", "eFapsTableHeader"));
 
-    final DnDBehavior dndBehavior = DnDBehavior.getSourceBehavior();
+    final DnDBehavior dndBehavior =
+        DnDBehavior.getSourceBehavior(this.headerproperties);
     dndBehavior.setHorizontal(true);
     dndBehavior.setHandles(true);
-    dndBehavior.setAppendJavaScript("storeColumnOrder(getColumnOrder("
+    dndBehavior.setAppendJavaScript(this.headerproperties
+        + ".storeColumnOrder(getColumnOrder("
         + this.headerproperties
-        + "));\n reloadTable();\n");
+        + "));\n"
+        + this.headerproperties
+        + ".reloadTable()\n");
     this.add(dndBehavior);
 
     final int browserWidth =
@@ -137,7 +142,7 @@ public class HeaderPanel extends Panel {
         cell.add(new SimpleAttributeModifier("class",
             "eFapsTableHeaderCell eFapsCellWidth" + i));
 
-        cell.add(DnDBehavior.getItemBehavior());
+        cell.add(DnDBehavior.getItemBehavior(this.headerproperties));
       }
       cell.setOutputMarkupId(true);
       cellRepeater.add(cell);
@@ -198,17 +203,21 @@ public class HeaderPanel extends Panel {
             + ".storeColumnWidths = "
             + ((AjaxStoreColumnWidthBehavior) this.getBehaviors(
                 AjaxStoreColumnWidthBehavior.class).get(0)).getJavaScript()
+            + "  "
+            + this.headerproperties
+            + ".storeColumnOrder = "
+            + ((AjaxStoreColumnOrderBehavior) this.getBehaviors(
+                AjaxStoreColumnOrderBehavior.class).get(0)).getJavaScript()
+            + this.headerproperties
+            + ".reloadTable = "
+            + ((AjaxReloadTableBehavior) this.getBehaviors(
+                AjaxReloadTableBehavior.class).get(0)).getJavaScript()
             + "  addOnResizeEvent(function (){positionTableColumns("
             + this.headerproperties
             + ");});\n"
             + "  dojo.addOnLoad(function (){positionTableColumns("
             + this.headerproperties
             + ");});\n"
-
-            + ((AjaxStoreColumnOrderBehavior) this.getBehaviors(
-                AjaxStoreColumnOrderBehavior.class).get(0)).getJavaScript()
-            + ((AjaxReloadTableBehavior) this.getBehaviors(
-                AjaxReloadTableBehavior.class).get(0)).getJavaScript()
             + JavascriptUtils.SCRIPT_CLOSE_TAG;
 
     return ret;
@@ -285,7 +294,7 @@ public class HeaderPanel extends Panel {
 
     public String getJavaScript() {
       final StringBuilder ret = new StringBuilder();
-      ret.append("  function storeColumnOrder(_columnOrder){\n    ").append(
+      ret.append("function(_columnOrder){\n    ").append(
           generateCallbackScript("wicketAjaxPost('"
               + getCallbackUrl(false)
               + "','"
@@ -311,8 +320,8 @@ public class HeaderPanel extends Panel {
 
     public String getJavaScript() {
       final StringBuilder ret = new StringBuilder();
-      ret.append("  function reloadTable(){\n    ").append(getCallbackScript())
-          .append("\n  }\n");
+      ret.append("  function(){\n    ").append(getCallbackScript()).append(
+          "\n  }\n");
       return ret.toString();
     }
 
@@ -320,8 +329,12 @@ public class HeaderPanel extends Panel {
     protected void respond(final AjaxRequestTarget _target) {
       final TableModel model = (TableModel) this.getComponent().getModel();
       model.resetModel();
-      this.getComponent().setResponsePage(new TablePage(model));
-
+      if (this.getComponent().getPage() instanceof TablePage) {
+        this.getComponent().setResponsePage(new TablePage(model));
+      } else {
+        this.getComponent().setResponsePage(
+            new FormPage(this.getComponent().getPage().getModel()));
+      }
     }
   }
 }

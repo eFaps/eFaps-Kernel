@@ -34,6 +34,8 @@ function headerProperties(){
  this.bodyID = "";
  this.modelID = "";
  this.storeColumnWidths ="";
+ this.storeColumnOrder = "";
+ this.reloadTable = "";
 } 
 
 function positionTableColumns(_props) {
