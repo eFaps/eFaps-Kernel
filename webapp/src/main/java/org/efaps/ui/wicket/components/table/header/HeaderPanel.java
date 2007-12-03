@@ -193,15 +193,18 @@ public class HeaderPanel extends Panel {
             + this.headerproperties
             + ".modelID = "
             + ((TableModel) super.getModel()).getTableId()
-            + ";\n"
+            + ";\n  "
+            + this.headerproperties
+            + ".storeColumnWidths = "
+            + ((AjaxStoreColumnWidthBehavior) this.getBehaviors(
+                AjaxStoreColumnWidthBehavior.class).get(0)).getJavaScript()
             + "  addOnResizeEvent(function (){positionTableColumns("
             + this.headerproperties
             + ");});\n"
             + "  dojo.addOnLoad(function (){positionTableColumns("
             + this.headerproperties
             + ");});\n"
-            + ((AjaxStoreColumnWidthBehavior) this.getBehaviors(
-                AjaxStoreColumnWidthBehavior.class).get(0)).getJavaScript()
+
             + ((AjaxStoreColumnOrderBehavior) this.getBehaviors(
                 AjaxStoreColumnOrderBehavior.class).get(0)).getJavaScript()
             + ((AjaxReloadTableBehavior) this.getBehaviors(
@@ -247,7 +250,7 @@ public class HeaderPanel extends Panel {
 
     public String getJavaScript() {
       final StringBuilder ret = new StringBuilder();
-      ret.append("  function storeColumnWidths(_widths){\n    ").append(
+      ret.append("function(_widths){\n    ").append(
           generateCallbackScript("wicketAjaxPost('"
               + getCallbackUrl(false)
               + "','"

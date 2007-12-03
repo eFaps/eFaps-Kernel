@@ -37,11 +37,14 @@ public class FieldTableModel extends TableModel {
 
   private final long id;
 
+  private final String name;
+
   public FieldTableModel(final UUID _commanduuid, final String _oid,
                          final FieldTable _fieldTable) {
     super(_commanduuid, _oid);
     setTableUUID(_fieldTable.getTargetTable().getUUID());
     this.id = _fieldTable.getId();
+    this.name = _fieldTable.getName();
   }
 
   @SuppressWarnings("unchecked")
@@ -54,4 +57,15 @@ public class FieldTableModel extends TableModel {
         (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
     return lists;
   }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.efaps.ui.wicket.models.TableModel#getUserAttributeKey(org.efaps.ui.wicket.models.TableModel.UserAttributeKey)
+   */
+  @Override
+  public String getUserAttributeKey(UserAttributeKey _key) {
+    return super.getCommandUUID() + "-" + this.name + "-" + _key.value;
+  }
+
 }

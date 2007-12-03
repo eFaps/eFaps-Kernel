@@ -33,6 +33,7 @@ function headerProperties(){
  this.headerID = "";
  this.bodyID = "";
  this.modelID = "";
+ this.storeColumnWidths ="";
 } 
 
 function positionTableColumns(_props) {
@@ -171,7 +172,7 @@ function endColumnSize(_seperator,_event,_props){
   _seperator.style.width = parseInt(_seperator.style.width) - seperatorWidth +"px";
   _seperator.style.left = parseInt(_seperator.style.left) - move + seperatorWidth/2 +"px";
   _seperator.style.backgroundPosition = "-200px 0";
-  storeColumnWidths(getColumnWidths(_props));
+  _props.storeColumnWidths(getColumnWidths(_props));
 }
 
 

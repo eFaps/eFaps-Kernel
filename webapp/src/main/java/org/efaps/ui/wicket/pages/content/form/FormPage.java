@@ -96,7 +96,7 @@ public class FormPage extends AbstractContentPage {
     script.setVisible(model.isCreateMode()
         || model.isEditMode()
         || model.isSearchMode());
-    int i = 3;
+    int i = 0;
     RepeatingView elementRepeater = new RepeatingView("elementRepeater");
     form.add(elementRepeater);
     for (Element element : model.getElements()) {
