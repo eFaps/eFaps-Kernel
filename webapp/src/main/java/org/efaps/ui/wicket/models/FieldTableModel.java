@@ -23,17 +23,27 @@ package org.efaps.ui.wicket.models;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.FieldTable;
+import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 public class FieldTableModel extends TableModel {
 
   private static final long serialVersionUID = 1L;
+
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(TableModel.class);
 
   private final long id;
 
@@ -45,6 +55,23 @@ public class FieldTableModel extends TableModel {
     setTableUUID(_fieldTable.getTargetTable().getUUID());
     this.id = _fieldTable.getId();
     this.name = _fieldTable.getName();
+    try {
+      if (Context.getThreadContext().containsUserAtribute(
+          getUserAttributeKey(UserAttributeKey.SORTKEY))) {
+        super.setSortKey(Context.getThreadContext().getUserAttribute(
+            getUserAttributeKey(UserAttributeKey.SORTKEY)));
+      }
+      if (Context.getThreadContext().containsUserAtribute(
+          getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
+        super
+            .setSortDirection(SortDirection
+                .getEnum((Context.getThreadContext()
+                    .getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION)))));
+      }
+    } catch (EFapsException e) {
+      // we don't throw an error because this are only Usersettings
+      LOG.error("error during the retrieve of UserAttributes", e);
+    }
   }
 
   @SuppressWarnings("unchecked")

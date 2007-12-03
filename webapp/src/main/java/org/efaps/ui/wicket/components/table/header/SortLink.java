@@ -25,6 +25,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
 /**
@@ -65,8 +66,12 @@ public class SortLink extends Link {
     tablemodel.setSortDirection(model.getSortDirection());
 
     tablemodel.sort();
-    this.getRequestCycle().setResponsePage(new TablePage(tablemodel));
+    if (this.getPage() instanceof TablePage) {
+      this.getRequestCycle().setResponsePage(new TablePage(tablemodel));
+    } else {
+      this.getRequestCycle().setResponsePage(
+          new FormPage(this.getPage().getModel()));
+    }
 
   }
-
 }
