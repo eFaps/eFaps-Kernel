@@ -270,7 +270,7 @@ public class MenuContainer extends AbstractParentMarkupContainer {
     }
     if (_menuItem.getTarget() == Target.HIDDEN) {
       _html.append("', 'eFapsFrameHidden', '");
-    } else if (_menuItem.getTarget() == Target.POPUP) {
+    } else if (_menuItem.getTarget() == Target.MODAL) {
       _html.append("', 'top', '");
     } else {
       _html.append("', '_self', '");
