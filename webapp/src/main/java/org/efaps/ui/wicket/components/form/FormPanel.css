@@ -1,5 +1,5 @@
 .eFapsForm {
-  
+  width: 99%;
 }
 
 .eFapsFormRow {
@@ -7,7 +7,7 @@
 }
 
 .eFapsFormLabel,.eFapsFormLabelRequired,.eFapsFormLabelRequiredForce {
-  background-color: #008800;
+  background-color: #D0EDB8;
   font-weight: bold;
   padding-left: 4px;
   padding-right: 4px;
@@ -16,7 +16,10 @@
 }
 
 .eFapsFormLabel {
-  color: white;
+  color: #008800;
+  border-style: solid;
+  border-color: #008800;
+  border-width: 2px;
 }
 
 .eFapsFormLabelRequired {
@@ -33,7 +36,6 @@
 .eFapsFormValue {
   padding-left: 4px;
   padding-right: 4px;
-  width: 150px;
   white-space: nowrap;
   background-color: white;
   background-image: url("dotted-line.png");
