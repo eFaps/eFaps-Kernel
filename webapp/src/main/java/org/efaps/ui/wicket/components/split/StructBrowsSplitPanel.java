@@ -32,34 +32,42 @@ import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id:StructBrowsSplitPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class StructBrowsSplitPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public StructBrowsSplitPanel(final String _id, final String _listmenukey,
+  public StructBrowsSplitPanel(final String _wicketId,
+                               final String _listmenukey,
                                final PageParameters _parameters) {
-    super(_id);
+    super(_wicketId);
+
+    this.add(HeaderContributor.forCss(SplitHeaderPanel.class,
+        "StructBrowsSplitPanel.css"));
 
     final SplitContainerBehavior beh = new SplitContainerBehavior();
     beh.setOrientation(Orientation.VERTICAL);
     this.add(beh);
 
-    this.add(HeaderContributor.forCss(SplitHeaderPanel.class,
-        "StructBrowsSplitPanel.css"));
-    this.add(new SplitHeaderPanel("header", true));
+    final SplitHeaderPanel header = new SplitHeaderPanel("header", true);
+    this.add(header);
+
     final WebMarkupContainer top = new WebMarkupContainer("top");
     top.add(new ContentPaneBehavior(50, 20));
     this.add(top);
 
-    top.add(new StructurBrowserTreePanel("stuctbrows", _parameters,
-        _listmenukey));
+    final StructurBrowserTreePanel stuctbrows =
+        new StructurBrowserTreePanel("stuctbrows", _parameters, _listmenukey);
+    stuctbrows.setOutputMarkupId(true);
+    top.add(stuctbrows);
+    header.addHideComponent(stuctbrows);
 
     final WebMarkupContainer bottom = new WebMarkupContainer("bottom");
     bottom.add(new ContentPaneBehavior(50, 20));
     this.add(bottom);
+    header.addHideComponent(bottom);
 
     final WebMarkupContainer menuact = new WebMarkupContainer("menuact");
     menuact.setOutputMarkupId(true);
@@ -67,5 +75,4 @@ public class StructBrowsSplitPanel extends Panel {
     menuact.add(new MenuTree("menu", _parameters, _listmenukey));
 
   }
-
 }

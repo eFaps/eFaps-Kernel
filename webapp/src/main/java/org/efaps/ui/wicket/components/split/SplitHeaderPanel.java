@@ -20,9 +20,12 @@
 
 package org.efaps.ui.wicket.components.split;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.HeaderContributor;
@@ -46,12 +49,6 @@ public class SplitHeaderPanel extends Panel {
   private static final long serialVersionUID = 1L;
 
   /**
-   * this instance variable sores if the Split needs to have the link to hide
-   * apanel vertivally
-   */
-  private final boolean hidevertical;
-
-  /**
    * enum for the StyleSheets which are used in this Component
    */
   public enum Css {
@@ -71,6 +68,20 @@ public class SplitHeaderPanel extends Panel {
     }
 
   }
+
+  /**
+   * this instance variable stores if the Split needs to have the link to hide
+   * the panel vertically
+   */
+  private final boolean hidevertical;
+
+  /**
+   * this instance set contains the components wich must be hidden in the case
+   * of collapsing the panel. This is done through a javascript wich sets the
+   * style "display" to "none". This is necessary because Firefox is is showing
+   * the scrollbars of a div even if it is behind another div (z-index)
+   */
+  private final Set<Component> hideComponents = new HashSet<Component>();
 
   public SplitHeaderPanel(final String _id, final boolean _hidevertical) {
     super(_id);
@@ -129,7 +140,6 @@ public class SplitHeaderPanel extends Panel {
           .setVisible(false));
     }
 
-
     final AjaxLink link = new AjaxLink("expandcontract") {
 
       private static final long serialVersionUID = 1L;
@@ -144,18 +154,26 @@ public class SplitHeaderPanel extends Panel {
           panelId = findParent(ListOnlyPanel.class).getMarkupId();
         }
 
-        String ret =
-            "togglePaneHorizontal(\""
-                + getPage().get(
-                    ((ContentContainerPage) getPage()).getSplitPath())
-                    .getMarkupId()
-                + "\",\""
-                + panelId
-                + "\",\""
-                + this.getParent().getMarkupId()
-                + "\")";
+        final StringBuilder ret = new StringBuilder();
+        ret.append("togglePaneHorizontal(\"")
+           .append(getPage().get(((ContentContainerPage) getPage()).getSplitPath())
+                .getMarkupId())
+           .append("\",\"")
+           .append(panelId)
+           .append("\",\"")
+           .append(this.getParent().getMarkupId())
+           .append("\", new Array(");
+        boolean addComma = false;
+        for (Component _component : SplitHeaderPanel.this.hideComponents) {
+          if (addComma) {
+            ret.append(",");
+          }
+          ret.append("\"").append(_component.getMarkupId()).append("\"");
+          addComma = true;
+        }
+        ret.append("))");
 
-        _target.appendJavascript(ret);
+        _target.appendJavascript(ret.toString());
         _target.focusComponent(this.getParent());
       }
     };
@@ -171,20 +189,38 @@ public class SplitHeaderPanel extends Panel {
   private String getJavaScript() {
     final StringBuilder ret = new StringBuilder();
 
-    ret.append(JavascriptUtils.SCRIPT_OPEN_TAG)
-       .append("  var connections = [];\n")
-       .append("  var header;\n")
-       .append("  function togglePaneHorizontal(_splitId, _paneId, _headerId) {\n")
-       .append("    header = dojo.byId(_headerId);\n")
-       .append("    var split = dijit.byId(_splitId);\n")
-       .append("    var pane = dijit.byId(_paneId);\n")
-       .append("    if(pane.sizeShare > 0) {\n")
-       .append("      split._saveState();\n")
-       .append("      connections[0] = dojo.connect(split,\"beginSizing\",this,"
+    ret
+        .append(JavascriptUtils.SCRIPT_OPEN_TAG)
+        .append("  var connections = [];\n")
+        .append("  var header;\n")
+        .append("  var hideIds;\n")
+        .append("  function togglePaneHorizontal(_splitId, _paneId, _headerId, _hideIds) {\n")
+        .append("    header = dojo.byId(_headerId);\n")
+        .append("    hideIds = _hideIds;\n")
+        .append("    var split = dijit.byId(_splitId);\n")
+        .append("    var pane = dijit.byId(_paneId);\n")
+        .append("    if(pane.sizeShare > 20) {\n")
+        .append("      dojo.forEach(hideIds, function(id){\n")
+        .append("          dojo.byId(id).style.display = \"none\"\n")
+        .append("      });\n")
+        .append("      var children = split.getChildren();\n")
+        .append("      var space = split.isHorizontal ? split.paneWidth : split.paneHeight;\n")
+        .append("      if(children.length > 1){\n")
+        .append("        space -= split.sizerWidth * (children.length - 1);\n")
+        .append("      }\n")
+        .append("      var outOf = 0;\n")
+        .append("      dojo.forEach(children, function(child){\n")
+        .append("        outOf += child.sizeShare;\n")
+        .append("      });\n")
+        .append("      var pixPerUnit = space / outOf;\n")
+        .append("      var gro = Math.round(18/pixPerUnit);\n")
+        .append("      split._saveState();\n")
+        .append("      connections[0] = dojo.connect(split,\"beginSizing\",this,"
                 + " \"toggleHeaderHorizontal\" );\n")
-       .append("      header.className=\"")
-          .append(Css.HEADER_CLOSED.value).append("\";\n")
-       .append("      header.getElementsByTagName(\"div\")[");
+        .append("      header.className=\"")
+        .append(Css.HEADER_CLOSED.value)
+        .append("\";\n")
+        .append("      header.getElementsByTagName(\"div\")[");
 
     if (this.hidevertical) {
       ret.append("1");
@@ -192,10 +228,13 @@ public class SplitHeaderPanel extends Panel {
       ret.append("0");
     }
 
-    ret.append("].className=\"").append(Css.IMAGE_EXPAND.value).append("\";\n")
+    ret.append("].className=\"")
+       .append(Css.IMAGE_EXPAND.value)
+       .append("\";\n")
        .append("      header.getElementsByTagName(\"span\")[0].className=\"")
-          .append(Css.TITEL_HIDE.value).append("\";\n")
-       .append("      pane.sizeShare = 0;\n")
+       .append(Css.TITEL_HIDE.value)
+       .append("\";\n")
+       .append("      pane.sizeShare = gro;\n")
        .append("      split.layout();\n")
        .append("    } else {\n")
        .append("      toggleHeaderHorizontal();\n")
@@ -214,7 +253,8 @@ public class SplitHeaderPanel extends Panel {
          .append("      connections[1] = dojo.connect(split,\"beginSizing\",this,"
                   + " \"toggleHeaderVertical\" );\n")
          .append("      header.getElementsByTagName(\"div\")[0].className=\"")
-            .append(Css.IMAGE_EXPAND_VERTICAL.value).append("\";\n")
+         .append(Css.IMAGE_EXPAND_VERTICAL.value)
+         .append("\";\n")
          .append("      pane.sizeShare = 0;\n")
          .append("      split.layout();\n")
          .append("    } else {\n")
@@ -226,7 +266,11 @@ public class SplitHeaderPanel extends Panel {
     }
 
     ret.append("  function toggleHeaderHorizontal(){\n")
-       .append("    header.className=\"").append(Css.HEADER_OPEN.value)
+       .append("    dojo.forEach(hideIds, function(id){\n")
+       .append("      dojo.byId(id).style.display = \"inline\"\n")
+       .append("    });\n")
+       .append("    header.className=\"")
+       .append(Css.HEADER_OPEN.value)
        .append("\";\n")
        .append("    header.getElementsByTagName(\"div\")[");
 
@@ -236,20 +280,24 @@ public class SplitHeaderPanel extends Panel {
       ret.append("0");
     }
 
-    ret.append("].className=\"").append(Css.IMAGE_CONTRACT.value)
+    ret.append("].className=\"")
+       .append(Css.IMAGE_CONTRACT.value)
        .append("\";\n")
        .append("    header.getElementsByTagName(\"span\")[0].className=\"")
-           .append(Css.TITEL.value).append("\";\n")
+       .append(Css.TITEL.value)
+       .append("\";\n")
        .append("    dojo.disconnect(connections[0]);\n")
-       .append("}\n");
+       .append("  }\n");
 
     if (this.hidevertical) {
       ret.append("  function toggleHeaderVertical(){\n")
          .append("    header.getElementsByTagName(\"div\")[0].className=\"")
-             .append(Css.IMAGE_CONTRACT_VERTICAL.value).append("\";\n")
+         .append(Css.IMAGE_CONTRACT_VERTICAL.value)
+         .append("\";\n")
          .append("    dojo.disconnect(connections[1]);\n")
-         .append("}\n");
+         .append("  }\n");
     }
+
     ret.append(JavascriptUtils.SCRIPT_CLOSE_TAG);
     return ret.toString();
   }
@@ -265,4 +313,12 @@ public class SplitHeaderPanel extends Panel {
     _tag.put("class", Css.HEADER_OPEN.value);
   }
 
+  /**
+   * add a component wich will be hidden by setting the style "display" to "none"
+   *
+   * @param _component Component wich must be hidden
+   */
+  public void addHideComponent(final Component _component) {
+    this.hideComponents.add(_component);
+  }
 }

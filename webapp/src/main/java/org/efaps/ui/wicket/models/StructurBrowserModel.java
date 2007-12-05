@@ -545,28 +545,6 @@ public class StructurBrowserModel extends AbstractModel {
     return this.headers;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.model.Model#toString()
-   */
-  @Override
-  public String toString() {
-    return this.label;
-  }
-
-  /**
-   * This class is used to add a ChildNode under a ParentNode, if the ParentNode
-   * actually has some children. By using this class it then can very easy be
-   * distinguished between Nodes wich where expanded and Nodes wich still need
-   * to be expanded.
-   */
-  public class BogusNode extends DefaultMutableTreeNode {
-
-    private static final long serialVersionUID = 1L;
-
-  }
-
   /**
    * This is the getter method for the instance variable {@link #image}.
    *
@@ -587,6 +565,28 @@ public class StructurBrowserModel extends AbstractModel {
     if (_url != null) {
       this.image = "/.." + RequestHandler.replaceMacrosInUrl(_url);
     }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.model.Model#toString()
+   */
+  @Override
+  public String toString() {
+    return this.label;
+  }
+
+  /**
+   * This class is used to add a ChildNode under a ParentNode, if the ParentNode
+   * actually has some children. By using this class it then can very easy be
+   * distinguished between Nodes wich where expanded and Nodes wich still need
+   * to be expanded.
+   */
+  public class BogusNode extends DefaultMutableTreeNode {
+
+    private static final long serialVersionUID = 1L;
+
   }
 
 }
