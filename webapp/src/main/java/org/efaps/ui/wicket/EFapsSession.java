@@ -93,6 +93,9 @@ public class EFapsSession extends WebSession {
   private final Map<String, Object> sessionAttributes =
       new HashMap<String, Object>();
 
+  private final Map<String, UpdateInterface> updateBehaviors =
+      new HashMap<String, UpdateInterface>();
+
   /**
    * Standart Constructor from Wicket
    *
@@ -100,6 +103,17 @@ public class EFapsSession extends WebSession {
    */
   public EFapsSession(final Request _request) {
     super(_request);
+  }
+
+  public void addUpdateBehaviors(final String _oid,
+                                 final UpdateInterface _behavior) {
+    this.updateBehaviors.put(_oid, _behavior);
+
+  }
+
+  public UpdateInterface getUpdateBehavior(final String _oid) {
+    return this.updateBehaviors.get(_oid);
+
   }
 
   /**

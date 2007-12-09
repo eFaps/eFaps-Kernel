@@ -48,9 +48,11 @@ import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.beans.ValueList;
+import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
+import org.efaps.db.SearchQuery;
 import org.efaps.servlet.RequestHandler;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -375,7 +377,7 @@ public class StructurBrowserModel extends AbstractModel {
    * @param _parent
    *                the parent to set
    */
-  private void setParent(boolean _parent) {
+  public void setParent(boolean _parent) {
     this.parent = _parent;
   }
 
@@ -402,7 +404,7 @@ public class StructurBrowserModel extends AbstractModel {
 
   @Override
   public void resetModel() {
-    // not needed here
+    this.childs.clear();
   }
 
   /**
@@ -577,6 +579,33 @@ public class StructurBrowserModel extends AbstractModel {
     return this.label;
   }
 
+  public void requeryLabel() {
+    try {
+      ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
+      ValueList valuelist = parser.ExpressionString();
+
+      SearchQuery query = new SearchQuery();
+      query.setObject(super.getOid());
+      valuelist.makeSelect(query);
+      query.execute();
+      if (query.next()) {
+        setLabel(valuelist.makeString(query).toString());
+      }
+    } catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+  public void addBogusNode(DefaultMutableTreeNode _parent) {
+    _parent.add(new BogusNode());
+  }
   /**
    * This class is used to add a ChildNode under a ParentNode, if the ParentNode
    * actually has some children. By using this class it then can very easy be

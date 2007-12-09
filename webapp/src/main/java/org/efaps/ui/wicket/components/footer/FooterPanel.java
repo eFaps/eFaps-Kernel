@@ -50,6 +50,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.UpdateInterface;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.form.FormPanel;
@@ -293,6 +294,14 @@ public class FooterPanel extends Panel {
         }
         FooterPanel.this.success = true;
 
+        UpdateInterface update =
+            ((EFapsSession) this.getComponent().getSession())
+                .getUpdateBehavior(model.getOid());
+        if (update != null && update.isAjaxCallback()) {
+          update.setOid(model.getOid());
+          update.setMode(model.getMode());
+          _target.prependJavascript(update.getAjaxCallback());
+        }
       }
     }
 
@@ -375,7 +384,8 @@ public class FooterPanel extends Panel {
       while (iterator.hasNext()) {
         final Object object = iterator.next();
         if (object instanceof WebMarkupContainer) {
-          final Iterator<?> iterator2 = ((WebMarkupContainer) object).iterator();
+          final Iterator<?> iterator2 =
+              ((WebMarkupContainer) object).iterator();
           while (iterator2.hasNext()) {
             final Object object2 = iterator2.next();
             if (object2 instanceof FormPanel) {

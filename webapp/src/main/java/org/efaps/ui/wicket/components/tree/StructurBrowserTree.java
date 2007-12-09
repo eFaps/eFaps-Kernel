@@ -20,7 +20,11 @@
 
 package org.efaps.ui.wicket.components.tree;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 
@@ -30,6 +34,7 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
+import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.tree.Tree;
 import org.apache.wicket.markup.ComponentTag;
@@ -40,9 +45,12 @@ import org.apache.wicket.markup.html.tree.ITreeState;
 
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
+import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.UpdateInterface;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
+import org.efaps.ui.wicket.models.StructurBrowserModel.BogusNode;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -58,16 +66,26 @@ public class StructurBrowserTree extends Tree {
   private static final ResourceReference CSS =
       new ResourceReference(StructurBrowserTree.class, "StructurTree.css");
 
+  /**
+   * instance variable holding the Key to the MenuTree (needed to update it)
+   */
   private final String listMenuKey;
 
-  public StructurBrowserTree(final String _id, final TreeModel _model,
+  private final Map<String, DefaultMutableTreeNode> oidToNode =
+      new HashMap<String, DefaultMutableTreeNode>();
+
+  public StructurBrowserTree(final String _wicketId, final TreeModel _model,
                              final String _listmenukey) {
-    super(_id, _model);
+    super(_wicketId, _model);
     this.listMenuKey = _listmenukey;
     this.setRootLess(true);
-    ITreeState treeState = this.getTreeState();
+
+    final ITreeState treeState = this.getTreeState();
     treeState.collapseAll();
     treeState.addTreeStateListener(new AsyncronTreeUpdateListener());
+
+    final AjaxUpdateBehavior update = new AjaxUpdateBehavior();
+    this.add(update);
   }
 
   @Override
@@ -82,13 +100,15 @@ public class StructurBrowserTree extends Tree {
    *      java.lang.String, javax.swing.tree.TreeNode)
    */
   @Override
-  protected Component newNodeIcon(MarkupContainer parent, String id,
-                                  TreeNode node) {
+  protected Component newNodeIcon(final MarkupContainer _parent,
+                                  final String _wicketId, final TreeNode _node) {
     final StructurBrowserModel model =
-        (StructurBrowserModel) ((DefaultMutableTreeNode) node).getUserObject();
-    if (model.getImage() != null) {
-
-      return new WebMarkupContainer(id) {
+        (StructurBrowserModel) ((DefaultMutableTreeNode) _node).getUserObject();
+    Component ret;
+    if (model.getImage() == null) {
+      ret = super.newNodeIcon(_parent, _wicketId, _node);
+    } else {
+      ret = new WebMarkupContainer(_wicketId) {
 
         private static final long serialVersionUID = 1L;
 
@@ -98,9 +118,8 @@ public class StructurBrowserTree extends Tree {
           tag.put("style", "background-image: url('" + model.getImage() + "')");
         }
       };
-    } else {
-      return super.newNodeIcon(parent, id, node);
     }
+    return ret;
   }
 
   /*
@@ -112,13 +131,20 @@ public class StructurBrowserTree extends Tree {
   @Override
   protected MarkupContainer newNodeLink(final MarkupContainer _parent,
                                         final String _id, final TreeNode _node) {
+    final StructurBrowserModel model =
+        (StructurBrowserModel) ((DefaultMutableTreeNode) _node).getUserObject();
+
+    ((EFapsSession) this.getSession()).addUpdateBehaviors(model.getOid(),
+        (AjaxUpdateBehavior) getBehaviors(AjaxUpdateBehavior.class).get(0));
+
+    this.oidToNode.put(model.getOid(), (DefaultMutableTreeNode) _node);
 
     return newLink(_parent, _id, new ILinkCallback() {
 
       private static final long serialVersionUID = 1L;
 
       public void onClick(final AjaxRequestTarget _target) {
-        StructurBrowserModel model =
+        final StructurBrowserModel model =
             (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
                 .getUserObject();
 
@@ -147,7 +173,7 @@ public class StructurBrowserTree extends Tree {
                     private static final long serialVersionUID = 1L;
 
                     public Page getPage() {
-                      TablePage page = new TablePage(parameter);
+                      final TablePage page = new TablePage(parameter);
                       page.setListMenuKey(StructurBrowserTree.this.listMenuKey);
                       return page;
                     }
@@ -176,7 +202,7 @@ public class StructurBrowserTree extends Tree {
                   });
         }
 
-        InlineFrame component =
+        final InlineFrame component =
             (InlineFrame) getPage().get(
                 ((ContentContainerPage) getPage()).getInlinePath());
         page.setOutputMarkupId(true);
@@ -188,11 +214,11 @@ public class StructurBrowserTree extends Tree {
         parameter2.add("oid", model.getOid());
         parameter2.put("command", model.getCommand().getUUID().toString());
 
-        MenuTree menutree =
+        final MenuTree menutree =
             (MenuTree) ((EFapsSession) getSession())
                 .getFromCache(StructurBrowserTree.this.listMenuKey);
 
-        MenuTree newmenutree =
+        final MenuTree newmenutree =
             new MenuTree(menutree.getId(), parameter2, menutree.getMenuKey());
 
         menutree.replaceWith(newmenutree);
@@ -201,5 +227,97 @@ public class StructurBrowserTree extends Tree {
       }
 
     });
+  }
+
+  public class AjaxUpdateBehavior extends AbstractDefaultAjaxBehavior implements
+      UpdateInterface {
+
+    private static final long serialVersionUID = 1L;
+
+    private String oid;
+
+    private TargetMode mode;
+
+    @Override
+    protected void respond(final AjaxRequestTarget _target) {
+      DefaultMutableTreeNode node =
+          StructurBrowserTree.this.oidToNode.get(this.oid);
+      DefaultTreeModel treemodel =
+          (DefaultTreeModel) this.getComponent().getModel().getObject();
+      StructurBrowserModel model = (StructurBrowserModel) node.getUserObject();
+      StructurBrowserTree tree = (StructurBrowserTree) this.getComponent();
+      if (this.mode == TargetMode.EDIT) {
+        treemodel.nodeChanged(node);
+        model.requeryLabel();
+      }
+      if (this.mode == TargetMode.CREATE) {
+        if (node.getChildCount() > 0) {
+          if (!(node.getChildAt(0) instanceof BogusNode)) {
+            node.removeAllChildren();
+            model.resetModel();
+            model.addChildren(node);
+            tree.invalidateAll();
+          }
+        } else {
+          model.setParent(true);
+          model.addBogusNode(node);
+          treemodel.nodeChanged(node);
+        }
+      }
+
+      tree.updateTree(_target);
+    }
+
+    @Override
+    protected CharSequence getCallbackScript() {
+      return "function findFrame(_current, _target)  {"
+          + "  var ret = _current.frames[_target];"
+          + "  if (!ret) {"
+          + "    for (var i=0; i < _current.frames.length && !ret; i++)  {"
+          + "      ret = findFrame(_current.frames[i], _target);"
+          + "    }"
+          + "  }"
+          + "  return ret;"
+          + "}"
+          + "var fen = findFrame(top,\"eFapsFrameContent\");"
+          + "if(!fen){"
+          + "  fen = top;"
+          + "}"
+          + "fen.setTimeout(function(){ fen.childCallBack(\"javascript:"
+          + generateCallbackScript("wicketAjaxGet('"
+              + getCallbackUrl(false)
+              + "'")
+          + "\");},0);";
+      // the timeout is needed due to a bug in firefox, that does not close the
+      // nsIXMLHttpRequest and therfore throws an error that disables any
+      // further javascript. The timeout is a workaround for this bug.
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getPreconditionScript()
+     */
+    @Override
+    protected CharSequence getPreconditionScript() {
+      return null;
+    }
+
+    public boolean isAjaxCallback() {
+      return true;
+    }
+
+    public String getAjaxCallback() {
+      return getCallbackScript().toString();
+    }
+
+    public void setOid(final String _oid) {
+      this.oid = _oid;
+    }
+
+    public void setMode(final TargetMode _mode) {
+      this.mode = _mode;
+    }
+
   }
 }

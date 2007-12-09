@@ -25,28 +25,33 @@ import org.apache.wicket.markup.html.panel.Panel;
 
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 
+/**
+ * This class renders a Panel containing a StructurBrowserTree
+ * 
+ * @author jmox
+ * @version $Id$
+ */
 public class StructurBrowserTreePanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public StructurBrowserTreePanel(final String _id,
+  public StructurBrowserTreePanel(final String _wicketId,
                                   final PageParameters _parameters,
                                   final String _listmenukey) {
-    this(_id, new StructurBrowserModel(_parameters), _listmenukey);
+    this(_wicketId, new StructurBrowserModel(_parameters), _listmenukey);
   }
 
-  public StructurBrowserTreePanel(final String _id,
+  public StructurBrowserTreePanel(final String _wicketId,
                                   final StructurBrowserModel _model,
                                   final String _listmenukey) {
-    super(_id, _model);
+    super(_wicketId, _model);
 
-    StructurBrowserModel model = (StructurBrowserModel) super.getModel();
-    if (!model.isInitialised()) {
-      model.execute();
+    if (!_model.isInitialised()) {
+      _model.execute();
     }
 
-    StructurBrowserTree tree =
-        new StructurBrowserTree("tree", model.getTreeModel(), _listmenukey);
+    final StructurBrowserTree tree =
+        new StructurBrowserTree("tree", _model.getTreeModel(), _listmenukey);
     this.add(tree);
 
   }
