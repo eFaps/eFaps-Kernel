@@ -32,10 +32,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.event.EventType;
-import org.efaps.admin.event.Parameter.ParameterValues;
-import org.efaps.admin.ui.AbstractCommand;
-import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
@@ -131,23 +127,14 @@ public class DialogPage extends WebPage {
     @Override
     public void onClick(final AjaxRequestTarget _target) {
 
-      final AbstractCommand command = ((MenuItemModel) getModel()).getCommand();
+      MenuItemModel model = ((MenuItemModel) getModel());
 
-      if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-        try {
-          final String[] contextoid = { ((MenuItemModel) getModel()).getOid() };
-          Context.getThreadContext().getParameters().put("oid", contextoid);
-          final String[] oids = (String[]) this.parameters.get("selectedRow");
-          if (oids == null) {
-            command.executeEvents(EventType.UI_COMMAND_EXECUTE);
-          } else {
-            command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-                ParameterValues.OTHERS, oids);
-          }
-        } catch (EFapsException e) {
-          throw new RestartResponseException(new ErrorPage(e));
-        }
+      try {
+        model.executeEvents((String[]) this.parameters.get("selectedRow"));
+      } catch (EFapsException e) {
+        throw new RestartResponseException(new ErrorPage(e));
       }
+
       DialogPage.this.modal.setWindowClosedCallback(new UpdateParentCallback(
           DialogPage.this.parent, DialogPage.this.modal));
       DialogPage.this.modal.setUpdateParent(true);
