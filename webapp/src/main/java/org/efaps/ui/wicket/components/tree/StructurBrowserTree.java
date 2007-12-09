@@ -250,7 +250,7 @@ public class StructurBrowserTree extends Tree {
         treemodel.nodeChanged(node);
         model.requeryLabel();
       }
-      if (this.mode == TargetMode.CREATE) {
+      if (this.mode == TargetMode.CREATE || this.mode == TargetMode.UNKNOWN) {
         if (node.getChildCount() > 0) {
           if (!(node.getChildAt(0) instanceof BogusNode)) {
             node.removeAllChildren();

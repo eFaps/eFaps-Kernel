@@ -32,6 +32,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.UpdateInterface;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
@@ -133,6 +135,14 @@ public class DialogPage extends WebPage {
         model.executeEvents((String[]) this.parameters.get("selectedRow"));
       } catch (EFapsException e) {
         throw new RestartResponseException(new ErrorPage(e));
+      }
+
+      UpdateInterface update =
+          ((EFapsSession) getSession()).getUpdateBehavior(model.getOid());
+      if (update != null && update.isAjaxCallback()) {
+        update.setOid(model.getOid());
+        update.setMode(model.getMode());
+        _target.prependJavascript(update.getAjaxCallback());
       }
 
       DialogPage.this.modal.setWindowClosedCallback(new UpdateParentCallback(
