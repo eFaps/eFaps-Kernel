@@ -35,7 +35,7 @@ import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  * @todo description
  */
@@ -74,7 +74,7 @@ public class HistoryTrigger implements EventExecution {
       while (iter.hasNext()) {
         Entry<?, ?> entry = (Entry<?, ?>) iter.next();
         Attribute attr = (Attribute) entry.getKey();
-        String value = (String) entry.getValue().toString();
+        String value = entry.getValue().toString();
 
         insert = new Insert("Common_History_Attributes");
         insert.add("HistoryID", ID);
