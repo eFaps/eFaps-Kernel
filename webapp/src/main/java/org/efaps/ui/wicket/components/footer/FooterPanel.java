@@ -296,14 +296,15 @@ public class FooterPanel extends Panel {
         // execute the CallBacks
         final List<UpdateInterface> updates =
             ((EFapsSession) getSession()).getUpdateBehavior(model.getOid());
-        for (UpdateInterface update : updates) {
-          if (update.isAjaxCallback()) {
-            update.setOid(model.getOid());
-            update.setMode(model.getMode());
-            _target.prependJavascript(update.getAjaxCallback());
+        if (updates != null) {
+          for (UpdateInterface update : updates) {
+            if (update.isAjaxCallback()) {
+              update.setOid(model.getOid());
+              update.setMode(model.getMode());
+              _target.prependJavascript(update.getAjaxCallback());
+            }
           }
         }
-
       }
     }
 
