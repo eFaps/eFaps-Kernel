@@ -40,6 +40,7 @@ import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.util.EFapsException;
 
 /**
  * This class provides the Model for rendering MenuComponents in
@@ -268,33 +269,38 @@ public class MenuItemModel extends AbstractModel {
     this.windowWidth = command.getWindowWidth();
     this.defaultSelected = command.isDefaultSelected();
     this.description = "";
-    this.label = "";
+    requeryLabel();
 
     try {
-      String label = DBProperties.getProperty(command.getLabel());
-
-      if (super.getOid() != null) {
-        final SearchQuery query = new SearchQuery();
-        query.setObject(super.getOid());
-        final ValueParser parser = new ValueParser(new StringReader(label));
-        final ValueList list = parser.ExpressionString();
-        list.makeSelect(query);
-        if (query.selectSize() > 0) {
-          query.execute();
-          if (query.next()) {
-            label = list.makeString(query);
-          }
-          query.close();
-        }
-      }
-      this.label = label;
-
       if (command instanceof AbstractMenu) {
         for (AbstractCommand subCmd : ((AbstractMenu) command).getCommands()) {
           if (subCmd != null && subCmd.hasAccess()) {
             this.childs
                 .add(new MenuItemModel(subCmd.getUUID(), super.getOid()));
           }
+        }
+      }
+    } catch (EFapsException e) {
+      throw new RestartResponseException(new ErrorPage(e));
+    }
+  }
+
+  public void requeryLabel() {
+    try {
+      this.label = DBProperties.getProperty(getCommand().getLabel());
+      if (super.getOid() != null) {
+        final SearchQuery query = new SearchQuery();
+        query.setObject(super.getOid());
+        final ValueParser parser =
+            new ValueParser(new StringReader(this.label));
+        final ValueList list = parser.ExpressionString();
+        list.makeSelect(query);
+        if (query.selectSize() > 0) {
+          query.execute();
+          if (query.next()) {
+            this.label = list.makeString(query);
+          }
+          query.close();
         }
       }
     } catch (Exception e) {

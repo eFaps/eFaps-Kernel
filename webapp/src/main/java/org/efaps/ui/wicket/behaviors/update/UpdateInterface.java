@@ -18,25 +18,55 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket;
+package org.efaps.ui.wicket.behaviors.update;
 
 import org.efaps.admin.ui.AbstractCommand.TargetMode;
 
-
 /**
+ * This Interface is used for Behaviors wich are stored in
+ * {@link #org.efaps.ui.wicket.EFapsSession()}. For an example of implementing
+ * this Interface
+ * {@link #rg.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior()}
+ *
+ * @see #org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior
  * @author jmox
  * @version $Id$
- *
  */
 public interface UpdateInterface {
 
+  /**
+   * This method should return if the class should respond on a Ajaxrequest
+   *
+   * @return
+   */
   public boolean isAjaxCallback();
 
+  /**
+   * Thi smethod should return the CallBackScript of the Behavior
+   *
+   * @return
+   */
   public String getAjaxCallback();
 
+  /**
+   * Method used to set the Oid
+   *
+   * @param _oid
+   */
   public void setOid(final String _oid);
 
+  /**
+   * Method used to set the TargetMode
+   *
+   * @param _mode
+   */
   public void setMode(final TargetMode _mode);
 
+  /**
+   * returns the Id of this Behavior
+   *
+   * @return
+   */
+  public String getId();
 
 }

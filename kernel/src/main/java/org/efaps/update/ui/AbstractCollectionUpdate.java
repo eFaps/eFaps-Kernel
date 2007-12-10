@@ -253,7 +253,7 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
 
     /**
      * Updates / creates the instance in the database. Uses
-     * {@link AbstractUpdate.updateInDB} for the update. Only the fields are
+     * {@link AbstractAjaxUpdateBehavior.updateInDB} for the update. Only the fields are
      * also updated for collection defined through this definiton.
      *
      * @param _instance

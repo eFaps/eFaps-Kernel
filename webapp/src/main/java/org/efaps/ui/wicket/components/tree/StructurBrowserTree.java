@@ -34,7 +34,6 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
-import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.tree.Tree;
 import org.apache.wicket.markup.ComponentTag;
@@ -47,7 +46,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.UpdateInterface;
+import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.models.StructurBrowserModel.BogusNode;
@@ -191,7 +190,7 @@ public class StructurBrowserTree extends Tree {
                     private static final long serialVersionUID = 1L;
 
                     public Page getPage() {
-                      FormPage page = new FormPage(parameter);
+                      final FormPage page = new FormPage(parameter);
                       page.setListMenuKey(StructurBrowserTree.this.listMenuKey);
                       return page;
                     }
@@ -229,28 +228,25 @@ public class StructurBrowserTree extends Tree {
     });
   }
 
-  public class AjaxUpdateBehavior extends AbstractDefaultAjaxBehavior implements
-      UpdateInterface {
+  public class AjaxUpdateBehavior extends AbstractAjaxUpdateBehavior {
 
     private static final long serialVersionUID = 1L;
 
-    private String oid;
-
-    private TargetMode mode;
-
     @Override
     protected void respond(final AjaxRequestTarget _target) {
-      DefaultMutableTreeNode node =
-          StructurBrowserTree.this.oidToNode.get(this.oid);
-      DefaultTreeModel treemodel =
+      final DefaultMutableTreeNode node =
+          StructurBrowserTree.this.oidToNode.get(getOid());
+      final DefaultTreeModel treemodel =
           (DefaultTreeModel) this.getComponent().getModel().getObject();
-      StructurBrowserModel model = (StructurBrowserModel) node.getUserObject();
-      StructurBrowserTree tree = (StructurBrowserTree) this.getComponent();
-      if (this.mode == TargetMode.EDIT) {
+      final StructurBrowserModel model =
+          (StructurBrowserModel) node.getUserObject();
+      final StructurBrowserTree tree =
+          (StructurBrowserTree) this.getComponent();
+      if (getMode() == TargetMode.EDIT) {
         treemodel.nodeChanged(node);
         model.requeryLabel();
       }
-      if (this.mode == TargetMode.CREATE || this.mode == TargetMode.UNKNOWN) {
+      if (getMode() == TargetMode.CREATE || getMode() == TargetMode.UNKNOWN) {
         if (node.getChildCount() > 0) {
           if (!(node.getChildAt(0) instanceof BogusNode)) {
             node.removeAllChildren();
@@ -266,57 +262,6 @@ public class StructurBrowserTree extends Tree {
       }
 
       tree.updateTree(_target);
-    }
-
-    @Override
-    protected CharSequence getCallbackScript() {
-      return "function findFrame(_current, _target)  {"
-          + "  var ret = _current.frames[_target];"
-          + "  if (!ret) {"
-          + "    for (var i=0; i < _current.frames.length && !ret; i++)  {"
-          + "      ret = findFrame(_current.frames[i], _target);"
-          + "    }"
-          + "  }"
-          + "  return ret;"
-          + "}"
-          + "var fen = findFrame(top,\"eFapsFrameContent\");"
-          + "if(!fen){"
-          + "  fen = top;"
-          + "}"
-          + "fen.setTimeout(function(){ fen.childCallBack(\"javascript:"
-          + generateCallbackScript("wicketAjaxGet('"
-              + getCallbackUrl(false)
-              + "'")
-          + "\");},0);";
-      // the timeout is needed due to a bug in firefox, that does not close the
-      // nsIXMLHttpRequest and therfore throws an error that disables any
-      // further javascript. The timeout is a workaround for this bug.
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getPreconditionScript()
-     */
-    @Override
-    protected CharSequence getPreconditionScript() {
-      return null;
-    }
-
-    public boolean isAjaxCallback() {
-      return true;
-    }
-
-    public String getAjaxCallback() {
-      return getCallbackScript().toString();
-    }
-
-    public void setOid(final String _oid) {
-      this.oid = _oid;
-    }
-
-    public void setMode(final TargetMode _mode) {
-      this.mode = _mode;
     }
 
   }

@@ -50,7 +50,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.UpdateInterface;
+import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.form.FormPanel;
@@ -293,15 +293,17 @@ public class FooterPanel extends Panel {
 
         }
         FooterPanel.this.success = true;
-
-        UpdateInterface update =
-            ((EFapsSession) this.getComponent().getSession())
-                .getUpdateBehavior(model.getOid());
-        if (update != null && update.isAjaxCallback()) {
-          update.setOid(model.getOid());
-          update.setMode(model.getMode());
-          _target.prependJavascript(update.getAjaxCallback());
+        // execute the CallBacks
+        final List<UpdateInterface> updates =
+            ((EFapsSession) getSession()).getUpdateBehavior(model.getOid());
+        for (UpdateInterface update : updates) {
+          if (update.isAjaxCallback()) {
+            update.setOid(model.getOid());
+            update.setMode(model.getMode());
+            _target.prependJavascript(update.getAjaxCallback());
+          }
         }
+
       }
     }
 

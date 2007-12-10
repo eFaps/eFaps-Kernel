@@ -20,7 +20,9 @@
 
 package org.efaps.ui.wicket;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -37,6 +39,7 @@ import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.admin.user.UserAttributesSet.UserAttributesDefinition;
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
+import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
@@ -93,8 +96,16 @@ public class EFapsSession extends WebSession {
   private final Map<String, Object> sessionAttributes =
       new HashMap<String, Object>();
 
-  private final Map<String, UpdateInterface> updateBehaviors =
-      new HashMap<String, UpdateInterface>();
+  /**
+   * This instance map stores the Behaviors that will be called through the
+   * UpdateInterface
+   *
+   * @see #addUpdateBehaviors(String, UpdateInterface)
+   * @see #getUpdateBehavior(String)
+   * @see #getUpdateBehaviors()
+   */
+  private final Map<String, List<UpdateInterface>> updateBehaviors =
+      new HashMap<String, List<UpdateInterface>>();
 
   /**
    * Standart Constructor from Wicket
@@ -105,13 +116,44 @@ public class EFapsSession extends WebSession {
     super(_request);
   }
 
+  /**
+   * method to add a Behavior to the {@link #updateBehaviors}. The behavior
+   * will only be added if no updatebehvior with the same Id is existing in the
+   * List related to the given oid
+   *
+   * @param _oid
+   *                Oid (used as key in the map)
+   * @param _behavior
+   *                (behavoir to be added)
+   */
   public void addUpdateBehaviors(final String _oid,
                                  final UpdateInterface _behavior) {
-    this.updateBehaviors.put(_oid, _behavior);
+    List<UpdateInterface> behaviors;
 
+    if (this.updateBehaviors.containsKey(_oid)) {
+      behaviors = this.updateBehaviors.get(_oid);
+      for (int i = 0; i < behaviors.size(); i++) {
+        if (behaviors.get(i).getId().equals(_behavior.getId())) {
+          behaviors.remove(i);
+          break;
+        }
+      }
+    } else {
+      behaviors = new ArrayList<UpdateInterface>();
+
+    }
+    behaviors.add(_behavior);
+    this.updateBehaviors.put(_oid, behaviors);
   }
 
-  public UpdateInterface getUpdateBehavior(final String _oid) {
+  /**
+   * method that returns the behaviors as aList that rely to a specified oid
+   *
+   * @param _oid
+   *                OID to get the List for
+   * @return List with Behaviors
+   */
+  public List<UpdateInterface> getUpdateBehavior(final String _oid) {
     return this.updateBehaviors.get(_oid);
   }
 
@@ -121,7 +163,7 @@ public class EFapsSession extends WebSession {
    *
    * @return value of instance variable {@link #updateBehaviors}
    */
-  public Map<String, UpdateInterface> getUpdateBehaviors() {
+  public Map<String, List<UpdateInterface>> getUpdateBehaviors() {
     return this.updateBehaviors;
   }
 
@@ -341,7 +383,7 @@ public class EFapsSession extends WebSession {
 
         if (Context.getThreadContext().containsUserAtribute(
             UserAttributesDefinition.LOCALE.name)) {
-          Locale locale =
+          final Locale locale =
               new Locale(Context.getThreadContext().getUserAttribute(
                   UserAttributesDefinition.LOCALE.name));
           Context.getThreadContext().setLocale(locale);

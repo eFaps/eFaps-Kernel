@@ -158,7 +158,7 @@ public class ImageUpdate extends AbstractUpdate  {
 
     /**
      * Updates / creates the instance in the database. Uses
-     * {@link AbstractUpdate.updateInDB} for the update. If a file name is
+     * {@link AbstractAjaxUpdateBehavior.updateInDB} for the update. If a file name is
      * given, this file is checked in the created image instance.
      *
      * @param _instance     instance to update (or null if instance is to

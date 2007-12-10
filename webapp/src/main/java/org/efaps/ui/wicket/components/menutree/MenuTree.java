@@ -22,6 +22,8 @@ package org.efaps.ui.wicket.components.menutree;
 
 import java.io.Serializable;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -50,7 +52,9 @@ import org.apache.wicket.markup.html.tree.AbstractTree;
 import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
 import org.efaps.ui.wicket.components.StaticImageComponent;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
@@ -87,6 +91,9 @@ public class MenuTree extends AbstractTree {
    */
   private final String menuKey;
 
+  private final Map<String, DefaultMutableTreeNode> oidToNode =
+      new HashMap<String, DefaultMutableTreeNode>();
+
   public MenuTree(final String _wicketId, final PageParameters _parameters,
                   final String _menukey) {
 
@@ -101,17 +108,17 @@ public class MenuTree extends AbstractTree {
     add(HeaderContributor.forCss(getClass(), "MenuTree.css"));
     ((EFapsSession) this.getSession()).putIntoCache(this.menuKey, this);
 
-    DefaultMutableTreeNode rootNode =
+    final DefaultMutableTreeNode rootNode =
         (DefaultMutableTreeNode) ((DefaultTreeModel) getModelObject())
             .getRoot();
 
     boolean noChildSelected = true;
-    Enumeration<?> newNodes = rootNode.children();
+    final Enumeration<?> newNodes = rootNode.children();
 
     while (newNodes.hasMoreElements()) {
-      DefaultMutableTreeNode newNode =
+      final DefaultMutableTreeNode newNode =
           (DefaultMutableTreeNode) newNodes.nextElement();
-      MenuItemModel newmodel = (MenuItemModel) newNode.getUserObject();
+      final MenuItemModel newmodel = (MenuItemModel) newNode.getUserObject();
       if (newmodel.isDefaultSelected()) {
         getTreeState().selectNode(newNode, true);
         noChildSelected = false;
@@ -120,6 +127,9 @@ public class MenuTree extends AbstractTree {
     if (noChildSelected) {
       getTreeState().selectNode(rootNode, true);
     }
+
+    final AjaxUpdateBehavior update = new AjaxUpdateBehavior();
+    this.add(update);
   }
 
   public MenuTree(final String _wicketId, final TreeModel _model,
@@ -131,6 +141,8 @@ public class MenuTree extends AbstractTree {
     add(HeaderContributor.forCss(getClass(), "MenuTree.css"));
     ((EFapsSession) this.getSession()).putIntoCache(this.menuKey, this);
 
+    final AjaxUpdateBehavior update = new AjaxUpdateBehavior();
+    this.add(update);
   }
 
   /**
@@ -160,18 +172,24 @@ public class MenuTree extends AbstractTree {
       }
     });
 
-    MenuItemModel model = (MenuItemModel) node.getUserObject();
+    final MenuItemModel model = (MenuItemModel) node.getUserObject();
+    if (model.isHeader()) {
+      ((EFapsSession) this.getSession()).addUpdateBehaviors(model.getOid(),
+          (AjaxUpdateBehavior) getBehaviors(AjaxUpdateBehavior.class).get(0));
+      this.oidToNode.put(model.getOid(), node);
+    }
+
     item.add(new Intendation("intend", level));
 
     final AjaxMenuTreeLink link = new AjaxMenuTreeLink("link", node);
     item.add(link);
-    Label label = new Label("label", model.getLabel());
+    final Label label = new Label("label", model.getLabel());
     link.add(label);
 
     if (node.children().hasMoreElements()
         && !node.isRoot()
         && !model.isStepInto()) {
-      AjaxExpandLink expandLink = new AjaxExpandLink("expandLink", node);
+      final AjaxExpandLink expandLink = new AjaxExpandLink("expandLink", node);
       item.add(expandLink);
       if (getTreeState().isNodeExpanded(node)) {
         expandLink.add(new Image("expandIcon", ICON_MENUTREECHILDOPENED));
@@ -202,15 +220,17 @@ public class MenuTree extends AbstractTree {
       } else if (model.isStepInto()) {
         item.add(new WebMarkupContainer("goIntolink").setVisible(false));
         item.add(new WebMarkupContainer("removelink").setVisible(false));
-        AjaxGoUpLink goUplink = new AjaxGoUpLink("goUplink", node);
+        final AjaxGoUpLink goUplink = new AjaxGoUpLink("goUplink", node);
         item.add(goUplink);
         goUplink.add(new Image("goUpIcon", ICON_MENUTREEGOUP));
       } else {
-        AjaxGoIntoLink goIntolink = new AjaxGoIntoLink("goIntolink", node);
+        final AjaxGoIntoLink goIntolink =
+            new AjaxGoIntoLink("goIntolink", node);
         item.add(goIntolink);
         goIntolink.add(new Image("goIntoIcon", ICON_MENUTREEGOINTO));
 
-        AjaxRemoveLink removelink = new AjaxRemoveLink("removelink", node);
+        final AjaxRemoveLink removelink =
+            new AjaxRemoveLink("removelink", node);
         item.add(removelink);
         removelink.add(new Image("removeIcon", ICON_MENUTREEREMOVE));
         item.add(new WebMarkupContainer("goUplink").setVisible(false));
@@ -240,16 +260,16 @@ public class MenuTree extends AbstractTree {
     final DefaultMutableTreeNode node =
         (DefaultMutableTreeNode) getTreeState().getSelectedNodes().iterator()
             .next();
-    String oid = _parameters.getString("oid");
-    UUID uuid = UUID.fromString(_parameters.getString("command"));
-    Enumeration<?> childs = node.children();
+    final String oid = _parameters.getString("oid");
+    final UUID uuid = UUID.fromString(_parameters.getString("command"));
+    final Enumeration<?> childs = node.children();
     boolean old = false;
     while (childs.hasMoreElements()) {
 
-      DefaultMutableTreeNode child =
+      final DefaultMutableTreeNode child =
           (DefaultMutableTreeNode) childs.nextElement();
 
-      MenuItemModel childmodel = (MenuItemModel) child.getUserObject();
+      final MenuItemModel childmodel = (MenuItemModel) child.getUserObject();
       if (childmodel.getOid().equals(oid)
           && childmodel.getCommandUUID().equals(uuid)) {
         getTreeState().selectNode(child, true);
@@ -258,14 +278,14 @@ public class MenuTree extends AbstractTree {
     }
     if (!old) {
       final MenuItemModel model = new MenuItemModel(uuid, oid);
-      DefaultMutableTreeNode rootNode = model.getNode();
+      final DefaultMutableTreeNode rootNode = model.getNode();
       node.add(rootNode);
       boolean noChildSelected = true;
-      Enumeration<?> newNodes = rootNode.children();
+      final Enumeration<?> newNodes = rootNode.children();
       while (newNodes.hasMoreElements()) {
-        DefaultMutableTreeNode newNode =
+        final DefaultMutableTreeNode newNode =
             (DefaultMutableTreeNode) newNodes.nextElement();
-        MenuItemModel newmodel = (MenuItemModel) newNode.getUserObject();
+        final MenuItemModel newmodel = (MenuItemModel) newNode.getUserObject();
         if (newmodel.isDefaultSelected()) {
           getTreeState().selectNode(newNode, true);
           noChildSelected = false;
@@ -297,7 +317,7 @@ public class MenuTree extends AbstractTree {
                 private static final long serialVersionUID = 1L;
 
                 public Page getPage() {
-                  TablePage page = new TablePage(para);
+                  final TablePage page = new TablePage(para);
                   page.setListMenuKey(getMenuKey());
                   return page;
                 }
@@ -315,7 +335,7 @@ public class MenuTree extends AbstractTree {
                 private static final long serialVersionUID = 1L;
 
                 public Page getPage() {
-                  FormPage page = new FormPage(para);
+                  final FormPage page = new FormPage(para);
                   page.setListMenuKey(getMenuKey());
                   return page;
                 }
@@ -326,7 +346,7 @@ public class MenuTree extends AbstractTree {
               });
     }
 
-    InlineFrame component =
+    final InlineFrame component =
         (InlineFrame) getPage().get(
             ((ContentContainerPage) getPage()).getInlinePath());
     page.setOutputMarkupId(true);
@@ -351,7 +371,7 @@ public class MenuTree extends AbstractTree {
     @Override
     protected void onComponentTagBody(MarkupStream markupStream,
                                       ComponentTag openTag) {
-      Response response = RequestCycle.get().getResponse();
+      final Response response = RequestCycle.get().getResponse();
 
       for (int i = this.level - 1; i >= 0; --i) {
         response.write("<td class=\"eFapsMenuTreeIntend\"><div></div></td>");
@@ -361,4 +381,33 @@ public class MenuTree extends AbstractTree {
 
   }
 
+  public class AjaxUpdateBehavior extends AbstractAjaxUpdateBehavior {
+
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    protected void respond(final AjaxRequestTarget _target) {
+      final DefaultMutableTreeNode node = MenuTree.this.oidToNode.get(getOid());
+      final DefaultTreeModel treemodel =
+          (DefaultTreeModel) this.getComponent().getModel().getObject();
+      final MenuItemModel model = (MenuItemModel) node.getUserObject();
+      final MenuTree tree = (MenuTree) this.getComponent();
+      if (getMode() == TargetMode.EDIT) {
+        model.requeryLabel();
+        treemodel.nodeChanged(node);
+        tree.updateTree(_target);
+      }
+
+    }
+
+    @Override
+    public String getAjaxCallback() {
+      String ret = "";
+      if (getMode() == TargetMode.EDIT) {
+        ret = getCallbackScript().toString();
+      }
+      return ret;
+    }
+
+  }
 }

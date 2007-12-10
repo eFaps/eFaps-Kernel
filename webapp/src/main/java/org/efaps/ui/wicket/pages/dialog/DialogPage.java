@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.pages.dialog;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.Component;
@@ -33,7 +34,7 @@ import org.apache.wicket.markup.html.resources.StyleSheetReference;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.UpdateInterface;
+import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
@@ -129,7 +130,7 @@ public class DialogPage extends WebPage {
     @Override
     public void onClick(final AjaxRequestTarget _target) {
 
-      MenuItemModel model = ((MenuItemModel) getModel());
+      final MenuItemModel model = ((MenuItemModel) getModel());
 
       try {
         model.executeEvents((String[]) this.parameters.get("selectedRow"));
@@ -137,12 +138,14 @@ public class DialogPage extends WebPage {
         throw new RestartResponseException(new ErrorPage(e));
       }
 
-      UpdateInterface update =
+      final List<UpdateInterface> updates =
           ((EFapsSession) getSession()).getUpdateBehavior(model.getOid());
-      if (update != null && update.isAjaxCallback()) {
-        update.setOid(model.getOid());
-        update.setMode(model.getMode());
-        _target.prependJavascript(update.getAjaxCallback());
+      for (UpdateInterface update : updates) {
+        if (update.isAjaxCallback()) {
+          update.setOid(model.getOid());
+          update.setMode(model.getMode());
+          _target.prependJavascript(update.getAjaxCallback());
+        }
       }
 
       DialogPage.this.modal.setWindowClosedCallback(new UpdateParentCallback(
