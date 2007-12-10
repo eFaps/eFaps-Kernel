@@ -18,10 +18,11 @@
  * Last Changed By: $Author:jmox $
  */
 
-package org.efaps.ui.wicket.components.dojo;
+package org.efaps.ui.wicket.behaviors.dojo;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
+
 
 /**
  * This class turns a Component into a dojo SplitContainer.

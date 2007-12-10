@@ -25,9 +25,9 @@ import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 
-import org.efaps.ui.wicket.components.dojo.ContentPaneBehavior;
-import org.efaps.ui.wicket.components.dojo.SplitContainerBehavior;
-import org.efaps.ui.wicket.components.dojo.SplitContainerBehavior.Orientation;
+import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior.Orientation;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
 

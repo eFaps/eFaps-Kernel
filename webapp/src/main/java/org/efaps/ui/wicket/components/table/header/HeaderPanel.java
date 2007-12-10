@@ -38,8 +38,8 @@ import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.db.Context;
-import org.efaps.ui.wicket.components.dojo.DnDBehavior;
-import org.efaps.ui.wicket.components.dojo.DojoReference;
+import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.DojoReference;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.components.table.TablePanel;

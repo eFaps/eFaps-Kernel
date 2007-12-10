@@ -33,7 +33,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.components.AbstractAjaxCallBackBehavior;
+import org.efaps.ui.wicket.behaviors.AbstractAjaxCallBackBehavior;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.models.cell.TableCellModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;

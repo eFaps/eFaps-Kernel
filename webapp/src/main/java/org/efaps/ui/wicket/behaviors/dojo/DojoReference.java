@@ -18,7 +18,7 @@
  * Last Changed By: $Author:jmox $
  */
 
-package org.efaps.ui.wicket.components.dojo;
+package org.efaps.ui.wicket.behaviors.dojo;
 
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.ResourceReference;

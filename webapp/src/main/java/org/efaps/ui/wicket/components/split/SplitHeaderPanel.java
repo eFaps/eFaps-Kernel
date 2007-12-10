@@ -37,7 +37,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.components.dojo.ContentPaneBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
 /**

@@ -18,11 +18,12 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components.dojo;
+package org.efaps.ui.wicket.behaviors.dojo;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.markup.html.IHeaderResponse;
+
 
 /**
  * This class renders the Links for the JavaScripts in the Head for Behaviors

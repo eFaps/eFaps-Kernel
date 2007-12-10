@@ -32,7 +32,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
-import org.efaps.ui.wicket.components.dojo.DnDBehavior;
+import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
 

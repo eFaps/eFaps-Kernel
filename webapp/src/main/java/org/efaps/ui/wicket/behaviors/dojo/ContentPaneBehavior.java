@@ -18,10 +18,11 @@
  * Last Changed By: $Author:jmox $
  */
 
-package org.efaps.ui.wicket.components.dojo;
+package org.efaps.ui.wicket.behaviors.dojo;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
+
 
 /**
  * This clas turns a Component into a Dojo-ContentPane
