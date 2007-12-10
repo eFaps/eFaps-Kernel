@@ -35,10 +35,11 @@ import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.CssUtils;
 
-import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Search;
+import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.components.dojo.SplitContainerBehavior;
@@ -92,6 +93,8 @@ public class ContentContainerPage extends WebPage {
   }
 
   private void initialise() {
+    ((EFapsSession) getSession()).getUpdateBehaviors().clear();
+
     final ClientProperties properties =
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties();
 

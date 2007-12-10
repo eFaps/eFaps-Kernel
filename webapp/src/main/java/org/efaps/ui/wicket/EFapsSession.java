@@ -113,7 +113,16 @@ public class EFapsSession extends WebSession {
 
   public UpdateInterface getUpdateBehavior(final String _oid) {
     return this.updateBehaviors.get(_oid);
+  }
 
+  /**
+   * This is the getter method for the instance variable
+   * {@link #updateBehaviors}.
+   *
+   * @return value of instance variable {@link #updateBehaviors}
+   */
+  public Map<String, UpdateInterface> getUpdateBehaviors() {
+    return this.updateBehaviors;
   }
 
   /**
