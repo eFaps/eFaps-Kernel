@@ -48,7 +48,6 @@ import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.beans.ValueList;
-import org.efaps.beans.valueparser.ParseException;
 import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
@@ -109,6 +108,7 @@ public class StructurBrowserModel extends AbstractModel {
    * @see #toString()
    * @see #getLabel()
    * @see #setLabel(String)
+   * @see #requeryLabel()
    */
   private String label;
 
@@ -152,8 +152,21 @@ public class StructurBrowserModel extends AbstractModel {
    */
   private String valueLabel;
 
+  /**
+   * this instancevariable contains the url for the Image that will be presented
+   * in GUI
+   */
   private String image;
 
+  /**
+   * this instrance variable is used as a <b>TriState</b>, to determine if the
+   * Model should show the direction of this Model as Child in comparisment to
+   * the parent.<br>
+   * The tristate is used as follows:
+   * <li><b>null</b>: no direction will be shown</li>
+   * <li><b>true</b>: an arrow showing downwards, will be rendered</li>
+   * <li><b>false</b>: an arrow showing upwards, will be rendered</li>
+   */
   private Boolean direction = null;
 
   /**
@@ -187,13 +200,13 @@ public class StructurBrowserModel extends AbstractModel {
    * method used to initialise this StructurBrowserModel
    */
   private void initialise() {
-    AbstractCommand command = getCommand();
+    final AbstractCommand command = getCommand();
     if (command != null && command.getTargetTable() != null) {
       this.tableuuid = command.getTargetTable().getUUID();
       this.browserFieldName = command.getProperty("TargetStructurBrowserField");
     } else {
       if ("true".equals(command.getProperty("TargetStructurBrowser"))) {
-        String label =
+        final String label =
             Menu.getTypeTreeMenu(new Instance(getOid()).getType()).getLabel();
         this.valueLabel = DBProperties.getProperty(label);
       }
@@ -215,19 +228,19 @@ public class StructurBrowserModel extends AbstractModel {
   public void execute() {
     List<Return> ret;
     try {
-      if (this.tableuuid != null) {
-        ret =
-            getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-                ParameterValues.OTHERS, "execute");
-        List<List<Object[]>> lists =
-            (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
-        executeTreeTable(lists);
-      } else {
-        List<List<Object[]>> list = new ArrayList<List<Object[]>>();
-        List<Object[]> instances = new ArrayList<Object[]>(1);
+      if (this.tableuuid == null) {
+        final List<List<Object[]>> list = new ArrayList<List<Object[]>>();
+        final List<Object[]> instances = new ArrayList<Object[]>(1);
         instances.add(new Object[] { new Instance(getOid()), null });
         list.add(instances);
         executeTree(list);
+      } else {
+        ret =
+            getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
+                ParameterValues.OTHERS, "execute");
+        final List<List<Object[]>> lists =
+            (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
+        executeTreeTable(lists);
       }
     } catch (EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
@@ -240,29 +253,32 @@ public class StructurBrowserModel extends AbstractModel {
    *
    * @param _lists
    */
-  private void executeTree(List<List<Object[]>> _lists) {
+  private void executeTree(final List<List<Object[]>> _lists) {
     try {
-      List<Instance> instances = new ArrayList<Instance>();
-
+      final List<Instance> instances = new ArrayList<Instance>();
+      final Map<Instance, List<Object[]>> instMapper =
+          new HashMap<Instance, List<Object[]>>();
       for (List<Object[]> oneList : _lists) {
-        Object[] inst = oneList.get(oneList.size() - 1);
+        final Object[] inst = oneList.get(oneList.size() - 1);
         instances.add((Instance) inst[0]);
+        instMapper.put((Instance) inst[0], oneList);
       }
 
-      ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
-      ValueList valuelist = parser.ExpressionString();
-      ListQuery query = new ListQuery(instances);
+      final ValueParser parser =
+          new ValueParser(new StringReader(this.valueLabel));
+      final ValueList valuelist = parser.ExpressionString();
+      final ListQuery query = new ListQuery(instances);
       valuelist.makeSelect(query);
       query.execute();
       while (query.next()) {
         Object value = null;
-        Instance instance = query.getInstance();
+        final Instance instance = query.getInstance();
         value = valuelist.makeString(query);
-        StructurBrowserModel child =
+        final StructurBrowserModel child =
             new StructurBrowserModel(Menu.getTypeTreeMenu(instance.getType())
                 .getUUID(), instance.getOid());
         this.childs.add(child);
-
+        child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
         child.setLabel(value.toString());
         child.setParent(checkForChildren(instance));
         child.setImage(instance.getType().getProperty("Icon"));
@@ -280,19 +296,19 @@ public class StructurBrowserModel extends AbstractModel {
    *
    * @param _lists
    */
-  private void executeTreeTable(List<List<Object[]>> _lists) {
+  private void executeTreeTable(final List<List<Object[]>> _lists) {
     try {
-      List<Instance> instances = new ArrayList<Instance>();
-      Map<Instance, List<Object[]>> instMapper =
+      final List<Instance> instances = new ArrayList<Instance>();
+      final Map<Instance, List<Object[]>> instMapper =
           new HashMap<Instance, List<Object[]>>();
       for (List<Object[]> oneList : _lists) {
-        Object[] inst = oneList.get(oneList.size() - 1);
+        final Object[] inst = oneList.get(oneList.size() - 1);
         instances.add((Instance) inst[0]);
         instMapper.put((Instance) inst[0], oneList);
       }
 
       // evaluate for all expressions in the table
-      ListQuery query = new ListQuery(instances);
+      final ListQuery query = new ListQuery(instances);
       for (Field field : this.getTable().getFields()) {
         if (field.getExpression() != null) {
           query.addSelect(field.getExpression());
@@ -308,8 +324,8 @@ public class StructurBrowserModel extends AbstractModel {
       query.execute();
       Attribute attr = null;
       while (query.next()) {
-        Instance instance = query.getInstance();
-        StringBuilder oids = new StringBuilder();
+        final Instance instance = query.getInstance();
+        final StringBuilder oids = new StringBuilder();
         boolean first = true;
         for (Object[] oneInstance : instMapper.get(instance)) {
           if (first) {
@@ -322,10 +338,10 @@ public class StructurBrowserModel extends AbstractModel {
 
         String strValue = "";
 
-        StructurBrowserModel child =
+        final StructurBrowserModel child =
             new StructurBrowserModel(super.getCommandUUID(), instance.getOid());
         this.childs.add(child);
-        child.direction = (Boolean) ((instMapper.get(instance).get(0))[1]);
+        child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
         for (Field field : this.getTable().getFields()) {
           Object value = null;
 
@@ -334,7 +350,7 @@ public class StructurBrowserModel extends AbstractModel {
             attr = query.getAttribute(field.getExpression());
           }
 
-          FieldValue fieldvalue =
+          final FieldValue fieldvalue =
               new FieldValue(new FieldDefinition("egal", field), attr, value,
                   instance);
           if (value != null) {
@@ -379,7 +395,7 @@ public class StructurBrowserModel extends AbstractModel {
    * @param _parent
    *                the parent to set
    */
-  public void setParent(boolean _parent) {
+  public void setParent(final boolean _parent) {
     this.parent = _parent;
   }
 
@@ -393,7 +409,7 @@ public class StructurBrowserModel extends AbstractModel {
   private boolean checkForChildren(final Instance _instance) {
 
     try {
-      List<Return> ret =
+      final List<Return> ret =
           getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
               ParameterValues.INSTANCE, _instance, ParameterValues.OTHERS,
               "checkForChildren");
@@ -404,6 +420,11 @@ public class StructurBrowserModel extends AbstractModel {
 
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.efaps.ui.wicket.models.AbstractModel#resetModel()
+   */
   @Override
   public void resetModel() {
     this.childs.clear();
@@ -436,7 +457,7 @@ public class StructurBrowserModel extends AbstractModel {
    */
   public TreeModel getTreeModel() {
     TreeModel model = null;
-    DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
+    final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(this);
     addNode(rootNode, this.childs);
     model = new DefaultTreeModel(rootNode);
     return model;
@@ -451,10 +472,10 @@ public class StructurBrowserModel extends AbstractModel {
    * @param childs
    *                List<StructurBrowserModel>to be added as childs
    */
-  private void addNode(DefaultMutableTreeNode parent,
-                       List<StructurBrowserModel> childs) {
+  private void addNode(final DefaultMutableTreeNode parent,
+                       final List<StructurBrowserModel> childs) {
     for (int i = 0; i < childs.size(); i++) {
-      DefaultMutableTreeNode childNode =
+      final DefaultMutableTreeNode childNode =
           new DefaultMutableTreeNode(childs.get(i));
       parent.add(childNode);
       if (childs.get(i).hasChilds()) {
@@ -477,7 +498,7 @@ public class StructurBrowserModel extends AbstractModel {
    *                the DefaultMutableTreeNode the new Children schould be added
    */
   @SuppressWarnings("unchecked")
-  public void addChildren(DefaultMutableTreeNode parent) {
+  public void addChildren(final DefaultMutableTreeNode parent) {
     parent.removeAllChildren();
     List<Return> ret;
     try {
@@ -485,13 +506,13 @@ public class StructurBrowserModel extends AbstractModel {
           getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
               ParameterValues.INSTANCE, new Instance(super.getOid()),
               ParameterValues.OTHERS, "addChildren");
-      List<List<Object[]>> lists =
+      final List<List<Object[]>> lists =
           (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
 
-      if (this.tableuuid != null) {
-        executeTreeTable(lists);
-      } else {
+      if (this.tableuuid == null) {
         this.executeTree(lists);
+      } else {
+        this.executeTreeTable(lists);
       }
       addNode(parent, this.childs);
     } catch (EFapsException e) {
@@ -516,7 +537,7 @@ public class StructurBrowserModel extends AbstractModel {
    * @param label
    *                the label to set
    */
-  private void setLabel(String label) {
+  private void setLabel(final String label) {
     this.label = label;
   }
 
@@ -580,6 +601,16 @@ public class StructurBrowserModel extends AbstractModel {
     return this.direction;
   }
 
+  /**
+   * This is the setter method for the instance variable {@link #direction}.
+   *
+   * @param direction
+   *                the direction to set
+   */
+  public void setDirection(final Boolean direction) {
+    this.direction = direction;
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -590,31 +621,34 @@ public class StructurBrowserModel extends AbstractModel {
     return this.label;
   }
 
+  /**
+   * this method is updateing the Label, by requering the eFpas-DataBase
+   */
   public void requeryLabel() {
     try {
-      ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
-      ValueList valuelist = parser.ExpressionString();
+      final ValueParser parser =
+          new ValueParser(new StringReader(this.valueLabel));
+      final ValueList valuelist = parser.ExpressionString();
 
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setObject(super.getOid());
       valuelist.makeSelect(query);
       query.execute();
       if (query.next()) {
         setLabel(valuelist.makeString(query).toString());
       }
-    } catch (ParseException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
   }
 
-  public void addBogusNode(DefaultMutableTreeNode _parent) {
+  /**
+   * method to add a new BogusNode to the given Node
+   *
+   * @param _parent
+   *                Parent a BogusNode should be added
+   */
+  public void addBogusNode(final DefaultMutableTreeNode _parent) {
     _parent.add(new BogusNode());
   }
 
@@ -623,6 +657,9 @@ public class StructurBrowserModel extends AbstractModel {
    * actually has some children. By using this class it then can very easy be
    * distinguished between Nodes wich where expanded and Nodes wich still need
    * to be expanded.
+   *
+   * @author jmox
+   * @version $Id$
    */
   public class BogusNode extends DefaultMutableTreeNode {
 

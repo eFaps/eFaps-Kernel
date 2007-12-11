@@ -134,3 +134,18 @@ div.wicket-tree div.row-selected {
   background-color: #E0E8FF;
   font-weight: bold;  
 }
+
+.directionDown{
+  background-image: url("eFaps-direction.png");
+  float: left;
+  height: 17px;
+  width: 11px;
+}
+
+.directionUp{
+  background-image: url("eFaps-direction.png");
+  float: left;
+  height: 17px;
+  width: 11px;
+  background-position:-13px;
+}

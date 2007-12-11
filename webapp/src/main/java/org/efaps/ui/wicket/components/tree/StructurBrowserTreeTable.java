@@ -50,6 +50,11 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
+ * This class renders a TreeTable, wich loads the childs asynchron.<br>
+ * The items of the tree consists of junction link, icon and label. An aditional
+ * arrow showing the direction of the child can be rendered depending on a
+ * Tristate. The table shows the columns as difined in the model.
+ *
  * @author jmox
  * @version $Id:StructurBrowserTreeTable.java 1510 2007-10-18 14:35:40Z jmox $
  */
@@ -57,13 +62,17 @@ public class StructurBrowserTreeTable extends TreeTable {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * ResourceReference to the StyleSheet used for this TreeTable
+   */
   private static final ResourceReference CSS =
       new ResourceReference(StructurBrowserTreeTable.class,
           "StructurTreeTable.css");
 
-  public StructurBrowserTreeTable(final String _id, final TreeModel _treeModel,
+  public StructurBrowserTreeTable(final String _wicketId,
+                                  final TreeModel _treeModel,
                                   final IColumn[] _columns) {
-    super(_id, _treeModel, _columns);
+    super(_wicketId, _treeModel, _columns);
     this.setRootLess(true);
 
     final ITreeState treeState = this.getTreeState();
@@ -92,8 +101,9 @@ public class StructurBrowserTreeTable extends TreeTable {
                                   final String _wicketId, final TreeNode _node) {
     final StructurBrowserModel model =
         (StructurBrowserModel) ((DefaultMutableTreeNode) _node).getUserObject();
-    if (model.getImage() != null) {
-
+    if (model.getImage() == null) {
+      return super.newNodeIcon(_parent, _wicketId, _node);
+    } else {
       return new WebMarkupContainer(_wicketId) {
 
         private static final long serialVersionUID = 1L;
@@ -104,8 +114,6 @@ public class StructurBrowserTreeTable extends TreeTable {
           tag.put("style", "background-image: url('" + model.getImage() + "')");
         }
       };
-    } else {
-      return super.newNodeIcon(_parent, _wicketId, _node);
     }
   }
 
@@ -156,7 +164,7 @@ public class StructurBrowserTreeTable extends TreeTable {
             throw new RestartResponseException(new ErrorPage(e));
           }
           if (menu == null) {
-            EFapsException excep =
+            final EFapsException excep =
                 new EFapsException(this.getClass(), "newNodeLink.noTreeMenu",
                     instance.getType().getName());
             throw new RestartResponseException(new ErrorPage(excep));
@@ -180,6 +188,13 @@ public class StructurBrowserTreeTable extends TreeTable {
     });
   }
 
+  /**
+   * This class renders a Freagment of the TreeTable, represending a Node
+   * including the junctionlink, the icon etc.
+   *
+   * @author jmox
+   * @version $Id$
+   */
   private class StructurBrowserTreeFragment extends Panel {
 
     private static final long serialVersionUID = 1L;
@@ -195,9 +210,9 @@ public class StructurBrowserTreeTable extends TreeTable {
 
       add(newJunctionLink(this, "link", "image", _node));
 
-      WebComponent direction = new WebComponent("direction");
+      final WebComponent direction = new WebComponent("direction");
       add(direction);
-      StructurBrowserModel model =
+      final StructurBrowserModel model =
           (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
               .getUserObject();
       if (model.getDirection() == null) {
@@ -207,7 +222,7 @@ public class StructurBrowserTreeTable extends TreeTable {
       } else {
         direction.add(new SimpleAttributeModifier("class", "directionUp"));
       }
-      MarkupContainer nodeLink = newNodeLink(this, "nodeLink", _node);
+      final MarkupContainer nodeLink = newNodeLink(this, "nodeLink", _node);
       add(nodeLink);
 
       nodeLink.add(newNodeIcon(nodeLink, "icon", _node));
