@@ -64,10 +64,11 @@ public class StructurBrowser implements EventExecution {
     query.addSelect("OID");
     query.execute();
 
-    List<List<Instance>> list = new ArrayList<List<Instance>>();
+    List<List<Object[]>> list = new ArrayList<List<Object[]>>();
     while (query.next()) {
-      List<Instance> instances = new ArrayList<Instance>(1);
-      instances.add(new Instance((String) query.get("OID")));
+      List<Object[]> instances = new ArrayList<Object[]>(1);
+      instances.add(new Object[] { new Instance((String) query.get("OID")),
+          null });
       list.add(instances);
     }
 
@@ -108,10 +109,12 @@ public class StructurBrowser implements EventExecution {
     query.addWhereExprEqValue("ParentCollectionLink", this.getId(instance));
     query.execute();
 
-    List<List<Instance>> lists = new ArrayList<List<Instance>>();
+    List<List<Object[]>> lists = new ArrayList<List<Object[]>>();
+
     while (query.next()) {
-      List<Instance> instances = new ArrayList<Instance>(1);
-      instances.add(new Instance((String) query.get("OID")));
+      List<Object[]> instances = new ArrayList<Object[]>(1);
+      instances.add(new Object[] { new Instance((String) query.get("OID")),
+          true });
       lists.add(instances);
     }
     ret.put(ReturnValues.VALUES, lists);

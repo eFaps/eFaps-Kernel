@@ -154,6 +154,8 @@ public class StructurBrowserModel extends AbstractModel {
 
   private String image;
 
+  private Boolean direction = null;
+
   /**
    * standart constructor, if called this StructurBrowserModel will be defined
    * as root
@@ -217,13 +219,13 @@ public class StructurBrowserModel extends AbstractModel {
         ret =
             getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
                 ParameterValues.OTHERS, "execute");
-        List<List<Instance>> lists =
-            (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
+        List<List<Object[]>> lists =
+            (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
         executeTreeTable(lists);
       } else {
-        List<List<Instance>> list = new ArrayList<List<Instance>>();
-        List<Instance> instances = new ArrayList<Instance>(1);
-        instances.add(new Instance(getOid()));
+        List<List<Object[]>> list = new ArrayList<List<Object[]>>();
+        List<Object[]> instances = new ArrayList<Object[]>(1);
+        instances.add(new Object[] { new Instance(getOid()), null });
         list.add(instances);
         executeTree(list);
       }
@@ -238,16 +240,15 @@ public class StructurBrowserModel extends AbstractModel {
    *
    * @param _lists
    */
-  private void executeTree(List<List<Instance>> _lists) {
+  private void executeTree(List<List<Object[]>> _lists) {
     try {
       List<Instance> instances = new ArrayList<Instance>();
-      Map<Instance, List<Instance>> instMapper =
-          new HashMap<Instance, List<Instance>>();
-      for (List<Instance> oneList : _lists) {
-        Instance inst = oneList.get(oneList.size() - 1);
-        instances.add(inst);
-        instMapper.put(inst, oneList);
+
+      for (List<Object[]> oneList : _lists) {
+        Object[] inst = oneList.get(oneList.size() - 1);
+        instances.add((Instance) inst[0]);
       }
+
       ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
       ValueList valuelist = parser.ExpressionString();
       ListQuery query = new ListQuery(instances);
@@ -279,15 +280,15 @@ public class StructurBrowserModel extends AbstractModel {
    *
    * @param _lists
    */
-  private void executeTreeTable(List<List<Instance>> _lists) {
+  private void executeTreeTable(List<List<Object[]>> _lists) {
     try {
       List<Instance> instances = new ArrayList<Instance>();
-      Map<Instance, List<Instance>> instMapper =
-          new HashMap<Instance, List<Instance>>();
-      for (List<Instance> oneList : _lists) {
-        Instance inst = oneList.get(oneList.size() - 1);
-        instances.add(inst);
-        instMapper.put(inst, oneList);
+      Map<Instance, List<Object[]>> instMapper =
+          new HashMap<Instance, List<Object[]>>();
+      for (List<Object[]> oneList : _lists) {
+        Object[] inst = oneList.get(oneList.size() - 1);
+        instances.add((Instance) inst[0]);
+        instMapper.put((Instance) inst[0], oneList);
       }
 
       // evaluate for all expressions in the table
@@ -310,20 +311,21 @@ public class StructurBrowserModel extends AbstractModel {
         Instance instance = query.getInstance();
         StringBuilder oids = new StringBuilder();
         boolean first = true;
-        for (Instance oneInstance : instMapper.get(instance)) {
+        for (Object[] oneInstance : instMapper.get(instance)) {
           if (first) {
             first = false;
           } else {
             oids.append("|");
           }
-          oids.append(oneInstance.getOid());
+          oids.append(((Instance) oneInstance[0]).getOid());
         }
+
         String strValue = "";
 
         StructurBrowserModel child =
             new StructurBrowserModel(super.getCommandUUID(), instance.getOid());
         this.childs.add(child);
-
+        child.direction = (Boolean) ((instMapper.get(instance).get(0))[1]);
         for (Field field : this.getTable().getFields()) {
           Object value = null;
 
@@ -483,8 +485,8 @@ public class StructurBrowserModel extends AbstractModel {
           getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
               ParameterValues.INSTANCE, new Instance(super.getOid()),
               ParameterValues.OTHERS, "addChildren");
-      List<List<Instance>> lists =
-          (List<List<Instance>>) ret.get(0).get(ReturnValues.VALUES);
+      List<List<Object[]>> lists =
+          (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
 
       if (this.tableuuid != null) {
         executeTreeTable(lists);
@@ -569,6 +571,15 @@ public class StructurBrowserModel extends AbstractModel {
     }
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #direction}.
+   *
+   * @return value of instance variable {@link #direction}
+   */
+  public Boolean getDirection() {
+    return this.direction;
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -606,6 +617,7 @@ public class StructurBrowserModel extends AbstractModel {
   public void addBogusNode(DefaultMutableTreeNode _parent) {
     _parent.add(new BogusNode());
   }
+
   /**
    * This class is used to add a ChildNode under a ParentNode, if the ParentNode
    * actually has some children. By using this class it then can very easy be

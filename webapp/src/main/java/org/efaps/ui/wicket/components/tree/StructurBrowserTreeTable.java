@@ -30,9 +30,11 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.TreeTable;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -115,11 +117,13 @@ public class StructurBrowserTreeTable extends TreeTable {
    *      org.apache.wicket.extensions.markup.html.tree.table.TreeTable.IRenderNodeCallback)
    */
   @Override
-  protected Component newTreePanel(final MarkupContainer _parent, final String _wicketId,
+  protected Component newTreePanel(final MarkupContainer _parent,
+                                   final String _wicketId,
                                    final TreeNode _node, final int _level,
                                    final IRenderNodeCallback _renderNodeCallback) {
 
-    return new StructurBrowserTreeFragment(_wicketId, _node, _level, _renderNodeCallback);
+    return new StructurBrowserTreeFragment(_wicketId, _node, _level,
+        _renderNodeCallback);
 
   }
 
@@ -139,7 +143,7 @@ public class StructurBrowserTreeTable extends TreeTable {
 
       public void onClick(AjaxRequestTarget target) {
         Instance instance = null;
-        final   StructurBrowserModel model =
+        final StructurBrowserModel model =
             (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
                 .getUserObject();
 
@@ -157,7 +161,7 @@ public class StructurBrowserTreeTable extends TreeTable {
                     instance.getType().getName());
             throw new RestartResponseException(new ErrorPage(excep));
           }
-          final  PageParameters parameters = new PageParameters();
+          final PageParameters parameters = new PageParameters();
           parameters.add("command", menu.getUUID().toString());
           parameters.add("oid", model.getOid());
           ContentContainerPage page;
@@ -191,6 +195,18 @@ public class StructurBrowserTreeTable extends TreeTable {
 
       add(newJunctionLink(this, "link", "image", _node));
 
+      WebComponent direction = new WebComponent("direction");
+      add(direction);
+      StructurBrowserModel model =
+          (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
+              .getUserObject();
+      if (model.getDirection() == null) {
+        direction.setVisible(false);
+      } else if (model.getDirection()) {
+        direction.add(new SimpleAttributeModifier("class", "directionDown"));
+      } else {
+        direction.add(new SimpleAttributeModifier("class", "directionUp"));
+      }
       MarkupContainer nodeLink = newNodeLink(this, "nodeLink", _node);
       add(nodeLink);
 

@@ -36,10 +36,12 @@ div.wicket-tree-table {
 
 div.wicket-tree-table-body {
   background-color: white;
-  position:absolute;
-  overflow:auto;
-  top:19px;
-  bottom:0px;
+  position: absolute;
+  overflow-y: auto;
+  overflow-x: hidden;
+  top: 19px;
+  bottom: 0px;
+  width: 100%;
 }
 
 div.wicket-tree-table a {
@@ -245,6 +247,22 @@ div.wicket-tree-table div.row:hover{
 }
 
 .eFapsCheckboxCell{
- margin-left:-9px;
- margin-top:1px;
+  margin-left: -9px;
+  margin-top: 1px;
 }
+
+.directionDown{
+  background-image: url("eFaps-direction.png");
+  float: left;
+  height: 17px;
+  width: 11px;
+}
+
+.directionUp{
+  background-image: url("eFaps-direction.png");
+  float: left;
+  height: 17px;
+  width: 11px;
+  background-position:-13px;
+}
+
