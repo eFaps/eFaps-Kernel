@@ -49,6 +49,7 @@ import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.AbstractTree;
+import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.AbstractCommand;
@@ -96,8 +97,11 @@ public class MenuTree extends AbstractTree {
 
   public MenuTree(final String _wicketId, final PageParameters _parameters,
                   final String _menukey) {
-
     super(_wicketId);
+
+    final ITreeState treestate = this.getTreeState();
+    treestate.expandAll();
+
     this.menuKey = _menukey;
     final MenuItemModel model =
         new MenuItemModel(UUID.fromString(_parameters.getString("command")),
