@@ -1,49 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-
- Copyright 2003-2007 The eFaps Team
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-
- Author:          tmo
- Revision:        $Rev$
- Last Changed:    $Date$
- Last Changed By: $Author$
-
+  
+  Copyright 2003-2007 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          tmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+  
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
 
   <modelVersion>4.0.0</modelVersion>
 
-  <repositories>
-    <repository>
-      <id>wicket-stuff</id>
-      <name>wicket-stuff</name>
-      <layout>default</layout>
-      <url>http://www.wicketstuff.org/maven/repository</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-
   <!-- ************************************************************************
-  * Parent Module Definition
-  ************************************************************************* -->
+    * Parent Module Definition
+    ************************************************************************* -->
   <parent>
     <groupId>org.efaps</groupId>
     <artifactId>efaps</artifactId>
@@ -51,21 +39,18 @@
   </parent>
 
   <!-- ************************************************************************
-  * Module Definition
-  ************************************************************************* -->
+    * Module Definition
+    ************************************************************************* -->
   <packaging>jar</packaging>
   <groupId>org.efaps</groupId>
   <artifactId>eFaps-WebApp</artifactId>
 
   <name>webapp</name>
-  <description>
-    eFaps-WebApp provides a web interface as the User Interface for eFaps
-    which can be easily expanded and altered.
-  </description>
+  <description>eFaps-WebApp provides a web interface as the User Interface for eFaps which can be easily expanded and altered.</description>
 
   <!-- ************************************************************************
-  * Project itself
-  ************************************************************************* -->
+    * Project itself
+    ************************************************************************* -->
   <build>
     <resources>
       <resource>
@@ -82,7 +67,7 @@
           <exclude>**/*.java</exclude>
         </excludes>
       </resource>
-    </resources>  
+    </resources>
     <plugins>
       <!--
         Compiler Settings:
@@ -109,7 +94,7 @@
           <configFile>file:${basedir}/src/main/jetty/jetty.xml</configFile>
           <userName>Administrator</userName>
           <passWord>Administrator</passWord>
-         </configuration>
+        </configuration>
         <dependencies>
           <!-- connection Pooling, used as J2EE resource -->
           <dependency>
@@ -117,7 +102,7 @@
             <artifactId>commons-dbcp</artifactId>
             <version>1.2.1</version>
           </dependency>
-           <!-- as depency, wicket itself is referenced (and so started) -->
+          <!-- as depency, wicket itself is referenced (and so started) -->
           <dependency>
             <groupId>org.efaps</groupId>
             <artifactId>eFaps-WebApp</artifactId>
@@ -129,8 +114,8 @@
   </build>
 
   <!-- ************************************************************************
-  * Dependencies
-  ************************************************************************* -->
+    * Dependencies
+    ************************************************************************* -->
   <dependencies>
 
     <!-- eFaps kernel -->
@@ -176,7 +161,21 @@
       <version>1.3.0-rc2</version>
       <scope>compile</scope>
     </dependency>
-   
-   </dependencies>
+
+    <!-- xerces used for creating xml on the fly-->
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.8.1</version>
+    </dependency>
+
+    <!-- fop used to create pdf from formated object on the fly -->
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>fop</artifactId>
+      <version>0.93</version>
+    </dependency>
+
+  </dependencies>
 
 </project>

@@ -67,6 +67,11 @@ public class TableCellModel extends Model {
    */
   private final boolean fixedWidth;
 
+  /**
+   * instance variable storing the name of the field
+   */
+  private final String name;
+
   public TableCellModel(final Field _field, final String _oid,
                         final String _cellvalue, final String _icon) {
     super();
@@ -76,6 +81,7 @@ public class TableCellModel extends Model {
     this.cellValue = _cellvalue;
     this.icon = _icon;
     this.fixedWidth = _field.isFixedWidth();
+    this.name = _field.getName();
   }
 
   /**
@@ -154,5 +160,14 @@ public class TableCellModel extends Model {
    */
   public boolean isCheckOut() {
     return this.reference.contains("/servlet/checkout");
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #name}.
+   *
+   * @return value of instance variable {@link #name}
+   */
+  public String getName() {
+    return this.name;
   }
 }
