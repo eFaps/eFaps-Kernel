@@ -757,6 +757,7 @@
               <xsd:enumeration value="Target" />
               <xsd:enumeration value="TargetCreateType" />
               <xsd:enumeration value="TargetConnectAttribute" />
+              <xsd:enumeration value="TargetDefaultMenu"></xsd:enumeration>
               <xsd:enumeration value="TargetMode" />
               <xsd:enumeration value="TargetShowCheckBoxes" />
               <xsd:enumeration value="TargetStructurBrowser"></xsd:enumeration>

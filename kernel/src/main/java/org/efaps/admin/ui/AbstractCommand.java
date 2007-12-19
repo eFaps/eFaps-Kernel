@@ -23,8 +23,10 @@ package org.efaps.admin.ui;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Vector;
 
+import org.efaps.admin.common.SystemAttribute;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
@@ -207,6 +209,8 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #setTargetCreateType
    */
   private Type targetCreateType = null;
+
+  private boolean targetDefaultMenu = true;
 
   /**
    * The instance variable stores the target user interface form object which is
@@ -526,6 +530,27 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
   }
 
   /**
+   * This is the getter method for the instance variable
+   * {@link #targetDefaultMenu}.
+   *
+   * @return value of instance variable {@link #targetDefaultMenu}
+   */
+  public boolean hasTargetDefaultMenu() {
+    return this.targetDefaultMenu;
+  }
+
+  /**
+   * This is the setter method for the instance variable
+   * {@link #targetDefaultMenu}.
+   *
+   * @param targetDefaultMenu
+   *                the targetDefaultMenu to set
+   */
+  public void setTargetDefaultMenu(boolean targetDefaultMenu) {
+    this.targetDefaultMenu = targetDefaultMenu;
+  }
+
+  /**
    * This is the setter method for the instance variable {@link #targetForm}.
    *
    * @return value of instance variable {@link #targetForm}
@@ -556,7 +581,23 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @see #setTargetMenu
    */
   public Menu getTargetMenu() {
-    return this.targetMenu;
+    Menu ret = null;
+    if (this.targetDefaultMenu) {
+      // reads the Value from "Common_Main_DefaultMenu"
+      final String menuname =
+          SystemAttribute.get(
+              UUID.fromString("32e06630-03af-42a8-97c9-e798d39a7f54"))
+              .getStringValue();
+      if (!"none".equals(menuname)) {
+        if (this.targetMenu == null) {
+          ret = Menu.get(menuname);
+        } else {
+          this.targetMenu.addAll(Menu.get(menuname));
+          ret = this.targetMenu;
+        }
+      }
+    }
+    return ret;
   }
 
   /**
@@ -569,6 +610,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    */
   public void setTargetMenu(final Menu _targetMenu) {
     this.targetMenu = _targetMenu;
+
   }
 
   /**
@@ -1024,6 +1066,10 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
       setTargetConnectAttribute(Attribute.get(_value));
     } else if ("TargetCreateType".equals(_name)) {
       setTargetCreateType(Type.get(_value));
+    } else if ("TargetDefaultMenu".equals(_name)) {
+      if ("none".equals(_value)) {
+        this.setTargetDefaultMenu(false);
+      }
     } else if ("TargetMode".equals(_name)) {
       if ("create".equals(_value)) {
         setTargetMode(TargetMode.CREATE);
@@ -1117,4 +1163,5 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
       this.clause = _clause;
     }
   }
+
 }
