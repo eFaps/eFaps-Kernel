@@ -103,6 +103,10 @@ public abstract class AbstractUpdate {
    */
   private boolean abstractType = false;
 
+  private String application;
+
+  private Long maxVersion;
+
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
@@ -157,7 +161,7 @@ public abstract class AbstractUpdate {
                                                         Exception {
     try {
 
-      for (AbstractDefinition def : this.definitions) {
+      for (final AbstractDefinition def : this.definitions) {
 
         final Expression jexlExpr =
             ExpressionFactory.createExpression(def.mode);
@@ -171,7 +175,7 @@ public abstract class AbstractUpdate {
               this.allLinkTypes, this.abstractType);
         }
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOG.error("updateInDB", e);
       throw e;
     }
@@ -179,6 +183,15 @@ public abstract class AbstractUpdate {
 
   // ///////////////////////////////////////////////////////////////////////////
   // getter and setter methods
+
+  /**
+   * This is the getter method for the instance variable {@link #url}.
+   *
+   * @return value of instance variable {@link #url}
+   */
+  public URL getURL() {
+    return this.url;
+  }
 
   /**
    * @see #url
@@ -233,6 +246,54 @@ public abstract class AbstractUpdate {
    */
   protected List<AbstractDefinition> getDefinitions() {
     return this.definitions;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #application}.
+   *
+   * @return value of instance variable {@link #application}
+   */
+  public String getApplication() {
+    return this.application;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #application}.
+   *
+   * @param application
+   *                the application to set
+   */
+  public void setApplication(String application) {
+    this.application = application;
+  }
+
+  /**
+   * This is the getter method for the instance variable
+   * {@link #dataModelTypeName}.
+   *
+   * @return value of instance variable {@link #dataModelTypeName}
+   */
+  public String getDataModelTypeName() {
+    return this.dataModelTypeName;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #maxVersion}.
+   *
+   * @return value of instance variable {@link #maxVersion}
+   */
+  public Long getMaxVersion() {
+    return this.maxVersion;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #maxVersion}.
+   *
+   * @param maxVersion
+   *                the maxVersion to set
+   */
+  public void setMaxVersion(Long maxVersion) {
+    this.maxVersion = maxVersion;
   }
 
   /**
@@ -444,7 +505,7 @@ public abstract class AbstractUpdate {
         if (_instance.getType().getAttribute("Revision") != null) {
           update.add("Revision", this.globalVersion + "#" + this.localVersion);
         }
-        for (Map.Entry<String, String> entry : this.values.entrySet()) {
+        for (final Map.Entry<String, String> entry : this.values.entrySet()) {
           update.add(entry.getKey(), entry.getValue());
         }
         if (LOG.isInfoEnabled() && (name != null)) {
@@ -466,7 +527,7 @@ public abstract class AbstractUpdate {
         if (name == null) {
           _insert.add("Name", "-");
         }
-        for (Map.Entry<String, String> entry : this.values.entrySet()) {
+        for (final Map.Entry<String, String> entry : this.values.entrySet()) {
           _insert.add(entry.getKey(), entry.getValue());
         }
         if (LOG.isInfoEnabled() && (name != null)) {
@@ -481,13 +542,13 @@ public abstract class AbstractUpdate {
         instance = _insert.getInstance();
       }
       if (_allLinkTypes != null) {
-        for (Link linkType : _allLinkTypes) {
+        for (final Link linkType : _allLinkTypes) {
           setLinksInDB(instance, linkType, this.links.get(linkType));
         }
       }
       setPropertiesInDb(instance, this.properties);
 
-      for (Event event : this.events) {
+      for (final Event event : this.events) {
         final Instance newInstance =
             event.updateInDB(instance, getValue("Name"));
         setPropertiesInDb(newInstance, event.getProperties());
@@ -547,7 +608,7 @@ public abstract class AbstractUpdate {
         targets = new HashMap<Long, Map<String, String>>();
       }
       if (_links != null) {
-        for (Map.Entry<String, Map<String, String>> linkEntry : _links
+        for (final Map.Entry<String, Map<String, String>> linkEntry : _links
             .entrySet()) {
           query = new SearchQuery();
           query.setQueryTypes(_link.childTypeName);
@@ -568,13 +629,15 @@ public abstract class AbstractUpdate {
       }
 
       // insert needed new links and update already existing
-      for (Map.Entry<Long, Map<String, String>> target : targets.entrySet()) {
+      for (final Map.Entry<Long, Map<String, String>> target : targets
+          .entrySet()) {
         if (currents.get(target.getKey()) == null) {
           final Insert insert = new Insert(_link.linkName);
           insert.add(_link.parentAttrName, "" + _instance.getId());
           insert.add(_link.childAttrName, "" + target.getKey());
           if (target.getValue() != null) {
-            for (Map.Entry<String, String> value : target.getValue().entrySet()) {
+            for (final Map.Entry<String, String> value : target.getValue()
+                .entrySet()) {
               insert.add(value.getKey(), value.getValue());
             }
           }
@@ -582,7 +645,8 @@ public abstract class AbstractUpdate {
         } else {
           if (target.getValue() != null) {
             final Update update = new Update(currents.get(target.getKey()));
-            for (Map.Entry<String, String> value : target.getValue().entrySet()) {
+            for (final Map.Entry<String, String> value : target.getValue()
+                .entrySet()) {
               update.add(value.getKey(), value.getValue());
             }
             update.executeWithoutAccessCheck();
@@ -592,7 +656,7 @@ public abstract class AbstractUpdate {
       }
 
       // remove unneeded current links to access types
-      for (String oid : currents.values()) {
+      for (final String oid : currents.values()) {
         final Delete del = new Delete(oid);
         del.executeWithoutAccessCheck();
       }
@@ -630,7 +694,7 @@ public abstract class AbstractUpdate {
 
         // add current properites
         if (_properties != null) {
-          for (Map.Entry<String, String> entry : _properties.entrySet()) {
+          for (final Map.Entry<String, String> entry : _properties.entrySet()) {
             final Insert insert = new Insert("Admin_Common_Property");
             insert.add("Name", entry.getKey());
             insert.add("Value", entry.getValue());

@@ -32,14 +32,17 @@ import java.util.Map.Entry;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.lang.builder.ToStringBuilder;
-
+import org.efaps.importer.DataImport;
 import org.efaps.update.access.AccessSetUpdate;
 import org.efaps.update.access.AccessTypeUpdate;
 import org.efaps.update.common.SystemAttributeUpdate;
 import org.efaps.update.datamodel.SQLTableUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
+import org.efaps.update.dbproperty.DBPropertiesUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
+import org.efaps.update.program.CSSUpdate;
 import org.efaps.update.program.JavaUpdate;
+import org.efaps.update.program.XSLUpdate;
 import org.efaps.update.ui.CommandUpdate;
 import org.efaps.update.ui.FormUpdate;
 import org.efaps.update.ui.ImageUpdate;
@@ -75,13 +78,10 @@ public class Install {
 
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // static variables
-
   /**
    * List of all update classes. The order is also used for the install order.
    *
-   * @see #install
+   * @see #install(Long)
    */
   private final Map<Class<? extends AbstractUpdate>, FileType> updateClasses =
       new LinkedHashMap<Class<? extends AbstractUpdate>, FileType>();
@@ -102,6 +102,22 @@ public class Install {
       this.updateClasses.put(WebDAVUpdate.class, FileType.XML);
       this.updateClasses.put(JavaUpdate.class, FileType.XML);
       this.updateClasses.put(SystemAttributeUpdate.class, FileType.XML);
+      this.updateClasses.put(CSSUpdate.class, FileType.CSS);
+      this.updateClasses.put(XSLUpdate.class, FileType.XSL);
+    }
+  }
+
+  /**
+   * List of all import classes. The order is also used for the import order.
+   *
+   * @see #importData()
+   */
+  private final Map<Class<? extends ImportInterface>, FileType> importClasses =
+      new LinkedHashMap<Class<? extends ImportInterface>, FileType>();
+  {
+    if (this.importClasses.size() == 0) {
+      this.importClasses.put(DataImport.class, FileType.XML);
+      this.importClasses.put(DBPropertiesUpdate.class, FileType.XML);
     }
   }
 
@@ -131,6 +147,10 @@ public class Install {
    */
   private final Map<Class<? extends AbstractUpdate>, List<AbstractUpdate>> cache =
       new HashMap<Class<? extends AbstractUpdate>, List<AbstractUpdate>>();
+
+  private String application;
+
+  private Long maxVersion;
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -182,8 +202,29 @@ public class Install {
           if (file.getType().equals(entry.getValue().type)) {
             final Object obj = method.invoke(null, file.getUrl());
             if (obj != null) {
-              list.add((AbstractUpdate) obj);
+              final AbstractUpdate update = (AbstractUpdate) obj;
+              update.setApplication(this.application);
+              update.setMaxVersion(this.maxVersion);
+              list.add(update);
             }
+          }
+        }
+      }
+    }
+  }
+
+  public void importData() throws Exception {
+
+    for (final Entry<Class<? extends ImportInterface>, FileType> entry : this.importClasses
+        .entrySet()) {
+      final Method method =
+          entry.getKey().getMethod(entry.getValue().method, URL.class);
+
+      for (final InstallFile file : this.files) {
+        if (file.getType().equals(entry.getValue().type)) {
+          final Object obj = method.invoke(null, file.getUrl());
+          if (obj != null) {
+            ((ImportInterface) obj).updateInDB();
           }
         }
       }
@@ -214,6 +255,26 @@ public class Install {
    */
   public List<InstallFile> getFiles() {
     return this.files;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #application}.
+   *
+   * @param application
+   *                the application to set
+   */
+  public void setApplication(String application) {
+    this.application = application;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #maxVersion}.
+   *
+   * @param maxVersion
+   *                the maxVersion to set
+   */
+  public void setMaxVersion(Long maxVersion) {
+    this.maxVersion = maxVersion;
   }
 
   /**
@@ -254,6 +315,19 @@ public class Install {
     public String getType() {
       return this.type;
     }
+
+  }
+
+  /**
+   * This interface is used in {@link #org.efaps.update.Install.importData()}.
+   *
+   * @see #importClasses
+   * @author jmox
+   * @version $Id$
+   */
+  public interface ImportInterface {
+
+    public void updateInDB() throws EFapsException;
 
   }
 

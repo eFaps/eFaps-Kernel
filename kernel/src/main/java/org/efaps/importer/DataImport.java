@@ -26,18 +26,30 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.digester.Digester;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+
+import org.efaps.update.Install.ImportInterface;
 
 /**
  * Class wich contains the method to launch the import of Data into a efaps
  * connected Database.
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
  */
-public class DataImport {
+public class DataImport implements ImportInterface {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Logger LOG = LoggerFactory.getLogger(DataImport.class);
+
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -45,35 +57,36 @@ public class DataImport {
    */
   private RootObject root = null;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors / destructors
 
   /**
-   * DefaultConstructor used by Shell -create
+   * DefaultConstructor
    */
   public DataImport() {
+    super();
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
-   * 
-   * @param _xml  String representing the file name including path to the
-   *              XML-File
+   * @param _xml
+   *                String representing the file name including path to the
+   *                XML-File
    * @see #readXMLFile(File)
    * @see #readXMLFile(URL)
    */
-  public void readXMLFile(final String _xml) throws MalformedURLException  {
+  public void readXMLFile(final String _xml) throws MalformedURLException {
     readXMLFile(new File(_xml));
   }
 
   /**
-   * 
-   * @param _xml  XML-File
+   * @param _xml
+   *                XML-File
    * @see #readXMLFile(URL)
    */
-  public void readXMLFile(final File _xml) throws MalformedURLException  {
+  public void readXMLFile(final File _xml) throws MalformedURLException {
     readXMLFile(_xml.toURL());
   }
 
@@ -81,111 +94,111 @@ public class DataImport {
    * Method that uses the {@link org.apache.commons.digester.Digester} to read
    * the objects from the given xml-File an build the java-Objects in a
    * parent-child Hirachy.
-   * 
-   * @param _xml  URL to the XML-File
+   *
+   * @param _url
+   *                URL to the XML-File
    */
-  public void readXMLFile(final URL _xml) {
-    Digester digester = new Digester();
+  public static DataImport readXMLFile(final URL _url) {
 
-    digester.setValidating(false);
-
-    digester.addObjectCreate("import", RootObject.class);
-
-    // Read the Definitions
-    digester.addCallMethod("import/definition/date", "setDateFormat", 1);
-    digester.addCallParam("import/definition/date", 0, "format");
-
-    // Read OrderObject
-    digester.addFactoryCreate("import/definition/order",
-        new OrderObjectFactory(), false);
-    digester.addCallMethod("import/definition/order/attribute", "addAttribute",
-        3, new Class[] { Integer.class, String.class, String.class });
-    digester.addCallParam("import/definition/order/attribute", 0, "index");
-    digester.addCallParam("import/definition/order/attribute", 1, "name");
-    digester.addCallParam("import/definition/order/attribute", 2, "criteria");
-    digester.addSetNext("import/definition/order", "addOrder",
-        "org.efaps.importer.OrderObject");
-
-    // Read DefaultObject
-    digester.addObjectCreate("import/definition/default", DefaultObject.class);
-    digester.addCallMethod("import/definition/default", "addDefault", 3);
-    digester.addCallParam("import/definition/default", 0, "type");
-    digester.addCallParam("import/definition/default", 1, "name");
-    digester.addCallParam("import/definition/default", 2);
-
-    digester.addObjectCreate("import/definition/default/linkattribute",
-        ForeignObject.class);
-    digester.addCallMethod("import/definition/default/linkattribute",
-        "setLinkAttribute", 2);
-    digester.addCallParam("import/definition/default/linkattribute", 0, "name");
-    digester.addCallParam("import/definition/default/linkattribute", 1, "type");
-
-    digester.addCallMethod(
-        "import/definition/default/linkattribute/queryattribute",
-        "addAttribute", 2);
-    digester.addCallParam(
-        "import/definition/default/linkattribute/queryattribute", 0, "name");
-    digester.addCallParam(
-        "import/definition/default/linkattribute/queryattribute", 1);
-
-    digester.addSetNext("import/definition/default/linkattribute", "addLink",
-        "org.efaps.importer.ForeignObject");
-
-    // Create the Objects
-    digester.addFactoryCreate("*/object", new InsertObjectFactory(), false);
-
-    digester.addCallMethod("*/object/attribute", "addAttribute", 3);
-    digester.addCallParam("*/object/attribute", 0, "name");
-    digester.addCallParam("*/object/attribute", 1);
-    digester.addCallParam("*/object/attribute", 2, "unique");
-
-    digester.addCallMethod("*/object/file", "setCheckinObject", 2);
-    digester.addCallParam("*/object/file", 0, "name");
-    digester.addCallParam("*/object/file", 1, "url");
-
-    digester.addCallMethod("*/object/parentattribute", "setParentAttribute", 2);
-    digester.addCallParam("*/object/parentattribute", 0, "name");
-    digester.addCallParam("*/object/parentattribute", 1, "unique");
-
-    digester.addCallMethod("*/object/linkattribute", "addUniqueAttribute", 2);
-    digester.addCallParam("*/object/linkattribute", 0, "unique");
-    digester.addCallParam("*/object/linkattribute", 1, "name");
-
-    digester.addSetNext("*/object", "addChild",
-        "org.efaps.importer.InsertObject");
-
-    digester.addObjectCreate("*/object/linkattribute", ForeignObject.class);
-    digester.addCallMethod("*/object/linkattribute", "setLinkAttribute", 2);
-    digester.addCallParam("*/object/linkattribute", 0, "name");
-    digester.addCallParam("*/object/linkattribute", 1, "type");
-
-    digester.addCallMethod("*/object/linkattribute/queryattribute",
-        "addAttribute", 2);
-    digester.addCallParam("*/object/linkattribute/queryattribute", 0, "name");
-    digester.addCallParam("*/object/linkattribute/queryattribute", 1);
-
-    digester.addSetNext("*/object/linkattribute", "addLink",
-        "org.efaps.importer.ForeignObject");
-
+    DataImport ret = new DataImport();
     try {
-      this.root = (RootObject) digester.parse(_xml);
-    } catch (IOException e) {
-      e.printStackTrace(System.err);
-    } catch (SAXException e) {
-      e.printStackTrace(System.err);
+      final Digester digester = new Digester();
+      digester.setValidating(false);
+
+      digester.addObjectCreate("import", RootObject.class);
+
+      final String def = "import/definition";
+
+      // Read the Definitions
+      digester.addCallMethod(def + "/date", "setDateFormat", 1);
+      digester.addCallParam(def + "/date", 0, "format");
+
+      // Read OrderObject
+      digester.addFactoryCreate(def + "/order", new OrderObjectFactory(), false);
+      digester.addCallMethod(def + "/order/attribute",
+          "addAttribute", 3, new Class[] { Integer.class, String.class, String.class });
+      digester.addCallParam(def + "/order/attribute", 0, "index");
+      digester.addCallParam(def + "/order/attribute", 1, "name");
+      digester.addCallParam(def + "/order/attribute", 2, "criteria");
+      digester.addSetNext(def + "/order", "addOrder", "org.efaps.importer.OrderObject");
+
+      // Read DefaultObject
+      digester.addObjectCreate(def + "/default", DefaultObject.class);
+      digester.addCallMethod(def + "/default", "addDefault", 3);
+      digester.addCallParam(def + "/default", 0, "type");
+      digester.addCallParam(def + "/default", 1, "name");
+      digester.addCallParam(def + "/default", 2);
+
+      digester.addObjectCreate(def + "/default/linkattribute", ForeignObject.class);
+      digester.addCallMethod(def + "/default/linkattribute", "setLinkAttribute", 2);
+      digester.addCallParam(def + "/default/linkattribute", 0, "name");
+      digester.addCallParam(def + "/default/linkattribute", 1,"type");
+
+      digester.addCallMethod(def + "/default/linkattribute/queryattribute", "addAttribute", 2);
+      digester.addCallParam(def + "/default/linkattribute/queryattribute", 0, "name");
+      digester.addCallParam(def + "/default/linkattribute/queryattribute", 1);
+
+      digester.addSetNext(def + "/default/linkattribute", "addLink", "org.efaps.importer.ForeignObject");
+
+      // Create the Objects
+      digester.addFactoryCreate("*/object", new InsertObjectFactory(), false);
+
+      digester.addCallMethod("*/object/attribute", "addAttribute", 3);
+      digester.addCallParam("*/object/attribute", 0, "name");
+      digester.addCallParam("*/object/attribute", 1);
+      digester.addCallParam("*/object/attribute", 2, "unique");
+
+      digester.addCallMethod("*/object/file", "setCheckinObject", 2);
+      digester.addCallParam("*/object/file", 0, "name");
+      digester.addCallParam("*/object/file", 1, "url");
+
+      digester.addCallMethod("*/object/parentattribute", "setParentAttribute", 2);
+      digester.addCallParam("*/object/parentattribute", 0, "name");
+      digester.addCallParam("*/object/parentattribute", 1, "unique");
+
+      digester.addCallMethod("*/object/linkattribute", "addUniqueAttribute", 2);
+      digester.addCallParam("*/object/linkattribute", 0, "unique");
+      digester.addCallParam("*/object/linkattribute", 1, "name");
+
+      digester.addSetNext("*/object", "addChild", "org.efaps.importer.InsertObject");
+
+      digester.addObjectCreate("*/object/linkattribute", ForeignObject.class);
+      digester.addCallMethod("*/object/linkattribute", "setLinkAttribute", 2);
+      digester.addCallParam("*/object/linkattribute", 0, "name");
+      digester.addCallParam("*/object/linkattribute", 1, "type");
+
+      digester.addCallMethod("*/object/linkattribute/queryattribute", "addAttribute", 2);
+      digester.addCallParam("*/object/linkattribute/queryattribute", 0, "name");
+      digester.addCallParam("*/object/linkattribute/queryattribute", 1);
+
+      digester.addSetNext("*/object/linkattribute", "addLink", "org.efaps.importer.ForeignObject");
+
+      ret.root = (RootObject) digester.parse(_url);
+
+      if (!ret.hasData()) {
+        ret = null;
+      }
+
+    } catch (final IOException e) {
+      LOG.error(_url.toString() + " is not readable", e);
+    } catch (final SAXException e) {
+      LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
+    return ret;
   }
 
   /**
    * Method that starts the Insertion of the Objects into the Database
    */
   public void updateInDB() {
-    this.root.dbAddChilds();
+    if (hasData()) {
+      this.root.dbAddChilds();
+    }
   }
 
   /**
    * has the root recieved Data from the digester that must be inserted
-   * 
+   *
    * @return true, if there is Data
    */
   public boolean hasData() {

@@ -26,7 +26,6 @@ import org.jfrog.maven.annomojo.annotations.MojoGoal;
 import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
 
 import org.efaps.maven.plugin.goal.efaps.install.Application;
-import org.efaps.util.EFapsException;
 
 /**
  * Installs an eFaps application.
@@ -48,21 +47,14 @@ public final class SourceInstallMojo extends AbstractEFapsInstallMojo  {
     init();
 
     try {
-      Application appl = getApplication();
+      final Application appl = getApplication();
       if (appl != null) {
-
         appl.install(getUserName(), getPassWord());
-
-        reloadCache();
-        startTransaction();
-        appl.importData();
-        commitTransaction();
       }
 
-    } catch (EFapsException e) {
-      getLog().error(e);
-    } catch (Exception e) {
-      getLog().error(e);
+    } catch (final Exception e) {
+      throw new MojoExecutionException(
+          "Could not execute SourceInstall script", e);
     }
   }
 }

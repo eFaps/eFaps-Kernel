@@ -39,6 +39,8 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
+
+import org.efaps.update.Install.ImportInterface;
 import org.efaps.util.EFapsException;
 
 /**
@@ -49,20 +51,36 @@ import org.efaps.util.EFapsException;
  * key, if it is allready existing inside this bundle. The Bundle will allways
  * be idendified by the UUID and not by the name.
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
-public class DBPropertiesUpdate {
+public class DBPropertiesUpdate implements ImportInterface {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Logger LOG = LoggerFactory.getLogger(DBPropertiesUpdate.class);
+  private final static Logger LOG =
+      LoggerFactory.getLogger(DBPropertiesUpdate.class);
 
-  /////////////////////////////////////////////////////////////////////////////
+  /**
+   * name for the Type
+   */
+  public static final String TYPE_PROPERTIES = "Admin_DBProperties";
+
+  /**
+   * name for the Type
+   */
+  public static final String TYPE_PROPERTIES_BUNDLE = "Admin_DBProperties_Bundle";
+
+  /**
+   * name for the Type
+   */
+  public static final String TYPE_PROPERTIES_LOCAL = "Admin_DBProperties_Local";
+
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -101,53 +119,47 @@ public class DBPropertiesUpdate {
    * @return ID of the Language
    */
   private String getLanguageId(final String _language) {
-    String ID = null;
-    SearchQuery query = new SearchQuery();
+    String ret = null;
+    final SearchQuery query = new SearchQuery();
     try {
       query.setQueryTypes("Admin_Language");
       query.addSelect("ID");
       query.addWhereExprEqValue("Language", _language);
       query.executeWithoutAccessCheck();
       if (query.next()) {
-        ID = query.get("ID").toString();
+        ret = query.get("ID").toString();
       } else {
-        ID = insertNewLanguage(_language);
+        ret = insertNewLanguage(_language);
       }
       query.close();
-      return ID;
-    } catch (EFapsException e) {
-
+      return ret;
+    } catch (final EFapsException e) {
       LOG.error("getLanguageId()", e);
     }
-    return ID;
-
+    return ret;
   }
 
   /**
    * inserts a new language into the Database
    *
    * @param _language
-   *          language to be inserted
+   *                language to be inserted
    * @return ID of the new language
    */
   private String insertNewLanguage(final String _language) {
-    String ID = null;
+    String ret = null;
     try {
-      Insert insert = new Insert("Admin_Language");
+      final Insert insert = new Insert("Admin_Language");
       insert.add("Language", _language);
       insert.executeWithoutAccessCheck();
-      ID = insert.getId();
+      ret = insert.getId();
       insert.close();
-    } catch (EFapsException e) {
-
+    } catch (final EFapsException e) {
       LOG.error("insertNewLanguage()", e);
-    } catch (Exception e) {
-
+    } catch (final Exception e) {
       LOG.error("insertNewLanguage()", e);
     }
-
-    return ID;
-
+    return ret;
   }
 
   /**
@@ -155,7 +167,7 @@ public class DBPropertiesUpdate {
    *
    * @param _Name
    */
-  private void setBundleName(String _Name) {
+  private void setBundleName(final String _Name) {
     this.bundlename = _Name;
   }
 
@@ -173,7 +185,7 @@ public class DBPropertiesUpdate {
    *
    * @param _UUID
    */
-  public void setBundleUUID(String _UUID) {
+  public void setBundleUUID(final String _UUID) {
     this.bundeluuid = _UUID;
   }
 
@@ -192,26 +204,23 @@ public class DBPropertiesUpdate {
    * @return ID of the new Bundle
    */
   private String insertNewBundle() {
-
+    String ret = null;
     try {
-      Insert insert = new Insert("Admin_DBProperties_Bundle");
+      final Insert insert = new Insert(TYPE_PROPERTIES_BUNDLE);
       insert.add("Name", getBundleName());
       insert.add("UUID", getBundleUUID());
       insert.add("Sequence", getSequence());
       insert.executeWithoutAccessCheck();
 
-      String Id = insert.getId();
+      ret = insert.getId();
       insert.close();
-      return Id;
-    } catch (EFapsException e) {
 
+    } catch (final EFapsException e) {
       LOG.error("insertNewBundle()", e);
-    } catch (Exception e) {
-
+    } catch (final Exception e) {
       LOG.error("insertNewBundle()", e);
     }
-
-    return null;
+    return ret;
   }
 
   /**
@@ -228,7 +237,7 @@ public class DBPropertiesUpdate {
    *
    * @param _Sequence
    */
-  private void setSequence(String _Sequence) {
+  private void setSequence(final String _Sequence) {
     this.bundlesequence = _Sequence;
   }
 
@@ -236,19 +245,20 @@ public class DBPropertiesUpdate {
    * Import Properties from a Properties-File as default, if the key is already
    * existing, the default will be replaced with the new default
    *
-   * @param _url  Complete Path/Name of the property file to import
+   * @param _url
+   *                Complete Path/Name of the property file to import
    */
   private void importFromProperties(final URL _url) {
 
     try {
-      InputStream propInFile = _url.openStream();
-      Properties p2 = new Properties();
-      p2.load(propInFile);
-      Iterator<Entry<Object, Object>> x = p2.entrySet().iterator();
+      final InputStream propInFile = _url.openStream();
+      final Properties props = new Properties();
+      props.load(propInFile);
+      final Iterator<Entry<Object, Object>> iter = props.entrySet().iterator();
 
-      while (x.hasNext()) {
-        Entry<Object, Object> element = x.next();
-        String OID = getExistingKey(element.getKey().toString());
+      while (iter.hasNext()) {
+        final Entry<Object, Object> element = iter.next();
+        final String OID = getExistingKey(element.getKey().toString());
         if (OID == null) {
           insertNewProp(element.getKey().toString(), element.getValue()
               .toString());
@@ -257,7 +267,7 @@ public class DBPropertiesUpdate {
         }
       }
 
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error("ImportFromProperties() - I/O failed.", e);
     }
   }
@@ -267,7 +277,7 @@ public class DBPropertiesUpdate {
    *
    * @param _ID
    */
-  private void setBundleID(String _ID) {
+  private void setBundleID(final String _ID) {
     this.bundleid = _ID;
 
   }
@@ -286,29 +296,31 @@ public class DBPropertiesUpdate {
    * key is not existing, a new default(=value) will also be created. If the
    * language is not existing it will be created also.
    *
-   * @param _url      Complete Path/Name of the File to import
-   * @param _language Language to use for the Import
+   * @param _url
+   *                Complete Path/Name of the File to import
+   * @param _language
+   *                Language to use for the Import
    */
-  private void importFromProperties(final URL _url,
-                                    final String _language) {
+  private void importFromProperties(final URL _url, final String _language) {
 
     String propOID;
     String propID;
     String localOID;
     try {
 
-      InputStream propInFile = _url.openStream();
-      Properties p2 = new Properties();
-      p2.load(propInFile);
-      Iterator<Entry<Object, Object>> x = p2.entrySet().iterator();
+      final InputStream propInFile = _url.openStream();
+      final Properties props = new Properties();
+      props.load(propInFile);
+      final Iterator<Entry<Object, Object>> iter = props.entrySet().iterator();
 
-      while (x.hasNext()) {
-        Entry<Object, Object> element = x.next();
+      while (iter.hasNext()) {
+        final Entry<Object, Object> element = iter.next();
         propOID = getExistingKey(element.getKey().toString());
 
         if (propOID == null) {
-          propID = insertNewProp(element.getKey().toString(), element
-              .getValue().toString());
+          propID =
+              insertNewProp(element.getKey().toString(), element.getValue()
+                  .toString());
         } else {
           propID = getId(propOID);
         }
@@ -322,7 +334,7 @@ public class DBPropertiesUpdate {
         }
       }
 
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error("ImportFromProperties() - I/O failed.", e);
     }
   }
@@ -331,80 +343,71 @@ public class DBPropertiesUpdate {
    * Is a localized value already existing
    *
    * @param _propertyid
-   *          ID of the Property, the localized value is related to
+   *                ID of the Property, the localized value is related to
    * @return OID of the value, otherwise null
    */
   private String getExistingLocale(final String _propertyid,
                                    final String _language) {
-    SearchQuery query = new SearchQuery();
-    String OID = null;
+    String ret = null;
     try {
-      query.setQueryTypes("Admin_DBProperties_Local");
+      final SearchQuery query = new SearchQuery();
+      query.setQueryTypes(TYPE_PROPERTIES_LOCAL);
       query.addSelect("OID");
       query.addWhereExprEqValue("PropertyID", _propertyid);
       query.addWhereExprEqValue("LanguageID", getLanguageId(_language));
       query.executeWithoutAccessCheck();
       if (query.next()) {
-        OID = (String) query.get("OID");
+        ret = (String) query.get("OID");
       }
       query.close();
-
-      return OID;
-    } catch (EFapsException e) {
-
+    } catch (final EFapsException e) {
       LOG.error("getExistingLocale(String)", e);
     }
-
-    return null;
+    return ret;
   }
 
   /**
    * Insert a new localized Value
    *
    * @param _propertyid
-   *          ID of the Property, the localized value is related to
+   *                ID of the Property, the localized value is related to
    * @param _value
-   *          Value of the Property
+   *                Value of the Property
    */
   private void insertNewLocal(final String _propertyid, final String _value,
                               final String _language) {
     try {
-      Insert insert = new Insert("Admin_DBProperties_Local");
+      final Insert insert = new Insert(TYPE_PROPERTIES_LOCAL);
       insert.add("Value", _value);
       insert.add("PropertyID", _propertyid);
       insert.add("LanguageID", getLanguageId(_language));
       insert.executeWithoutAccessCheck();
       insert.close();
 
-    } catch (EFapsException e) {
-
+    } catch (final EFapsException e) {
       LOG.error("insertNewLocal(String)", e);
-    } catch (Exception e) {
-
+    } catch (final Exception e) {
       LOG.error("insertNewLocal(String)", e);
     }
-
   }
 
   /**
    * Update a localized Value
    *
    * @param _OID
-   *          OID, of the localized Value
+   *                OID, of the localized Value
    * @param _value
-   *          Value
+   *                Value
    */
-  private void updateLocale(String _OID, String _value) {
+  private void updateLocale(final String _OID, final String _value) {
     try {
-      Update update = new Update(_OID);
+      final Update update = new Update(_OID);
       update.add("Value", _value);
       update.execute();
 
-    } catch (EFapsException e) {
-
+    } catch (final EFapsException e) {
       LOG.error("updateLocale(String, String)", e);
-    } catch (Exception e) {
-
+    } catch (final Exception e) {
       LOG.error("updateLocale(String, String)", e);
     }
 
@@ -413,86 +416,77 @@ public class DBPropertiesUpdate {
   /**
    * Is a key already existing
    *
-   *
    * @param _key
-   *          Key to search for
+   *                Key to search for
    * @return OID of the key, otherwise null
    */
-  private String getExistingKey(String _key) {
-    String OID = null;
-    SearchQuery query = new SearchQuery();
+  private String getExistingKey(final String _key) {
+    String ret = null;
     try {
-      query.setQueryTypes("Admin_DBProperties");
+      final SearchQuery query = new SearchQuery();
+      query.setQueryTypes(TYPE_PROPERTIES);
       query.addSelect("OID");
       query.addWhereExprEqValue("Key", _key);
       query.addWhereExprEqValue("BundleID", getBundleID());
       query.executeWithoutAccessCheck();
       if (query.next()) {
-        OID = (String) query.get("OID");
+        ret = (String) query.get("OID");
       }
 
       query.close();
-      return OID;
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("getExisting()", e);
     }
-
-    return null;
+    return ret;
   }
 
   /**
    * Update a Default
    *
    * @param _OID
-   *          OID of the value to update
+   *                OID of the value to update
    * @param _value
-   *          value
+   *                value
    */
-  private void updateDefault(String _OID, String _value) {
+  private void updateDefault(final String _OID, final String _value) {
     try {
-      Update update = new Update(_OID);
+      final Update update = new Update(_OID);
       update.add("Default", _value);
       update.execute();
 
-    } catch (EFapsException e) {
-
+    } catch (final EFapsException e) {
       LOG.error("updateDefault(String, String)", e);
-    } catch (Exception e) {
-
+    } catch (final Exception e) {
       LOG.error("updateDefault(String, String)", e);
     }
-
   }
 
   /**
    * Insert a new Property
    *
    * @param _key
-   *          Key to insert
+   *                Key to insert
    * @param _value
-   *          value to insert
+   *                value to insert
    * @return ID of the new Property
    */
-  private String insertNewProp(String _key, String _value) {
+  private String insertNewProp(final String _key, final String _value) {
+    String ret = null;
     try {
-      Insert insert = new Insert("Admin_DBProperties");
+      final Insert insert = new Insert(TYPE_PROPERTIES);
       insert.add("BundleID", getBundleID());
       insert.add("Key", _key);
       insert.add("Default", _value);
       insert.executeWithoutAccessCheck();
-      String Id = insert.getId();
+      ret = insert.getId();
       insert.close();
-      return Id;
-    } catch (EFapsException e) {
 
+    } catch (final EFapsException e) {
       LOG.error("InsertNew(String, String)", e);
-    } catch (Exception e) {
-
+    } catch (final Exception e) {
       LOG.error("InsertNew(String, String)", e);
     }
-
-    return null;
-
+    return ret;
   }
 
   /**
@@ -501,16 +495,14 @@ public class DBPropertiesUpdate {
    * @param OID
    * @return ID
    */
-  private String getId(String OID) {
-    Long id = new Instance(OID).getId();
+  private String getId(final String OID) {
+    final Long id = new Instance(OID).getId();
     return id.toString();
-
   }
 
-
   public static DBPropertiesUpdate readXMLFile(final URL _url) {
-    DBPropertiesUpdate propimport = null;
-    Digester digester = new Digester();
+    DBPropertiesUpdate ret = null;
+    final Digester digester = new Digester();
 
     digester.setValidating(false);
 
@@ -532,70 +524,72 @@ public class DBPropertiesUpdate {
     digester.addSetNext("dbproperties/resource", "addResource");
 
     try {
-      propimport = (DBPropertiesUpdate) digester.parse(_url);
+      ret = (DBPropertiesUpdate) digester.parse(_url);
 
-      if (propimport != null) {
-        String urlStr = _url.toString();
-        int i = urlStr.lastIndexOf("/");
-        propimport.root = urlStr.substring(0, i + 1);
+      if (ret != null) {
+        final String urlStr = _url.toString();
+        ret.root = urlStr.substring(0, urlStr.lastIndexOf("/") + 1);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error("importProperties(String)", e);
-    } catch (SAXException e) {
+    } catch (final SAXException e) {
       LOG.error("importProperties(String)", e);
     }
-    return propimport;
+    return ret;
   }
 
   /**
    * set the Bundle
    *
-   * @param _Name
-   *          Name of the Bundle
-   * @param _Sequence
-   *          Sequence of the Bundle
+   * @param _name
+   *                Name of the Bundle
+   * @param _sequence
+   *                Sequence of the Bundle
    */
-  public void setBundle(String _Name, String _Sequence) {
-    setBundleName(_Name);
-    setSequence(_Sequence);
+  public void setBundle(final String _name, final String _sequence) {
+    setBundleName(_name);
+    setSequence(_sequence);
   }
 
   /**
    * add a Resource to the Properties
    *
    * @param _resource
-   *          Resource to be added
+   *                Resource to be added
    */
-  public void addResource(Resource _resource) {
+  public void addResource(final Resource _resource) {
     this.resources.add(_resource);
   }
 
   /**
    * Import a Bundle of Properties into the database
-   *
    */
-  public void updateInDB() throws MalformedURLException  {
+  public void updateInDB() {
     if (LOG.isInfoEnabled()) {
       LOG.info("Importing Properties '" + this.getBundleName() + "'");
     }
 
-    String BundleID = getExistingBundle(getBundleUUID());
+    final String BundleID = getExistingBundle(getBundleUUID());
 
-    if (BundleID != null) {
-      setBundleID(BundleID);
-    } else {
+    if (BundleID == null) {
       setBundleID(insertNewBundle());
+    } else {
+      setBundleID(BundleID);
     }
-    for (Resource resource : this.resources) {
+    try {
+      for (final Resource resource : this.resources) {
 
-      if (resource.type.equals("Properties")) {
-        if (resource.language.equals("")) {
-          importFromProperties(new URL(this.root + resource.filename));
-        } else {
-          importFromProperties(new URL(this.root + resource.filename),
-                               resource.language);
+        if ("Properties".equals(resource.type)) {
+          if ("".equals(resource.language)) {
+            importFromProperties(new URL(this.root + resource.filename));
+          } else {
+            importFromProperties(new URL(this.root + resource.filename),
+                resource.language);
+          }
         }
       }
+    } catch (final MalformedURLException e) {
+      LOG.error("The URL given for one File of the DBProperties is invalid", e);
     }
   }
 
@@ -603,29 +597,26 @@ public class DBPropertiesUpdate {
    * Is the Bundle allready existing
    *
    * @param _UUID
-   *          UUID of the Bundle
+   *                UUID of the Bundle
    * @return ID of the Bundle if existing, else null
    */
-  private String getExistingBundle(String _UUID) {
-    SearchQuery query = new SearchQuery();
-
-    String BundleID = null;
+  private String getExistingBundle(final String _UUID) {
+    String ret = null;
     try {
-      query.setQueryTypes("Admin_DBProperties_Bundle");
+      final SearchQuery query = new SearchQuery();
+      query.setQueryTypes(TYPE_PROPERTIES_BUNDLE);
       query.addSelect("ID");
       query.addWhereExprEqValue("UUID", _UUID);
       query.executeWithoutAccessCheck();
       if (query.next()) {
-        BundleID = query.get("ID").toString();
+        ret = query.get("ID").toString();
       }
       query.close();
-      return BundleID;
-    } catch (EFapsException e) {
 
+    } catch (final EFapsException e) {
       LOG.error("getExistingBundle(String)", e);
     }
-    return null;
-
+    return ret;
   }
 
   /**
@@ -633,9 +624,9 @@ public class DBPropertiesUpdate {
    *
    * @author jmo
    * @version $Id$
-   *
    */
   public static class Resource {
+
     /**
      * type of the Properties
      */
@@ -655,11 +646,11 @@ public class DBPropertiesUpdate {
      * set the Resource
      *
      * @param _type
-     *          type of the Properties
+     *                type of the Properties
      * @param _language
-     *          language of the Properties
+     *                language of the Properties
      * @param _filename
-     *          Filename of the Properties
+     *                Filename of the Properties
      */
     public void setResource(final String _type, final String _language,
                             final String _filename) {

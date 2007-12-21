@@ -41,7 +41,7 @@ import org.efaps.maven.plugin.goal.efaps.install.Application;
 @MojoGoal("install")
 @MojoRequiresDependencyResolution("compile")
 public final class InstallMojo extends AbstractEFapsInstallMojo  {
-  
+
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
@@ -70,7 +70,7 @@ public final class InstallMojo extends AbstractEFapsInstallMojo  {
 
       // get install application (read from all install xml files)
       final Map<String, Application> appls = new HashMap<String, Application>();
-      Enumeration<URL> urlEnum = cl.getResources("META-INF/efaps/install.xml");
+      final Enumeration<URL> urlEnum = cl.getResources("META-INF/efaps/install.xml");
       while (urlEnum.hasMoreElements())  {
         final Application appl = Application.getApplication(urlEnum.nextElement(),
                                                             getClasspathElements());
@@ -90,13 +90,8 @@ public final class InstallMojo extends AbstractEFapsInstallMojo  {
       for (final String applName : applicationNames)  {
         final Application appl = appls.get(applName);
         appl.install(getUserName(), getPassWord());
-        startTransaction();
-        appl.importData();
-        commitTransaction();
       }
-    } catch (MojoExecutionException e)  {
-      throw e;
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       throw new MojoExecutionException(
             "Could not execute Installation script", e);
     }

@@ -21,7 +21,6 @@
 package org.efaps.maven.plugin.goal.efaps.install;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,14 +39,12 @@ import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
-import org.efaps.importer.DataImport;
 import org.efaps.update.Install;
-import org.efaps.update.Install.InstallFile;
-import org.efaps.update.dbproperty.DBPropertiesUpdate;
 import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
+ * @author jmox
  * @version $Id$
  */
 public class Application {
@@ -105,6 +102,12 @@ public class Application {
    */
   private final List<Long> notStoredVersions = new ArrayList<Long>();
 
+  /**
+   * this instance variable stores the highes or maximum Numer of the Versions
+   * to be installed
+   */
+  private Long maxVersion;
+
   // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
@@ -134,16 +137,20 @@ public class Application {
       digester.addObjectCreate("install/version", ApplicationVersion.class);
       digester.addSetNext("install/version", "addVersion");
 
-      digester.addCallMethod("install/version", "setNumber", 1, new Class[] { Long.class });
+      digester.addCallMethod("install/version", "setNumber", 1,
+          new Class[] { Long.class });
       digester.addCallParam("install/version", 0, "number");
 
-      digester.addCallMethod("install/version", "setCompile", 1, new Class[] { Boolean.class });
+      digester.addCallMethod("install/version", "setCompile", 1,
+          new Class[] { Boolean.class });
       digester.addCallParam("install/version", 0, "compile");
 
-      digester.addCallMethod("install/version", "setReloadCacheNeeded", 1, new Class[] { Boolean.class });
+      digester.addCallMethod("install/version", "setReloadCacheNeeded", 1,
+          new Class[] { Boolean.class });
       digester.addCallParam("install/version", 0, "reloadCache");
 
-      digester.addCallMethod("install/version", "setLoginNeeded", 1, new Class[] { Boolean.class });
+      digester.addCallMethod("install/version", "setLoginNeeded", 1,
+          new Class[] { Boolean.class });
       digester.addCallParam("install/version", 0, "login");
 
       digester.addCallMethod("install/version/script", "addScript", 3);
@@ -155,6 +162,7 @@ public class Application {
 
       for (final ApplicationVersion applVers : appl.getVersions()) {
         applVers.setClasspathElements(_classpathElements);
+        appl.setMaxVersion(applVers.getNumber());
       }
     } catch (final IOException e) {
       LOG.error("Could not open / read version file '" + _url + "'");
@@ -196,6 +204,9 @@ public class Application {
     // load installed versions
     loadInstalledVersions(_userName);
 
+    this.install.setApplication(this.application);
+    this.install.setMaxVersion(this.maxVersion);
+
     LOG.info("Install application '" + this.application + "'");
     for (final ApplicationVersion version : this.versions) {
       if (LOG.isInfoEnabled()) {
@@ -217,6 +228,19 @@ public class Application {
         }
       }
     }
+    if (LOG.isInfoEnabled()) {
+      LOG.info("Importing Data...");
+    }
+
+    Context.begin(_userName);
+    if (RunLevel.isInitialisable()) {
+      RunLevel.init("shell");
+      RunLevel.execute();
+      Context.rollback();
+      Context.begin(_userName);
+    }
+    this.install.importData();
+    Context.commit();
 
   }
 
@@ -398,28 +422,22 @@ public class Application {
   }
 
   /**
-   * imports Data from XML-Files and Properties
+   * This is the setter method for the instance variable {@link #maxVersion}.
+   *
+   * @param maxVersion
+   *                the maxVersion to set
    */
-  public void importData() {
-    final List<InstallFile> files = this.install.getFiles();
+  public void setMaxVersion(Long maxVersion) {
+    this.maxVersion = maxVersion;
+  }
 
-    for (final InstallFile file : files) {
-      final DataImport dimport = new DataImport();
-      dimport.readXMLFile(file.getUrl());
-      if (dimport.hasData()) {
-        dimport.updateInDB();
-      }
-      final DBPropertiesUpdate prop =
-          DBPropertiesUpdate.readXMLFile(file.getUrl());
-      if (prop != null) {
-        try {
-          prop.updateInDB();
-        } catch (final MalformedURLException e) {
-          LOG.error("could not find the Porperties File for " + file.getUrl(),
-              e);
-        }
-      }
-    }
+  /**
+   * This is the getter method for the instance variable {@link #maxVersion}.
+   *
+   * @return value of instance variable {@link #maxVersion}
+   */
+  public Long getMaxVersion() {
+    return this.maxVersion;
   }
 
   /**
