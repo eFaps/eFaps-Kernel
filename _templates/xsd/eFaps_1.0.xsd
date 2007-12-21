@@ -645,6 +645,7 @@
       <xsd:element name="file" maxOccurs="unbounded" minOccurs="1">
         <xsd:complexType>
           <xsd:attribute name="name" type="xsd:string" use="required"></xsd:attribute>
+          <xsd:attribute name="type" type="xsd:string" use="required"></xsd:attribute>
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
@@ -760,6 +761,7 @@
               <xsd:enumeration value="TargetDefaultMenu"></xsd:enumeration>
               <xsd:enumeration value="TargetMode" />
               <xsd:enumeration value="TargetShowCheckBoxes" />
+              <xsd:enumeration value="TargetShowFile"></xsd:enumeration>
               <xsd:enumeration value="TargetStructurBrowser"></xsd:enumeration>
               <xsd:enumeration value="TargetStructurBrowserField"></xsd:enumeration>
               <xsd:enumeration value="TargetTableSortKey" />

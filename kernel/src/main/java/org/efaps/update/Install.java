@@ -24,9 +24,10 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
@@ -51,10 +52,28 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
+ * @author jmox
  * @version $Id$
  * @todo description
  */
 public class Install {
+
+  public enum FileType {
+    JAVA("source-java", "readXMLFile"),
+    CSS("source-css", "readFile"),
+    XML("install-xml", "readXMLFile"),
+    XSL("source-xsl", "readFile");
+
+    public String type;
+
+    public String method;
+
+    private FileType(final String _type, final String _method) {
+      this.type = _type;
+      this.method = _method;
+    }
+
+  }
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables
@@ -64,25 +83,25 @@ public class Install {
    *
    * @see #install
    */
-  private final List<Class<? extends AbstractUpdate>> UPDATE_CLASSES =
-      new ArrayList<Class<? extends AbstractUpdate>>();
+  private final Map<Class<? extends AbstractUpdate>, FileType> updateClasses =
+      new LinkedHashMap<Class<? extends AbstractUpdate>, FileType>();
   {
-    if (this.UPDATE_CLASSES.size() == 0) {
-      this.UPDATE_CLASSES.add(RoleUpdate.class);
-      this.UPDATE_CLASSES.add(SQLTableUpdate.class);
-      this.UPDATE_CLASSES.add(TypeUpdate.class);
-      this.UPDATE_CLASSES.add(JAASSystemUpdate.class);
-      this.UPDATE_CLASSES.add(AccessTypeUpdate.class);
-      this.UPDATE_CLASSES.add(AccessSetUpdate.class);
-      this.UPDATE_CLASSES.add(ImageUpdate.class);
-      this.UPDATE_CLASSES.add(FormUpdate.class);
-      this.UPDATE_CLASSES.add(TableUpdate.class);
-      this.UPDATE_CLASSES.add(SearchUpdate.class);
-      this.UPDATE_CLASSES.add(MenuUpdate.class);
-      this.UPDATE_CLASSES.add(CommandUpdate.class);
-      this.UPDATE_CLASSES.add(WebDAVUpdate.class);
-      this.UPDATE_CLASSES.add(JavaUpdate.class);
-      this.UPDATE_CLASSES.add(SystemAttributeUpdate.class);
+    if (this.updateClasses.size() == 0) {
+      this.updateClasses.put(RoleUpdate.class, FileType.XML);
+      this.updateClasses.put(SQLTableUpdate.class, FileType.XML);
+      this.updateClasses.put(TypeUpdate.class, FileType.XML);
+      this.updateClasses.put(JAASSystemUpdate.class, FileType.XML);
+      this.updateClasses.put(AccessTypeUpdate.class, FileType.XML);
+      this.updateClasses.put(AccessSetUpdate.class, FileType.XML);
+      this.updateClasses.put(ImageUpdate.class, FileType.XML);
+      this.updateClasses.put(FormUpdate.class, FileType.XML);
+      this.updateClasses.put(TableUpdate.class, FileType.XML);
+      this.updateClasses.put(SearchUpdate.class, FileType.XML);
+      this.updateClasses.put(MenuUpdate.class, FileType.XML);
+      this.updateClasses.put(CommandUpdate.class, FileType.XML);
+      this.updateClasses.put(WebDAVUpdate.class, FileType.XML);
+      this.updateClasses.put(JavaUpdate.class, FileType.XML);
+      this.updateClasses.put(SystemAttributeUpdate.class, FileType.XML);
     }
   }
 
@@ -92,9 +111,9 @@ public class Install {
   /**
    * All defined file urls which are updated.
    *
-   * @see #addURL
+   * @see #addFile(URL, String)
    */
-  private final Map<String, URL> urls = new TreeMap<String, URL>();
+  private final List<InstallFile> files = new ArrayList<InstallFile>();
 
   /**
    * Flag to store that the cache is initialised.
@@ -127,14 +146,16 @@ public class Install {
     initialise();
 
     // initiliase JexlContext (used to evalute version)
-    JexlContext jexlContext = JexlHelper.createContext();
+    final JexlContext jexlContext = JexlHelper.createContext();
     if (_number != null) {
       jexlContext.getVars().put("version", _number);
     }
 
     // make update
-    for (Class<? extends AbstractUpdate> updateClass : this.UPDATE_CLASSES) {
-      for (AbstractUpdate update : this.cache.get(updateClass)) {
+    for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : this.updateClasses
+        .entrySet()) {
+      final Class<? extends AbstractUpdate> updateClass = entry.getKey();
+      for (final AbstractUpdate update : this.cache.get(updateClass)) {
         update.updateInDB(jexlContext);
       }
     }
@@ -148,14 +169,21 @@ public class Install {
       this.initialised = true;
       this.cache.clear();
 
-      for (Class<? extends AbstractUpdate> updateClass : this.UPDATE_CLASSES) {
-        List<AbstractUpdate> list = new ArrayList<AbstractUpdate>();
+      for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : this.updateClasses
+          .entrySet()) {
+        final List<AbstractUpdate> list = new ArrayList<AbstractUpdate>();
+
+        final Class<? extends AbstractUpdate> updateClass = entry.getKey();
         this.cache.put(updateClass, list);
-        Method method = updateClass.getMethod("readXMLFile", URL.class);
-        for (URL url : this.urls.values()) {
-          Object obj = method.invoke(null, url);
-          if (obj != null) {
-            list.add((AbstractUpdate) obj);
+
+        final Method method =
+            updateClass.getMethod(entry.getValue().method, URL.class);
+        for (final InstallFile file : this.files) {
+          if (file.getType().equals(entry.getValue().type)) {
+            final Object obj = method.invoke(null, file.getUrl());
+            if (obj != null) {
+              list.add((AbstractUpdate) obj);
+            }
           }
         }
       }
@@ -167,27 +195,26 @@ public class Install {
    * automatically reseted.
    *
    * @param _url
-   *          file to append
+   *                file to append
    * @see #urls
    * @see #initialised
    */
-  public void addURL(final URL _url) {
-    this.urls.put(_url.toString(), _url);
+  public void addFile(final URL _url, final String _type) {
+    this.files.add(new InstallFile(_url, _type));
     this.initialised = false;
-  }
-
-  /**
-   * this is the getter method for instance variable {@link #urls}
-   *
-   * @return instance variable {@link #urls}
-   * @see #urls
-   */
-  public Map<String, URL> getURLs() {
-    return this.urls;
   }
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
+
+  /**
+   * This is the getter method for the instance variable {@link #files}.
+   *
+   * @return value of instance variable {@link #files}
+   */
+  public List<InstallFile> getFiles() {
+    return this.files;
+  }
 
   /**
    * Returns a string representation with values of all instance variables.
@@ -196,6 +223,38 @@ public class Install {
    */
   @Override
   public String toString() {
-    return new ToStringBuilder(this).append("urls", this.urls).toString();
+    return new ToStringBuilder(this).append("urls", this.files).toString();
   }
+
+  public class InstallFile {
+
+    private final URL url;
+
+    private final String type;
+
+    public InstallFile(final URL _url, final String _type) {
+      this.url = _url;
+      this.type = _type;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #url}.
+     *
+     * @return value of instance variable {@link #url}
+     */
+    public URL getUrl() {
+      return this.url;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #type}.
+     *
+     * @return value of instance variable {@link #type}
+     */
+    public String getType() {
+      return this.type;
+    }
+
+  }
+
 }

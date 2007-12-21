@@ -21,8 +21,10 @@ package org.efaps.maven.plugin.install;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.tools.ant.DirectoryScanner;
@@ -30,9 +32,12 @@ import org.jfrog.maven.annomojo.annotations.MojoParameter;
 
 import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
+import org.efaps.update.Install.FileType;
+
 
 /**
  * @author tmo
+ * @author jmox
  * @version $Id$
  */
 public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
@@ -41,13 +46,26 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
   // static variables
 
   /**
+   * Default Mapping of a a file extension to a Type for import and update
+   */
+  private final static Map<String,String> DEFAULT_TYPE_MAPPING = new HashMap<String, String>();
+  static {
+    DEFAULT_TYPE_MAPPING.put("css", FileType.CSS.type);
+    DEFAULT_TYPE_MAPPING.put("java", FileType.JAVA.type);
+    DEFAULT_TYPE_MAPPING.put("xml", FileType.XML.type);
+    DEFAULT_TYPE_MAPPING.put("xsl", FileType.XSL.type);
+  }
+
+  /**
    * Default list of includes used to evaluate the files to copy.
    *
    * @see #getFiles
    */
   private final static Set<String> DEFAULT_INCLUDES = new HashSet<String>();
   static  {
+    DEFAULT_INCLUDES.add("**/*.css");
     DEFAULT_INCLUDES.add("**/*.xml");
+    DEFAULT_INCLUDES.add("**/*.xsl");
   }
 
   /**
@@ -79,13 +97,20 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
    * List of includes.
    */
   @MojoParameter()
-  private List<String> includes = null;
+  private final List<String> includes = null;
 
   /**
    * List of excludes.
    */
   @MojoParameter()
-  private List<String> excludes = null;
+  private final List<String> excludes = null;
+
+
+  /**
+   * Map of TypeMapping
+   */
+  @MojoParameter()
+  private final Map<String, String> typeMapping = null;
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -93,23 +118,27 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
   /**
    * <code>null</code> is returned, of the version file could not be opened
    * and read.
-   * 
+   *
    * @return application instance with all version information
    * @todo description
-    */
+   */
   protected Application getApplication() {
     Application appl = null;
     try {
-      appl = Application.getApplication(this.versionFile.toURL(),
-                                        getClasspathElements());
+      appl =
+          Application.getApplication(this.versionFile.toURL(),
+              getClasspathElements());
 
-      for (final String file : getFiles())  {
-        appl.addURL(new File(this.eFapsDir, file).toURL());
+      for (final String fileName : getFiles()) {
+        final String type =
+            getTypeMapping().get(
+                fileName.substring(fileName.lastIndexOf(".") + 1));
+        appl.addURL(new File(this.eFapsDir, fileName).toURL(), type);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       getLog().error(
           "Could not open / read version file " + "'" + this.versionFile + "'");
-    } catch (Exception e) {
+    } catch (final Exception e) {
       getLog().error(e);
     }
     return appl;
@@ -119,10 +148,10 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
    * Uses the {@link #includes} and {@link #excludes} together with the root
    * directory {@link #eFapsDir} to get all related and matched files.
    *
-   * @see #includes   defines includes; if not specified by maven, the default
-   *                  value is <code>**&#x002f;*.xml</code>
-   * @see #excludes   defines excludes; if not specified by maven , the default
-   *                  value is <code>**&#x002f;version.xml</code>
+   * @see #includes defines includes; if not specified by maven, the default
+   *      value is <code>**&#x002f;*.xml</code>
+   * @see #excludes defines excludes; if not specified by maven , the default
+   *      value is <code>**&#x002f;version.xml</code>
    * @see #DEFAULT_INCLUDES
    * @see #DEFAULT_EXCLUDES
    */
@@ -154,6 +183,20 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
    */
   protected File getEFapsDir() {
     return this.eFapsDir;
+  }
+
+  /**
+   * this method return the TypeMapping for import and update. The mapping can
+   * be defined in the pom.xml with the parameter {@link #typeMapping}. In the
+   * case that the mapping is not defined in the pom.xml a default
+   * {@link #DEFAULT_TYPE_MAPPING} will be returned.
+   *
+   * @return Map containing the mapping of file extension to type
+   * @see #typeMapping
+   * @see #DEFAULT_TYPE_MAPPING
+   */
+  protected Map<String, String> getTypeMapping() {
+    return (this.typeMapping == null) ? DEFAULT_TYPE_MAPPING : this.typeMapping;
   }
 
   /**
