@@ -33,6 +33,7 @@ import org.efaps.ui.wicket.components.form.row.RowPanel;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.FormModel.FormElementModel;
 import org.efaps.ui.wicket.models.FormModel.FormRowModel;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -41,6 +42,9 @@ import org.efaps.ui.wicket.models.FormModel.FormRowModel;
 public class FormPanel extends Panel {
 
   private static final long serialVersionUID = 1550111712776698728L;
+
+  public static CSSResourceReference CSS =
+      new CSSResourceReference(FormPanel.class, "FormPanel.css");
 
   private final Map<String, Label> requiredComponents =
       new HashMap<String, Label>();
@@ -54,14 +58,14 @@ public class FormPanel extends Panel {
       _model.execute();
     }
 
-    add(HeaderContributor.forCss(getClass(), "FormPanel.css"));
+    add(HeaderContributor.forCss(CSS));
 
-    RepeatingView rowRepeater = new RepeatingView("rowRepeater");
+    final RepeatingView rowRepeater = new RepeatingView("rowRepeater");
     this.add(rowRepeater);
 
-    for (FormRowModel rowmodel : _formelementmodel.getRowModels()) {
+    for (final FormRowModel rowmodel : _formelementmodel.getRowModels()) {
 
-      RowPanel row =
+      final RowPanel row =
           new RowPanel(rowRepeater.newChildId(), rowmodel, _model, _page, this);
       rowRepeater.add(row);
 
