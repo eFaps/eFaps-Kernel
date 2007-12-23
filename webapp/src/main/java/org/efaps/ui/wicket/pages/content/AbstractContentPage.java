@@ -21,9 +21,9 @@
 package org.efaps.ui.wicket.pages.content;
 
 import org.apache.wicket.IPageMap;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
@@ -32,6 +32,7 @@ import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.menu.MenuPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -42,6 +43,10 @@ public abstract class AbstractContentPage extends WebPage {
   private static final long serialVersionUID = -2374207555009145191L;
 
   public static final String POPUP_PAGEMAP_NAME = "eFapsPopUp";
+
+  public static final CSSResourceReference CSS =
+      new CSSResourceReference(AbstractContentPage.class,
+          "AbstractContentPage.css");
 
   private String listMenuKey;
 
@@ -54,27 +59,26 @@ public abstract class AbstractContentPage extends WebPage {
   }
 
   public AbstractContentPage(final IModel _model,
-                     final ModalWindowContainer _modalWindow) {
+                             final ModalWindowContainer _modalWindow) {
     super(_model);
     this.modalWindow = _modalWindow;
   }
 
   public AbstractContentPage(final IModel _model,
-                     final ModalWindowContainer _modalWindow,
-                     final IPageMap _pagemap) {
+                             final ModalWindowContainer _modalWindow,
+                             final IPageMap _pagemap) {
     super(_pagemap, _model);
     this.modalWindow = _modalWindow;
   }
 
   protected void addComponents(FormContainer _form) {
 
-    add(new StyleSheetReference("css", AbstractContentPage.class,
-        "AbstractContentPage.css"));
+    add(HeaderContributor.forCss(CSS));
 
     add(this.modal);
     this.modal.setPageMapName("modal");
 
-    AbstractModel model = (AbstractModel) super.getModel();
+    final AbstractModel model = (AbstractModel) super.getModel();
     add(new HeadingPanel("titel", model.getTitle()));
 
     add(new MenuPanel("menu", model, _form));

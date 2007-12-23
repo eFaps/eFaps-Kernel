@@ -22,7 +22,6 @@ package org.efaps.ui.wicket.components.menu;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.components.FormContainer;
@@ -38,32 +37,31 @@ public class MenuPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public MenuPanel(final String _id, IModel _model) {
+  public MenuPanel(final String _id, final AbstractModel _model) {
     this(_id, _model, null);
   }
 
-  public MenuPanel(final String _id, IModel _model, FormContainer _form) {
+  public MenuPanel(final String _id, final AbstractModel _model,
+                   final FormContainer _form) {
     super(_id, _model);
 
-    if (_model instanceof AbstractModel) {
-      final AbstractModel model = (AbstractModel) _model;
+    final AbstractModel model = _model;
 
-      if (model.getCommand().getTargetMenu() != null) {
-        final MenuContainer menu =
-            new MenuContainer("eFapsMenu", new MenuItemModel(model.getCommand()
-                .getTargetMenu().getUUID(), model.getOid()), _form);
-        add(menu);
-      } else if (model.getMode() == TargetMode.SEARCH
-          && model.getCallingCommandUUID() != null) {
-        final MenuContainer menu =
-            new MenuContainer("eFapsMenu", new SearchItemModel(model
-                .getCallingCommand().getTargetSearch().getUUID()), _form);
+    if (model.getCommand().getTargetMenu() != null) {
+      final MenuContainer menu =
+          new MenuContainer("eFapsMenu", new MenuItemModel(model.getCommand()
+              .getTargetMenu().getUUID(), model.getOid()), _form);
+      add(menu);
+    } else if (model.getMode() == TargetMode.SEARCH
+        && model.getCallingCommandUUID() != null) {
+      final MenuContainer menu =
+          new MenuContainer("eFapsMenu", new SearchItemModel(model
+              .getCallingCommand().getTargetSearch().getUUID()), _form);
 
-        add(menu);
-      } else {
-        add(new WebMarkupContainer("eFapsMenu"));
-      }
-
+      add(menu);
+    } else {
+      add(new WebMarkupContainer("eFapsMenu"));
     }
+
   }
 }

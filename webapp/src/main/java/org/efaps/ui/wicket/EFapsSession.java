@@ -381,7 +381,7 @@ public class EFapsSession extends WebSession {
         Context.begin(this.userName, super.getLocale(), this.sessionAttributes,
             parameter, null);
 
-        if (Context.getThreadContext().containsUserAtribute(
+        if (Context.getThreadContext().containsUserAttribute(
             UserAttributesDefinition.LOCALE.name)) {
           final Locale locale =
               new Locale(Context.getThreadContext().getUserAttribute(

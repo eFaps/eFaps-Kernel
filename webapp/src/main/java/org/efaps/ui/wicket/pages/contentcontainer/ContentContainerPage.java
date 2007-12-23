@@ -25,12 +25,12 @@ import org.apache.wicket.IPageMap;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
-import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.CssUtils;
@@ -48,6 +48,7 @@ import org.efaps.ui.wicket.components.split.StructBrowsSplitPanel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -61,6 +62,10 @@ public class ContentContainerPage extends WebPage {
       "eFapsContentContainerIFrame";
 
   public static final String IFRAME_WICKETID = "splitrightactiframe";
+
+  private static CSSResourceReference CSS =
+      new CSSResourceReference(ContentContainerPage.class,
+          "ContentContainerPage.css");
 
   private String listMenuKey;
 
@@ -108,9 +113,9 @@ public class ContentContainerPage extends WebPage {
 
     this.listMenuKey = "ListMenu_" + this.getPageMapName();
 
-    add(new StyleSheetReference("css", getClass(), "ContentContainerPage.css"));
+    add(HeaderContributor.forCss(CSS));
 
-    WebMarkupContainer split = new WebMarkupContainer("split");
+    final WebMarkupContainer split = new WebMarkupContainer("split");
     this.add(split);
     split.add(new SplitContainerBehavior());
     if (this.structurbrowser) {
@@ -119,12 +124,12 @@ public class ContentContainerPage extends WebPage {
     } else {
       split.add(new ListOnlyPanel("left", this.listMenuKey, this.parameters));
     }
-    WebMarkupContainer right = new WebMarkupContainer("right");
+    final WebMarkupContainer right = new WebMarkupContainer("right");
     split.add(right);
 
     right.add(new ContentPaneBehavior(80, 20));
 
-    WebMarkupContainer parent = new WebMarkupContainer("splitrightact");
+    final WebMarkupContainer parent = new WebMarkupContainer("splitrightact");
     right.add(parent);
     parent.setOutputMarkupId(true);
 
@@ -137,10 +142,10 @@ public class ContentContainerPage extends WebPage {
       uuid = (String) parametersForPage.get("command");
     }
 
-    AbstractCommand cmd = getCommand(UUID.fromString(uuid));
+    final AbstractCommand cmd = getCommand(UUID.fromString(uuid));
     this.webForm = cmd.getTargetForm() != null;
     if (cmd instanceof Menu) {
-      for (AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
+      for (final AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
         if (childcmd.isDefaultSelected()) {
           parametersForPage.put("command", childcmd.getUUID().toString());
           this.webForm = childcmd.getTargetForm() != null;
@@ -149,7 +154,7 @@ public class ContentContainerPage extends WebPage {
       }
     }
 
-    InlineFrame inline =
+    final InlineFrame inline =
         new InlineFrame(IFRAME_WICKETID, PageMap.forName(IFRAME_PAGEMAP_NAME),
             new IPageLink() {
 

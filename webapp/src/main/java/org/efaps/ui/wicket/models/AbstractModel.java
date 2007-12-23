@@ -500,8 +500,7 @@ public abstract class AbstractModel extends Model {
    *                ParameterValues.OTHERS
    * @throws EFapsException
    */
-  public List<Return> executeEvents(final String[] _others)
-                                                           throws EFapsException {
+  public List<Return> executeEvents(final Object _others) throws EFapsException {
     List<Return> ret = new ArrayList<Return>();
     AbstractCommand command;
     if (this.callingCommandUUID == null) {

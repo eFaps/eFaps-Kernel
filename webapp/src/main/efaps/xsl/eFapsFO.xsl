@@ -48,7 +48,7 @@
   </xsl:template>
 
   <xsl:template match="title">
-    <fo:block font-size="20pt" font-family="serif" line-height="30pt">
+    <fo:block font-size="13pt" font-family="arial, verdana, helvetica, sans-serif" line-height="18pt" color="#008800" font-weight="bold">
       <xsl:value-of select="/eFaps/title" />
     </fo:block>
   </xsl:template>
@@ -64,16 +64,33 @@
           <fo:table-row>
             <xsl:for-each select="f_cell">
               <fo:table-cell>
-                <fo:block font-size="9pt" font-weight="bold" color="#008800" background-color="#D0EDB8" border-style="solid" border-color="#008800"
-                  border-width="2px" margin-right ="3px"
-                >
-                  <xsl:value-of select=".//label" />
-                </fo:block>
-              </fo:table-cell>
-              <fo:table-cell>
-                <fo:block font-size="9pt">
-                  <xsl:value-of select=".//value" />
-                </fo:block>
+                <xsl:if test="@type = 'Label'">
+                  <fo:block font-size="9pt" font-weight="bold" color="#008800" background-color="#D0EDB8" border-style="solid" border-color="#008800"
+                    border-width="2px" margin-right="3px"
+                  >
+                    <xsl:value-of select=".//value" />
+                  </fo:block>
+                </xsl:if>
+                <xsl:if test="@type = 'Value'">
+                  <xsl:attribute name="number-columns-spanned">
+                      <xsl:value-of select="@column-span" />
+                    </xsl:attribute>
+                  <xsl:choose>
+                    <xsl:when test='.//value[.!=""]'>
+                      <fo:block font-size="9pt" border-bottom-style="dotted" border-bottom-width="1pt" border-bottom-color="#008800"
+                        padding-top="2pt"
+                      >
+                        <xsl:value-of select=".//value" />
+                      </fo:block>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <fo:block font-size="9pt" border-bottom-style="dotted" border-bottom-width="1pt" border-bottom-color="#008800"
+                        padding-top="12pt"
+                      >
+                      </fo:block>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:if>
               </fo:table-cell>
             </xsl:for-each>
           </fo:table-row>
@@ -83,7 +100,9 @@
   </xsl:template>
 
   <xsl:template match="heading">
-    <fo:block font-size="20pt" font-family="serif" line-height="30pt">
+    <fo:block font-size="13pt" font-family="arial, verdana, helvetica, sans-serif" line-height="18pt" color="#008800" font-weight="bold"
+      padding-top="20pt"
+    >
       <xsl:value-of select=".//value" />
     </fo:block>
   </xsl:template>
@@ -92,7 +111,11 @@
     <fo:block font-size="10pt">
       <fo:table>
         <xsl:for-each select=".//t_header/t_cell">
-          <fo:table-column column-width="50mm" />
+          <fo:table-column>
+            <xsl:attribute name="column-width">
+            <xsl:value-of select="@width" />
+          </xsl:attribute>
+          </fo:table-column>
         </xsl:for-each>
 
         <fo:table-header>

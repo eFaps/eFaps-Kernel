@@ -60,12 +60,12 @@ public class FieldTableModel extends TableModel {
     this.id = _fieldTable.getId();
     this.name = _fieldTable.getName();
     try {
-      if (Context.getThreadContext().containsUserAtribute(
+      if (Context.getThreadContext().containsUserAttribute(
           getUserAttributeKey(UserAttributeKey.SORTKEY))) {
         super.setSortKey(Context.getThreadContext().getUserAttribute(
             getUserAttributeKey(UserAttributeKey.SORTKEY)));
       }
-      if (Context.getThreadContext().containsUserAtribute(
+      if (Context.getThreadContext().containsUserAttribute(
           getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
         super
             .setSortDirection(SortDirection

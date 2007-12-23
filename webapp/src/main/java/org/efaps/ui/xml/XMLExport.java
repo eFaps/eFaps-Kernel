@@ -39,20 +39,24 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
-import org.apache.fop.apps.MimeConstants;
+import org.apache.wicket.Application;
+import org.apache.wicket.Component;
+import org.apache.wicket.Session;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import org.efaps.ui.wicket.EFapsApplication;
 import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.FieldTableModel;
 import org.efaps.ui.wicket.models.FormModel;
@@ -65,31 +69,14 @@ import org.efaps.ui.wicket.models.FormModel.FormRowModel;
 import org.efaps.ui.wicket.models.TableModel.RowModel;
 import org.efaps.ui.wicket.models.cell.FormCellModel;
 import org.efaps.ui.wicket.models.cell.TableCellModel;
+import org.efaps.ui.wicket.resources.XSLResource;
+import org.efaps.ui.wicket.util.FileFormat.MimeTypes;
 
-public class XMLExport {// XML tag's
-
-  public enum TAG {
-    FORM("form"),
-    FORM_CELL("f_cell"),
-    FORM_ROW("f_row"),
-    HEADING("heading"),
-    LABEL("label"),
-    ROOT("eFaps"),
-    TABLE("table"),
-    TABLE_BODY("t_body"),
-    TABLE_CELL("t_cell"),
-    TABLE_HEADER("t_header"),
-    TABLE_ROW("t_row"),
-    TITLE("title"),
-    TIMESTAMP("TimeStamp"),
-    VALUE("value");
-
-    public String value;
-
-    private TAG(final String _value) {
-      this.value = _value;
-    }
-  }
+/**
+ * @author jmox
+ * @version $Id$
+ */
+public class XMLExport {
 
   public enum XML {
     VERSION("1.0"),
@@ -109,112 +96,136 @@ public class XMLExport {// XML tag's
   // Variables
   private Date msgTimeStamp = null;
 
-  private String xmlStr = null;
+  private File fileStoreFolder;
+
+  private File file;
+
+  private MimeTypes mimeType;
+
+  private AbstractModel model;
+
+  private Document xmlDocument;
+
+  private static String APPNAME = Application.get().getApplicationKey();
 
   // Constructor
-  public XMLExport(AbstractModel _model) {
+  public XMLExport(final AbstractModel _model) {
+    initialise(_model);
+  }
 
-    this.msgTimeStamp = new Date();
+  public XMLExport(final Object object) {
+    if (object instanceof Component) {
+      initialise((AbstractModel) ((Component) object).getPage().getModel());
+    }
+  }
 
-    // Generate the XML Document using DOM
-    Document xmlDoc = this.generateXMLDocument(_model);
-
-    // Generate a XML String
-    this.generateXMLString(xmlDoc);
-    System.out.print(this.xmlStr);
-
-    // configure fopFactory as desired
-    FopFactory fopFactory = FopFactory.newInstance();
-
-    FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
-    // configure foUserAgent as desired
-
+  public void generateDocument(final MimeTypes _mimeType) {
+    OutputStream out = null;
     try {
-      OutputStream out =
-          new FileOutputStream(new File("/Users/janmoxter/documents",
-              "ResultXML2FO.fo"));
+      this.mimeType = _mimeType;
 
-      OutputStream pdf =
-          new FileOutputStream(new File("/Users/janmoxter/documents",
-              "ResultXML2PDF.pdf"));
+      // configure fopFactory as desired
+      final FopFactory fopFactory = FopFactory.newInstance();
+
+      final FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
+      // configure foUserAgent as desired
+
+      final File sessionFolder = getSessionFolder(Session.get().getId());;
+
+      this.file =
+          new File(sessionFolder, "print-"
+              + this.model.getOid()
+              + "."
+              + this.mimeType.end);
+
+      out = new FileOutputStream(this.file);
 
       // Construct fop with desired output format
-      Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, pdf);
+      final Fop fop =
+          fopFactory.newFop(this.mimeType.application, foUserAgent, out);
 
       // Setup XSLT
-      TransformerFactory factory = TransformerFactory.newInstance();
-      Transformer transformer =
-          factory
-              .newTransformer(new StreamSource(
-                  new File(
-                      "/Users/janmoxter/Documents/workspace/efaps/webapp/src/main/java/org/efaps/ui/xml",
-                      "eFapsFO.xsl")));
+      final TransformerFactory factory = TransformerFactory.newInstance();
+      final XSLResource resource = XSLResource.get("xsl.eFapsFO.xsl");
 
-      Source src = new DOMSource(xmlDoc);
+      final Transformer transformer =
+          factory.newTransformer(new StreamSource(resource.getResourceStream()
+              .getInputStream()));
 
-      // Resulting SAX events (the generated FO) must be piped through to FOP
-      Result res = new StreamResult(out);
+      final Source src = new DOMSource(this.xmlDocument);
 
-      transformer.transform(src, res);
-
-      Result res2 = new SAXResult(fop.getDefaultHandler());
+      final Result res2 = new SAXResult(fop.getDefaultHandler());
       transformer.transform(src, res2);
       // Start XSLT transformation and FOP processing
 
-      out.close();
-      pdf.close();
-    } catch (TransformerConfigurationException e) {
+    } catch (final FileNotFoundException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    } catch (FileNotFoundException e) {
+    } catch (final FOPException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    } catch (TransformerException e) {
+    } catch (final TransformerConfigurationException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    } catch (IOException e) {
+    } catch (final TransformerException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    } catch (FOPException e) {
+    } catch (final ResourceStreamNotFoundException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
     finally {
-
+      try {
+        out.close();
+      } catch (final IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
-
   }
 
-  // Retrive probe message as XML string
-  public String getXMLString() {
-    return this.xmlStr;
+  private void initialise(final AbstractModel _model) {
+    this.msgTimeStamp = new Date();
+    this.model = _model;
+    // Generate the XML Document using DOM
+    // Generate a XML String
+    this.xmlDocument = this.generateXMLDocument(_model);
+    // Generate a XML String
+    this.xmlDocument.normalizeDocument();
+    // TODO nur fuer testzwecke
+
+    System.out.print(generateXMLString(this.xmlDocument));
+
+    this.fileStoreFolder = getDefaultFileStoreFolder();
+    this.fileStoreFolder.mkdirs();
   }
 
   // Generate a DOM XML document
-  private Document generateXMLDocument(AbstractModel _model) {
+  protected Document generateXMLDocument(AbstractModel _model) {
     Document xmlDoc = null;
     try {
       // Create a XML Document
-      DocumentBuilderFactory dbFactory =
+      final DocumentBuilderFactory dbFactory =
           DocumentBuilderFactoryImpl.newInstance();
-      DocumentBuilder docBuilder = dbFactory.newDocumentBuilder();
+      dbFactory.setNamespaceAware(true);
+      final DocumentBuilder docBuilder = dbFactory.newDocumentBuilder();
       xmlDoc = docBuilder.newDocument();
-    } catch (Exception e) {
+    } catch (final Exception e) {
       System.out.println("Error " + e);
     }
 
     // Create the root element
-    Element root = xmlDoc.createElement(TAG.ROOT.value);
+    final Element root = xmlDoc.createElement(TAG.ROOT.value);
     xmlDoc.appendChild(root);
 
     // Add TimeStamp Element and its value
-    Element item = xmlDoc.createElement(TAG.TIMESTAMP.value);
+    final Element item = xmlDoc.createElement(TAG.TIMESTAMP.value);
     item.appendChild(xmlDoc.createTextNode((new SimpleDateFormat(
         DATE_TIME_FORMAT)).format(this.msgTimeStamp)));
     root.appendChild(item);
 
     root.appendChild(xmlDoc.createComment("titel"));
-    Element title = xmlDoc.createElement(TAG.TITLE.value);
+    final Element title = xmlDoc.createElement(TAG.TITLE.value);
     title.appendChild(xmlDoc.createTextNode(_model.getTitle()));
     root.appendChild(title);
 
@@ -223,10 +234,11 @@ public class XMLExport {// XML tag's
       root.appendChild(xmlDoc.createComment("table"));
       root.appendChild(getTableElement(xmlDoc, (TableModel) _model));
     } else if (_model instanceof FormModel) {
-      for (FormModel.Element formelement : ((FormModel) _model).getElements()) {
+      for (final FormModel.Element formelement : ((FormModel) _model)
+          .getElements()) {
         if (formelement.getType().equals(ElementType.FORM)) {
           root.appendChild(xmlDoc.createComment("form"));
-          root.appendChild(getFormElement(xmlDoc,
+          root.appendChild(getFormElement(xmlDoc, (FormModel) _model,
               (FormElementModel) formelement.getModel()));
         } else if (formelement.getType().equals(ElementType.HEADING)) {
           root.appendChild(getHeadingElement(xmlDoc, (HeadingModel) formelement
@@ -241,70 +253,90 @@ public class XMLExport {// XML tag's
     return xmlDoc;
   }
 
-  private Element getHeadingElement(final Document _xmlDoc,
-                                    final HeadingModel _model) {
-    Element heading = _xmlDoc.createElement(TAG.HEADING.value);
-    Element value = _xmlDoc.createElement(TAG.VALUE.value);
+  protected Element getHeadingElement(final Document _xmlDoc,
+                                      final HeadingModel _model) {
+    final Element heading = _xmlDoc.createElement(TAG.HEADING.value);
+    final Element value = _xmlDoc.createElement(TAG.VALUE.value);
     heading.setAttribute("level", ((Integer) _model.getLevel()).toString());
     heading.appendChild(value);
     value.appendChild(_xmlDoc.createTextNode(_model.getLabel()));
     return heading;
   }
 
-  private Element getFormElement(final Document _xmlDoc,
-                                 final FormElementModel _model) {
-    Element form = _xmlDoc.createElement(TAG.FORM.value);
-    for (FormRowModel rowmodel : _model.getRowModels()) {
-      Element f_row = _xmlDoc.createElement(TAG.FORM_ROW.value);
-      form.appendChild(f_row);
-      for (FormCellModel formcellmodel : rowmodel.getValues()) {
-        Element f_cell = _xmlDoc.createElement(TAG.FORM_CELL.value);
-        f_row.appendChild(f_cell);
+  protected Element getFormElement(final Document _xmlDoc,
+                                   final FormModel _formmodel,
+                                   final FormElementModel _model) {
+    final Element form = _xmlDoc.createElement(TAG.FORM.value);
+    form.setAttribute("maxGoupCount", ((Integer) _formmodel.getMaxGroupCount())
+        .toString());
 
-        Element f_label = _xmlDoc.createElement(TAG.LABEL.value);
+    for (final FormRowModel rowmodel : _model.getRowModels()) {
+
+      final Element f_row = _xmlDoc.createElement(TAG.FORM_ROW.value);
+      form.appendChild(f_row);
+      for (final FormCellModel formcellmodel : rowmodel.getValues()) {
+        final Integer colspan =
+            2 * (_formmodel.getMaxGroupCount() - rowmodel.getGroupCount()) + 1;
+
+        final Element f_cell = _xmlDoc.createElement(TAG.FORM_CELL.value);
+        f_row.appendChild(f_cell);
+        f_cell.setAttribute("type", "Label");
+
+        final Element f_label = _xmlDoc.createElement(TAG.VALUE.value);
         f_cell.appendChild(f_label);
         f_label.appendChild(_xmlDoc
             .createTextNode(formcellmodel.getCellLabel()));
 
-        Element value = _xmlDoc.createElement(TAG.VALUE.value);
-        f_cell.appendChild(value);
+        final Element f_cellvalue = _xmlDoc.createElement(TAG.FORM_CELL.value);
+        f_cellvalue.setAttribute("type", "Value");
+        f_cellvalue.setAttribute("column-span", colspan.toString());
+        f_row.appendChild(f_cellvalue);
+        final Element value = _xmlDoc.createElement(TAG.VALUE.value);
+        f_cellvalue.appendChild(value);
         value.appendChild(_xmlDoc.createTextNode(formcellmodel.getCellValue()));
       }
     }
     return form;
   }
 
-  private Element getTableElement(final Document _xmlDoc,
-                                  final TableModel _model) {
+  protected Element getTableElement(final Document _xmlDoc,
+                                    final TableModel _model) {
 
-    Element table = _xmlDoc.createElement(TAG.TABLE.value);
+    final Element table = _xmlDoc.createElement(TAG.TABLE.value);
 
-    Element table_header = _xmlDoc.createElement(TAG.TABLE_HEADER.value);
+    final Element table_header = _xmlDoc.createElement(TAG.TABLE_HEADER.value);
     table.appendChild(table_header);
 
-    for (HeaderModel headermodel : _model.getHeaders()) {
-      Element t_cell = _xmlDoc.createElement(TAG.TABLE_CELL.value);
+    for (final HeaderModel headermodel : _model.getHeaders()) {
+      final Element t_cell = _xmlDoc.createElement(TAG.TABLE_CELL.value);
       t_cell.setAttribute("name", headermodel.getName());
+      String width;
+      if (headermodel.isFixedWidth()) {
+        width = headermodel.getWidth() + "pt";
+      } else {
+        width = 100 / _model.getWidthWeight() * headermodel.getWidth() + "%";
+      }
+      t_cell.setAttribute("width", width);
       table_header.appendChild(t_cell);
 
-      Element value = _xmlDoc.createElement(TAG.VALUE.value);
+      final Element value = _xmlDoc.createElement(TAG.VALUE.value);
       value.appendChild(_xmlDoc.createTextNode(headermodel.getLabel()));
 
       t_cell.appendChild(value);
     }
     boolean addBody = true;
-    Element t_body = _xmlDoc.createElement(TAG.TABLE_BODY.value);
-    for (RowModel rowmodel : _model.getValues()) {
+    final Element t_body = _xmlDoc.createElement(TAG.TABLE_BODY.value);
+    for (final RowModel rowmodel : _model.getValues()) {
       if (addBody) {
         table.appendChild(t_body);
         addBody = false;
       }
-      Element t_row = _xmlDoc.createElement(TAG.TABLE_ROW.value);
+      final Element t_row = _xmlDoc.createElement(TAG.TABLE_ROW.value);
       t_body.appendChild(t_row);
 
-      for (TableCellModel tablecellmodel : rowmodel.getValues()) {
-        Element t_cell = _xmlDoc.createElement(TAG.TABLE_CELL.value);
-        Element value = _xmlDoc.createElement(TAG.VALUE.value);
+      for (final TableCellModel tablecellmodel : rowmodel.getValues()) {
+        final Element t_cell = _xmlDoc.createElement(TAG.TABLE_CELL.value);
+        final Element value = _xmlDoc.createElement(TAG.VALUE.value);
         t_cell.appendChild(value);
         value
             .appendChild(_xmlDoc.createTextNode(tablecellmodel.getCellValue()));
@@ -317,8 +349,8 @@ public class XMLExport {// XML tag's
   }
 
   // Generate String out of the XML document object
-  private void generateXMLString(Document _xmlDoc) {
-
+  private String generateXMLString(Document _xmlDoc) {
+    String ret = null;
     StringWriter strWriter = null;
     XMLSerializer probeMsgSerializer = null;
     OutputFormat outFormat = null;
@@ -342,12 +374,46 @@ public class XMLExport {// XML tag's
 
       // Serialize XML Document
       probeMsgSerializer.serialize(_xmlDoc);
-      this.xmlStr = strWriter.toString();
+      ret = strWriter.toString();
       strWriter.close();
 
-    } catch (IOException ioEx) {
+    } catch (final IOException ioEx) {
       System.out.println("Error " + ioEx);
     }
+    return ret;
+  }
+
+  private static File getDefaultFileStoreFolder() {
+    final File dir =
+        (File) ((EFapsApplication) Application.get()).getServletContext()
+            .getAttribute("javax.servlet.context.tempdir");
+    if (dir != null) {
+      return dir;
+    } else {
+      try {
+        return File.createTempFile("file-prefix", null).getParentFile();
+      } catch (final IOException e) {
+        throw new WicketRuntimeException(e);
+      }
+    }
+  }
+
+  private File getSessionFolder(final String sessionId) {
+    final File storeFolder = new File(this.fileStoreFolder, APPNAME + "-print");
+    final File sessionFolder = new File(storeFolder, sessionId);
+    if (sessionFolder.exists() == false) {
+      sessionFolder.mkdirs();
+    }
+    return sessionFolder;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #file}.
+   *
+   * @return value of instance variable {@link #file}
+   */
+  public File getFile() {
+    return this.file;
   }
 
 }

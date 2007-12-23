@@ -20,12 +20,16 @@
 
 package org.efaps.ui.wicket.components.menu;
 
+import java.io.File;
+import java.util.List;
+
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.InlineFrame;
 
-import org.efaps.admin.event.EventType;
+import org.efaps.admin.event.Return;
+import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
@@ -90,16 +94,25 @@ public class StandardLink extends AbstractMenuItemLink {
       } else {
         this.setResponsePage(FormPage.class, para);
       }
-    } else if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-
+    } else {
       try {
-        command.executeEvents(EventType.UI_COMMAND_EXECUTE);
+        List<Return> rets = model.executeEvents(this);
+        if ("true".equals(command.getProperty("TargetShowFile"))) {
+          Object object = rets.get(0).get(ReturnValues.VALUES);
+          if (object instanceof File) {
+            getRequestCycle().setRequestTarget(
+                new FileRequestTarget((File) object));
+          }
+
+        }
+
       } catch (EFapsException e) {
         throw new RestartResponseException(new ErrorPage(e));
       }
       if ("true".equals(command.getProperty("NoUpdateAfterCOMMAND"))) {
         this.getRequestCycle().setRequestTarget(null);
       }
+
     }
 
   }

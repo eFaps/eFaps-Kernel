@@ -29,6 +29,7 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.link.PopupSettings;
+import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
@@ -47,6 +48,12 @@ import org.efaps.ui.wicket.models.SearchItemModel;
  * @version $Id:MenuContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class MenuContainer extends AbstractParentMarkupContainer {
+
+  public static final JavascriptResourceReference JSCOOKMENU =
+      new JavascriptResourceReference(MenuContainer.class, "JSCookMenu.js");
+
+  public static final JavascriptResourceReference EFAPSEXTENSION =
+    new JavascriptResourceReference(MenuContainer.class, "EFapsExtension.js");
 
   private static final long serialVersionUID = 1L;
 
@@ -99,8 +106,8 @@ public class MenuContainer extends AbstractParentMarkupContainer {
                        final FormContainer _form) {
     super(_id, _model);
     this.form = _form;
-    add(HeaderContributor.forJavaScript(getClass(), "JSCookMenu.js"));
-    add(HeaderContributor.forJavaScript(getClass(), "EFapsExtension.js"));
+    add(HeaderContributor.forJavaScript(JSCOOKMENU));
+    add(HeaderContributor.forJavaScript(EFAPSEXTENSION));
     add(HeaderContributor.forCss(getClass(), "theme.css"));
     add(new StringHeaderContributor(HEADER_RESOURCE));
     add(HeaderContributor.forJavaScript(getClass(), "theme.js"));
@@ -109,7 +116,7 @@ public class MenuContainer extends AbstractParentMarkupContainer {
 
   private void initialise() {
     final MenuItemModel model = (MenuItemModel) super.getModel();
-    for (MenuItemModel menuItem : model.getChilds()) {
+    for (final MenuItemModel menuItem : model.getChilds()) {
       addLink(menuItem);
     }
   }
@@ -157,7 +164,7 @@ public class MenuContainer extends AbstractParentMarkupContainer {
         this.add(new LogOutLink(getNewChildId(), _menuItemModel));
       }
     }
-    for (MenuItemModel childs : _menuItemModel.getChilds()) {
+    for (final MenuItemModel childs : _menuItemModel.getChilds()) {
       addLink(childs);
     }
   }
@@ -233,7 +240,7 @@ public class MenuContainer extends AbstractParentMarkupContainer {
     html.append(JavascriptUtils.SCRIPT_OPEN_TAG).append("var ").append(id)
         .append("=[");
 
-    for (MenuItemModel menuItem : model.getChilds()) {
+    for (final MenuItemModel menuItem : model.getChilds()) {
       convertToHtml(menuItem, html, true, new StringBuilder());
       html.append(",\n");
     }
@@ -280,7 +287,7 @@ public class MenuContainer extends AbstractParentMarkupContainer {
       _html.append(_menuItem.getDescription());
     }
     _html.append("'");
-    for (MenuItemModel menuItem : _menuItem.getChilds()) {
+    for (final MenuItemModel menuItem : _menuItem.getChilds()) {
       _html.append("\n").append(_prefix).append("  ,");
       convertToHtml(menuItem, _html, false, new StringBuilder(_prefix)
           .append("  "));

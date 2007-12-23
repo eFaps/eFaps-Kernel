@@ -538,7 +538,7 @@ public class TableModel extends AbstractModel {
     List<Field> fields = this.getTable().getFields();
     List<Field> ret = new ArrayList<Field>();
     try {
-      if (Context.getThreadContext().containsUserAtribute(
+      if (Context.getThreadContext().containsUserAttribute(
           getUserAttributeKey(UserAttributeKey.COLUMNORDER))) {
 
         String columnOrder =
@@ -579,7 +579,7 @@ public class TableModel extends AbstractModel {
    */
   private List<Integer> getUserWidths() {
     try {
-      if (Context.getThreadContext().containsUserAtribute(
+      if (Context.getThreadContext().containsUserAttribute(
           getUserAttributeKey(UserAttributeKey.COLUMNWIDTH))) {
         this.userWidths = true;
         final String widths =
@@ -684,13 +684,13 @@ public class TableModel extends AbstractModel {
       this.showCheckBoxes = showCheckBoxes;
       // get the User spesific Attributes if exist overwrite the defaults
       try {
-        if (Context.getThreadContext().containsUserAtribute(
+        if (Context.getThreadContext().containsUserAttribute(
             getUserAttributeKey(UserAttributeKey.SORTKEY))) {
           this.sortKey =
               Context.getThreadContext().getUserAttribute(
                   getUserAttributeKey(UserAttributeKey.SORTKEY));
         }
-        if (Context.getThreadContext().containsUserAtribute(
+        if (Context.getThreadContext().containsUserAttribute(
             getUserAttributeKey(UserAttributeKey.SORTDIRECTION))) {
           this.sortDirection =
               SortDirection
