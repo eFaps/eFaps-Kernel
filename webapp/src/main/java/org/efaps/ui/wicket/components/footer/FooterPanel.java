@@ -33,6 +33,7 @@ import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
@@ -42,7 +43,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.PopupCloseLink;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
@@ -63,6 +63,7 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -76,6 +77,9 @@ import org.efaps.util.EFapsException;
 public class FooterPanel extends Panel {
 
   private static final long serialVersionUID = -1722339596237748160L;
+
+  public final static CSSResourceReference CSS =
+      new CSSResourceReference(FooterPanel.class, "FooterPanel.css");
 
   /**
    * This instance variable stores the ModalWindowContainer the Page and with it
@@ -150,7 +154,7 @@ public class FooterPanel extends Panel {
       label = getLabel(model.getCommand().getName(), "Search");
     }
 
-    add(new StyleSheetReference("panelcss", getClass(), "FooterPanel.css"));
+    add(HeaderContributor.forCss(CSS));
 
     if ((model.isSubmit() && model instanceof TableModel)
         || !model.isSearchMode()) {
@@ -297,7 +301,7 @@ public class FooterPanel extends Panel {
         final List<UpdateInterface> updates =
             ((EFapsSession) getSession()).getUpdateBehavior(model.getOid());
         if (updates != null) {
-          for (UpdateInterface update : updates) {
+          for (final UpdateInterface update : updates) {
             if (update.isAjaxCallback()) {
               update.setOid(model.getOid());
               update.setMode(model.getMode());
@@ -330,7 +334,7 @@ public class FooterPanel extends Panel {
       final List<Return> returns =
           ((AbstractModel) this.form.getParent().getModel())
               .executeEvents(_other);
-      for (Return oneReturn : returns) {
+      for (final Return oneReturn : returns) {
         if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
           final String key = (String) oneReturn.get(ReturnValues.VALUES);
           showDialog(_target, key);
@@ -356,7 +360,7 @@ public class FooterPanel extends Panel {
       final List<Return> validation =
           ((AbstractModel) this.form.getParent().getModel()).validate();
 
-      for (Return oneReturn : validation) {
+      for (final Return oneReturn : validation) {
         if (oneReturn.get(ReturnValues.TRUE) == null) {
           final String key = (String) oneReturn.get(ReturnValues.VALUES);
           showDialog(_target, key);
@@ -402,7 +406,7 @@ public class FooterPanel extends Panel {
 
       final Map<?, ?> map =
           this.getComponent().getRequestCycle().getRequest().getParameterMap();
-      for (Entry<String, Label> entry : container.getRequiredComponents()
+      for (final Entry<String, Label> entry : container.getRequiredComponents()
           .entrySet()) {
 
         final String[] values = (String[]) map.get(entry.getKey());

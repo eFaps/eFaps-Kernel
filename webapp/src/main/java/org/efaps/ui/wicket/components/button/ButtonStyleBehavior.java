@@ -21,12 +21,13 @@
 package org.efaps.ui.wicket.components.button;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -36,8 +37,8 @@ public class ButtonStyleBehavior extends AbstractBehavior {
 
   private static final long serialVersionUID = 1L;
 
-  public final static ResourceReference CSS =
-      new ResourceReference(ButtonStyleBehavior.class,
+  public final static CSSResourceReference CSS =
+      new CSSResourceReference(ButtonStyleBehavior.class,
           "ButtonStyleBehavior.css");
 
   /*
