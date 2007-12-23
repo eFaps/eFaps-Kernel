@@ -20,6 +20,7 @@
 
 package org.efaps.maven.plugin.goal.efaps.install;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -108,6 +109,12 @@ public class Application {
    */
   private Long maxVersion;
 
+
+  /**
+   * this instance variable stores the Directory to the files to be installed
+   */
+  private File eFapsDir;
+
   // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
@@ -120,7 +127,8 @@ public class Application {
    * @todo better definition of include dir / file
    */
   public static Application getApplication(final URL _url,
-                                           final List<String> _classpathElements) {
+                                           final List<String> _classpathElements,
+                                           final File _efapsdir) {
     Application appl = null;
     try {
       final Digester digester = new Digester();
@@ -159,6 +167,7 @@ public class Application {
       digester.addCallParam("install/version/script", 2, "function");
 
       appl = (Application) digester.parse(_url);
+      appl.setEFapsDir(_efapsdir);
 
       for (final ApplicationVersion applVers : appl.getVersions()) {
         applVers.setClasspathElements(_classpathElements);
@@ -206,8 +215,10 @@ public class Application {
 
     this.install.setApplication(this.application);
     this.install.setMaxVersion(this.maxVersion);
+    this.install.setRootDir(this.eFapsDir.getAbsolutePath());
 
     LOG.info("Install application '" + this.application + "'");
+
     for (final ApplicationVersion version : this.versions) {
       if (LOG.isInfoEnabled()) {
         LOG.info("Check version " + version.getNumber());
@@ -229,7 +240,7 @@ public class Application {
       }
     }
     if (LOG.isInfoEnabled()) {
-      LOG.info("Importing Data...");
+      LOG.info("Importing Data... for application '" + this.application + "'");
     }
 
     Context.begin(_userName);
@@ -411,6 +422,29 @@ public class Application {
     return this.application;
   }
 
+
+  /**
+   * This is the getter method for the instance variable {@link #eFapsDir}.
+   *
+   * @return value of instance variable {@link #eFapsDir}
+   */
+  public File getEFapsDir() {
+    return this.eFapsDir;
+  }
+
+
+  /**
+   * This is the setter method for the instance variable
+   * {@link #eFapsDir}.
+   *
+   * @param _efapsdir
+   *                the eFapsDir to set
+   */
+  public void setEFapsDir(final File _efapsdir) {
+    this.eFapsDir = _efapsdir;
+  }
+
+
   /**
    * This is the getter method for instance variable {@link #versions}.
    *
@@ -451,5 +485,7 @@ public class Application {
         .append("versions", this.versions).append("install", this.install)
         .toString();
   }
+
+
 
 }

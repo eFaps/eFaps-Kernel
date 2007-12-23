@@ -20,6 +20,7 @@
 
 package org.efaps.update.program;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Set;
@@ -39,6 +40,8 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
 
 /**
+ * TODO description
+ *
  * @author jmox
  * @version $Id$
  */
@@ -50,6 +53,11 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
   private final static Logger LOG =
       LoggerFactory.getLogger(AbstractSourceUpdate.class);
 
+  /**
+   * Constructor setting the Name iof the Type to be imported/updated
+   *
+   * @param _modelTypeName
+   */
   protected AbstractSourceUpdate(final String _modelTypeName) {
     super(_modelTypeName);
   }
@@ -64,7 +72,9 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
     return new Long(1);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   *
    * @see org.efaps.update.AbstractUpdate#updateInDB(org.apache.commons.jexl.JexlContext)
    */
   @Override
@@ -73,7 +83,9 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
     try {
 
       for (final AbstractDefinition def : getDefinitions()) {
-
+        if (((SourceDefinition) def).getRootDir() == null) {
+          ((SourceDefinition) def).setRootDir(getRootDir());
+        }
         final Expression jexlExpr =
             ExpressionFactory.createExpression("(version=="
                 + getVersion()
@@ -94,20 +106,61 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
     }
   }
 
+  /**
+   * TODO description
+   *
+   * @author jmox
+   * @version $Id$
+   */
   public static abstract class SourceDefinition extends AbstractDefinition {
 
+    /**
+     * instance vraiable holding the URL to the file to be imported
+     */
     private URL url;
 
-    private String fileName;
+    /**
+     * the name as the sourcefile will have in eFaps
+     */
+    private String name;
+
+    /**
+     * the String representation of the Directory containing the files to be
+     * installed/updated
+     */
+    private String rootDir;
 
     public SourceDefinition(final URL _url) {
-      setURL(_url);
+      this.url = _url;
     }
 
-    public void setURL(URL _url) {
-      this.url = _url;
-      final String urlStr = _url.toString();
-      this.fileName = urlStr.substring(urlStr.lastIndexOf("/") + 1);
+    /**
+     * This is the getter method for the instance variable {@link #name}.
+     *
+     * @return value of instance variable {@link #name}
+     */
+    public String getName() {
+      return this.name;
+    }
+
+    @Override
+    public void setName(final String _filename) {
+      this.name = _filename;
+      addValue("Name", this.name);
+    }
+
+    /**
+     * In case that the {@link #name} is not set, this method sets a default for
+     * the Name, using the {@link #rootDir} to determine a Name
+     */
+    private void setDefaultName() {
+      final String urlStr = this.url.toString();
+      this.name =
+          urlStr.substring(urlStr.lastIndexOf(this.rootDir)
+              + this.rootDir.length()
+              + 1);
+      this.name = this.name.replace(File.separator, ".");
+      addValue("Name", this.name);
     }
 
     @Override
@@ -117,11 +170,15 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
                                                        Exception {
       Instance instance = null;
       Insert insert = null;
-      addValue("Name", this.fileName);
+
+      if (getName() == null) {
+        setDefaultName();
+      }
+
       // search for the instance
       final SearchQuery query = new SearchQuery();
       query.setQueryTypes(_dataModelType.getName());
-      query.addWhereExprEqValue("Name", this.fileName);
+      query.addWhereExprEqValue("Name", this.name);
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
       if (query.next()) {
@@ -132,9 +189,6 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
       // if no instance exists, a new insert must be done
       if (instance == null) {
         insert = new Insert(_dataModelType);
-        if (insert.getInstance().getType().getAttribute("Abstract") != null) {
-          insert.add("Abstract", ((Boolean) _abstractType).toString());
-        }
       }
       updateInDB(instance, _allLinkTypes, insert);
     }
@@ -159,14 +213,53 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
       final Instance instance =
           super.updateInDB(_instance, _allLinkTypes, _insert);
 
-      if (this.fileName != null) {
+      if (this.name != null) {
         final InputStream in = this.url.openStream();
         final Checkin checkin = new Checkin(instance);
-        checkin.executeWithoutAccessCheck(this.fileName, in, in.available());
+        checkin.executeWithoutAccessCheck(this.name, in, in.available());
         in.close();
       }
       return instance;
     }
+
+    /**
+     * This is the getter method for the instance variable {@link #url}.
+     *
+     * @return value of instance variable {@link #url}
+     */
+    public URL getUrl() {
+      return this.url;
+    }
+
+    /**
+     * This is the setter method for the instance variable {@link #url}.
+     *
+     * @param url
+     *                the url to set
+     */
+    public void setUrl(URL url) {
+      this.url = url;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #rootDir}.
+     *
+     * @return value of instance variable {@link #rootDir}
+     */
+    public String getRootDir() {
+      return this.rootDir;
+    }
+
+    /**
+     * This is the setter method for the instance variable {@link #rootDir}.
+     *
+     * @param rootDir
+     *                the rootDir to set
+     */
+    public void setRootDir(String rootDir) {
+      this.rootDir = rootDir;
+    }
+
   }
 
 }

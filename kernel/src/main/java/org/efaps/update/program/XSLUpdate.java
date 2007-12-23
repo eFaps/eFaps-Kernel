@@ -23,9 +23,10 @@ package org.efaps.update.program;
 import java.net.URL;
 
 /**
+ * TODO description
+ *
  * @author jmox
  * @version $Id$
- * 
  */
 public class XSLUpdate extends AbstractSourceUpdate {
 

@@ -54,10 +54,11 @@ import org.efaps.update.user.RoleUpdate;
 import org.efaps.util.EFapsException;
 
 /**
+ * TODO description
+ *
  * @author tmo
  * @author jmox
  * @version $Id$
- * @todo description
  */
 public class Install {
 
@@ -152,6 +153,8 @@ public class Install {
 
   private Long maxVersion;
 
+  private String rootDir;
+
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
@@ -205,6 +208,7 @@ public class Install {
               final AbstractUpdate update = (AbstractUpdate) obj;
               update.setApplication(this.application);
               update.setMaxVersion(this.maxVersion);
+              update.setRootDir(this.rootDir);
               list.add(update);
             }
           }
@@ -275,6 +279,25 @@ public class Install {
    */
   public void setMaxVersion(Long maxVersion) {
     this.maxVersion = maxVersion;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #rootDir}.
+   *
+   * @return value of instance variable {@link #rootDir}
+   */
+  public String getRootDir() {
+    return this.rootDir;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #rootDir}.
+   *
+   * @param _rootDir
+   *                the rootDir to set
+   */
+  public void setRootDir(String _rootDir) {
+    this.rootDir = _rootDir;
   }
 
   /**

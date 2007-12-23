@@ -107,6 +107,8 @@ public abstract class AbstractUpdate {
 
   private Long maxVersion;
 
+  private String rootDir;
+
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
@@ -294,6 +296,25 @@ public abstract class AbstractUpdate {
    */
   public void setMaxVersion(Long maxVersion) {
     this.maxVersion = maxVersion;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #rootDir}.
+   *
+   * @return value of instance variable {@link #rootDir}
+   */
+  public String getRootDir() {
+    return this.rootDir;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #rootDir}.
+   *
+   * @param rootDir
+   *                the rootDir to set
+   */
+  public void setRootDir(String rootDir) {
+    this.rootDir = rootDir;
   }
 
   /**

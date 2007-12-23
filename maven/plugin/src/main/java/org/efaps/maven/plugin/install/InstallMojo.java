@@ -33,16 +33,16 @@ import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
 
 /**
+ * TODO description
  *
  * @author tmo
  * @version $Id$
- * @todo description
  */
 @MojoGoal("install")
 @MojoRequiresDependencyResolution("compile")
-public final class InstallMojo extends AbstractEFapsInstallMojo  {
+public final class InstallMojo extends AbstractEFapsInstallMojo {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -52,48 +52,52 @@ public final class InstallMojo extends AbstractEFapsInstallMojo  {
   @MojoParameter(defaultValue = "efaps")
   private String applications;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
    * Executes the kernel install goal.
    *
-   * @throws MojoExecutionException if a defined application could not be found
-   *                                or the installation scripts could not be
-   *                                executed
+   * @throws MojoExecutionException
+   *                 if a defined application could not be found or the
+   *                 installation scripts could not be executed
    * @todo descriptionâ
    */
-  public void execute() throws MojoExecutionException  {
+  public void execute() throws MojoExecutionException {
     init();
-    try  {
+    try {
       final ClassLoader cl = getClass().getClassLoader();
 
       // get install application (read from all install xml files)
       final Map<String, Application> appls = new HashMap<String, Application>();
-      final Enumeration<URL> urlEnum = cl.getResources("META-INF/efaps/install.xml");
-      while (urlEnum.hasMoreElements())  {
-        final Application appl = Application.getApplication(urlEnum.nextElement(),
-                                                            getClasspathElements());
+      final Enumeration<URL> urlEnum =
+          cl.getResources("META-INF/efaps/install.xml");
+      while (urlEnum.hasMoreElements()) {
+        final Application appl =
+            Application.getApplication(urlEnum.nextElement(),
+                getClasspathElements(), getEFapsDir());
         appls.put(appl.getApplication(), appl);
       }
 
       // test if all defined applications could be found
       final String[] applicationNames = this.applications.split(",");
-      for (final String applName : applicationNames)  {
-        if (appls.get(applName) == null)  {
+      for (final String applName : applicationNames) {
+        if (appls.get(applName) == null) {
           throw new MojoExecutionException("Could not found defined "
-              + "application '" + applName + "'. Installation not possible!");
+              + "application '"
+              + applName
+              + "'. Installation not possible!");
         }
       }
 
       // install applications
-      for (final String applName : applicationNames)  {
+      for (final String applName : applicationNames) {
         final Application appl = appls.get(applName);
         appl.install(getUserName(), getPassWord());
       }
-    } catch (final Exception e)  {
-      throw new MojoExecutionException(
-            "Could not execute Installation script", e);
+    } catch (final Exception e) {
+      throw new MojoExecutionException("Could not execute Installation script",
+          e);
     }
   }
 }

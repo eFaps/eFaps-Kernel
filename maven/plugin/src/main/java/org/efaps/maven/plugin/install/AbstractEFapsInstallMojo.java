@@ -42,13 +42,14 @@ import org.efaps.update.Install.FileType;
  */
 public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Default Mapping of a a file extension to a Type for import and update
    */
-  private final static Map<String,String> DEFAULT_TYPE_MAPPING = new HashMap<String, String>();
+  private final static Map<String, String> DEFAULT_TYPE_MAPPING =
+      new HashMap<String, String>();
   static {
     DEFAULT_TYPE_MAPPING.put("css", FileType.CSS.type);
     DEFAULT_TYPE_MAPPING.put("java", FileType.JAVA.type);
@@ -62,7 +63,7 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
    * @see #getFiles
    */
   private final static Set<String> DEFAULT_INCLUDES = new HashSet<String>();
-  static  {
+  static {
     DEFAULT_INCLUDES.add("**/*.css");
     DEFAULT_INCLUDES.add("**/*.xml");
     DEFAULT_INCLUDES.add("**/*.xsl");
@@ -127,7 +128,7 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
     try {
       appl =
           Application.getApplication(this.versionFile.toURL(),
-              getClasspathElements());
+              getClasspathElements(), getEFapsDir());
 
       for (final String fileName : getFiles()) {
         final String type =
