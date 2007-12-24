@@ -25,7 +25,7 @@
 
 <dbproperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>f10521f6-4343-4d2c-b525-7fc56df9d0e2</uuid>
-  <bundle name="efaps" sequence="1"/>
+  <bundle name="eFaps-WebApp" sequence="1"/>
   <resource>
     <type>Properties</type>
     <language></language> 
