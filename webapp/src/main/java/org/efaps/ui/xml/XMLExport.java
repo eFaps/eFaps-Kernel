@@ -293,7 +293,13 @@ public class XMLExport {
         f_row.appendChild(f_cellvalue);
         final Element value = _xmlDoc.createElement(TAG.VALUE.value);
         f_cellvalue.appendChild(value);
-        value.appendChild(_xmlDoc.createTextNode(formcellmodel.getCellValue()));
+        if (formcellmodel.getCellValue() == null) {
+          value.appendChild(_xmlDoc
+              .createTextNode(""));
+        } else {
+          value.appendChild(_xmlDoc
+              .createTextNode(formcellmodel.getCellValue()));
+        }
       }
     }
     return form;
