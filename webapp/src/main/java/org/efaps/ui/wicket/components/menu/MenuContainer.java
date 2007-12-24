@@ -41,6 +41,7 @@ import org.efaps.ui.wicket.components.AbstractParentMarkupContainer;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.models.SearchItemModel;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author tmo
@@ -49,13 +50,19 @@ import org.efaps.ui.wicket.models.SearchItemModel;
  */
 public class MenuContainer extends AbstractParentMarkupContainer {
 
+  private static final long serialVersionUID = 1L;
+
   public static final JavascriptResourceReference JSCOOKMENU =
       new JavascriptResourceReference(MenuContainer.class, "JSCookMenu.js");
 
   public static final JavascriptResourceReference EFAPSEXTENSION =
-    new JavascriptResourceReference(MenuContainer.class, "EFapsExtension.js");
+      new JavascriptResourceReference(MenuContainer.class, "EFapsExtension.js");
 
-  private static final long serialVersionUID = 1L;
+  public static final JavascriptResourceReference THEME =
+      new JavascriptResourceReference(MenuContainer.class, "theme.js");
+
+  public static CSSResourceReference CSS =
+      new CSSResourceReference(MenuContainer.class, "theme.css");
 
   private static String URL =
       "resources/" + MenuContainer.class.getName() + "/";
@@ -108,9 +115,9 @@ public class MenuContainer extends AbstractParentMarkupContainer {
     this.form = _form;
     add(HeaderContributor.forJavaScript(JSCOOKMENU));
     add(HeaderContributor.forJavaScript(EFAPSEXTENSION));
-    add(HeaderContributor.forCss(getClass(), "theme.css"));
+    add(HeaderContributor.forCss(CSS));
     add(new StringHeaderContributor(HEADER_RESOURCE));
-    add(HeaderContributor.forJavaScript(getClass(), "theme.js"));
+    add(HeaderContributor.forJavaScript(THEME));
     initialise();
   }
 
