@@ -39,6 +39,7 @@ import org.apache.wicket.util.string.JavascriptUtils;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -47,6 +48,9 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 public class SplitHeaderPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
+
+  public static final CSSResourceReference CSS =
+      new CSSResourceReference(SplitHeaderPanel.class, "SplitHeaderPanel.css");
 
   /**
    * enum for the StyleSheets which are used in this Component
@@ -87,8 +91,7 @@ public class SplitHeaderPanel extends Panel {
     super(_id);
     this.hidevertical = _hidevertical;
     this.setOutputMarkupId(true);
-    this.add(HeaderContributor.forCss(SplitHeaderPanel.class,
-        "SplitHeaderPanel.css"));
+    this.add(HeaderContributor.forCss(CSS));
     this.add(new StringHeaderContributor(getJavaScript()));
 
     this.add(new Label("titel", DBProperties.getProperty("Split.Titel")));
@@ -155,14 +158,10 @@ public class SplitHeaderPanel extends Panel {
         }
 
         final StringBuilder ret = new StringBuilder();
-        ret.append("togglePaneHorizontal(\"")
-           .append(getPage().get(((ContentContainerPage) getPage()).getSplitPath())
-                .getMarkupId())
-           .append("\",\"")
-           .append(panelId)
-           .append("\",\"")
-           .append(this.getParent().getMarkupId())
-           .append("\", new Array(");
+        ret.append("togglePaneHorizontal(\"").append(
+            getPage().get(((ContentContainerPage) getPage()).getSplitPath())
+                .getMarkupId()).append("\",\"").append(panelId).append("\",\"")
+            .append(this.getParent().getMarkupId()).append("\", new Array(");
         boolean addComma = false;
         for (Component _component : SplitHeaderPanel.this.hideComponents) {
           if (addComma) {
@@ -194,7 +193,8 @@ public class SplitHeaderPanel extends Panel {
         .append("  var connections = [];\n")
         .append("  var header;\n")
         .append("  var hideIds;\n")
-        .append("  function togglePaneHorizontal(_splitId, _paneId, _headerId, _hideIds) {\n")
+        .append(
+            "  function togglePaneHorizontal(_splitId, _paneId, _headerId, _hideIds) {\n")
         .append("    header = dojo.byId(_headerId);\n")
         .append("    hideIds = _hideIds;\n")
         .append("    var split = dijit.byId(_splitId);\n")
@@ -204,23 +204,20 @@ public class SplitHeaderPanel extends Panel {
         .append("          dojo.byId(id).style.display = \"none\"\n")
         .append("      });\n")
         .append("      var children = split.getChildren();\n")
-        .append("      var space = split.isHorizontal ? split.paneWidth : split.paneHeight;\n")
-        .append("      if(children.length > 1){\n")
-        .append("        space -= split.sizerWidth * (children.length - 1);\n")
-        .append("      }\n")
-        .append("      var outOf = 0;\n")
-        .append("      dojo.forEach(children, function(child){\n")
-        .append("        outOf += child.sizeShare;\n")
-        .append("      });\n")
-        .append("      var pixPerUnit = space / outOf;\n")
-        .append("      var gro = Math.round(18/pixPerUnit);\n")
-        .append("      split._saveState();\n")
-        .append("      connections[0] = dojo.connect(split,\"beginSizing\",this,"
-                + " \"toggleHeaderHorizontal\" );\n")
-        .append("      header.className=\"")
-        .append(Css.HEADER_CLOSED.value)
-        .append("\";\n")
-        .append("      header.getElementsByTagName(\"div\")[");
+        .append(
+            "      var space = split.isHorizontal ? split.paneWidth : split.paneHeight;\n")
+        .append("      if(children.length > 1){\n").append(
+            "        space -= split.sizerWidth * (children.length - 1);\n")
+        .append("      }\n").append("      var outOf = 0;\n").append(
+            "      dojo.forEach(children, function(child){\n").append(
+            "        outOf += child.sizeShare;\n").append("      });\n")
+        .append("      var pixPerUnit = space / outOf;\n").append(
+            "      var gro = Math.round(18/pixPerUnit);\n").append(
+            "      split._saveState();\n").append(
+            "      connections[0] = dojo.connect(split,\"beginSizing\",this,"
+                + " \"toggleHeaderHorizontal\" );\n").append(
+            "      header.className=\"").append(Css.HEADER_CLOSED.value)
+        .append("\";\n").append("      header.getElementsByTagName(\"div\")[");
 
     if (this.hidevertical) {
       ret.append("1");
@@ -228,51 +225,37 @@ public class SplitHeaderPanel extends Panel {
       ret.append("0");
     }
 
-    ret.append("].className=\"")
-       .append(Css.IMAGE_EXPAND.value)
-       .append("\";\n")
-       .append("      header.getElementsByTagName(\"span\")[0].className=\"")
-       .append(Css.TITEL_HIDE.value)
-       .append("\";\n")
-       .append("      pane.sizeShare = gro;\n")
-       .append("      split.layout();\n")
-       .append("    } else {\n")
-       .append("      toggleHeaderHorizontal();\n")
-       .append("      split._restoreState();\n")
-       .append("      split.layout();\n")
-       .append("    }\n")
-       .append("  }\n");
+    ret.append("].className=\"").append(Css.IMAGE_EXPAND.value).append("\";\n")
+        .append("      header.getElementsByTagName(\"span\")[0].className=\"")
+        .append(Css.TITEL_HIDE.value).append("\";\n").append(
+            "      pane.sizeShare = gro;\n").append("      split.layout();\n")
+        .append("    } else {\n").append("      toggleHeaderHorizontal();\n")
+        .append("      split._restoreState();\n").append(
+            "      split.layout();\n").append("    }\n").append("  }\n");
 
     if (this.hidevertical) {
-      ret.append("  function togglePaneVertical(_splitId, _paneId, _headerId) {\n")
-         .append("    header = dojo.byId(_headerId);\n")
-         .append("    var split = dijit.byId(_splitId);\n")
-         .append("    var pane = dijit.byId(_paneId);\n")
-         .append("    if(pane.sizeShare > 0) {\n")
-         .append("      split._saveState();\n")
-         .append("      connections[1] = dojo.connect(split,\"beginSizing\",this,"
-                  + " \"toggleHeaderVertical\" );\n")
-         .append("      header.getElementsByTagName(\"div\")[0].className=\"")
-         .append(Css.IMAGE_EXPAND_VERTICAL.value)
-         .append("\";\n")
-         .append("      pane.sizeShare = 0;\n")
-         .append("      split.layout();\n")
-         .append("    } else {\n")
-         .append("      toggleHeaderVertical();\n")
-         .append("      split._restoreState();\n")
-         .append("      split.layout();\n")
-         .append("    }\n")
-         .append("  }\n");
+      ret.append(
+          "  function togglePaneVertical(_splitId, _paneId, _headerId) {\n")
+          .append("    header = dojo.byId(_headerId);\n").append(
+              "    var split = dijit.byId(_splitId);\n").append(
+              "    var pane = dijit.byId(_paneId);\n").append(
+              "    if(pane.sizeShare > 0) {\n").append(
+              "      split._saveState();\n").append(
+              "      connections[1] = dojo.connect(split,\"beginSizing\",this,"
+                  + " \"toggleHeaderVertical\" );\n").append(
+              "      header.getElementsByTagName(\"div\")[0].className=\"")
+          .append(Css.IMAGE_EXPAND_VERTICAL.value).append("\";\n").append(
+              "      pane.sizeShare = 0;\n").append("      split.layout();\n")
+          .append("    } else {\n").append("      toggleHeaderVertical();\n")
+          .append("      split._restoreState();\n").append(
+              "      split.layout();\n").append("    }\n").append("  }\n");
     }
 
-    ret.append("  function toggleHeaderHorizontal(){\n")
-       .append("    dojo.forEach(hideIds, function(id){\n")
-       .append("      dojo.byId(id).style.display = \"inline\"\n")
-       .append("    });\n")
-       .append("    header.className=\"")
-       .append(Css.HEADER_OPEN.value)
-       .append("\";\n")
-       .append("    header.getElementsByTagName(\"div\")[");
+    ret.append("  function toggleHeaderHorizontal(){\n").append(
+        "    dojo.forEach(hideIds, function(id){\n").append(
+        "      dojo.byId(id).style.display = \"inline\"\n").append("    });\n")
+        .append("    header.className=\"").append(Css.HEADER_OPEN.value)
+        .append("\";\n").append("    header.getElementsByTagName(\"div\")[");
 
     if (this.hidevertical) {
       ret.append("1");
@@ -280,22 +263,17 @@ public class SplitHeaderPanel extends Panel {
       ret.append("0");
     }
 
-    ret.append("].className=\"")
-       .append(Css.IMAGE_CONTRACT.value)
-       .append("\";\n")
-       .append("    header.getElementsByTagName(\"span\")[0].className=\"")
-       .append(Css.TITEL.value)
-       .append("\";\n")
-       .append("    dojo.disconnect(connections[0]);\n")
-       .append("  }\n");
+    ret.append("].className=\"").append(Css.IMAGE_CONTRACT.value).append(
+        "\";\n").append(
+        "    header.getElementsByTagName(\"span\")[0].className=\"").append(
+        Css.TITEL.value).append("\";\n").append(
+        "    dojo.disconnect(connections[0]);\n").append("  }\n");
 
     if (this.hidevertical) {
-      ret.append("  function toggleHeaderVertical(){\n")
-         .append("    header.getElementsByTagName(\"div\")[0].className=\"")
-         .append(Css.IMAGE_CONTRACT_VERTICAL.value)
-         .append("\";\n")
-         .append("    dojo.disconnect(connections[1]);\n")
-         .append("  }\n");
+      ret.append("  function toggleHeaderVertical(){\n").append(
+          "    header.getElementsByTagName(\"div\")[0].className=\"").append(
+          Css.IMAGE_CONTRACT_VERTICAL.value).append("\";\n").append(
+          "    dojo.disconnect(connections[1]);\n").append("  }\n");
     }
 
     ret.append(JavascriptUtils.SCRIPT_CLOSE_TAG);
@@ -314,9 +292,11 @@ public class SplitHeaderPanel extends Panel {
   }
 
   /**
-   * add a component wich will be hidden by setting the style "display" to "none"
+   * add a component wich will be hidden by setting the style "display" to
+   * "none"
    *
-   * @param _component Component wich must be hidden
+   * @param _component
+   *                Component wich must be hidden
    */
   public void addHideComponent(final Component _component) {
     this.hideComponents.add(_component);

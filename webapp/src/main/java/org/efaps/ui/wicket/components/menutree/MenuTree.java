@@ -61,6 +61,7 @@ import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -84,6 +85,9 @@ public class MenuTree extends AbstractTree {
 
   public static final ResourceReference ICON_MENUTREECHILDOPENED =
       new ResourceReference(MenuTree.class, "eFapsMenuTreeChildOpened.gif");
+
+  public static final CSSResourceReference CSS =
+    new CSSResourceReference(MenuTree.class, "MenuTree.css");
 
   /**
    * this Instancevariable holds the key wich is used to retrieve a item of this
@@ -109,7 +113,7 @@ public class MenuTree extends AbstractTree {
 
     this.setModel(new Model((Serializable) model.getTreeModel()));
 
-    add(HeaderContributor.forCss(getClass(), "MenuTree.css"));
+    add(HeaderContributor.forCss(CSS));
     ((EFapsSession) this.getSession()).putIntoCache(this.menuKey, this);
 
     final DefaultMutableTreeNode rootNode =
@@ -142,7 +146,7 @@ public class MenuTree extends AbstractTree {
     this.menuKey = _menukey;
     this.setModel(new Model((Serializable) _model));
 
-    add(HeaderContributor.forCss(getClass(), "MenuTree.css"));
+    add(HeaderContributor.forCss(CSS));
     ((EFapsSession) this.getSession()).putIntoCache(this.menuKey, this);
 
     final AjaxUpdateBehavior update = new AjaxUpdateBehavior();

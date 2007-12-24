@@ -30,6 +30,7 @@ import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior.Orientation;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -39,13 +40,16 @@ public class StructBrowsSplitPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
+  public static final CSSResourceReference CSS =
+      new CSSResourceReference(StructBrowsSplitPanel.class,
+          "StructBrowsSplitPanel.css");
+
   public StructBrowsSplitPanel(final String _wicketId,
                                final String _listmenukey,
                                final PageParameters _parameters) {
     super(_wicketId);
 
-    this.add(HeaderContributor.forCss(SplitHeaderPanel.class,
-        "StructBrowsSplitPanel.css"));
+    this.add(HeaderContributor.forCss(CSS));
 
     final SplitContainerBehavior beh = new SplitContainerBehavior();
     beh.setOrientation(Orientation.VERTICAL);
