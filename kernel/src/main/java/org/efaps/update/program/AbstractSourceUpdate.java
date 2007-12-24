@@ -23,6 +23,7 @@ package org.efaps.update.program;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.Set;
 
 import org.apache.commons.jexl.Expression;
@@ -53,6 +54,11 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
   private final static Logger LOG =
       LoggerFactory.getLogger(AbstractSourceUpdate.class);
 
+  private boolean setVersion = true;
+
+  private final String localVersion =
+      (new Date(System.currentTimeMillis())).toString();
+
   /**
    * Constructor setting the Name iof the Type to be imported/updated
    *
@@ -72,6 +78,25 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
     return new Long(1);
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #setVersion}.
+   *
+   * @return value of instance variable {@link #setVersion}
+   */
+  public boolean isSetVersion() {
+    return this.setVersion;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #setVersion}.
+   *
+   * @param setVersion
+   *                the setVersion to set
+   */
+  public void setSetVersion(boolean setVersion) {
+    this.setVersion = setVersion;
+  }
+
   /*
    * (non-Javadoc)
    *
@@ -85,6 +110,10 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
       for (final AbstractDefinition def : getDefinitions()) {
         if (((SourceDefinition) def).getRootDir() == null) {
           ((SourceDefinition) def).setRootDir(getRootDir());
+        }
+        if (this.setVersion) {
+          ((SourceDefinition) def).setVersion(getApplication(), "1", "eFaps:"
+              + this.localVersion, "(version==" + getVersion() + ")");
         }
         final Expression jexlExpr =
             ExpressionFactory.createExpression("(version=="

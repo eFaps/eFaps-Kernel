@@ -27,6 +27,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -40,6 +41,7 @@ import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -49,6 +51,9 @@ import org.efaps.util.EFapsException;
 public class DialogPage extends WebPage {
 
   private static final long serialVersionUID = 1L;
+
+  private static final CSSResourceReference CSS =
+      new CSSResourceReference(ErrorPage.class, "ErrorPage.css");
 
   private final ModalWindowContainer modal;
 
@@ -61,7 +66,7 @@ public class DialogPage extends WebPage {
     this.parent = _parent;
     this.modal = _modal;
     final String cmdName = _model.getCommand().getName();
-    add(new StyleSheetReference("css", getClass(), "DialogPage.css"));
+    this.add(HeaderContributor.forCss(CSS));
 
     this.add(new Label("textLabel", DBProperties.getProperty(cmdName
         + ".Question")));
@@ -133,14 +138,14 @@ public class DialogPage extends WebPage {
       final MenuItemModel model = ((MenuItemModel) getModel());
 
       try {
-        model.executeEvents((String[]) this.parameters.get("selectedRow"));
-      } catch (EFapsException e) {
+        model.executeEvents(this.parameters.get("selectedRow"));
+      } catch (final EFapsException e) {
         throw new RestartResponseException(new ErrorPage(e));
       }
 
       final List<UpdateInterface> updates =
           ((EFapsSession) getSession()).getUpdateBehavior(model.getOid());
-      for (UpdateInterface update : updates) {
+      for (final UpdateInterface update : updates) {
         if (update.isAjaxCallback()) {
           update.setOid(model.getOid());
           update.setMode(model.getMode());

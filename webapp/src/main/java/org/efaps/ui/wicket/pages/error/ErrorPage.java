@@ -24,16 +24,17 @@ import java.text.MessageFormat;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
-import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -49,6 +50,9 @@ public class ErrorPage extends WebPage {
    */
   private static final Logger LOG = LoggerFactory.getLogger(ErrorPage.class);
 
+  private static final CSSResourceReference CSS =
+    new CSSResourceReference(ErrorPage.class, "ErrorPage.css");
+
   public ErrorPage(final Exception _exception) {
 
     LOG.error("ErrorPage was called", _exception);
@@ -61,7 +65,7 @@ public class ErrorPage extends WebPage {
 
     if (_exception instanceof EFapsException) {
 
-      EFapsException eFapsException = (EFapsException) _exception;
+      final EFapsException eFapsException = (EFapsException) _exception;
       errorKey =
           eFapsException.getClassName().getName()
               + "."
@@ -80,7 +84,7 @@ public class ErrorPage extends WebPage {
       }
     }
 
-    StackTraceElement[] traceElements = _exception.getStackTrace();
+    final StackTraceElement[] traceElements = _exception.getStackTrace();
     for (int i = 0; i < traceElements.length; i++) {
       errorAdvanced += traceElements[i].toString() + "\n";
     }
@@ -88,7 +92,7 @@ public class ErrorPage extends WebPage {
         + DBProperties.getProperty("ErrorPage.Titel")
         + "</title>"));
 
-    add(new StyleSheetReference("css", getClass(), "ErrorPage.css"));
+    this.add(HeaderContributor.forCss(CSS));
 
     add(new Label("errorIDLabel", DBProperties
         .getProperty("ErrorPage.Id.Label")));
@@ -100,7 +104,7 @@ public class ErrorPage extends WebPage {
 
     final WebMarkupContainer advanced = new WebMarkupContainer("advanced");
 
-    AjaxLink ajaxlink = new AjaxLink("openclose") {
+    final AjaxLink ajaxlink = new AjaxLink("openclose") {
 
       private boolean expanded = false;
 
