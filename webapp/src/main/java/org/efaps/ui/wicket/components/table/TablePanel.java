@@ -34,10 +34,14 @@ import org.efaps.ui.wicket.components.table.row.RowPanel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.RowModel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 public class TablePanel extends Panel {
 
   private static final long serialVersionUID = 1L;
+
+  public static final CSSResourceReference CSS =
+      new CSSResourceReference(TablePanel.class, "TablePanel.css");
 
   public TablePanel(final String _id, final TableModel _model, final Page _page) {
     super(_id, _model);
@@ -48,7 +52,7 @@ public class TablePanel extends Panel {
     this.setOutputMarkupId(true);
     this.add(new SimpleAttributeModifier("class", "eFapsTableBody"));
 
-    add(HeaderContributor.forCss(getClass(), "TablePanel.css"));
+    add(HeaderContributor.forCss(CSS));
 
     final RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
     add(rowsRepeater);

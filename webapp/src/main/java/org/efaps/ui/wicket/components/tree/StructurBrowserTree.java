@@ -36,6 +36,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree;
 import org.apache.wicket.markup.ComponentTag;
@@ -58,6 +59,7 @@ import org.efaps.ui.wicket.models.StructurBrowserModel.BogusNode;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * This class renders a Tree, wich loads the childs asynchron.<br>
@@ -75,8 +77,8 @@ public class StructurBrowserTree extends DefaultAbstractTree {
   /**
    * ResourceReference to the StyleSheet used for this Tree
    */
-  private static final ResourceReference CSS =
-      new ResourceReference(StructurBrowserTree.class, "StructurTree.css");
+  private static final CSSResourceReference CSS =
+      new CSSResourceReference(StructurBrowserTree.class, "StructurTree.css");
 
   /**
    * instance variable holding the Key to the MenuTree (needed to update it)
@@ -103,6 +105,8 @@ public class StructurBrowserTree extends DefaultAbstractTree {
                              final String _listmenukey) {
     super(_wicketId, _model);
     this.listMenuKey = _listmenukey;
+    this.add(HeaderContributor.forCss(CSS));
+
     this.setRootLess(true);
     // we want a tree that is collapsed and updated asynchron
     final ITreeState treeState = this.getTreeState();
@@ -120,7 +124,9 @@ public class StructurBrowserTree extends DefaultAbstractTree {
    */
   @Override
   protected ResourceReference getCSS() {
-    return CSS;
+    // return null here and set a own HeaderContributor, to gbe able to use
+    // eFaps own CSSResourceReference
+    return null;
   }
 
   /*
@@ -183,7 +189,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
         AbstractCommand cmd = model.getCommand();
 
         if (cmd instanceof Menu) {
-          for (AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
+          for (final AbstractCommand childcmd : ((Menu) cmd).getCommands()) {
             if (childcmd.isDefaultSelected()) {
               cmd = childcmd;
               break;
