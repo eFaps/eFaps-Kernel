@@ -22,8 +22,8 @@ package org.efaps.ui.wicket.pages.content.form;
 
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
@@ -40,6 +40,7 @@ import org.efaps.ui.wicket.models.FormModel.Element;
 import org.efaps.ui.wicket.models.FormModel.ElementType;
 import org.efaps.ui.wicket.models.FormModel.FormElementModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -48,6 +49,9 @@ import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 public class FormPage extends AbstractContentPage {
 
   private static final long serialVersionUID = -3554311414948286302L;
+
+  private static final CSSResourceReference CSS =
+      new CSSResourceReference(FormPage.class, "FormPage.css");
 
   public FormPage(final PageParameters _parameters) {
     this(new FormModel(_parameters), null);
@@ -79,34 +83,33 @@ public class FormPage extends AbstractContentPage {
     this.addComponents();
   }
 
-
-
   protected void addComponents() {
-    add(new StyleSheetReference("webformcss", getClass(), "FormPage.css"));
-    FormContainer form = new FormContainer("form");
+    add(HeaderContributor.forCss(CSS));
+
+    final FormContainer form = new FormContainer("form");
     add(form);
     super.addComponents(form);
 
-    FormModel model = (FormModel) super.getModel();
+    final FormModel model = (FormModel) super.getModel();
 
     if (!model.isInitialised()) {
       model.execute();
     }
 
-    WebMarkupContainer script = new WebMarkupContainer("selectscript");
+    final WebMarkupContainer script = new WebMarkupContainer("selectscript");
     this.add(script);
     script.setVisible(model.isCreateMode()
         || model.isEditMode()
         || model.isSearchMode());
     int i = 0;
-    RepeatingView elementRepeater = new RepeatingView("elementRepeater");
+    final RepeatingView elementRepeater = new RepeatingView("elementRepeater");
     form.add(elementRepeater);
-    for (Element element : model.getElements()) {
+    for (final Element element : model.getElements()) {
       if (element.getType().equals(ElementType.FORM)) {
         elementRepeater.add(new FormPanel(elementRepeater.newChildId(), this,
             model, (FormElementModel) element.getModel()));
       } else if (element.getType().equals(ElementType.HEADING)) {
-        HeadingModel headingmodel = (HeadingModel) element.getModel();
+        final HeadingModel headingmodel = (HeadingModel) element.getModel();
         elementRepeater.add(new HeadingPanel(elementRepeater.newChildId(),
             headingmodel.getLabel(), headingmodel.getLevel()));
       } else if (element.getType().equals(ElementType.TABLE)) {

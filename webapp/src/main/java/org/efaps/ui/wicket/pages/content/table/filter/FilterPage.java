@@ -25,6 +25,7 @@ import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -34,7 +35,6 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.resources.StyleSheetReference;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
@@ -42,6 +42,7 @@ import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -51,15 +52,18 @@ public class FilterPage extends WebPage {
 
   private static final long serialVersionUID = 1L;
 
+  private static final CSSResourceReference CSS =
+      new CSSResourceReference(FilterPage.class, "FilterPage.css");
+
   private static String CHECKBOXNAME = "eFapsFilterSelection";
 
   public FilterPage(final TableModel _model,
                     final ModalWindowContainer _modalwindow) {
     super(_model);
 
-    add(new StyleSheetReference("filtercss", getClass(), "FilterPage.css"));
+    add(HeaderContributor.forCss(CSS));
 
-    FormContainer form = new FormContainer("eFapsForm");
+    final FormContainer form = new FormContainer("eFapsForm");
     this.add(form);
 
     final FilterListView checksList =
@@ -67,7 +71,7 @@ public class FilterPage extends WebPage {
 
     form.add(checksList);
 
-    AjaxButton ajaxbutton = new AjaxButton(Button.LINKID, form) {
+    final AjaxButton ajaxbutton = new AjaxButton(Button.LINKID, form) {
 
       private static final long serialVersionUID = 1L;
 
@@ -96,7 +100,7 @@ public class FilterPage extends WebPage {
     form
         .add(new Button("submitButton", ajaxbutton, "send", Button.ICON_ACCEPT));
 
-    AjaxLink ajaxcancel = new AjaxLink(Button.LINKID) {
+    final AjaxLink ajaxcancel = new AjaxLink(Button.LINKID) {
 
       private static final long serialVersionUID = 1L;
 
@@ -141,7 +145,7 @@ public class FilterPage extends WebPage {
 
     @Override
     protected void populateItem(final ListItem _item) {
-      WebMarkupContainer tr = new WebMarkupContainer("listview_tr");
+      final WebMarkupContainer tr = new WebMarkupContainer("listview_tr");
       _item.add(tr);
 
       if (this.odd) {

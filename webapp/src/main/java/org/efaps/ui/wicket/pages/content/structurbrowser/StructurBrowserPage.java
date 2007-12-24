@@ -21,12 +21,12 @@
 package org.efaps.ui.wicket.pages.content.structurbrowser;
 
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.markup.html.resources.StyleSheetReference;
-
+import org.apache.wicket.behavior.HeaderContributor;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -36,25 +36,29 @@ public class StructurBrowserPage extends AbstractContentPage {
 
   private static final long serialVersionUID = 7564911406648729094L;
 
+  private static final CSSResourceReference CSS =
+      new CSSResourceReference(StructurBrowserPage.class,
+          "StructurBrowserPage.css");
+
   public StructurBrowserPage(final PageParameters _parameters) {
     super(new StructurBrowserModel(_parameters));
     this.addComponents();
   }
 
   protected void addComponents() {
+    add(HeaderContributor.forCss(CSS));
 
-    StructurBrowserModel model = (StructurBrowserModel) super.getModel();
+    final StructurBrowserModel model = (StructurBrowserModel) super.getModel();
     if (!model.isInitialised()) {
       model.execute();
     }
 
-    FormContainer form = new FormContainer("form");
+    final FormContainer form = new FormContainer("form");
     this.add(form);
     super.addComponents(form);
 
     form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", model));
-    this.add(new StyleSheetReference("structurtablecss", getClass(),
-        "StructurBrowserPage.css"));
+
   }
 
 }
