@@ -121,8 +121,8 @@
         <fo:table-header>
           <fo:table-row>
             <xsl:for-each select=".//t_header/t_cell">
-              <fo:table-cell>
-                <fo:block font-weight="bold">
+              <fo:table-cell >
+                <fo:block font-weight="bold" background-color="#008800" color="white">
                   <xsl:value-of select=".//value" />
                 </fo:block>
               </fo:table-cell>
