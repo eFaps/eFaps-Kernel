@@ -20,9 +20,12 @@
 
 package org.efaps.ui.wicket.resources;
 
+import java.util.UUID;
+
 import org.apache.wicket.Application;
 import org.apache.wicket.SharedResources;
 
+import org.efaps.admin.common.SystemAttribute;
 import org.efaps.update.program.CSSUpdate;
 
 /**
@@ -30,7 +33,6 @@ import org.efaps.update.program.CSSUpdate;
  *
  * @author jmox
  * @version $Id$
- *
  */
 public class CSSResource extends AbstractEFapsResource {
 
@@ -51,13 +53,32 @@ public class CSSResource extends AbstractEFapsResource {
       sharedResources.add(_name, null, resource);
     }
     return resource;
+
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.markup.html.WebResource#getCacheDuration()
+   */
+  @Override
+  protected int getCacheDuration() {
+    return SystemAttribute.get(
+        UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"))
+        .getIntegerValue();
   }
 
   @Override
-  protected EFapsResourceStream setResourceStream() {
+  protected EFapsResourceStream setNewResourceStream() {
     return new CSSResourceStream();
   }
 
+  /**
+   * TODO description
+   *
+   * @author jmox
+   * @version $Id$
+   */
   public class CSSResourceStream extends EFapsResourceStream {
 
     private static final long serialVersionUID = 1L;

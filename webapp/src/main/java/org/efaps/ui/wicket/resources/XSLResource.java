@@ -54,10 +54,17 @@ public class XSLResource extends AbstractEFapsResource {
   }
 
   @Override
-  protected EFapsResourceStream setResourceStream() {
+  protected EFapsResourceStream setNewResourceStream() {
     return new XSLResourceStream();
   }
 
+  /**
+   * TODO description
+   *
+   * @author jmox
+   * @version $Id$
+   *
+   */
   public class XSLResourceStream extends EFapsResourceStream {
 
     private static final long serialVersionUID = 1L;

@@ -29,6 +29,7 @@ import org.apache.wicket.protocol.http.PageExpiredException;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebRequestCycle;
+import org.apache.wicket.session.ISessionStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +38,8 @@ import org.efaps.ui.wicket.pages.login.LoginPage;
 
 /**
  * This class extends the
- * {@link org.apache.wicket.protocol.http.WebRequestCycle} only to throw a own
- * ErrorPage.
+ * {@link org.apache.wicket.protocol.http.WebRequestCycle} to throw a own
+ * ErrorPage and open/close the Context.
  *
  * @author jmox
  * @version $Id$
@@ -54,6 +55,41 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
   public EFapsWebRequestCycle(WebApplication application, WebRequest request,
                               Response response) {
     super(application, request, response);
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.RequestCycle#onBeginRequest()
+   */
+  @Override
+  protected void onBeginRequest() {
+    final EFapsSession session = getEFapsSession();
+    if (session != null) {
+      session.openContext();
+    }
+    super.onBeginRequest();
+  }
+
+  private EFapsSession getEFapsSession() {
+    final ISessionStore sessionStore = this.getApplication().getSessionStore();
+    final EFapsSession session =
+        (EFapsSession) sessionStore.lookup(this.request);
+    return session;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.RequestCycle#onEndRequest()
+   */
+  @Override
+  protected void onEndRequest() {
+    super.onEndRequest();
+    final EFapsSession session = getEFapsSession();
+    if (session != null) {
+      session.closeContext();
+    }
   }
 
   /*
@@ -89,4 +125,5 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
       return new ErrorPage(_exception);
     }
   }
+
 }

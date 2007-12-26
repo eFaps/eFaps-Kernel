@@ -168,39 +168,6 @@ public class EFapsSession extends WebSession {
   }
 
   /**
-   * on attach a Context will be opened if a User is logged in
-   *
-   * @see #openContext()
-   * @see org.apache.wicket.Session#attach()
-   */
-  @Override
-  protected void attach() {
-    super.attach();
-    if (this.isLogedIn() && (RequestCycle.get() != null)) {
-      openContext();
-    }
-  }
-
-  /**
-   * on detach the Context will be closed if open
-   *
-   * @see #closeContext()
-   * @see org.apache.wicket.Session#detach()
-   */
-  @Override
-  protected void detach() {
-    super.detach();
-    try {
-      if (this.isLogedIn() && !Context.isTMNoTransaction()) {
-        closeContext();
-      }
-    } catch (EFapsException e) {
-      LOG.error("could not read the Status of the TransactionManager", e);
-    }
-
-  }
-
-  /**
    * This Method stores a Component in the Cache
    *
    * @param _key
@@ -357,7 +324,7 @@ public class EFapsSession extends WebSession {
           Context.rollback();
         }
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("could not check name and password", e);
     }
 
@@ -372,27 +339,29 @@ public class EFapsSession extends WebSession {
    * @see #attach()
    */
   @SuppressWarnings("unchecked")
-  private void openContext() {
-    try {
-      if (!Context.isTMActive()) {
-        final Map<String, String[]> parameter =
-            RequestCycle.get().getRequest().getParameterMap();
+  public void openContext() {
+    if (isLogedIn()) {
+      try {
+        if (!Context.isTMActive()) {
+          final Map<String, String[]> parameter =
+              RequestCycle.get().getRequest().getParameterMap();
 
-        Context.begin(this.userName, super.getLocale(), this.sessionAttributes,
-            parameter, null);
+          Context.begin(this.userName, super.getLocale(),
+              this.sessionAttributes, parameter, null);
 
-        if (Context.getThreadContext().containsUserAttribute(
-            UserAttributesDefinition.LOCALE.name)) {
-          final Locale locale =
-              new Locale(Context.getThreadContext().getUserAttribute(
-                  UserAttributesDefinition.LOCALE.name));
-          Context.getThreadContext().setLocale(locale);
+          if (Context.getThreadContext().containsUserAttribute(
+              UserAttributesDefinition.LOCALE.name)) {
+            final Locale locale =
+                new Locale(Context.getThreadContext().getUserAttribute(
+                    UserAttributesDefinition.LOCALE.name));
+            Context.getThreadContext().setLocale(locale);
+          }
+
         }
-
+      } catch (final EFapsException e) {
+        LOG.error("could not initialise the context", e);
+        throw new RestartResponseException(new ErrorPage(e));
       }
-    } catch (EFapsException e) {
-      LOG.error("could not initialise the context", e);
-      throw new RestartResponseException(new ErrorPage(e));
     }
   }
 
@@ -402,20 +371,24 @@ public class EFapsSession extends WebSession {
    *
    * @see #detach()
    */
-  private void closeContext() {
-    try {
-      if (Context.isTMActive()) {
-        Context.commit();
-      } else {
-        Context.rollback();
+  public void closeContext() {
+    if (isLogedIn()) {
+
+      try {
+        if (!Context.isTMNoTransaction()) {
+          if (Context.isTMActive()) {
+            Context.commit();
+          } else {
+            Context.rollback();
+          }
+        }
+      } catch (final SecurityException e) {
+        throw new RestartResponseException(new ErrorPage(e));
+      } catch (final IllegalStateException e) {
+        throw new RestartResponseException(new ErrorPage(e));
+      } catch (final EFapsException e) {
+        throw new RestartResponseException(new ErrorPage(e));
       }
-    } catch (SecurityException e) {
-      throw new RestartResponseException(new ErrorPage(e));
-    } catch (IllegalStateException e) {
-      throw new RestartResponseException(new ErrorPage(e));
-    } catch (EFapsException e) {
-      throw new RestartResponseException(new ErrorPage(e));
     }
   }
-
 }

@@ -26,13 +26,19 @@ import java.io.InputStream;
 import java.util.Locale;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.wicket.Application;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.WebResource;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.time.Time;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
+import org.efaps.ui.wicket.EFapsSession;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
@@ -45,6 +51,8 @@ public abstract class AbstractEFapsResource extends WebResource {
 
   private static final long serialVersionUID = 1L;
 
+  private static final Logger LOG = LoggerFactory.getLogger(EFapsSession.class);
+
   private final String name;
 
   private final String type;
@@ -55,45 +63,16 @@ public abstract class AbstractEFapsResource extends WebResource {
     super();
     this.name = _name;
     this.type = _type;
-    this.stream = setResourceStream();
-    this.stream.setInputStream(getFromDB());
+    this.stream = setNewResourceStream();
   }
 
-  protected abstract EFapsResourceStream setResourceStream();
-
-
-
-
-
-  protected InputStream getFromDB() {
-    InputStream ret = null;
-    try {
-      final SearchQuery query = new SearchQuery();
-      query.setQueryTypes(this.type);
-      query.addSelect("OID");
-      query.addWhereExprMatchValue("Name", this.name);
-      query.execute();
-      if (query.next()) {
-        final Checkout checkout = new Checkout(query.get("OID").toString());
-        final InputStream tmp = checkout.execute();
-        ret = new ByteArrayInputStream(IOUtils.toByteArray(tmp));
-        tmp.close();
-        checkout.close();
-      }
-
-    } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-
-    return ret;
-  }
+  protected abstract EFapsResourceStream setNewResourceStream();
 
   @Override
   public IResourceStream getResourceStream() {
+    if (this.stream == null) {
+      this.stream = setNewResourceStream();
+    }
     return this.stream;
   }
 
@@ -107,43 +86,83 @@ public abstract class AbstractEFapsResource extends WebResource {
 
     private static final long serialVersionUID = 1L;
 
-    private InputStream inputstream;
+    private transient InputStream inputStream;
 
-    private final Time time;
+    private Time time;
+
+    private byte[] data;
 
     public EFapsResourceStream() {
       this.time = Time.now();
     }
 
-    public void setInputStream(final InputStream _inputstream) {
-      this.inputstream = _inputstream;
+    protected void setData() {
+      try {
+        final SearchQuery query = new SearchQuery();
+        query.setQueryTypes(AbstractEFapsResource.this.type);
+        query.addSelect("OID");
+        query.addWhereExprMatchValue("Name", AbstractEFapsResource.this.name);
+        query.execute();
+        if (query.next()) {
+          final Checkout checkout = new Checkout(query.get("OID").toString());
+          final InputStream tmp = checkout.execute();
+          this.data = IOUtils.toByteArray(tmp);
+          tmp.close();
+          checkout.close();
+          if (LOG.isInfoEnabled()) {
+            LOG.info("loaded: " + AbstractEFapsResource.this.name);
+          }
+        }
+      } catch (final EFapsException e) {
+        throw new RestartResponseException(new ErrorPage(e));
+      } catch (final IOException e) {
+        throw new RestartResponseException(new ErrorPage(e));
+      }
     }
 
     public void close() throws IOException {
+      if (this.inputStream != null) {
+        this.inputStream.close();
+        this.inputStream = null;
+      }
     }
 
     public InputStream getInputStream() throws ResourceStreamNotFoundException {
-      return this.inputstream;
+      if (this.inputStream == null) {
+        checkData(false);
+        this.inputStream = new ByteArrayInputStream(this.data);
+      }
+      return this.inputStream;
     }
 
     public Locale getLocale() {
-      // TODO Auto-generated method stub
       return null;
     }
 
     public long length() {
-
-      return -1;
+      checkData(true);
+      return this.data != null ? this.data.length : 0;
     }
 
     public void setLocale(Locale locale) {
-      // TODO Auto-generated method stub
-
+      // not used here
     }
 
     public Time lastModifiedTime() {
       return this.time;
     }
 
+    private void checkData(final boolean _checkDuration) {
+      if ((Application.DEVELOPMENT.equals(Application.get()
+          .getConfigurationType()) || ((Time.now())
+          .subtract(lastModifiedTime()).getMilliseconds() / 1000 > getCacheDuration()))
+          && _checkDuration) {
+        this.time = Time.now();
+        setData();
+      }
+      if (this.data == null) {
+        setData();
+      }
+    }
   }
 }

@@ -53,7 +53,7 @@ public class DialogPage extends WebPage {
   private static final long serialVersionUID = 1L;
 
   private static final CSSResourceReference CSS =
-      new CSSResourceReference(ErrorPage.class, "ErrorPage.css");
+      new CSSResourceReference(DialogPage.class, "DialogPage.css");
 
   private final ModalWindowContainer modal;
 
