@@ -30,8 +30,16 @@
   </filter>
 
   <filter path="/*"
+          name="BasicAuthenticationFilter"
+          classname="org.efaps.ui.wicket.filter.BasicAuthenticationFilter">
+    <parameter key="login.name">wicket:eFaps:org.efaps.ui.wicket.LoginAttributeName</parameter>
+  </filter>
+
+  <filter path="/*"
           name="eFapsTransactionFilter"
-          classname="org.efaps.ui.wicket.filter.TransactionFilter"/>
+          classname="org.efaps.ui.wicket.filter.TransactionFilter">
+    <parameter key="login.name">wicket:eFaps:org.efaps.ui.wicket.LoginAttributeName</parameter>
+  </filter>
 
   <servlet path="/*"
           name="eFapsServlet"
@@ -52,3 +60,5 @@
           
 
 </server>
+
+

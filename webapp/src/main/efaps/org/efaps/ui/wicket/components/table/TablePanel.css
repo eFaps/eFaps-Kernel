@@ -3,7 +3,6 @@
 }
 
 .eFapsTableHeader,.eFapsTableRowOdd,.eFapsTableRowEven {
-  line-height: 1, 6 em;
   overflow: hidden;
   min-height: 18px;
   height: 18px;

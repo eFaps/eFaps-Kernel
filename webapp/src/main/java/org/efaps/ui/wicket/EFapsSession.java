@@ -51,6 +51,9 @@ public class EFapsSession extends WebSession {
 
   private static final long serialVersionUID = 1884548064760514909L;
 
+  public static final String LOGIN_ATTRIBUTE_NAME =
+      "org.efaps.ui.wicket.LoginAttributeName";
+
   /**
    * Logger for this class
    */
@@ -251,6 +254,7 @@ public class EFapsSession extends WebSession {
     final String[] pwd = (String[]) parameter.get("password");
     if (checkLogin(name[0], pwd[0])) {
       this.userName = name[0];
+      setAttribute(LOGIN_ATTRIBUTE_NAME, this.userName);
     } else {
       this.userName = null;
       this.sessionAttributes.clear();
@@ -269,6 +273,7 @@ public class EFapsSession extends WebSession {
       ((UserAttributesSet) this.sessionAttributes
           .get(UserAttributesSet.CONTEXTMAPKEY)).storeInDb();
       this.sessionAttributes.clear();
+      removeAttribute(LOGIN_ATTRIBUTE_NAME);
     }
     closeContext();
   }

@@ -100,25 +100,25 @@ public class ImageServlet extends HttpServlet  {
         loadCache();
       }
 
-      ImageMapper imageMapper = cache.get(imgName);
+      final ImageMapper imageMapper = cache.get(imgName);
 
       if (imageMapper != null)  {
-        Checkout checkout = new Checkout(imageMapper.oid);
+        final Checkout checkout = new Checkout(imageMapper.oid);
 
         _res.setContentType(getServletContext().getMimeType(imageMapper.file));
         _res.addHeader("Content-Disposition", "inline; filename=\"" + imageMapper.file + "\"");
 
-        checkout.executeWithoutAccessCheck(_res.getOutputStream());
+        checkout.execute(_res.getOutputStream());
 
         checkout.close();
       }
-    } catch (IOException e)  {
+    } catch (final IOException e)  {
       LOG.error("while reading history data", e);
       throw e;
-    } catch (CacheReloadException e)  {
+    } catch (final CacheReloadException e)  {
       LOG.error("while reading history data", e);
       throw new ServletException(e);
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       LOG.error("while reading history data", e);
       throw new ServletException(e);
     }
@@ -136,7 +136,7 @@ public class ImageServlet extends HttpServlet  {
   private static void loadCache() throws CacheReloadException  {
     try  {
       synchronized(cache)  {
-        SearchQuery query = new SearchQuery();
+        final SearchQuery query = new SearchQuery();
         query.setQueryTypes(AbstractAdminObject.EFapsClassName.IMAGE.name);
         query.addSelect("Name");
         query.addSelect("FileName");
@@ -144,14 +144,14 @@ public class ImageServlet extends HttpServlet  {
         query.executeWithoutAccessCheck();
 
         while (query.next())  {
-          String name = (String) query.get("Name");
-          String file = (String) query.get("FileName");
-          String oid  = (String) query.get("OID");
+          final String name = (String) query.get("Name");
+          final String file = (String) query.get("FileName");
+          final String oid  = (String) query.get("OID");
           cache.add(new ImageMapper(name, file, oid));
         }
         query.close();
       }
-    } catch (EFapsException e)  {
+    } catch (final EFapsException e)  {
       throw new CacheReloadException("could not initialise "
                                      + "image servlet cache");
     }
