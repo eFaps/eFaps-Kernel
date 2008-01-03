@@ -99,5 +99,11 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
       modal.show(_target);
 
     }
+
+    @Override
+    protected CharSequence getPreconditionScript() {
+      return null;
+    }
   }
+
 }
