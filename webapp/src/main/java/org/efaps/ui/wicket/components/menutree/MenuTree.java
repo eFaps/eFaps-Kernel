@@ -56,7 +56,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
-import org.efaps.ui.wicket.components.StaticImageComponent;
+import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -218,7 +218,7 @@ public class MenuTree extends AbstractTree {
       if (imageUrl == null) {
         link.add(new WebMarkupContainer("icon").setVisible(false));
       } else {
-        link.add(new StaticImageComponent("icon", new Model(imageUrl)));
+        link.add(new StaticImageComponent("icon", imageUrl));
       }
 
       if (node.isRoot()) {

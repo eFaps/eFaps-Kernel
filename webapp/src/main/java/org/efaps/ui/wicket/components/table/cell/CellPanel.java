@@ -29,7 +29,7 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.LabelComponent;
-import org.efaps.ui.wicket.components.StaticImageComponent;
+import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.cell.TableCellModel;
 
@@ -98,8 +98,8 @@ public class CellPanel extends Panel {
       if (cellmodel.getIcon() == null) {
         celllink.add(new WebMarkupContainer("linkicon").setVisible(false));
       } else {
-        celllink.add(new StaticImageComponent("linkicon", new Model(cellmodel
-            .getIcon())));
+        celllink.add(new StaticImageComponent("linkicon", cellmodel
+            .getIcon()));
       }
       this.add(new WebMarkupContainer("icon").setVisible(false));
       this.add(new WebMarkupContainer("label").setVisible(false));
@@ -110,7 +110,7 @@ public class CellPanel extends Panel {
         this.add(new WebMarkupContainer("icon").setVisible(false));
       } else {
         this.add(new StaticImageComponent("icon",
-            new Model(cellmodel.getIcon())));
+            cellmodel.getIcon()));
       }
 
     }

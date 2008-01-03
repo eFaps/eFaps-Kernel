@@ -18,27 +18,33 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components;
-
-import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.WebComponent;
-import org.apache.wicket.model.IModel;
+package org.efaps.ui.wicket.components.efapscontent;
 
 /**
- * @author jmo
+ * TODO description
+ *
+ * @author jmox
  * @version $Id$
  */
-public class StaticImageComponent extends WebComponent {
+public class EFapsContentReference {
 
-  private static final long serialVersionUID = 1L;
+  private final String name;
 
-  public StaticImageComponent(String id, IModel model) {
-    super(id, model);
-
+  public EFapsContentReference(final Class<?> _scope, final String _name) {
+    this(_scope.getPackage().getName() + "." + _name);
   }
 
-  protected void onComponentTag(ComponentTag tag) {
-    checkComponentTag(tag, "img");
-    tag.put("src", getModelObjectAsString());
+  public EFapsContentReference(final String _name) {
+    this.name = _name;
   }
+
+  /**
+   * This is the getter method for the instance variable {@link #name}.
+   *
+   * @return value of instance variable {@link #name}
+   */
+  public String getName() {
+    return this.name;
+  }
+
 }

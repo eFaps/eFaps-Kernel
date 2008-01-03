@@ -29,13 +29,14 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.LabelComponent;
-import org.efaps.ui.wicket.components.StaticImageComponent;
+import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
 import org.efaps.ui.wicket.models.cell.FormCellModel;
 
-
 /**
+ * TODO description
+ *
  * @author jmox
  * @version $Id$
  */
@@ -50,7 +51,7 @@ public class ValueCellPanel extends Panel {
       if (_model.getIcon() == null) {
         this.add(new WebComponent("icon").setVisible(false));
       } else {
-        this.add(new StaticImageComponent("icon", new Model(_model.getIcon())));
+        this.add(new StaticImageComponent("icon", _model.getIcon()));
       }
 
       this.add(new LabelComponent("label", new Model(_model.getCellValue())));
@@ -74,8 +75,7 @@ public class ValueCellPanel extends Panel {
       if (_model.getIcon() == null) {
         link.add(new WebComponent("linkIcon").setVisible(false));
       } else {
-        link.add(new StaticImageComponent("linkIcon", new Model(_model
-            .getIcon())));
+        link.add(new StaticImageComponent("linkIcon", _model.getIcon()));
       }
       link
           .add(new LabelComponent("linkLabel", new Model(_model.getCellValue())));

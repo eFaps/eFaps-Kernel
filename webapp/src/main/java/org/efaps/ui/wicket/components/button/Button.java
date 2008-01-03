@@ -20,12 +20,13 @@
 
 package org.efaps.ui.wicket.components.button;
 
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
+
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 
 /**
  * @author jmox
@@ -37,14 +38,14 @@ public class Button extends Panel {
 
   public static final String LINKID = "buttonLink";
 
-  public static final ResourceReference ICON_CANCEL =
-      new ResourceReference(Button.class, "cancel.png");
+  public static final EFapsContentReference ICON_CANCEL =
+      new EFapsContentReference(Button.class, "cancel.png");
 
-  public static final ResourceReference ICON_ACCEPT =
-      new ResourceReference(Button.class, "accept.png");
+  public static final EFapsContentReference ICON_ACCEPT =
+      new EFapsContentReference(Button.class, "accept.png");
 
-  public static final ResourceReference ICON_NEXT =
-      new ResourceReference(Button.class, "next.png");
+  public static final EFapsContentReference ICON_NEXT =
+      new EFapsContentReference(Button.class, "next.png");
 
   private final ButtonImage imagediv = new ButtonImage("icon");
 
@@ -54,7 +55,7 @@ public class Button extends Panel {
   }
 
   public Button(final String _wicketId, final WebMarkupContainer _link,
-                final String _label, final ResourceReference _icon) {
+                final String _label, final EFapsContentReference _icon) {
     super(_wicketId);
     this.add(_link);
     _link.add(new ButtonStyleBehavior());
@@ -65,7 +66,7 @@ public class Button extends Panel {
     _link.add(this.imagediv);
 
     if (_icon != null) {
-      this.imagediv.setImageResourceReference(_icon);
+      this.imagediv.setReference(_icon);
     }
 
   }
@@ -74,9 +75,8 @@ public class Button extends Panel {
     return LINKID;
   }
 
-  public void setIconReference(final ResourceReference _icon) {
-    this.imagediv.setImageResourceReference(_icon);
-
+  public void setIconReference(final EFapsContentReference _icon) {
+    this.imagediv.setReference(_icon);
   }
 
   /*
@@ -92,22 +92,29 @@ public class Button extends Panel {
     super.onBeforeRender();
   }
 
-  public class ButtonImage extends WebComponent {
+  public class ButtonImage extends StaticImageComponent {
 
     private static final long serialVersionUID = 1L;
 
-    private ResourceReference reference;
+    private boolean reference = false;
 
-    public ButtonImage(String id) {
-      super(id);
-    }
-
-    public void setImageResourceReference(final ResourceReference _reference) {
-      this.reference = _reference;
+    public ButtonImage(final String _wicketId) {
+      super(_wicketId);
     }
 
     public boolean hasReference() {
-      return this.reference != null;
+      return this.reference;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.efaps.ui.wicket.components.efapscontent.StaticImageComponent#setReference(org.efaps.ui.wicket.components.efapscontent.EFapsContentReference)
+     */
+    @Override
+    public void setReference(final EFapsContentReference _reference) {
+      super.setReference(_reference);
+      this.reference = true;
     }
 
     /*
@@ -117,16 +124,11 @@ public class Button extends Panel {
      */
     @Override
     protected void onComponentTag(final ComponentTag _tag) {
-
-      super.onComponentTag(_tag);
-      _tag
-          .put(
-              "style",
-              "background-repeat: no-repeat; " +
-              "background-position: left top; " +
-              "background-image:url("
-                  + this.getRequestCycle().urlFor(this.reference)
-                  + ")");
+      _tag.put("style", "background-repeat: no-repeat; "
+          + "background-position: left top; "
+          + "background-image:url("
+          + super.getUrl()
+          + ")");
     }
 
   }

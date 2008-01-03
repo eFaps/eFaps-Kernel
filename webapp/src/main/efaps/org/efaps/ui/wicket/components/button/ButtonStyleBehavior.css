@@ -1,6 +1,6 @@
 .eFapsButton {
   background-color: transparent;
-  background-image: url(button-rb.png);
+  background-image: url(../../servlet/image/org.efaps.ui.wicket.components.button.button-rb.png);
   background-position: right top;
   background-repeat: no-repeat;
   border-style: none;
@@ -14,7 +14,7 @@
 }
 
 .efapsButtonLeftBorder {
-  background-image: url(button-lb.png);
+  background-image: url(../../servlet/image/org.efaps.ui.wicket.components.button.button-lb.png);
   background-position: left top;
   background-repeat: no-repeat;
   background-color: transparent;
