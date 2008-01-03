@@ -33,7 +33,7 @@
   background-color: red;
   color: black;
   font-style: italic;
-  border-style:double;
+  border-style: double;
   border-color: black;
 }
 
@@ -42,7 +42,7 @@
   padding-right: 4px;
   white-space: nowrap;
   background-color: white;
-  background-image: url("dotted-line.png");
+  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.form.dotted-line.png");
   background-repeat: repeat-x;
   background-position: bottom;
   border-right: 1px solid #ddd;
