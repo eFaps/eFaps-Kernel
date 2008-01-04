@@ -73,7 +73,7 @@ public class CSSCompiler {
 
       final Checkout checkout =
           new Checkout(Type.get(TYPE_CSS).getId() + "." + entry.getValue());
-      // TODO check character encoding!!
+      // TODO check character encoding!!UTF-8
       final BufferedReader in =
           new BufferedReader(new InputStreamReader(checkout.execute()));
       final StringBuffer buffer = new StringBuffer();

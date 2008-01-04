@@ -20,9 +20,11 @@
 
 package org.efaps.ui.servlet;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
-
+import java.util.zip.GZIPOutputStream;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -98,13 +100,28 @@ public class StaticContentServlet extends HttpServlet {
         final Checkout checkout = new Checkout(imageMapper.oid);
 
         _res.setContentType(getServletContext().getMimeType(imageMapper.file));
-        _res.addHeader("Content-Disposition", "inline; filename=\""
-            + imageMapper.file
-            + "\"");
+        _res.setDateHeader("Last-Modified", imageMapper.time);
+        _res.setDateHeader("Expires", System.currentTimeMillis()
+            + (3600 * 1000));
+        _res.setHeader("Cache-Control", "max-age=3600");
 
-        checkout.execute(_res.getOutputStream());
+        if (supportsCompression(_req)) {
+          _res.setHeader("Content-Encoding", "gzip");
 
-        checkout.close();
+          final ByteArrayOutputStream bytearray = new ByteArrayOutputStream();
+          final GZIPOutputStream zout = new GZIPOutputStream(bytearray);
+          checkout.execute(zout);
+          zout.close();
+          final byte[] b = bytearray.toByteArray();
+          bytearray.close();
+          _res.getOutputStream().write(b);
+          checkout.close();
+
+        } else {
+          _res.setContentLength((int) imageMapper.filelength);
+          checkout.execute(_res.getOutputStream());
+        }
+
       }
     } catch (final IOException e) {
       LOG.error("while reading history data", e);
@@ -116,6 +133,15 @@ public class StaticContentServlet extends HttpServlet {
       LOG.error("while reading history data", e);
       throw new ServletException(e);
     }
+  }
+
+  private boolean supportsCompression(HttpServletRequest _req) {
+    boolean ret = false;
+    final String accencoding = _req.getHeader("Accept-Encoding");
+    if (accencoding != null) {
+      ret = accencoding.indexOf("gzip") >= 0;
+    }
+    return ret;
   }
 
   /**
@@ -135,16 +161,20 @@ public class StaticContentServlet extends HttpServlet {
         query.setQueryTypes("Admin_Program_CSSCompiled");
         query.addSelect("Name");
         query.addSelect("FileName");
-
         query.addSelect("OID");
+        query.addSelect("FileLength");
+        query.addSelect("Modified");
+
         query.executeWithoutAccessCheck();
 
         while (query.next()) {
           final String name = (String) query.get("Name");
           final String file = (String) query.get("FileName");
           final String oid = (String) query.get("OID");
-
-          cache.add(new ContentMapper(name, file, oid));
+          final Long filelength = (Long) query.get("FileLength");
+          final Date time = (Date) query.get("Modified");
+          cache.add(new ContentMapper(name, file, oid, filelength, time
+              .getTime()));
         }
         query.close();
       }
@@ -175,6 +205,10 @@ public class StaticContentServlet extends HttpServlet {
      */
     private final String oid;
 
+    private final long filelength;
+
+    private final Long time;
+
     /**
      * @param _name
      *                administrational name of the image
@@ -184,11 +218,13 @@ public class StaticContentServlet extends HttpServlet {
      *                object id of the image
      */
     private ContentMapper(final String _name, final String _file,
-                          final String _oid) {
+                          final String _oid, final Long _filelength,
+                          final Long _time) {
       this.name = _name;
       this.oid = _oid;
       this.file = _file;
-
+      this.filelength = _filelength;
+      this.time = _time;
     }
 
     /**

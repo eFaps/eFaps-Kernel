@@ -21,6 +21,7 @@
 package org.efaps.ui.servlet;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -42,18 +43,16 @@ import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * The servlet checks out user interface images depending on the
- * administrational name (not file name).<br/>
- * E.g.:<br/>
+ * administrational name (not file name).<br/> E.g.:<br/>
  * <code>/efaps/servlet/image/Admin_UI_Image</code>.
  *
  * @author tmo
  * @version $Id:ImageServlet.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ImageServlet extends HttpServlet  {
+public class ImageServlet extends HttpServlet {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
-
 
   private static final long serialVersionUID = -2469349574113406199L;
 
@@ -65,18 +64,19 @@ public class ImageServlet extends HttpServlet  {
   /**
    * The cache stores all instance of class {@link #ImageMappe}.
    */
-  private static Cache < ImageMapper > cache = new Cache < ImageMapper > (
-    new CacheReloadInterface()  {
-        public int priority()  {
+  private static Cache<ImageMapper> cache =
+      new Cache<ImageMapper>(new CacheReloadInterface() {
+
+        public int priority() {
           return 20000;
         };
-        public void reloadCache() throws CacheReloadException  {
+
+        public void reloadCache() throws CacheReloadException {
           ImageServlet.loadCache();
         };
-    }
-  );
+      });
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -84,41 +84,50 @@ public class ImageServlet extends HttpServlet  {
    * returns them in a output stream to the web client. The name of the user
    * interface image object must given as name at the end of the path.
    *
-   * @param _req request variable
-   * @param _res response variable
+   * @param _req
+   *                request variable
+   * @param _res
+   *                response variable
    * @see #PARAM_ATTRNAME
    * @see #PARAM_OID
    */
   @Override
-  protected void doGet(HttpServletRequest _req, HttpServletResponse _res) throws ServletException, IOException  {
+  protected void doGet(HttpServletRequest _req, HttpServletResponse _res)
+                                                                         throws ServletException,
+                                                                         IOException {
     String imgName = _req.getRequestURI();
 
     imgName = imgName.substring(imgName.lastIndexOf('/') + 1);
 
-    try  {
-      if (!cache.hasEntries())  {
+    try {
+      if (!cache.hasEntries()) {
         loadCache();
       }
 
       final ImageMapper imageMapper = cache.get(imgName);
 
-      if (imageMapper != null)  {
+      if (imageMapper != null) {
         final Checkout checkout = new Checkout(imageMapper.oid);
 
         _res.setContentType(getServletContext().getMimeType(imageMapper.file));
-        _res.addHeader("Content-Disposition", "inline; filename=\"" + imageMapper.file + "\"");
+        _res.setContentLength((int) imageMapper.filelength);
+        _res.setDateHeader("Last-Modified", imageMapper.time);
+
+        _res.setDateHeader("Expires", System.currentTimeMillis()
+            + (3600 * 1000));
+        _res.setHeader("Cache-Control", "max-age=3600");
 
         checkout.execute(_res.getOutputStream());
 
         checkout.close();
       }
-    } catch (final IOException e)  {
+    } catch (final IOException e) {
       LOG.error("while reading history data", e);
       throw e;
-    } catch (final CacheReloadException e)  {
+    } catch (final CacheReloadException e) {
       LOG.error("while reading history data", e);
       throw new ServletException(e);
-    } catch (final Exception e)  {
+    } catch (final Exception e) {
       LOG.error("while reading history data", e);
       throw new ServletException(e);
     }
@@ -126,34 +135,40 @@ public class ImageServlet extends HttpServlet  {
 
   /**
    * A query is made for all user interface images and caches the name, file
-   * name and object id. The cache is needed to reference from an image name
-   * to the object id and the original file name.
+   * name and object id. The cache is needed to reference from an image name to
+   * the object id and the original file name.
    *
-   * @throws Exception if searchquery fails
+   * @throws Exception
+   *                 if searchquery fails
    * @see #cache
    * @see #ImageMapper
    */
-  private static void loadCache() throws CacheReloadException  {
-    try  {
-      synchronized(cache)  {
+  private static void loadCache() throws CacheReloadException {
+    try {
+      synchronized (cache) {
         final SearchQuery query = new SearchQuery();
         query.setQueryTypes(AbstractAdminObject.EFapsClassName.IMAGE.name);
         query.addSelect("Name");
         query.addSelect("FileName");
         query.addSelect("OID");
+        query.addSelect("FileLength");
+        query.addSelect("Modified");
         query.executeWithoutAccessCheck();
 
-        while (query.next())  {
+        while (query.next()) {
           final String name = (String) query.get("Name");
           final String file = (String) query.get("FileName");
-          final String oid  = (String) query.get("OID");
-          cache.add(new ImageMapper(name, file, oid));
+          final String oid = (String) query.get("OID");
+          final Long filelength = (Long) query.get("FileLength");
+          final Date time = (Date) query.get("Modified");
+          cache
+              .add(new ImageMapper(name, file, oid, filelength, time.getTime()));
         }
         query.close();
       }
-    } catch (final EFapsException e)  {
+    } catch (final EFapsException e) {
       throw new CacheReloadException("could not initialise "
-                                     + "image servlet cache");
+          + "image servlet cache");
     }
   }
 
@@ -161,7 +176,7 @@ public class ImageServlet extends HttpServlet  {
    * The class is used to map from the administrational image name to the image
    * file name and image object id.
    */
-  private static class ImageMapper implements CacheObjectInterface  {
+  private static class ImageMapper implements CacheObjectInterface {
 
     /**
      * The instance variable stores the administational name of the image.
@@ -178,15 +193,26 @@ public class ImageServlet extends HttpServlet  {
      */
     private final String oid;
 
+    private final long filelength;
+
+    private final Long time;
+
     /**
-     * @param _name   administrational name of the image
-     * @param _file   file name of the image
-     * @param _oid    object id of the image
+     * @param _name
+     *                administrational name of the image
+     * @param _file
+     *                file name of the image
+     * @param _oid
+     *                object id of the image
      */
-    private ImageMapper(final String _name, final String _file, final String _oid)  {
+    private ImageMapper(final String _name, final String _file,
+                        final String _oid, final Long _filelength,
+                        final Long _time) {
       this.name = _name;
       this.oid = _oid;
       this.file = _file;
+      this.filelength = _filelength;
+      this.time = _time;
     }
 
     /**
@@ -195,7 +221,7 @@ public class ImageServlet extends HttpServlet  {
      * @return value of instance variable {@link #name}
      * @see #name
      */
-    public String getName()  {
+    public String getName() {
       return this.name;
     }
 
@@ -205,7 +231,7 @@ public class ImageServlet extends HttpServlet  {
      *
      * @return always <code>null</code>
      */
-    public UUID getUUID()  {
+    public UUID getUUID() {
       return null;
     }
 
@@ -215,7 +241,7 @@ public class ImageServlet extends HttpServlet  {
      *
      * @return always <code>0</code>
      */
-    public long getId()  {
+    public long getId() {
       return 0;
     }
   }
