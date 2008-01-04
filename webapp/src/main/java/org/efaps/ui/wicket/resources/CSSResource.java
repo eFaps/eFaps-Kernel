@@ -26,7 +26,6 @@ import org.apache.wicket.Application;
 import org.apache.wicket.SharedResources;
 
 import org.efaps.admin.common.SystemAttribute;
-import org.efaps.update.program.CSSUpdate;
 
 /**
  * TODO description
@@ -39,7 +38,7 @@ public class CSSResource extends AbstractEFapsResource {
   private static final long serialVersionUID = 1L;
 
   public CSSResource(final String _name) {
-    super(_name, CSSUpdate.TYPENAME);
+    super(_name, "Admin_Program_CSSCompiled");
   }
 
   public static CSSResource get(final String _name) {

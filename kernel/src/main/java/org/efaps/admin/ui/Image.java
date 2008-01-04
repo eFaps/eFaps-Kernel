@@ -28,14 +28,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.servlet.RequestHandler;
+import org.efaps.util.RequestHandler;
 
 /**
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class Image extends AbstractUserInterfaceObject  {
+public class Image extends AbstractUserInterfaceObject {
 
   /**
    * The static variable defines the class name in eFaps.
@@ -55,33 +55,42 @@ public class Image extends AbstractUserInterfaceObject  {
   /**
    * Constructor to set the id and name of the command object.
    *
-   * @param _id   id  of the command to set
-   * @param _name name of the command to set
+   * @param _id
+   *                id of the command to set
+   * @param _name
+   *                name of the command to set
    */
-  public Image(final Long _id, final String _uuid, final String _name)  {
-    super(_id, _uuid, _name );
+  public Image(final Long _id, final String _uuid, final String _name) {
+    super(_id, _uuid, _name);
   }
 
   /**
    * Sets the link properties for this object.
    *
-   * @param _linkType type of the link property
-   * @param _toId     to id
-   * @param _toType   to type
-   * @param _toName   to name
+   * @param _linkType
+   *                type of the link property
+   * @param _toId
+   *                to id
+   * @param _toType
+   *                to type
+   * @param _toName
+   *                to name
    */
   @Override
   protected void setLinkProperty(final EFapsClassName _linkType,
                                  final long _toId,
                                  final EFapsClassName _toType,
-                                 final String _toName)  throws Exception {
+                                 final String _toName) throws Exception {
     switch (_linkType) {
       case LINK_ICONISTYPEICONFOR:
         final Type type = Type.get(_toId);
-        if (type == null)  {
-          LOG.error("Image '" + this.getName() + "' could not defined as type "
-                    + "icon for type '" + _toName + "'! Type does not exists!");
-        } else  {
+        if (type == null) {
+          LOG.error("Image '"
+              + this.getName()
+              + "' could not defined as type icon for type '"
+              + _toName
+              + "'! Type does not exists!");
+        } else {
           TYPE2IMAGE.put(type, this);
         }
         break;
@@ -95,20 +104,22 @@ public class Image extends AbstractUserInterfaceObject  {
    *
    * @return URL of this image
    */
-  public String getUrl()  {
-    return RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/" + getName());
+  public String getUrl() {
+    return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE
+        + getName());
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
 
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Image}.
    *
-   * @param _id id to search in the cache
+   * @param _id
+   *                id to search in the cache
    * @return instance of class {@link Image}
    * @see #getCache
    */
-  static public Image get(final long _id)  {
+  static public Image get(final long _id) {
     return getCache().get(_id);
   }
 
@@ -116,11 +127,12 @@ public class Image extends AbstractUserInterfaceObject  {
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Image}.
    *
-   * @param _name name to search in the cache
+   * @param _name
+   *                name to search in the cache
    * @return instance of class {@link Image}
    * @see #getCache
    */
-  static public Image get(final String _name)  {
+  static public Image get(final String _name) {
     return getCache().get(_name);
   }
 
@@ -128,11 +140,12 @@ public class Image extends AbstractUserInterfaceObject  {
    * Returns for given parameter <i>UUID</i> the instance of class
    * {@link Image}.
    *
-   * @param _uuid UUID to search in the cache
+   * @param _uuid
+   *                UUID to search in the cache
    * @return instance of class {@link Image}
    * @see #getCache
    */
-  static public Image get(final UUID _uuid){
+  static public Image get(final UUID _uuid) {
     return getCache().get(_uuid);
   }
 
@@ -140,13 +153,13 @@ public class Image extends AbstractUserInterfaceObject  {
    * Returns for given type the type tree menu. If no type tree menu is defined
    * for the type, it is searched if for parent type a menu is defined.
    *
-   * @param _type   type for which the type tree menu is searched
-   * @return type tree menu for given type if found; otherwise
-   *         <code>null</code>.
+   * @param _type
+   *                type for which the type tree menu is searched
+   * @return type tree menu for given type if found; otherwise <code>null</code>.
    */
-  public static Image getTypeIcon(final Type _type)  {
+  public static Image getTypeIcon(final Type _type) {
     Image ret = TYPE2IMAGE.get(_type);
-    if ((ret == null) && (_type.getParentType() != null))  {
+    if ((ret == null) && (_type.getParentType() != null)) {
       ret = getTypeIcon(_type.getParentType());
     }
     return ret;
@@ -157,7 +170,7 @@ public class Image extends AbstractUserInterfaceObject  {
    *
    * @return value of static variable {@link #cache}
    */
-  static UserInterfaceObjectCache<Image> getCache()  {
+  static UserInterfaceObjectCache<Image> getCache() {
     return cache;
   }
 
@@ -166,6 +179,6 @@ public class Image extends AbstractUserInterfaceObject  {
    *
    * @see #getCache
    */
-  static private UserInterfaceObjectCache<Image> cache
-          = new UserInterfaceObjectCache<Image>(Image.class);
+  static private UserInterfaceObjectCache<Image> cache =
+      new UserInterfaceObjectCache<Image>(Image.class);
 }

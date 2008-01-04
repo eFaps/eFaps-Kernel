@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1510 $
+ * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
+ * Last Changed By: $Author:jmox $
  */
 
 package org.efaps.ui.wicket.filter;
@@ -36,7 +36,7 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.servlet.RequestHandler;
+import org.efaps.util.RequestHandler;
 
 /**
  * @author tmo
@@ -172,7 +172,7 @@ public class FormBasedAuthenticationFilter extends AbstractAuthenticationFilter 
   @Override
   public void init(final FilterConfig _filterConfig) throws ServletException {
     super.init(_filterConfig);
-    String root =
+    final String root =
         "/" + _filterConfig.getServletContext().getServletContextName() + "/";
 
     this.urlNotLoggedInForward =
@@ -244,14 +244,14 @@ public class FormBasedAuthenticationFilter extends AbstractAuthenticationFilter 
                           final HttpServletResponse _response,
                           final FilterChain _chain) throws IOException,
                                                    ServletException {
-    String uri = _request.getRequestURI().replaceAll("//+", "/");
+    final String uri = _request.getRequestURI().replaceAll("//+", "/");
     // logout
     if (this.urlLogout.equals(uri)) {
       // setLoggedInUser(_request, null);
       // _request.getSession(true).removeAttribute(SESSIONPARAM_LOGIN_FORWARD);
       // remove all http session attributes! it's a logout!
-      HttpSession session = _request.getSession();
-      for (Enumeration<?> e = session.getAttributeNames(); e.hasMoreElements();) {
+      final HttpSession session = _request.getSession();
+      for (final Enumeration<?> e = session.getAttributeNames(); e.hasMoreElements();) {
         session.removeAttribute((String) e.nextElement());
       }
       _request.getRequestDispatcher("/").forward(_request, _response);
@@ -269,17 +269,17 @@ public class FormBasedAuthenticationFilter extends AbstractAuthenticationFilter 
                                 final HttpServletResponse _response,
                                 final FilterChain _chain) throws IOException,
                                                          ServletException {
-    String uri = _request.getRequestURI().replaceAll("//+", "/");
+    final String uri = _request.getRequestURI().replaceAll("//+", "/");
     boolean exclude = false;
-    for (String excludeUri : this.exludeUris) {
+    for (final String excludeUri : this.exludeUris) {
       exclude = exclude || uri.startsWith(excludeUri);
     }
 
     if (exclude) {
       _chain.doFilter(_request, _response);
     } else if (this.urlLogin.equals(uri)) {
-      String name = _request.getParameter(this.paramLoginName);
-      String passwd = _request.getParameter(this.paramLoginPassword);
+      final String name = _request.getParameter(this.paramLoginName);
+      final String passwd = _request.getParameter(this.paramLoginPassword);
       if (checkLogin(name, passwd)) {
         setLoggedInUser(_request, name);
         _response.setContentType("text/html");
@@ -341,9 +341,9 @@ public class FormBasedAuthenticationFilter extends AbstractAuthenticationFilter 
           + "\" name=\"Login\">"
           + "</frameset>"
           + "</html>");
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw e;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOG.error("Could not write the frame for not correct login.", e);
       throw new ServletException(e);
     }

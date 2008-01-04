@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   
-  Author:          tmo
+  Author:          jmox
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -26,7 +26,7 @@
 <datamodel-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
-  <uuid>9118e1e3-ed4c-425d-8578-8d1f1d385110</uuid>
+  <uuid>0607ea90-b48f-4b76-96f5-67cab19bd7b1</uuid>
 
   <!-- create type -->
   <definition>
@@ -36,7 +36,7 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Program_JavaClass</name>
+    <name>Admin_Program_CSSCompiled</name>
   </definition>
 
   <!-- define type -->
@@ -47,14 +47,14 @@
       <local>$Rev$</local>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_Program_JavaClass</name>
+    <name>Admin_Program_CSSCompiled</name>
     <parent>Admin_Program_Compiled</parent>
 
     <!-- attributes -->
     <attribute>
       <name>ProgramLink</name>
       <type>Link</type>
-      <typelink>Admin_Program_Java</typelink>
+      <typelink>Admin_Program_CSS</typelink>
       <sqltable>Admin_Program_CompiledSQLTable</sqltable>
       <sqlcolumn>PROGRAM</sqlcolumn>
     </attribute>

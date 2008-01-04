@@ -33,8 +33,8 @@ import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
-import org.efaps.servlet.RequestHandler;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -285,7 +285,7 @@ public class Field extends AbstractUserInterfaceObject {
         }
         query.close();
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("get(long)", e);
     }
     return col.getFieldsMap().get(_id);
@@ -374,7 +374,7 @@ public class Field extends AbstractUserInterfaceObject {
                                  final String _toName) throws Exception {
     switch (_linkType) {
       case LINK_ICON:
-        setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/"
+        setIcon(RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE
             + _toName));
         break;
       default:
@@ -401,19 +401,19 @@ public class Field extends AbstractUserInterfaceObject {
     } else if ("ClassNameUI".equals(_name)) {
       try {
         setClassUI((UIInterface) Class.forName(_value).newInstance());
-      } catch (ClassNotFoundException e) {
+      } catch (final ClassNotFoundException e) {
         throw new CacheReloadException("could not found class '"
             + _value
             + "' for '"
             + getName()
             + "'", e);
-      } catch (InstantiationException e) {
+      } catch (final InstantiationException e) {
         throw new CacheReloadException("could not instantiate class '"
             + _value
             + "' for '"
             + getName()
             + "'", e);
-      } catch (IllegalAccessException e) {
+      } catch (final IllegalAccessException e) {
         throw new CacheReloadException("could not access class '"
             + _value
             + "' for '"
@@ -449,19 +449,19 @@ public class Field extends AbstractUserInterfaceObject {
         final Class<?> programValueClass = Class.forName(_value);
         setProgramValue((FieldProgramValueInterface) programValueClass
             .newInstance());
-      } catch (ClassNotFoundException e) {
+      } catch (final ClassNotFoundException e) {
         throw new CacheReloadException("could not found class '"
             + _value
             + "' for '"
             + getName()
             + "'", e);
-      } catch (InstantiationException e) {
+      } catch (final InstantiationException e) {
         throw new CacheReloadException("could not instantiate class '"
             + _value
             + "' for '"
             + getName()
             + "'", e);
-      } catch (IllegalAccessException e) {
+      } catch (final IllegalAccessException e) {
         throw new CacheReloadException("could not access class '"
             + _value
             + "' for '"

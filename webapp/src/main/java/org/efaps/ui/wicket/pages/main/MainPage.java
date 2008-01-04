@@ -24,7 +24,6 @@ import java.util.UUID;
 
 import org.apache.wicket.PageMap;
 import org.apache.wicket.RestartResponseException;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -35,12 +34,13 @@ import org.apache.wicket.util.string.JavascriptUtils;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributer;
 import org.efaps.ui.wicket.components.menu.MenuContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.empty.EmptyPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -55,8 +55,8 @@ public class MainPage extends WebPage {
 
   public final static String IFRAME_WICKETID = "content";
 
-  private static final CSSResourceReference CSS =
-      new CSSResourceReference(MainPage.class, "MainPage.css");
+  private static final EFapsContentReference CSS =
+      new EFapsContentReference(MainPage.class, "MainPage.css");
 
   private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
@@ -82,7 +82,7 @@ public class MainPage extends WebPage {
     add(this.modal);
     this.modal.setPageMapName("modal");
 
-    this.add(HeaderContributor.forCss(CSS));
+    this.add(StaticHeaderContributer.forCss(CSS));
 
     this.add(new ChildCallBackHeaderContributer());
 

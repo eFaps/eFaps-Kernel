@@ -16,7 +16,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   
-  Author:          tmo
+  Author:          jmox
   Revision:        $Rev$
   Last Changed:    $Date$
   Last Changed By: $Author$
@@ -26,7 +26,7 @@
 <datamodel-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
-  <uuid>9118e1e3-ed4c-425d-8578-8d1f1d385110</uuid>
+  <uuid>86f6c8d6-b2c0-4d08-9ce7-7ce46d0dcdd0</uuid>
 
   <!-- create type -->
   <definition>
@@ -36,7 +36,7 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Program_JavaClass</name>
+    <name>Admin_Program2Program</name>
   </definition>
 
   <!-- define type -->
@@ -47,26 +47,23 @@
       <local>$Rev$</local>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_Program_JavaClass</name>
-    <parent>Admin_Program_Compiled</parent>
-
+    <name>Admin_Program2Program</name>
+    <parent>Admin_Common_Abstract2Abstract</parent>
     <!-- attributes -->
     <attribute>
-      <name>ProgramLink</name>
+      <name>From</name>
       <type>Link</type>
-      <typelink>Admin_Program_Java</typelink>
-      <sqltable>Admin_Program_CompiledSQLTable</sqltable>
-      <sqlcolumn>PROGRAM</sqlcolumn>
+      <typelink>Admin_Abstract</typelink>
+      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
+      <sqlcolumn>FROMID</sqlcolumn>
     </attribute>
-
-    <!-- properties -->
-    <property name="StoreAttributeFileLength">FileLength</property>
-    <property name="StoreAttributeFileName">FileName</property>
-    <property name="StoreCompress">NONE</property>
-    <property name="StoreJDBCBlob">CPLPRG</property>
-    <property name="StoreJDBCKey">ID</property>
-    <property name="StoreJDBCTable">T_PRGCOMPILED</property>
-    <property name="StoreResource">org.efaps.db.transaction.JDBCStoreResource</property>
+    <attribute>
+      <name>To</name>
+      <type>Link</type>
+      <typelink>Admin_Abstract</typelink>
+      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
+      <sqlcolumn>TOID</sqlcolumn>
+    </attribute>
   </definition>
 
 </datamodel-type>

@@ -20,13 +20,22 @@
 
 package org.efaps.ui.wicket.components.efapscontent;
 
+import org.apache.wicket.IClusterable;
+
+import org.efaps.util.RequestHandler;
+
 /**
  * TODO description
  *
  * @author jmox
  * @version $Id$
  */
-public class EFapsContentReference {
+public class EFapsContentReference implements IClusterable {
+
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
   private final String name;
 
@@ -47,4 +56,13 @@ public class EFapsContentReference {
     return this.name;
   }
 
+  public String getImageUrl() {
+    return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE
+        + this.name);
+  }
+
+  public String getCSSUrl() {
+    return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_STATIC
+        + this.name);
+  }
 }

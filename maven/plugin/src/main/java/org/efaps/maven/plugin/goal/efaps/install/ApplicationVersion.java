@@ -33,6 +33,7 @@ import org.mozilla.javascript.Scriptable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.program.css.CSSCompiler;
 import org.efaps.admin.program.esjp.Compiler;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
@@ -44,7 +45,7 @@ import static org.mozilla.javascript.Context.javaToJS;
 import static org.mozilla.javascript.ScriptableObject.putProperty;
 
 /**
- * 
+ *
  * @author tmo
  * @version $Id$
  * @todo description
@@ -64,7 +65,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
   /**
    * The number of the version is stored in this instance variable.
-   * 
+   *
    * @see #setNumber
    * @see #getNumber
    */
@@ -108,7 +109,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
    *
    * @see #addScript
    */
-  private List<Script> scripts = new ArrayList<Script>();
+  private final List<Script> scripts = new ArrayList<Script>();
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -148,7 +149,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
     for (final Script script : this.scripts)  {
       script.execute(_userName, _password);
     }
-    
+
     // Compile esjp's in the database (if the compile flag is set).
     if (this.compile)  {
       Context.begin(_userName);
@@ -158,6 +159,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
       Context.begin(_userName);
       (new Compiler(this.classpathElements)).compile();
+      (new CSSCompiler()).compile();
       Context.commit();
     }
 
@@ -175,12 +177,12 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
                         final String _function)  {
     this.scripts.add(new Script(_code, _name, _function));
   }
-  
+
   /**
    * Compares this application version with the specified application version.<br/>
    * The method compares the version number of the application version. To do
    * this, the method {@link java.lang.Long#compareTo} is called.
-   * 
+   *
    * @param _compareTo
    *          application version instance to compare to
    * @return a negative integer, zero, or a positive integer as this application
@@ -194,14 +196,14 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
         .compareTo(((ApplicationVersion) _compareTo).number);
   }
 
-  
+
 
   /////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
 
   /**
    * This is the setter method for instance variable {@link #number}.
-   * 
+   *
    * @param _number
    *          new value for instance variable {@link #number}
    * @see #number
@@ -213,7 +215,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
   /**
    * This is the getter method for instance variable {@link #number}.
-   * 
+   *
    * @return value of instance variable {@link #number}
    * @see #number
    * @see #setNumber
@@ -224,7 +226,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
   /**
    * This is the setter method for instance variable {@link #compile}.
-   * 
+   *
    * @param _compile new value for instance variable {@link #compile}
    * @see #compile
    */
@@ -234,7 +236,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
   /**
    * This is the setter method for instance variable {@link #loginNeeded}.
-   * 
+   *
    * @param _compile new value for instance variable {@link #loginNeeded}
    * @see #loginNeeded
    */
@@ -244,7 +246,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
   /**
    * This is the setter method for instance variable {@link #reloadCacheNeeded}.
-   * 
+   *
    * @param _compile new value for instance variable {@link #reloadCacheNeeded}
    * @see #reloadCacheNeeded
    */
@@ -254,7 +256,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
   /**
    * This is the setter method for instance variable {@link #classpathElements}.
-   * 
+   *
    * @param _compile new value for instance variable {@link #classpathElements}
    * @see #classpathElements
    */
@@ -264,9 +266,10 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
   /**
    * Returns a string representation with values of all instance variables.
-   * 
+   *
    * @return string representation of this Application
    */
+  @Override
   public String toString() {
     return new ToStringBuilder(this)
             .append("number", this.number).toString();
@@ -323,9 +326,9 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
                         final String _password) throws IOException {
 
       // create new javascript context
-      org.mozilla.javascript.Context javaScriptContext = enter();
+      final org.mozilla.javascript.Context javaScriptContext = enter();
 
-      Scriptable scope = new ImporterTopLevel(javaScriptContext);;
+      final Scriptable scope = new ImporterTopLevel(javaScriptContext);;
 
       // define the context javascript property
       putProperty(scope, "javaScriptContext", javaScriptContext);
@@ -342,26 +345,26 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
         LOG.info("Execute script file '" + this.fileName + "'");
         final Reader in = new InputStreamReader(
             getClass().getClassLoader().getResourceAsStream(this.fileName));
-        javaScriptContext.evaluateReader(scope, in, this.fileName, 1, null); 
+        javaScriptContext.evaluateReader(scope, in, this.fileName, 1, null);
         in.close();
       }
 
       // evaluate script code (if defined)
       if (this.code != null)  {
-        javaScriptContext.evaluateReader(scope, 
-            new StringReader(this.code), 
-            "Executing script code of version " + ApplicationVersion.this.number, 
-            1, 
-            null); 
+        javaScriptContext.evaluateReader(scope,
+            new StringReader(this.code),
+            "Executing script code of version " + ApplicationVersion.this.number,
+            1,
+            null);
       }
 
       // evalute script defined through the reader
       if (this.function != null)  {
         LOG.info("Execute script function '" + this.function + "'");
-        javaScriptContext.evaluateReader(scope, 
-                                         new StringReader(this.function), 
-                                         this.function, 
-                                         1, 
+        javaScriptContext.evaluateReader(scope,
+                                         new StringReader(this.function),
+                                         this.function,
+                                         1,
                                          null);
       }
     }

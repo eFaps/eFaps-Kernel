@@ -318,6 +318,15 @@ public abstract class AbstractUpdate {
   }
 
   /**
+   * This is the getter method for the instance variable {@link #allLinkTypes}.
+   *
+   * @return value of instance variable {@link #allLinkTypes}
+   */
+  protected Set<Link> getAllLinkTypes() {
+    return this.allLinkTypes;
+  }
+
+  /**
    * Returns a string representation with values of all instance variables.
    *
    * @return string representation of this abstract update
@@ -873,5 +882,8 @@ public abstract class AbstractUpdate {
     }
 
   }
+
+
+
 
 }

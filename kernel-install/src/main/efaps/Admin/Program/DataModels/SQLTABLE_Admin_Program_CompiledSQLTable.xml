@@ -37,13 +37,14 @@
       <mode>(version==2)</mode>
     </version>
     <database>
-      <table-name>T_PRGJAVACLASS</table-name>
+      <table-name>T_PRGCOMPILED</table-name>
       <create>true</create>
       <update>true</update>
       <!-- columns -->
+      <column name="TYPEID"     type="INTEGER"/>
       <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
       <column name="PROGRAM"    type="INTEGER"                    not-null="true"/>
-      <column name="CLASS"      type="BLOB"/>
+      <column name="CPLPRG"     type="BLOB"/>
       <column name="FILENAME"   type="STRING_SHORT" length="128"/>
       <column name="FILELENGTH" type="INTEGER"/>
       <column name="CREATOR"    type="INTEGER"                    not-null="true"/>
@@ -62,13 +63,13 @@
       <mode>(version==4)</mode>
     </version>
     <database>
-      <table-name>T_PRGJAVACLASS</table-name>
+      <table-name>T_PRGCOMPILED</table-name>
       <update>true</update>
       <!-- constraints -->
-      <unique  name="T_PRGJVCL_UK_NAME"     columns="NAME"/>
-      <foreign name="T_PRGJVCL_FK_PRG"      key="PROGRAM"       reference="T_PRGABSTRACT(ID)"/>
-      <foreign name="T_PRGJVCL_FK_CRTR"     key="CREATOR"       reference="T_USERPERSON(ID)"/>
-      <foreign name="T_PRGJVCL_FK_MDFR"     key="MODIFIER"      reference="T_USERPERSON(ID)"/>
+      <unique  name="T_PRGCL_UK_NAME"     columns="NAME"/>
+      <foreign name="T_PRGCL_FK_PRG"      key="PROGRAM"       reference="T_PRGABSTRACT(ID)"/>
+      <foreign name="T_PRGCL_FK_CRTR"     key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="T_PRGCL_FK_MDFR"     key="MODIFIER"      reference="T_USERPERSON(ID)"/>
     </database>
   </definition>
 
@@ -80,9 +81,10 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_Program_JavaClassSQLTable</name>
+    <name>Admin_Program_CompiledSQLTable</name>
+    <typeid-column>TYPEID</typeid-column>
     <database>
-      <table-name>T_PRGJAVACLASS</table-name>
+      <table-name>T_PRGCOMPILED</table-name>
     </database>
   </definition>
 </datamodel-sqltable>

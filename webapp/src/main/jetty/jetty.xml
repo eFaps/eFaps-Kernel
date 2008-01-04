@@ -42,15 +42,20 @@
   </filter>
 
   <servlet path="/*"
-          name="eFapsServlet"
-          displayname="eFapsServlet"
+          name="eFapsRequestHandlerInitServlet"
+          displayname="eFapsRequestHandlerInitServlet"
           initorder="1"
-          classname="org.efaps.servlet.RequestHandler"/>
+          classname="org.efaps.ui.servlet.RequestHandlerInitServlet"/>
 
   <servlet path="/servlet/image/*"
           name="eFapsImageServlet"
           displayname="eFapsImageServlet"
           classname="org.efaps.ui.servlet.ImageServlet"/>
+          
+  <servlet path="/servlet/static/*"
+          name="eFapsStaticContentServlet"
+          displayname="eFapsStaticContentServlet"
+          classname="org.efaps.ui.servlet.StaticContentServlet"/>        
   
   <servlet path="/servlet/checkout/*"
           name="eFapsCheckOutServlet"

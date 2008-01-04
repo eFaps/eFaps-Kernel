@@ -65,7 +65,12 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
    * @param _modelTypeName
    */
   protected AbstractSourceUpdate(final String _modelTypeName) {
-    super(_modelTypeName);
+    this(_modelTypeName, null);
+  }
+
+  protected AbstractSourceUpdate(final String modelTypeName,
+                                 final Set<Link> linkTypes) {
+    super(modelTypeName, linkTypes);
   }
 
   /**
@@ -125,8 +130,8 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
           if ((getURL() != null) && LOG.isInfoEnabled()) {
             LOG.info("Checkin of: '" + getURL().toString() + "' ");
           }
-          def.updateInDB(Type.get(super.getDataModelTypeName()), null, null,
-              false);
+          def.updateInDB(Type.get(super.getDataModelTypeName()), null,
+              getAllLinkTypes(), false);
         }
       }
     } catch (final Exception e) {
@@ -247,6 +252,12 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
         final Checkin checkin = new Checkin(instance);
         checkin.executeWithoutAccessCheck(this.name, in, in.available());
         in.close();
+      }
+
+      if (_allLinkTypes != null) {
+        for (final Link linkType : _allLinkTypes) {
+          setLinksInDB(instance, linkType, getLinks(linkType));
+        }
       }
       return instance;
     }

@@ -23,8 +23,6 @@ package org.efaps.ui.wicket.components.efapscontent;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
 
-import org.efaps.servlet.RequestHandler;
-
 /**
  * @author jmo
  * @version $Id:StaticImageComponent.java 1510 2007-10-18 14:35:40Z jmox $
@@ -81,10 +79,7 @@ public class StaticImageComponent extends WebComponent {
   }
 
   public void setReference(final EFapsContentReference _reference) {
-    this.url =
-        RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/"
-            + _reference.getName());
-
+    this.url = _reference.getImageUrl();
   }
 
 }

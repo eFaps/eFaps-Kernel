@@ -52,9 +52,9 @@ import org.efaps.beans.valueparser.ValueParser;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.db.SearchQuery;
-import org.efaps.servlet.RequestHandler;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
+import org.efaps.util.RequestHandler;
 
 /**
  * This class is used to provide the Model for the StructurBrowser for eFpas.<br>
@@ -242,7 +242,7 @@ public class StructurBrowserModel extends AbstractModel {
             (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
         executeTreeTable(lists);
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
   }
@@ -258,7 +258,7 @@ public class StructurBrowserModel extends AbstractModel {
       final List<Instance> instances = new ArrayList<Instance>();
       final Map<Instance, List<Object[]>> instMapper =
           new HashMap<Instance, List<Object[]>>();
-      for (List<Object[]> oneList : _lists) {
+      for (final List<Object[]> oneList : _lists) {
         final Object[] inst = oneList.get(oneList.size() - 1);
         instances.add((Instance) inst[0]);
         instMapper.put((Instance) inst[0], oneList);
@@ -283,7 +283,7 @@ public class StructurBrowserModel extends AbstractModel {
         child.setParent(checkForChildren(instance));
         child.setImage(instance.getType().getProperty("Icon"));
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
     super.setInitialised(true);
@@ -301,7 +301,7 @@ public class StructurBrowserModel extends AbstractModel {
       final List<Instance> instances = new ArrayList<Instance>();
       final Map<Instance, List<Object[]>> instMapper =
           new HashMap<Instance, List<Object[]>>();
-      for (List<Object[]> oneList : _lists) {
+      for (final List<Object[]> oneList : _lists) {
         final Object[] inst = oneList.get(oneList.size() - 1);
         instances.add((Instance) inst[0]);
         instMapper.put((Instance) inst[0], oneList);
@@ -309,7 +309,7 @@ public class StructurBrowserModel extends AbstractModel {
 
       // evaluate for all expressions in the table
       final ListQuery query = new ListQuery(instances);
-      for (Field field : this.getTable().getFields()) {
+      for (final Field field : this.getTable().getFields()) {
         if (field.getExpression() != null) {
           query.addSelect(field.getExpression());
         }
@@ -327,7 +327,7 @@ public class StructurBrowserModel extends AbstractModel {
         final Instance instance = query.getInstance();
         final StringBuilder oids = new StringBuilder();
         boolean first = true;
-        for (Object[] oneInstance : instMapper.get(instance)) {
+        for (final Object[] oneInstance : instMapper.get(instance)) {
           if (first) {
             first = false;
           } else {
@@ -342,7 +342,7 @@ public class StructurBrowserModel extends AbstractModel {
             new StructurBrowserModel(super.getCommandUUID(), instance.getOid());
         this.childs.add(child);
         child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
-        for (Field field : this.getTable().getFields()) {
+        for (final Field field : this.getTable().getFields()) {
           Object value = null;
 
           if (field.getExpression() != null) {
@@ -374,7 +374,7 @@ public class StructurBrowserModel extends AbstractModel {
         }
       }
 
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
     super.setInitialised(true);
@@ -414,7 +414,7 @@ public class StructurBrowserModel extends AbstractModel {
               ParameterValues.INSTANCE, _instance, ParameterValues.OTHERS,
               "checkForChildren");
       return ret.get(0).get(ReturnValues.TRUE) != null;
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
 
@@ -515,7 +515,7 @@ public class StructurBrowserModel extends AbstractModel {
         this.executeTreeTable(lists);
       }
       addNode(parent, this.childs);
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
   }
@@ -622,7 +622,7 @@ public class StructurBrowserModel extends AbstractModel {
   }
 
   /**
-   * this method is updateing the Label, by requering the eFpas-DataBase
+   * this method is updateing the Label, by requering the eFaps-DataBase
    */
   public void requeryLabel() {
     try {
@@ -637,7 +637,7 @@ public class StructurBrowserModel extends AbstractModel {
       if (query.next()) {
         setLabel(valuelist.makeString(query).toString());
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
   }

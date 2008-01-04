@@ -31,7 +31,8 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
-import org.efaps.servlet.RequestHandler;
+
+import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
 
 /**
@@ -995,7 +996,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
                                  final String _toName) throws Exception {
     switch (_linkType) {
       case LINK_ICON:
-        setIcon(RequestHandler.replaceMacrosInUrl("${ROOTURL}/servlet/image/"
+        setIcon(RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE
             + _toName));
         break;
       case LINK_TARGET_FORM:
