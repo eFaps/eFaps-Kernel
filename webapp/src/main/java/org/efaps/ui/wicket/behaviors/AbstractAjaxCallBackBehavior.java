@@ -52,19 +52,25 @@ public abstract class AbstractAjaxCallBackBehavior extends AjaxEventBehavior {
 
   @Override
   protected CharSequence getCallbackScript() {
-    String str =
+    final String str =
         super.getCallbackScript().toString().replace("return !wcall;", "");
     CharSequence ret = null;
     if (this.target != Target.SELF) {
-      ret =
-          this.target.jstarget
-              + ".childCallBack(\"javascript:"
-              + str
-              + "\")";
+      ret = this.target.jstarget + ".childCallBack(\"javascript:" + str + "\")";
     } else {
       ret = str.replace("'", "\"");
     }
     return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.ajax.AbstractDefaultAjaxBehavior#getPreconditionScript()
+   */
+  @Override
+  protected CharSequence getPreconditionScript() {
+    return null;
   }
 
 }

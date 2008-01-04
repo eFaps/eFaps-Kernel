@@ -146,6 +146,9 @@ public class MenuTree extends AbstractTree {
     this.menuKey = _menukey;
     this.setModel(new Model((Serializable) _model));
 
+    final ITreeState treestate = this.getTreeState();
+    treestate.expandAll();
+
     add(HeaderContributor.forCss(CSS));
     ((EFapsSession) this.getSession()).putIntoCache(this.menuKey, this);
 
