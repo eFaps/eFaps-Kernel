@@ -24,7 +24,6 @@ import java.text.MessageFormat;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -34,7 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**
@@ -50,8 +50,8 @@ public class ErrorPage extends WebPage {
    */
   private static final Logger LOG = LoggerFactory.getLogger(ErrorPage.class);
 
-  private static final CSSResourceReference CSS =
-    new CSSResourceReference(ErrorPage.class, "ErrorPage.css");
+  private static final EFapsContentReference CSS =
+    new EFapsContentReference(ErrorPage.class, "ErrorPage.css");
 
   public ErrorPage(final Exception _exception) {
 
@@ -92,7 +92,7 @@ public class ErrorPage extends WebPage {
         + DBProperties.getProperty("ErrorPage.Titel")
         + "</title>"));
 
-    this.add(HeaderContributor.forCss(CSS));
+    this.add(StaticHeaderContributor.forCss(CSS));
 
     add(new Label("errorIDLabel", DBProperties
         .getProperty("ErrorPage.Id.Label")));

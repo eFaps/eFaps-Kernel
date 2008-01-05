@@ -35,7 +35,7 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributer;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.menu.MenuContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
@@ -82,7 +82,7 @@ public class MainPage extends WebPage {
     add(this.modal);
     this.modal.setPageMapName("modal");
 
-    this.add(StaticHeaderContributer.forCss(CSS));
+    this.add(StaticHeaderContributor.forCss(CSS));
 
     this.add(new ChildCallBackHeaderContributer());
 

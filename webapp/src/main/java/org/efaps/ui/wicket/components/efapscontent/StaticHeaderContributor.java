@@ -24,17 +24,17 @@ import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.IHeaderResponse;
 
-public class StaticHeaderContributer extends HeaderContributor {
+public class StaticHeaderContributor extends HeaderContributor {
 
   private static final long serialVersionUID = 1L;
 
-  public StaticHeaderContributer(IHeaderContributor headerContributor) {
+  public StaticHeaderContributor(IHeaderContributor headerContributor) {
     super(headerContributor);
   }
 
-  public static final StaticHeaderContributer forCss(
+  public static final StaticHeaderContributor forCss(
                                                      final EFapsContentReference _reference) {
-    return new StaticHeaderContributer(new IHeaderContributor() {
+    return new StaticHeaderContributor(new IHeaderContributor() {
 
       private static final long serialVersionUID = 1L;
 
