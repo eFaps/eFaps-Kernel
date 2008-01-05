@@ -25,7 +25,6 @@ import org.apache.wicket.IPageMap;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -43,12 +42,13 @@ import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.split.ListOnlyPanel;
 import org.efaps.ui.wicket.components.split.StructBrowsSplitPanel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -63,8 +63,8 @@ public class ContentContainerPage extends WebPage {
 
   public static final String IFRAME_WICKETID = "splitrightactiframe";
 
-  private static CSSResourceReference CSS =
-      new CSSResourceReference(ContentContainerPage.class,
+  private static EFapsContentReference CSS =
+      new EFapsContentReference(ContentContainerPage.class,
           "ContentContainerPage.css");
 
   private String listMenuKey;
@@ -113,7 +113,7 @@ public class ContentContainerPage extends WebPage {
 
     this.listMenuKey = "ListMenu_" + this.getPageMapName();
 
-    add(HeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forCss(CSS));
 
     final WebMarkupContainer split = new WebMarkupContainer("split");
     this.add(split);

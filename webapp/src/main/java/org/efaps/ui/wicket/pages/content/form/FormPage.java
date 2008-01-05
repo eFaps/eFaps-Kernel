@@ -22,12 +22,13 @@ package org.efaps.ui.wicket.pages.content.form;
 
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -40,7 +41,6 @@ import org.efaps.ui.wicket.models.FormModel.Element;
 import org.efaps.ui.wicket.models.FormModel.ElementType;
 import org.efaps.ui.wicket.models.FormModel.FormElementModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -50,8 +50,8 @@ public class FormPage extends AbstractContentPage {
 
   private static final long serialVersionUID = -3554311414948286302L;
 
-  private static final CSSResourceReference CSS =
-      new CSSResourceReference(FormPage.class, "FormPage.css");
+  private static final EFapsContentReference CSS =
+      new EFapsContentReference(FormPage.class, "FormPage.css");
 
   public FormPage(final PageParameters _parameters) {
     this(new FormModel(_parameters), null);
@@ -84,7 +84,7 @@ public class FormPage extends AbstractContentPage {
   }
 
   protected void addComponents() {
-    add(HeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forCss(CSS));
 
     final FormContainer form = new FormContainer("form");
     add(form);
