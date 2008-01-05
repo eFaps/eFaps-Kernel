@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -40,9 +39,10 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -52,8 +52,8 @@ public class FilterPage extends WebPage {
 
   private static final long serialVersionUID = 1L;
 
-  private static final CSSResourceReference CSS =
-      new CSSResourceReference(FilterPage.class, "FilterPage.css");
+  private static final EFapsContentReference CSS =
+      new EFapsContentReference(FilterPage.class, "FilterPage.css");
 
   private static String CHECKBOXNAME = "eFapsFilterSelection";
 
@@ -61,7 +61,7 @@ public class FilterPage extends WebPage {
                     final ModalWindowContainer _modalwindow) {
     super(_model);
 
-    add(HeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forCss(CSS));
 
     final FormContainer form = new FormContainer("eFapsForm");
     this.add(form);

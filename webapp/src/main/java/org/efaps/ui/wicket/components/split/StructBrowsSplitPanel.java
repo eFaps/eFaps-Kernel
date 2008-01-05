@@ -21,16 +21,16 @@
 package org.efaps.ui.wicket.components.split;
 
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior.Orientation;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -40,8 +40,8 @@ public class StructBrowsSplitPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public static final CSSResourceReference CSS =
-      new CSSResourceReference(StructBrowsSplitPanel.class,
+  public static final EFapsContentReference CSS =
+      new EFapsContentReference(StructBrowsSplitPanel.class,
           "StructBrowsSplitPanel.css");
 
   public StructBrowsSplitPanel(final String _wicketId,
@@ -49,7 +49,7 @@ public class StructBrowsSplitPanel extends Panel {
                                final PageParameters _parameters) {
     super(_wicketId);
 
-    this.add(HeaderContributor.forCss(CSS));
+    this.add(StaticHeaderContributor.forCss(CSS));
 
     final SplitContainerBehavior beh = new SplitContainerBehavior();
     beh.setOrientation(Orientation.VERTICAL);

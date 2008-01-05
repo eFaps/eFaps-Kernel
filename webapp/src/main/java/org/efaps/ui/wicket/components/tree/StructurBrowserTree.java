@@ -36,7 +36,6 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AbstractBehavior;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree;
 import org.apache.wicket.markup.ComponentTag;
@@ -53,13 +52,14 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.models.StructurBrowserModel.BogusNode;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * This class renders a Tree, wich loads the childs asynchron.<br>
@@ -77,8 +77,8 @@ public class StructurBrowserTree extends DefaultAbstractTree {
   /**
    * ResourceReference to the StyleSheet used for this Tree
    */
-  private static final CSSResourceReference CSS =
-      new CSSResourceReference(StructurBrowserTree.class, "StructurTree.css");
+  private static final EFapsContentReference CSS =
+      new EFapsContentReference(StructurBrowserTree.class, "StructurTree.css");
 
   /**
    * instance variable holding the Key to the MenuTree (needed to update it)
@@ -105,7 +105,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
                              final String _listmenukey) {
     super(_wicketId, _model);
     this.listMenuKey = _listmenukey;
-    this.add(HeaderContributor.forCss(CSS));
+    this.add(StaticHeaderContributor.forCss(CSS));
 
     this.setRootLess(true);
     // we want a tree that is collapsed and updated asynchron

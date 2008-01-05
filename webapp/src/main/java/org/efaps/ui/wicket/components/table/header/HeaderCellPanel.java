@@ -22,7 +22,6 @@ package org.efaps.ui.wicket.components.table.header;
 
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
@@ -33,9 +32,10 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * This class renders the Cells inside a Header, providing all necessary Links
@@ -59,8 +59,8 @@ public class HeaderCellPanel extends Panel {
   public static final ResourceReference ICON_SORTASC =
       new ResourceReference(HeaderCellPanel.class, "eFapsSortAscending.gif");
 
-  public static final CSSResourceReference CSS =
-    new CSSResourceReference(HeaderCellPanel.class, "HeaderCellPanel.css");
+  public static final EFapsContentReference CSS =
+    new EFapsContentReference(HeaderCellPanel.class, "HeaderCellPanel.css");
 
   /**
    * Constructor used to render only a CheckBoxCell
@@ -90,7 +90,7 @@ public class HeaderCellPanel extends Panel {
                          final TableModel _tablemodel) {
     super(_id, _model);
 
-    add(HeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forCss(CSS));
 
     this.add(new SimpleAttributeModifier("title", _model.getLabel()));
 

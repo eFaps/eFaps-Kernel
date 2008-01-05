@@ -22,15 +22,15 @@ package org.efaps.ui.wicket.pages.content.table;
 
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -40,8 +40,8 @@ public class TablePage extends AbstractContentPage {
 
   private static final long serialVersionUID = 7564911406648729094L;
 
-  private static final CSSResourceReference CSS =
-      new CSSResourceReference(TablePage.class, "TablePage.css");
+  private static final EFapsContentReference CSS =
+      new EFapsContentReference(TablePage.class, "TablePage.css");
 
   public TablePage(final PageParameters _parameters) {
     this(new TableModel(_parameters));
@@ -62,7 +62,7 @@ public class TablePage extends AbstractContentPage {
   }
 
   protected void addComponents() {
-    this.add(HeaderContributor.forCss(CSS));
+    this.add(StaticHeaderContributor.forCss(CSS));
     final TableModel model = (TableModel) super.getModel();
     if (!model.isInitialised()) {
       model.execute();

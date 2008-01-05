@@ -23,25 +23,25 @@ package org.efaps.ui.wicket.components.table;
 import java.util.Iterator;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.RowModel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 public class TablePanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public static final CSSResourceReference CSS =
-      new CSSResourceReference(TablePanel.class, "TablePanel.css");
+  public static final EFapsContentReference CSS =
+      new EFapsContentReference(TablePanel.class, "TablePanel.css");
 
   public TablePanel(final String _id, final TableModel _model, final Page _page) {
     super(_id, _model);
@@ -52,7 +52,7 @@ public class TablePanel extends Panel {
     this.setOutputMarkupId(true);
     this.add(new SimpleAttributeModifier("class", "eFapsTableBody"));
 
-    add(HeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forCss(CSS));
 
     final RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
     add(rowsRepeater);

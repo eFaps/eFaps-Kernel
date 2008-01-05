@@ -28,7 +28,6 @@ import java.util.Set;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -38,8 +37,9 @@ import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -49,8 +49,8 @@ public class SplitHeaderPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public static final CSSResourceReference CSS =
-      new CSSResourceReference(SplitHeaderPanel.class, "SplitHeaderPanel.css");
+  public static final EFapsContentReference CSS =
+      new EFapsContentReference(SplitHeaderPanel.class, "SplitHeaderPanel.css");
 
   /**
    * enum for the StyleSheets which are used in this Component
@@ -91,7 +91,7 @@ public class SplitHeaderPanel extends Panel {
     super(_id);
     this.hidevertical = _hidevertical;
     this.setOutputMarkupId(true);
-    this.add(HeaderContributor.forCss(CSS));
+    this.add(StaticHeaderContributor.forCss(CSS));
     this.add(new StringHeaderContributor(getJavaScript()));
 
     this.add(new Label("titel", DBProperties.getProperty("Split.Titel")));

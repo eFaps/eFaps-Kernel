@@ -21,13 +21,13 @@
 package org.efaps.ui.wicket.components.split;
 
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -37,13 +37,13 @@ public class ListOnlyPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public static final CSSResourceReference CSS =
-      new CSSResourceReference(ListOnlyPanel.class, "ListOnlyPanel.css");
+  public static final EFapsContentReference CSS =
+      new EFapsContentReference(ListOnlyPanel.class, "ListOnlyPanel.css");
 
   public ListOnlyPanel(final String _wicketId, final String _listmenukey,
                        final PageParameters _parameters) {
     super(_wicketId);
-    this.add(HeaderContributor.forCss(CSS));
+    this.add(StaticHeaderContributor.forCss(CSS));
     this.add(new ContentPaneBehavior(20, 20));
 
     final SplitHeaderPanel header = new SplitHeaderPanel("header", false);

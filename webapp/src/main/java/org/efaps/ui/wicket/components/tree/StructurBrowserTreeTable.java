@@ -30,7 +30,6 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.markup.html.tree.table.IColumn;
 import org.apache.wicket.extensions.markup.html.tree.table.TreeTable;
@@ -45,10 +44,11 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Instance;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 import org.efaps.util.EFapsException;
 
 /**
@@ -67,15 +67,15 @@ public class StructurBrowserTreeTable extends TreeTable {
   /**
    * ResourceReference to the StyleSheet used for this TreeTable
    */
-  private static final CSSResourceReference CSS =
-      new CSSResourceReference(StructurBrowserTreeTable.class,
+  private static final EFapsContentReference CSS =
+      new EFapsContentReference(StructurBrowserTreeTable.class,
           "StructurTreeTable.css");
 
   public StructurBrowserTreeTable(final String _wicketId,
                                   final TreeModel _treeModel,
                                   final IColumn[] _columns) {
     super(_wicketId, _treeModel, _columns);
-    this.add(HeaderContributor.forCss(CSS));
+    this.add(StaticHeaderContributor.forCss(CSS));
     this.setRootLess(true);
 
     final ITreeState treeState = this.getTreeState();

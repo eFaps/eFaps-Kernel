@@ -21,12 +21,12 @@
 package org.efaps.ui.wicket.pages.content.structurbrowser;
 
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.efaps.ui.wicket.components.FormContainer;
+import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
+import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
 
 /**
  * @author jmox
@@ -36,8 +36,8 @@ public class StructurBrowserPage extends AbstractContentPage {
 
   private static final long serialVersionUID = 7564911406648729094L;
 
-  private static final CSSResourceReference CSS =
-      new CSSResourceReference(StructurBrowserPage.class,
+  private static final EFapsContentReference CSS =
+      new EFapsContentReference(StructurBrowserPage.class,
           "StructurBrowserPage.css");
 
   public StructurBrowserPage(final PageParameters _parameters) {
@@ -46,7 +46,7 @@ public class StructurBrowserPage extends AbstractContentPage {
   }
 
   protected void addComponents() {
-    add(HeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forCss(CSS));
 
     final StructurBrowserModel model = (StructurBrowserModel) super.getModel();
     if (!model.isInitialised()) {
