@@ -33,7 +33,6 @@ import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
@@ -63,7 +62,8 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**
@@ -78,8 +78,8 @@ public class FooterPanel extends Panel {
 
   private static final long serialVersionUID = -1722339596237748160L;
 
-  public final static CSSResourceReference CSS =
-      new CSSResourceReference(FooterPanel.class, "FooterPanel.css");
+  public final static EFapsContentReference CSS =
+      new EFapsContentReference(FooterPanel.class, "FooterPanel.css");
 
   /**
    * This instance variable stores the ModalWindowContainer the Page and with it
@@ -154,7 +154,7 @@ public class FooterPanel extends Panel {
       label = getLabel(model.getCommand().getName(), "Search");
     }
 
-    add(HeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forCss(CSS));
 
     if ((model.isSubmit() && model instanceof TableModel)
         || !model.isSearchMode()) {

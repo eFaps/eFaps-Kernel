@@ -22,11 +22,11 @@ package org.efaps.ui.wicket.pages.content.structurbrowser;
 
 import org.apache.wicket.PageParameters;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * @author jmox

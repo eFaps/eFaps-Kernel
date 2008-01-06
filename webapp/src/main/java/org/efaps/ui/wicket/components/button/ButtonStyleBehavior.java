@@ -27,7 +27,7 @@ import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 
-import org.efaps.ui.wicket.resources.CSSResourceReference;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
  * @author jmox
@@ -37,8 +37,8 @@ public class ButtonStyleBehavior extends AbstractBehavior {
 
   private static final long serialVersionUID = 1L;
 
-  public final static CSSResourceReference CSS =
-      new CSSResourceReference(ButtonStyleBehavior.class,
+  public final static EFapsContentReference CSS =
+      new EFapsContentReference(ButtonStyleBehavior.class,
           "ButtonStyleBehavior.css");
 
   /*
@@ -49,7 +49,7 @@ public class ButtonStyleBehavior extends AbstractBehavior {
   @Override
   public void renderHead(final IHeaderResponse _response) {
     super.renderHead(_response);
-    _response.renderCSSReference(CSS);
+    _response.renderCSSReference(CSS.getCSSUrl());
   }
 
   /*

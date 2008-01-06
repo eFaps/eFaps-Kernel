@@ -34,12 +34,12 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.button.Button;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**

@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.pages.content;
 
 import org.apache.wicket.IPageMap;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
@@ -32,7 +31,8 @@ import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.menu.MenuPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * @author jmox
@@ -44,8 +44,8 @@ public abstract class AbstractContentPage extends WebPage {
 
   public static final String POPUP_PAGEMAP_NAME = "eFapsPopUp";
 
-  public static final CSSResourceReference CSS =
-      new CSSResourceReference(AbstractContentPage.class,
+  public static final EFapsContentReference CSS =
+      new EFapsContentReference(AbstractContentPage.class,
           "AbstractContentPage.css");
 
   private String listMenuKey;
@@ -73,7 +73,7 @@ public abstract class AbstractContentPage extends WebPage {
 
   protected void addComponents(FormContainer _form) {
 
-    add(HeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forCss(CSS));
 
     add(this.modal);
     this.modal.setPageMapName("modal");

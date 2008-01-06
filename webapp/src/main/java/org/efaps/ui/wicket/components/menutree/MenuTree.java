@@ -39,7 +39,6 @@ import org.apache.wicket.ResourceReference;
 import org.apache.wicket.Response;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AbstractBehavior;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
@@ -61,7 +60,8 @@ import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * @author jmox
@@ -86,8 +86,8 @@ public class MenuTree extends AbstractTree {
   public static final ResourceReference ICON_MENUTREECHILDOPENED =
       new ResourceReference(MenuTree.class, "eFapsMenuTreeChildOpened.gif");
 
-  public static final CSSResourceReference CSS =
-    new CSSResourceReference(MenuTree.class, "MenuTree.css");
+  public static final EFapsContentReference CSS =
+    new EFapsContentReference(MenuTree.class, "MenuTree.css");
 
   /**
    * this Instancevariable holds the key wich is used to retrieve a item of this
@@ -113,7 +113,7 @@ public class MenuTree extends AbstractTree {
 
     this.setModel(new Model((Serializable) model.getTreeModel()));
 
-    add(HeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forCss(CSS));
     ((EFapsSession) this.getSession()).putIntoCache(this.menuKey, this);
 
     final DefaultMutableTreeNode rootNode =
@@ -149,7 +149,7 @@ public class MenuTree extends AbstractTree {
     final ITreeState treestate = this.getTreeState();
     treestate.expandAll();
 
-    add(HeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forCss(CSS));
     ((EFapsSession) this.getSession()).putIntoCache(this.menuKey, this);
 
     final AjaxUpdateBehavior update = new AjaxUpdateBehavior();

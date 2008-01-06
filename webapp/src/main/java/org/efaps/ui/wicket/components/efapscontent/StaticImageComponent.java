@@ -23,6 +23,8 @@ package org.efaps.ui.wicket.components.efapscontent;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
 
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+
 /**
  * @author jmo
  * @version $Id:StaticImageComponent.java 1510 2007-10-18 14:35:40Z jmox $

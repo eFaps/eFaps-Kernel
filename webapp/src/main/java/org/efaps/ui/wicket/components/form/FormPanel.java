@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
@@ -33,7 +32,8 @@ import org.efaps.ui.wicket.components.form.row.RowPanel;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.FormModel.FormElementModel;
 import org.efaps.ui.wicket.models.FormModel.FormRowModel;
-import org.efaps.ui.wicket.resources.CSSResourceReference;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * @author jmox
@@ -43,8 +43,8 @@ public class FormPanel extends Panel {
 
   private static final long serialVersionUID = 1550111712776698728L;
 
-  public static CSSResourceReference CSS =
-      new CSSResourceReference(FormPanel.class, "FormPanel.css");
+  public static EFapsContentReference CSS =
+      new EFapsContentReference(FormPanel.class, "FormPanel.css");
 
   private final Map<String, Label> requiredComponents =
       new HashMap<String, Label>();
@@ -58,7 +58,7 @@ public class FormPanel extends Panel {
       _model.execute();
     }
 
-    add(HeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forCss(CSS));
 
     final RepeatingView rowRepeater = new RepeatingView("rowRepeater");
     this.add(rowRepeater);

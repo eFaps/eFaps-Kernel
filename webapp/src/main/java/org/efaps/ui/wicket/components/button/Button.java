@@ -25,8 +25,8 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
  * @author jmox

@@ -27,10 +27,10 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior.Orientation;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreePanel;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * @author jmox

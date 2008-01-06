@@ -42,13 +42,13 @@ import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
 import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.split.ListOnlyPanel;
 import org.efaps.ui.wicket.components.split.StructBrowsSplitPanel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * @author jmox

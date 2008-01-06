@@ -32,10 +32,10 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.ui.wicket.behaviors.dojo.DnDBehavior;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * This class renders the Cells inside a Header, providing all necessary Links

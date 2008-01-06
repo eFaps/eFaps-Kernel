@@ -34,13 +34,13 @@ import org.apache.wicket.util.string.JavascriptUtils;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.menu.MenuContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
 import org.efaps.ui.wicket.pages.empty.EmptyPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**

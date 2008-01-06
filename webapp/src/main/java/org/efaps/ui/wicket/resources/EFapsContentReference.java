@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.components.efapscontent;
+package org.efaps.ui.wicket.resources;
 
 import org.apache.wicket.IClusterable;
 

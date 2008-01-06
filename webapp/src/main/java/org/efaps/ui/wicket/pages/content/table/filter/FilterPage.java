@@ -39,10 +39,10 @@ import org.apache.wicket.model.Model;
 
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * @author jmox

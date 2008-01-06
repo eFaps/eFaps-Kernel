@@ -44,11 +44,11 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**

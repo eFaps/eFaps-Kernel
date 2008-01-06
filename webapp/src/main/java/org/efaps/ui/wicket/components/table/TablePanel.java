@@ -29,12 +29,12 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.TableModel.RowModel;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 public class TablePanel extends Panel {
 

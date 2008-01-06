@@ -52,14 +52,14 @@ import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
 import org.efaps.ui.wicket.models.StructurBrowserModel.BogusNode;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * This class renders a Tree, wich loads the childs asynchron.<br>

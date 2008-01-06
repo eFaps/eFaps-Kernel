@@ -37,9 +37,9 @@ import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.behaviors.dojo.ContentPaneBehavior;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * @author jmox

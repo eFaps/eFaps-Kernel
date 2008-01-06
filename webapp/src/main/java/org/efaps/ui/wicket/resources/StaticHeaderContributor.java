@@ -20,32 +20,28 @@
 
 package org.efaps.ui.wicket.resources;
 
-import org.apache.wicket.Resource;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.behavior.HeaderContributor;
+import org.apache.wicket.markup.html.IHeaderContributor;
+import org.apache.wicket.markup.html.IHeaderResponse;
 
-/**
- * TODO description
- *
- * @author jmox
- * @version $Id$
- *
- */
-public class CSSResourceReference extends ResourceReference {
+
+public class StaticHeaderContributor extends HeaderContributor {
 
   private static final long serialVersionUID = 1L;
 
-  public CSSResourceReference(Class<?> scope, String name) {
-    super(scope, name);
+  public StaticHeaderContributor(IHeaderContributor headerContributor) {
+    super(headerContributor);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.ResourceReference#newResource()
-   */
-  @Override
-  protected Resource newResource() {
-    return CSSResource.get(getScope().getPackage().getName() + "." + getName());
-  }
+  public static final StaticHeaderContributor forCss(
+                                                     final EFapsContentReference _reference) {
+    return new StaticHeaderContributor(new IHeaderContributor() {
 
+      private static final long serialVersionUID = 1L;
+
+      public void renderHead(IHeaderResponse response) {
+        response.renderCSSReference(_reference.getCSSUrl());
+      }
+    });
+  }
 }

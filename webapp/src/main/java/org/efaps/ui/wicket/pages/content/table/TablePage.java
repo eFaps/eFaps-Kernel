@@ -25,12 +25,12 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.components.efapscontent.EFapsContentReference;
-import org.efaps.ui.wicket.components.efapscontent.StaticHeaderContributor;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
  * @author jmox
