@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ package org.efaps.maven.plugin.goal.efaps;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import org.efaps.admin.program.esjp.Compiler;
 import org.efaps.maven.plugin.EFapsAbstractMojo;
+import org.efaps.maven.plugin.goal.efaps.install.ApplicationVersion;
 import org.efaps.util.EFapsException;
 
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
@@ -50,9 +50,8 @@ public final class CompileMojo extends EFapsAbstractMojo {
 
     try {
       reloadCache();
-      startTransaction();
-      (new Compiler(getClasspathElements())).compile();
-      commitTransaction();
+      
+      (new ApplicationVersion()).compileAll(getUserName());
 
     } catch (EFapsException e) {
       getLog().error(e);

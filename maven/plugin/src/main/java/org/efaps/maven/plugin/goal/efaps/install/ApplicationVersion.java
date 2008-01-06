@@ -152,17 +152,28 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
     // Compile esjp's in the database (if the compile flag is set).
     if (this.compile)  {
-      Context.begin(_userName);
-      RunLevel.init("shell");
-      RunLevel.execute();
-      Context.rollback();
-
-      Context.begin(_userName);
-      (new Compiler(this.classpathElements)).compile();
-      (new CSSCompiler()).compile();
-      Context.commit();
+      compileAll(_userName);
     }
 
+  }
+
+  /**
+   * Compiles the ESJP's and all Cascade Styles Sheets within eFaps.
+   *
+   * @param _userName   name of logged in user for which the compile is done
+   *                    (could be also <code>null</code>)
+   * @throws EFapsException if compiled failed
+   */
+  public void compileAll(final String _userName) throws EFapsException  {
+    Context.begin(_userName);
+    RunLevel.init("shell");
+    RunLevel.execute();
+    Context.rollback();
+
+    Context.begin(_userName);
+    (new Compiler(this.classpathElements)).compile();
+    (new CSSCompiler()).compile();
+    Context.commit();
   }
 
   /**
