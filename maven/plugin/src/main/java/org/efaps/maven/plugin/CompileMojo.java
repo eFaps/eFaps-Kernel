@@ -18,11 +18,10 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.maven.plugin.goal.efaps;
+package org.efaps.maven.plugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
 
-import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.efaps.maven.plugin.goal.efaps.install.ApplicationVersion;
 import org.efaps.util.EFapsException;
 
@@ -30,7 +29,7 @@ import org.jfrog.maven.annomojo.annotations.MojoGoal;
 import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
 
 /**
- * Compiles all esjp's within eFaps.
+ * Compiles all ESPJ's and Cascade Style Sheets within eFaps.
  *
  * @author tmo
  * @version $Id$
