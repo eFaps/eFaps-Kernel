@@ -50,7 +50,9 @@ public final class CompileMojo extends EFapsAbstractMojo {
     try {
       reloadCache();
       
-      (new ApplicationVersion()).compileAll(getUserName());
+      final ApplicationVersion applVers = new ApplicationVersion();
+      applVers.setClasspathElements(getClasspathElements());
+      applVers.compileAll(getUserName());
 
     } catch (EFapsException e) {
       getLog().error(e);
