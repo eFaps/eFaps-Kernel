@@ -45,6 +45,8 @@
     </version>
     <name>TeamWork_SourceImage</name>
     <file>IMAGE_TeamWork_SourceImage.gif</file>
+    <!-- is type icon for -->
+    <type>TeamWork_Source</type>
   </definition>
 
 </ui-image>

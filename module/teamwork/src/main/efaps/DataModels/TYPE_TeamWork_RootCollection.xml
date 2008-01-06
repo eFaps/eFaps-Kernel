@@ -75,8 +75,6 @@
     <trigger name="TeamWork_RootCollection_DELETE_POST" event="DELETE_POST" program="org.efaps.esjp.common.history.HistoryTrigger">
       <property name="Type">Common_History_Delete</property>
     </trigger>
-    <!-- property definitions -->
-    <property name="Icon">${ROOTURL}/servlet/image/TeamWork_RootCollectionImage</property>
 
   </definition>
 </datamodel-type>

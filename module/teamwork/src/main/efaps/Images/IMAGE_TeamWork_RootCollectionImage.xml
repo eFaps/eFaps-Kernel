@@ -45,6 +45,8 @@
     </version>
     <name>TeamWork_RootCollectionImage</name>
     <file>IMAGE_TeamWork_RootCollectionImage.gif</file>
-  </definition>
+    <!-- is type icon for -->
+    <type>TeamWork_RootCollection</type>
+   </definition>
 
 </ui-image>

@@ -133,7 +133,6 @@
     </trigger>
     
     <!-- property definitions -->
-    <property name="Icon">${ROOTURL}/servlet/image/TeamWork_SourceVersionImage</property>
     <property name="StoreAttributeFileLength">FileLength</property>
     <property name="StoreAttributeFileName">Name</property>
     <property name="StoreCompress">GZIP</property>
