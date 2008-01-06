@@ -65,13 +65,13 @@ public class MenuContainer extends AbstractParentMarkupContainer {
   public static EFapsContentReference CSS =
       new EFapsContentReference(MenuContainer.class, "theme.css");
 
-  private static String URL =
-      "resources/" + MenuContainer.class.getName() + "/";
+  public static EFapsContentReference IMG_BLANK =
+      new EFapsContentReference(MenuContainer.class, "blank.gif");
 
   private static String HEADER_RESOURCE =
       JavascriptUtils.SCRIPT_OPEN_TAG
           + "var myThemeOfficeBase=\""
-          + URL
+          + IMG_BLANK.getImageUrl().replace("blank.gif?", "")
           + "\";"
           + JavascriptUtils.SCRIPT_CLOSE_TAG
           + CssUtils.INLINE_OPEN_TAG
@@ -95,12 +95,6 @@ public class MenuContainer extends AbstractParentMarkupContainer {
           + "  height: 16px;"
           + "\n}\n"
           + CssUtils.INLINE_CLOSE_TAG;
-
-  private static String IMG_BLANK_SUB =
-      "<img src=\"" + URL + "blank.gif\" class=\"eFapsMenuSubImage\"/>";
-
-  private static String IMG_BLANK_MAIN =
-      "<img src=\"" + URL + "blank.gif\" class=\"eFapsMenuMainBlankImage\"/>";
 
   private final FormContainer form;
 
@@ -274,9 +268,11 @@ public class MenuContainer extends AbstractParentMarkupContainer {
             "\" class=\"eFapsMenuSubImage\"/>");
       }
     } else if (!_isMain) {
-      _html.append(IMG_BLANK_SUB);
+      _html.append("<img src=\"").append(IMG_BLANK.getImageUrl()).append(
+          "\" class=\"eFapsMenuSubImage\"/>");
     } else {
-      _html.append(IMG_BLANK_MAIN);
+      _html.append("<img src=\"").append(IMG_BLANK.getImageUrl()).append(
+          "\" class=\"eFapsMenuMainBlankImage\"/>");
     }
     _html.append("','<span class=\"eFapsMenuLabel\">").append(
         _menuItem.getLabel()).append("</span>', '");
