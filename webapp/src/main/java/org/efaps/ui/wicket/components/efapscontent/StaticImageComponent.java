@@ -49,6 +49,12 @@ public class StaticImageComponent extends WebComponent {
     this.url = _url;
   }
 
+  public StaticImageComponent(final String _wicketid,
+                              final EFapsContentReference _reference) {
+    super(_wicketid);
+    this.url = _reference.getImageUrl();
+  }
+
   /*
    * (non-Javadoc)
    *

@@ -35,7 +35,6 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RequestCycle;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.Response;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AbstractBehavior;
@@ -44,7 +43,6 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.AbstractTree;
@@ -71,23 +69,23 @@ public class MenuTree extends AbstractTree {
 
   private static final long serialVersionUID = 1L;
 
-  public static final ResourceReference ICON_MENUTREEREMOVE =
-      new ResourceReference(MenuTree.class, "eFapsMenuTreeRemove.gif");
+  public static final EFapsContentReference ICON_REMOVE =
+      new EFapsContentReference(MenuTree.class, "Remove.gif");
 
-  public static final ResourceReference ICON_MENUTREEGOINTO =
-      new ResourceReference(MenuTree.class, "eFapsMenuTreeGoInto.gif");
+  public static final EFapsContentReference ICON_GOINTO =
+      new EFapsContentReference(MenuTree.class, "GoInto.gif");
 
-  public static final ResourceReference ICON_MENUTREEGOUP =
-      new ResourceReference(MenuTree.class, "eFapsMenuTreeGoUp.gif");
+  public static final EFapsContentReference ICON_GOUP =
+      new EFapsContentReference(MenuTree.class, "GoUp.gif");
 
-  public static final ResourceReference ICON_MENUTREECHILDCLOSED =
-      new ResourceReference(MenuTree.class, "eFapsMenuTreeChildClosed.gif");
+  public static final EFapsContentReference ICON_CHILDCLOSED =
+      new EFapsContentReference(MenuTree.class, "ChildClosed.gif");
 
-  public static final ResourceReference ICON_MENUTREECHILDOPENED =
-      new ResourceReference(MenuTree.class, "eFapsMenuTreeChildOpened.gif");
+  public static final EFapsContentReference ICON_CHILDOPENED =
+      new EFapsContentReference(MenuTree.class, "ChildOpened.gif");
 
   public static final EFapsContentReference CSS =
-    new EFapsContentReference(MenuTree.class, "MenuTree.css");
+      new EFapsContentReference(MenuTree.class, "MenuTree.css");
 
   /**
    * this Instancevariable holds the key wich is used to retrieve a item of this
@@ -203,9 +201,11 @@ public class MenuTree extends AbstractTree {
       final AjaxExpandLink expandLink = new AjaxExpandLink("expandLink", node);
       item.add(expandLink);
       if (getTreeState().isNodeExpanded(node)) {
-        expandLink.add(new Image("expandIcon", ICON_MENUTREECHILDOPENED));
+        expandLink.add(new StaticImageComponent("expandIcon",
+            ICON_CHILDOPENED));
       } else {
-        expandLink.add(new Image("expandIcon", ICON_MENUTREECHILDCLOSED));
+        expandLink.add(new StaticImageComponent("expandIcon",
+            ICON_CHILDCLOSED));
       }
     } else {
       item.add(new WebMarkupContainer("expandLink").setVisible(false));
@@ -233,17 +233,19 @@ public class MenuTree extends AbstractTree {
         item.add(new WebMarkupContainer("removelink").setVisible(false));
         final AjaxGoUpLink goUplink = new AjaxGoUpLink("goUplink", node);
         item.add(goUplink);
-        goUplink.add(new Image("goUpIcon", ICON_MENUTREEGOUP));
+        goUplink.add(new StaticImageComponent("goUpIcon", ICON_GOUP));
       } else {
         final AjaxGoIntoLink goIntolink =
             new AjaxGoIntoLink("goIntolink", node);
         item.add(goIntolink);
-        goIntolink.add(new Image("goIntoIcon", ICON_MENUTREEGOINTO));
+        goIntolink.add(new StaticImageComponent("goIntoIcon",
+            ICON_GOINTO));
 
         final AjaxRemoveLink removelink =
             new AjaxRemoveLink("removelink", node);
         item.add(removelink);
-        removelink.add(new Image("removeIcon", ICON_MENUTREEREMOVE));
+        removelink.add(new StaticImageComponent("removeIcon",
+            ICON_REMOVE));
         item.add(new WebMarkupContainer("goUplink").setVisible(false));
       }
     } else {
