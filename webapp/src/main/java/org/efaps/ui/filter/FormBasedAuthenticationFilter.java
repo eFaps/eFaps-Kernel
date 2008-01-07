@@ -18,7 +18,7 @@
  * Last Changed By: $Author:jmox $
  */
 
-package org.efaps.ui.wicket.filter;
+package org.efaps.ui.filter;
 
 import java.io.IOException;
 import java.io.PrintWriter;

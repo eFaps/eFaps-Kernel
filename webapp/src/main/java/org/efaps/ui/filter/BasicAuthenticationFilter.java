@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.filter;
+package org.efaps.ui.filter;
 
 import java.io.IOException;
 
