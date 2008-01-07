@@ -20,7 +20,6 @@
 
 package org.efaps.ui.wicket.components.table.header;
 
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.ComponentTag;
@@ -47,17 +46,17 @@ public class HeaderCellPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public static final ResourceReference ICON_FILTER =
-      new ResourceReference(HeaderCellPanel.class, "eFapsFilter.gif");
+  public static final EFapsContentReference ICON_FILTER =
+      new EFapsContentReference(HeaderCellPanel.class, "Filter.gif");
 
-  public static final ResourceReference ICON_FILTERACTIVE =
-      new ResourceReference(HeaderCellPanel.class, "eFapsFilterActive.gif");
+  public static final EFapsContentReference ICON_FILTERACTIVE =
+      new EFapsContentReference(HeaderCellPanel.class, "FilterActive.gif");
 
-  public static final ResourceReference ICON_SORTDESC =
-      new ResourceReference(HeaderCellPanel.class, "eFapsSortDescending.gif");
+  public static final EFapsContentReference ICON_SORTDESC =
+      new EFapsContentReference(HeaderCellPanel.class, "SortDescending.gif");
 
-  public static final ResourceReference ICON_SORTASC =
-      new ResourceReference(HeaderCellPanel.class, "eFapsSortAscending.gif");
+  public static final EFapsContentReference ICON_SORTASC =
+      new EFapsContentReference(HeaderCellPanel.class, "SortAscending.gif");
 
   public static final EFapsContentReference CSS =
     new EFapsContentReference(HeaderCellPanel.class, "HeaderCellPanel.css");
@@ -105,12 +104,12 @@ public class HeaderCellPanel extends Panel {
         sortlink.add(new SimpleAttributeModifier("class",
             "eFapsHeaderSortAscending"));
         sortlink.add(new SimpleAttributeModifier("style",
-            " background-image: url(" + this.urlFor(ICON_SORTASC) + ");"));
+            " background-image: url(" + ICON_SORTASC.getImageUrl() + ");"));
       } else if (_model.getSortDirection() == SortDirection.DESCENDING) {
         sortlink.add(new SimpleAttributeModifier("class",
             "eFapsHeaderSortDescending"));
         sortlink.add(new SimpleAttributeModifier("style",
-            " background-image: url(" + this.urlFor(ICON_SORTDESC) + ");"));
+            " background-image: url(" + ICON_SORTDESC.getImageUrl() + ");"));
       }
 
       if (_model.isFilterable()) {
@@ -139,12 +138,12 @@ public class HeaderCellPanel extends Panel {
         filterlink.add(new SimpleAttributeModifier("class",
             "eFapsHeaderFilterActive"));
         filterlink.add(new SimpleAttributeModifier("style",
-            " background-image: url(" + this.urlFor(ICON_FILTERACTIVE) + ");"));
+            " background-image: url(" + ICON_FILTERACTIVE.getImageUrl() + ");"));
       } else {
         filterlink
             .add(new SimpleAttributeModifier("class", "eFapsHeaderFilter"));
         filterlink.add(new SimpleAttributeModifier("style",
-            " background-image: url(" + this.urlFor(ICON_FILTER) + ");"));
+            " background-image: url(" + ICON_FILTER.getImageUrl() + ");"));
       }
       this.add(filterlink);
 
