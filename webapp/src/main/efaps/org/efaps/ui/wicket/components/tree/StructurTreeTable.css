@@ -99,13 +99,13 @@ div.wicket-tree-table span.junction-last {
 }
 
 div.wicket-tree-table span.junction {
-  background-image: url("tree-images.png"); 
+  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
   background-position: -36px 0px;
   background-repeat: repeat-y;  
 }
 
 div.wicket-tree-table span.junction-last {
-  background-image: url("tree-images.png"); 
+  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
   background-position: -72px 0px;
   background-repeat: no-repeat;
 }
@@ -117,17 +117,17 @@ div.wicket-tree-table span.corner {
 }
 
 div.wicket-tree-table span.plus {
-  background-image: url("tree-images.png"); 
+  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
   background-position: 0px center;
 }
 
 div.wicket-tree-table span.minus {
-  background-image: url("tree-images.png"); 
+  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
   background-position: -18px center;
 }
 
 div.wicket-tree-table span.corner {
-  background-image: url("tree-images.png"); 
+  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
   background-position: -54px center;
 }
 
@@ -149,7 +149,7 @@ div.wicket-tree-table span.indent-blank {
 div.wicket-tree-table span.indent-line {
   _margin-left: 3px;  /* ie 3px bug fix*/
   overflow: hidden;
-  background-image: url("tree-images.png"); 
+  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.tree-images.png"); 
   background-position: -36px 0px;
   background-repeat: repeat-y;
 }
@@ -194,7 +194,7 @@ div.wicket-tree-table div.row-selected a.node-link span {
 div.wicket-tree-table div.row , 
 div.wicket-tree-table div.row-selected
 /* div.wicket-tree-table div.row-selected span.b_ */ {
-  background-image: url("dotted-line.png");
+  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.dotted-line.png");
   background-repeat: repeat-x;
   background-position: bottom;
 }
@@ -252,14 +252,14 @@ div.wicket-tree-table div.row:hover{
 }
 
 .directionDown{
-  background-image: url("eFaps-direction.png");
+  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.Direction.png");
   float: left;
   height: 17px;
   width: 11px;
 }
 
 .directionUp{
-  background-image: url("eFaps-direction.png");
+  background-image: url("../../servlet/image/org.efaps.ui.wicket.components.tree.Direction.png");
   float: left;
   height: 17px;
   width: 11px;
