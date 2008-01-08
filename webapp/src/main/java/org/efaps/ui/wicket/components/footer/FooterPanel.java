@@ -276,36 +276,49 @@ public class FooterPanel extends Panel {
 
         final AbstractModel model = (AbstractModel) this.imodel;
 
-        if (model.getCommand().getTarget() == Target.MODAL) {
-          FooterPanel.this.modalWindow.setReloadChild(true);
-          FooterPanel.this.modalWindow.close(_target);
-        } else {
-          final AbstractModel openermodel =
-              (AbstractModel) ((EFapsSession) Session.get()).getOpenerModel();
-          Class<?> clazz;
-          if (openermodel instanceof TableModel) {
-            clazz = TablePage.class;
-          } else {
-            clazz = FormPage.class;
-          }
-          final CharSequence url =
-              this.form.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-                  clazz, openermodel.getPageParameters());
-          _target.appendJavascript("opener.location.href = '"
-              + url
-              + "'; self.close();");
+        final boolean dopple = true;
+        if (dopple) {
+          final StringBuilder ex = new StringBuilder();
+          ex.append("var f=document.getElementById('").append(
+              this.form.getMarkupId()).append(
+              "');f.onsubmit=undefined;f.action=\"").append(this.form.getActionUrl())
+              .append("\";f.submit();");
 
-        }
-        FooterPanel.this.success = true;
-        // execute the CallBacks
-        final List<UpdateInterface> updates =
-            ((EFapsSession) getSession()).getUpdateBehavior(model.getOid());
-        if (updates != null) {
-          for (final UpdateInterface update : updates) {
-            if (update.isAjaxCallback()) {
-              update.setOid(model.getOid());
-              update.setMode(model.getMode());
-              _target.prependJavascript(update.getAjaxCallback());
+          this.form.setMultiPart(true);
+          _target.appendJavascript(ex.toString());
+
+        } else {
+          if (model.getCommand().getTarget() == Target.MODAL) {
+            FooterPanel.this.modalWindow.setReloadChild(true);
+            FooterPanel.this.modalWindow.close(_target);
+          } else {
+            final AbstractModel openermodel =
+                (AbstractModel) ((EFapsSession) Session.get()).getOpenerModel();
+            Class<?> clazz;
+            if (openermodel instanceof TableModel) {
+              clazz = TablePage.class;
+            } else {
+              clazz = FormPage.class;
+            }
+            final CharSequence url =
+                this.form.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
+                    clazz, openermodel.getPageParameters());
+            _target.appendJavascript("opener.location.href = '"
+                + url
+                + "'; self.close();");
+
+          }
+          FooterPanel.this.success = true;
+          // execute the CallBacks
+          final List<UpdateInterface> updates =
+              ((EFapsSession) getSession()).getUpdateBehavior(model.getOid());
+          if (updates != null) {
+            for (final UpdateInterface update : updates) {
+              if (update.isAjaxCallback()) {
+                update.setOid(model.getOid());
+                update.setMode(model.getMode());
+                _target.prependJavascript(update.getAjaxCallback());
+              }
             }
           }
         }

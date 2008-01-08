@@ -24,6 +24,8 @@ import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.IFormSubmitListener;
+import org.apache.wicket.protocol.http.servlet.MultipartServletWebRequest;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 
 import org.efaps.ui.wicket.models.AbstractModel;
@@ -38,8 +40,11 @@ public class FormContainer extends Form {
 
   private Component defaultSubmit;
 
+  private String actionUrl;
+
   public FormContainer(String id) {
     super(id);
+    // super.setMultiPart(true);
   }
 
   /*
@@ -65,6 +70,12 @@ public class FormContainer extends Form {
   @Override
   protected void onComponentTag(final ComponentTag _tag) {
     super.onComponentTag(_tag);
+    if (((AbstractModel) this.getPage().getModel()).isCreateMode()
+        || ((AbstractModel) this.getPage().getModel()).isEditMode()) {
+      _tag.put("enctype", "multipart/form-data");
+    }
+
+    this.actionUrl = urlFor(IFormSubmitListener.INTERFACE).toString();
     // only on SearchMode we want normal submit, in any other case we use
     // AjaxSubmit
     if (!((AbstractModel) this.getPage().getModel()).isSearchMode()) {
@@ -80,7 +91,7 @@ public class FormContainer extends Form {
   protected void appendDefaultSubmit(final MarkupStream markupStream,
                                      final ComponentTag openTag) {
 
-    AppendingStringBuffer buffer = new AppendingStringBuffer();
+    final AppendingStringBuffer buffer = new AppendingStringBuffer();
 
     // div that is not visible (but not display:none either)
     buffer.append("<div style=\"width:0px;height:0px;position:absolute;"
@@ -98,4 +109,30 @@ public class FormContainer extends Form {
     getResponse().write(buffer);
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #actionUrl}.
+   *
+   * @return value of instance variable {@link #actionUrl}
+   */
+  public String getActionUrl() {
+    return this.actionUrl;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.markup.html.form.Form#onSubmit()
+   */
+  @Override
+  protected void onSubmit() {
+
+    super.onSubmit();
+    if (getRequestCycle().getRequest() instanceof MultipartServletWebRequest) {
+      final MultipartServletWebRequest multi =
+          (MultipartServletWebRequest) getRequestCycle().getRequest();
+      multi.getFiles();
+      System.out.println("hier ist der Multi");
+    }
+
+  }
 }
