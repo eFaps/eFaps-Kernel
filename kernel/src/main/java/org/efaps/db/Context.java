@@ -20,6 +20,8 @@
 
 package org.efaps.db;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -41,7 +43,6 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.apache.commons.fileupload.FileItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -191,9 +192,8 @@ public class Context {
    * length of the file.
    *
    * @see #getFileParameters
-   * @todo replace FileItem against own implementation
    */
-  private final Map<String, FileItem> fileParameters;
+  private final Map<String, FileParameter> fileParameters;
 
   /**
    * A map to be able to set attributes with a lifetime of a request (e.g.
@@ -227,9 +227,9 @@ public class Context {
   private Context(final Transaction _transaction,
                   final Person _person,
                   final Locale _locale,
-                  final Map < String, Object > _sessionAttributes,
-                  final Map < String, String[] > _parameters,
-                  final Map < String, FileItem > _fileParameters)
+                  final Map<String, Object> _sessionAttributes,
+                  final Map<String, String[]> _parameters,
+                  final Map<String, FileParameter> _fileParameters)
                                                       throws EFapsException  {
     if (LOG.isDebugEnabled())  {
       LOG.debug("create new context for " + _person);
@@ -238,13 +238,13 @@ public class Context {
     this.person = _person;
     this.locale = _locale;
     this.parameters = (_parameters == null)
-                              ? new HashMap < String, String[] > ()
+                              ? new HashMap<String, String[]>()
                               : _parameters;
     this.fileParameters = (_fileParameters == null)
-                              ? new HashMap < String, FileItem > ()
+                              ? new HashMap<String, FileParameter>()
                               : _fileParameters;
     this.sessionAttributes = (_sessionAttributes == null)
-                              ? new HashMap < String, Object > ()
+                              ? new HashMap<String, Object>()
                               : _sessionAttributes;
 try  {
     setConnection(DATASOURCE.getConnection());
@@ -729,7 +729,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
    * @return value of instance variable {@link #fileParameters}
    * @see #fileParameters
    */
-  public final Map < String, FileItem > getFileParameters()  {
+  public final Map<String, FileParameter> getFileParameters()  {
     return this.fileParameters;
   }
 
@@ -787,7 +787,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
                               final Locale _locale,
                               final Map<String, Object> _sessionAttributes,
                               final Map<String, String[]> _parameters,
-                              final Map<String, FileItem> _fileParameters)
+                              final Map<String, FileParameter> _fileParameters)
                                            throws EFapsException  {
     if (THREADCONTEXT.get() != null)  {
       throw new EFapsException(Context.class,
@@ -951,7 +951,62 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
     return DBTYPE;
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // classes and interfaces
 
+  /**
+   * Interfaces defining file parameters used to access file parameters (e.g.
+   * uploads from the user within the web application).
+   */
+  public static interface FileParameter  {
 
+    /**
+     * Closes the file for this this file parameter is defined (e.g. deletes
+     * the file in the temporary directory, if needed).
+     *
+     * @throws IOException if the close failed
+     */
+    public abstract void close() throws IOException;
+
+    /**
+     * Returns the input stream of the file for which this file parameter is
+     * defined
+     *
+     * @return input stream of the file
+     * @throws IOException if the input stream could not be returned
+     */
+    public abstract InputStream getInputStream() throws IOException;
+
+    /**
+     * Returns the size of the file for which this file parameter is defined.
+     *
+     * @return size of file
+     */
+    public abstract long getSize();
+
+    /**
+     * Returns the content type of the file for which this file parameter is
+     * defined.
+     * 
+     * @return content type of the file
+     */
+    public abstract String getContentType();
+
+    /**
+     * Returns the name of the file for which this file parameter is
+     * defined.
+     *
+     * @return name of file
+     */
+    public abstract String getName();
+
+    /**
+     * Returns the name of the parameter for which this file parameter is
+     * defined.
+     *
+     * @return parameter name
+     */
+    public abstract String getParameterName();
+  }
 
 }
