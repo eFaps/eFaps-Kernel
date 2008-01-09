@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@
 
 package org.efaps.esjp.common.uiform;
 
+import java.io.IOException;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.AbstractFileType;
 import org.efaps.admin.event.EventExecution;
@@ -28,6 +30,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.db.Checkin;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -38,22 +41,25 @@ import org.efaps.util.EFapsException;
  *
  * @author jmo
  * @version $Id$
+ * @todo connection via middle object is missing
+ * @todo throw Exception if checkin fails
  */
 public class Create implements EventExecution {
 
   /**
    * @param _parameter
+   * @throws  
    */
-  public Return execute(final Parameter _parameter) throws EFapsException {
+  public Return execute(final Parameter _parameter) throws EFapsException  {
     Return ret = new Return();
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
     AbstractCommand command =
         (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
 
     Context context = Context.getThreadContext();
 
-    Insert insert = new Insert(command.getTargetCreateType());
-    for (Field field : command.getTargetForm().getFields()) {
+    final Insert insert = new Insert(command.getTargetCreateType());
+    for (final Field field : command.getTargetForm().getFields()) {
       if (field.getExpression() != null
           && (field.isCreatable() || field.isHidden())) {
         Attribute attr =
@@ -67,9 +73,44 @@ public class Create implements EventExecution {
       }
     }
     if (command.getTargetConnectAttribute() != null) {
-      insert.add(command.getTargetConnectAttribute(), "" + instance.getId());
+      insert.add(command.getTargetConnectAttribute(), "" + parent.getId());
     }
     insert.execute();
+
+    final Instance instance = insert.getInstance();
+
+// "TargetConnectChildAttribute"
+//        // "TargetConnectParentAttribute"
+//        // "TargetConnectType"
+//        if (getCommand().getProperty("TargetConnectType") != null) {
+//          Instance parent = new Instance(getParameter("oid"));
+    //
+//          Insert connect = new Insert(getCommand().getProperty("TargetConnectType"));
+//          connect.add(getCommand().getProperty("TargetConnectParentAttribute"), ""
+//              + parent.getId());
+//          connect.add(getCommand().getProperty("TargetConnectChildAttribute"), ""
+//              + insert.getId());
+//          connect.execute();
+//        }
+
+    for (final Field field : command.getTargetForm().getFields()) {
+      if (field.getExpression() == null && field.isCreatable()) {
+        final Context.FileParameter fileItem = context.getFileParameters().get(field.getName());
+
+        if (fileItem != null) {
+          final Checkin checkin = new Checkin(instance);
+          try {
+            checkin.execute(fileItem.getName(),
+                            fileItem.getInputStream(),
+                            (int) fileItem.getSize());
+          } catch (IOException e) {
+// TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
+      }
+    }
+
     return ret;
   }
 }
