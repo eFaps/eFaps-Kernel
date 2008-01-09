@@ -203,5 +203,28 @@
       <version>1.6R7</version>
     </dependency>
 
+    <!-- java transaction manager -->
+    <dependency>
+      <groupId>jotm</groupId>
+      <artifactId>jotm</artifactId>
+      <version>2.0.10</version>
+      <exclusions>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.resource</groupId>
+          <artifactId>connector-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- replacement for the javax.resource.connector-api-1.5 needed by jotm-->
+    <dependency>
+      <groupId>org.ow2.spec.ee</groupId>
+      <artifactId>ow2-connector-1.5-spec</artifactId>
+      <version>1.0-M1</version>
+    </dependency>
+
   </dependencies>
 </project>

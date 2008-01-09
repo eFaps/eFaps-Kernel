@@ -253,23 +253,10 @@
     </dependency>
 
     <!-- Transaction Manager -->
-    <!--
-      <url>http://jakarta.apache.org/slide</url>
-      <properties>
-      <war.bundle>true</war.bundle>
-      <comment>The component is part of the slide module.</comment>
-      </properties>
-    -->
     <dependency>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-jta</artifactId>
       <version>1.0-M1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>slide</groupId>
-      <artifactId>slide-kernel</artifactId>
-      <version>2.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>

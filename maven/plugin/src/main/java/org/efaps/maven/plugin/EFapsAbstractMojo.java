@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,15 @@ import javax.sql.DataSource;
 
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.slide.transaction.SlideTransactionManager;
+//import org.apache.slide.transaction.SlideTransactionManager;
 import org.jfrog.maven.annomojo.annotations.MojoParameter;
 import org.mortbay.naming.NamingUtil;
+import org.objectweb.jotm.Current;
 
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
+import org.efaps.db.transaction.VFSStoreFactoryBean;
 import org.efaps.maven.logger.SLF4JOverMavenLog;
 import org.efaps.util.EFapsException;
 
@@ -51,6 +53,44 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public abstract class EFapsAbstractMojo implements Mojo {
+
+  /////////////////////////////////////////////////////////////////////////////
+  // static variables
+
+  /**
+   * Key name holding all store names in the store configuration.
+   *
+   * @see #initStores
+   */
+  private final static String KEY_STORENAMES = "stores";
+
+  /**
+   * Extension of the key for name of the javax naming for one store.
+   *
+   * @see #initStores
+   */
+  private final static String KEY_STORE_NAMING = ".naming";
+
+  /**
+   * Extension of the key for the base name (path) for one store.
+   *
+   * @see #initStores
+   */
+  private final static String KEY_STORE_BASENAME = ".basename";
+
+  /**
+   * Extension of the key for the provider class name for one store.
+   *
+   * @see #initStores
+   */
+  private final static String KEY_STORE_PROVIDER = ".provider";
+
+  /**
+   * Regular expression used to split all store names.
+   *
+   * @see #initStores
+   */
+  private final static String REGEXP_SPLIT_STORENAMES = "\\|";
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -64,9 +104,16 @@ public abstract class EFapsAbstractMojo implements Mojo {
   private Log log = null;
 
   /**
+   * Class name of the SQL database factory (implementing interface
+   * {@link #javax.sql.DataSource}).
+   *
+   * @see javax.sql.DataSource
+   * @see #initDatabase
    */
   @MojoParameter(required = true,
-                 expression = "${org.efaps.db.factory}")
+                 expression = "${org.efaps.db.factory}",
+                 description = "SQL database factory class name (implementing "
+                               + "interface javax.sql.DataSource)")
   private String factory;
 
   /**
@@ -94,10 +141,23 @@ public abstract class EFapsAbstractMojo implements Mojo {
   private String passWord;
 
   /**
+   * Defines the database type (used to define database specific 
+   * implementations).
    */
   @MojoParameter(expression = "${org.efaps.db.type}",
                  required = true)
   private String type;
+
+  /**
+   * All property configurations defining the store configurations.
+   *
+   * @see #initStores
+   */
+  @MojoParameter(expression = "${org.efaps.stores}",
+                 required = false,
+                 description = "Comma separated list of properties defining "
+                               + "all store configurations.")
+  private String stores;
 
   /**
    * Project classpath.
@@ -119,6 +179,8 @@ public abstract class EFapsAbstractMojo implements Mojo {
   /**
    * @todo better way instead of catching class not found exception (needed for
    *       the shell!)
+   * @see #initDatabase
+   * @see #initStores
    */
   protected void init()  {
     try  {
@@ -128,6 +190,7 @@ public abstract class EFapsAbstractMojo implements Mojo {
     }
     
     initDatabase();
+    initStores();
   }
 
   /**
@@ -219,7 +282,8 @@ public abstract class EFapsAbstractMojo implements Mojo {
           initialised = initialised && true;
         }
 // TODO: must be referenced by class frmo outside
-NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new SlideTransactionManager());
+//        NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new SlideTransactionManager());
+NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
       } catch (NamingException e)  {
         getLog().error(
             "could not bind JDBC pooling class " + "'" 
@@ -235,6 +299,62 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new SlideTransactionMan
     return initialised;
   }
 
+  /**
+   * Initialize all stores.
+   * 
+   * @see #stores
+   */
+  private boolean initStores()  {
+    boolean initialized = true;
+
+    final javax.naming.Context compCtx;
+    try {
+      final InitialContext context = new InitialContext();
+      compCtx = (javax.naming.Context)context.lookup ("java:comp/env");
+    } catch (NamingException e) {
+      throw new Error("Could not initialize JNDI", e);
+    }
+    final Map<String, String> conf = convertToMap(this.stores);
+    final String[] storeNames = conf.get(KEY_STORENAMES).split(REGEXP_SPLIT_STORENAMES);
+
+    for (final String storeName : storeNames)  {
+
+      if (!"".equals(storeName))  {
+        final String naming = conf.get(storeName + KEY_STORE_NAMING);
+        final String basename = conf.get(storeName + KEY_STORE_BASENAME);
+        final String provider = conf.get(storeName + KEY_STORE_PROVIDER);
+
+        getLog().info("Intialize store '" + naming + "'");
+
+        if ((naming == null) || ("".equals(naming)))  {
+          getLog().error("javax naming name for store '" + storeName
+                         + "' is not defined!");
+          initialized = false;
+        } else if ((basename == null) || ("".equals(basename)))  {
+          getLog().error("base name (path) for store '" + storeName
+              + "' is not defined!");
+          initialized = false;
+        } else if ((provider == null) || ("".equals(provider)))  {
+          getLog().error("provider class name for store '" + storeName
+              + "' is not defined!");
+          initialized = false;
+        } else  {
+          final VFSStoreFactoryBean factory = new VFSStoreFactoryBean();
+          factory.setBaseName(basename);
+          factory.setProvider(provider);
+          try  {
+            NamingUtil.bind(compCtx, naming, factory);
+          } catch (NamingException e)  {
+            getLog().error(
+                "could not bind VFS store factory bean to '" + naming + "'",
+                e);
+          }
+        }
+      }
+    }
+    return initialized;
+  }
+  
   /**
    * Reloads the internal eFaps cache.
    */
