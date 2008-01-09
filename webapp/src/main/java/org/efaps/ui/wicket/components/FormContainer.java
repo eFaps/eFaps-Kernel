@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
  */
 
 package org.efaps.ui.wicket.components;
+
+import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.ComponentTag;
@@ -123,15 +125,18 @@ public class FormContainer extends Form {
    *
    * @see org.apache.wicket.markup.html.form.Form#onSubmit()
    */
+  @SuppressWarnings("unchecked")
   @Override
   protected void onSubmit() {
 
     super.onSubmit();
     if (getRequestCycle().getRequest() instanceof MultipartServletWebRequest) {
-      final MultipartServletWebRequest multi =
-          (MultipartServletWebRequest) getRequestCycle().getRequest();
-      multi.getFiles();
-      System.out.println("hier ist der Multi");
+
+      final List<MultiListener> multis = this.getBehaviors(MultiListener.class);
+      for (final MultiListener onemulti : multis) {
+        onemulti.onSubmit();
+      }
+
     }
 
   }

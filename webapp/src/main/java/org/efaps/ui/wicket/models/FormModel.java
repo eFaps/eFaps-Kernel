@@ -77,6 +77,9 @@ public class FormModel extends AbstractModel {
    */
   private UUID formUUID;
 
+  // TODO set fileupload
+  private boolean fileUpload = true;
+
   public FormModel(PageParameters _parameters) {
     super(_parameters);
     final AbstractCommand command = super.getCommand();
@@ -119,7 +122,7 @@ public class FormModel extends AbstractModel {
         } else if (super.isSearchMode()) {
           final List<EventDefinition> events =
               getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
-          for (EventDefinition eventDef : events) {
+          for (final EventDefinition eventDef : events) {
             final String tmp = eventDef.getProperty("Types");
             if (tmp != null) {
               type = Type.get(tmp);
@@ -131,7 +134,7 @@ public class FormModel extends AbstractModel {
         query = new SearchQuery();
         query.setObject(super.getOid());
 
-        for (Field field : form.getFields()) {
+        for (final Field field : form.getFields()) {
           if (field.getExpression() != null) {
             query.addSelect(field.getExpression());
           }
@@ -259,9 +262,9 @@ public class FormModel extends AbstractModel {
       if (query != null) {
         query.close();
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
     super.setInitialised(true);
@@ -366,5 +369,24 @@ public class FormModel extends AbstractModel {
       return this.model;
     }
 
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #fileUpload}.
+   *
+   * @return value of instance variable {@link #fileUpload}
+   */
+  public boolean isFileUpload() {
+    return this.fileUpload;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #fileUpload}.
+   *
+   * @param fileUpload
+   *                the fileUpload to set
+   */
+  public void setFileUpload(boolean fileUpload) {
+    this.fileUpload = fileUpload;
   }
 }

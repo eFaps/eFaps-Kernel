@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,51 +20,25 @@
 
 package org.efaps.ui.wicket.components.footer;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageMap;
-import org.apache.wicket.PageParameters;
-import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow.WindowClosedCallback;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.markup.html.link.PopupCloseLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.event.Return;
-import org.efaps.admin.event.Return.ReturnValues;
-import org.efaps.admin.ui.AbstractCommand.Target;
-import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
-import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.pages.content.AbstractContentPage;
-import org.efaps.ui.wicket.pages.content.form.FormPage;
-import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
-import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
-import org.efaps.util.EFapsException;
 
 /**
  * This class renders the Footer under a WebForm or WebTable.<br>
@@ -107,8 +81,11 @@ public class FooterPanel extends Panel {
                      FormContainer _form) {
     super(_id, _model);
     this.modalWindow = _modalWindow;
+
     final AbstractModel model = (AbstractModel) super.getModel();
 
+    // if we want a SucessDialog we add it here, it will be opened after closing
+    // the window
     if ("true".equals(model.getCommand().getProperty("SuccessDialog"))) {
       FooterPanel.this.modalWindow
           .setWindowClosedCallback(new WindowClosedCallback() {
@@ -159,8 +136,8 @@ public class FooterPanel extends Panel {
     if ((model.isSubmit() && model instanceof TableModel)
         || !model.isSearchMode()) {
       final Button button =
-          new Button("createeditsearch", new AjaxSubmitAndCloseLink(
-              Button.LINKID, model, _form), label, Button.ICON_ACCEPT);
+          new Button("createeditsearch", new AjaxSubmitCloseLink(Button.LINKID,
+              model, _form), label, Button.ICON_ACCEPT);
       this.add(button);
     } else if (model.isSearchMode() && model.getCallingCommandUUID() != null) {
       final Button button =
@@ -203,327 +180,36 @@ public class FooterPanel extends Panel {
     return ret;
   }
 
-  /**
-   * Link using Ajax to submit the Form and close the ModalWindow or the PopUp
-   * this FooterPanel is imbeded.
-   */
-  public class AjaxSubmitAndCloseLink extends SubmitLink {
-
-    private static final long serialVersionUID = 1L;
-
-    public AjaxSubmitAndCloseLink(final String _id, final IModel _model,
-                                  final FormContainer _form) {
-      super(_id, _form);
-      this.add(new AjaxSubmitAndCloseBehavior(_model, _form));
-      _form.setDefaultSubmit(this);
-    }
-  }
 
   /**
-   * Behavior providing the functionality for {@link #AjaxSubmitAndCloseLink}
-   */
-  public class AjaxSubmitAndCloseBehavior extends AjaxFormSubmitBehavior {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Instance variable storing the model, because the superclasses of a
-     * behavior, don't store the model.
-     */
-    private final IModel imodel;
-
-    /** Instance variable storing the form to be submited. */
-    private final FormContainer form;
-
-    /**
-     * Constructor
-     *
-     * @param _model
-     * @param _form
-     */
-    public AjaxSubmitAndCloseBehavior(final IModel _model,
-                                      final FormContainer _form) {
-      super(_form, "onclick");
-      this.imodel = _model;
-      this.form = _form;
-    }
-
-    @Override
-    protected void onSubmit(final AjaxRequestTarget _target) {
-      final String[] other =
-          this.getComponent().getRequestCycle().getRequest().getParameters(
-              "selectedRow");
-      if (checkForRequired(_target) && (validateForm(_target))) {
-        try {
-          if (!executeEvents(_target, other)) {
-            return;
-          }
-
-        } catch (final EFapsException e) {
-          final ModalWindowContainer modal =
-              ((AbstractContentPage) this.getComponent().getPage()).getModal();
-          modal.setPageCreator(new ModalWindow.PageCreator() {
-
-            private static final long serialVersionUID = 1L;
-
-            public Page createPage() {
-              return new ErrorPage(e);
-            }
-          });
-          modal.show(_target);
-          return;
-        }
-
-        final AbstractModel model = (AbstractModel) this.imodel;
-
-        final boolean dopple = true;
-        if (dopple) {
-          final StringBuilder ex = new StringBuilder();
-          ex.append("var f=document.getElementById('").append(
-              this.form.getMarkupId()).append(
-              "');f.onsubmit=undefined;f.action=\"").append(this.form.getActionUrl())
-              .append("\";f.submit();");
-
-          this.form.setMultiPart(true);
-          _target.appendJavascript(ex.toString());
-
-        } else {
-          if (model.getCommand().getTarget() == Target.MODAL) {
-            FooterPanel.this.modalWindow.setReloadChild(true);
-            FooterPanel.this.modalWindow.close(_target);
-          } else {
-            final AbstractModel openermodel =
-                (AbstractModel) ((EFapsSession) Session.get()).getOpenerModel();
-            Class<?> clazz;
-            if (openermodel instanceof TableModel) {
-              clazz = TablePage.class;
-            } else {
-              clazz = FormPage.class;
-            }
-            final CharSequence url =
-                this.form.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-                    clazz, openermodel.getPageParameters());
-            _target.appendJavascript("opener.location.href = '"
-                + url
-                + "'; self.close();");
-
-          }
-          FooterPanel.this.success = true;
-          // execute the CallBacks
-          final List<UpdateInterface> updates =
-              ((EFapsSession) getSession()).getUpdateBehavior(model.getOid());
-          if (updates != null) {
-            for (final UpdateInterface update : updates) {
-              if (update.isAjaxCallback()) {
-                update.setOid(model.getOid());
-                update.setMode(model.getMode());
-                _target.prependJavascript(update.getAjaxCallback());
-              }
-            }
-          }
-        }
-      }
-    }
-
-    @Override
-    protected void onError(final AjaxRequestTarget _target) {
-      // not useful here
-    }
-
-    /**
-     * execute the events wich are related to CommandAbstract calling the Form
-     *
-     * @param _target
-     *                AjaxRequestTarget to be used in the case a ModalPage
-     *                should be called
-     * @param _other
-     *                Parameters to be passed on to the Event
-     * @return true if the events where executed successfully, otherwise false
-     * @throws EFapsException
-     */
-    private boolean executeEvents(final AjaxRequestTarget _target,
-                                  final String[] _other) throws EFapsException {
-      boolean ret = true;
-      final List<Return> returns =
-          ((AbstractModel) this.form.getParent().getModel())
-              .executeEvents(_other);
-      for (final Return oneReturn : returns) {
-        if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
-          final String key = (String) oneReturn.get(ReturnValues.VALUES);
-          showDialog(_target, key);
-          ret = false;
-          break;
-        }
-      }
-      return ret;
-    }
-
-    /**
-     * executes the Validation-Events related to the CommandAbstract wich called
-     * this Form
-     *
-     * @param _target
-     *                AjaxRequestTarget to be used in the case a ModalPage
-     *                should be called
-     * @return true if the Validation was valid, otherwise false
-     */
-    private boolean validateForm(final AjaxRequestTarget _target) {
-      boolean ret = true;
-
-      final List<Return> validation =
-          ((AbstractModel) this.form.getParent().getModel()).validate();
-
-      for (final Return oneReturn : validation) {
-        if (oneReturn.get(ReturnValues.TRUE) == null) {
-          final String key = (String) oneReturn.get(ReturnValues.VALUES);
-          showDialog(_target, key);
-
-          ret = false;
-          break;
-        }
-      }
-      return ret;
-    }
-
-    /**
-     * Method checking if the mandatory field of the Form are filled in, and if
-     * not opens a WarnDialog and marks the fields in the Form via Ajax.
-     *
-     * @param _target
-     *                RequestTarget used for this Request
-     * @return true if all mandatory fields are filled, else false
-     */
-    private boolean checkForRequired(final AjaxRequestTarget _target) {
-      boolean ret = true;
-      if (this.form.getParent().getModel() instanceof TableModel) {
-        return true;
-      }
-
-      final Iterator<?> iterator = this.form.iterator();
-      FormPanel container = null;
-      while (iterator.hasNext()) {
-        final Object object = iterator.next();
-        if (object instanceof WebMarkupContainer) {
-          final Iterator<?> iterator2 =
-              ((WebMarkupContainer) object).iterator();
-          while (iterator2.hasNext()) {
-            final Object object2 = iterator2.next();
-            if (object2 instanceof FormPanel) {
-              container = (FormPanel) object2;
-              break;
-            }
-          }
-          break;
-        }
-      }
-
-      final Map<?, ?> map =
-          this.getComponent().getRequestCycle().getRequest().getParameterMap();
-      for (final Entry<String, Label> entry : container.getRequiredComponents()
-          .entrySet()) {
-
-        final String[] values = (String[]) map.get(entry.getKey());
-        final String value = values[0];
-        if (value == null || value.length() == 0) {
-          final Label label = entry.getValue();
-          label.add(new SimpleAttributeModifier("class",
-              "eFapsFormLabelRequiredForce"));
-          _target.addComponent(label);
-          ret = false;
-        }
-      }
-      if (!ret) {
-        showDialog(_target, "MandatoryDialog");
-      }
-      return ret;
-    }
-
-  }
-
-  /**
-   * shows a modal DialogPage
+   * This is the getter method for the instance variable {@link #modalWindow}.
    *
-   * @param _target
-   *                AjaxRequestTarget to be used for opening the modal
-   *                DialogPage
-   * @param _key
-   *                the Key to get the DBProperties from the eFapsDataBaase
+   * @return value of instance variable {@link #modalWindow}
    */
-  private void showDialog(final AjaxRequestTarget _target, final String _key) {
-    final ModalWindowContainer modal =
-        ((AbstractContentPage) this.getPage()).getModal();
-
-    modal.setResizable(false);
-    modal.setInitialWidth(20);
-    modal.setInitialHeight(12);
-    modal.setWidthUnit("em");
-    modal.setHeightUnit("em");
-    modal.setPageMapName("warn");
-
-    modal.setPageCreator(new ModalWindow.PageCreator() {
-
-      private static final long serialVersionUID = 1L;
-
-      public Page createPage() {
-        return new DialogPage(modal, _key);
-      }
-    });
-
-    modal.show(_target);
-
+  public ModalWindowContainer getModalWindow() {
+    return this.modalWindow;
   }
 
+
   /**
-   * Link using Ajax to close the ModalWindow the FooterPanel was opened in.
+   * This is the getter method for the instance variable {@link #success}.
+   *
+   * @return value of instance variable {@link #success}
    */
-  public class AjaxCancelLink extends AjaxLink {
-
-    public AjaxCancelLink(final String _id) {
-      super(_id);
-    }
-
-    private static final long serialVersionUID = 1L;
-
-    @Override
-    public void onClick(final AjaxRequestTarget _target) {
-      FooterPanel.this.modalWindow.setReloadChild(false);
-      FooterPanel.this.modalWindow.close(_target);
-    }
+  public boolean isSuccess() {
+    return this.success;
   }
 
+
   /**
-   * Link used to submit a Search
+   * This is the setter method for the instance variable
+   * {@link #success}.
+   *
+   * @param success
+   *                the success to set
    */
-  public class SearchSubmitLink extends SubmitLink {
-
-    private static final long serialVersionUID = 1L;
-
-    public SearchSubmitLink(final String _id, final AbstractModel _model,
-                            final Form _form) {
-      super(_id, _form);
-      super.setModel(_model);
-    }
-
-    @Override
-    public void onSubmit() {
-      super.onSubmit();
-      final AbstractModel model = (AbstractModel) super.getModel();
-
-      final PageParameters parameters = new PageParameters();
-      parameters.add("command", model.getCommand().getUUID().toString());
-      parameters.add("oid", model.getOid());
-
-      final TableModel newmodel = new TableModel(parameters);
-      if (model.isSubmit()) {
-        newmodel.setSubmit(true);
-        newmodel.setCallingCommandUUID(model.getCallingCommandUUID());
-      }
-
-      final TablePage page = new TablePage(newmodel);
-
-      this.getRequestCycle().setResponsePage(page);
-
-    }
+  public void setSuccess(boolean success) {
+    this.success = success;
   }
 
 }
