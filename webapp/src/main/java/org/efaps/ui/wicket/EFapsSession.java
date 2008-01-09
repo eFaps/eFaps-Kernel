@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +33,10 @@ import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.protocol.http.IMultipartWebRequest;
+import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebSession;
+import org.apache.wicket.util.upload.FileItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -348,11 +353,31 @@ public class EFapsSession extends WebSession {
     if (isLogedIn()) {
       try {
         if (!Context.isTMActive()) {
-          final Map<String, String[]> parameter =
-              RequestCycle.get().getRequest().getParameterMap();
+          WebRequest request = (WebRequest)RequestCycle.get().getRequest();
+
+          String contentType = ((WebRequest)request).getHttpServletRequest().getContentType();
+          System.out.println("EFapsWebRequestCycle.request.getHttpServletRequest().getContentType()="+contentType);
+          if ((contentType != null) && contentType.startsWith("multipart/form-data"))  {
+            request = request.newMultipartWebRequest(this.getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
+          }
+          
+          
+          final Map<String, String[]> parameters = request.getParameterMap();
+          Map<String, Context.FileParameter> fileParams = null;
+
+          // If we successfully installed a multipart request
+          if (request instanceof IMultipartWebRequest)  {
+            final Map<String, FileItem> fileMap = ((IMultipartWebRequest)request).getFiles();
+            fileParams = new HashMap<String, Context.FileParameter>(fileMap.size());
+
+            for (final Map.Entry<String, FileItem> entry : fileMap.entrySet())  {
+              fileParams.put(entry.getKey(), new FileParameter(entry));
+            }
+          }
+System.out.println("fileParams="+fileParams);
 
           Context.begin(this.userName, super.getLocale(),
-              this.sessionAttributes, parameter, null);
+              this.sessionAttributes, parameters, fileParams);
 
           if (Context.getThreadContext().containsUserAttribute(
               UserAttributesDefinition.LOCALE.name)) {
@@ -396,4 +421,41 @@ public class EFapsSession extends WebSession {
       }
     }
   }
+  
+  private class FileParameter implements Context.FileParameter  {
+
+    private final FileItem fileItem;
+
+    private final String parameterName;
+
+    public FileParameter(final Map.Entry<String, FileItem> _entry)  {
+      this.parameterName = _entry.getKey();
+      this.fileItem = _entry.getValue();
+    }
+
+    public void close() throws IOException {
+    }
+
+    public String getContentType() {
+      return this.fileItem.getContentType();
+    }
+
+    public InputStream getInputStream() throws IOException {
+      return this.fileItem.getInputStream();
+    }
+
+    public String getName() {
+      return this.fileItem.getName();
+    }
+
+    public String getParameterName() {
+      return this.parameterName;
+    }
+
+    public long getSize() {
+      return this.fileItem.getSize();
+    }
+    
+  };
+
 }
