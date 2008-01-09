@@ -2,7 +2,7 @@
 
 <!--
 
- Copyright 2003-2007 The eFaps Team
+ Copyright 2003-2008 The eFaps Team
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -23,7 +23,10 @@
 
 -->
 
-<ui-form  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-form xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>efbeaead-5973-40a4-ad7d-64cabad40233</uuid>
 
   <!-- ************************************************************************
@@ -70,9 +73,12 @@
       <property name="Expression">Revision</property>
     </field>
      <field name="file">
-      <property name="ClassNameUI">org.efaps.admin.datamodel.ui.FileUI</property>
       <property name="Editable">true</property>
       <property name="Label">Admin_UI_File/File.Label</property>
+      <trigger name="Admin_UI_File/file"
+               event="UI_FIELD_VALUE" 
+               program="org.efaps.esjp.common.file.FileField"
+               method="getFieldValueUI"/>
     </field>
  </definition>
 
