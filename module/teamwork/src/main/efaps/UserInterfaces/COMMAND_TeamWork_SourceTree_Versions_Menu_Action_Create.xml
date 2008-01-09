@@ -59,7 +59,7 @@
       <execute program="org.efaps.esjp.common.uiform.Create"/>
     </target>
     <!-- property definitions -->
-    <property name="Target">popup</property>
+    <property name="Target">modal</property>
     <property name="TargetConnectAttribute">TeamWork_SourceVersion/ParentSourceLink</property>
     <property name="TargetCreateType">TeamWork_SourceVersion</property>
     <property name="TargetMode">create</property>
