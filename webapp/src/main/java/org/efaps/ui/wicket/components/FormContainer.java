@@ -27,14 +27,17 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IFormSubmitListener;
-import org.apache.wicket.protocol.http.servlet.MultipartServletWebRequest;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 
 import org.efaps.ui.wicket.models.AbstractModel;
 
+
 /**
- * @author jmo
+ * TODO description
+ *
+ * @author jmox
  * @version $Id$
+ *
  */
 public class FormContainer extends Form {
 
@@ -48,6 +51,8 @@ public class FormContainer extends Form {
     super(id);
     // super.setMultiPart(true);
   }
+
+  private boolean fileUpload = false;
 
   /*
    * (non-Javadoc)
@@ -128,16 +133,33 @@ public class FormContainer extends Form {
   @SuppressWarnings("unchecked")
   @Override
   protected void onSubmit() {
-
     super.onSubmit();
-    if (getRequestCycle().getRequest() instanceof MultipartServletWebRequest) {
-
-      final List<MultiListener> multis = this.getBehaviors(MultiListener.class);
-      for (final MultiListener onemulti : multis) {
-        onemulti.onSubmit();
+    if (this.fileUpload) {
+      final List<FileUploadListener> uploadListeners =
+          this.getBehaviors(FileUploadListener.class);
+      for (final FileUploadListener listener : uploadListeners) {
+        listener.onSubmit();
       }
-
     }
-
   }
+
+  /**
+   * This is the getter method for the instance variable {@link #fileUpload}.
+   *
+   * @return value of instance variable {@link #fileUpload}
+   */
+  public boolean isFileUpload() {
+    return this.fileUpload;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #fileUpload}.
+   *
+   * @param _fileUpload
+   *                the fileUpload to set
+   */
+  public void setFileUpload(boolean _fileUpload) {
+    this.fileUpload = _fileUpload;
+  }
+
 }

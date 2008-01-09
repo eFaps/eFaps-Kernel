@@ -28,7 +28,7 @@ package org.efaps.ui.wicket.components;
  * @version $Id$
  *
  */
-public interface MultiListener {
+public interface FileUploadListener {
 
   void onSubmit();
 

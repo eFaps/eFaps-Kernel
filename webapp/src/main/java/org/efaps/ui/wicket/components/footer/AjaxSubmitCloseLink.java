@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.footer;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
-import org.efaps.ui.wicket.models.FormModel;
 
 /**
  * Link using Ajax to submit the Form and close the ModalWindow or the PopUp
@@ -40,10 +39,6 @@ public class AjaxSubmitCloseLink extends SubmitLink {
                              final AbstractModel _model,
                              final FormContainer _form) {
     super(_wicketid, _form);
-
-    if (_model instanceof FormModel && ((FormModel) _model).isFileUpload()) {
-      _form.add(new UploadBehavior());
-    }
     this.add(new AjaxSubmitCloseBehavior(_model, _form));
     _form.setDefaultSubmit(this);
   }

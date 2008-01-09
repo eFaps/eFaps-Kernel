@@ -165,7 +165,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     script.append("var f=document.getElementById('").append(
         this.form.getMarkupId()).append("');f.onsubmit=undefined;f.action=\"")
         .append(this.form.getActionUrl()).append("\";f.submit();");
-    this.form.setMultiPart(true);
+    this.form.setFileUpload(true);
     _target.appendJavascript(script.toString());
   }
 

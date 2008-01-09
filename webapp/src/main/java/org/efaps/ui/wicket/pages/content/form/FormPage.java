@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-20078 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,13 +88,13 @@ public class FormPage extends AbstractContentPage {
 
     final FormContainer form = new FormContainer("form");
     add(form);
-    super.addComponents(form);
 
     final FormModel model = (FormModel) super.getModel();
 
     if (!model.isInitialised()) {
       model.execute();
     }
+    super.addComponents(form);
 
     final WebMarkupContainer script = new WebMarkupContainer("selectscript");
     this.add(script);

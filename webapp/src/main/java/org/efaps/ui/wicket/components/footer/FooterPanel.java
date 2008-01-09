@@ -35,6 +35,7 @@ import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
+import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -133,6 +134,10 @@ public class FooterPanel extends Panel {
 
     add(StaticHeaderContributor.forCss(CSS));
 
+    if (_model instanceof FormModel && ((FormModel) _model).isFileUpload()) {
+      _form.add(new UploadBehavior(this.modalWindow));
+    }
+
     if ((model.isSubmit() && model instanceof TableModel)
         || !model.isSearchMode()) {
       final Button button =
@@ -180,7 +185,6 @@ public class FooterPanel extends Panel {
     return ret;
   }
 
-
   /**
    * This is the getter method for the instance variable {@link #modalWindow}.
    *
@@ -189,7 +193,6 @@ public class FooterPanel extends Panel {
   public ModalWindowContainer getModalWindow() {
     return this.modalWindow;
   }
-
 
   /**
    * This is the getter method for the instance variable {@link #success}.
@@ -200,10 +203,8 @@ public class FooterPanel extends Panel {
     return this.success;
   }
 
-
   /**
-   * This is the setter method for the instance variable
-   * {@link #success}.
+   * This is the setter method for the instance variable {@link #success}.
    *
    * @param success
    *                the success to set

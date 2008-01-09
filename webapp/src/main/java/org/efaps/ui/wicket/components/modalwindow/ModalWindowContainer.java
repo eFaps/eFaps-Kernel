@@ -76,34 +76,38 @@ public class ModalWindowContainer extends ModalWindow {
   public void close(final AjaxRequestTarget _target) {
     super.close(_target);
     if (this.reloadChild) {
-      AbstractModel model = (AbstractModel) this.getPage().getModel();
-      if (model != null) {
-        Class<?> clazz = null;
-        if (model instanceof TableModel) {
-          clazz = TablePage.class;
-        } else if (model instanceof FormModel) {
-          clazz = FormPage.class;
-        } else if (model instanceof StructurBrowserModel) {
-          clazz = StructurBrowserPage.class;
-        }
-        PageParameters parameters = model.getPageParameters();
-        parameters.put("listMenuKey", ((AbstractContentPage) this.getPage())
-            .getListMenuKey());
-        CharSequence url =
-            this.urlFor(PageMap.forName(this.getPage().getPageMapName()),
-                clazz, parameters);
-        String javascript = null;
-        if (this.getPage().getPageMapName()
-            .equals(MainPage.IFRAME_PAGEMAP_NAME)) {
-          javascript = "top.frames[0].location.href = '";
-        } else {
-          javascript = "top.frames[0].frames[0].location.href = '";
-        }
-        javascript += url + "';";
-        _target.prependJavascript(javascript);
-      }
+      _target.prependJavascript(getReloadJavaScript());
     }
 
+  }
+
+  public String getReloadJavaScript() {
+    final AbstractModel model = (AbstractModel) this.getPage().getModel();
+    String javascript = "";
+    if (model != null) {
+      Class<?> clazz = null;
+      if (model instanceof TableModel) {
+        clazz = TablePage.class;
+      } else if (model instanceof FormModel) {
+        clazz = FormPage.class;
+      } else if (model instanceof StructurBrowserModel) {
+        clazz = StructurBrowserPage.class;
+      }
+      final PageParameters parameters = model.getPageParameters();
+      parameters.put("listMenuKey", ((AbstractContentPage) this.getPage())
+          .getListMenuKey());
+      final CharSequence url =
+          this.urlFor(PageMap.forName(this.getPage().getPageMapName()), clazz,
+              parameters);
+
+      if (this.getPage().getPageMapName().equals(MainPage.IFRAME_PAGEMAP_NAME)) {
+        javascript = "top.frames[0].location.href = '";
+      } else {
+        javascript = "top.frames[0].frames[0].location.href = '";
+      }
+      javascript += url + "';";
+    }
+    return javascript;
   }
 
   /**
@@ -148,4 +152,29 @@ public class ModalWindowContainer extends ModalWindow {
 
   }
 
+  /**
+   * This method is a exact copy of the private method getCloseJavacript() in
+   * {@link #org.efaps.ui.wicket.components.modalwindow.ModalWindow}, nut we
+   * need it public
+   *
+   * @return
+   */
+  public static String getCloseJavacript() {
+    return "var win;\n" //
+        + "try {\n"
+        + "     win = window.parent.Wicket.Window;\n"
+        + "} catch (ignore) {\n"
+        + "}\n"
+        + "if (typeof(win) == \"undefined\" || typeof(win.current) == \"undefined\") {\n"
+        + "  try {\n"
+        + "     win = window.Wicket.Window;\n"
+        + "  } catch (ignore) {\n"
+        + "  }\n"
+        + "}\n"
+        + "if (typeof(win) != \"undefined\" && typeof(win.current) != \"undefined\") {\n"
+        + "     window.parent.setTimeout(function() {\n"
+        + "             win.current.close();\n"
+        + "     }, 0);\n"
+        + "}";
+  }
 }

@@ -77,8 +77,7 @@ public class FormModel extends AbstractModel {
    */
   private UUID formUUID;
 
-  // TODO set fileupload
-  private boolean fileUpload = true;
+  private boolean fileUpload = false;
 
   public FormModel(PageParameters _parameters) {
     super(_parameters);
@@ -219,6 +218,16 @@ public class FormModel extends AbstractModel {
             } else {
               strValue = fieldvalue.getViewHtml();
             }
+            if (strValue != null) {
+              final String tmp = strValue.replaceAll(" ", "");
+              if (tmp.toLowerCase().contains("type=\"file\"")) {
+                this.fileUpload = true;
+                strValue +=
+                    "<input type=\"hidden\" name=\""
+                        + field.getName()
+                        + "\" value=\"tets\">";
+              }
+            }
             String oid = null;
             String icon = field.getIcon();
             if (instance != null) {
@@ -298,6 +307,25 @@ public class FormModel extends AbstractModel {
     return this.elements;
   }
 
+  /**
+   * This is the getter method for the instance variable {@link #fileUpload}.
+   *
+   * @return value of instance variable {@link #fileUpload}
+   */
+  public boolean isFileUpload() {
+    return this.fileUpload;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #fileUpload}.
+   *
+   * @param fileUpload
+   *                the fileUpload to set
+   */
+  public void setFileUpload(boolean fileUpload) {
+    this.fileUpload = fileUpload;
+  }
+
   public class FormRowModel extends Model {
 
     private static final long serialVersionUID = 1L;
@@ -371,22 +399,4 @@ public class FormModel extends AbstractModel {
 
   }
 
-  /**
-   * This is the getter method for the instance variable {@link #fileUpload}.
-   *
-   * @return value of instance variable {@link #fileUpload}
-   */
-  public boolean isFileUpload() {
-    return this.fileUpload;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #fileUpload}.
-   *
-   * @param fileUpload
-   *                the fileUpload to set
-   */
-  public void setFileUpload(boolean fileUpload) {
-    this.fileUpload = fileUpload;
-  }
 }
