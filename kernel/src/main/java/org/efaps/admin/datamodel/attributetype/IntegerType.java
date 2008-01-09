@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,8 @@ public class IntegerType extends AbstractType {
    */
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
 
-    setValue(_rs.getLong(_indexes.get(0).intValue()).intValue());
+    final Long val = _rs.getLong(_indexes.get(0).intValue());
+    this.value = (val != null) ? val.intValue() : 0;
     return _rs.getLong(_indexes.get(0).intValue());
   }
 
