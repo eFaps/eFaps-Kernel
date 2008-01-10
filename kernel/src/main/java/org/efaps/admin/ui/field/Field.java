@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003 - 2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -241,6 +241,11 @@ public class Field extends AbstractUserInterfaceObject {
   private boolean fixedWidth = false;
 
   /**
+   * is this field in case of targetmode view viewable
+   */
+  private boolean viewable = true;
+
+  /**
    * Standart-Constructor
    */
   public Field() {
@@ -442,6 +447,8 @@ public class Field extends AbstractUserInterfaceObject {
       setReference(RequestHandler.replaceMacrosInUrl(_value));
     } else if ("Icon".equals(_name)) {
       setIcon(RequestHandler.replaceMacrosInUrl(_value));
+    } else if ("Viewable".equals(_name)) {
+      this.viewable = !("false".equalsIgnoreCase(_value));
     } else if ("Label".equals(_name)) {
       setLabel(_value);
     } else if ("ProgramValue".equals(_name)) {
@@ -1010,4 +1017,14 @@ public class Field extends AbstractUserInterfaceObject {
   public boolean isFixedWidth() {
     return this.fixedWidth;
   }
+
+  /**
+   * This is the getter method for the instance variable {@link #viewable}.
+   *
+   * @return value of instance variable {@link #viewable}
+   */
+  public boolean isViewable() {
+    return this.viewable;
+  }
+
 }

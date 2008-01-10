@@ -239,22 +239,24 @@ public class FormModel extends AbstractModel {
                 }
               }
             }
-
-            if (queryhasresult) {
-              final FormCellModel cell =
-                  new FormCellModel(field, oid, strValue, icon, super
-                      .isEditMode() ? field.isRequired() : false, label);
-              row.add(cell);
-            } else if (strValue != null && !strValue.equals("")) {
-              final FormCellModel cell =
-                  new FormCellModel(field, oid, strValue, icon, super
-                      .isSearchMode() ? false : field.isRequired(), label);
-              if (super.isSearchMode()) {
-                cell.setReference(null);
+            // if we have ViewMode and the field is not Viewable than we don't
+            // add the Cell to the row
+            if (!(super.isViewMode() && !field.isViewable())) {
+              if (queryhasresult) {
+                final FormCellModel cell =
+                    new FormCellModel(field, oid, strValue, icon, super
+                        .isEditMode() ? field.isRequired() : false, label);
+                row.add(cell);
+              } else if (strValue != null && !strValue.equals("")) {
+                final FormCellModel cell =
+                    new FormCellModel(field, oid, strValue, icon, super
+                        .isSearchMode() ? false : field.isRequired(), label);
+                if (super.isSearchMode()) {
+                  cell.setReference(null);
+                }
+                row.add(cell);
               }
-              row.add(cell);
             }
-
             rowgroupcount--;
             if (rowgroupcount < 1) {
               rowgroupcount = 1;
