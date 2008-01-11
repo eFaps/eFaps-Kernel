@@ -58,7 +58,7 @@ public class FileField  {
        .append("name=\"").append(field.getName()).append("\" ")
        .append("type=\"file\" ")
        .append("size=\"").append(field.getCols()).append("\" ")
-       .append(">");
+       .append("/>");
 
     final Return retVal = new Return();
     retVal.put(ReturnValues.VALUES, ret);
