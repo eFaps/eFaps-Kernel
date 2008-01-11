@@ -43,6 +43,7 @@ import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
+import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.Table;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
@@ -281,7 +282,7 @@ public class StructurBrowserModel extends AbstractModel {
         child.setDirection((Boolean) ((instMapper.get(instance).get(0))[1]));
         child.setLabel(value.toString());
         child.setParent(checkForChildren(instance));
-        child.setImage(instance.getType().getProperty("Icon"));
+        child.setImage(Image.getTypeIcon(instance.getType()).getUrl());
       }
     } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
@@ -368,7 +369,7 @@ public class StructurBrowserModel extends AbstractModel {
           if (field.getName().equals(this.browserFieldName)) {
             child.setLabel(strValue);
             child.setParent(checkForChildren(instance));
-            child.setImage(instance.getType().getProperty("Icon"));
+            child.setImage(Image.getTypeIcon(instance.getType()).getUrl());
           }
           child.getColumns().add(strValue);
         }
@@ -588,7 +589,7 @@ public class StructurBrowserModel extends AbstractModel {
    */
   private void setImage(final String _url) {
     if (_url != null) {
-      this.image = "/.." + RequestHandler.replaceMacrosInUrl(_url);
+      this.image = RequestHandler.replaceMacrosInUrl(_url);
     }
   }
 
