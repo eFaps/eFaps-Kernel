@@ -222,10 +222,20 @@ public class FormModel extends AbstractModel {
               final String tmp = strValue.replaceAll(" ", "");
               if (tmp.toLowerCase().contains("type=\"file\"")) {
                 this.fileUpload = true;
+                final String script =
+                    "onchange=\"document.getElementById(\'eFapsHiddenfield"
+                        + field.getName()
+                        + "\').value = this.value;\"/>";
+
+                strValue = strValue.replace(">", script);
+
                 strValue +=
                     "<input type=\"hidden\" name=\""
                         + field.getName()
-                        + "\" value=\"tets\">";
+                        + "\" value=\"\" id=\"eFapsHiddenfield"
+                        + field.getName()
+                        + "\"/>";
+
               }
             }
             String oid = null;
