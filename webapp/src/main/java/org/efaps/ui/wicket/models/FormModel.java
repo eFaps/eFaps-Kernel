@@ -48,9 +48,13 @@ import org.efaps.ui.wicket.models.cell.FormCellModel;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
+
 /**
- * @author jmo
- * @version $Id:FormModel.java 1510 2007-10-18 14:35:40Z jmox $
+ * TODO description
+ *
+ * @author jmox
+ * @version $Id$
+ *
  */
 public class FormModel extends AbstractModel {
 
@@ -218,24 +222,13 @@ public class FormModel extends AbstractModel {
             } else {
               strValue = fieldvalue.getViewHtml();
             }
+
+            // we search in the string if it is like <input type="file".. and
+            // set the fileUpload Flag
             if (strValue != null) {
               final String tmp = strValue.replaceAll(" ", "");
               if (tmp.toLowerCase().contains("type=\"file\"")) {
                 this.fileUpload = true;
-                final String script =
-                    "onchange=\"document.getElementById(\'eFapsHiddenfield"
-                        + field.getName()
-                        + "\').value = this.value;\"/>";
-
-                strValue = strValue.replace(">", script);
-
-                strValue +=
-                    "<input type=\"hidden\" name=\""
-                        + field.getName()
-                        + "\" value=\"\" id=\"eFapsHiddenfield"
-                        + field.getName()
-                        + "\"/>";
-
               }
             }
             String oid = null;

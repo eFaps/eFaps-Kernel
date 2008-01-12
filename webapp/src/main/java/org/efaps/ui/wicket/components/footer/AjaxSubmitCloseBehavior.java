@@ -174,6 +174,21 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     // not useful here
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.ajax.form.AjaxFormSubmitBehavior#getPreconditionScript()
+   */
+  @Override
+  protected CharSequence getPreconditionScript() {
+    String ret = null;
+    if (this.model instanceof FormModel
+        && ((FormModel) this.model).isFileUpload()) {
+      ret = "return eFapsFileInput()";
+    }
+    return ret;
+  }
+
   /**
    * execute the events wich are related to CommandAbstract calling the Form
    *

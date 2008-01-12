@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Page;
+import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 import org.apache.wicket.markup.repeater.RepeatingView;
 
 import org.efaps.ui.wicket.components.form.row.RowPanel;
@@ -35,9 +37,13 @@ import org.efaps.ui.wicket.models.FormModel.FormRowModel;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
+
 /**
+ * TODO description
+ *
  * @author jmox
- * @version $Id:WebFormContainer.java 1510 2007-10-18 14:35:40Z jmox $
+ * @version $Id$
+ *
  */
 public class FormPanel extends Panel {
 
@@ -45,6 +51,9 @@ public class FormPanel extends Panel {
 
   public static EFapsContentReference CSS =
       new EFapsContentReference(FormPanel.class, "FormPanel.css");
+
+  public static final JavascriptResourceReference FILEINPUT =
+      new JavascriptResourceReference(FormPanel.class, "EFapsFileInput.js");
 
   private final Map<String, Label> requiredComponents =
       new HashMap<String, Label>();
@@ -59,7 +68,9 @@ public class FormPanel extends Panel {
     }
 
     add(StaticHeaderContributor.forCss(CSS));
-
+    if (_model.isFileUpload()) {
+      add(HeaderContributor.forJavaScript(FILEINPUT));
+    }
     final RepeatingView rowRepeater = new RepeatingView("rowRepeater");
     this.add(rowRepeater);
 
