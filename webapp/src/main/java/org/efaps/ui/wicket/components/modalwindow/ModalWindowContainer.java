@@ -24,6 +24,7 @@ import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.util.string.AppendingStringBuffer;
 
 import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.FormModel;
@@ -50,6 +51,7 @@ public class ModalWindowContainer extends ModalWindow {
   public ModalWindowContainer(String id) {
     super(id);
     super.setCssClassName(ModalWindow.CSS_CLASS_GRAY);
+
   }
 
   /**
@@ -177,4 +179,20 @@ public class ModalWindowContainer extends ModalWindow {
         + "     }, 0);\n"
         + "}";
   }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow#postProcessSettings(org.apache.wicket.util.string.AppendingStringBuffer)
+   */
+  @Override
+  protected AppendingStringBuffer postProcessSettings(
+                                                      AppendingStringBuffer settings) {
+    // cut out that stupit PreconditionScript, because it will not work in case
+    // of frames
+    final int start = settings.lastIndexOf("function()");
+    settings.replace(start, settings.capacity(), "null );};");
+    return settings;
+  }
+
 }
