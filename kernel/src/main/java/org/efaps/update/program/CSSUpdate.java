@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,9 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * TODO description
  *
@@ -37,6 +40,15 @@ import java.util.Set;
 public class CSSUpdate extends AbstractSourceUpdate {
 
   public static String TYPENAME = "Admin_Program_CSS";
+
+  public static String ANNOTATION_VERSION = "@version";
+
+  public static String ANNOTATION_EXTENDS = "@extends";
+
+  /**
+   * Logging instance used to give logging information of this class.
+   */
+  private final static Logger LOG = LoggerFactory.getLogger(CSSUpdate.class);
 
   private int version = 0;
 
@@ -64,26 +76,25 @@ public class CSSUpdate extends AbstractSourceUpdate {
       final BufferedReader in =
           new BufferedReader(new FileReader(_url.getPath()));
       while ((thisLine = in.readLine()) != null) {
-        System.out.println(thisLine);
-        if (thisLine.contains("@version")) {
+        if (thisLine.contains(ANNOTATION_VERSION)) {
           final String versionstr =
-              thisLine.substring(thisLine.indexOf("@version") + 8);
+              thisLine.substring(thisLine.indexOf(ANNOTATION_VERSION)
+                  + ANNOTATION_VERSION.length());
           ret.version = Integer.parseInt(versionstr.trim());
         }
-        if (thisLine.contains("@extends")) {
+        if (thisLine.contains(ANNOTATION_EXTENDS)) {
           final String parent =
-              thisLine.substring(thisLine.indexOf("@extends") + 8);
+              thisLine.substring(thisLine.indexOf(ANNOTATION_EXTENDS)
+                  + ANNOTATION_EXTENDS.length());
           definition.assignSuper(parent.trim());
         }
       }
       in.close();
 
     } catch (final FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error(_url.toString() + " could not be found", e);
     } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error(_url.toString() + " is not readable", e);
     }
 
     return ret;
@@ -105,6 +116,12 @@ public class CSSUpdate extends AbstractSourceUpdate {
     return ret;
   }
 
+  /**
+   * TODO description
+   *
+   * @author jmox
+   * @version $Id$
+   */
   public static class CSSDefinition extends SourceDefinition {
 
     public CSSDefinition(final URL _url) {

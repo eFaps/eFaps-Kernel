@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,15 @@ import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
+import org.efaps.update.program.CSSUpdate;
 import org.efaps.util.EFapsException;
 
+/**
+ * TODO description
+ *
+ * @author jmox
+ * @version $Id$
+ */
 public class CSSCompiler {
 
   /**
@@ -78,10 +85,14 @@ public class CSSCompiler {
           new BufferedReader(new InputStreamReader(checkout.execute()));
       final StringBuffer buffer = new StringBuffer();
       try {
-        int pos;
-        while ((pos = in.read()) != -1) {
-          buffer.append((char) pos);
+        String thisLine;
+        while ((thisLine = in.readLine()) != null) {
+          if (!thisLine.contains(CSSUpdate.ANNOTATION_VERSION)
+              && !thisLine.contains(CSSUpdate.ANNOTATION_EXTENDS)) {
+            buffer.append(thisLine);
+          }
         }
+
         int start = 0;
         while ((start = buffer.indexOf("/*")) >= 0) {
           final int end = buffer.indexOf("*/", start + 2);
