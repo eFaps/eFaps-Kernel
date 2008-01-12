@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,13 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
+
 /**
+ * TODO description
+ *
  * @author jmox
- * @version $Id:DialogPage.java 1489 2007-10-15 22:50:46Z jmox $
+ * @version $Id$
+ *
  */
 public class DialogPage extends WebPage {
 
@@ -143,14 +147,15 @@ public class DialogPage extends WebPage {
 
       final List<UpdateInterface> updates =
           ((EFapsSession) getSession()).getUpdateBehavior(model.getOid());
-      for (final UpdateInterface update : updates) {
-        if (update.isAjaxCallback()) {
-          update.setOid(model.getOid());
-          update.setMode(model.getMode());
-          _target.prependJavascript(update.getAjaxCallback());
+      if (updates != null) {
+        for (final UpdateInterface update : updates) {
+          if (update.isAjaxCallback()) {
+            update.setOid(model.getOid());
+            update.setMode(model.getMode());
+            _target.prependJavascript(update.getAjaxCallback());
+          }
         }
       }
-
       DialogPage.this.modal.setWindowClosedCallback(new UpdateParentCallback(
           DialogPage.this.parent, DialogPage.this.modal));
       DialogPage.this.modal.setUpdateParent(true);
