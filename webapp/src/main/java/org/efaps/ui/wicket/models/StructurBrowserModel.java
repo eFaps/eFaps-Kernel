@@ -414,7 +414,7 @@ public class StructurBrowserModel extends AbstractModel {
           getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
               ParameterValues.INSTANCE, _instance, ParameterValues.OTHERS,
               "checkForChildren");
-      return ret.get(0).get(ReturnValues.TRUE) != null;
+      return (ret.isEmpty() ? false : ret.get(0).get(ReturnValues.TRUE) != null);
     } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
