@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -187,12 +187,12 @@ public class ModalWindowContainer extends ModalWindow {
    */
   @Override
   protected AppendingStringBuffer postProcessSettings(
-                                                      AppendingStringBuffer settings) {
+                                                      final AppendingStringBuffer _settings) {
     // cut out that stupit PreconditionScript, because it will not work in case
     // of frames
-    final int start = settings.lastIndexOf("function()");
-    settings.replace(start, settings.capacity(), "null );};");
-    return settings;
+    final int start = _settings.lastIndexOf("function()");
+    _settings.replace(start, _settings.capacity(), "null );};");
+    return _settings;
   }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.common.SystemAttribute;
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -41,6 +42,13 @@ import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
 
+/**
+ * TODO description
+ *
+ * @author jmox
+ * @version $Id$
+ *
+ */
 public class StaticContentServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
@@ -66,6 +74,8 @@ public class StaticContentServlet extends HttpServlet {
         };
       });
 
+  private int cacheDuration = 3600;
+
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
@@ -85,16 +95,20 @@ public class StaticContentServlet extends HttpServlet {
   protected void doGet(HttpServletRequest _req, HttpServletResponse _res)
                                                                          throws ServletException,
                                                                          IOException {
-    String imgName = _req.getRequestURI();
+    String contentName = _req.getRequestURI();
 
-    imgName = imgName.substring(imgName.lastIndexOf('/') + 1);
+    contentName = contentName.substring(contentName.lastIndexOf('/') + 1);
 
     try {
       if (!cache.hasEntries()) {
+        this.cacheDuration =
+            SystemAttribute.get(
+                UUID.fromString("50a65460-2d08-4ea8-b801-37594e93dad5"))
+                .getIntegerValue();
         loadCache();
       }
 
-      final ContentMapper imageMapper = cache.get(imgName);
+      final ContentMapper imageMapper = cache.get(contentName);
 
       if (imageMapper != null) {
         final Checkout checkout = new Checkout(imageMapper.oid);
@@ -102,8 +116,8 @@ public class StaticContentServlet extends HttpServlet {
         _res.setContentType(getServletContext().getMimeType(imageMapper.file));
         _res.setDateHeader("Last-Modified", imageMapper.time);
         _res.setDateHeader("Expires", System.currentTimeMillis()
-            + (3600 * 1000));
-        _res.setHeader("Cache-Control", "max-age=3600");
+            + (this.cacheDuration * 1000));
+        _res.setHeader("Cache-Control", "max-age=" + this.cacheDuration);
 
         if (supportsCompression(_req)) {
           _res.setHeader("Content-Encoding", "gzip");
