@@ -26,8 +26,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 import org.efaps.admin.datamodel.Type;
@@ -55,15 +57,34 @@ public final class EFapsPackager {
       new HashMap<String, OnePackage>();
 
   public static String getPackageKey(final List<String> _names) {
+    mergeList(_names);
     String name;
     if (PACKAGEMAPPER.containsKey(_names)) {
       name = PACKAGEMAPPER.get(_names);
+      if (name == "") {
+        name = createName(_names);
+        PACKAGEMAPPER.put(_names, name);
+      }
     } else {
       name = createName(_names);
       PACKAGEMAPPER.put(_names, name);
 
     }
     return name;
+  }
+
+  private static void mergeList(final List<String> _names) {
+    final Set<String> compare = new HashSet<String>();
+
+    for (int i = 0; i < _names.size();) {
+      if (compare.contains(_names.get(i))) {
+        _names.remove(i);
+      } else {
+        compare.add(_names.get(i));
+        i++;
+      }
+    }
+
   }
 
   private static String createName(final List<String> _names) {

@@ -22,7 +22,6 @@ package org.efaps.ui.wicket.pages.content;
 
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.FormContainer;
@@ -31,6 +30,7 @@ import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.menu.MenuPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
+import org.efaps.ui.wicket.pages.AbstractEFapsPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
@@ -38,7 +38,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:AbstractContentPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public abstract class AbstractContentPage extends WebPage {
+public abstract class AbstractContentPage extends AbstractEFapsPage {
 
   private static final long serialVersionUID = -2374207555009145191L;
 
