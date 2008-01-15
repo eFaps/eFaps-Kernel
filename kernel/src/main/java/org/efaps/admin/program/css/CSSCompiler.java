@@ -64,7 +64,7 @@ public class CSSCompiler {
   /**
    * UUID of the CompiledCSS type.
    */
-  private static final UUID TYPE_COMPILED =
+  public static final UUID TYPE_COMPILED =
       UUID.fromString("0607ea90-b48f-4b76-96f5-67cab19bd7b1");
 
   public void compile() throws EFapsException {

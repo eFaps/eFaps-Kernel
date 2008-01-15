@@ -22,6 +22,7 @@ package org.efaps.ui.servlet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.UUID;
 import java.util.zip.GZIPOutputStream;
@@ -34,6 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.common.SystemAttribute;
+import org.efaps.admin.program.pack.EFapsPackager;
+import org.efaps.admin.program.pack.OnePackage;
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -47,7 +50,6 @@ import org.efaps.util.cache.CacheReloadInterface;
  *
  * @author jmox
  * @version $Id$
- *
  */
 public class StaticContentServlet extends HttpServlet {
 
@@ -136,15 +138,34 @@ public class StaticContentServlet extends HttpServlet {
           checkout.execute(_res.getOutputStream());
         }
 
+      } else if (EFapsPackager.containsPackage(contentName)) {
+        final OnePackage pack = EFapsPackager.getPackage(contentName);
+
+        _res.setContentType("text/css");
+        _res.setDateHeader("Last-Modified", pack.getCreationTime());
+        _res.setDateHeader("Expires", System.currentTimeMillis()
+            + (this.cacheDuration * 1000));
+        _res.setHeader("Cache-Control", "max-age=" + this.cacheDuration);
+
+        _res.setHeader("Content-Encoding", "gzip");
+
+        int bytesRead;
+        final byte[] buffer = new byte[2048];
+
+        final InputStream in = pack.getInputStream();
+        while ((bytesRead = in.read(buffer)) != -1) {
+          _res.getOutputStream().write(buffer, 0, bytesRead);
+        }
+
       }
     } catch (final IOException e) {
-      LOG.error("while reading history data", e);
+      LOG.error("while reading Static Content", e);
       throw e;
     } catch (final CacheReloadException e) {
-      LOG.error("while reading history data", e);
+      LOG.error("while reading Static Content", e);
       throw new ServletException(e);
     } catch (final Exception e) {
-      LOG.error("while reading history data", e);
+      LOG.error("while reading Static Content", e);
       throw new ServletException(e);
     }
   }

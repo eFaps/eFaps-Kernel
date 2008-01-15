@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,16 @@
 
 package org.efaps.ui.wicket.pages.main;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
+import org.apache.wicket.Component;
+import org.apache.wicket.MarkupContainer;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
@@ -32,6 +38,7 @@ import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.JavascriptUtils;
 
 import org.efaps.admin.dbproperty.DBProperties;
+import org.efaps.admin.program.pack.EFapsPackager;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.menu.MenuContainer;
@@ -43,9 +50,13 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
+
 /**
- * @author jmo
- * @version $Id:MainPage.java 1490 2007-10-15 23:04:02Z jmox $
+ * TODO description
+ *
+ * @author jmox
+ * @version $Id$
+ *
  */
 public class MainPage extends WebPage {
 
@@ -116,5 +127,49 @@ public class MainPage extends WebPage {
 
   public final ModalWindowContainer getModal() {
     return this.modal;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.Page#onBeforeRender()
+   */
+  @Override
+  protected void onBeforeRender() {
+    final List<String> resources = new ArrayList<String>();
+    final List<IBehavior> beh = this.getBehaviors();
+    for (final IBehavior oneBehavior : beh) {
+      if (oneBehavior instanceof StaticHeaderContributor) {
+        this.remove(oneBehavior);
+        resources.add(((StaticHeaderContributor) oneBehavior).getReference()
+            .getName());
+      }
+    }
+    addChildStatics(resources, this);
+
+    this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
+        EFapsPackager.getPackageKey(resources))));
+
+    super.onBeforeRender();
+  }
+
+  private void addChildStatics(final List<String> _behaviors,
+                               final MarkupContainer _markupcontainer) {
+    final Iterator<?> it = _markupcontainer.iterator();
+    while (it.hasNext()) {
+      final Component component = (Component) it.next();
+      final List<IBehavior> beh = component.getBehaviors();
+      for (final IBehavior oneBehavior : beh) {
+        if (oneBehavior instanceof StaticHeaderContributor) {
+          component.remove(oneBehavior);
+          _behaviors.add(((StaticHeaderContributor) oneBehavior).getReference()
+              .getName());
+        }
+      }
+      if (component instanceof MarkupContainer) {
+        addChildStatics(_behaviors, (MarkupContainer) component);
+      }
+    }
+
   }
 }
