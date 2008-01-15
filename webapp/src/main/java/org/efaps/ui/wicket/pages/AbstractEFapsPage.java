@@ -83,9 +83,14 @@ public class AbstractEFapsPage extends WebPage {
         }
       }
       addChildStatics(resources, this);
-
-      this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
-          EFapsPackager.getPackageKey(resources))));
+      if (resources.size() > 1) {
+        this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
+            EFapsPackager.getPackageKey(resources))));
+      } else if (!resources.isEmpty()) {
+        // if it is only one we don't need a Package
+        this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
+            resources.get(0))));
+      }
       this.merged = true;
     }
     super.onBeforeRender();
@@ -105,9 +110,7 @@ public class AbstractEFapsPage extends WebPage {
               .getName());
         }
       }
-      if (component instanceof MarkupContainer) {
-        addChildStatics(_behaviors, (MarkupContainer) component);
-      }
+
     }
   }
 
