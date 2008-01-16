@@ -1,0 +1,11 @@
+@version 2
+@extends org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage.css
+
+/* extending for IE */
+
+.eFapsContentContainerFrame { 
+  position: static;
+  height: 100%;
+  border-bottom: 63px solid white;
+}
+

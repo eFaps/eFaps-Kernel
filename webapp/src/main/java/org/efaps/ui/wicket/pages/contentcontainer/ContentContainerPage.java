@@ -25,14 +25,11 @@ import org.apache.wicket.IPageMap;
 import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.protocol.http.ClientProperties;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
-import org.apache.wicket.util.string.CssUtils;
-
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Command;
 import org.efaps.admin.ui.Menu;
@@ -66,6 +63,14 @@ public class ContentContainerPage extends AbstractEFapsPage {
   private static EFapsContentReference CSS =
       new EFapsContentReference(ContentContainerPage.class,
           "ContentContainerPage.css");
+
+  private static EFapsContentReference CSS_IE =
+      new EFapsContentReference(ContentContainerPage.class,
+          "ContentContainerPage_IE.css");
+
+  private static EFapsContentReference CSS_SAFARI =
+      new EFapsContentReference(ContentContainerPage.class,
+          "ContentContainerPage_Safari.css");
 
   private String listMenuKey;
 
@@ -104,16 +109,14 @@ public class ContentContainerPage extends AbstractEFapsPage {
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties();
 
     if (properties.isBrowserSafari()) {
-      add(new StringHeaderContributor(CssUtils.INLINE_OPEN_TAG
-          + ".eFapsContentContainerFrame{\n"
-          + "  height:100%; \n"
-          + "}\n"
-          + CssUtils.INLINE_CLOSE_TAG));
+      add(StaticHeaderContributor.forCss(CSS_SAFARI));
+    } else if (properties.isBrowserInternetExplorer()) {
+      add(StaticHeaderContributor.forCss(CSS_IE));
+    } else {
+      add(StaticHeaderContributor.forCss(CSS));
     }
 
     this.listMenuKey = "ListMenu_" + this.getPageMapName();
-
-    add(StaticHeaderContributor.forCss(CSS));
 
     final WebMarkupContainer split = new WebMarkupContainer("split");
     this.add(split);

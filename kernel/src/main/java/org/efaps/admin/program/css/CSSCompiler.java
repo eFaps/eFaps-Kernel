@@ -24,11 +24,9 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
-import java.util.Map.Entry;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,82 +68,116 @@ public class CSSCompiler {
   public void compile() throws EFapsException {
     removeAllCompiled();
 
-    final Map<String, Long> allcss = readCSS();
+    final List<OneCSS> allcss = readCSS();
 
-    for (final Entry<String, Long> entry : allcss.entrySet()) {
+    for (final OneCSS onecss : allcss) {
 
       if (LOG.isInfoEnabled()) {
-        LOG.info("compiling " + entry.getKey());
+        LOG.info("compiling " + onecss.getName());
       }
 
-      final Checkout checkout =
-          new Checkout(Type.get(TYPE_CSS).getId() + "." + entry.getValue());
-      // TODO check character encoding!!UTF-8
-      final BufferedReader in =
-          new BufferedReader(new InputStreamReader(checkout.execute()));
-      final StringBuffer buffer = new StringBuffer();
-      try {
-        String thisLine;
-        while ((thisLine = in.readLine()) != null) {
-          if (!thisLine.contains(CSSUpdate.ANNOTATION_VERSION)
-              && !thisLine.contains(CSSUpdate.ANNOTATION_EXTENDS)) {
-            buffer.append(thisLine);
-          }
-        }
-
-        int start = 0;
-        while ((start = buffer.indexOf("/*")) >= 0) {
-          final int end = buffer.indexOf("*/", start + 2);
-          if (end >= start + 2)
-            buffer.delete(start, end + 2);
-        }
-
-        String css = buffer.toString();
-        in.close();
-        css = css.replaceAll("\\s+", " ");
-        css = css.replaceAll("([!{}:;>+\\(\\[,])\\s+", "$1");
-
-        Instance instance;
-        final Insert insert = new Insert(Type.get(TYPE_COMPILED));
-        insert.add("Name", entry.getKey());
-        insert.add("ProgramLink", "" + entry.getValue());
-        insert.executeWithoutAccessCheck();
-        instance = insert.getInstance();
-        insert.close();
-
-        // TODO check character encoding!!
-        final ByteArrayInputStream str =
-            new ByteArrayInputStream(css.getBytes());
-        String name =
-            entry.getKey().substring(0, entry.getKey().lastIndexOf("."));
-
-        name =
-            name.substring(name.lastIndexOf(".") + 1)
-                + entry.getKey().substring(entry.getKey().lastIndexOf("."));
-
-        final Checkin checkin = new Checkin(instance);
-        checkin.executeWithoutAccessCheck(name, str, css.getBytes().length);
-
-      } catch (final IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+      final List<String> supers = getSuper(onecss.getOid());
+      String ttl = "";
+      while (!supers.isEmpty()) {
+        ttl += getCompiledString(supers.get(supers.size() - 1));
+        supers.remove(supers.size() - 1);
       }
+      ttl += getCompiledString(onecss.getOid());
+
+      Instance instance;
+      final Insert insert = new Insert(Type.get(TYPE_COMPILED));
+      insert.add("Name", onecss.getName());
+      insert.add("ProgramLink", "" + onecss.getId());
+      insert.executeWithoutAccessCheck();
+      instance = insert.getInstance();
+      insert.close();
+
+      // TODO check character encoding!!
+      final ByteArrayInputStream str = new ByteArrayInputStream(ttl.getBytes());
+      String name =
+          onecss.getName().substring(0, onecss.getName().lastIndexOf("."));
+
+      name =
+          name.substring(name.lastIndexOf(".") + 1)
+              + onecss.getName().substring(onecss.getName().lastIndexOf("."));
+
+      final Checkin checkin = new Checkin(instance);
+      checkin.executeWithoutAccessCheck(name, str, ttl.getBytes().length);
     }
     // query.setExpand(_oid, _expand)
 
   }
 
-  protected Map<String, Long> readCSS() throws EFapsException {
-    final Map<String, Long> ret = new HashMap<String, Long>();
+  protected List<OneCSS> readCSS() throws EFapsException {
+    final List<OneCSS> ret = new ArrayList<OneCSS>();
     final SearchQuery query = new SearchQuery();
     query.setQueryTypes(Type.get(TYPE_CSS).getName());
     query.addSelect("ID");
+    query.addSelect("OID");
     query.addSelect("Name");
     query.executeWithoutAccessCheck();
     while (query.next()) {
       final String name = (String) query.get("Name");
+      final String oid = (String) query.get("OID");
       final Long id = (Long) query.get("ID");
-      ret.put(name, id);
+      ret.add(new OneCSS(name, oid, id));
+    }
+    return ret;
+  }
+
+  private String getCompiledString(final String _oid) {
+    String ret = "";
+    try {
+      final Checkout checkout = new Checkout(_oid);
+      // TODO check character encoding!!UTF-8
+      final BufferedReader in =
+          new BufferedReader(new InputStreamReader(checkout.execute()));
+
+      final StringBuffer buffer = new StringBuffer();
+
+      String thisLine;
+      while ((thisLine = in.readLine()) != null) {
+        if (!thisLine.contains(CSSUpdate.ANNOTATION_VERSION)
+            && !thisLine.contains(CSSUpdate.ANNOTATION_EXTENDS)) {
+          buffer.append(thisLine);
+        }
+      }
+
+      int start = 0;
+      while ((start = buffer.indexOf("/*")) >= 0) {
+        final int end = buffer.indexOf("*/", start + 2);
+        if (end >= start + 2)
+          buffer.delete(start, end + 2);
+      }
+
+      ret = buffer.toString();
+      in.close();
+      checkout.close();
+      ret = ret.replaceAll("\\s+", " ");
+      ret = ret.replaceAll("([!{}:;>+\\(\\[,])\\s+", "$1");
+      ret += "\n";
+
+    } catch (final EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (final IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return ret;
+
+  }
+
+  private List<String> getSuper(final String _oid) throws EFapsException {
+    final List<String> ret = new ArrayList<String>();
+    final SearchQuery query = new SearchQuery();
+    query.setExpand(_oid, "Admin_Program_CSS2CSS\\From");
+    query.addSelect("To");
+    query.execute();
+    if (query.next()) {
+      final String tooid = Type.get(TYPE_CSS).getId() + "." + query.get("To");
+      ret.add(tooid);
+      ret.addAll(getSuper(tooid));
     }
     return ret;
   }
@@ -163,6 +195,49 @@ public class CSSCompiler {
       del.executeWithoutAccessCheck();
     }
     query.close();
+  }
+
+  private class OneCSS {
+
+    private final String name;
+
+    private final String oid;
+
+    private final long id;
+
+    public OneCSS(final String _name, final String _oid, final long _id) {
+      this.name = _name;
+      this.oid = _oid;
+      this.id = _id;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #name}.
+     *
+     * @return value of instance variable {@link #name}
+     */
+    public String getName() {
+      return this.name;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #oid}.
+     *
+     * @return value of instance variable {@link #oid}
+     */
+    public String getOid() {
+      return this.oid;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #id}.
+     *
+     * @return value of instance variable {@link #id}
+     */
+    public long getId() {
+      return this.id;
+    }
+
   }
 
 }
