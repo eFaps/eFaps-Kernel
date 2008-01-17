@@ -33,8 +33,8 @@ import org.mozilla.javascript.Scriptable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.efaps.admin.program.css.CSSCompiler;
 import org.efaps.admin.program.esjp.Compiler;
+import org.efaps.admin.program.staticsource.AbstractSourceCompiler;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.update.Install;
@@ -172,7 +172,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
 
     Context.begin(_userName);
     (new Compiler(this.classpathElements)).compile();
-    (new CSSCompiler()).compile();
+    AbstractSourceCompiler.compileAll();
     Context.commit();
   }
 

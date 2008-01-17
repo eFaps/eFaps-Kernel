@@ -33,7 +33,7 @@ import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.program.css.CSSCompiler;
+import org.efaps.admin.program.staticsource.CSSCompiler;
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;

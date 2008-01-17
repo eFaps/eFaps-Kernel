@@ -18,26 +18,22 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.program.css;
+package org.efaps.admin.program.staticsource;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
-import org.efaps.db.Checkout;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
-import org.efaps.update.program.CSSUpdate;
 import org.efaps.util.EFapsException;
 
 /**
@@ -46,31 +42,25 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class CSSCompiler {
+public abstract class AbstractSourceCompiler {
 
   /**
    * Logging instance used in this class.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(CSSCompiler.class);
+  private static final Logger LOG =
+      LoggerFactory.getLogger(AbstractSourceCompiler.class);
 
-  /**
-   * UUID of the CSS type.
-   */
-  private static final UUID TYPE_CSS =
-      UUID.fromString("f5a5bcf6-3cc7-4530-a5a0-7808a392381b");
-
-  /**
-   * UUID of the CompiledCSS type.
-   */
-  public static final UUID TYPE_COMPILED =
-      UUID.fromString("0607ea90-b48f-4b76-96f5-67cab19bd7b1");
+  public static void compileAll() throws EFapsException {
+    (new CSSCompiler()).compile();
+    (new JavaScriptCompiler()).compile();
+  }
 
   public void compile() throws EFapsException {
     removeAllCompiled();
 
-    final List<OneCSS> allcss = readCSS();
+    final List<OneSource> allsource = readSources();
 
-    for (final OneCSS onecss : allcss) {
+    for (final OneSource onecss : allsource) {
 
       if (LOG.isInfoEnabled()) {
         LOG.info("compiling " + onecss.getName());
@@ -85,7 +75,7 @@ public class CSSCompiler {
       ttl += getCompiledString(onecss.getOid());
 
       Instance instance;
-      final Insert insert = new Insert(Type.get(TYPE_COMPILED));
+      final Insert insert = new Insert(Type.get(getUUID4TypeCompiled()));
       insert.add("Name", onecss.getName());
       insert.add("ProgramLink", "" + onecss.getId());
       insert.executeWithoutAccessCheck();
@@ -108,85 +98,22 @@ public class CSSCompiler {
 
   }
 
-  protected List<OneCSS> readCSS() throws EFapsException {
-    final List<OneCSS> ret = new ArrayList<OneCSS>();
-    final SearchQuery query = new SearchQuery();
-    query.setQueryTypes(Type.get(TYPE_CSS).getName());
-    query.addSelect("ID");
-    query.addSelect("OID");
-    query.addSelect("Name");
-    query.executeWithoutAccessCheck();
-    while (query.next()) {
-      final String name = (String) query.get("Name");
-      final String oid = (String) query.get("OID");
-      final Long id = (Long) query.get("ID");
-      ret.add(new OneCSS(name, oid, id));
-    }
-    return ret;
-  }
+  public abstract UUID getUUID4TypeCompiled();
 
-  private String getCompiledString(final String _oid) {
-    String ret = "";
-    try {
-      final Checkout checkout = new Checkout(_oid);
-      // TODO check character encoding!!UTF-8
-      final BufferedReader in =
-          new BufferedReader(new InputStreamReader(checkout.execute()));
+  public abstract UUID getUUID4Type();
 
-      final StringBuffer buffer = new StringBuffer();
+  public abstract UUID getUUID4Type2Type();
 
-      String thisLine;
-      while ((thisLine = in.readLine()) != null) {
-        if (!thisLine.contains(CSSUpdate.ANNOTATION_VERSION)
-            && !thisLine.contains(CSSUpdate.ANNOTATION_EXTENDS)) {
-          buffer.append(thisLine);
-        }
-      }
+  public abstract OneSource getNewOneSource(final String _name,
+                                            final String _oid, final long _id);
 
-      int start = 0;
-      while ((start = buffer.indexOf("/*")) >= 0) {
-        final int end = buffer.indexOf("*/", start + 2);
-        if (end >= start + 2)
-          buffer.delete(start, end + 2);
-      }
+  protected abstract String getCompiledString(final String _oid);
 
-      ret = buffer.toString();
-      in.close();
-      checkout.close();
-      ret = ret.replaceAll("\\s+", " ");
-      ret = ret.replaceAll("([!{}:;>+\\(\\[,])\\s+", "$1");
-      ret += "\n";
-
-    } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return ret;
-
-  }
-
-  private List<String> getSuper(final String _oid) throws EFapsException {
-    final List<String> ret = new ArrayList<String>();
-    final SearchQuery query = new SearchQuery();
-    query.setExpand(_oid, "Admin_Program_CSS2CSS\\From");
-    query.addSelect("To");
-    query.execute();
-    if (query.next()) {
-      final String tooid = Type.get(TYPE_CSS).getId() + "." + query.get("To");
-      ret.add(tooid);
-      ret.addAll(getSuper(tooid));
-    }
-    return ret;
-  }
-
-  private void removeAllCompiled() throws EFapsException {
+  protected void removeAllCompiled() throws EFapsException {
 
     final SearchQuery query = new SearchQuery();
 
-    query.setQueryTypes(Type.get(TYPE_COMPILED).getName());
+    query.setQueryTypes(Type.get(getUUID4TypeCompiled()).getName());
     query.addSelect("OID");
     query.executeWithoutAccessCheck();
     while (query.next()) {
@@ -197,7 +124,39 @@ public class CSSCompiler {
     query.close();
   }
 
-  private class OneCSS {
+  protected List<OneSource> readSources() throws EFapsException {
+    final List<OneSource> ret = new ArrayList<OneSource>();
+    final SearchQuery query = new SearchQuery();
+    query.setQueryTypes(Type.get(getUUID4Type()).getName());
+    query.addSelect("ID");
+    query.addSelect("OID");
+    query.addSelect("Name");
+    query.executeWithoutAccessCheck();
+    while (query.next()) {
+      final String name = (String) query.get("Name");
+      final String oid = (String) query.get("OID");
+      final Long id = (Long) query.get("ID");
+      ret.add(getNewOneSource(name, oid, id));
+    }
+    return ret;
+  }
+
+  protected List<String> getSuper(final String _oid) throws EFapsException {
+    final List<String> ret = new ArrayList<String>();
+    final SearchQuery query = new SearchQuery();
+    query.setExpand(_oid, Type.get(getUUID4Type2Type()).getName() + "\\From");
+    query.addSelect("To");
+    query.execute();
+    if (query.next()) {
+      final String tooid =
+          Type.get(getUUID4Type()).getId() + "." + query.get("To");
+      ret.add(tooid);
+      ret.addAll(getSuper(tooid));
+    }
+    return ret;
+  }
+
+  protected abstract class OneSource {
 
     private final String name;
 
@@ -205,7 +164,7 @@ public class CSSCompiler {
 
     private final long id;
 
-    public OneCSS(final String _name, final String _oid, final long _id) {
+    public OneSource(final String _name, final String _oid, final long _id) {
       this.name = _name;
       this.oid = _oid;
       this.id = _id;
@@ -237,7 +196,6 @@ public class CSSCompiler {
     public long getId() {
       return this.id;
     }
-
   }
 
 }
