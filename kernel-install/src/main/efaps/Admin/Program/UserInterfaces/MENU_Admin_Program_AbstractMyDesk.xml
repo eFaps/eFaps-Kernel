@@ -58,6 +58,7 @@
       <child>Admin_Program_JavaMyDesk</child>
       <child>Admin_Event_Definition_MyDesk</child>
       <child>Admin_Program_CSSMyDesk</child>
+      <child>Admin_Program_JavaScriptMyDesk</child>
       <child>Admin_Program_XSLMyDesk</child>
     </childs>
   </definition>
