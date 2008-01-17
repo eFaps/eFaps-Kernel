@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  
+  Copyright 2003-2007 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          jmox
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+  
+-->
+
+<datamodel-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
+>
+  <uuid>5ed4d346-c82e-4f4e-b52e-a4d5afa0e284</uuid>
+
+  <!-- create type -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==6)</mode>
+    </version>
+    <name>Admin_Program_JavaScriptCompiled</name>
+  </definition>
+
+  <!-- define type -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==7)</mode>
+    </version>
+    <name>Admin_Program_JavaScriptCompiled</name>
+    <parent>Admin_Program_Compiled</parent>
+
+    <!-- attributes -->
+    <attribute>
+      <name>ProgramLink</name>
+      <type>Link</type>
+      <typelink>Admin_Program_JavaScript</typelink>
+      <sqltable>Admin_Program_CompiledSQLTable</sqltable>
+      <sqlcolumn>PROGRAM</sqlcolumn>
+    </attribute>
+
+    <!-- properties -->
+    <property name="StoreAttributeFileLength">FileLength</property>
+    <property name="StoreAttributeFileName">FileName</property>
+    <property name="StoreCompress">NONE</property>
+    <property name="StoreJDBCBlob">CPLPRG</property>
+    <property name="StoreJDBCKey">ID</property>
+    <property name="StoreJDBCTable">T_PRGCOMPILED</property>
+    <property name="StoreResource">org.efaps.db.transaction.JDBCStoreResource</property>
+  </definition>
+
+</datamodel-type>

@@ -41,6 +41,7 @@ import org.efaps.update.datamodel.TypeUpdate;
 import org.efaps.update.dbproperty.DBPropertiesUpdate;
 import org.efaps.update.integration.WebDAVUpdate;
 import org.efaps.update.program.CSSUpdate;
+import org.efaps.update.program.JavaScriptUpdate;
 import org.efaps.update.program.JavaUpdate;
 import org.efaps.update.program.XSLUpdate;
 import org.efaps.update.ui.CommandUpdate;
@@ -64,6 +65,7 @@ public class Install {
 
   public enum FileType {
     JAVA("source-java", "readXMLFile"),
+    JS("source-js", "readFile"),
     CSS("source-css", "readFile"),
     XML("install-xml", "readXMLFile"),
     XSL("source-xsl", "readFile");
@@ -105,6 +107,7 @@ public class Install {
       this.updateClasses.put(SystemAttributeUpdate.class, FileType.XML);
       this.updateClasses.put(CSSUpdate.class, FileType.CSS);
       this.updateClasses.put(XSLUpdate.class, FileType.XSL);
+      this.updateClasses.put(JavaScriptUpdate.class, FileType.JS);
     }
   }
 

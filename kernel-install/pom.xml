@@ -76,6 +76,10 @@
           <userName>Administrator</userName>
           <passWord>Administrator</passWord>
           <rootPackage>org/efaps/installations</rootPackage>
+          <excludes>
+            <exclude>**/CreateAll.js</exclude>
+            <excludes>**/versions.xml</excludes>
+          </excludes>
         </configuration>
         <dependencies>
           <!-- Connection Pooling -->

@@ -53,6 +53,7 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
   static {
     DEFAULT_TYPE_MAPPING.put("css", FileType.CSS.type);
     DEFAULT_TYPE_MAPPING.put("java", FileType.JAVA.type);
+    DEFAULT_TYPE_MAPPING.put("js", FileType.JS.type);
     DEFAULT_TYPE_MAPPING.put("xml", FileType.XML.type);
     DEFAULT_TYPE_MAPPING.put("xsl", FileType.XSL.type);
   }
@@ -65,6 +66,7 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
   private final static Set<String> DEFAULT_INCLUDES = new HashSet<String>();
   static {
     DEFAULT_INCLUDES.add("**/*.css");
+    DEFAULT_INCLUDES.add("**/*.js");
     DEFAULT_INCLUDES.add("**/*.xml");
     DEFAULT_INCLUDES.add("**/*.xsl");
   }
