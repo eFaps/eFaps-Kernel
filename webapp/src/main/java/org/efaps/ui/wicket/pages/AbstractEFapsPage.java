@@ -21,8 +21,11 @@
 package org.efaps.ui.wicket.pages;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.IPageMap;
@@ -72,32 +75,66 @@ public class AbstractEFapsPage extends WebPage {
   @Override
   protected void onBeforeRender() {
     if (mergeStatics() && !this.merged) {
-      final List<String> resources = new ArrayList<String>();
+
+      final Map<StaticHeaderContributor.Type, List<String>> resources =
+          new HashMap<StaticHeaderContributor.Type, List<String>>();
+
       final List<IBehavior> beh = this.getBehaviors();
 
       for (final IBehavior oneBehavior : beh) {
         if (oneBehavior instanceof StaticHeaderContributor) {
           this.remove(oneBehavior);
-          resources.add(((StaticHeaderContributor) oneBehavior).getReference()
-              .getName());
+          List<String> resourcelist =
+              resources.get(((StaticHeaderContributor) oneBehavior).getType());
+
+          if (resourcelist == null) {
+            resourcelist = new ArrayList<String>();
+            resources.put(((StaticHeaderContributor) oneBehavior).getType(),
+                resourcelist);
+          }
+
+          resourcelist.add(((StaticHeaderContributor) oneBehavior)
+              .getReference().getName());
         }
       }
       addChildStatics(resources, this);
-      if (resources.size() > 1) {
-        this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
-            EFapsPackager.getPackageKey(resources))));
-      } else if (!resources.isEmpty()) {
-        // if it is only one we don't need a Package
-        this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
-            resources.get(0))));
+
+      for (final Entry<StaticHeaderContributor.Type, List<String>> entry : resources
+          .entrySet()) {
+        if (entry.getKey().equals(StaticHeaderContributor.Type.CSS)) {
+          if (entry.getValue().size() > 1) {
+            this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
+                EFapsPackager.getPackageKey(entry.getValue()))));
+          } else if (!entry.getValue().isEmpty()) {
+            // if it is only one we don't need a Package
+            this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
+                entry.getValue().get(0))));
+          }
+        }
+
+        if (entry.getKey().equals(StaticHeaderContributor.Type.JS)) {
+          if (entry.getValue().size() > 1) {
+            this.add(StaticHeaderContributor
+                .forJavaScript(new EFapsContentReference(EFapsPackager
+                    .getPackageKey(entry.getValue()))));
+          } else if (!entry.getValue().isEmpty()) {
+            // if it is only one we don't need a Package
+            this.add(StaticHeaderContributor
+                .forJavaScript(new EFapsContentReference(entry.getValue()
+                    .get(0))));
+          }
+
+        }
       }
+
       this.merged = true;
     }
     super.onBeforeRender();
   }
 
   @SuppressWarnings("unchecked")
-  protected void addChildStatics(final List<String> _behaviors,
+  protected void addChildStatics(
+                                 final Map<StaticHeaderContributor.Type, List<String>> resources,
                                  final MarkupContainer _markupcontainer) {
     final Iterator<?> it = _markupcontainer.iterator();
     while (it.hasNext()) {
@@ -106,8 +143,17 @@ public class AbstractEFapsPage extends WebPage {
       for (final IBehavior oneBehavior : beh) {
         if (oneBehavior instanceof StaticHeaderContributor) {
           component.remove(oneBehavior);
-          _behaviors.add(((StaticHeaderContributor) oneBehavior).getReference()
-              .getName());
+          List<String> resourcelist =
+              resources.get(((StaticHeaderContributor) oneBehavior).getType());
+
+          if (resourcelist == null) {
+            resourcelist = new ArrayList<String>();
+            resources.put(((StaticHeaderContributor) oneBehavior).getType(),
+                resourcelist);
+          }
+
+          resourcelist.add(((StaticHeaderContributor) oneBehavior)
+              .getReference().getName());
         }
       }
 

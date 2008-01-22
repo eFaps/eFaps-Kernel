@@ -36,6 +36,13 @@ public class StaticHeaderContributor extends HeaderContributor {
 
   private final EFapsContentReference reference;
 
+  public enum Type {
+    CSS,
+    JS;
+  }
+
+  private StaticHeaderContributor.Type type;
+
   public StaticHeaderContributor(final IHeaderContributor _headerContributor,
                                  final EFapsContentReference _reference) {
     super(_headerContributor);
@@ -44,14 +51,17 @@ public class StaticHeaderContributor extends HeaderContributor {
 
   public static final StaticHeaderContributor forCss(
                                                      final EFapsContentReference _reference) {
-    return new StaticHeaderContributor(new IHeaderContributor() {
+    final StaticHeaderContributor ret =
+        new StaticHeaderContributor(new IHeaderContributor() {
 
-      private static final long serialVersionUID = 1L;
+          private static final long serialVersionUID = 1L;
 
-      public void renderHead(IHeaderResponse response) {
-        response.renderCSSReference(_reference.getCSSUrl());
-      }
-    }, _reference);
+          public void renderHead(IHeaderResponse response) {
+            response.renderCSSReference(_reference.getCSSUrl());
+          }
+        }, _reference);
+    ret.setType(Type.CSS);
+    return ret;
   }
 
   /**
@@ -61,6 +71,41 @@ public class StaticHeaderContributor extends HeaderContributor {
    */
   public EFapsContentReference getReference() {
     return this.reference;
+  }
+
+  public static final StaticHeaderContributor forJavaScript(
+                                                            final EFapsContentReference _reference) {
+
+    final StaticHeaderContributor ret =
+        new StaticHeaderContributor(new IHeaderContributor() {
+
+          private static final long serialVersionUID = 1L;
+
+          public void renderHead(IHeaderResponse response) {
+            response.renderJavascriptReference(_reference.getCSSUrl());
+          }
+        }, _reference);
+    ret.setType(Type.JS);
+    return ret;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #type}.
+   *
+   * @return value of instance variable {@link #type}
+   */
+  public StaticHeaderContributor.Type getType() {
+    return this.type;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #type}.
+   *
+   * @param type
+   *                the type to set
+   */
+  public void setType(StaticHeaderContributor.Type type) {
+    this.type = type;
   }
 
 }

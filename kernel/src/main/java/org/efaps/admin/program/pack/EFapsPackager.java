@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPOutputStream;
 
-import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.program.staticsource.CSSCompiler;
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -93,7 +91,8 @@ public final class EFapsPackager {
     try {
       for (final String name : _names) {
         final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(Type.get(CSSCompiler.TYPE_COMPILED).getName());
+        query.setQueryTypes("Admin_Program_StaticCompiled");
+        query.setExpandChildTypes(true);
         query.addSelect("OID");
         query.addWhereExprEqValue("Name", name);
         query.execute();

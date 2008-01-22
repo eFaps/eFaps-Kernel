@@ -26,7 +26,7 @@
 <datamodel-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
-  <uuid>5ed4d346-c82e-4f4e-b52e-a4d5afa0e284</uuid>
+  <uuid>76fb464e-1d14-4437-ad23-092ab12669dd</uuid>
 
   <!-- create type -->
   <definition>
@@ -36,7 +36,7 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Program_JavaScriptCompiled</name>
+    <name>Admin_Program_StaticCompiled</name>
   </definition>
 
   <!-- define type -->
@@ -47,17 +47,8 @@
       <local>$Rev$</local>
       <mode>(version==7)</mode>
     </version>
-    <name>Admin_Program_JavaScriptCompiled</name>
-    <parent>Admin_Program_StaticCompiled</parent>
-
-    <!-- attributes -->
-    <attribute>
-      <name>ProgramLink</name>
-      <type>Link</type>
-      <typelink>Admin_Program_JavaScript</typelink>
-      <sqltable>Admin_Program_CompiledSQLTable</sqltable>
-      <sqlcolumn>PROGRAM</sqlcolumn>
-    </attribute>
+    <name>Admin_Program_StaticCompiled</name>
+    <parent>Admin_Program_Compiled</parent>
 
     <!-- properties -->
     <property name="StoreAttributeFileLength">FileLength</property>

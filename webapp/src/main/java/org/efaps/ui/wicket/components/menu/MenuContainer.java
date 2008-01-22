@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,11 @@ package org.efaps.ui.wicket.components.menu;
 import java.util.Iterator;
 
 import org.apache.wicket.PageMap;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.link.ILinkListener;
 import org.apache.wicket.markup.html.link.PopupSettings;
-import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
@@ -53,14 +51,11 @@ public class MenuContainer extends AbstractParentMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
-  public static final JavascriptResourceReference JSCOOKMENU =
-      new JavascriptResourceReference(MenuContainer.class, "JSCookMenu.js");
+  public static final EFapsContentReference THEME =
+      new EFapsContentReference(MenuContainer.class, "theme.js");
 
-  public static final JavascriptResourceReference EFAPSEXTENSION =
-      new JavascriptResourceReference(MenuContainer.class, "EFapsExtension.js");
-
-  public static final JavascriptResourceReference THEME =
-      new JavascriptResourceReference(MenuContainer.class, "theme.js");
+  public static final EFapsContentReference EFAPSEXTENSION =
+      new EFapsContentReference(MenuContainer.class, "EFapsExtension.js");
 
   public static EFapsContentReference CSS =
       new EFapsContentReference(MenuContainer.class, "theme.css");
@@ -108,11 +103,11 @@ public class MenuContainer extends AbstractParentMarkupContainer {
                        final FormContainer _form) {
     super(_id, _model);
     this.form = _form;
-    add(HeaderContributor.forJavaScript(JSCOOKMENU));
-    add(HeaderContributor.forJavaScript(EFAPSEXTENSION));
     add(StaticHeaderContributor.forCss(CSS));
+    add(StaticHeaderContributor.forJavaScript(EFAPSEXTENSION));
+    add(StaticHeaderContributor.forJavaScript(THEME));
     add(new StringHeaderContributor(HEADER_RESOURCE));
-    add(HeaderContributor.forJavaScript(THEME));
+
     initialise();
   }
 

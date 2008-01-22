@@ -48,7 +48,7 @@
       <mode>(version==7)</mode>
     </version>
     <name>Admin_Program_CSSCompiled</name>
-    <parent>Admin_Program_Compiled</parent>
+    <parent>Admin_Program_StaticCompiled</parent>
 
     <!-- attributes -->
     <attribute>

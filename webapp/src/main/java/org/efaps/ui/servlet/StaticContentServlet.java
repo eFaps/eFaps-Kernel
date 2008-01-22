@@ -141,7 +141,7 @@ public class StaticContentServlet extends HttpServlet {
       } else if (EFapsPackager.containsPackage(contentName)) {
         final OnePackage pack = EFapsPackager.getPackage(contentName);
 
-        _res.setContentType("text/css");
+//        _res.setContentType("text/css");
         _res.setDateHeader("Last-Modified", pack.getCreationTime());
         _res.setDateHeader("Expires", System.currentTimeMillis()
             + (this.cacheDuration * 1000));
@@ -193,7 +193,8 @@ public class StaticContentServlet extends HttpServlet {
     try {
       synchronized (cache) {
         final SearchQuery query = new SearchQuery();
-        query.setQueryTypes("Admin_Program_CSSCompiled");
+        query.setQueryTypes("Admin_Program_StaticCompiled");
+        query.setExpandChildTypes(true);
         query.addSelect("Name");
         query.addSelect("FileName");
         query.addSelect("OID");
