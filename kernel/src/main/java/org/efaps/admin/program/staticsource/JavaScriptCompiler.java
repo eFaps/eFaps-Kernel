@@ -91,7 +91,6 @@ public class JavaScriptCompiler extends AbstractSourceCompiler {
 
             public void error(String arg0, String arg1, int arg2, String arg3,
                               int arg4) {
-
               LOG.error(arg0);
             }
 
@@ -104,7 +103,6 @@ public class JavaScriptCompiler extends AbstractSourceCompiler {
             public void warning(String arg0, String arg1, int arg2,
                                 String arg3, int arg4) {
               // TODO use a systemproperty to determine if warning or not
-
               LOG.warn(arg0);
             }
           });

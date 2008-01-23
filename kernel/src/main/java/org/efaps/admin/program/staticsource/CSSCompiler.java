@@ -21,11 +21,15 @@
 package org.efaps.admin.program.staticsource;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.UUID;
+
+import com.yahoo.platform.yui.compressor.CssCompressor;
+
 import org.efaps.db.Checkout;
-import org.efaps.update.program.CSSUpdate;
 import org.efaps.util.EFapsException;
 
 /**
@@ -72,31 +76,19 @@ public class CSSCompiler extends AbstractSourceCompiler {
     try {
       final Checkout checkout = new Checkout(_oid);
       // TODO check character encoding!!UTF-8
+      // TODO remove extend and version
       final BufferedReader in =
           new BufferedReader(new InputStreamReader(checkout.execute()));
 
-      final StringBuffer buffer = new StringBuffer();
-
-      String thisLine;
-      while ((thisLine = in.readLine()) != null) {
-        if (!thisLine.contains(CSSUpdate.ANNOTATION_VERSION)
-            && !thisLine.contains(CSSUpdate.ANNOTATION_EXTENDS)) {
-          buffer.append(thisLine);
-        }
-      }
-
-      int start = 0;
-      while ((start = buffer.indexOf("/*")) >= 0) {
-        final int end = buffer.indexOf("*/", start + 2);
-        if (end >= start + 2)
-          buffer.delete(start, end + 2);
-      }
-
-      ret = buffer.toString();
+      final CssCompressor compressor = new CssCompressor(in);
       in.close();
       checkout.close();
-      ret = ret.replaceAll("\\s+", " ");
-      ret = ret.replaceAll("([!{}:;>+\\(\\[,])\\s+", "$1");
+      final ByteArrayOutputStream byteout = new ByteArrayOutputStream();
+      final OutputStreamWriter out = new OutputStreamWriter(byteout);
+      compressor.compress(out, 2000);
+      out.flush();
+
+      ret = byteout.toString();
       ret += "\n";
 
     } catch (final EFapsException e) {

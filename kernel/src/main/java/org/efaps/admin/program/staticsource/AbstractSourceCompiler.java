@@ -67,12 +67,12 @@ public abstract class AbstractSourceCompiler {
       }
 
       final List<String> supers = getSuper(onecss.getOid());
-      String ttl = "";
+      final StringBuilder builder = new StringBuilder();
       while (!supers.isEmpty()) {
-        ttl += getCompiledString(supers.get(supers.size() - 1));
+        builder.append(getCompiledString(supers.get(supers.size() - 1)));
         supers.remove(supers.size() - 1);
       }
-      ttl += getCompiledString(onecss.getOid());
+      builder.append(getCompiledString(onecss.getOid()));
 
       Instance instance;
       final Insert insert = new Insert(Type.get(getUUID4TypeCompiled()));
@@ -83,7 +83,8 @@ public abstract class AbstractSourceCompiler {
       insert.close();
 
       // TODO check character encoding!!
-      final ByteArrayInputStream str = new ByteArrayInputStream(ttl.getBytes());
+      final byte[] mybytes = builder.toString().getBytes();
+      final ByteArrayInputStream str = new ByteArrayInputStream(mybytes);
       String name =
           onecss.getName().substring(0, onecss.getName().lastIndexOf("."));
 
@@ -92,9 +93,8 @@ public abstract class AbstractSourceCompiler {
               + onecss.getName().substring(onecss.getName().lastIndexOf("."));
 
       final Checkin checkin = new Checkin(instance);
-      checkin.executeWithoutAccessCheck(name, str, ttl.getBytes().length);
+      checkin.executeWithoutAccessCheck(name, str, mybytes.length);
     }
-    // query.setExpand(_oid, _expand)
 
   }
 
