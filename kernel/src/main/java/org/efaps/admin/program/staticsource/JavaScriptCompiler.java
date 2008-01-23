@@ -21,15 +21,32 @@
 package org.efaps.admin.program.staticsource;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.UUID;
 
+import org.mozilla.javascript.ErrorReporter;
+import org.mozilla.javascript.EvaluatorException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
+
 import org.efaps.db.Checkout;
-import org.efaps.update.program.JavaScriptUpdate;
 import org.efaps.util.EFapsException;
 
+/**
+ * TODO description
+ *
+ * @author jmox
+ * @version $Id$
+ */
 public class JavaScriptCompiler extends AbstractSourceCompiler {
+
+  private static final Logger LOG =
+      LoggerFactory.getLogger(JavaScriptCompiler.class);
 
   /**
    * UUID of the CSS type.
@@ -63,180 +80,54 @@ public class JavaScriptCompiler extends AbstractSourceCompiler {
 
   @Override
   protected String getCompiledString(final String _oid) {
-    String ret = "";
+    final Checkout checkout = new Checkout(_oid);
+    BufferedReader in;
+    ByteArrayOutputStream byteout = null;
     try {
-      final Checkout checkout = new Checkout(_oid);
-      // TODO check character encoding!!UTF-8
-      final BufferedReader in =
-          new BufferedReader(new InputStreamReader(checkout.execute()));
+      in = new BufferedReader(new InputStreamReader(checkout.execute()));
 
-      final StringBuffer buffer = new StringBuffer();
+      final JavaScriptCompressor compressor =
+          new JavaScriptCompressor(in, new ErrorReporter() {
 
-      String thisLine;
-      while ((thisLine = in.readLine()) != null) {
-        if (!thisLine.contains(JavaScriptUpdate.ANNOTATION_VERSION)
-            && !thisLine.contains(JavaScriptUpdate.ANNOTATION_EXTENDS)) {
-          buffer.append(thisLine).append("\n");
-        }
-      }
+            public void error(String arg0, String arg1, int arg2, String arg3,
+                              int arg4) {
 
-      int start = 0;
-      while ((start = buffer.indexOf("/*")) >= 0) {
-        final int end = buffer.indexOf("*/", start + 2);
-        if (end >= start + 2)
-          buffer.delete(start, end + 2);
-      }
+              LOG.error(arg0);
+            }
 
-      ret = buffer.toString();
+            public EvaluatorException runtimeError(String arg0, String arg1,
+                                                   int arg2, String arg3,
+                                                   int arg4) {
+              return null;
+            }
+
+            public void warning(String arg0, String arg1, int arg2,
+                                String arg3, int arg4) {
+              // TODO use a systemproperty to determine if warning or not
+
+              LOG.warn(arg0);
+            }
+          });
+
       in.close();
       checkout.close();
-      ret = stripCommentsAndWhitespace(ret);
-      ret += "\n";
-
+      byteout = new ByteArrayOutputStream();
+      final OutputStreamWriter out = new OutputStreamWriter(byteout);
+      compressor.compress(out, 2000, false, true, false, true);
+      out.flush();
     } catch (final EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (final EvaluatorException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     } catch (final IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    String ret = byteout.toString();
+    ret += "\n";
     return ret;
-
-  }
-
-  private static int getPrevCount(String s, int fromIndex, char c) {
-    int count = 0;
-    --fromIndex;
-    while (fromIndex >= 0) {
-      if (s.charAt(fromIndex--) == c) {
-        ++count;
-      } else {
-        break;
-      }
-    }
-    return count;
-  }
-
-  public enum CurrentState {
-    LINE_COMMENT,
-    REGULAR_TEXT,
-    WHITE_SPACE,
-    MULTILINE_COMMENT,
-    STRING_SINGLE_QUOTE,
-    REG_EXP,
-    STRING_DOUBLE_QUOTES;
-  }
-
-  public String stripCommentsAndWhitespace(final String _org) {
-    // let's be optimistic
-    final StringBuffer result = new StringBuffer(_org.length() / 2);
-    CurrentState state = CurrentState.REGULAR_TEXT;
-
-    for (int i = 0; i < _org.length(); ++i) {
-      char c = _org.charAt(i);
-      final char next = (i < _org.length() - 1) ? _org.charAt(i + 1) : 0;
-      final char prev = (i > 0) ? _org.charAt(i - 1) : 0;
-
-      if (state == CurrentState.WHITE_SPACE) {
-
-        if (Character.isWhitespace(next) == false) {
-          state = CurrentState.REGULAR_TEXT;
-        }
-        continue;
-      }
-
-      if (state == CurrentState.REGULAR_TEXT) {
-        if (c == '/' && next == '/' && prev != '\\') {
-          state = CurrentState.LINE_COMMENT;
-          continue;
-        } else if (c == '/' && next == '*') {
-          state = CurrentState.MULTILINE_COMMENT;
-          ++i;
-          continue;
-        } else if (c == '/') {
-          // This might be a divide operator, or it might be a regular
-          // expression.
-          // Work out if it's a regular expression by finding the previous
-          // non-whitespace
-          // char, which
-          // will be either '=' or '('. If it's not, it's just a divide
-          // operator.
-          int idx = i - 1;
-          while (idx > 0) {
-            final char tmp = _org.charAt(idx);
-            if (Character.isWhitespace(tmp)) {
-              idx--;
-              continue;
-            }
-            if (tmp == '=' || tmp == '(') {
-              state = CurrentState.REG_EXP;
-              break;
-            }
-            break;
-          }
-        } else if (Character.isWhitespace(c) && Character.isWhitespace(next)) {
-          // ignore all whitespace characters after this one
-          state = CurrentState.WHITE_SPACE;
-          c = '\n';
-        } else if (c == '\'') {
-          state = CurrentState.STRING_SINGLE_QUOTE;
-        } else if (c == '"') {
-          state = CurrentState.STRING_DOUBLE_QUOTES;
-        }
-        result.append(c);
-        continue;
-      }
-
-      if (state == CurrentState.LINE_COMMENT) {
-        if (c == '\n' || c == '\r') {
-          state = CurrentState.REGULAR_TEXT;
-          continue;
-        }
-      }
-
-      if (state == CurrentState.MULTILINE_COMMENT) {
-        if (c == '*' && next == '/') {
-          state = CurrentState.REGULAR_TEXT;
-          ++i;
-          continue;
-        }
-      }
-
-      if (state == CurrentState.STRING_SINGLE_QUOTE) {
-        // to leave a string expression we need even (or zero) number of
-        // backslashes
-        final int count = getPrevCount(_org, i, '\\');
-        if (c == '\'' && count % 2 == 0) {
-          state = CurrentState.REGULAR_TEXT;
-        }
-        result.append(c);
-        continue;
-      }
-
-      if (state == CurrentState.STRING_DOUBLE_QUOTES) {
-        // to leave a string expression we need even (or zero) number of
-        // backslashes
-        final int count = getPrevCount(_org, i, '\\');
-        if (c == '"' && count % 2 == 0) {
-          state = CurrentState.REGULAR_TEXT;
-        }
-        result.append(c);
-        continue;
-      }
-
-      if (state == CurrentState.REG_EXP) {
-        // to leave regular expression we need even (or zero) number of
-        // backslashes
-        final int count = getPrevCount(_org, i, '\\');
-        if (c == '/' && count % 2 == 0) {
-          state = CurrentState.REGULAR_TEXT;
-        }
-        result.append(c);
-        continue;
-      }
-    }
-
-    return result.toString();
   }
 
   @Override

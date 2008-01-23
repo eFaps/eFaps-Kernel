@@ -1540,7 +1540,7 @@ function cmGetProperties (obj)
 	if (obj == null)
 		return 'null';
 
-	var msg = obj + ':\n';
+	var msg = obj + ':\\n';
 	var i;
 	for (i in obj)
 		msg += i + ' = ' + obj[i] + '; ';
