@@ -41,9 +41,9 @@ public class JavaScriptUpdate extends AbstractSourceUpdate {
 
   public static String TYPENAME = "Admin_Program_JavaScript";
 
-  public static String ANNOTATION_VERSION = "//@version";
+  public static String ANNOTATION_VERSION = "@version";
 
-  public static String ANNOTATION_EXTENDS = "//@extends";
+  public static String ANNOTATION_EXTENDS = "@extends";
 
   /**
    * Logging instance used to give logging information of this class.
@@ -77,15 +77,28 @@ public class JavaScriptUpdate extends AbstractSourceUpdate {
           new BufferedReader(new FileReader(_url.getPath()));
       while ((thisLine = in.readLine()) != null) {
         if (thisLine.contains(ANNOTATION_VERSION)) {
-          final String versionstr =
+          String versionstr =
               thisLine.substring(thisLine.indexOf(ANNOTATION_VERSION)
                   + ANNOTATION_VERSION.length());
-          ret.version = Integer.parseInt(versionstr.trim());
+          versionstr = versionstr.trim();
+          if (Character.isDigit(versionstr.charAt(0))) {
+            ret.version = Integer.parseInt(versionstr.substring(0, 1));
+          }
+          for (int i = 0; i < versionstr.length(); i++) {
+            if (!Character.isDigit(versionstr.charAt(i))) {
+              ret.version = Integer.parseInt(versionstr.substring(0, i));
+              break;
+            }
+          }
         }
         if (thisLine.contains(ANNOTATION_EXTENDS)) {
-          final String parent =
+          String parent =
               thisLine.substring(thisLine.indexOf(ANNOTATION_EXTENDS)
                   + ANNOTATION_EXTENDS.length());
+          parent = parent.trim();
+          if (parent.indexOf(" ") > 0) {
+            parent = parent.substring(0, parent.indexOf(" "));
+          }
           definition.assignSuper(parent.trim());
         }
       }
