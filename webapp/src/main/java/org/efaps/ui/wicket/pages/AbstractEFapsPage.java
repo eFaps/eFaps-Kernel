@@ -35,6 +35,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.program.pack.EFapsPackager;
+import org.efaps.admin.program.pack.OnePackage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
@@ -101,27 +102,30 @@ public class AbstractEFapsPage extends WebPage {
 
       for (final Entry<StaticHeaderContributor.Type, List<String>> entry : resources
           .entrySet()) {
-        if (entry.getKey().equals(StaticHeaderContributor.Type.CSS)) {
-          if (entry.getValue().size() > 1) {
+        if (entry.getValue().size() > 1) {
+
+          final String name = EFapsPackager.getPackageKey(entry.getValue());
+          final OnePackage onepackage = EFapsPackager.getPackage(name);
+
+          if (entry.getKey().equals(StaticHeaderContributor.Type.CSS)) {
             this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
-                EFapsPackager.getPackageKey(entry.getValue()))));
-          } else if (!entry.getValue().isEmpty()) {
-            // if it is only one we don't need a Package
+                name)));
+            onepackage.setContentType("text/css");
+          } else if (entry.getKey().equals(StaticHeaderContributor.Type.JS)) {
+            this.add(StaticHeaderContributor
+                .forJavaScript(new EFapsContentReference(name)));
+            onepackage.setContentType("text/javascript");
+          }
+        } else if (!entry.getValue().isEmpty()) {
+          // if it is only one we don't need a Package
+          if (entry.getKey().equals(StaticHeaderContributor.Type.CSS)) {
             this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
                 entry.getValue().get(0))));
-          }
-        }
-
-        if (entry.getKey().equals(StaticHeaderContributor.Type.JS)) {
-          if (entry.getValue().size() > 1) {
-            this.add(StaticHeaderContributor
-                .forJavaScript(new EFapsContentReference(EFapsPackager
-                    .getPackageKey(entry.getValue()))));
-          } else if (!entry.getValue().isEmpty()) {
-            // if it is only one we don't need a Package
+          } else if (entry.getKey().equals(StaticHeaderContributor.Type.JS)) {
             this.add(StaticHeaderContributor
                 .forJavaScript(new EFapsContentReference(entry.getValue()
                     .get(0))));
+
           }
 
         }

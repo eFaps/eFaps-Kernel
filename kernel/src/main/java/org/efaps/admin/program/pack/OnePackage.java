@@ -37,6 +37,8 @@ public class OnePackage {
 
   private final long created;
 
+  private String contentType = "text/plain";
+
   public OnePackage(final File _file) {
     this.file = _file;
     this.created = System.currentTimeMillis();
@@ -55,6 +57,25 @@ public class OnePackage {
 
   public long getCreationTime() {
     return this.created;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #contentType}.
+   *
+   * @return value of instance variable {@link #contentType}
+   */
+  public String getContentType() {
+    return this.contentType;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #contentType}.
+   *
+   * @param contentType
+   *                the contentType to set
+   */
+  public void setContentType(String contentType) {
+    this.contentType = contentType;
   }
 
 }

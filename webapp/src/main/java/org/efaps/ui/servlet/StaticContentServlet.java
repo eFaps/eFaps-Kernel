@@ -140,8 +140,7 @@ public class StaticContentServlet extends HttpServlet {
 
       } else if (EFapsPackager.containsPackage(contentName)) {
         final OnePackage pack = EFapsPackager.getPackage(contentName);
-
-//        _res.setContentType("text/css");
+        _res.setContentType(pack.getContentType());
         _res.setDateHeader("Last-Modified", pack.getCreationTime());
         _res.setDateHeader("Expires", System.currentTimeMillis()
             + (this.cacheDuration * 1000));
