@@ -57,19 +57,14 @@ public class MenuContainer extends AbstractParentMarkupContainer {
   public static final EFapsContentReference EFAPSEXTENSION =
       new EFapsContentReference(MenuContainer.class, "EFapsExtension.js");
 
-  public static EFapsContentReference CSS =
+  public static final EFapsContentReference CSS =
       new EFapsContentReference(MenuContainer.class, "theme.css");
 
-  public static EFapsContentReference IMG_BLANK =
+  public static final EFapsContentReference IMG_BLANK =
       new EFapsContentReference(MenuContainer.class, "blank.gif");
 
   private static String HEADER_RESOURCE =
-      JavascriptUtils.SCRIPT_OPEN_TAG
-          + "var myThemeOfficeBase=\""
-          + IMG_BLANK.getImageUrl().replace("blank.gif?", "")
-          + "\";"
-          + JavascriptUtils.SCRIPT_CLOSE_TAG
-          + CssUtils.INLINE_OPEN_TAG
+      CssUtils.INLINE_OPEN_TAG
           + "span.eFapsMenuLabel  {\n "
           + "  vertical-align: middle;\n "
           + "}\n"
@@ -103,10 +98,10 @@ public class MenuContainer extends AbstractParentMarkupContainer {
                        final FormContainer _form) {
     super(_id, _model);
     this.form = _form;
+    add(new StringHeaderContributor(HEADER_RESOURCE));
     add(StaticHeaderContributor.forCss(CSS));
     add(StaticHeaderContributor.forJavaScript(EFAPSEXTENSION));
     add(StaticHeaderContributor.forJavaScript(THEME));
-    add(new StringHeaderContributor(HEADER_RESOURCE));
 
     initialise();
   }

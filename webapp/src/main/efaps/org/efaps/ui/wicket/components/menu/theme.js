@@ -1,6 +1,6 @@
 
 // directory of where all the images are
-var cmThemeOfficeBase = '/JSCookMenu/ThemeOffice/';
+var cmThemeOfficeBase = '/eFaps/servlet/image/org.efaps.ui.wicket.components.menu.';
 
 // the follow block allows user to re-define theme base directory
 // before it is loaded.
