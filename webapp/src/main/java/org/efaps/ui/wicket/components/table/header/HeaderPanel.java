@@ -31,7 +31,6 @@ import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.CssUtils;
@@ -49,6 +48,8 @@ import org.efaps.ui.wicket.models.TableModel.UserAttributeKey;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
+import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**
@@ -64,8 +65,8 @@ public class HeaderPanel extends Panel {
   private final ModalWindowContainer modal =
       new ModalWindowContainer("eFapsModal");
 
-  public static final JavascriptResourceReference JAVASCRIPT =
-      new JavascriptResourceReference(HeaderPanel.class, "HeaderPanel.js");
+  public static final EFapsContentReference JAVASCRIPT =
+      new EFapsContentReference(HeaderPanel.class, "HeaderPanel.js");
 
   private final Component tablepanel;
 
@@ -173,7 +174,7 @@ public class HeaderPanel extends Panel {
     this
         .add(new HeaderContributor(DojoReference.getHeaderContributerforDojo()));
     this
-        .add(new HeaderContributor(HeaderContributor.forJavaScript(JAVASCRIPT)));
+        .add(new HeaderContributor(StaticHeaderContributor.forJavaScript(JAVASCRIPT)));
   }
 
   public final ModalWindowContainer getModal() {
@@ -229,7 +230,7 @@ public class HeaderPanel extends Panel {
 
     ret.append(CssUtils.INLINE_OPEN_TAG).append(".eFapsCSSId").append(
         ((TableModel) super.getModel()).getTableId()).append("{}\n");
-    for (String width : _widths) {
+    for (final String width : _widths) {
       ret.append(width);
     }
     ret.append(CssUtils.INLINE_CLOSE_TAG);
@@ -277,7 +278,7 @@ public class HeaderPanel extends Panel {
             ((TableModel) this.getComponent().getModel())
                 .getUserAttributeKey(UserAttributeKey.COLUMNWIDTH), widths);
         ((TableModel) this.getComponent().getModel()).resetModel();
-      } catch (EFapsException e) {
+      } catch (final EFapsException e) {
         throw new RestartResponseException(new ErrorPage(e));
       }
     }

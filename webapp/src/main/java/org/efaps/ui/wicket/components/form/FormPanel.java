@@ -24,10 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.wicket.Page;
-import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 import org.apache.wicket.markup.repeater.RepeatingView;
 
 import org.efaps.ui.wicket.components.form.row.RowPanel;
@@ -52,8 +50,8 @@ public class FormPanel extends Panel {
   public static EFapsContentReference CSS =
       new EFapsContentReference(FormPanel.class, "FormPanel.css");
 
-  public static final JavascriptResourceReference FILEINPUT =
-      new JavascriptResourceReference(FormPanel.class, "EFapsFileInput.js");
+  public static final EFapsContentReference FILEINPUT =
+      new EFapsContentReference(FormPanel.class, "EFapsFileInput.js");
 
   private final Map<String, Label> requiredComponents =
       new HashMap<String, Label>();
@@ -69,7 +67,7 @@ public class FormPanel extends Panel {
 
     add(StaticHeaderContributor.forCss(CSS));
     if (_model.isFileUpload()) {
-      add(HeaderContributor.forJavaScript(FILEINPUT));
+      add(StaticHeaderContributor.forJavaScript(FILEINPUT));
     }
     final RepeatingView rowRepeater = new RepeatingView("rowRepeater");
     this.add(rowRepeater);
