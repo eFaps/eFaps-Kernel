@@ -23,7 +23,14 @@ package org.efaps.admin.program.pack;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.zip.GZIPOutputStream;
+
+import org.efaps.db.Checkout;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO description
@@ -33,21 +40,39 @@ import java.io.InputStream;
  */
 public class OnePackage {
 
-  private final File file;
+  private File file = null;
+
+  private File gzipFile = null;
 
   private final long created;
 
   private String contentType = "text/plain";
 
-  public OnePackage(final File _file) {
-    this.file = _file;
+  private final List<String> oids;
+
+  private final String key;
+
+  public OnePackage(final String _key, final List<String> _oids) {
+    this.key = _key;
     this.created = System.currentTimeMillis();
+    this.oids = _oids;
+
   }
 
-  public InputStream getInputStream() {
+  public synchronized InputStream getInputStream(boolean _gziped) {
     InputStream ret = null;
     try {
-      ret = new FileInputStream(this.file);
+      if (_gziped) {
+        if (this.gzipFile == null) {
+          this.gzipFile = setFile(true);
+        }
+        ret = new FileInputStream(this.gzipFile);
+      } else {
+        if (this.file == null) {
+          this.file = setFile(false);
+        }
+        ret = new FileInputStream(this.file);
+      }
     } catch (final FileNotFoundException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -76,6 +101,54 @@ public class OnePackage {
    */
   public void setContentType(String contentType) {
     this.contentType = contentType;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #oids}.
+   *
+   * @return value of instance variable {@link #oids}
+   */
+  public List<String> getOids() {
+    return this.oids;
+  }
+
+  private File setFile(boolean _gziped) {
+    final String filename = (_gziped ? this.key + "GZIP" : this.key);
+    final File ret = new File(EFapsPackager.getTempFolder(), filename);;
+
+    try {
+      final FileOutputStream out = new FileOutputStream(ret);
+      final byte[] buffer = new byte[1024];
+      int bytesRead;
+      if (_gziped) {
+        final GZIPOutputStream zout = new GZIPOutputStream(out);
+        for (final String oid : this.oids) {
+          final Checkout checkout = new Checkout(oid);
+          final InputStream bis = checkout.execute();
+          while ((bytesRead = bis.read(buffer)) != -1) {
+            zout.write(buffer, 0, bytesRead);
+          }
+        }
+        zout.close();
+      } else {
+        for (final String oid : this.oids) {
+          final Checkout checkout = new Checkout(oid);
+          final InputStream bis = checkout.execute();
+          while ((bytesRead = bis.read(buffer)) != -1) {
+            out.write(buffer, 0, bytesRead);
+          }
+        }
+      }
+      out.close();
+    } catch (final IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (final EFapsException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return ret;
   }
 
 }

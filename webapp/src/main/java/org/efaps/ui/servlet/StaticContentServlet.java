@@ -139,19 +139,20 @@ public class StaticContentServlet extends HttpServlet {
         }
 
       } else if (EFapsPackager.containsPackage(contentName)) {
-        final OnePackage pack = EFapsPackager.getPackage(contentName);
-        _res.setContentType(pack.getContentType());
-        _res.setDateHeader("Last-Modified", pack.getCreationTime());
+        final OnePackage onepackage = EFapsPackager.getPackage(contentName);
+
+        _res.setContentType(onepackage.getContentType());
+        _res.setDateHeader("Last-Modified", onepackage.getCreationTime());
         _res.setDateHeader("Expires", System.currentTimeMillis()
             + (this.cacheDuration * 1000));
         _res.setHeader("Cache-Control", "max-age=" + this.cacheDuration);
-
         _res.setHeader("Content-Encoding", "gzip");
 
         int bytesRead;
         final byte[] buffer = new byte[2048];
 
-        final InputStream in = pack.getInputStream();
+        final InputStream in =
+            onepackage.getInputStream(supportsCompression(_req));
         while ((bytesRead = in.read(buffer)) != -1) {
           _res.getOutputStream().write(buffer, 0, bytesRead);
         }

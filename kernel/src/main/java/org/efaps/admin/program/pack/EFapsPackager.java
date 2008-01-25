@@ -21,20 +21,20 @@
 package org.efaps.admin.program.pack;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.GZIPOutputStream;
-
-import org.efaps.db.Checkout;
+import java.util.UUID;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+import org.efaps.util.cache.Cache;
+import org.efaps.util.cache.CacheObjectInterface;
+import org.efaps.util.cache.CacheReloadException;
+import org.efaps.util.cache.CacheReloadInterface;
 
 /**
  * TODO description
@@ -45,120 +45,150 @@ import org.efaps.util.EFapsException;
 public final class EFapsPackager {
 
   private EFapsPackager() {
-
   }
 
-  public static Map<List<String>, String> PACKAGEMAPPER =
+  private static File TMPFOLDER;
+
+  private static Cache<StaticCompiledSource> CACHE =
+      new Cache<StaticCompiledSource>(new CacheReloadInterface() {
+
+        public int priority() {
+          return 20000;
+        };
+
+        public void reloadCache() throws CacheReloadException {
+          EFapsPackager.loadCache();
+        };
+      });
+
+  public static Map<List<String>, String> BUNDLEMAPPER =
       new HashMap<List<String>, String>();
 
-  public static Map<String, OnePackage> PACKAGES =
+  public static Map<String, OnePackage> BUNDLES =
       new HashMap<String, OnePackage>();
 
   public static String getPackageKey(final List<String> _names) {
     mergeList(_names);
-    String name;
-    if (PACKAGEMAPPER.containsKey(_names)) {
-      name = PACKAGEMAPPER.get(_names);
-      if (name == "") {
-        name = createName(_names);
-        PACKAGEMAPPER.put(_names, name);
+    String key;
+    synchronized (BUNDLEMAPPER) {
+      if (BUNDLEMAPPER.containsKey(_names)) {
+        key = BUNDLEMAPPER.get(_names);
+      } else {
+        key = createNewKey(_names);
+        BUNDLEMAPPER.put(_names, key);
       }
-    } else {
-      name = createName(_names);
-      PACKAGEMAPPER.put(_names, name);
-
     }
-    return name;
+    return key;
   }
 
   private static void mergeList(final List<String> _names) {
     final Set<String> compare = new HashSet<String>();
 
-    for (int i = 0; i < _names.size();) {
+    for (int i = _names.size() - 1; i > -1;) {
       if (compare.contains(_names.get(i))) {
         _names.remove(i);
       } else {
         compare.add(_names.get(i));
-        i++;
+        i--;
       }
     }
-
   }
 
-  private static String createName(final List<String> _names) {
-    final StringBuilder ret = new StringBuilder();
-    final List<String> oids = new ArrayList<String>();
+  private static void loadCache() {
     try {
-      for (final String name : _names) {
+      synchronized (CACHE) {
         final SearchQuery query = new SearchQuery();
         query.setQueryTypes("Admin_Program_StaticCompiled");
         query.setExpandChildTypes(true);
         query.addSelect("OID");
-        query.addWhereExprEqValue("Name", name);
+        query.addSelect("Name");
         query.execute();
-        if (query.next()) {
-          if (ret.length() > 0) {
-            ret.append("-");
-          }
-          final String oid = query.get("OID").toString();
-          ret.append(oid);
-          oids.add(oid);
+        while (query.next()) {
+          final String name = (String) query.get("Name");
+          final String oid = (String) query.get("OID");
+          CACHE.add(new StaticCompiledSource(oid, name));
         }
       }
     } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      // TODO
     }
-    setFile(oids, ret.toString());
-
-    return ret.toString();
   }
 
-  private static void setFile(List<String> oids, String name2) {
-
-    final File file = new File(getTempFolder(), name2);;
-    try {
-
-      final FileOutputStream out = new FileOutputStream(file);
-      final GZIPOutputStream zout = new GZIPOutputStream(out);
-      int bytesRead;
-      final byte[] buffer = new byte[2048];
-      for (final String oid : oids) {
-        final Checkout checkout = new Checkout(oid);
-        final InputStream bis = checkout.execute();
-        while ((bytesRead = bis.read(buffer)) != -1) {
-          zout.write(buffer, 0, bytesRead);
-        }
-
+  private static String createNewKey(final List<String> _names) {
+    final StringBuilder builder = new StringBuilder();
+    final List<String> oids = new ArrayList<String>();
+    if (!CACHE.hasEntries()) {
+      loadCache();
+    }
+    for (final String name : _names) {
+      if (builder.length() > 0) {
+        builder.append("-");
       }
-      zout.close();
-      out.close();
-      PACKAGES.put(name2, new OnePackage(file));
-    } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    };
+      final String oid = CACHE.get(name).getOid();
+      builder.append(oid);
+      oids.add(oid);
+    }
+    final String ret = builder.toString();
+    BUNDLES.put(ret, new OnePackage(ret, oids));
+    return ret;
+  }
+
+  public static boolean containsPackage(final String _key) {
+    return BUNDLES.containsKey(_key);
+  }
+
+  public static OnePackage getPackage(final String _key) {
+    return BUNDLES.get(_key);
   }
 
   public static File getTempFolder() {
     try {
-      return File.createTempFile("test", null).getParentFile();
+      if (TMPFOLDER == null) {
+        final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
+        TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");;
+        TMPFOLDER.mkdir();
+      }
     } catch (final IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    return null;
+    return TMPFOLDER;
   }
 
-  public static boolean containsPackage(final String _key) {
-    return PACKAGES.containsKey(_key);
-  }
+  private static class StaticCompiledSource implements CacheObjectInterface {
 
-  public static OnePackage getPackage(final String _key) {
-    return PACKAGES.get(_key);
+    private final String name;
+
+    private final String oid;
+
+    public StaticCompiledSource(final String _oid, final String _name) {
+      this.name = _name;
+      this.oid = _oid;
+    }
+
+    public long getId() {
+      // TODO Auto-generated method stub
+      return 0;
+    }
+
+    public String getName() {
+      return this.name;
+    }
+
+    public UUID getUUID() {
+      // TODO Auto-generated method stub
+      return null;
+    }
+
+    /**
+     * This is the getter method for the instance variable {@link #oid}.
+     *
+     * @return value of instance variable {@link #oid}
+     */
+    public String getOid() {
+      return this.oid;
+    }
+
   }
 
 }
