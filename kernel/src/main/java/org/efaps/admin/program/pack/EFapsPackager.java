@@ -84,12 +84,12 @@ public final class EFapsPackager {
   private static void mergeList(final List<String> _names) {
     final Set<String> compare = new HashSet<String>();
 
-    for (int i = _names.size() - 1; i > -1;) {
+    for (int i = _names.size() - 1; i > -1; i--) {
       if (compare.contains(_names.get(i))) {
         _names.remove(i);
       } else {
         compare.add(_names.get(i));
-        i--;
+
       }
     }
   }
