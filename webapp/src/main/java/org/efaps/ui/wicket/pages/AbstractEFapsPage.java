@@ -34,8 +34,8 @@ import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.admin.program.bundle.EFapsPackager;
-import org.efaps.admin.program.bundle.OnePackage;
+import org.efaps.admin.program.bundle.BundleMaker;
+import org.efaps.admin.program.bundle.Bundle;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
@@ -85,8 +85,8 @@ public class AbstractEFapsPage extends WebPage {
           .entrySet()) {
         if (entry.getValue().size() > 1) {
           final List namelist = merge(entry.getValue());
-          final String name = EFapsPackager.getPackageKey(namelist);
-          final OnePackage onepackage = EFapsPackager.getPackage(name);
+          final String name = BundleMaker.getPackageKey(namelist);
+          final Bundle onepackage = BundleMaker.getPackage(name);
 
           if (entry.getKey().equals(StaticHeaderContributor.Type.CSS)) {
             this.add(StaticHeaderContributor.forCss(new EFapsContentReference(

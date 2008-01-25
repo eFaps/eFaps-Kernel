@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.common.SystemAttribute;
-import org.efaps.admin.program.bundle.EFapsPackager;
-import org.efaps.admin.program.bundle.OnePackage;
+import org.efaps.admin.program.bundle.BundleMaker;
+import org.efaps.admin.program.bundle.Bundle;
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -138,8 +138,8 @@ public class StaticContentServlet extends HttpServlet {
           checkout.execute(_res.getOutputStream());
         }
 
-      } else if (EFapsPackager.containsPackage(contentName)) {
-        final OnePackage onepackage = EFapsPackager.getPackage(contentName);
+      } else if (BundleMaker.containsPackage(contentName)) {
+        final Bundle onepackage = BundleMaker.getPackage(contentName);
 
         _res.setContentType(onepackage.getContentType());
         _res.setDateHeader("Last-Modified", onepackage.getCreationTime());

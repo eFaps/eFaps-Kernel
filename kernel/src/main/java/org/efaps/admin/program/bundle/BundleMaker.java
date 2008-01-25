@@ -42,9 +42,9 @@ import org.efaps.util.cache.CacheReloadInterface;
  * @author jmox
  * @version $Id$
  */
-public final class EFapsPackager {
+public final class BundleMaker {
 
-  private EFapsPackager() {
+  private BundleMaker() {
   }
 
   private static File TMPFOLDER;
@@ -57,15 +57,15 @@ public final class EFapsPackager {
         };
 
         public void reloadCache() throws CacheReloadException {
-          EFapsPackager.loadCache();
+          BundleMaker.loadCache();
         };
       });
 
   public static Map<List<String>, String> BUNDLEMAPPER =
       new HashMap<List<String>, String>();
 
-  public static Map<String, OnePackage> BUNDLES =
-      new HashMap<String, OnePackage>();
+  public static Map<String, Bundle> BUNDLES =
+      new HashMap<String, Bundle>();
 
   public static String getPackageKey(final List<String> _names) {
     mergeList(_names);
@@ -129,7 +129,7 @@ public final class EFapsPackager {
       oids.add(oid);
     }
     final String ret = builder.toString();
-    BUNDLES.put(ret, new OnePackage(ret, oids));
+    BUNDLES.put(ret, new Bundle(ret, oids));
     return ret;
   }
 
@@ -137,7 +137,7 @@ public final class EFapsPackager {
     return BUNDLES.containsKey(_key);
   }
 
-  public static OnePackage getPackage(final String _key) {
+  public static Bundle getPackage(final String _key) {
     return BUNDLES.get(_key);
   }
 

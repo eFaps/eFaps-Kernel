@@ -38,7 +38,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class OnePackage {
+public class Bundle {
 
   private File file = null;
 
@@ -52,7 +52,7 @@ public class OnePackage {
 
   private final String key;
 
-  public OnePackage(final String _key, final List<String> _oids) {
+  public Bundle(final String _key, final List<String> _oids) {
     this.key = _key;
     this.created = System.currentTimeMillis();
     this.oids = _oids;
@@ -114,7 +114,7 @@ public class OnePackage {
 
   private File setFile(boolean _gziped) {
     final String filename = (_gziped ? this.key + "GZIP" : this.key);
-    final File ret = new File(EFapsPackager.getTempFolder(), filename);;
+    final File ret = new File(BundleMaker.getTempFolder(), filename);;
 
     try {
       final FileOutputStream out = new FileOutputStream(ret);
