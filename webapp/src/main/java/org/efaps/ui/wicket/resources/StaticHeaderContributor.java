@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.resources;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.behavior.HeaderContributor;
 import org.apache.wicket.markup.html.IHeaderContributor;
 import org.apache.wicket.markup.html.IHeaderResponse;
@@ -36,9 +37,18 @@ public class StaticHeaderContributor extends HeaderContributor {
 
   private final EFapsContentReference reference;
 
+  private boolean merged = false;
+
+  private Component component;
+
   public enum Type {
     CSS,
     JS;
+  }
+
+  @Override
+  public void bind(final Component _component) {
+    this.component = _component;
   }
 
   private StaticHeaderContributor.Type type;
@@ -51,6 +61,12 @@ public class StaticHeaderContributor extends HeaderContributor {
 
   public static final StaticHeaderContributor forCss(
                                                      final EFapsContentReference _reference) {
+    return StaticHeaderContributor.forCss(_reference, false);
+  }
+
+  public static final StaticHeaderContributor forCss(
+                                                     final EFapsContentReference _reference,
+                                                     final boolean _merged) {
     final StaticHeaderContributor ret =
         new StaticHeaderContributor(new IHeaderContributor() {
 
@@ -75,6 +91,12 @@ public class StaticHeaderContributor extends HeaderContributor {
 
   public static final StaticHeaderContributor forJavaScript(
                                                             final EFapsContentReference _reference) {
+    return StaticHeaderContributor.forJavaScript(_reference, false);
+  }
+
+  public static final StaticHeaderContributor forJavaScript(
+                                                            final EFapsContentReference _reference,
+                                                            boolean _merged) {
 
     final StaticHeaderContributor ret =
         new StaticHeaderContributor(new IHeaderContributor() {
@@ -106,6 +128,35 @@ public class StaticHeaderContributor extends HeaderContributor {
    */
   public void setType(StaticHeaderContributor.Type type) {
     this.type = type;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #merged}.
+   *
+   * @return value of instance variable {@link #merged}
+   */
+  public boolean isMerged() {
+    return this.merged;
+  }
+
+  /**
+   * This is the setter method for the instance variable {@link #merged}.
+   *
+   * @param merged
+   *                the merged to set
+   */
+  public void setMerged(boolean merged) {
+    this.merged = merged;
+  }
+
+
+  /**
+   * This is the getter method for the instance variable {@link #component}.
+   *
+   * @return value of instance variable {@link #component}
+   */
+  public Component getComponent() {
+    return this.component;
   }
 
 }

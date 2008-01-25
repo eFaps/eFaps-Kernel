@@ -49,8 +49,6 @@ public class AbstractEFapsPage extends WebPage {
 
   private static final long serialVersionUID = 1L;
 
-  private boolean merged = false;
-
   public AbstractEFapsPage() {
 
   }
@@ -75,92 +73,78 @@ public class AbstractEFapsPage extends WebPage {
   @SuppressWarnings("unchecked")
   @Override
   protected void onBeforeRender() {
-    if (mergeStatics() && !this.merged) {
+    if (mergeStatics()) {
 
-      final Map<StaticHeaderContributor.Type, List<String>> resources =
-          new HashMap<StaticHeaderContributor.Type, List<String>>();
+      final Map<StaticHeaderContributor.Type, List<StaticHeaderContributor>> resources =
+          new HashMap<StaticHeaderContributor.Type, List<StaticHeaderContributor>>();
 
-      final List<IBehavior> beh = this.getBehaviors();
-
-      for (final IBehavior oneBehavior : beh) {
-        if (oneBehavior instanceof StaticHeaderContributor) {
-          this.remove(oneBehavior);
-          List<String> resourcelist =
-              resources.get(((StaticHeaderContributor) oneBehavior).getType());
-
-          if (resourcelist == null) {
-            resourcelist = new ArrayList<String>();
-            resources.put(((StaticHeaderContributor) oneBehavior).getType(),
-                resourcelist);
-          }
-
-          resourcelist.add(((StaticHeaderContributor) oneBehavior)
-              .getReference().getName());
-        }
-      }
+      addStaticBehaviors(resources, this.getBehaviors());
       addChildStatics(resources, this);
 
-      for (final Entry<StaticHeaderContributor.Type, List<String>> entry : resources
+      for (final Entry<StaticHeaderContributor.Type, List<StaticHeaderContributor>> entry : resources
           .entrySet()) {
         if (entry.getValue().size() > 1) {
-
-          final String name = EFapsPackager.getPackageKey(entry.getValue());
+          final List namelist = merge(entry.getValue());
+          final String name = EFapsPackager.getPackageKey(namelist);
           final OnePackage onepackage = EFapsPackager.getPackage(name);
 
           if (entry.getKey().equals(StaticHeaderContributor.Type.CSS)) {
             this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
-                name)));
+                name), true));
             onepackage.setContentType("text/css");
           } else if (entry.getKey().equals(StaticHeaderContributor.Type.JS)) {
-            this.add(StaticHeaderContributor
-                .forJavaScript(new EFapsContentReference(name)));
+            this.add(StaticHeaderContributor.forJavaScript(
+                new EFapsContentReference(name), true));
             onepackage.setContentType("text/javascript");
-          }
-        } else if (!entry.getValue().isEmpty()) {
-          // if it is only one we don't need a Package
-          if (entry.getKey().equals(StaticHeaderContributor.Type.CSS)) {
-            this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
-                entry.getValue().get(0))));
-          } else if (entry.getKey().equals(StaticHeaderContributor.Type.JS)) {
-            this.add(StaticHeaderContributor
-                .forJavaScript(new EFapsContentReference(entry.getValue()
-                    .get(0))));
-
           }
 
         }
       }
-
-      this.merged = true;
     }
     super.onBeforeRender();
   }
 
+  protected List<String> merge(List<StaticHeaderContributor> _behaviors) {
+    final List<String> ret = new ArrayList<String>();
+    for (final StaticHeaderContributor behavior : _behaviors) {
+      ret.add(behavior.getReference().getName());
+      behavior.getComponent().remove(behavior);
+    }
+    return ret;
+  }
+
+  protected void addStaticBehaviors(
+                                    final Map<StaticHeaderContributor.Type, List<StaticHeaderContributor>> _resources,
+                                    final List<IBehavior> _behaviors) {
+
+    for (final IBehavior oneBehavior : _behaviors) {
+      if (oneBehavior instanceof StaticHeaderContributor) {
+        final StaticHeaderContributor behavior =
+            (StaticHeaderContributor) oneBehavior;
+        if (!behavior.isMerged()) {
+          List<StaticHeaderContributor> behaviors =
+              _resources.get(behavior.getType());
+          if (behaviors == null) {
+            behaviors = new ArrayList<StaticHeaderContributor>();
+            _resources.put(behavior.getType(), behaviors);
+          }
+          behaviors.add(behavior);
+        }
+      }
+    }
+  }
+
   @SuppressWarnings("unchecked")
   protected void addChildStatics(
-                                 final Map<StaticHeaderContributor.Type, List<String>> resources,
+                                 final Map<StaticHeaderContributor.Type, List<StaticHeaderContributor>> resources,
                                  final MarkupContainer _markupcontainer) {
     final Iterator<?> it = _markupcontainer.iterator();
     while (it.hasNext()) {
       final Component component = (Component) it.next();
-      final List<IBehavior> beh = component.getBehaviors();
-      for (final IBehavior oneBehavior : beh) {
-        if (oneBehavior instanceof StaticHeaderContributor) {
-          component.remove(oneBehavior);
-          List<String> resourcelist =
-              resources.get(((StaticHeaderContributor) oneBehavior).getType());
-
-          if (resourcelist == null) {
-            resourcelist = new ArrayList<String>();
-            resources.put(((StaticHeaderContributor) oneBehavior).getType(),
-                resourcelist);
-          }
-
-          resourcelist.add(((StaticHeaderContributor) oneBehavior)
-              .getReference().getName());
-        }
+      if (component instanceof MarkupContainer) {
+        addChildStatics(resources, (MarkupContainer) component);
       }
-
+      addStaticBehaviors(resources, component.getBehaviors());
     }
   }
 

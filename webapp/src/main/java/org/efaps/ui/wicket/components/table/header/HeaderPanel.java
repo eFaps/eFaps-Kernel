@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,8 +173,7 @@ public class HeaderPanel extends Panel {
 
     this
         .add(new HeaderContributor(DojoReference.getHeaderContributerforDojo()));
-    this
-        .add(new HeaderContributor(StaticHeaderContributor.forJavaScript(JAVASCRIPT)));
+    this.add(StaticHeaderContributor.forJavaScript(JAVASCRIPT));
   }
 
   public final ModalWindowContainer getModal() {
