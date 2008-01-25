@@ -38,7 +38,9 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class Bundle {
+public class TempFileBundle implements BundleInterface {
+
+  private static File TMPFOLDER;
 
   private File file = null;
 
@@ -48,15 +50,12 @@ public class Bundle {
 
   private String contentType = "text/plain";
 
-  private final List<String> oids;
+  private List<String> oids;
 
-  private final String key;
+  private String key;
 
-  public Bundle(final String _key, final List<String> _oids) {
-    this.key = _key;
+  public TempFileBundle() {
     this.created = System.currentTimeMillis();
-    this.oids = _oids;
-
   }
 
   public synchronized InputStream getInputStream(boolean _gziped) {
@@ -114,7 +113,7 @@ public class Bundle {
 
   private File setFile(boolean _gziped) {
     final String filename = (_gziped ? this.key + "GZIP" : this.key);
-    final File ret = new File(BundleMaker.getTempFolder(), filename);;
+    final File ret = new File(getTempFolder(), filename);;
 
     try {
       final FileOutputStream out = new FileOutputStream(ret);
@@ -151,4 +150,22 @@ public class Bundle {
     return ret;
   }
 
+  public static File getTempFolder() {
+    try {
+      if (TMPFOLDER == null) {
+        final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
+        TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");;
+        TMPFOLDER.mkdir();
+      }
+    } catch (final IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return TMPFOLDER;
+  }
+
+  public void setKey(String _key, List<String> _oids) {
+    this.key = _key;
+    this.oids = _oids;
+  }
 }

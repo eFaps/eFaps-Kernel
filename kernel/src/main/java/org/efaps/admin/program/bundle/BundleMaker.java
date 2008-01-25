@@ -20,8 +20,6 @@
 
 package org.efaps.admin.program.bundle;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,8 +45,6 @@ public final class BundleMaker {
   private BundleMaker() {
   }
 
-  private static File TMPFOLDER;
-
   private static Cache<StaticCompiledSource> CACHE =
       new Cache<StaticCompiledSource>(new CacheReloadInterface() {
 
@@ -61,20 +57,21 @@ public final class BundleMaker {
         };
       });
 
-  public static Map<List<String>, String> BUNDLEMAPPER =
+  private static Map<List<String>, String> BUNDLEMAPPER =
       new HashMap<List<String>, String>();
 
-  public static Map<String, Bundle> BUNDLES =
-      new HashMap<String, Bundle>();
+  private static Map<String, BundleInterface> BUNDLES =
+      new HashMap<String, BundleInterface>();
 
-  public static String getPackageKey(final List<String> _names) {
+  public static String getBundleKey(final List<String> _names,
+                                     Class<?> _bundleclass) {
     mergeList(_names);
     String key;
     synchronized (BUNDLEMAPPER) {
       if (BUNDLEMAPPER.containsKey(_names)) {
         key = BUNDLEMAPPER.get(_names);
       } else {
-        key = createNewKey(_names);
+        key = createNewKey(_names, _bundleclass);
         BUNDLEMAPPER.put(_names, key);
       }
     }
@@ -89,7 +86,6 @@ public final class BundleMaker {
         _names.remove(i);
       } else {
         compare.add(_names.get(i));
-
       }
     }
   }
@@ -114,7 +110,8 @@ public final class BundleMaker {
     }
   }
 
-  private static String createNewKey(final List<String> _names) {
+  private static String createNewKey(final List<String> _names,
+                                     Class<?> _bundleclass) {
     final StringBuilder builder = new StringBuilder();
     final List<String> oids = new ArrayList<String>();
     if (!CACHE.hasEntries()) {
@@ -129,30 +126,27 @@ public final class BundleMaker {
       oids.add(oid);
     }
     final String ret = builder.toString();
-    BUNDLES.put(ret, new Bundle(ret, oids));
-    return ret;
-  }
-
-  public static boolean containsPackage(final String _key) {
-    return BUNDLES.containsKey(_key);
-  }
-
-  public static Bundle getPackage(final String _key) {
-    return BUNDLES.get(_key);
-  }
-
-  public static File getTempFolder() {
     try {
-      if (TMPFOLDER == null) {
-        final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
-        TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");;
-        TMPFOLDER.mkdir();
-      }
-    } catch (final IOException e) {
+      final BundleInterface x = (BundleInterface) _bundleclass.newInstance();
+      x.setKey(ret, oids);
+      BUNDLES.put(ret, x);
+    } catch (final InstantiationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    } catch (final IllegalAccessException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    return TMPFOLDER;
+    //
+    return ret;
+  }
+
+  public static boolean containsKey(final String _key) {
+    return BUNDLES.containsKey(_key);
+  }
+
+  public static BundleInterface getBundle(final String _key) {
+    return BUNDLES.get(_key);
   }
 
   private static class StaticCompiledSource implements CacheObjectInterface {

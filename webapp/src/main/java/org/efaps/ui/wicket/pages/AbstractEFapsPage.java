@@ -35,7 +35,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.program.bundle.BundleMaker;
-import org.efaps.admin.program.bundle.Bundle;
+import org.efaps.admin.program.bundle.TempFileBundle;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
@@ -85,17 +85,18 @@ public class AbstractEFapsPage extends WebPage {
           .entrySet()) {
         if (entry.getValue().size() > 1) {
           final List namelist = merge(entry.getValue());
-          final String name = BundleMaker.getPackageKey(namelist);
-          final Bundle onepackage = BundleMaker.getPackage(name);
-
+          final String name =
+              BundleMaker.getBundleKey(namelist, TempFileBundle.class);
+          final TempFileBundle bundle =
+              (TempFileBundle) BundleMaker.getBundle(name);
           if (entry.getKey().equals(StaticHeaderContributor.Type.CSS)) {
             this.add(StaticHeaderContributor.forCss(new EFapsContentReference(
                 name), true));
-            onepackage.setContentType("text/css");
+            bundle.setContentType("text/css");
           } else if (entry.getKey().equals(StaticHeaderContributor.Type.JS)) {
             this.add(StaticHeaderContributor.forJavaScript(
                 new EFapsContentReference(name), true));
-            onepackage.setContentType("text/javascript");
+            bundle.setContentType("text/javascript");
           }
 
         }

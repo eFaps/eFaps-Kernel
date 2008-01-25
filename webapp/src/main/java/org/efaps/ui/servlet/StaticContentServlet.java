@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.common.SystemAttribute;
+import org.efaps.admin.program.bundle.BundleInterface;
 import org.efaps.admin.program.bundle.BundleMaker;
-import org.efaps.admin.program.bundle.Bundle;
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -138,11 +138,11 @@ public class StaticContentServlet extends HttpServlet {
           checkout.execute(_res.getOutputStream());
         }
 
-      } else if (BundleMaker.containsPackage(contentName)) {
-        final Bundle onepackage = BundleMaker.getPackage(contentName);
+      } else if (BundleMaker.containsKey(contentName)) {
+        final BundleInterface bundle = BundleMaker.getBundle(contentName);
 
-        _res.setContentType(onepackage.getContentType());
-        _res.setDateHeader("Last-Modified", onepackage.getCreationTime());
+        _res.setContentType(bundle.getContentType());
+        _res.setDateHeader("Last-Modified", bundle.getCreationTime());
         _res.setDateHeader("Expires", System.currentTimeMillis()
             + (this.cacheDuration * 1000));
         _res.setHeader("Cache-Control", "max-age=" + this.cacheDuration);
@@ -152,7 +152,7 @@ public class StaticContentServlet extends HttpServlet {
         final byte[] buffer = new byte[2048];
 
         final InputStream in =
-            onepackage.getInputStream(supportsCompression(_req));
+            bundle.getInputStream(supportsCompression(_req));
         while ((bytesRead = in.read(buffer)) != -1) {
           _res.getOutputStream().write(buffer, 0, bytesRead);
         }
