@@ -34,8 +34,8 @@ import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.admin.program.pack.EFapsPackager;
-import org.efaps.admin.program.pack.OnePackage;
+import org.efaps.admin.program.bundle.EFapsPackager;
+import org.efaps.admin.program.bundle.OnePackage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 

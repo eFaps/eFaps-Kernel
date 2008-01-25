@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.common.SystemAttribute;
-import org.efaps.admin.program.pack.EFapsPackager;
-import org.efaps.admin.program.pack.OnePackage;
+import org.efaps.admin.program.bundle.EFapsPackager;
+import org.efaps.admin.program.bundle.OnePackage;
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;

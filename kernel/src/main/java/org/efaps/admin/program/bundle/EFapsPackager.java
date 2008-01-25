@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.admin.program.pack;
+package org.efaps.admin.program.bundle;
 
 import java.io.File;
 import java.io.IOException;
