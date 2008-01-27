@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev$
- * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Revision:        $Rev:1522 $
+ * Last Changed:    $Date:2007-10-23 23:27:31 +0200 (Di, 23 Okt 2007) $
+ * Last Changed By: $Author:tmo $
  */
 
 package org.efaps.maven.derby;
@@ -25,16 +25,15 @@ import java.util.Properties;
 import org.apache.derby.drda.NetworkServerControl;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoParameter;
+import org.apache.maven.tools.plugin.Goal;
+import org.apache.maven.tools.plugin.Parameter;
 
 /**
- * 
+ *
  * @author tmo
- * @version $Id$
+ * @version $Id:DerbyShutdownMojo.java 1522 2007-10-23 21:27:31Z tmo $
  */
-@MojoGoal("derby-shutdown")
+@Goal(name = "derby-shutdown")
 public class DerbyShutdownMojo extends AbstractMojo {
 
   /////////////////////////////////////////////////////////////////////////////
@@ -43,7 +42,7 @@ public class DerbyShutdownMojo extends AbstractMojo {
   /**
    * Derby specific Properties.
    */
-  @MojoParameter
+  @Parameter
   private Properties properties;
 
   /////////////////////////////////////////////////////////////////////////////
