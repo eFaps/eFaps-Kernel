@@ -99,9 +99,11 @@ public final class BundleMaker {
    *                The Class that will be instandiated in the case that the key
    *                did not allready exist
    * @return the Key to a Bundle
+   * @throws EFapsException
    */
   public static String getBundleKey(final List<String> _names,
-                                    final Class<?> _bundleclass) {
+                                    final Class<?> _bundleclass)
+                                                                throws EFapsException {
     mergeList(_names);
     String key;
     synchronized (BUNDLEMAPPER) {
@@ -142,34 +144,41 @@ public final class BundleMaker {
    * @param _bundleclass
    *                The Class to be instanciated
    * @return the Key to a Bundle
+   * @throws EFapsException
    */
   private static String createNewKey(final List<String> _names,
-                                     Class<?> _bundleclass) {
+                                     Class<?> _bundleclass)
+                                                           throws EFapsException {
     final StringBuilder builder = new StringBuilder();
     final List<String> oids = new ArrayList<String>();
-    if (!CACHE.hasEntries()) {
-      loadCache();
-    }
-    for (final String name : _names) {
-      if (builder.length() > 0) {
-        builder.append("-");
-      }
-      final String oid = CACHE.get(name).getOid();
-      builder.append(oid);
-      oids.add(oid);
-    }
-    final String ret = builder.toString();
+    String ret = null;
     try {
+      if (!CACHE.hasEntries()) {
+        loadCache();
+      }
+      for (final String name : _names) {
+        if (builder.length() > 0) {
+          builder.append("-");
+        }
+        final String oid = CACHE.get(name).getOid();
+        builder.append(oid);
+        oids.add(oid);
+      }
+      ret = builder.toString();
+
       final BundleInterface bundle =
           (BundleInterface) _bundleclass.newInstance();
       bundle.setKey(ret, oids);
       BUNDLES.put(ret, bundle);
     } catch (final InstantiationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EFapsException(BundleMaker.class,
+          "createNewKey.InstantiationException", e, _bundleclass);
     } catch (final IllegalAccessException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EFapsException(BundleMaker.class,
+          "createNewKey.IllegalAccessException", e, _bundleclass);
+    } catch (final CacheReloadException e) {
+      throw new EFapsException(BundleMaker.class,
+          "createNewKey.CacheReloadException", e);
     }
     return ret;
   }
@@ -198,8 +207,10 @@ public final class BundleMaker {
 
   /**
    * method to load the StaticCompiledSources into the Cache
+   *
+   * @throws CacheReloadException
    */
-  private static void loadCache() {
+  private static void loadCache() throws CacheReloadException {
     try {
       synchronized (CACHE) {
         final SearchQuery query = new SearchQuery();
@@ -215,8 +226,8 @@ public final class BundleMaker {
         }
       }
     } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new CacheReloadException(
+          "could not initialise the Cache for the BundleMaker");
     }
   }
 

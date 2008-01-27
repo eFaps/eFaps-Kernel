@@ -30,14 +30,17 @@ import java.util.Map.Entry;
 import org.apache.wicket.Component;
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
+import org.efaps.util.EFapsException;
 
 /**
  * TODO description
@@ -85,8 +88,12 @@ public class AbstractEFapsPage extends WebPage {
           .entrySet()) {
         if (entry.getValue().size() > 1) {
           final List namelist = merge(entry.getValue());
-          final String name =
-              BundleMaker.getBundleKey(namelist, TempFileBundle.class);
+          String name = "";
+          try {
+            name = BundleMaker.getBundleKey(namelist, TempFileBundle.class);
+          } catch (final EFapsException e) {
+            throw new RestartResponseException(new ErrorPage(e));
+          }
           final TempFileBundle bundle =
               (TempFileBundle) BundleMaker.getBundle(name);
           if (entry.getKey().equals(StaticHeaderContributor.Type.CSS)) {
