@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.PageMap;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.Session;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.behavior.StringHeaderContributor;
@@ -40,6 +41,7 @@ import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
+import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 import org.efaps.util.EFapsException;
 
@@ -54,6 +56,9 @@ public class UploadBehavior extends AbstractBehavior implements
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * this instance variable stores the Component this IBhevaior is bind to
+   */
   private Component component;
 
   private final ModalWindowContainer modalWindow;
@@ -77,8 +82,7 @@ public class UploadBehavior extends AbstractBehavior implements
     try {
       executeEvents();
     } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new RestartResponseException(new ErrorPage(e));
     }
     final FormModel model = (FormModel) this.component.getPage().getModel();
     String script;
@@ -118,6 +122,13 @@ public class UploadBehavior extends AbstractBehavior implements
         new StringHeaderContributor(script));
   }
 
+  /**
+   * method that executes the events wich are related to the Model of the
+   * ParentComponent
+   *
+   * @return true if the ESJP returned the ReturnValue.TRUE , else false
+   * @throws EFapsException
+   */
   private boolean executeEvents() throws EFapsException {
 
     boolean ret = true;
