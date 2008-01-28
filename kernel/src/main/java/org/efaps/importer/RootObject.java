@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,12 @@ import org.efaps.util.EFapsException;
  * In this case the Object represents the Root and therefore can't be a child.
  * The Root means in this case the &lt;import&gt;&lt;/import&gt; of the
  * XML-File.
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
  */
 public class RootObject extends AbstractObject {
+
   /**
    * Logger for this class
    */
@@ -70,35 +71,38 @@ public class RootObject extends AbstractObject {
 
   @Override
   public Map<String, Object> getAttributes() {
-
+    // not needed here
     return null;
   }
 
   @Override
   public String getType() {
-
+    // not needed here
     return null;
   }
 
+  @Override
   public void setID(String _ID) {
-
+    // not needed here
   }
 
   public void addChild(AbstractObject _Object) {
-    CHILDS.add(_Object);
+    this.CHILDS.add(_Object);
   }
 
   @Override
   public void dbAddChilds() {
-    for (AbstractObject object : this.CHILDS) {
+    for (final AbstractObject object : this.CHILDS) {
       try {
         if (LOG.isInfoEnabled()) {
-          LOG.info("Inserting the Base-Objects '" + object.getType()
+          LOG.info("Inserting the Base-Objects '"
+              + object.getType()
               + "' to the Database");
         }
-        Insert insert = new Insert(object.getType());
+        final Insert insert = new Insert(object.getType());
 
-        for (Entry<String, Object> element : object.getAttributes().entrySet()) {
+        for (final Entry<String, Object> element : object.getAttributes()
+            .entrySet()) {
           if (element.getValue() instanceof Timestamp) {
             insert.add(element.getKey().toString(), (Timestamp) element
                 .getValue());
@@ -108,26 +112,24 @@ public class RootObject extends AbstractObject {
                 .toString());
           }
         }
-        for (ForeignObject link : object.getLinks()) {
+        for (final ForeignObject link : object.getLinks()) {
           insert.add(link.getLinkAttribute(), link.dbGetID());
         }
         insert.executeWithoutAccessCheck();
-        String ID = insert.getId();
+        final String ID = insert.getId();
         insert.close();
 
         object.setID(ID);
 
-      } catch (EFapsException e) {
-
+      } catch (final EFapsException e) {
         LOG.error("insertDB()", e);
-      } catch (Exception e) {
-
+      } catch (final Exception e) {
         LOG.error("insertDB()", e);
       }
 
     }
 
-    for (AbstractObject object : this.CHILDS) {
+    for (final AbstractObject object : this.CHILDS) {
       object.dbAddChilds();
     }
 
@@ -135,54 +137,53 @@ public class RootObject extends AbstractObject {
 
   @Override
   public String getParrentAttribute() {
-
+    // not needed here
     return null;
   }
 
   @Override
   public Set<ForeignObject> getLinks() {
-
+    // not needed here
     return null;
   }
 
   @Override
   public boolean isCheckinObject() {
-
     return false;
   }
 
   @Override
   public void dbCheckObjectIn() {
-
+    // not needed here
   }
 
   @Override
   public Set<String> getUniqueAttributes() {
-
+    // not needed here
     return null;
   }
 
   @Override
   public Object getAttribute(String _attribute) {
-    // TODO Auto-generated method stub
+    // not needed here
     return null;
   }
 
   @Override
   public boolean hasChilds() {
-    // TODO Auto-generated method stub
+    // not needed here
     return false;
   }
 
   @Override
   public String dbUpdateOrInsert(final AbstractObject _parent, final String _ID) {
-    // TODO Auto-generated method stub
+    // not needed here
     return null;
   }
 
   @Override
   public String getID() {
-    // TODO Auto-generated method stub
+    // not needed here
     return null;
   }
 
