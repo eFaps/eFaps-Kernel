@@ -39,35 +39,29 @@ import org.efaps.util.EFapsException;
 /**
  * This esjp is used from the UI_COMMAND_EXECUTE from the Form on Create.
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
- * @todo connection via middle object is missing
- * @todo throw Exception if checkin fails
  */
 public class Create implements EventExecution {
 
-  /**
-   * @param _parameter
-   * @throws  
-   */
-  public Return execute(final Parameter _parameter) throws EFapsException  {
-    Return ret = new Return();
+  public Return execute(final Parameter _parameter) throws EFapsException {
+    final Return ret = new Return();
     final Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    AbstractCommand command =
+    final AbstractCommand command =
         (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
 
-    Context context = Context.getThreadContext();
+    final Context context = Context.getThreadContext();
 
     final Insert insert = new Insert(command.getTargetCreateType());
     for (final Field field : command.getTargetForm().getFields()) {
       if (field.getExpression() != null
           && (field.isCreatable() || field.isHidden())) {
-        Attribute attr =
+        final Attribute attr =
             command.getTargetCreateType().getAttribute(field.getExpression());
         if (attr != null
             && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
                 .getClassRepr())) {
-          String value = context.getParameter(field.getName());
+          final String value = context.getParameter(field.getName());
           insert.add(attr, value);
         }
       }
@@ -78,34 +72,35 @@ public class Create implements EventExecution {
     insert.execute();
 
     final Instance instance = insert.getInstance();
+    // TODO connection via middle object is missing
 
-// "TargetConnectChildAttribute"
-//        // "TargetConnectParentAttribute"
-//        // "TargetConnectType"
-//        if (getCommand().getProperty("TargetConnectType") != null) {
-//          Instance parent = new Instance(getParameter("oid"));
+    // "TargetConnectChildAttribute"
+    // // "TargetConnectParentAttribute"
+    // // "TargetConnectType"
+    // if (getCommand().getProperty("TargetConnectType") != null) {
+    // Instance parent = new Instance(getParameter("oid"));
     //
-//          Insert connect = new Insert(getCommand().getProperty("TargetConnectType"));
-//          connect.add(getCommand().getProperty("TargetConnectParentAttribute"), ""
-//              + parent.getId());
-//          connect.add(getCommand().getProperty("TargetConnectChildAttribute"), ""
-//              + insert.getId());
-//          connect.execute();
-//        }
+    // Insert connect = new
+    // Insert(getCommand().getProperty("TargetConnectType"));
+    // connect.add(getCommand().getProperty("TargetConnectParentAttribute"), ""
+    // + parent.getId());
+    // connect.add(getCommand().getProperty("TargetConnectChildAttribute"), ""
+    // + insert.getId());
+    // connect.execute();
+    // }
 
     for (final Field field : command.getTargetForm().getFields()) {
       if (field.getExpression() == null && field.isCreatable()) {
-        final Context.FileParameter fileItem = context.getFileParameters().get(field.getName());
+        final Context.FileParameter fileItem =
+            context.getFileParameters().get(field.getName());
 
         if (fileItem != null) {
           final Checkin checkin = new Checkin(instance);
           try {
-            checkin.execute(fileItem.getName(),
-                            fileItem.getInputStream(),
-                            (int) fileItem.getSize());
-          } catch (IOException e) {
-// TODO Auto-generated catch block
-            e.printStackTrace();
+            checkin.execute(fileItem.getName(), fileItem.getInputStream(),
+                (int) fileItem.getSize());
+          } catch (final IOException e) {
+            throw new EFapsException(this.getClass(), "execute", e, _parameter);
           }
         }
       }
