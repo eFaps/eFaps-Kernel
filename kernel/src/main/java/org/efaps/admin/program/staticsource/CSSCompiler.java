@@ -27,6 +27,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.yahoo.platform.yui.compressor.CssCompressor;
 
 import org.efaps.db.Checkout;
@@ -39,6 +42,11 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  */
 public class CSSCompiler extends AbstractSourceCompiler {
+
+  /**
+   * Logging instance used in this class.
+   */
+  private static final Logger LOG = LoggerFactory.getLogger(CSSCompiler.class);
 
   /**
    * UUID of the CSS type.
@@ -75,10 +83,8 @@ public class CSSCompiler extends AbstractSourceCompiler {
     String ret = "";
     try {
       final Checkout checkout = new Checkout(_oid);
-      // TODO check character encoding!!UTF-8
-      // TODO remove extend and version
       final BufferedReader in =
-          new BufferedReader(new InputStreamReader(checkout.execute()));
+          new BufferedReader(new InputStreamReader(checkout.execute(), "UTF-8"));
 
       final CssCompressor compressor = new CssCompressor(in);
       in.close();
@@ -92,22 +98,28 @@ public class CSSCompiler extends AbstractSourceCompiler {
       ret += "\n";
 
     } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
+      LOG.error("error during checkout of Instance with oid:" + _oid, e);
       e.printStackTrace();
     } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("error during reqding of the Inputstram of Instance with oid:"
+          + _oid, e);
     }
     return ret;
 
   }
 
   @Override
-  public OneSource getNewOneSource(String _name, String _oid, long _id) {
+  public AbstractSource getNewSource(String _name, String _oid, long _id) {
     return new OneCSS(_name, _oid, _id);
   }
 
-  protected class OneCSS extends OneSource {
+  /**
+   * TODO description
+   *
+   * @author jmox
+   * @version $Id$
+   */
+  protected class OneCSS extends AbstractSource {
 
     public OneCSS(final String _name, final String _oid, final long _id) {
       super(_name, _oid, _id);

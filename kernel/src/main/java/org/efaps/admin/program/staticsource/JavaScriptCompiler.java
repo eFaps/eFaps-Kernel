@@ -114,14 +114,15 @@ public class JavaScriptCompiler extends AbstractSourceCompiler {
       compressor.compress(out, 2000, false, true, false, true);
       out.flush();
     } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
+      LOG.error("error during checkout of Instance with oid:" + _oid, e);
       e.printStackTrace();
     } catch (final EvaluatorException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error(
+          "error during the evaluation of the JavaScript of Instance with oid:"
+              + _oid, e);
     } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      LOG.error("error during reqding of the Inputstram of Instance with oid:"
+          + _oid, e);
     }
     String ret = byteout.toString();
     ret += "\n";
@@ -129,11 +130,18 @@ public class JavaScriptCompiler extends AbstractSourceCompiler {
   }
 
   @Override
-  public OneSource getNewOneSource(String _name, String _oid, long _id) {
+  public AbstractSource getNewSource(String _name, String _oid, long _id) {
     return new OneJavaScript(_name, _oid, _id);
   }
 
-  protected class OneJavaScript extends OneSource {
+  /**
+   * TODO description
+   *
+   * @author jmox
+   * @version $Id$
+   *
+   */
+  protected class OneJavaScript extends AbstractSource {
 
     public OneJavaScript(final String _name, final String _oid, final long _id) {
       super(_name, _oid, _id);

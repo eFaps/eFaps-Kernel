@@ -21,6 +21,7 @@
 package org.efaps.admin.program.staticsource;
 
 import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -50,17 +51,32 @@ public abstract class AbstractSourceCompiler {
   private static final Logger LOG =
       LoggerFactory.getLogger(AbstractSourceCompiler.class);
 
+  /**
+   * Static Method that executes the method compile for the SubClasses
+   * CSSCompiler and JavaScriptCompiler
+   *
+   * @throws EFapsException
+   */
   public static void compileAll() throws EFapsException {
     (new CSSCompiler()).compile();
     (new JavaScriptCompiler()).compile();
   }
 
+  /**
+   * this method is doig the actual compiling in the following steps
+   * <li>delete all existing compiled source from the eFaps-DataBase</li>
+   * <li>read all sources from the eFaps-DataBase</li>
+   * <li>compile all sources (including the ecteding of any super type) and
+   * insert it into the eFaps-DataBase</li>
+   *
+   * @throws EFapsException
+   */
   public void compile() throws EFapsException {
     removeAllCompiled();
 
-    final List<OneSource> allsource = readSources();
+    final List<AbstractSource> allsource = readSources();
 
-    for (final OneSource onecss : allsource) {
+    for (final AbstractSource onecss : allsource) {
 
       if (LOG.isInfoEnabled()) {
         LOG.info("compiling " + onecss.getName());
@@ -74,16 +90,19 @@ public abstract class AbstractSourceCompiler {
       }
       builder.append(getCompiledString(onecss.getOid()));
 
-      Instance instance;
       final Insert insert = new Insert(Type.get(getUUID4TypeCompiled()));
       insert.add("Name", onecss.getName());
       insert.add("ProgramLink", "" + onecss.getId());
       insert.executeWithoutAccessCheck();
-      instance = insert.getInstance();
+      final Instance instance = insert.getInstance();
       insert.close();
 
-      // TODO check character encoding!!
-      final byte[] mybytes = builder.toString().getBytes();
+      byte[] mybytes = null;
+      try {
+        mybytes = builder.toString().getBytes("UTF-8");
+      } catch (final UnsupportedEncodingException e) {
+        LOG.error("error in reading Bytes from String using UTF-8", e);
+      }
       final ByteArrayInputStream str = new ByteArrayInputStream(mybytes);
       String name =
           onecss.getName().substring(0, onecss.getName().lastIndexOf("."));
@@ -98,17 +117,55 @@ public abstract class AbstractSourceCompiler {
 
   }
 
-  public abstract UUID getUUID4TypeCompiled();
+  /**
+   * get the UUID for the CompiledType
+   *
+   * @return UUID for the CompiledType
+   */
+  protected abstract UUID getUUID4TypeCompiled();
 
-  public abstract UUID getUUID4Type();
+  /**
+   * get the UUID for the Type
+   *
+   * @return UUID for the Type
+   */
+  protected abstract UUID getUUID4Type();
 
-  public abstract UUID getUUID4Type2Type();
+  /**
+   * get the UUID for the Type2Type
+   *
+   * @return UUID for the Type2Type
+   */
+  protected abstract UUID getUUID4Type2Type();
 
-  public abstract OneSource getNewOneSource(final String _name,
-                                            final String _oid, final long _id);
+  /**
+   * get a new AbstractSource to instanciate
+   *
+   * @see #AbstractSource
+   * @see #readSources()
+   * @param _name
+   * @param _oid
+   * @param _id
+   * @return
+   */
+  protected abstract AbstractSource getNewSource(final String _name,
+                                                 final String _oid,
+                                                 final long _id);
 
+  /**
+   * get the compiled String for the Instance with OID _oid
+   *
+   * @param _oid
+   *                oid of the instance the compiled STrign will be returned
+   * @return a compiled String of the Instance Oid
+   */
   protected abstract String getCompiledString(final String _oid);
 
+  /**
+   * This method removes all compiled Types from the eFapas-DataBase
+   *
+   * @throws EFapsException
+   */
   protected void removeAllCompiled() throws EFapsException {
 
     final SearchQuery query = new SearchQuery();
@@ -124,8 +181,15 @@ public abstract class AbstractSourceCompiler {
     query.close();
   }
 
-  protected List<OneSource> readSources() throws EFapsException {
-    final List<OneSource> ret = new ArrayList<OneSource>();
+  /**
+   * this method reads all Sources from the eFapsDataBase and returns for each
+   * Source a Instance od AbstractSource in a List
+   *
+   * @return List with AbstractSources
+   * @throws EFapsException
+   */
+  protected List<AbstractSource> readSources() throws EFapsException {
+    final List<AbstractSource> ret = new ArrayList<AbstractSource>();
     final SearchQuery query = new SearchQuery();
     query.setQueryTypes(Type.get(getUUID4Type()).getName());
     query.addSelect("ID");
@@ -136,11 +200,20 @@ public abstract class AbstractSourceCompiler {
       final String name = (String) query.get("Name");
       final String oid = (String) query.get("OID");
       final Long id = (Long) query.get("ID");
-      ret.add(getNewOneSource(name, oid, id));
+      ret.add(getNewSource(name, oid, id));
     }
     return ret;
   }
 
+  /**
+   * recursive method that searches the SuperSource for the current Instance
+   * identified by the oid
+   *
+   * @param _oid
+   *                OId of the Instance the Super Instance will be searched
+   * @return List of SuperSources in reverse order
+   * @throws EFapsException
+   */
   protected List<String> getSuper(final String _oid) throws EFapsException {
     final List<String> ret = new ArrayList<String>();
     final SearchQuery query = new SearchQuery();
@@ -156,15 +229,30 @@ public abstract class AbstractSourceCompiler {
     return ret;
   }
 
-  protected abstract class OneSource {
+  /**
+   * TODO description
+   *
+   * @author jmox
+   * @version $Id$
+   */
+  protected abstract class AbstractSource {
 
+    /**
+     * stores the name of this source
+     */
     private final String name;
 
+    /**
+     * stores the oid of this source
+     */
     private final String oid;
 
+    /**
+     * stores the id of this source
+     */
     private final long id;
 
-    public OneSource(final String _name, final String _oid, final long _id) {
+    public AbstractSource(final String _name, final String _oid, final long _id) {
       this.name = _name;
       this.oid = _oid;
       this.id = _id;
