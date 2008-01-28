@@ -58,7 +58,8 @@ public class TempFileBundle implements BundleInterface {
     this.created = System.currentTimeMillis();
   }
 
-  public synchronized InputStream getInputStream(boolean _gziped) {
+  public synchronized InputStream getInputStream(final boolean _gziped)
+                                                                       throws EFapsException {
     InputStream ret = null;
     try {
       if (_gziped) {
@@ -73,8 +74,7 @@ public class TempFileBundle implements BundleInterface {
         ret = new FileInputStream(this.file);
       }
     } catch (final FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EFapsException(this.getClass(), "getInputStream", e);
     }
     return ret;
   }
@@ -95,11 +95,11 @@ public class TempFileBundle implements BundleInterface {
   /**
    * This is the setter method for the instance variable {@link #contentType}.
    *
-   * @param contentType
+   * @param _contentType
    *                the contentType to set
    */
-  public void setContentType(String contentType) {
-    this.contentType = contentType;
+  public void setContentType(final String _contentType) {
+    this.contentType = _contentType;
   }
 
   /**
@@ -111,9 +111,9 @@ public class TempFileBundle implements BundleInterface {
     return this.oids;
   }
 
-  private File setFile(boolean _gziped) {
+  private File setFile(final boolean _gziped) throws EFapsException {
     final String filename = (_gziped ? this.key + "GZIP" : this.key);
-    final File ret = new File(getTempFolder(), filename);;
+    final File ret = new File(getTempFolder(), filename);
 
     try {
       final FileOutputStream out = new FileOutputStream(ret);
@@ -140,31 +140,25 @@ public class TempFileBundle implements BundleInterface {
       }
       out.close();
     } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (final EFapsException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EFapsException(this.getClass(), "setFile", e, filename);
     }
-
     return ret;
   }
 
-  public static File getTempFolder() {
+  public static File getTempFolder() throws EFapsException {
     try {
       if (TMPFOLDER == null) {
         final File tmp = File.createTempFile("eFapsTemp", null).getParentFile();
-        TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");;
+        TMPFOLDER = new File(tmp.getAbsolutePath() + "/eFapsTemp");
         TMPFOLDER.mkdir();
       }
     } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EFapsException(TempFileBundle.class, "getTempFolder", e);
     }
     return TMPFOLDER;
   }
 
-  public void setKey(String _key, List<String> _oids) {
+  public void setKey(final String _key, final List<String> _oids) {
     this.key = _key;
     this.oids = _oids;
   }

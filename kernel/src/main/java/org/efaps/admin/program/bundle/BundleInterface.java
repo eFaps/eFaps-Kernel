@@ -23,6 +23,8 @@ package org.efaps.admin.program.bundle;
 import java.io.InputStream;
 import java.util.List;
 
+import org.efaps.util.EFapsException;
+
 /**
  * TODO description
  *
@@ -31,7 +33,7 @@ import java.util.List;
  */
 public interface BundleInterface {
 
-  public InputStream getInputStream(boolean _gziped);
+  public InputStream getInputStream(boolean _gziped) throws EFapsException;
 
   public String getContentType();
 
