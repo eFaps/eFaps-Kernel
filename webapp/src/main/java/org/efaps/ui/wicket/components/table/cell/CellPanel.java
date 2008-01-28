@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,8 @@ import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.cell.TableCellModel;
 
 /**
+ * TODO description
+ *
  * @author jmox
  * @version $Id:CellPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
@@ -54,7 +56,6 @@ public class CellPanel extends Panel {
     super(_wicketId, _cellmodel);
     final TableCellModel cellmodel = (TableCellModel) super.getModel();
 
-    // TODO add the titel only if wanted or??
     this.add(new SimpleAttributeModifier("title", cellmodel.getCellValue()));
 
     this.add(new WebMarkupContainer("checkbox").setVisible(false));
@@ -98,8 +99,7 @@ public class CellPanel extends Panel {
       if (cellmodel.getIcon() == null) {
         celllink.add(new WebMarkupContainer("linkicon").setVisible(false));
       } else {
-        celllink.add(new StaticImageComponent("linkicon", cellmodel
-            .getIcon()));
+        celllink.add(new StaticImageComponent("linkicon", cellmodel.getIcon()));
       }
       this.add(new WebMarkupContainer("icon").setVisible(false));
       this.add(new WebMarkupContainer("label").setVisible(false));
@@ -109,8 +109,7 @@ public class CellPanel extends Panel {
       if (cellmodel.getIcon() == null) {
         this.add(new WebMarkupContainer("icon").setVisible(false));
       } else {
-        this.add(new StaticImageComponent("icon",
-            cellmodel.getIcon()));
+        this.add(new StaticImageComponent("icon", cellmodel.getIcon()));
       }
 
     }
