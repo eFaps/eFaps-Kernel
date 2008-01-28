@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,8 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
+ * TODO description
+ *
  * @author jmox
  * @version $Id$
  */
@@ -353,28 +355,32 @@ public class EFapsSession extends WebSession {
     if (isLogedIn()) {
       try {
         if (!Context.isTMActive()) {
-          WebRequest request = (WebRequest)RequestCycle.get().getRequest();
+          WebRequest request = (WebRequest) RequestCycle.get().getRequest();
 
-          String contentType = ((WebRequest)request).getHttpServletRequest().getContentType();
-          System.out.println("EFapsWebRequestCycle.request.getHttpServletRequest().getContentType()="+contentType);
-          if ((contentType != null) && contentType.startsWith("multipart/form-data"))  {
-            request = request.newMultipartWebRequest(this.getApplication().getApplicationSettings().getDefaultMaximumUploadSize());
+          final String contentType =
+              (request).getHttpServletRequest().getContentType();
+
+          if ((contentType != null)
+              && contentType.startsWith("multipart/form-data")) {
+            request =
+                request.newMultipartWebRequest(this.getApplication()
+                    .getApplicationSettings().getDefaultMaximumUploadSize());
           }
-          
-          
+
           final Map<String, String[]> parameters = request.getParameterMap();
           Map<String, Context.FileParameter> fileParams = null;
 
           // If we successfully installed a multipart request
-          if (request instanceof IMultipartWebRequest)  {
-            final Map<String, FileItem> fileMap = ((IMultipartWebRequest)request).getFiles();
-            fileParams = new HashMap<String, Context.FileParameter>(fileMap.size());
+          if (request instanceof IMultipartWebRequest) {
+            final Map<String, FileItem> fileMap =
+                ((IMultipartWebRequest) request).getFiles();
+            fileParams =
+                new HashMap<String, Context.FileParameter>(fileMap.size());
 
-            for (final Map.Entry<String, FileItem> entry : fileMap.entrySet())  {
+            for (final Map.Entry<String, FileItem> entry : fileMap.entrySet()) {
               fileParams.put(entry.getKey(), new FileParameter(entry));
             }
           }
-System.out.println("fileParams="+fileParams);
 
           Context.begin(this.userName, super.getLocale(),
               this.sessionAttributes, parameters, fileParams);
@@ -421,19 +427,20 @@ System.out.println("fileParams="+fileParams);
       }
     }
   }
-  
-  private class FileParameter implements Context.FileParameter  {
+
+  private class FileParameter implements Context.FileParameter {
 
     private final FileItem fileItem;
 
     private final String parameterName;
 
-    public FileParameter(final Map.Entry<String, FileItem> _entry)  {
+    public FileParameter(final Map.Entry<String, FileItem> _entry) {
       this.parameterName = _entry.getKey();
       this.fileItem = _entry.getValue();
     }
 
     public void close() throws IOException {
+      // not needed yet
     }
 
     public String getContentType() {
@@ -455,7 +462,7 @@ System.out.println("fileParams="+fileParams);
     public long getSize() {
       return this.fileItem.getSize();
     }
-    
+
   };
 
 }
