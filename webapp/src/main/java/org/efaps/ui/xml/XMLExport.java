@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,11 @@ import org.efaps.ui.wicket.models.cell.FormCellModel;
 import org.efaps.ui.wicket.models.cell.TableCellModel;
 import org.efaps.ui.wicket.resources.XSLResource;
 import org.efaps.ui.wicket.util.FileFormat.MimeTypes;
+import org.efaps.util.EFapsException;
 
 /**
+ * TODO description
+ *
  * @author jmox
  * @version $Id$
  */
@@ -119,7 +122,7 @@ public class XMLExport {
     }
   }
 
-  public void generateDocument(final MimeTypes _mimeType) {
+  public void generateDocument(final MimeTypes _mimeType) throws EFapsException {
     OutputStream out = null;
     try {
       this.mimeType = _mimeType;
@@ -159,27 +162,27 @@ public class XMLExport {
       // Start XSLT transformation and FOP processing
 
     } catch (final FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EFapsException(this.getClass(),
+          "generateDocument.FileNotFoundException", e, this.file);
     } catch (final FOPException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EFapsException(this.getClass(), "generateDocument", e,
+          this.file);
     } catch (final TransformerConfigurationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EFapsException(this.getClass(), "generateDocument", e,
+          this.file);
     } catch (final TransformerException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EFapsException(this.getClass(), "generateDocument", e,
+          this.file);
     } catch (final ResourceStreamNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new EFapsException(this.getClass(), "generateDocument", e,
+          this.file);
     }
     finally {
       try {
         out.close();
       } catch (final IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        throw new EFapsException(this.getClass(), "generateDocument", e,
+            this.file);
       }
     }
   }
@@ -294,8 +297,7 @@ public class XMLExport {
         final Element value = _xmlDoc.createElement(TAG.VALUE.value);
         f_cellvalue.appendChild(value);
         if (formcellmodel.getCellValue() == null) {
-          value.appendChild(_xmlDoc
-              .createTextNode(""));
+          value.appendChild(_xmlDoc.createTextNode(""));
         } else {
           value.appendChild(_xmlDoc
               .createTextNode(formcellmodel.getCellValue()));
