@@ -148,7 +148,7 @@
               <fo:table-row>
                 <xsl:for-each select=".//t_cell">
                   <fo:table-cell>
-                    <fo:block font-size="9pt">
+                    <fo:block font-size="9pt" border-bottom-style="dotted" border-bottom-width="1pt" border-bottom-color="#008800">
                       <xsl:value-of select=".//value" />
                     </fo:block>
                   </fo:table-cell>
