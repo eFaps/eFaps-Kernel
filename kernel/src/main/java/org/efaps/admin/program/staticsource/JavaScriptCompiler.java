@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.yahoo.platform.yui.compressor.JavaScriptCompressor;
 
+import org.efaps.admin.common.SystemAttribute;
 import org.efaps.db.Checkout;
 import org.efaps.util.EFapsException;
 
@@ -102,8 +103,12 @@ public class JavaScriptCompiler extends AbstractSourceCompiler {
 
             public void warning(String arg0, String arg1, int arg2,
                                 String arg3, int arg4) {
-              // TODO use a systemproperty to determine if warning or not
-              LOG.warn(arg0);
+              // Admin_Program_JavaScriptCompiled_Warn: do we want warnings?
+              if (SystemAttribute.get(
+                  UUID.fromString("3f12d8ba-f825-4dc9-912b-1dc0d19c1520"))
+                  .getBooleanValue()) {
+                LOG.warn(arg0);
+              }
             }
           });
 
@@ -139,7 +144,6 @@ public class JavaScriptCompiler extends AbstractSourceCompiler {
    *
    * @author jmox
    * @version $Id$
-   *
    */
   protected class OneJavaScript extends AbstractSource {
 
