@@ -53,7 +53,7 @@ public class AbstractEFapsPage extends WebPage {
   private static final long serialVersionUID = 1L;
 
   public AbstractEFapsPage() {
-
+    super();
   }
 
   public AbstractEFapsPage(final IModel _model) {

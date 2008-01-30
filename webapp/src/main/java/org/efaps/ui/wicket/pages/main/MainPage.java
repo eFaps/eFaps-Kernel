@@ -44,7 +44,10 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * This Page is the MainPage for eFaps and also the Homepage as set in
+ * {@link #org.efaps.ui.wicket.EFapsApplication.getHomePage()}.<br>
+ * It contains the MainMenu and two iFrames. One for the Content and one hidden
+ * to provide the possibilty to set a response into the hidden FRame.
  *
  * @author jmox
  * @version $Id$
@@ -53,30 +56,54 @@ public class MainPage extends AbstractEFapsPage {
 
   private static final long serialVersionUID = -4231606613730698766L;
 
+  /**
+   * this static variable contians the Key for the PageMap for the IFrame
+   */
   public final static String IFRAME_PAGEMAP_NAME = "MainPageIFramePageMap";
 
+  /**
+   * this static variable contians the id for the htmlFrame
+   */
   public final static String IFRAME_WICKETID = "content";
 
+  /**
+   * Reference to the StyleSheet for this Page
+   */
   private static final EFapsContentReference CSS =
       new EFapsContentReference(MainPage.class, "MainPage.css");
 
+  /**
+   * Reference to a JavaScript used for this Page
+   */
+  private static final EFapsContentReference FRAMEJS =
+      new EFapsContentReference(MainPage.class, "SetFrameHeight4Safari.js");
+
+  /**
+   * the MainPage has a ModalWindow that can be called from the childPages
+   */
   private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
+  /**
+   * Constructor adding all Compoments to this Page
+   */
   public MainPage() {
     super();
-    // TODO remove the 67 from this trick
-    // hack to show the IFrame correctly in safari
+
+    // for Safari we need to add a JavaScript Function to resize the iFrame
     if (((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
         .isBrowserSafari()) {
+      final StaticHeaderContributor framejs =
+          StaticHeaderContributor.forJavaScript(FRAMEJS);
+      // don't merge it to keep the sequence
+      framejs.setMerged(true);
+      this.add(framejs);
       this.add(new StringHeaderContributor(JavascriptUtils.SCRIPT_OPEN_TAG
           + "  window.onresize = eFapsSetIFrameHeight; \n"
           + "  window.onload = eFapsSetIFrameHeight; \n"
-          + "  function eFapsSetIFrameHeight() {\n"
-          + "    var x = window.innerHeight - 67; \n"
-          + "    document.getElementById('eFapsFrameContent').height=x;\n"
-          + "  }"
           + JavascriptUtils.SCRIPT_CLOSE_TAG));
+
     }
+    // set the title for the Page
     this.add(new StringHeaderContributor("<title>"
         + DBProperties.getProperty("Logo.Version.Label")
         + "</title>"));
@@ -103,7 +130,7 @@ public class MainPage extends AbstractEFapsPage {
     this.add(new Label("version", DBProperties
         .getProperty("Logo.Version.Label")));
 
-    // MainToolBar
+    // add the MainToolBar to the Page
     final MenuContainer menu =
         new MenuContainer("menu", new MenuItemModel(UUID
             .fromString("87001cc3-c45c-44de-b8f1-776df507f268")));
@@ -116,9 +143,13 @@ public class MainPage extends AbstractEFapsPage {
 
   }
 
+  /**
+   * method to get the ModalWindow of this Page
+   *
+   * @return
+   */
   public final ModalWindowContainer getModal() {
     return this.modal;
   }
-
 
 }
