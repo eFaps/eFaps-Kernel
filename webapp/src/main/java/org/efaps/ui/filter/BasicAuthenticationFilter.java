@@ -32,10 +32,9 @@ import org.apache.commons.codec.binary.Base64;
 
 /**
  * The filter is used to make basic access authentication defined in RFC 2617.
- * 
+ *
  * @author tmo
- * @version $Id: BasicAuthenticationFilter.java 675 2007-02-14 20:56:25 +0000
- *          (Wed, 14 Feb 2007) jmo $
+ * @version $Id$
  * @todo description
  */
 public class BasicAuthenticationFilter extends AbstractAuthenticationFilter {
@@ -45,7 +44,7 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationFilter {
 
   /**
    * The string is name of the parameter used to define the title.
-   * 
+   *
    * @see #init
    */
   final private static String INIT_PARAM_TITLE = "title";
@@ -55,7 +54,7 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationFilter {
 
   /**
    * Store the title which is shown in the realm dialog on the client side.
-   * 
+   *
    * @see #init
    * @see #doFilter
    */
@@ -65,16 +64,16 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationFilter {
   // instance methods
 
   /**
-   * 
+   *
    * Called by the web container to indicate to a filter that it is being placed
    * into service. The servlet container calls the init method exactly once
    * after instantiating the filter. The init method must complete successfully
    * before the filter is asked to do any filtering work.
-   * 
+   *
    * The web container cannot place the filter into service if the init method
    * either 1.Throws a ServletException 2.Does not return within a time period
    * defined by the web container
-   * 
+   *
    * @param _filterConfig
    *          filter configuration instance
    * @see #INIT_PARAM_TITLE
@@ -83,10 +82,11 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationFilter {
    * @see #loginhandler
    * @todo description
    */
+  @Override
   public void init(final FilterConfig _filterConfig) throws ServletException {
     super.init(_filterConfig);
     // sets the title
-    String title = _filterConfig.getInitParameter(INIT_PARAM_TITLE);
+    final String title = _filterConfig.getInitParameter(INIT_PARAM_TITLE);
     if (title != null) {
       this.title = title;
     }
@@ -99,23 +99,24 @@ public class BasicAuthenticationFilter extends AbstractAuthenticationFilter {
    * {@link AbstractAuthenticationFilter#checkLogin}.<br/> If the
    * authentication fails, the header for basic authentication is sent again to
    * the used, otherwise the nothing is filtered anymore.
-   * 
+   *
    */
+  @Override
   protected void doAuthenticate(final HttpServletRequest _request,
                                 final HttpServletResponse _response,
                                 final FilterChain _chain) throws IOException,
                                                          ServletException {
-    String header = _request.getHeader("Authorization");
+    final String header = _request.getHeader("Authorization");
 
     if (header == null) {
       _response.setHeader("WWW-Authenticate", "Basic realm=\"" + this.title
           + "\"");
       _response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     } else {
-      String encoded = header.substring(header.indexOf(" ") + 1);
-      String decoded = new String(Base64.decodeBase64(encoded.getBytes()));
-      String name = decoded.substring(0, decoded.indexOf(":"));
-      String passwd = decoded.substring(decoded.indexOf(":") + 1);
+      final String encoded = header.substring(header.indexOf(" ") + 1);
+      final String decoded = new String(Base64.decodeBase64(encoded.getBytes()));
+      final String name = decoded.substring(0, decoded.indexOf(":"));
+      final String passwd = decoded.substring(decoded.indexOf(":") + 1);
       if (checkLogin(name, passwd)) {
         setLoggedInUser(_request, name);
         _chain.doFilter(_request, _response);

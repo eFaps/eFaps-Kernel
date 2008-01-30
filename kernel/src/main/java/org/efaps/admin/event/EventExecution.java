@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003 - 2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,22 +26,22 @@ import org.efaps.util.EFapsException;
  * This interface is for the Programs loaded dynamically from the efapsdatabase
  * with the efapsClassLoader. To be invoked the Classes loaded with the
  * efapsclassloader must use this interfacs!
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
- * 
+ *
  */
 public interface EventExecution {
 
   /**
    * This method is calles from efaps to invoke the class
-   * 
+   *
    * @param _context
    *          Context of the
    * @param _instance
    * @param _map
    *          Map with values from the trigger
-   * @throws EFapsException 
+   * @throws EFapsException
    */
   public Return execute(final Parameter _parameter) throws EFapsException;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class TypeUI extends AbstractUI {
@@ -35,9 +35,9 @@ public class TypeUI extends AbstractUI {
     String ret = null;
 
     if (_fieldValue.getValue() instanceof Type) {
-      Type value = ((Type) _fieldValue.getValue());
+      final Type value = ((Type) _fieldValue.getValue());
 
-      String name = value.getName();
+      final String name = value.getName();
 
       ret = DBProperties.getProperty(name + ".Label");
 
@@ -52,11 +52,11 @@ public class TypeUI extends AbstractUI {
     String value = null;
     String value2 = null;
     if (_fieldValue.getValue() instanceof Type) {
-      Type type = ((Type) _fieldValue.getValue());
+      final Type type = ((Type) _fieldValue.getValue());
       value = DBProperties.getProperty(type.getName() + ".Label");
     }
     if (_fieldValue2.getValue() instanceof Type) {
-      Type type = ((Type) _fieldValue2.getValue());
+      final Type type = ((Type) _fieldValue2.getValue());
       value2 = DBProperties.getProperty(type.getName() + ".Label");
     }
 

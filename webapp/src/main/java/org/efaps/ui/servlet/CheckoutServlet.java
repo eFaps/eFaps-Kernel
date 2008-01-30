@@ -33,8 +33,7 @@ import org.efaps.db.Checkout;
  * The servlet checks out files from objects.
  *
  * @author tmo
- * @version $Id: CheckoutServlet.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
- *          2007) jmo $
+ * @version $Id$
  */
 public class CheckoutServlet extends HttpServlet {
 
@@ -61,10 +60,10 @@ public class CheckoutServlet extends HttpServlet {
   protected void doGet(HttpServletRequest _req, HttpServletResponse _res)
                                                                          throws ServletException,
                                                                          IOException {
-    String oid = _req.getParameter(PARAM_OID);
+    final String oid = _req.getParameter(PARAM_OID);
 
     try {
-      Checkout checkout = new Checkout(oid);
+      final Checkout checkout = new Checkout(oid);
       checkout.preprocess();
 
       _res.setContentType(getServletContext().getMimeType(
@@ -74,11 +73,11 @@ public class CheckoutServlet extends HttpServlet {
 
       checkout.execute(_res.getOutputStream());
 
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw e;
-    } catch (ServletException e) {
+    } catch (final ServletException e) {
       throw e;
-    } catch (Throwable e) {
+    } catch (final Throwable e) {
       throw new ServletException(e);
     }
   }

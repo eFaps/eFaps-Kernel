@@ -25,7 +25,7 @@ import org.apache.wicket.markup.ComponentTag;
 import org.efaps.ui.wicket.components.AbstractParentMarkupContainer;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  *
  */

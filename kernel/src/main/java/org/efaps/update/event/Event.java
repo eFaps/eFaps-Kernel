@@ -35,10 +35,10 @@ import org.efaps.util.EFapsException;
 
 /**
  * This class defines a Event to be connected with a Update
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
- * 
+ *
  */
 public class Event {
 
@@ -49,7 +49,7 @@ public class Event {
 
   /**
    * Property value depending on the property name for this Trigger
-   * 
+   *
    * @see #addProperty.
    */
   private final Map<String, String> properties = new HashMap<String, String>();
@@ -82,12 +82,12 @@ public class Event {
   private boolean                   isTrigger  = false;
 
   public void setTrigger(final boolean _isTrigger) {
-    isTrigger = _isTrigger;
+    this.isTrigger = _isTrigger;
   }
 
   /**
    * Constructor of Event for a Trigger setting all instancevariables
-   * 
+   *
    * @param _name
    *          name of the Event
    * @param _event
@@ -116,30 +116,30 @@ public class Event {
    * For given type defined with the instance parameter, this trigger is
    * searched by typeID and indexposition. If the trigger exists, the trigger is
    * updated. Otherwise the trigger is created.
-   * 
+   *
    * @param _instance
    *          type instance to update with this attribute
    * @param _typeName
    *          name of the type to update
    * @return Instance of the updateted or inserted Trigger, null incase of error
-   * 
-   * 
+   *
+   *
    */
   public Instance updateInDB(final Instance _instance, final String _typeName) {
 
     try {
 
       String eventtype;
-      if (isTrigger) {
+      if (this.isTrigger) {
         eventtype = EventType.valueOf(this.event).name;
       } else {
         eventtype = this.event;
       }
 
-      long typeID = _instance.getId();
-      long progID = getProgID(_typeName);
+      final long typeID = _instance.getId();
+      final long progID = getProgID(_typeName);
 
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setQueryTypes(eventtype);
       query.addWhereExprEqValue("Abstract", typeID);
       query.addWhereExprEqValue("Name", this.name);
@@ -162,12 +162,12 @@ public class Event {
       update.add("Method", this.method);
       update.executeWithoutAccessCheck();
 
-      Instance instance = update.getInstance();
+      final Instance instance = update.getInstance();
       update.close();
       return instance;
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("updateInDB(Instance, String)", e);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOG.error("updateInDB(Instance, String)", e);
     }
     return null;
@@ -176,7 +176,7 @@ public class Event {
 
   /**
    * get the ID of the Program
-   * 
+   *
    * @param _typeName
    *          Name of teh Type
    * @return id of the Program, 0 if not found
@@ -185,7 +185,7 @@ public class Event {
   private long getProgID(String _typeName) throws EFapsException {
     long id = 0;
 
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     query.setQueryTypes("Admin_Program_Java");
     query.addSelect("ID");
     query.addWhereExprEqValue("Name", this.program);
@@ -202,7 +202,7 @@ public class Event {
 
   /**
    * add a Property to this Trigger
-   * 
+   *
    * @param _name
    *          Name of the Property
    * @param _value
@@ -214,7 +214,7 @@ public class Event {
 
   /**
    * get the properties of this Trigger
-   * 
+   *
    * @return Map containing the Properties
    */
   public Map<String, String> getProperties() {

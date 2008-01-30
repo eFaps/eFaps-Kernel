@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,20 +37,20 @@ import org.efaps.util.EFapsException;
  * Userinterface.<br>
  * Depending on the accessmode (e.g. edit) the Value of a Field is presented in
  * an editable or noneditable mode.
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
  */
 public class LinkWithRangesUI extends AbstractUI {
   @Override
   public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
-    StringBuilder ret = new StringBuilder();
-    Attribute attribute = _fieldValue.getAttribute();
+    final StringBuilder ret = new StringBuilder();
+    final Attribute attribute = _fieldValue.getAttribute();
 
     if (_fieldValue.getValue() != null) {
       if (attribute.hasEvents(EventType.RANGE_VALUE)) {
 
-        for (Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
+        for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
           ret.append((String) ((Map<?, ?>) values.get(ReturnValues.VALUES))
               .get(_fieldValue.getValue().toString()));
         }
@@ -64,22 +64,22 @@ public class LinkWithRangesUI extends AbstractUI {
 
   @Override
   public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
-    StringBuilder ret = new StringBuilder();
-    Attribute attribute = _fieldValue.getAttribute();
+    final StringBuilder ret = new StringBuilder();
+    final Attribute attribute = _fieldValue.getAttribute();
     if (_fieldValue.getValue() != null) {
       if (attribute.hasEvents(EventType.RANGE_VALUE)) {
-        for (Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
+        for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
 
           ret.append("<select name=\"").append(
               _fieldValue.getFieldDef().getField().getName()).append(
               "\" size=\"1\">");
 
-          Iterator<?> iter =
+          final Iterator<?> iter =
               ((Map<?, ?>) values.get(ReturnValues.VALUES)).entrySet()
                   .iterator();
 
           while (iter.hasNext()) {
-            Entry<?, ?> entry = (Entry<?, ?>) iter.next();
+            final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
             ret.append("<option value=\"").append(entry.getKey());
             if (_fieldValue.getValue().toString().equals(entry.getKey())) {
               ret.append("\" selected=\"selected");
@@ -100,20 +100,20 @@ public class LinkWithRangesUI extends AbstractUI {
   @Override
   public String getCreateHtml(final FieldValue _fieldValue)
       throws EFapsException {
-    StringBuilder ret = new StringBuilder();
-    Attribute attribute = _fieldValue.getAttribute();
+    final StringBuilder ret = new StringBuilder();
+    final Attribute attribute = _fieldValue.getAttribute();
     if (attribute.hasEvents(EventType.RANGE_VALUE)) {
-      for (Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
+      for (final Return values : attribute.executeEvents(EventType.RANGE_VALUE)) {
 
         ret.append("<select name=\"").append(
             _fieldValue.getFieldDef().getField().getName()).append(
             "\" size=\"1\">");
 
-        Iterator<?> iter =
+        final Iterator<?> iter =
             ((Map<?, ?>) values.get(ReturnValues.VALUES)).entrySet().iterator();
 
         while (iter.hasNext()) {
-          Entry<?, ?> entry = (Entry<?, ?>) iter.next();
+          final Entry<?, ?> entry = (Entry<?, ?>) iter.next();
           ret.append("<option value=\"").append(entry.getKey()).append("\">")
               .append(entry.getValue()).append("</option>");
         }
@@ -129,7 +129,7 @@ public class LinkWithRangesUI extends AbstractUI {
   @Override
   public String getSearchHtml(final FieldValue _fieldValue)
       throws EFapsException {
-    Field field = _fieldValue.getFieldDef().getField();
+    final Field field = _fieldValue.getFieldDef().getField();
     return "<input type=\"text\" " + "size=\"" + field.getCols() + "\" "
         + "name=\"" + field.getName() + "\" " + "value=\"*\"" + "/>";
   }

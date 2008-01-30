@@ -622,7 +622,7 @@ public class DBPropertiesUpdate implements ImportInterface {
   /**
    * Class to store the diffrent Resources witch can come with one bundle
    *
-   * @author jmo
+   * @author jmox
    * @version $Id$
    */
   public static class Resource {

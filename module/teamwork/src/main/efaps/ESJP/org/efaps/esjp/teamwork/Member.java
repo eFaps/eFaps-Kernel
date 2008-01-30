@@ -46,7 +46,7 @@ import org.efaps.util.EFapsException;
  * This Class is a JavaProgram for eFaps, wich takes care of the Members in
  * TeamWork.
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class Member implements EventExecution {
@@ -64,25 +64,25 @@ public class Member implements EventExecution {
    */
   public Return insertNewMember(Parameter _parameter) {
 
-    Iterator<?> iter =
+    final Iterator<?> iter =
         ((Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES)).entrySet()
             .iterator();
 
-    String defaultaccessSet =
+    final String defaultaccessSet =
         (String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
             .get("DefaultAccessSet");
 
-    Map<String, String> newValues = new HashMap<String, String>();
+    final Map<String, String> newValues = new HashMap<String, String>();
 
     while (iter.hasNext()) {
-      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
-      Attribute attr = (Attribute) entry.getKey();
-      String attrName = attr.getName();
-      String value = entry.getValue().toString();
+      final Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
+      final Attribute attr = (Attribute) entry.getKey();
+      final String attrName = attr.getName();
+      final String value = entry.getValue().toString();
       newValues.put(attrName, value);
     }
 
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
 
     try {
       // is this member allready existing?
@@ -96,7 +96,7 @@ public class Member implements EventExecution {
       if (!query.next()) {
 
         if (!isRoot(newValues.get("AbstractLink").toString())) {
-          Insert insert = new Insert("TeamWork_Member");
+          final Insert insert = new Insert("TeamWork_Member");
           insert.add("AccessSetLink", getAccessSetID(defaultaccessSet));
           insert.add("AbstractLink", getRootID(newValues.get("AbstractLink")));
           insert.add("UserAbstractLink", newValues.get("UserAbstractLink"));
@@ -104,7 +104,7 @@ public class Member implements EventExecution {
           insert.close();
 
         }
-        Insert insert = new Insert("TeamWork_Member");
+        final Insert insert = new Insert("TeamWork_Member");
         insert.add("AccessSetLink", newValues.get("AccessSetLink"));
         insert.add("AbstractLink", newValues.get("AbstractLink"));
         insert.add("UserAbstractLink", newValues.get("UserAbstractLink"));
@@ -116,10 +116,10 @@ public class Member implements EventExecution {
         }
       }
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
 
       LOG.error("insertNewMember(Map<TriggerKeys4Values,Object>)", e);
-    } catch (Exception e) {
+    } catch (final Exception e) {
 
       LOG.error("insertNewMember(Map<TriggerKeys4Values,Object>)", e);
     }
@@ -136,7 +136,7 @@ public class Member implements EventExecution {
    */
   private boolean isRoot(final String _abstractlink) {
     boolean ret = false;
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     try {
       query.setQueryTypes("TeamWork_Abstract2Abstract");
       query.addWhereExprEqValue("AbstractLink", _abstractlink);
@@ -147,7 +147,7 @@ public class Member implements EventExecution {
         ret = true;
       }
       query.close();
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("Can't check if TeamWork_Abstract: "
           + _abstractlink
           + " is a Root", e);
@@ -165,7 +165,7 @@ public class Member implements EventExecution {
    */
   private String getRootID(final String _abstractlink) {
     String ID = null;
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     try {
       query.setQueryTypes("TeamWork_Abstract2Abstract");
       query.addWhereExprEqValue("AbstractLink", _abstractlink);
@@ -179,7 +179,7 @@ public class Member implements EventExecution {
         LOG.error("Cant't find the ID of the Root for: " + _abstractlink);
       }
       query.close();
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("getRootID(String)", e);
     }
     return ID;
@@ -188,7 +188,7 @@ public class Member implements EventExecution {
   public Return editMember(Parameter _parameter) {
     System.out.print("geht doch");
 
-    Return ret = new Return();
+    final Return ret = new Return();
     ret.put(ReturnValues.VALUES, "test");
 
     return ret;
@@ -196,18 +196,18 @@ public class Member implements EventExecution {
 
   public Return execute(Parameter _parameter) {
 
-    Iterator<?> iter =
+    final Iterator<?> iter =
         ((Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES)).entrySet()
             .iterator();
-    Map<String, String> newValues = new HashMap<String, String>();
+    final Map<String, String> newValues = new HashMap<String, String>();
     while (iter.hasNext()) {
-      Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
-      Attribute attr = (Attribute) entry.getKey();
-      String attrName = attr.getName();
-      String value = entry.getValue().toString();
+      final Map.Entry<?, ?> entry = (Map.Entry<?, ?>) iter.next();
+      final Attribute attr = (Attribute) entry.getKey();
+      final String attrName = attr.getName();
+      final String value = entry.getValue().toString();
       newValues.put(attrName, value);
     }
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     Update update;
     try {
       query.setQueryTypes("TeamWork_Member");
@@ -227,10 +227,10 @@ public class Member implements EventExecution {
       update.add("AbstractLink", newValues.get("AbstractLink"));
       update.add("UserAbstractLink", newValues.get("UserAbstractLink"));
       update.execute();
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
 
       LOG.error("execute(Map<TriggerKeys4Values,Object>)", e);
-    } catch (Exception e) {
+    } catch (final Exception e) {
 
       LOG.error("execute(Map<TriggerKeys4Values,Object>)", e);
     }
@@ -247,10 +247,10 @@ public class Member implements EventExecution {
    */
   public Return insertCollectionCreator(Parameter _parameter) {
 
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    String abstractlink = ((Long) instance.getId()).toString();
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final String abstractlink = ((Long) instance.getId()).toString();
 
-    String accessSet =
+    final String accessSet =
         (String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
             .get("AccessSet");
 
@@ -264,7 +264,7 @@ public class Member implements EventExecution {
           .getPerson().getId()).toString());
       insert.execute();
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
 
       LOG.error("insertCollectionCreator(Map<TriggerKeys4Values,Object>)", e);
     }
@@ -281,7 +281,7 @@ public class Member implements EventExecution {
    */
   private String getAccessSetID(final String _accessset) {
     String ID = null;
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     try {
       query.setQueryTypes("Admin_Access_AccessSet");
       query.addWhereExprEqValue("Name", _accessset);
@@ -292,7 +292,7 @@ public class Member implements EventExecution {
       } else {
         LOG.error("Cant't find the ID of the AccessSet for: " + _accessset);
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("getAccessSetID(String)", e);
     }
     return ID;
@@ -307,14 +307,14 @@ public class Member implements EventExecution {
    * @return
    */
   public Return removeMember(Parameter _parameter) {
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    String tempID = ((Long) instance.getId()).toString();
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final String tempID = ((Long) instance.getId()).toString();
 
     Context context = null;
     try {
       context = Context.getThreadContext();
 
-      String abstractid =
+      final String abstractid =
           context.getParameter("oid").substring(
               context.getParameter("oid").indexOf(".") + 1);
 
@@ -326,7 +326,7 @@ public class Member implements EventExecution {
       query.executeWithoutAccessCheck();
 
       if (query.next()) {
-        Long Userid = ((Person) query.get("UserAbstractLink")).getId();
+        final Long Userid = ((Person) query.get("UserAbstractLink")).getId();
         query.close();
 
         query = new SearchQuery();
@@ -336,7 +336,7 @@ public class Member implements EventExecution {
         query.executeWithoutAccessCheck();
 
         while (query.next()) {
-          SearchQuery query2 = new SearchQuery();
+          final SearchQuery query2 = new SearchQuery();
           query2.setQueryTypes("TeamWork_Member");
           query2.addWhereExprEqValue("AbstractLink", query.get("AbstractLink")
               .toString());
@@ -344,8 +344,8 @@ public class Member implements EventExecution {
           query2.addSelect("OID");
           query2.executeWithoutAccessCheck();
           if (query2.next()) {
-            String delOID = (String) query2.get("OID");
-            Delete delete = new Delete(delOID);
+            final String delOID = (String) query2.get("OID");
+            final Delete delete = new Delete(delOID);
             delete.execute();
           }
           query2.close();
@@ -355,7 +355,7 @@ public class Member implements EventExecution {
         LOG.error("no");
       }
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("removeMember(ParameterInterface)", e);
     }
 

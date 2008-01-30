@@ -38,9 +38,10 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmo
- * @version $Id$ TODO
- *          loeschen von sich selber nicht erlaubt, loeschen von letzdem holder
+ * @author jmox
+ * @version $Id$
+ *
+ * TODO    loeschen von sich selber nicht erlaubt, loeschen von letzdem holder
  *          nicht erlaubt
  */
 public class AccessCheckOnMember implements EventExecution {
@@ -69,8 +70,8 @@ public class AccessCheckOnMember implements EventExecution {
     if ("TeamWork_Member".equals(_instance.getType().getName())
         || "TeamWork_MemberRights".equals(_instance.getType().getName())) {
       try {
-        Context context = Context.getThreadContext();
-        for (Role role : context.getPerson().getRoles()) {
+        final Context context = Context.getThreadContext();
+        for (final Role role : context.getPerson().getRoles()) {
           // the TeamWorkAdmin has all rights on a TeamWork_RootCollection, so
           // no further controlling is needed
           if (role.getName().equals("TeamWorkAdmin")) {
@@ -88,19 +89,19 @@ public class AccessCheckOnMember implements EventExecution {
                 .getPerson().getId());
 
         if (accessSetID != 0) {
-          AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
+          final AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
           if (accessSet.getAccessTypes().contains(_accessType)) {
             hasAccess = true;
           }
 
         } else {
-          for (Group group : context.getPerson().getGroups()) {
+          for (final Group group : context.getPerson().getGroups()) {
             accessSetID =
                 getSpecificAccessSetID(context.getParameter("oid"), group
                     .getId());
             if (accessSetID != 0) {
 
-              AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
+              final AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
               if (accessSet.getAccessTypes().contains(_accessType)) {
                 hasAccess = true;
               }
@@ -111,7 +112,7 @@ public class AccessCheckOnMember implements EventExecution {
 
         }
 
-      } catch (EFapsException e) {
+      } catch (final EFapsException e) {
         LOG.error("checkAccess(Instance, AccessType)", e);
       }
     }
@@ -121,7 +122,7 @@ public class AccessCheckOnMember implements EventExecution {
 
   private long getSpecificAccessSetID(final String _oid,
                                       final long _abstractuserid) {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     long ret = 0;
     try {
       query.setExpand(_oid, "TeamWork_MemberRights\\AbstractLink");
@@ -132,7 +133,7 @@ public class AccessCheckOnMember implements EventExecution {
       if (query.next()) {
         ret = (Long) query.get("AccessSetLink");
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
 
       LOG.error("getSpecificAccessSetID(String, long)", e);
     }
@@ -142,10 +143,10 @@ public class AccessCheckOnMember implements EventExecution {
   }
 
   public Return execute(Parameter _parameter) {
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    AccessType accessType =
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final AccessType accessType =
         (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
-    Return ret = new Return();
+    final Return ret = new Return();
 
     if (checkAccess(instance, accessType)) {
       ret.put(ReturnValues.TRUE, true);

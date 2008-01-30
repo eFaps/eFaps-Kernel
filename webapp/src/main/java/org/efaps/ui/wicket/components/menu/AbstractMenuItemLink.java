@@ -26,7 +26,7 @@ import org.apache.wicket.markup.html.link.Link;
 import org.efaps.ui.wicket.models.MenuItemModel;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public abstract class AbstractMenuItemLink extends Link {

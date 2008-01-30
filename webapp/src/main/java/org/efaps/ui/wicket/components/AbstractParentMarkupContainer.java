@@ -29,9 +29,8 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 
 /**
- * @author jmo
- * @version $Id: AbstractParentMarkupContainer.java 1270 2007-08-18 02:24:34Z
- *          jmo $
+ * @author jmox
+ * @version $Id$
  */
 public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
 
@@ -44,7 +43,7 @@ public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
   public AbstractParentMarkupContainer(String id, IModel _model) {
     super(id, _model);
   }
-  
+
 
   @Override
   public String getMarkupId() {
@@ -76,12 +75,12 @@ public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
     }
     markupStream.setCurrentIndex(markupStart);
 
-    Iterator<?> childs = this.iterator();
+    final Iterator<?> childs = this.iterator();
     while (childs.hasNext()) {
       markupStream.setCurrentIndex(markupStart);
-      
-      Component child = (Component) childs.next();
-      
+
+      final Component child = (Component) childs.next();
+
       child.render(getMarkupStream());
 
     }

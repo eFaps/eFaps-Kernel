@@ -24,7 +24,7 @@ import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.util.string.JavascriptUtils;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class ChildCallBackHeaderContributer extends StringHeaderContributor {

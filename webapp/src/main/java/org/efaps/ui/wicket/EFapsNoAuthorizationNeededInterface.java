@@ -26,7 +26,7 @@ package org.efaps.ui.wicket;
  * This has the effect that only a Page wich implements this Interface, will
  * <b>not</b> be checked if a User is checked in and so can be accesed.
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public interface EFapsNoAuthorizationNeededInterface {

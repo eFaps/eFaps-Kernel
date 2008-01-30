@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class DateTimeUI extends AbstractUI {
@@ -37,10 +37,10 @@ public class DateTimeUI extends AbstractUI {
     String ret = null;
 
     if (_fieldValue.getValue() instanceof Date) {
-      Date value = (Date) _fieldValue.getValue();
+      final Date value = (Date) _fieldValue.getValue();
 
       if (value != null) {
-        DateFormat format =
+        final DateFormat format =
             DateFormat.getDateTimeInstance(DateFormat.DEFAULT,
                 DateFormat.DEFAULT, Context.getThreadContext().getLocale());
         ret = format.format(value);

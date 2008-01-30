@@ -47,7 +47,7 @@ import org.efaps.ui.webdav.method.PutMethod;
  *
  * @author tmo
  * @version $Id: WebDAVServlet.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
- *          2007) jmo $
+ *          2007) jmox$
  */
 public class WebDAVServlet extends HttpServlet {
 
@@ -93,7 +93,7 @@ public class WebDAVServlet extends HttpServlet {
     System.out.println("getPath " + _request.getPathInfo());
     System.out.println("getMethod " + _request.getMethod());
 
-    AbstractMethod method = methods.get(_request.getMethod());
+    final AbstractMethod method = methods.get(_request.getMethod());
     if (method != null) {
       method.run(new WebDAVRequest(_request), _response);
     } else {

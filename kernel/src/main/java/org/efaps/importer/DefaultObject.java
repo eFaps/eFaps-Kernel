@@ -32,8 +32,8 @@ import java.util.Map;
  * &lt;/definition&gt; <br>
  * <br>
  * The Value can also be retrived by a ForeignObject.
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
  */
 public class DefaultObject {
@@ -54,7 +54,7 @@ public class DefaultObject {
 
   /**
    * adds a new Dafult to the DEFAULTS
-   * 
+   *
    * @param _type
    *          String containing the Type of the Object
    * @param _name
@@ -71,7 +71,7 @@ public class DefaultObject {
 
   /**
    * get the DefaultValue of the Object
-   * 
+   *
    * @param _type
    *          String containing the Type of the Object
    * @param _name
@@ -79,7 +79,7 @@ public class DefaultObject {
    * @return String containing the DefaultValue, null if not defined
    */
   public static String getDefault(final String _type, final String _name) {
-    DefaultObject def = DEFAULTS.get(_type + "/" + _name);
+    final DefaultObject def = DEFAULTS.get(_type + "/" + _name);
     if (def == null) {
       return null;
     }
@@ -94,7 +94,7 @@ public class DefaultObject {
 
   /**
    * Adds a ForeignObject to this DefaultObject
-   * 
+   *
    * @param _Object
    *          ForeignObject to add
    */

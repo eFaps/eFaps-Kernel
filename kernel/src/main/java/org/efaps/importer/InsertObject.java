@@ -55,8 +55,8 @@ import org.efaps.util.EFapsException;
  * Every InsertObject can be a child to an other InsertObject, so that a
  * parent-child-hirachie can be constructed. The first InsertObject must be the
  * child to a {@code org.efaps.importer.RootObject}.
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
  */
 public class InsertObject extends AbstractObject {
@@ -73,7 +73,7 @@ public class InsertObject extends AbstractObject {
   /**
    * Map containing all Attributes of this InsertObject
    */
-  private Map<String, Object> attributes = new HashMap<String, Object>();
+  private final Map<String, Object> attributes = new HashMap<String, Object>();
 
   /**
    * contains the Name of the Attribute, wich presents the
@@ -84,7 +84,7 @@ public class InsertObject extends AbstractObject {
   /**
    * contains all Childs of this Insertobject
    */
-  private Map<String, List<AbstractObject>> childs =
+  private final Map<String, List<AbstractObject>> childs =
       new HashMap<String, List<AbstractObject>>();
 
   /**
@@ -95,12 +95,12 @@ public class InsertObject extends AbstractObject {
   /**
    * contains all {@link ForeignObjects} of this InsertObject
    */
-  private Set<ForeignObject> links = new HashSet<ForeignObject>();
+  private final Set<ForeignObject> links = new HashSet<ForeignObject>();
 
   /**
    * contains all Attributes wich are defined as unique for this InsertObejct
    */
-  private Set<String> uniqueAttributes = new HashSet<String>();
+  private final Set<String> uniqueAttributes = new HashSet<String>();
 
   /**
    * contains the CheckinObject, if the InsertObject contains one
@@ -113,7 +113,7 @@ public class InsertObject extends AbstractObject {
 
   /**
    * Constructor used by {@link InsertObjectFactory}
-   * 
+   *
    * @param _type
    *                Type of the InsertObject
    */
@@ -124,7 +124,7 @@ public class InsertObject extends AbstractObject {
 
   /**
    * set the Type of the InsertObject
-   * 
+   *
    * @param _type
    *                Type of the InsertObject
    */
@@ -136,7 +136,7 @@ public class InsertObject extends AbstractObject {
    * adds an Attribute to the <code>attributes</code> of this InsertObject and
    * in the case that the Parameter "_unique" equals "true" the Attribute will
    * also be added to the <code>uniqueAttributes.</code>
-   * 
+   *
    * @param _Name
    *                Name of the Attribute
    * @param _Value
@@ -158,7 +158,7 @@ public class InsertObject extends AbstractObject {
    * sets the <code>parentAttribute</code> of this InsertObject. If the
    * Parameter "_unique" equals "true" the Attribute will also be added to the
    * <code>uniqueAttributes.</code>
-   * 
+   *
    * @param _ParentAttribute
    *                Name of the Attribute
    * @param _unique
@@ -178,7 +178,7 @@ public class InsertObject extends AbstractObject {
   /**
    * adds a Child to this InsertObject seperated for the diferend Types. If the
    * Type of the InsertObject is also an OrderObject, the Childs will be sorted.
-   * 
+   *
    * @param _object
    *                Child to be added
    */
@@ -194,7 +194,7 @@ public class InsertObject extends AbstractObject {
       list.add(_object);
       if (RootObject.getOrder(_object.getType()) != null) {
 
-        TreeSet<AbstractObject> treeSet =
+        final TreeSet<AbstractObject> treeSet =
             new TreeSet<AbstractObject>(RootObject.getOrder(_object.getType()));
 
         treeSet.addAll(list);
@@ -213,7 +213,7 @@ public class InsertObject extends AbstractObject {
 
   /**
    * adds a ForeignObject to this InsertObject
-   * 
+   *
    * @param _Object
    *                ForeignObject to be added
    */
@@ -224,7 +224,7 @@ public class InsertObject extends AbstractObject {
 
   /**
    * adds a <code>uniqueAttributes</code>
-   * 
+   *
    * @param _unique
    *                the Attribute will be added if the Parameter equals "true"
    * @param _Name
@@ -238,7 +238,7 @@ public class InsertObject extends AbstractObject {
 
   @Override
   public void setID(String _id) {
-    id = _id;
+    this.id = _id;
   }
 
   @Override
@@ -247,8 +247,8 @@ public class InsertObject extends AbstractObject {
     String ID = null;
     boolean noInsert = false;
 
-    for (List<AbstractObject> list : this.childs.values()) {
-      for (AbstractObject object : list) {
+    for (final List<AbstractObject> list : this.childs.values()) {
+      for (final AbstractObject object : list) {
         noInsert = false;
 
         if (LOG.isInfoEnabled()) {
@@ -261,10 +261,10 @@ public class InsertObject extends AbstractObject {
         try {
           if (object.getUniqueAttributes().size() > 0) {
 
-            SearchQuery query = new SearchQuery();
+            final SearchQuery query = new SearchQuery();
             query.setQueryTypes(object.getType());
             query.addSelect("ID");
-            for (String element : object.getUniqueAttributes()) {
+            for (final String element : object.getUniqueAttributes()) {
 
               if (object.getAttributes().get(element) != null) {
                 query.addWhereExprEqValue(element, object.getAttributes().get(
@@ -277,9 +277,9 @@ public class InsertObject extends AbstractObject {
                 query.addWhereExprEqValue(element, this.id);
 
               }
-              for (ForeignObject link : object.getLinks()) {
+              for (final ForeignObject link : object.getLinks()) {
                 if (link.getLinkAttribute().equals(element)) {
-                  String foreignID = link.dbGetID();
+                  final String foreignID = link.dbGetID();
                   if (foreignID != null) {
                     query.addWhereExprEqValue(element, foreignID);
 
@@ -316,18 +316,18 @@ public class InsertObject extends AbstractObject {
 
         }
 
-        catch (EFapsException e) {
+        catch (final EFapsException e) {
 
           LOG.error("dbAddChilds() " + this.toString(), e);
-        } catch (Exception e) {
+        } catch (final Exception e) {
 
           LOG.error("dbAddChilds() " + this.toString(), e);
         }
       }
     }
 
-    for (List<AbstractObject> list : this.childs.values()) {
-      for (AbstractObject object : list) {
+    for (final List<AbstractObject> list : this.childs.values()) {
+      for (final AbstractObject object : list) {
         object.dbAddChilds();
       }
     }
@@ -335,7 +335,7 @@ public class InsertObject extends AbstractObject {
 
   /**
    * Method to Create the Update or Insert of the Datebase
-   * 
+   *
    * @param _parent
    *                Parent-Object of this Object
    * @param _ID
@@ -345,6 +345,7 @@ public class InsertObject extends AbstractObject {
    *         creation of the new object was skipped, because of a foreign Object
    *         was not found
    */
+  @Override
   public String dbUpdateOrInsert(final AbstractObject _parent, final String _ID) {
     Boolean noInsert = false;
     String ID = null;
@@ -360,7 +361,7 @@ public class InsertObject extends AbstractObject {
 
       }
 
-      for (Entry<String, Object> element : this.getAttributes().entrySet()) {
+      for (final Entry<String, Object> element : this.getAttributes().entrySet()) {
         if (element.getValue() instanceof Timestamp) {
 
           UpIn.add(element.getKey().toString(), (Timestamp) element.getValue());
@@ -372,9 +373,9 @@ public class InsertObject extends AbstractObject {
       if (this.getParrentAttribute() != null) {
         UpIn.add(this.getParrentAttribute(), _parent.getID());
       }
-      for (ForeignObject link : this.getLinks()) {
+      for (final ForeignObject link : this.getLinks()) {
 
-        String foreignID = link.dbGetID();
+        final String foreignID = link.dbGetID();
         if (foreignID != null) {
           UpIn.add(link.getLinkAttribute(), foreignID);
         } else {
@@ -390,9 +391,9 @@ public class InsertObject extends AbstractObject {
         UpIn.close();
       }
       return ID;
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("dbUpdateOrInsert() " + this.toString(), e);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOG.error("dbUpdateOrInsert() " + this.toString(), e);
     }
 
@@ -412,9 +413,9 @@ public class InsertObject extends AbstractObject {
 
   @Override
   public Map<String, Object> getAttributes() {
-    for (Entry<String, Object> element : this.attributes.entrySet()) {
+    for (final Entry<String, Object> element : this.attributes.entrySet()) {
 
-      Attribute attribute =
+      final Attribute attribute =
           Type.get(this.type).getAttribute(element.getKey().toString());
       // TODO das ist nur ein
       // hack damit CreatedType als DateTimeType behandelt werden kann
@@ -423,11 +424,11 @@ public class InsertObject extends AbstractObject {
           || attribute.getAttributeType().getClassRepr().getName().equals(
               "org.efaps.admin.datamodel.attributetype.CreatedType")) {
 
-        Date date =
+        final Date date =
             new SimpleDateFormat(RootObject.DATEFORMAT).parse(element
                 .getValue().toString(), new ParsePosition(0));
 
-        this.attributes.put((String) element.getKey(), new Timestamp(date
+        this.attributes.put(element.getKey(), new Timestamp(date
             .getTime()));
       }
     }
@@ -459,7 +460,7 @@ public class InsertObject extends AbstractObject {
 
   /**
    * method to Create a new {@link CheckinObject} and store it
-   * 
+   *
    * @param _Name
    *                Name of the CheckinObject
    * @param _URL
@@ -481,12 +482,12 @@ public class InsertObject extends AbstractObject {
   @Override
   public void dbCheckObjectIn() {
 
-    Checkin checkin = new Checkin(new Instance(this.type, this.id));
+    final Checkin checkin = new Checkin(new Instance(this.type, this.id));
 
     try {
       checkin.executeWithoutAccessCheck(this.ceckInObject.getName(),
           this.ceckInObject.getInputStream(), -1);
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
 
       LOG.error("checkObjectin() " + this.toString(), e);
     }
@@ -494,12 +495,13 @@ public class InsertObject extends AbstractObject {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
+  @Override
   public String toString() {
 
-    StringBuilder tmp = new StringBuilder();
+    final StringBuilder tmp = new StringBuilder();
     tmp.append("Type: ");
     tmp.append(this.type);
     tmp.append(" - ParentAttribute: ");
@@ -513,8 +515,10 @@ public class InsertObject extends AbstractObject {
 
   /**
    * Class to store the Information, needed to Check in a InsertObject
-   * 
-   * @author jmo
+   *
+   * @author jmox
+   * @version $Id$
+   *
    */
   public class CheckinObject {
 
@@ -530,7 +534,7 @@ public class InsertObject extends AbstractObject {
 
     /**
      * constructor setting the Filename and the URL of the CheckinObject
-     * 
+     *
      * @param _name
      *                Filename of the CheckinObject
      * @param _url
@@ -543,7 +547,7 @@ public class InsertObject extends AbstractObject {
 
     /**
      * get the Name of the CheckinObject
-     * 
+     *
      * @return Filename of the CheckinObject
      */
     public String getName() {
@@ -552,7 +556,7 @@ public class InsertObject extends AbstractObject {
 
     /**
      * get the URL of the CheckinObject
-     * 
+     *
      * @return URL to the File
      */
     public String getURL() {
@@ -561,14 +565,14 @@ public class InsertObject extends AbstractObject {
 
     /**
      * get an Inputstream of the File to check in
-     * 
+     *
      * @return Inputstream of the File
      */
     public InputStream getInputStream() {
       try {
-        InputStream inputstream = new FileInputStream(this.url);
+        final InputStream inputstream = new FileInputStream(this.url);
         return inputstream;
-      } catch (FileNotFoundException e) {
+      } catch (final FileNotFoundException e) {
 
         LOG.error("getInputStream()", e);
       }

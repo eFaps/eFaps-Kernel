@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ package org.efaps.admin.datamodel.ui;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmo
+ * TODO description
+ *
+ * @author jmox
  * @version $Id$
  */
 public abstract class AbstractUI implements UIInterface {
@@ -33,7 +35,7 @@ public abstract class AbstractUI implements UIInterface {
   }
 
   public String getCreateHtml(final FieldValue _fieldValue)
-      throws EFapsException {
+                                                           throws EFapsException {
     return "create";
   }
 
@@ -42,7 +44,7 @@ public abstract class AbstractUI implements UIInterface {
   }
 
   public String getSearchHtml(final FieldValue _fieldValue)
-      throws EFapsException {
+                                                           throws EFapsException {
     return "search";
   }
 

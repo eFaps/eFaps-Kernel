@@ -42,10 +42,10 @@ import org.efaps.util.EFapsException;
  * <code>org.apache.commons.jci.stores.ResourceStore</code>. Through this it
  * is posible to access the dateabase with the normal Checkin or Checkin
  * methods.
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
- * 
+ *
  */
 public class EFapsResourceStore implements ResourceStore {
 
@@ -75,7 +75,7 @@ public class EFapsResourceStore implements ResourceStore {
    * instance already exists in eFaps, the class data is updated. Otherwise, the
    * compiled class is new inserted in eFaps (related to the original Java
    * program).
-   * 
+   *
    * @param _resourceName
    *          name of the resource to stored (Java class name as file name)
    * @param _resourceData
@@ -87,21 +87,21 @@ public class EFapsResourceStore implements ResourceStore {
       LOG.debug("write '" + _resourceName + "'");
     }
     try {
-      String resourceName = getInternalClassName(new File(_resourceName).getAbsoluteFile()).toString();
-      String javaClassName = resourceName.replaceAll("\\.class", "")
+      final String resourceName = getInternalClassName(new File(_resourceName).getAbsoluteFile()).toString();
+      final String javaClassName = resourceName.replaceAll("\\.class", "")
                                          .replaceFirst(".", "");
 
-      Long id = compiler.getclass2id().get(javaClassName);
+      final Long id = this.compiler.getclass2id().get(javaClassName);
       Instance instance;
       if (id == null) {
-        String parent = _resourceName.replaceAll(".class$", "").replaceAll(
+        final String parent = _resourceName.replaceAll(".class$", "").replaceAll(
             "\\$.*", "")
             + ".java";
 
 
-        Long parentId = this.compiler.getfile2id().get(new File(parent).getAbsolutePath());
+        final Long parentId = this.compiler.getfile2id().get(new File(parent).getAbsolutePath());
 
-        Insert insert = new Insert(this.compiler.getClassType());
+        final Insert insert = new Insert(this.compiler.getClassType());
         insert.add("Name", javaClassName);
         insert.add("ProgramLink", "" + parentId);
         insert.executeWithoutAccessCheck();
@@ -112,10 +112,10 @@ public class EFapsResourceStore implements ResourceStore {
         this.compiler.getclass2id().remove(javaClassName);
       }
 
-      Checkin checkin = new Checkin(instance);
+      final Checkin checkin = new Checkin(instance);
       checkin.executeWithoutAccessCheck(_resourceName, new ByteArrayInputStream(_resourceData),
           _resourceData.length);
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOG.error("unable to write to Database '" + _resourceName + "'", e);
     }
   }
@@ -141,10 +141,10 @@ public class EFapsResourceStore implements ResourceStore {
   /**
    * The compiled class is recieved from the eFaps database (checked out) using
    * the name <i>_resourceName</i>
-   * 
+   *
    * @param _resourceName
    *          name of the resource to be recieved (Java class name)
-   * 
+   *
    * @return Byte-Array containing the compiled Java class
    */
   public byte[] read(final String _resourceName) {
@@ -153,27 +153,27 @@ public class EFapsResourceStore implements ResourceStore {
     if (LOG.isDebugEnabled()) {
       LOG.debug("read '" + _resourceName + "'");
     }
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     try {
       query.setQueryTypes(this.compiler.getClassType().getName());
       query.addSelect("ID");
       query.addWhereExprEqValue("Name", _resourceName);
       query.executeWithoutAccessCheck();
       if (query.next()) {
-        Long id = (Long) query.get("ID");
-        Checkout checkout = new Checkout(new Instance(
+        final Long id = (Long) query.get("ID");
+        final Checkout checkout = new Checkout(new Instance(
                                         this.compiler.getClassType(), id));
-        InputStream is = checkout.executeWithoutAccessCheck();
+        final InputStream is = checkout.executeWithoutAccessCheck();
 
         ret = new byte[is.available()];
         is.read(ret);
         is.close();
 
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("could not access the Database for reading '" + _resourceName
           + "'", e);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error("could not read the Javaclass '" + _resourceName + "'", e);
     }
     return ret;

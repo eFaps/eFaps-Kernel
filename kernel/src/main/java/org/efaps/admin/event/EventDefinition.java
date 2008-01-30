@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2007 The eFaps Team
+ * Copyright 2003 - 2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import org.efaps.util.cache.CacheReloadException;
  * the Method stored.
  *
  * @author tmo
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class EventDefinition extends AbstractAdminObject implements
@@ -109,7 +109,7 @@ public class EventDefinition extends AbstractAdminObject implements
    *                OID of thie EventDefenitoin
    */
   private void setProperties(final String _oid) {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     try {
       query.setExpand(_oid, "Admin_Common_Property\\Abstract");
       query.addSelect("Name");
@@ -120,9 +120,9 @@ public class EventDefinition extends AbstractAdminObject implements
         super.setProperty((String) query.get("Name"), (String) query
             .get("Value"));
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("setProperties(String)", e);
-    } catch (CacheReloadException e) {
+    } catch (final CacheReloadException e) {
       LOG.error("setProperties(String)", e);
     }
 
@@ -154,21 +154,21 @@ public class EventDefinition extends AbstractAdminObject implements
 
   private void setInstance() {
     try {
-      Class<?> cls =
+      final Class<?> cls =
           Class.forName(this.resourceName, true, new EFapsClassLoader(this
               .getClass().getClassLoader()));
       this.method =
           cls.getMethod(this.methodName, new Class[] { Parameter.class });
       this.progInstance = cls.newInstance();
-    } catch (ClassNotFoundException e) {
+    } catch (final ClassNotFoundException e) {
       LOG.error("could not find Class: '" + this.resourceName + "'", e);
-    } catch (InstantiationException e) {
+    } catch (final InstantiationException e) {
       LOG.error("could not instantiat Class: '" + this.resourceName + "'", e);
-    } catch (IllegalAccessException e) {
+    } catch (final IllegalAccessException e) {
       LOG.error("could not access Class: '" + this.resourceName + "'", e);
-    } catch (SecurityException e) {
+    } catch (final SecurityException e) {
       LOG.error("could not access Class: '" + this.resourceName + "'", e);
-    } catch (NoSuchMethodException e) {
+    } catch (final NoSuchMethodException e) {
       LOG.error("could not find method: '"
           + this.methodName
           + "' in class: '"
@@ -186,13 +186,13 @@ public class EventDefinition extends AbstractAdminObject implements
 
       ret = (Return) this.method.invoke(this.progInstance, _parameter);
 
-    } catch (SecurityException e) {
+    } catch (final SecurityException e) {
       LOG.error("could not access class: '" + this.resourceName, e);
-    } catch (IllegalArgumentException e) {
+    } catch (final IllegalArgumentException e) {
       LOG.error("execute(Context, Instance, Map<TriggerKeys4Values,Map>)", e);
-    } catch (IllegalAccessException e) {
+    } catch (final IllegalAccessException e) {
       LOG.error("could not access class: '" + this.resourceName, e);
-    } catch (InvocationTargetException e) {
+    } catch (final InvocationTargetException e) {
       LOG.error("could not invoke method: '"
           + this.methodName
           + "' in class: '"
@@ -211,7 +211,7 @@ public class EventDefinition extends AbstractAdminObject implements
    *                eFaps context for this request
    */
   public static void initialise() throws Exception {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     query.setQueryTypes(EFapsClassName.EVENT_DEFINITION.name);
     query.setExpandChildTypes(true);
     query.addSelect("OID");
@@ -228,16 +228,16 @@ public class EventDefinition extends AbstractAdminObject implements
       LOG.debug("initialise Triggers ---------------------------------------");
     }
     while (query.next()) {
-      String eventOID = (String) query.get("OID");
-      long eventId = ((Number) query.get("ID")).longValue();
-      Type eventType = (Type) query.get("Type");
-      String eventName = (String) query.get("Name");
-      long eventPos = (Long) query.get("IndexPosition");
-      long abstractID = ((Number) query.get("Abstract")).longValue();
-      Long programId = ((Number) query.get("JavaProg")).longValue();;
-      String method = (String) query.get("Method");
+      final String eventOID = (String) query.get("OID");
+      final long eventId = ((Number) query.get("ID")).longValue();
+      final Type eventType = (Type) query.get("Type");
+      final String eventName = (String) query.get("Name");
+      final long eventPos = (Long) query.get("IndexPosition");
+      final long abstractID = ((Number) query.get("Abstract")).longValue();
+      final Long programId = ((Number) query.get("JavaProg")).longValue();;
+      final String method = (String) query.get("Method");
 
-      String resName = getClassName(programId.toString());
+      final String resName = getClassName(programId.toString());
 
       if (LOG.isDebugEnabled()) {
         LOG.debug("   OID=" + eventOID);
@@ -251,12 +251,12 @@ public class EventDefinition extends AbstractAdminObject implements
         LOG.debug("   resName=" + resName);
       }
 
-      EFapsClassName eFapsClass =
+      final EFapsClassName eFapsClass =
           EFapsClassName.getEnum(getTypeName(abstractID));
 
       EventType triggerEvent = null;
-      for (EventType trigger : EventType.values()) {
-        Type triggerClass = Type.get(trigger.name);
+      for (final EventType trigger : EventType.values()) {
+        final Type triggerClass = Type.get(trigger.name);
         if (eventType.isKindOf(triggerClass)) {
           if (LOG.isDebugEnabled()) {
             LOG.debug("     found trigger " + trigger + ":" + triggerClass);
@@ -267,7 +267,7 @@ public class EventDefinition extends AbstractAdminObject implements
       }
 
       if (eFapsClass == EFapsClassName.DATAMODEL_TYPE) {
-        Type type = Type.get(abstractID);
+        final Type type = Type.get(abstractID);
         if (LOG.isDebugEnabled()) {
           LOG.debug("    type=" + type);
         }
@@ -276,7 +276,7 @@ public class EventDefinition extends AbstractAdminObject implements
             eventPos, resName, method, eventOID));
 
       } else if (eFapsClass == EFapsClassName.COMMAND) {
-        Command command = Command.get(abstractID);
+        final Command command = Command.get(abstractID);
 
         if (LOG.isDebugEnabled()) {
           LOG.debug("    Command=" + command.getName());
@@ -286,7 +286,7 @@ public class EventDefinition extends AbstractAdminObject implements
 
       } else if (eFapsClass == EFapsClassName.FIELD) {
 
-        Field field = Field.get(abstractID);
+        final Field field = Field.get(abstractID);
 
         if (LOG.isDebugEnabled()) {
           LOG.debug("       Field=" + field.getName());
@@ -296,7 +296,7 @@ public class EventDefinition extends AbstractAdminObject implements
             eventPos, resName, method, eventOID));
 
       } else if (eFapsClass == EFapsClassName.DATAMODEL_ATTRIBUTE) {
-        Attribute attribute = Attribute.get(abstractID);
+        final Attribute attribute = Attribute.get(abstractID);
         if (LOG.isDebugEnabled()) {
           LOG.debug("      Attribute=" + attribute.getName());
         }
@@ -305,7 +305,7 @@ public class EventDefinition extends AbstractAdminObject implements
             eventName, eventPos, resName, method, eventOID));
 
       } else if (eFapsClass == EFapsClassName.MENU) {
-        Menu menu = Menu.get(abstractID);
+        final Menu menu = Menu.get(abstractID);
         if (LOG.isDebugEnabled()) {
           LOG.debug("      Menu=" + menu.getName());
         }
@@ -315,7 +315,7 @@ public class EventDefinition extends AbstractAdminObject implements
 
       } else if (eFapsClass == EFapsClassName.FIELDTABLE) {
 
-        FieldTable fieldtable = FieldTable.get(abstractID);
+        final FieldTable fieldtable = FieldTable.get(abstractID);
 
         if (LOG.isDebugEnabled()) {
           LOG.debug("       Field=" + fieldtable.getName());
@@ -341,7 +341,7 @@ public class EventDefinition extends AbstractAdminObject implements
    * @return ClassName
    */
   private static String getClassName(final String _id) {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     String Name = null;
     try {
       query.setQueryTypes("Admin_Program_Java");
@@ -353,7 +353,7 @@ public class EventDefinition extends AbstractAdminObject implements
       } else {
         LOG.error("Can't find the Name for the Program with ID: " + _id);
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("getClassName(String)", e);
     }
     return Name;
@@ -367,7 +367,7 @@ public class EventDefinition extends AbstractAdminObject implements
    * @return NAem of the Type
    */
   private static String getTypeName(final long abstractID) {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     Type type = null;
     try {
       query.setQueryTypes("Admin_Abstract");
@@ -381,7 +381,7 @@ public class EventDefinition extends AbstractAdminObject implements
         // wird gebraucht, da fuer Admin_Abstract die Query nicht funktioniert
         type = Type.get(abstractID);
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("getClassName(String)", e);
     }
     if (type == null) {

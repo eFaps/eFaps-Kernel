@@ -23,13 +23,12 @@ package org.efaps.maven.plugin.goal.efaps;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.jfrog.maven.annomojo.annotations.MojoGoal;
 
-import org.efaps.importer.DataImport;
 import org.efaps.maven.plugin.EFapsAbstractMojo;
 
 /**
  * Data defined in an XML-Struktur is imported into the eFaps-Database
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
  * @todo must be reworked!
  */
@@ -65,7 +64,7 @@ public class ImportDataMojo extends EFapsAbstractMojo {
 //      }
 //      }
       commitTransaction();
-    } catch (Exception e)  {
+    } catch (final Exception e)  {
       throw new MojoExecutionException("data import failed", e);
     }
   }

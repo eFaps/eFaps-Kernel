@@ -34,8 +34,8 @@ import org.xml.sax.Attributes;
  * call of the Contructor setting the event<br>
  * If for the parameter method no value is given, it will be sett to the default
  * "execute"
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
  */
 public class EventFactory implements ObjectCreationFactory {
@@ -54,7 +54,7 @@ public class EventFactory implements ObjectCreationFactory {
 
   /**
    * Constructor setting the Event
-   * 
+   *
    * @param _event
    *          EventName to be set
    */
@@ -73,7 +73,7 @@ public class EventFactory implements ObjectCreationFactory {
       method = "execute";
     }
 
-    Event ret =
+    final Event ret =
         new Event(_attributes.getValue("name"), this.event, _attributes
             .getValue("program"), method, _attributes.getValue("index"));
     ret.setTrigger(_attributes.getValue("event") != null);

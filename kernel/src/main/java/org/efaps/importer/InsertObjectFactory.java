@@ -28,18 +28,19 @@ import org.xml.sax.Attributes;
 /**
  * Class to create InsertObjects with the Digester using a Constructor with
  * Parameters.
- * 
+ *
  * This Constructor is needed, because the Attribute "type" is needed from the
  * beginning to store the Information about an InsertObject sorted by the Type.
  * This information can't be changed later.
- * 
- * @author jmo
- * 
+ *
+ * @author jmox
+ * @version $Id$
+ *
  */
 public class InsertObjectFactory implements ObjectCreationFactory {
 
   public Object createObject(final Attributes _attributes) {
-    InsertObject ret = new InsertObject(_attributes.getValue("type"));
+    final InsertObject ret = new InsertObject(_attributes.getValue("type"));
     return ret;
   }
 

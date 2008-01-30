@@ -42,24 +42,24 @@ import org.efaps.util.EFapsException;
  * returned is the ID, the Value returned can be specified by the Propertie
  * "Value".
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class RangesValue implements EventExecution {
 
   public Return execute(final Parameter _parameter) throws EFapsException {
-    Return ret = new Return();
+    final Return ret = new Return();
 
-    String type =
+    final String type =
         (String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
             .get("Type");
 
-    String value =
+    final String value =
         (String) ((Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES))
             .get("Value");
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
 
-    Map<String, String> map = new HashMap<String, String>();
+    final Map<String, String> map = new HashMap<String, String>();
 
     query.setQueryTypes(type);
     query.addSelect("ID");
@@ -70,7 +70,7 @@ public class RangesValue implements EventExecution {
       map.put(query.get("ID").toString(), query.get(value).toString());
     }
     // sort by Value
-    List<Map.Entry<String, String>> list =
+    final List<Map.Entry<String, String>> list =
         new Vector<Map.Entry<String, String>>(map.entrySet());
 
     java.util.Collections.sort(list,
@@ -78,17 +78,17 @@ public class RangesValue implements EventExecution {
 
           public int compare(Map.Entry<String, String> entry,
                              Map.Entry<String, String> entry1) {
-            String r = entry.getValue().toString();
-            String r1 = entry1.getValue().toString();
+            final String r = entry.getValue().toString();
+            final String r1 = entry1.getValue().toString();
 
             return r.compareTo(r1);
           }
 
         });
 
-    Map<String, String> map2 = new TreeMap<String, String>();
+    final Map<String, String> map2 = new TreeMap<String, String>();
 
-    for (Map.Entry<String, String> entry : list) {
+    for (final Map.Entry<String, String> entry : list) {
       map2.put(entry.getKey(), entry.getValue());
     }
 

@@ -15,7 +15,7 @@
  *
  * Revision:        $Rev$
  * Last Changed:    $Date$
- * Last Changed By: $Author$
+ * Last Changed By: $Author: jmox\n$
  */
 
 package org.efaps.importer;
@@ -28,17 +28,17 @@ import org.xml.sax.Attributes;
 /**
  * Class to create OrderObjects with the Digester using a Constructor with
  * Parameters.
- * 
+ *
  * This Constructor is needed, because the Attribute "type" and "direction" are
  * needed from the beginning.
- * 
- * @author jmo
- * 
+ *
+ * @author jmox
+ *
  */
 public class OrderObjectFactory implements ObjectCreationFactory {
 
   public Object createObject(final Attributes _attributes) {
-    OrderObject ret = new OrderObject(_attributes.getValue("type"), _attributes
+    final OrderObject ret = new OrderObject(_attributes.getValue("type"), _attributes
         .getValue("direction"));
     return ret;
   }

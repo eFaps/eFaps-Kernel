@@ -21,14 +21,17 @@
 package org.efaps.jaas;
 
 import javax.security.auth.callback.Callback;
- 
+
 /**
  * The class defines with which action the login is made. It defines e.g. the
  * difference between a login and an import of all persons.
+ *
+ * @author tmo
+ * @version $Id$
  */
-public class ActionCallback implements Callback  {
-  
-  public enum Mode  {
+public class ActionCallback implements Callback {
+
+  public enum Mode {
     /** A 'normal' login is done. Name and Password must be checked. */
     Login,
     /** List of all persons is needed. */
@@ -39,31 +42,30 @@ public class ActionCallback implements Callback  {
     Undefined
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
-   *
-   *
    * @see #setMode
    * @see #getMode
    */
   private Mode mode = Mode.Undefined;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // getter and setter methods
 
   /**
    * This is the setter method for instance variable {@link #mode}.
    *
-   * @param _id new value for instance variable {@link #mode}
+   * @param _id
+   *                new value for instance variable {@link #mode}
    * @see #mode
    * @see #getMode
    */
-  public void setMode(final Mode _mode)  {
+  public void setMode(final Mode _mode) {
     this.mode = _mode;
   }
-  
+
   /**
    * This is the getter method for instance variable {@link #mode}.
    *
@@ -71,8 +73,7 @@ public class ActionCallback implements Callback  {
    * @see #mode
    * @see #setMode
    */
-  public Mode getMode()  {
+  public Mode getMode() {
     return this.mode;
   }
 }
-

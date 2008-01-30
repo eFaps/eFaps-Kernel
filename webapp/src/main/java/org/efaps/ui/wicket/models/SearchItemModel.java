@@ -25,7 +25,7 @@ import java.util.UUID;
 import org.efaps.admin.ui.Search;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class SearchItemModel extends MenuItemModel {

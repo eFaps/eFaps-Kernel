@@ -42,7 +42,7 @@ import org.efaps.util.EFapsException;
 /**
  * Class to check the AccessRights for the UserInterfaces in TeamWork.<br>
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class AccessCheckOnUserInterface implements EventExecution {
@@ -67,8 +67,8 @@ public class AccessCheckOnUserInterface implements EventExecution {
     boolean hasAccess = false;
 
     try {
-      Context context = Context.getThreadContext();
-      for (Role role : context.getPerson().getRoles()) {
+      final Context context = Context.getThreadContext();
+      for (final Role role : context.getPerson().getRoles()) {
         // the TeamWorkAdmin has all rights in TeamWork, so
         // no further controlling is needed
         if (role.getName().equals("TeamWorkAdmin")) {
@@ -82,19 +82,19 @@ public class AccessCheckOnUserInterface implements EventExecution {
               .getPerson().getId());
 
       if (accessSetID != 0) {
-        AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
+        final AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
         if (accessSet.getAccessTypes().contains(_accessType)
             && accessSet.getDataModelTypes().contains(_type)) {
           hasAccess = true;
         }
 
       } else {
-        for (Group group : context.getPerson().getGroups()) {
+        for (final Group group : context.getPerson().getGroups()) {
           accessSetID =
               getSpecificAccessSetID(context.getParameter("oid"), group.getId());
           if (accessSetID != 0) {
 
-            AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
+            final AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
             if (accessSet.getAccessTypes().contains(_accessType)
                 && accessSet.getDataModelTypes().contains(_type)) {
               hasAccess = true;
@@ -105,7 +105,7 @@ public class AccessCheckOnUserInterface implements EventExecution {
         }
       }
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("checkAccess(Instance, AccessType)", e);
     }
 
@@ -114,7 +114,7 @@ public class AccessCheckOnUserInterface implements EventExecution {
 
   private long getSpecificAccessSetID(final String _oid,
                                       final long _abstractuserid) {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     long ret = 0;
     try {
       query.setExpand(_oid, "TeamWork_MemberRights\\AbstractLink");
@@ -125,7 +125,7 @@ public class AccessCheckOnUserInterface implements EventExecution {
       if (query.next()) {
         ret = (Long) query.get("AccessSetLink");
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
 
       LOG.error("getSpecificAccessSetID(String, long)", e);
     }
@@ -136,15 +136,15 @@ public class AccessCheckOnUserInterface implements EventExecution {
 
   public Return execute(Parameter _parameter) {
 
-    AccessType accesstype =
+    final AccessType accesstype =
         AccessType.getAccessType((String) ((Map<?, ?>) _parameter
             .get(ParameterValues.PROPERTIES)).get("AccessType"));
 
-    Type type =
+    final Type type =
         Type.get((String) ((Map<?, ?>) _parameter
             .get(ParameterValues.PROPERTIES)).get("Type"));
 
-    Return ret = new Return();
+    final Return ret = new Return();
 
     if (checkAccess(type, accesstype)) {
       ret.put(ReturnValues.TRUE, true);

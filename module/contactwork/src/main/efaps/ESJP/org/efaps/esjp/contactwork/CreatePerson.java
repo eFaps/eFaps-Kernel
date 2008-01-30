@@ -27,7 +27,7 @@ import org.efaps.db.Insert;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class CreatePerson {

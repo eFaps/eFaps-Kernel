@@ -26,8 +26,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 /**
- * @author jmo
- * @version $Id:StaticImageComponent.java 1510 2007-10-18 14:35:40Z jmox $
+ * @author jmox * @version $Id:StaticImageComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public class StaticImageComponent extends WebComponent {
 

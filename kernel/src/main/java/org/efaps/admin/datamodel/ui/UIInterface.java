@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public interface UIInterface {

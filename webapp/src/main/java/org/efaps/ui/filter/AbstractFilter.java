@@ -33,8 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author tmo
- * @version $Id: AbstractFilter.java 675 2007-02-14 20:56:25 +0000 (Wed, 14 Feb
- *          2007) jmo $
+ * @version $Id$
  */
 public abstract class AbstractFilter implements Filter {
 

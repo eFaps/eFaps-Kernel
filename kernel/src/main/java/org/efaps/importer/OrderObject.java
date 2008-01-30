@@ -32,16 +32,17 @@ import java.util.TreeMap;
  * &lt;order type="YDSS_DocumentVersion" direction="ascending"&gt;<br>
  * &lt;attribute index="1" name="Version" criteria="numerical"/&gt; <br>
  * &lt;/order&gt;
- * 
- * @author jmo
- * 
+ *
+ * @author jmox
+ * @version $Id$
+ *
  */
 public class OrderObject implements Comparator<AbstractObject> {
 
   /**
    * contains the Type of the OrderObject
    */
-  private String                             type;
+  private final String                             type;
 
   /**
    * contains the direction of the order, true if ascending, false if descending
@@ -63,7 +64,7 @@ public class OrderObject implements Comparator<AbstractObject> {
 
   /**
    * Constructof for an OrderObject
-   * 
+   *
    * @param _type
    *          Type of the OrderObject
    * @param _direction
@@ -77,7 +78,7 @@ public class OrderObject implements Comparator<AbstractObject> {
 
   /**
    * get the Type of this OrderObject
-   * 
+   *
    * @return Type of the OrderObject
    */
   public String getType() {
@@ -86,7 +87,7 @@ public class OrderObject implements Comparator<AbstractObject> {
 
   /**
    * Method to add a OrderAttribute to this OrderObject
-   * 
+   *
    * @param _index
    *          Index of the OrderAttribute
    * @param _name
@@ -104,9 +105,9 @@ public class OrderObject implements Comparator<AbstractObject> {
     int returnValue;
 
     if (this.orderAttributes.get(1).getCriteria().equalsIgnoreCase("numerical")) {
-      Long comp1 = Long.parseLong((String) _arg0
+      final Long comp1 = Long.parseLong((String) _arg0
           .getAttribute(this.orderAttributes.get(1).getName()));
-      Long comp2 = Long.parseLong((String) _arg1
+      final Long comp2 = Long.parseLong((String) _arg1
           .getAttribute(this.orderAttributes.get(1).getName()));
 
       if (comp1 > comp2)
@@ -123,9 +124,9 @@ public class OrderObject implements Comparator<AbstractObject> {
 
     } else {
 
-      String comp1 = (String) _arg0.getAttribute(this.orderAttributes.get(1)
+      final String comp1 = (String) _arg0.getAttribute(this.orderAttributes.get(1)
           .getName());
-      String comp2 = (String) _arg1.getAttribute(this.orderAttributes.get(1)
+      final String comp2 = (String) _arg1.getAttribute(this.orderAttributes.get(1)
           .getName());
 
       returnValue = comp1.compareToIgnoreCase(comp2);
@@ -147,20 +148,18 @@ public class OrderObject implements Comparator<AbstractObject> {
 
   /**
    * private Class to store a OrderAttribute
-   * 
-   * @author jmo
-   * 
+   *
    */
   private class OrderAttribute {
     /**
      * Contains the Name of the Attribute
      */
-    private String name;
+    private final String name;
 
     /**
      * Criteria this Attribute will be ordered, like "numerical"
      */
-    private String criteria;
+    private final String criteria;
 
     public OrderAttribute(final String _name, final String _criteria) {
       this.name = _name;
@@ -169,7 +168,7 @@ public class OrderObject implements Comparator<AbstractObject> {
 
     /**
      * get the Name of this OrderAttribute
-     * 
+     *
      * @return String with the Name of the Attribute
      */
     public String getName() {
@@ -178,7 +177,7 @@ public class OrderObject implements Comparator<AbstractObject> {
 
     /**
      * get the Criteria for this OrderAttribute
-     * 
+     *
      * @return
      */
     public String getCriteria() {

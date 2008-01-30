@@ -29,9 +29,9 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
- * 
+ *
  */
 public class MemberFieldValue implements EventExecution {
 
@@ -41,8 +41,8 @@ public class MemberFieldValue implements EventExecution {
 
     this.fieldvalue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
     String ret = null;
-    HtmlType htmltype = this.fieldvalue.getHtmlType();
-    Return retVal = new Return();
+    final HtmlType htmltype = this.fieldvalue.getHtmlType();
+    final Return retVal = new Return();
 
     if (htmltype == HtmlType.CREATEHTML) {
       ret = getCreateHtml();

@@ -24,9 +24,9 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebComponent;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
- * 
+ *
  */
 public class CheckBoxComponent extends WebComponent {
   private static final long serialVersionUID = 1L;
@@ -35,14 +35,14 @@ public class CheckBoxComponent extends WebComponent {
 
   public CheckBoxComponent(String id, String _oid) {
     super(id);
-    oid = _oid;
+    this.oid = _oid;
   }
 
   @Override
   protected void onComponentTag(ComponentTag tag) {
     tag.getAttributes().put("type", "checkbox");
     tag.getAttributes().put("name", "selectedRow");
-    tag.getAttributes().put("value", oid);
+    tag.getAttributes().put("value", this.oid);
     tag.setName("input");
   }
 

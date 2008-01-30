@@ -42,8 +42,8 @@ import org.efaps.util.cache.Cache;
  * This Class is the Runlevel for eFaps. It provides the possibilty to load only
  * the specified or needed parts into the Cache. It can be defined within the
  * database.
- * 
- * @author jmo
+ *
+ * @author jmox
  * @author tmo
  * @version $Id$
  */
@@ -83,7 +83,7 @@ public class RunLevel {
    * All cache initialise methods for this runlevel are stored in this instance
    * variable. They are ordered by the priority.
    */
-  private List<CacheMethod>                cacheMethods  = new ArrayList<CacheMethod>();
+  private final List<CacheMethod>                cacheMethods  = new ArrayList<CacheMethod>();
 
   /**
    * The id in the eFaps database of this runlevel.
@@ -95,7 +95,7 @@ public class RunLevel {
   /**
    * The static method first removes all values in the caches. Then the cache is
    * initialized automatically depending on the desired RunLevel
-   * 
+   *
    * @param _runLevel   name of run level to initialise
    * @todo exception handling
    */
@@ -117,7 +117,7 @@ public class RunLevel {
     try {
       return Context.getDbType().existsTable(Context.getThreadContext().getConnection(),
                                              TABLE_TESTS);
-    } catch (SQLException e) {
+    } catch (final SQLException e) {
       throw new EFapsException(RunLevel.class,
                                "isInitialisable.SQLException", e);
     }
@@ -142,14 +142,14 @@ public class RunLevel {
 
   /**
    * All cache initialise methods stored in {@link #cacheMethods} are called.
-   * 
+   *
    * @see #cacheMethods
    */
   protected void executeMethods() throws EFapsException {
     if (this.parent != null) {
       this.parent.executeMethods();
     }
-    for (CacheMethod cacheMethod : this.cacheMethods) {
+    for (final CacheMethod cacheMethod : this.cacheMethods) {
       cacheMethod.callMethod();
     }
   }
@@ -158,7 +158,7 @@ public class RunLevel {
    * Reads the id and the parent id of this runlevel. All defined methods for
    * this runlevel are loaded. If a parent id is defined, the parent is
    * initialised.
-   * 
+   *
    * @param _sql
    *          sql statement to get the id and parent id for this runlevel
    * @see #parent
@@ -219,9 +219,9 @@ public class RunLevel {
         }
       }
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("initialise()", e);
-    } catch (SQLException e) {
+    } catch (final SQLException e) {
       LOG.error("initialise()", e);
     }
     finally {
@@ -258,7 +258,7 @@ public class RunLevel {
     /**
      * Constructor for the ChacheMethod in the Case that there are only
      * ClassName an MethodName
-     * 
+     *
      * @see CacheMethod(String _ClassName, String _MethodName, String
      *      _Parameter)
      * @param _ClassName
@@ -272,7 +272,7 @@ public class RunLevel {
 
     /**
      * Constructor for the Cache with ClassName, MethodName and Parameter
-     * 
+     *
      * @see CacheMethod(String _ClassName, String _MethodName)
      * @param _className
      *          Name of the Class
@@ -293,31 +293,31 @@ public class RunLevel {
      */
     public void callMethod() throws EFapsException {
       try {
-        Class<?> cls = Class.forName(this.className);
+        final Class<?> cls = Class.forName(this.className);
         if (this.parameter != null) {
-          Method m = cls.getMethod(this.methodName, String.class);
-          m.invoke(cls, (String) this.parameter);
+          final Method m = cls.getMethod(this.methodName, String.class);
+          m.invoke(cls, this.parameter);
         } else {
-          Method m = cls.getMethod(this.methodName, new Class[] {});
+          final Method m = cls.getMethod(this.methodName, new Class[] {});
           m.invoke(cls);
         }
-      } catch (ClassNotFoundException e) {
+      } catch (final ClassNotFoundException e) {
         LOG.error("class '" + this.className + "' not found", e);
         throw new EFapsException(getClass(),
             "callMethod.ClassNotFoundException", null, e, this.className);
-      } catch (NoSuchMethodException e) {
+      } catch (final NoSuchMethodException e) {
         LOG.error("class '" + this.className + "' does not own method '"
             + this.methodName + "'", e);
         throw new EFapsException(getClass(),
             "callMethod.NoSuchMethodException", null, e, this.className,
             this.methodName);
-      } catch (IllegalAccessException e) {
+      } catch (final IllegalAccessException e) {
         LOG.error("could not access class '" + this.className + "' method '"
             + this.methodName + "'", e);
         throw new EFapsException(getClass(),
             "callMethod.IllegalAccessException", null, e, this.className,
             this.methodName);
-      } catch (InvocationTargetException e) {
+      } catch (final InvocationTargetException e) {
         LOG.error("could not execute class '" + this.className + "' method '"
             + this.methodName + "' because an exception was thrown.", e);
         if (e.getCause() != null) {

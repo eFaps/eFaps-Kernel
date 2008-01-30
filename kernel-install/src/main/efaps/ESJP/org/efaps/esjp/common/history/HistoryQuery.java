@@ -33,7 +33,7 @@ import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  * @todo description
  */
@@ -43,9 +43,9 @@ public class HistoryQuery implements EventExecution {
    * @param _parameter
    */
   public Return execute(final Parameter _parameter) throws EFapsException {
-    Return ret = new Return();
+    final Return ret = new Return();
 
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
 
     SearchQuery query = new SearchQuery();
     query.setQueryTypes("Common_History_Update");
@@ -55,10 +55,10 @@ public class HistoryQuery implements EventExecution {
     query.addWhereExprEqValue("ForType", instance.getType().getId());
     query.execute();
 
-    List<List<Instance>> list = new ArrayList<List<Instance>>();
+    final List<List<Instance>> list = new ArrayList<List<Instance>>();
     while (query.next()) {
       System.out.println((String) query.get("OID"));
-      List<Instance> instances = new ArrayList<Instance>(1);
+      final List<Instance> instances = new ArrayList<Instance>(1);
       instances.add(new Instance((String) query.get("OID")));
       list.add(instances);
     }
@@ -73,7 +73,7 @@ public class HistoryQuery implements EventExecution {
     query.execute();
     while (query.next()) {
       System.out.println((String) query.get("OID"));
-      List<Instance> instances = new ArrayList<Instance>(1);
+      final List<Instance> instances = new ArrayList<Instance>(1);
       instances.add(new Instance((String) query.get("OID")));
       list.add(instances);
     }

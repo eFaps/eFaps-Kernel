@@ -29,9 +29,9 @@ import org.slf4j.LoggerFactory;
 /**
  * This Class extends the ClassLoader of java, to be able to load Classes on
  * demand from the eFaps Database.
- * 
- * @author jmo
- * 
+ *
+ * @author jmox
+ *
  */
 public class EFapsClassLoader extends ClassLoader {
   /**
@@ -51,7 +51,7 @@ public class EFapsClassLoader extends ClassLoader {
 
   /**
    * Constructor setting the Parent of the EFapsClassLoader in ClassLoader
-   * 
+   *
    * @param _parentClassLoader
    *          the Parent of the this EFapsClassLoader
    */
@@ -62,9 +62,10 @@ public class EFapsClassLoader extends ClassLoader {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.ClassLoader#findClass(java.lang.String)
    */
+  @Override
   public Class<?> findClass(String name) {
 
     byte[] b = getLoadedClasse(name);
@@ -77,7 +78,7 @@ public class EFapsClassLoader extends ClassLoader {
   /**
    * Loads the wanted Resource with the EFapsResourceStore into a byte-Array to
    * pass it on to findClass
-   * 
+   *
    * @param _resourceName
    *          name of the Resource to load
    * @return byte[] containing the compiled javaclass
@@ -86,7 +87,7 @@ public class EFapsClassLoader extends ClassLoader {
     if (LOG.isDebugEnabled()) {
       LOG.debug("Loading Class '" + _resourceName + "' from Database");
     }
-    byte[] x = new EFapsResourceStore(new Compiler()).read(_resourceName);
+    final byte[] x = new EFapsResourceStore(new Compiler()).read(_resourceName);
 
     if (x != null && HOLDCLASSESINCACHE) {
       LOADEDCLASSES.put(_resourceName, x);
@@ -97,7 +98,7 @@ public class EFapsClassLoader extends ClassLoader {
 
   /**
    * get the Binary Class sored inthe lokal Cache
-   * 
+   *
    * @param _resourceName
    *          Name of the Class
    * @return binary Class, null if not in Cache

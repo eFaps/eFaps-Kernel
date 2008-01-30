@@ -26,7 +26,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.efaps.ui.wicket.models.MenuItemModel;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public abstract class AbstractMenuItemAjaxComponent extends WebComponent {

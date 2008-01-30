@@ -33,9 +33,9 @@ import org.efaps.util.EFapsException;
 /**
  * This class presents an Object which is connected to an
  * <code>InsertObject</code> through an ID.
- * 
- * 
- * @author jmo
+ *
+ *
+ * @author jmox
  * @version $Id$
  */
 public class ForeignObject {
@@ -57,11 +57,11 @@ public class ForeignObject {
   /**
    * contains the attributes and the values used for the Query
    */
-  private Map<String, String> attributes    = new HashMap<String, String>();
+  private final Map<String, String> attributes    = new HashMap<String, String>();
 
   /**
    * adds an Attribute, which will be used to construct the Query
-   * 
+   *
    * @param _name
    *          Name of the attribute
    * @param _value
@@ -73,7 +73,7 @@ public class ForeignObject {
 
   /**
    * sets the LinkAttribute and the Type of the ForeignObject
-   * 
+   *
    * @param _name
    *          Name of the LinkAttribute
    * @param _type
@@ -87,7 +87,7 @@ public class ForeignObject {
 
   /**
    * returns the LinkAttribute of this ForeignObject
-   * 
+   *
    * @return String containing the Name of the LinkAttribute
    */
   public String getLinkAttribute() {
@@ -101,12 +101,12 @@ public class ForeignObject {
    * To get the ID a Query is build. If the Query returns Null, then it will be
    * controled if a default is defined for this ForeignObject.If is so the
    * default is returned, otherwise null.
-   * 
+   *
    * @return String with the ID of the ForeignObject. Null if not found and no
    *         default is defined.
    */
   public String dbGetID() {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     String ID = null;
     try {
 
@@ -115,13 +115,13 @@ public class ForeignObject {
 
       query.setExpandChildTypes(true);
 
-      for (Entry<String, String> element : this.attributes.entrySet()) {
+      for (final Entry<String, String> element : this.attributes.entrySet()) {
         query.addWhereExprEqValue(element.getKey().toString(), element
             .getValue().toString());
       }
       query.executeWithoutAccessCheck();
       if (query.next()) {
-        ID = (String) query.get("ID").toString();
+        ID = query.get("ID").toString();
       } else {
         ID = DefaultObject.getDefault(this.type, this.linkattribute);
 
@@ -139,7 +139,7 @@ public class ForeignObject {
       return ID;
 
     }
-    catch (EFapsException e) {
+    catch (final EFapsException e) {
 
       LOG.error("getID()", e);
     }
@@ -149,12 +149,13 @@ public class ForeignObject {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see java.lang.Object#toString()
    */
+  @Override
   public String toString() {
 
-    StringBuilder tmp = new StringBuilder();
+    final StringBuilder tmp = new StringBuilder();
     tmp.append("Type: ");
     tmp.append(this.type);
     tmp.append(" - Attribute: ");

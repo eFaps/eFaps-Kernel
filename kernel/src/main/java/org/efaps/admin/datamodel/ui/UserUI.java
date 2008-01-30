@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,19 +26,19 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class UserUI extends AbstractUI {
   @Override
   public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
     String ret = null;
-    Object value = _fieldValue.getValue();
+    final Object value = _fieldValue.getValue();
     if (value instanceof Person) {
-      Person person = (Person) value;
+      final Person person = (Person) value;
       ret = person.getViewableName(null);
     } else if (value instanceof Role) {
-      Role role = (Role) value;
+      final Role role = (Role) value;
       ret = role.getViewableName(null);
     } else {
       // throw new EFapsException();
@@ -46,23 +46,23 @@ public class UserUI extends AbstractUI {
     return ret;
   }
 
- 
+
   @Override
   public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2) {
     String value = null;
     if (_fieldValue.getValue() instanceof Person) {
-      Person person = (Person) _fieldValue.getValue();
+      final Person person = (Person) _fieldValue.getValue();
       value = person.getViewableName(null);
     } else if (_fieldValue.getValue() instanceof Role) {
-      Role role = (Role) _fieldValue.getValue();
+      final Role role = (Role) _fieldValue.getValue();
       value = role.getViewableName(null);
     }
-    String value2 = null;
+    final String value2 = null;
     if (_fieldValue2.getValue() instanceof Person) {
-      Person person = (Person) _fieldValue2.getValue();
+      final Person person = (Person) _fieldValue2.getValue();
       value = person.getViewableName(null);
     } else if (_fieldValue2.getValue() instanceof Role) {
-      Role role = (Role) _fieldValue2.getValue();
+      final Role role = (Role) _fieldValue2.getValue();
       value = role.getViewableName(null);
     }
 

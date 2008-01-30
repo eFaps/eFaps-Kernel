@@ -24,7 +24,7 @@ import org.apache.wicket.markup.html.WebPage;
 /**
  * This Page is used to send a Page to an IFrame wich has actually now Content.
  *
- * @author jmo
+ * @author jmox
  * @version $Id$
  */
 public class EmptyPage extends WebPage  {

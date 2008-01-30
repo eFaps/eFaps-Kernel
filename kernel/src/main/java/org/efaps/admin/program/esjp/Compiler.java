@@ -58,12 +58,12 @@ import org.efaps.util.EFapsException;
  * <li>rhino</li>
  * <li>janino</li>
  * </ul>
- * 
+ *
  * @author tmo
- * @author jmo
+ * @author jmox
  * @version $Id$
  * @todo exception handling in the resource reader
- * 
+ *
  */
 public class Compiler {
 
@@ -136,7 +136,7 @@ public class Compiler {
   /**
    * The constructor initiliase the two type instances {@link #esjpType} and
    * {@link #classType}.
-   * 
+   *
    * @see #esjpType
    * @see #classType
    */
@@ -166,7 +166,7 @@ public class Compiler {
    * compilitation. All old not needed comiled Java classes are automatically
    * removed. The compiler error and warning are logged (errors are using
    * error-level, warnings are using info-level).
-   * 
+   *
    * @see #readJavaPrograms
    * @see #readJavaClasses
    */
@@ -174,11 +174,11 @@ public class Compiler {
     readJavaPrograms();
     readJavaClasses();
 
-    ResourceReader reader = new EFapsResourceReader();
-    ResourceStore store = new EFapsResourceStore(this);
+    final ResourceReader reader = new EFapsResourceReader();
+    final ResourceStore store = new EFapsResourceStore(this);
 
-    String compName = System.getProperty(PROPERTY_COMPILER, DEFAULT_COMPILER);
-    JavaCompiler compiler = new JavaCompilerFactory().createCompiler(compName);
+    final String compName = System.getProperty(PROPERTY_COMPILER, DEFAULT_COMPILER);
+    final JavaCompiler compiler = new JavaCompilerFactory().createCompiler(compName);
 
     if (compiler == null)  {
       LOG.error("no compiler found for compiler " + compName + "!");
@@ -191,7 +191,7 @@ public class Compiler {
 
       // all checked in files must be compiled!
       final String[] resource
-            = file2id.keySet().toArray(new String[file2id.size()]);
+            = this.file2id.keySet().toArray(new String[this.file2id.size()]);
       String[] args = resource;
 
       // if javac compiler then set classpath!
@@ -208,8 +208,8 @@ public class Compiler {
                            ? ";"
                            : ":";
 
-        StringBuilder classPath = new StringBuilder();
-        for (String classPathElement : this.classPathElements)  {
+        final StringBuilder classPath = new StringBuilder();
+        for (final String classPathElement : this.classPathElements)  {
           classPath.append(classPathElement).append(sep);
         }
 
@@ -226,7 +226,7 @@ public class Compiler {
       final CompilationResult result = compiler.compile(args, reader, store,
           Compiler.class.getClassLoader());
 
-      for (Long id : this.class2id.values()) {
+      for (final Long id : this.class2id.values()) {
         (new Delete(this.classType, id)).executeWithoutAccessCheck();
       }
 
@@ -251,21 +251,21 @@ public class Compiler {
   /**
    * All Java programs in the eFaps database are read and stored in the mapping
    * {@link #file2id} for further using.
-   * 
+   *
    * @see #file2id
    */
   protected void readJavaPrograms() throws EFapsException {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     query.setQueryTypes(this.esjpType.getName());
     query.addSelect("ID");
     query.addSelect("Name");
     query.executeWithoutAccessCheck();
     while (query.next()) {
-      String name = (String) query.get("Name");
-      Long id = (Long) query.get("ID");
-      File file = new File(File.separator
+      final String name = (String) query.get("Name");
+      final Long id = (Long) query.get("ID");
+      final File file = new File(File.separator
           + name.replaceAll("\\.", Matcher.quoteReplacement(File.separator)) + ".java");
-      String absName = file.getAbsolutePath();
+      final String absName = file.getAbsolutePath();
       this.file2id.put(absName, id);
     }
   }
@@ -275,20 +275,20 @@ public class Compiler {
    * mapping {@link @class2id}. If a Java program is compiled and stored with
    * {@link EFapsResourceStore#write}, the class is removed. After the compile,
    * {@link #compile} removed all stored classes which are not needed anymore.
-   * 
+   *
    * @see #class2id
    * @see FapsResourceStore#write
    * @see #compile
    */
   protected void readJavaClasses() throws EFapsException {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     query.setQueryTypes(this.classType.getName());
     query.addSelect("ID");
     query.addSelect("Name");
     query.executeWithoutAccessCheck();
     while (query.next()) {
-      String name = (String) query.get("Name");
-      Long id = (Long) query.get("ID");
+      final String name = (String) query.get("Name");
+      final Long id = (Long) query.get("ID");
       this.class2id.put(name, id);
     }
   }
@@ -298,7 +298,7 @@ public class Compiler {
   /**
    * get the Map containing the Mapping between Java file name and compiled Java
    * program.
-   * 
+   *
    * @return Map
    */
   public Map<String, Long> getclass2id() {
@@ -308,7 +308,7 @@ public class Compiler {
   /**
    * get the Map containing the Mapping between Java file name and id of
    * internal eFaps Java program.
-   * 
+   *
    * @return Map
    */
   public Map<String, Long> getfile2id() {
@@ -317,7 +317,7 @@ public class Compiler {
 
   /**
    * get the Type instance of compile Java program.
-   * 
+   *
    * @return Type
    */
   public Type getClassType() {
@@ -334,7 +334,7 @@ public class Compiler {
 
     /**
      * The method checks if given resource name is avaible by eFaps.
-     * 
+     *
      * @param _resourceName
      *          Java program name (as file name!)
      * @return <i>true</i> if Java program exists in eFaps, otherwise <i>false</i>
@@ -342,7 +342,7 @@ public class Compiler {
      * @see Compiler#fileId
      */
     public boolean isAvailable(final String _resourceName) {
-      return file2id.containsKey(_resourceName);
+      return Compiler.this.file2id.containsKey(_resourceName);
     }
 
     /**
@@ -350,7 +350,7 @@ public class Compiler {
      * is returned.<br/> Because also compiled Java classes in the class path
      * must be readable, the related file is opened from the file system (if the
      * extension of the resource name ends with <code>.class</code>).
-     * 
+     *
      * @param _resourceName
      *          Java program name (as file name!)
      * @return source code of the Java program
@@ -359,29 +359,29 @@ public class Compiler {
      */
     public byte[] getBytes(final String _resourceName) {
       byte[] ret = null;
-      int index = _resourceName.lastIndexOf('.');
-      String extension = _resourceName.substring(index);
-      String resourceName = (new File(_resourceName)).getAbsolutePath();
+      final int index = _resourceName.lastIndexOf('.');
+      final String extension = _resourceName.substring(index);
+      final String resourceName = (new File(_resourceName)).getAbsolutePath();
       if (".class".equals(extension)) {
         try {
-          InputStream is = new FileInputStream(_resourceName);
+          final InputStream is = new FileInputStream(_resourceName);
           ret = new byte[is.available()];
           is.read(ret);
           is.close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
           LOG.error("compile error", e);
         }
       } else {
         try {
-          Checkout checkout = new Checkout(new Instance(esjpType,
-                                                        file2id.get(resourceName)));
-          InputStream is = checkout.executeWithoutAccessCheck();
+          final Checkout checkout = new Checkout(new Instance(Compiler.this.esjpType,
+                                                        Compiler.this.file2id.get(resourceName)));
+          final InputStream is = checkout.executeWithoutAccessCheck();
           ret = new byte[is.available()];
           is.read(ret);
           is.close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
           LOG.error("compile error", e);
-        } catch (EFapsException e) {
+        } catch (final EFapsException e) {
           LOG.error("compile error", e);
         }
       }

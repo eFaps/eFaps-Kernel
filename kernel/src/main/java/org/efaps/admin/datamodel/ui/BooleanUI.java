@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,18 +33,18 @@ import org.efaps.util.EFapsException;
  * e.g. <br>
  * Key = TypeName/AttributeName.false <br>
  * Value = inactive
- * 
- * @author jmo
+ *
+ * @author jmox
  * @version $Id$
  */
 public class BooleanUI extends AbstractUI {
   @Override
   public String getCreateHtml(final FieldValue _fieldValue)
       throws EFapsException {
-    StringBuilder ret = new StringBuilder();
+    final StringBuilder ret = new StringBuilder();
     Boolean bool = null;
-    Attribute attribute = _fieldValue.getAttribute();
-    Field field = _fieldValue.getFieldDef().getField();
+    final Attribute attribute = _fieldValue.getAttribute();
+    final Field field = _fieldValue.getFieldDef().getField();
     if (attribute.getDefaultValue() != null
         && attribute.getDefaultValue().length() > 0) {
       if (attribute.getDefaultValue().equalsIgnoreCase("TRUE")) {
@@ -58,7 +58,7 @@ public class BooleanUI extends AbstractUI {
        .append("name=\"").append(field.getName()).append("\" ")
        .append("value=\"").append("TRUE").append("\"/>")
        .append(getTrue(attribute)).append("<br/>");
-    
+
     ret.append("<input type=\"radio\" ")
        .append((bool != null && !bool) ? "checked=\"checked\" " : "")
        .append("name=\"").append(field.getName()).append("\" ")
@@ -70,18 +70,18 @@ public class BooleanUI extends AbstractUI {
 
   @Override
   public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
-    StringBuilder ret = new StringBuilder();
-    Field field = _fieldValue.getFieldDef().getField();
-    Attribute attribute = _fieldValue.getAttribute();
+    final StringBuilder ret = new StringBuilder();
+    final Field field = _fieldValue.getFieldDef().getField();
+    final Attribute attribute = _fieldValue.getAttribute();
     if (_fieldValue.getValue() instanceof Boolean) {
-      boolean bool = (Boolean) _fieldValue.getValue();
+      final boolean bool = (Boolean) _fieldValue.getValue();
 
       ret.append("<input type=\"radio\" ")
          .append(bool ? "checked=\"checked\" " : "")
          .append("name=\"").append(field.getName()).append("\" ")
          .append("value=\"").append("TRUE").append("\"/>")
          .append(getTrue(attribute)).append("<br/>");
-      
+
       ret.append("<input type=\"radio\" ")
          .append(bool ? "" : "checked=\"checked\" ")
          .append("name=\"").append(field.getName()).append("\" ")
@@ -90,11 +90,12 @@ public class BooleanUI extends AbstractUI {
     }
     return ret.toString();
   }
+  @Override
   public String getSearchHtml(final FieldValue _fieldValue) {
-    StringBuilder ret = new StringBuilder();
-    Field field = _fieldValue.getFieldDef().getField();
-    Attribute attribute = _fieldValue.getAttribute();
-    
+    final StringBuilder ret = new StringBuilder();
+    final Field field = _fieldValue.getFieldDef().getField();
+    final Attribute attribute = _fieldValue.getAttribute();
+
     ret.append("<input type=\"radio\" ")
        .append("name=\"").append(field.getName()).append("\" ")
        .append("value=\"").append("TRUE").append("\"/>")
@@ -104,18 +105,18 @@ public class BooleanUI extends AbstractUI {
        .append("name=\"").append(field.getName()).append("\" ")
        .append("value=\"").append("FALSE").append("\"/>")
        .append(getFalse(attribute));
-    
+
     return ret.toString();
   }
-  
-  
-  
+
+
+
   @Override
   public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
     String ret = null;
-    Attribute attribute = _fieldValue.getAttribute();
+    final Attribute attribute = _fieldValue.getAttribute();
     if (_fieldValue.getValue() instanceof Boolean) {
-      boolean bool = (Boolean) _fieldValue.getValue();
+      final boolean bool = (Boolean) _fieldValue.getValue();
       if (bool) {
         ret = this.getTrue(attribute);
       } else {
@@ -157,7 +158,7 @@ public class BooleanUI extends AbstractUI {
     String value = null;
     String value2 = null;
     if (_fieldValue.getValue() instanceof Boolean) {
-      boolean bool = (Boolean) _fieldValue.getValue();
+      final boolean bool = (Boolean) _fieldValue.getValue();
       if (bool) {
         value = getTrue(_fieldValue.getAttribute());
       } else {
@@ -165,7 +166,7 @@ public class BooleanUI extends AbstractUI {
       }
     }
     if (_fieldValue2.getValue() instanceof Boolean) {
-      boolean bool = (Boolean) _fieldValue2.getValue();
+      final boolean bool = (Boolean) _fieldValue2.getValue();
       if (bool) {
         value2 = getTrue(_fieldValue.getAttribute());
       } else {

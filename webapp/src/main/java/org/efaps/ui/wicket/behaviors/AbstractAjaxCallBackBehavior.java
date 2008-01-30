@@ -23,7 +23,7 @@ package org.efaps.ui.wicket.behaviors;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 
 /**
- * @author jmo
+ * @author jmox
  * @version $Id:AbstractAjaxCallBackBehavior.java 1510 2007-10-18 14:35:40Z jmox $
  */
 public abstract class AbstractAjaxCallBackBehavior extends AjaxEventBehavior {
