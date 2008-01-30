@@ -74,7 +74,8 @@ import org.efaps.ui.wicket.util.FileFormat.MimeTypes;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * This class provides functionalities to produce a PDF-Document to be shown to
+ * the user
  *
  * @author jmox
  * @version $Id$
@@ -93,35 +94,57 @@ public class XMLExport {
 
   }
 
-  // Format definitions
+  /**
+   * Format definitions for the Date
+   */
   private static final String DATE_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'";
 
-  // Variables
+  /**
+   * the date to be added as a TimeStamp
+   */
   private Date msgTimeStamp = null;
 
+  /**
+   * the folder the file lies in
+   */
   private File fileStoreFolder;
 
+  /**
+   * the file to be shown to the user
+   */
   private File file;
 
   private MimeTypes mimeType;
 
+  /**
+   * this variable contains the model used in this XMLExport
+   */
   private AbstractModel model;
 
+  /**
+   * the document
+   */
   private Document xmlDocument;
 
   private static String APPNAME = Application.get().getApplicationKey();
 
   // Constructor
-  public XMLExport(final AbstractModel _model) {
+  public XMLExport(final AbstractModel _model) throws EFapsException {
     initialise(_model);
   }
 
-  public XMLExport(final Object object) {
+  public XMLExport(final Object object) throws EFapsException {
     if (object instanceof Component) {
       initialise((AbstractModel) ((Component) object).getPage().getModel());
     }
   }
 
+  /**
+   * this method creates the Document
+   *
+   * @param _mimeType
+   * @throws EFapsException
+   */
   public void generateDocument(final MimeTypes _mimeType) throws EFapsException {
     OutputStream out = null;
     try {
@@ -187,7 +210,13 @@ public class XMLExport {
     }
   }
 
-  private void initialise(final AbstractModel _model) {
+  /**
+   * method to initialise this XMLExport
+   *
+   * @param _model
+   * @throws EFapsException
+   */
+  private void initialise(final AbstractModel _model) throws EFapsException {
     this.msgTimeStamp = new Date();
     this.model = _model;
     // Generate the XML Document using DOM
@@ -195,16 +224,22 @@ public class XMLExport {
     this.xmlDocument = this.generateXMLDocument(_model);
     // Generate a XML String
     this.xmlDocument.normalizeDocument();
-    // TODO nur fuer testzwecke
 
-    System.out.print(generateXMLString(this.xmlDocument));
+    // System.out.print(generateXMLString(this.xmlDocument));
 
     this.fileStoreFolder = getDefaultFileStoreFolder();
     this.fileStoreFolder.mkdirs();
   }
 
-  // Generate a DOM XML document
-  protected Document generateXMLDocument(AbstractModel _model) {
+  /**
+   * Generate a DOM XML document
+   *
+   * @param _model
+   * @return
+   * @throws EFapsException
+   */
+  protected Document generateXMLDocument(AbstractModel _model)
+                                                              throws EFapsException {
     Document xmlDoc = null;
     try {
       // Create a XML Document
@@ -214,7 +249,8 @@ public class XMLExport {
       final DocumentBuilder docBuilder = dbFactory.newDocumentBuilder();
       xmlDoc = docBuilder.newDocument();
     } catch (final Exception e) {
-      System.out.println("Error " + e);
+      throw new EFapsException(this.getClass(), "generateXMLDocument", e,
+          this.model);
     }
 
     // Create the root element
@@ -256,6 +292,14 @@ public class XMLExport {
     return xmlDoc;
   }
 
+  /**
+   * create a DOM-Element for a Heading
+   *
+   * @param _xmlDoc
+   *                Document this DOMElemnt should be added
+   * @param _model
+   * @return the Element for a Heading
+   */
   protected Element getHeadingElement(final Document _xmlDoc,
                                       final HeadingModel _model) {
     final Element heading = _xmlDoc.createElement(TAG.HEADING.value);
@@ -266,12 +310,20 @@ public class XMLExport {
     return heading;
   }
 
+  /**
+   * create a DOM-Element for a Form
+   *
+   * @param _xmlDoc
+   *                Document this DOMElemnt should be added
+   * @param _model
+   * @return the Element for a Form
+   */
   protected Element getFormElement(final Document _xmlDoc,
                                    final FormModel _formmodel,
                                    final FormElementModel _model) {
     final Element form = _xmlDoc.createElement(TAG.FORM.value);
-    form.setAttribute("maxGoupCount", ((Integer) _formmodel.getMaxGroupCount())
-        .toString());
+    form.setAttribute("maxGroupCount",
+        ((Integer) _formmodel.getMaxGroupCount()).toString());
 
     for (final FormRowModel rowmodel : _model.getRowModels()) {
 
@@ -307,6 +359,14 @@ public class XMLExport {
     return form;
   }
 
+  /**
+   * create a DOM-Element for a Table
+   *
+   * @param _xmlDoc
+   *                Document this DOMElemnt should be added
+   * @param _model
+   * @return the Element for a Table
+   */
   protected Element getTableElement(final Document _xmlDoc,
                                     final TableModel _model) {
 
@@ -356,8 +416,14 @@ public class XMLExport {
     return table;
   }
 
-  // Generate String out of the XML document object
-  private String generateXMLString(Document _xmlDoc) {
+  /**
+   * Generate String out of the XML document object
+   *
+   * @param _xmlDoc
+   * @return
+   * @throws EFapsException
+   */
+  public String generateXMLString(Document _xmlDoc) throws EFapsException {
     String ret = null;
     StringWriter strWriter = null;
     XMLSerializer probeMsgSerializer = null;
@@ -385,12 +451,17 @@ public class XMLExport {
       ret = strWriter.toString();
       strWriter.close();
 
-    } catch (final IOException ioEx) {
-      System.out.println("Error " + ioEx);
+    } catch (final IOException e) {
+      throw new EFapsException(this.getClass(), "generateXMLString", e);
     }
     return ret;
   }
 
+  /**
+   * get the FileStore
+   *
+   * @return
+   */
   private static File getDefaultFileStoreFolder() {
     final File dir =
         (File) ((EFapsApplication) Application.get()).getServletContext()
@@ -406,6 +477,12 @@ public class XMLExport {
     }
   }
 
+  /**
+   * get the SessionFOlder
+   *
+   * @param sessionId
+   * @return
+   */
   private File getSessionFolder(final String sessionId) {
     final File storeFolder = new File(this.fileStoreFolder, APPNAME + "-print");
     final File sessionFolder = new File(storeFolder, sessionId);
