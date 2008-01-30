@@ -277,8 +277,12 @@ public class EFapsSession extends WebSession {
   public final void logout() {
     this.userName = null;
     if (this.sessionAttributes.containsKey(UserAttributesSet.CONTEXTMAPKEY)) {
-      ((UserAttributesSet) this.sessionAttributes
-          .get(UserAttributesSet.CONTEXTMAPKEY)).storeInDb();
+      try {
+        ((UserAttributesSet) this.sessionAttributes
+            .get(UserAttributesSet.CONTEXTMAPKEY)).storeInDb();
+      } catch (final EFapsException e) {
+        throw new RestartResponseException(new ErrorPage(e));
+      }
       this.sessionAttributes.clear();
       removeAttribute(LOGIN_ATTRIBUTE_NAME);
     }
