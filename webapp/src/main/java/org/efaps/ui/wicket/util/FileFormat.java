@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * TODO description
+ * This class serves as a container for the enum, wich contians the MimesTypes.
  *
  * @author jmox
  * @version $Id$

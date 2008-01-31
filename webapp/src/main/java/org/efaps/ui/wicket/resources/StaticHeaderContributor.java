@@ -73,7 +73,7 @@ public class StaticHeaderContributor extends HeaderContributor {
           private static final long serialVersionUID = 1L;
 
           public void renderHead(IHeaderResponse response) {
-            response.renderCSSReference(_reference.getCSSUrl());
+            response.renderCSSReference(_reference.getStaticContentUrl());
           }
         }, _reference);
     ret.setType(Type.CSS);
@@ -104,7 +104,7 @@ public class StaticHeaderContributor extends HeaderContributor {
           private static final long serialVersionUID = 1L;
 
           public void renderHead(IHeaderResponse response) {
-            response.renderJavascriptReference(_reference.getCSSUrl());
+            response.renderJavascriptReference(_reference.getStaticContentUrl());
           }
         }, _reference);
     ret.setType(Type.JS);

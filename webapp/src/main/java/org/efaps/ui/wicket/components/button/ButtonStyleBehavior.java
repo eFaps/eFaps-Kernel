@@ -49,7 +49,7 @@ public class ButtonStyleBehavior extends AbstractBehavior {
   @Override
   public void renderHead(final IHeaderResponse _response) {
     super.renderHead(_response);
-    _response.renderCSSReference(CSS.getCSSUrl());
+    _response.renderCSSReference(CSS.getStaticContentUrl());
   }
 
   /*

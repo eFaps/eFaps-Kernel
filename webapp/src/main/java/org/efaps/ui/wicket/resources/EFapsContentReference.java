@@ -25,24 +25,40 @@ import org.apache.wicket.IClusterable;
 import org.efaps.util.RequestHandler;
 
 /**
- * TODO description
+ * This class is used as a Reference to an Object in the eFaps-DataBase.<br>
  *
  * @author jmox
  * @version $Id$
  */
 public class EFapsContentReference implements IClusterable {
 
-  /**
-   *
-   */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * the name of this EFapsContentReference. With this name the Object from the
+   * eFpas-DataBase will be identified.
+   */
   private final String name;
 
+  /**
+   * Constructor setting the name of the EFapsContentReference, from combining
+   * the name of the class and the name.
+   *
+   * @param _scope
+   *                class the name will be included
+   * @param _name
+   *                name of the Object
+   */
   public EFapsContentReference(final Class<?> _scope, final String _name) {
     this(_scope.getPackage().getName() + "." + _name);
   }
 
+  /**
+   * Constructor setting the name of the EFapsContentReference
+   *
+   * @param _name
+   *                Name to set
+   */
   public EFapsContentReference(final String _name) {
     this.name = _name;
   }
@@ -56,12 +72,22 @@ public class EFapsContentReference implements IClusterable {
     return this.name;
   }
 
+  /**
+   * get the URL to an Image from the eFaps-DataBase
+   *
+   * @return URL as a String
+   */
   public String getImageUrl() {
     return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE
         + this.name);
   }
 
-  public String getCSSUrl() {
+  /**
+   * get the URL to a Static Content from the eFaps-DataBase
+   *
+   * @return URL as a String
+   */
+  public String getStaticContentUrl() {
     return RequestHandler.replaceMacrosInUrl(RequestHandler.URL_STATIC
         + this.name);
   }

@@ -32,17 +32,14 @@ import org.apache.wicket.markup.html.WebResource;
 import org.apache.wicket.util.resource.IResourceStream;
 import org.apache.wicket.util.resource.ResourceStreamNotFoundException;
 import org.apache.wicket.util.time.Time;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
-import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * A subclass of WebResource that uses the EFapsResourceStream to provide the
+ * Resource
  *
  * @author jmox
  * @version $Id$
@@ -51,13 +48,20 @@ public abstract class AbstractEFapsResource extends WebResource {
 
   private static final long serialVersionUID = 1L;
 
-  private static final Logger LOG = LoggerFactory.getLogger(EFapsSession.class);
-
+  /**
+   * the Name of this AbstractEFapsResource
+   */
   private final String name;
 
+  /**
+   * the Type used to query the eFaps-DataBase
+   */
   private final String type;
 
-  protected EFapsResourceStream stream;
+  /**
+   * the ResourceStream for this AbstractEFapsResource
+   */
+  protected AbstractEFapsResourceStream stream;
 
   public AbstractEFapsResource(final String _name, final String _type) {
     super();
@@ -66,7 +70,18 @@ public abstract class AbstractEFapsResource extends WebResource {
     this.stream = setNewResourceStream();
   }
 
-  protected abstract EFapsResourceStream setNewResourceStream();
+  /**
+   * this method is used to set the AbstractEFapsResourceStream for the instance
+   * variable {@link #stream}. It si called from the Constructor
+   * {@link #AbstractEFapsResource(String, String)} and in case that the
+   * instance variable {@link #stream} is still null from
+   * {@link #getResourceStream()}. The method is implemented as abstract so
+   * that all subclasses can use there on subclass of an
+   * AbstractEFapsResourceStream.
+   *
+   * @return
+   */
+  protected abstract AbstractEFapsResourceStream setNewResourceStream();
 
   @Override
   public IResourceStream getResourceStream() {
@@ -77,25 +92,131 @@ public abstract class AbstractEFapsResource extends WebResource {
   }
 
   /**
-   * TODO description
-   *
-   * @author jmox
-   * @version $Id$
+   * Abstract class implementing the IResourceStream. It is used to retreive an
+   * InputStream from Data based on an Object from the eFaps-DataBase.
    */
-  public abstract class EFapsResourceStream implements IResourceStream {
+  protected abstract class AbstractEFapsResourceStream implements
+      IResourceStream {
 
     private static final long serialVersionUID = 1L;
 
-    private transient InputStream inputStream;
+    /**
+     * the InputStream wich will contain the data
+     *
+     * @see #getInputStream()
+     */
+    private InputStream inputStream;
 
+    /**
+     * this variable stores the time of the instanciation of this
+     * AbstractEFapsResourceStream
+     *
+     * @see #AbstractEFapsResource()
+     * @see #lastModifiedTime()
+     */
     private Time time;
 
+    /**
+     * this instance variiable stores the actual data wich will be returned by
+     * the Inputstream
+     *
+     * @see #getInputStream()
+     * @see #setData()
+     */
     private byte[] data;
 
-    public EFapsResourceStream() {
+    /**
+     * constructor that stores the time of the instanciation
+     */
+    public AbstractEFapsResourceStream() {
       this.time = Time.now();
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.wicket.util.resource.IResourceStream#close()
+     */
+    public void close() throws IOException {
+      if (this.inputStream != null) {
+        this.inputStream.close();
+        this.inputStream = null;
+      }
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.wicket.util.resource.IResourceStream#getInputStream()
+     */
+    public InputStream getInputStream() throws ResourceStreamNotFoundException {
+      if (this.inputStream == null) {
+        checkData(false);
+        this.inputStream = new ByteArrayInputStream(this.data);
+      }
+      return this.inputStream;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.wicket.util.resource.IResourceStream#getLocale()
+     */
+    public Locale getLocale() {
+      return null;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.wicket.util.resource.IResourceStream#length()
+     */
+    public long length() {
+      checkData(true);
+      return this.data != null ? this.data.length : 0;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.wicket.util.resource.IResourceStream#setLocale(java.util.Locale)
+     */
+    public void setLocale(final Locale _locale) {
+      // not used here
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.apache.wicket.util.watch.IModifiable#lastModifiedTime()
+     */
+    public Time lastModifiedTime() {
+      return this.time;
+    }
+
+    /**
+     * method that checks if the data was allready retrieved from the
+     * eFaps-DataBase or if it must be reloaded due to cache expire
+     *
+     * @param _checkDuration
+     *                should be checked if the cache is expired or not
+     */
+    protected void checkData(final boolean _checkDuration) {
+      if ((Application.DEVELOPMENT.equals(Application.get()
+          .getConfigurationType()) || ((Time.now())
+          .subtract(lastModifiedTime()).getMilliseconds() / 1000 > getCacheDuration()))
+          && _checkDuration) {
+        this.time = Time.now();
+        setData();
+      }
+      if (this.data == null) {
+        setData();
+      }
+    }
+
+    /**
+     * set the Data into the instance variable {@link #data}
+     */
     protected void setData() {
       try {
         final SearchQuery query = new SearchQuery();
@@ -109,59 +230,11 @@ public abstract class AbstractEFapsResource extends WebResource {
           this.data = IOUtils.toByteArray(tmp);
           tmp.close();
           checkout.close();
-          if (LOG.isInfoEnabled()) {
-            LOG.info("loaded: " + AbstractEFapsResource.this.name);
-          }
         }
       } catch (final EFapsException e) {
         throw new RestartResponseException(new ErrorPage(e));
       } catch (final IOException e) {
         throw new RestartResponseException(new ErrorPage(e));
-      }
-    }
-
-    public void close() throws IOException {
-      if (this.inputStream != null) {
-        this.inputStream.close();
-        this.inputStream = null;
-      }
-    }
-
-    public InputStream getInputStream() throws ResourceStreamNotFoundException {
-      if (this.inputStream == null) {
-        checkData(false);
-        this.inputStream = new ByteArrayInputStream(this.data);
-      }
-      return this.inputStream;
-    }
-
-    public Locale getLocale() {
-      return null;
-    }
-
-    public long length() {
-      checkData(true);
-      return this.data != null ? this.data.length : 0;
-    }
-
-    public void setLocale(Locale locale) {
-      // not used here
-    }
-
-    public Time lastModifiedTime() {
-      return this.time;
-    }
-
-    private void checkData(final boolean _checkDuration) {
-      if ((Application.DEVELOPMENT.equals(Application.get()
-          .getConfigurationType()) || ((Time.now())
-          .subtract(lastModifiedTime()).getMilliseconds() / 1000 > getCacheDuration()))
-          && _checkDuration) {
-        this.time = Time.now();
-        setData();
-      }
-      if (this.data == null) {
-        setData();
       }
     }
   }

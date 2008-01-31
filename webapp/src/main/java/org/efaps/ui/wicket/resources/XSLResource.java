@@ -26,20 +26,33 @@ import org.apache.wicket.SharedResources;
 import org.efaps.update.program.XSLUpdate;
 
 /**
- * TODO description
+ * The Resource for a XSL.
  *
  * @author jmox
  * @version $Id$
- *
  */
 public class XSLResource extends AbstractEFapsResource {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Constructor settingt the Name of the Type in the SuperClass
+   *
+   * @param _name
+   *                Name of the Resource
+   */
   public XSLResource(final String _name) {
     super(_name, XSLUpdate.TYPENAME);
   }
 
+  /**
+   * method to retrieve a XSLResource. It will check if it allready exist and
+   * return the existung one. If no Resource exists a new one will be created.
+   *
+   * @param _name
+   *                Name of the Resource
+   * @return the XSLResource related to the Name
+   */
   public static XSLResource get(final String _name) {
     final SharedResources sharedResources =
         Application.get().getSharedResources();
@@ -54,18 +67,14 @@ public class XSLResource extends AbstractEFapsResource {
   }
 
   @Override
-  protected EFapsResourceStream setNewResourceStream() {
+  protected AbstractEFapsResourceStream setNewResourceStream() {
     return new XSLResourceStream();
   }
 
   /**
-   * TODO description
-   *
-   * @author jmox
-   * @version $Id$
-   *
+   * Class for a ResourceStream for XSL
    */
-  public class XSLResourceStream extends EFapsResourceStream {
+  protected class XSLResourceStream extends AbstractEFapsResourceStream {
 
     private static final long serialVersionUID = 1L;
 
