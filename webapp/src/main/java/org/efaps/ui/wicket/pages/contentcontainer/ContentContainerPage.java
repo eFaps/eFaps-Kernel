@@ -40,7 +40,7 @@ import org.efaps.ui.wicket.behaviors.dojo.SplitContainerBehavior;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.split.ListOnlyPanel;
 import org.efaps.ui.wicket.components.split.StructBrowsSplitPanel;
-import org.efaps.ui.wicket.pages.AbstractEFapsPage;
+import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -51,7 +51,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:ContentContainerPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ContentContainerPage extends AbstractEFapsPage {
+public class ContentContainerPage extends AbstractMergePage {
 
   private static final long serialVersionUID = 3169723830151134904L;
 

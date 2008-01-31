@@ -36,7 +36,7 @@ import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.models.MenuItemModel;
-import org.efaps.ui.wicket.pages.AbstractEFapsPage;
+import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
@@ -50,7 +50,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  *
  */
-public class DialogPage extends AbstractEFapsPage {
+public class DialogPage extends AbstractMergePage {
 
   private static final long serialVersionUID = 1L;
 

@@ -36,7 +36,7 @@ import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.menu.MenuContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
-import org.efaps.ui.wicket.pages.AbstractEFapsPage;
+import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.empty.EmptyPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -52,7 +52,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class MainPage extends AbstractEFapsPage {
+public class MainPage extends AbstractMergePage {
 
   private static final long serialVersionUID = -4231606613730698766L;
 
@@ -92,11 +92,8 @@ public class MainPage extends AbstractEFapsPage {
     // for Safari we need to add a JavaScript Function to resize the iFrame
     if (((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
         .isBrowserSafari()) {
-      final StaticHeaderContributor framejs =
-          StaticHeaderContributor.forJavaScript(FRAMEJS);
       // don't merge it to keep the sequence
-      framejs.setMerged(true);
-      this.add(framejs);
+      this.add(StaticHeaderContributor.forJavaScript(FRAMEJS, true));
       this.add(new StringHeaderContributor(JavascriptUtils.SCRIPT_OPEN_TAG
           + "  window.onresize = eFapsSetIFrameHeight; \n"
           + "  window.onload = eFapsSetIFrameHeight; \n"
