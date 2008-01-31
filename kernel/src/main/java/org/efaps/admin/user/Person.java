@@ -318,7 +318,7 @@ public class Person extends AbstractUserObject {
           try {
             cmd.append("update T_USERPERSON set ");
             boolean first = true;
-            for (AttrName attrName : this.attrUpdated) {
+            for (final AttrName attrName : this.attrUpdated) {
               if (first) {
                 first = false;
               } else {
@@ -330,7 +330,7 @@ public class Person extends AbstractUserObject {
             stmt = rsrc.getConnection().prepareStatement(cmd.toString());
 
             int col = 1;
-            for (AttrName attrName : this.attrUpdated) {
+            for (final AttrName attrName : this.attrUpdated) {
               final String tmp = this.attrValues.get(attrName);
               stmt.setString(col, tmp == null ? null : tmp.trim());
               col++;
@@ -351,7 +351,7 @@ public class Person extends AbstractUserObject {
             }
             // TODO: update modified date
 
-          } catch (SQLException e) {
+          } catch (final SQLException e) {
             LOG.error("could not update '"
                 + cmd.toString()
                 + "' person with user name '"
@@ -368,7 +368,7 @@ public class Person extends AbstractUserObject {
               if (stmt != null) {
                 stmt.close();
               }
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
               throw new EFapsException(Person.class,
                   "commitAttrValuesInDB.SQLException", e, cmd.toString(),
                   getName(), getId());
@@ -442,7 +442,7 @@ public class Person extends AbstractUserObject {
           LOG.error("unknown username '" + getName() + "'");
         }
         resultset.close();
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("password check failed for person '" + getName() + "'", e);
         throw new EFapsException(getClass(), "checkPassword.SQLException", e,
             getName());
@@ -452,7 +452,7 @@ public class Person extends AbstractUserObject {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
           throw new EFapsException(getClass(), "checkPassword.SQLException", e,
               getName());
         }
@@ -468,21 +468,30 @@ public class Person extends AbstractUserObject {
 
   }
 
+  /**
+   * method that sets the time and the number of false Login
+   *
+   * @param _logintry
+   *                time of the false Login
+   * @param _count
+   *                number of tries
+   * @throws EFapsException
+   */
   private void setFalseLogin(final Timestamp _logintry, final int _count)
                                                                          throws EFapsException {
     if (_count > 0) {
-      Timestamp now = DateTimeUtil.getCurrentTimeFromDB();
+      final Timestamp now = DateTimeUtil.getCurrentTimeFromDB();
       // Admin_User_LoginTimeBeforeRetry
-      int dif =
+      final int dif =
           SystemAttribute.get(
               UUID.fromString("acf2b19b-f7c4-4e4a-a724-fb2d9ed30079"))
               .getIntegerValue();
       // Admin_User_LoginTries
-      int maxtries =
+      final int maxtries =
           SystemAttribute.get(
               UUID.fromString("85d94368-bc1e-49bf-88d7-a3912b50e938"))
               .getIntegerValue();
-      int count = _count + 1;
+      final int count = _count + 1;
       if (dif > 0 && (now.getTime() - _logintry.getTime()) > dif * 60 * 1000) {
         updateFalseLoginDB(1);
       } else {
@@ -496,6 +505,13 @@ public class Person extends AbstractUserObject {
     }
   }
 
+  /**
+   * method to set the number of false Login tries in the eFaps-DataBase
+   *
+   * @param _tries
+   *                number or tries
+   * @throws EFapsException
+   */
   private void updateFalseLoginDB(final int _tries) throws EFapsException {
     ConnectionResource rsrc = null;
     try {
@@ -520,7 +536,7 @@ public class Person extends AbstractUserObject {
           throw new EFapsException(getClass(), "updateLastLogin.NotUpdated",
               cmd.toString(), getName());
         }
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("could not execute '"
             + cmd.toString()
             + "' to update last login information for person '"
@@ -534,7 +550,7 @@ public class Person extends AbstractUserObject {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
           throw new EFapsException(getClass(), "updateLastLogin.SQLException",
               e, cmd.toString(), getName());
         }
@@ -557,8 +573,6 @@ public class Person extends AbstractUserObject {
    * @param _newPasswd
    *                new password to set for this user
    */
-  // TODO this method is called from the CreateAll.js. Is there a way to do this
-  // in another way?
   public void setPassword(final Context _context, final String _newPasswd)
                                                                           throws Exception {
     final Type type = Type.get(EFapsClassName.USER_PERSON.name);
@@ -625,7 +639,7 @@ public class Person extends AbstractUserObject {
         stmt = rsrc.getConnection().createStatement();
 
         final StringBuilder cmd = new StringBuilder("select ");
-        for (AttrName attrName : AttrName.values()) {
+        for (final AttrName attrName : AttrName.values()) {
           cmd.append(attrName.sqlColumn).append(",");
         }
         cmd.append("0 as DUMMY ").append("from V_USERPERSON ").append(
@@ -633,13 +647,13 @@ public class Person extends AbstractUserObject {
 
         final ResultSet resultset = stmt.executeQuery(cmd.toString());
         if (resultset.next()) {
-          for (AttrName attrName : AttrName.values()) {
+          for (final AttrName attrName : AttrName.values()) {
             final String tmp = resultset.getString(attrName.sqlColumn);
             setAttrValue(attrName, tmp == null ? null : tmp.trim());
           }
         }
         resultset.close();
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("read attributes for person with SQL statement is not "
             + "possible", e);
         throw new EFapsException(Person.class,
@@ -650,7 +664,7 @@ public class Person extends AbstractUserObject {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
           LOG.error("close of SQL statement is not possible", e);
         }
       }
@@ -711,7 +725,7 @@ public class Person extends AbstractUserObject {
         }
         resultset.close();
 
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         throw new EFapsException(getClass(), "getRolesFromDB.SQLException", e,
             getName());
       }
@@ -720,7 +734,7 @@ public class Person extends AbstractUserObject {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
           throw new EFapsException(getClass(), "getRolesFromDB.SQLException",
               e, getName());
         }
@@ -759,7 +773,7 @@ public class Person extends AbstractUserObject {
       throw new EFapsException(getClass(), "setRoles.noRoles", getName());
     }
 
-    for (Role role : _roles) {
+    for (final Role role : _roles) {
       add(role);
     }
 
@@ -767,14 +781,14 @@ public class Person extends AbstractUserObject {
     final Set<Role> rolesInDb = getRolesFromDB(_jaasSystem);
 
     // compare new roles with current roles (add missing roles)
-    for (Role role : _roles) {
+    for (final Role role : _roles) {
       if (!rolesInDb.contains(role)) {
         assignRoleInDb(_jaasSystem, role);
       }
     }
 
     // compare current roles with new roles (remove roles which are to much)
-    for (Role role : rolesInDb) {
+    for (final Role role : rolesInDb) {
       if (!_roles.contains(role)) {
         unassignRoleInDb(_jaasSystem, role);
       }
@@ -850,7 +864,7 @@ public class Person extends AbstractUserObject {
         }
         resultset.close();
 
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         throw new EFapsException(getClass(), "getGroupsFromDB.SQLException", e,
             getName());
       }
@@ -859,7 +873,7 @@ public class Person extends AbstractUserObject {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
           throw new EFapsException(getClass(), "getGroupsFromDB.SQLException",
               e, getName());
         }
@@ -898,7 +912,7 @@ public class Person extends AbstractUserObject {
       throw new EFapsException(getClass(), "setGroups.noGroups", getName());
     }
 
-    for (Group group : _groups) {
+    for (final Group group : _groups) {
       add(group);
     }
 
@@ -906,14 +920,14 @@ public class Person extends AbstractUserObject {
     final Set<Group> groupsInDb = getGroupsFromDB(_jaasSystem);
 
     // compare new roles with current groups (add missing groups)
-    for (Group group : _groups) {
+    for (final Group group : _groups) {
       if (!groupsInDb.contains(group)) {
         assignGroupInDb(_jaasSystem, group);
       }
     }
 
     // compare current roles with new groups (remove groups which are to much)
-    for (Group group : groupsInDb) {
+    for (final Group group : groupsInDb) {
       if (!_groups.contains(group)) {
         unassignGroupInDb(_jaasSystem, group);
       }
@@ -982,7 +996,7 @@ public class Person extends AbstractUserObject {
           throw new EFapsException(getClass(), "updateLastLogin.NotUpdated",
               cmd.toString(), getName());
         }
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("could not execute '"
             + cmd.toString()
             + "' to update last login information for person '"
@@ -996,7 +1010,7 @@ public class Person extends AbstractUserObject {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
           throw new EFapsException(getClass(), "updateLastLogin.SQLException",
               e, cmd.toString(), getName());
         }
@@ -1131,7 +1145,7 @@ public class Person extends AbstractUserObject {
           getCache().add(ret);
         }
         resultset.close();
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("search for person with SQL statement '"
             + _sql
             + "' is not possible", e);
@@ -1143,7 +1157,7 @@ public class Person extends AbstractUserObject {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
           LOG.error("close of SQL statement is not possible", e);
         }
       }
@@ -1191,13 +1205,13 @@ public class Person extends AbstractUserObject {
                 "and JAASSYSID=").append(_jaasSystem.getId());
 
         stmt = rsrc.getConnection().createStatement();
-        ResultSet resultset = stmt.executeQuery(cmd.toString());
+        final ResultSet resultset = stmt.executeQuery(cmd.toString());
         if (resultset.next()) {
           personId = resultset.getLong(1);
         }
         resultset.close();
 
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("search for person for JAAS system '"
             + _jaasSystem.getName()
             + "' with key '"
@@ -1211,7 +1225,7 @@ public class Person extends AbstractUserObject {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
           throw new EFapsException(Person.class, "getWithJAASKey.SQLException",
               e, _jaasSystem.getName(), _jaasKey);
         }
@@ -1329,7 +1343,7 @@ public class Person extends AbstractUserObject {
               cmd.toString(), _jaasSystem.getName(), _jaasKey, _userName);
         }
 
-      } catch (SQLException e) {
+      } catch (final SQLException e) {
         LOG.error("could not create for JAAS system '"
             + _jaasSystem.getName()
             + "' person with key '"
@@ -1345,7 +1359,7 @@ public class Person extends AbstractUserObject {
           if (stmt != null) {
             stmt.close();
           }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
           throw new EFapsException(Person.class, "createPerson.SQLException",
               e, _jaasSystem.getName(), _jaasKey);
         }
@@ -1358,7 +1372,7 @@ public class Person extends AbstractUserObject {
       }
     }
 
-    Person ret = get(persId);
+    final Person ret = get(persId);
     ret.assignToJAASSystem(_jaasSystem, _jaasKey);
     return ret;
   }
@@ -1374,6 +1388,9 @@ public class Person extends AbstractUserObject {
 
   // ///////////////////////////////////////////////////////////////////////////
 
+  /**
+   * This Class is used to store a Person in the Cache
+   */
   private static final class PersonCache extends Cache<Person> {
 
     PersonCache() {
@@ -1401,7 +1418,11 @@ public class Person extends AbstractUserObject {
           map = new HashMap<Long, Person>();
           Context.getThreadContext().setSessionAttribute("PersonCacheId", map);
         }
-      } catch (EFapsException e) {
+      } catch (final EFapsException e) {
+        LOG
+            .error(
+                "could not read or set a SessionAttribute for the PersonCacheID",
+                e);
       }
       return map;
     }
@@ -1419,7 +1440,9 @@ public class Person extends AbstractUserObject {
           Context.getThreadContext().setSessionAttribute("PersonCacheString",
               map);
         }
-      } catch (EFapsException e) {
+      } catch (final EFapsException e) {
+        LOG.error(
+            "could not read or set a SessionAttribute for the PersonCache", e);
       }
       return map;
     }
