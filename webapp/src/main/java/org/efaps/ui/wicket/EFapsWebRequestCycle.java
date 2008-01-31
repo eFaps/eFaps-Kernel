@@ -39,7 +39,7 @@ import org.efaps.ui.wicket.pages.login.LoginPage;
 /**
  * This class extends the
  * {@link org.apache.wicket.protocol.http.WebRequestCycle} to throw a own
- * ErrorPage and open/close the Context.
+ * ErrorPage and to open/close the Context on begin/end of a Request.
  *
  * @author jmox
  * @version $Id$
@@ -52,15 +52,27 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
   private static final Logger LOG =
       LoggerFactory.getLogger(EFapsWebRequestCycle.class);
 
-  public EFapsWebRequestCycle(WebApplication application, WebRequest request,
-                              Response response) {
-    super(application, request, response);
+  /**
+   * Constructor for a WebRequest
+   *
+   * @param _application
+   *                the Webapplication wich recieved the WebRequest
+   * @param _request
+   *                the WebRequest to be used for this RequestCycle
+   * @param _response
+   *                the Respone to be used for this RequestCycle
+   */
+  public EFapsWebRequestCycle(final WebApplication _application,
+                              final WebRequest _request,
+                              final Response _response) {
+    super(_application, _request, _response);
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Called when the request cycle object is beginning its response. It opens a
+   * new Context for the Session.
    *
-   * @see org.apache.wicket.RequestCycle#onBeginRequest()
+   * @see #onEndRequest()
    */
   @Override
   protected void onBeginRequest() {
@@ -71,6 +83,11 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
     super.onBeginRequest();
   }
 
+  /**
+   * method to get the EFapsSession
+   *
+   * @return EFapsSession
+   */
   private EFapsSession getEFapsSession() {
     final ISessionStore sessionStore = this.getApplication().getSessionStore();
     final EFapsSession session =
@@ -78,10 +95,11 @@ public class EFapsWebRequestCycle extends WebRequestCycle {
     return session;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Called when the request cycle object has finished its response. It closses
+   * the Context opened for teh Session.
    *
-   * @see org.apache.wicket.RequestCycle#onEndRequest()
+   * @see #onBeginRequest()
    */
   @Override
   protected void onEndRequest() {
