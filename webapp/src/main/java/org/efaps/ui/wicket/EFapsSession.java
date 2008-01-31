@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
@@ -49,7 +48,9 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
 
 /**
- * TODO description
+ * A WebSession subclass that is used e.g. as a store for behaviors that last a
+ * Session and provides functionalities like open/close a Contex and
+ * login/logout a User.
  *
  * @author jmox
  * @version $Id$
@@ -58,6 +59,10 @@ public class EFapsSession extends WebSession {
 
   private static final long serialVersionUID = 1884548064760514909L;
 
+  /**
+   * this variable is used as the Key to the UserName stored in the
+   * SessionAttributes
+   */
   public static final String LOGIN_ATTRIBUTE_NAME =
       "org.efaps.ui.wicket.LoginAttributeName";
 
@@ -272,8 +277,6 @@ public class EFapsSession extends WebSession {
   /**
    * logs a user out and stores the UserAttribues in the eFapsDataBase
    */
-  // TODO maybe we should store the UserAttributes elsewhere, because what
-  // happens if the User does not log out?
   public final void logout() {
     this.userName = null;
     if (this.sessionAttributes.containsKey(UserAttributesSet.CONTEXTMAPKEY)) {
@@ -382,7 +385,8 @@ public class EFapsSession extends WebSession {
                 new HashMap<String, Context.FileParameter>(fileMap.size());
 
             for (final Map.Entry<String, FileItem> entry : fileMap.entrySet()) {
-              fileParams.put(entry.getKey(), new FileParameter(entry));
+              fileParams.put(entry.getKey(), new FileParameter(entry.getKey(),
+                  entry.getValue()));
             }
           }
 
@@ -432,15 +436,31 @@ public class EFapsSession extends WebSession {
     }
   }
 
+  /**
+   * This Class is used to pass the FileItems along with its Parameters to the
+   * Context.
+   */
   private class FileParameter implements Context.FileParameter {
 
+    /**
+     * the FileItem of this FileParameter
+     */
     private final FileItem fileItem;
 
+    /**
+     * the Name of the Parameter of thie FileParameter
+     */
     private final String parameterName;
 
-    public FileParameter(final Map.Entry<String, FileItem> _entry) {
-      this.parameterName = _entry.getKey();
-      this.fileItem = _entry.getValue();
+    /**
+     * Constructo setting the Name of the Parameter and the FileItem
+     *
+     * @param _parameterName
+     * @param _fileItem
+     */
+    public FileParameter(final String _parameterName, final FileItem _fileItem) {
+      this.parameterName = _parameterName;
+      this.fileItem = _fileItem;
     }
 
     public void close() throws IOException {
