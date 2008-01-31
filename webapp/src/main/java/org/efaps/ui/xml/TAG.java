@@ -20,13 +20,11 @@
 
 package org.efaps.ui.xml;
 
-
 /**
- * TODO description
+ * This enum contains the tags wich will be used for creating a xml-Document.
  *
  * @author jmox
  * @version $Id$
- *
  */
 public enum TAG {
   FORM("form"),
