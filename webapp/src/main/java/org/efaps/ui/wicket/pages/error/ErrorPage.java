@@ -38,6 +38,9 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
 /**
+ * This Page is the ErrorPage for the eFaps-Webapplication.<br>
+ * It renders a Page that shows the EFapsException in a userfriendly way.
+ *
  * @author jmox
  * @version $Id:ErrorPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
@@ -50,10 +53,20 @@ public class ErrorPage extends WebPage {
    */
   private static final Logger LOG = LoggerFactory.getLogger(ErrorPage.class);
 
+  /**
+   * reference to the StyleSheet of this Page stored in the eFaps-DataBase
+   */
   private static final EFapsContentReference CSS =
-    new EFapsContentReference(ErrorPage.class, "ErrorPage.css");
+      new EFapsContentReference(ErrorPage.class, "ErrorPage.css");
 
+  /**
+   * Constructor adding all Components
+   *
+   * @param _exception
+   */
   public ErrorPage(final Exception _exception) {
+    super();
+    this.add(StaticHeaderContributor.forCss(CSS));
 
     LOG.error("ErrorPage was called", _exception);
 
@@ -64,6 +77,7 @@ public class ErrorPage extends WebPage {
     String errorAdvanced = "";
 
     if (_exception instanceof EFapsException) {
+      this.add(StaticHeaderContributor.forCss(CSS));
 
       final EFapsException eFapsException = (EFapsException) _exception;
       errorKey =
@@ -91,8 +105,6 @@ public class ErrorPage extends WebPage {
     this.add(new StringHeaderContributor("<title>"
         + DBProperties.getProperty("ErrorPage.Titel")
         + "</title>"));
-
-    this.add(StaticHeaderContributor.forCss(CSS));
 
     add(new Label("errorIDLabel", DBProperties
         .getProperty("ErrorPage.Id.Label")));
@@ -152,11 +164,21 @@ public class ErrorPage extends WebPage {
 
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.Page#isErrorPage()
+   */
   @Override
   public boolean isErrorPage() {
     return true;
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.wicket.Component#isVersioned()
+   */
   @Override
   public boolean isVersioned() {
     return false;
