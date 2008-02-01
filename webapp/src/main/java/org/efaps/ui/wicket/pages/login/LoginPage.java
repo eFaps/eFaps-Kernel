@@ -1,3 +1,23 @@
+/*
+ * Copyright 2003-2008 The eFaps Team
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Revision:        $Rev:1490 $
+ * Last Changed:    $Date:2007-10-15 18:04:02 -0500 (Mon, 15 Oct 2007) $
+ * Last Changed By: $Author:jmox $
+ */
+
 package org.efaps.ui.wicket.pages.login;
 
 import org.apache.wicket.Session;
@@ -58,7 +78,7 @@ public class LoginPage extends WebPage implements
 
     this.add(new StyleSheetReference("css", getClass(), "LoginPage.css"));
 
-    Form form = new Form("form") {
+    final Form form = new Form("form") {
 
       private static final long serialVersionUID = 1L;
 
@@ -83,7 +103,7 @@ public class LoginPage extends WebPage implements
     form.add(new Label("formpwd", new Model(DBProperties.getProperty(
         "Login.Password.Label", Session.get().getLocale().getLanguage()))));
 
-    Button button = new Button("formbutton") {
+    final Button button = new Button("formbutton") {
 
       private static final long serialVersionUID = 1L;
 
