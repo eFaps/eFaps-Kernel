@@ -42,32 +42,56 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 import org.efaps.util.EFapsException;
 
-
 /**
- * TODO description
+ * This Page renders a Dialog for Userinterference.<br>
+ * e.g. "Do you really want to...?"
  *
  * @author jmox
  * @version $Id$
- *
  */
 public class DialogPage extends AbstractMergePage {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * reference to the StyleSheet of this Page stored in the eFaps-DataBase
+   */
   private static final EFapsContentReference CSS =
       new EFapsContentReference(DialogPage.class, "DialogPage.css");
 
+  /**
+   * this instance variable stores the ModalWindow this Page is opened in
+   */
   private final ModalWindowContainer modal;
 
+  /**
+   * this instance variable stores the Compoment wich called this DialogPage, so
+   * that it can be accessed
+   */
   private Component parent;
 
+  /**
+   * Constructor used for a DialogPage that renders a Question like: "Are you
+   * sure that??" with a Cancel and a SubmitButton.
+   *
+   * @param _modal
+   *                ModalWindow this Page is opend in
+   * @param _model
+   *                the MenuItem that called this DialogPage
+   * @param _parameters
+   *                Parameters wich must be past on, in case of submit
+   * @param _parent
+   *                the ParentComponent
+   */
   public DialogPage(final ModalWindowContainer _modal,
                     final MenuItemModel _model, final Map<?, ?> _parameters,
                     final Component _parent) {
     super(_model);
     this.parent = _parent;
     this.modal = _modal;
+
     final String cmdName = _model.getCommand().getName();
+
     this.add(StaticHeaderContributor.forCss(CSS));
 
     this.add(new Label("textLabel", DBProperties.getProperty(cmdName
@@ -80,23 +104,47 @@ public class DialogPage extends AbstractMergePage {
         getLabel(cmdName, "Cancel"), Button.ICON_CANCEL));
   }
 
+  /**
+   * Constructor setting the ModalWindow
+   *
+   * @param _modal
+   * @param _key
+   */
   public DialogPage(final ModalWindowContainer _modal, final String _key) {
     this(_modal, DBProperties.getProperty(_key + ".Message"), getLabel(_key,
         "Close"));
   }
 
+  /**
+   * @param _modal
+   * @param _message
+   * @param _button
+   */
   public DialogPage(final ModalWindowContainer _modal, final String _message,
                     final String _button) {
     super();
     this.modal = _modal;
     this.add(StaticHeaderContributor.forCss(CSS));
+
     this.add(new Label("textLabel", _message));
+
     this.add(new WebMarkupContainer("submitButton").setVisible(false));
+
     this.add(new Button("closeButton", new AjaxCloseLink(Button.LINKID),
         _button, Button.ICON_CANCEL));
 
   }
 
+  /**
+   * method that gets the Value for the Buttons from the DBProperties
+   *
+   * @param _cmdName
+   *                Name of the Command, that Label for the Button should be
+   *                retrieved
+   * @param _keytype
+   *                type of the key e.g. "Cancel", "Submit", "Close"
+   * @return
+   */
   private static String getLabel(final String _cmdName, final String _keytype) {
     String ret;
     if (DBProperties.hasProperty(_cmdName + ".Button." + _keytype)) {
@@ -107,12 +155,15 @@ public class DialogPage extends AbstractMergePage {
     return ret;
   }
 
+  /**
+   * AjaxLink that closes the ModalWindow this Page was opened in
+   */
   public class AjaxCloseLink extends AjaxLink {
 
     private static final long serialVersionUID = 1L;
 
-    public AjaxCloseLink(final String _id) {
-      super(_id);
+    public AjaxCloseLink(final String _wicketId) {
+      super(_wicketId);
     }
 
     @Override
@@ -122,17 +173,23 @@ public class DialogPage extends AbstractMergePage {
 
   }
 
+  /**
+   * AjaxLink that submits the Parameters and closes the ModalWindow
+   */
   public class AjaxSubmitLink extends AjaxLink {
 
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * the Paramters that will be submited
+     */
     private final Map<?, ?> parameters;
 
-    public AjaxSubmitLink(final String _id, final MenuItemModel _model,
+    public AjaxSubmitLink(final String _wicketId, final MenuItemModel _model,
                           final Map<?, ?> _parameters) {
-      super(_id, _model);
+      super(_wicketId, _model);
       this.parameters = _parameters;
     }
-
-    private static final long serialVersionUID = 1L;
 
     @Override
     public void onClick(final AjaxRequestTarget _target) {
