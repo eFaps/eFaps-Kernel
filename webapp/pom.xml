@@ -52,8 +52,8 @@
     * Project itself
     ************************************************************************* -->
   <build>
-  
-    <resources> 
+
+    <resources>
       <resource>
         <filtering>false</filtering>
         <directory>src/main/resources</directory>
@@ -131,7 +131,7 @@
           <!-- used from the generateUUID goal -->
           <count>${count}</count>
           <file>${esjpfile}</file>
-          
+
         </configuration>
         <dependencies>
           <!-- Connection Pooling -->
@@ -212,6 +212,44 @@
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>fop</artifactId>
       <version>0.93</version>
+      <exclusions>
+        <exclusion>
+          <groupId>batik</groupId>
+          <artifactId>batik-ext</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>batik</groupId>
+          <artifactId>batik-awt-util</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>batik</groupId>
+          <artifactId>batik-bridge</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>batik</groupId>
+          <artifactId>batik-css</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>batik</groupId>
+          <artifactId>batik-extension</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>batik</groupId>
+          <artifactId>batik-gui-util</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>batik</groupId>
+          <artifactId>batik-gvt</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>batik</groupId>
+          <artifactId>batik-parser</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>batik</groupId>
+          <artifactId>batik-transcoder</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
   </dependencies>
