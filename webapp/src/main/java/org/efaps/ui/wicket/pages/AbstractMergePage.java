@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 import org.apache.wicket.Component;
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.MarkupContainer;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.markup.html.WebPage;
@@ -87,6 +88,21 @@ public class AbstractMergePage extends WebPage {
    */
   public AbstractMergePage(final IPageMap _pagemap) {
     super(_pagemap);
+  }
+
+  /**
+   * Constructor that passes to the SuperConstructor
+   */
+  public AbstractMergePage(final IPageMap _pagemap,
+                           final PageParameters _parameters) {
+    super(_pagemap, _parameters);
+  }
+
+  /**
+   * Constructor that passes to the SuperConstructor
+   */
+  public AbstractMergePage(final PageParameters _parameters) {
+    super(_parameters);
   }
 
   /**

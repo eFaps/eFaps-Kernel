@@ -48,6 +48,11 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
+ * This class renders a Page with is used as a Container for the Content.
+ * <br/>This is necessary to be able to have a spilt in the page, abd be able to
+ * reuse the same classes for the ContentPages. The Split contains on the left a
+ * menu or tree and on the right an iframe for the content.
+ *
  * @author jmox
  * @version $Id:ContentContainerPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
@@ -55,59 +60,116 @@ public class ContentContainerPage extends AbstractMergePage {
 
   private static final long serialVersionUID = 3169723830151134904L;
 
+  /**
+   * this static variable is used as an acesskey to the PageMap for the IFrame
+   */
   public static final String IFRAME_PAGEMAP_NAME =
       "eFapsContentContainerIFrame";
 
+  /**
+   * this static variable is used as the wicketid for the IFrame.
+   */
   public static final String IFRAME_WICKETID = "splitrightactiframe";
 
+  /**
+   * static variable as Reference to the Stylesheet for the Page (normal)
+   */
   private static EFapsContentReference CSS =
       new EFapsContentReference(ContentContainerPage.class,
           "ContentContainerPage.css");
 
+  /**
+   * static variable as Reference to the Stylesheet for the Page (Internet
+   * Explorer)
+   */
   private static EFapsContentReference CSS_IE =
       new EFapsContentReference(ContentContainerPage.class,
           "ContentContainerPage_IE.css");
 
+  /**
+   * static variable as Reference to the Stylesheet for the Page (Safari)
+   */
   private static EFapsContentReference CSS_SAFARI =
       new EFapsContentReference(ContentContainerPage.class,
           "ContentContainerPage_Safari.css");
 
-  private String listMenuKey;
+  /**
+   * variable contains the key to the MenuTree
+   */
+  private String menuTreeKey;
 
+  /**
+   * variable contains the Path to the IFrame-Component so that ist can be
+   * accessed by other classes
+   *
+   * @see #getInlinePath()
+   */
   private String inlinePath;
 
+  /**
+   * variable contains the Path to the Split-Component so that ist can be
+   * accessed by other classes
+   *
+   * @see #getSplitPath()
+   */
   private String splitPath;
 
-  private final PageParameters parameters;
-
+  /**
+   * does this Page contain a StucturBrowser
+   */
   private boolean structurbrowser;
 
+  /**
+   * Is the content a WebForm or a Table?
+   */
   private boolean webForm;
 
+  /**
+   * Constructor setting the PageParameters
+   *
+   * @param _parameters
+   */
   public ContentContainerPage(final PageParameters _parameters) {
-    this.parameters = _parameters;
+    super(_parameters);
     initialise();
   }
 
-  public ContentContainerPage(final PageParameters _parameters,
-                              final IPageMap _pagemap) {
-    this(_parameters, _pagemap, false);
+  /**
+   * Constructor setting the PageMap and the PageParameters
+   *
+   * @param _pagemap
+   * @param _parameters
+   */
+  public ContentContainerPage(final IPageMap _pagemap,
+                              final PageParameters _parameters) {
+    this(_pagemap, _parameters, false);
   }
 
-  public ContentContainerPage(final PageParameters _parameters,
-                              final IPageMap _pagemap, final boolean _strucbrow) {
-    super(_pagemap);
-    this.parameters = _parameters;
-    this.structurbrowser = _strucbrow;
+  /**
+   * Constructor setting the PageMap and the PageParameters
+   *
+   * @param _pagemap
+   * @param _parameters
+   * @param _addStructurBrowser
+   *                does the Page contain a StructurBrowser
+   */
+  public ContentContainerPage(final IPageMap _pagemap,
+                              final PageParameters _parameters,
+                              final boolean _addStructurBrowser) {
+    super(_pagemap, _parameters);
+    this.structurbrowser = _addStructurBrowser;
     initialise();
   }
 
+  /**
+   * method to initialise the Page
+   */
   private void initialise() {
     ((EFapsSession) getSession()).getUpdateBehaviors().clear();
 
     final ClientProperties properties =
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties();
-
+    // we use different StyleSheets for different Bowsers
     if (properties.isBrowserSafari()) {
       add(StaticHeaderContributor.forCss(CSS_SAFARI));
     } else if (properties.isBrowserInternetExplorer()) {
@@ -116,16 +178,18 @@ public class ContentContainerPage extends AbstractMergePage {
       add(StaticHeaderContributor.forCss(CSS));
     }
 
-    this.listMenuKey = "ListMenu_" + this.getPageMapName();
-
+    this.menuTreeKey = "MenuTree_" + this.getPageMapName();
+    // add a Split
     final WebMarkupContainer split = new WebMarkupContainer("split");
     this.add(split);
     split.add(new SplitContainerBehavior());
+    // add a StructurBowser?
     if (this.structurbrowser) {
-      split.add(new StructBrowsSplitPanel("left", this.listMenuKey,
-          this.parameters));
+      split.add(new StructBrowsSplitPanel("left", this.menuTreeKey,
+          getPageParameters()));
     } else {
-      split.add(new ListOnlyPanel("left", this.listMenuKey, this.parameters));
+      split
+          .add(new ListOnlyPanel("left", this.menuTreeKey, getPageParameters()));
     }
     final WebMarkupContainer right = new WebMarkupContainer("right");
     split.add(right);
@@ -136,8 +200,9 @@ public class ContentContainerPage extends AbstractMergePage {
     right.add(parent);
     parent.setOutputMarkupId(true);
 
+    // select the defaultCommand
     final PageParameters parametersForPage =
-        (PageParameters) this.parameters.clone();
+        (PageParameters) getPageParameters().clone();
     String uuid;
     if (parametersForPage.get("command") instanceof String[]) {
       uuid = ((String[]) parametersForPage.get("command"))[0];
@@ -156,13 +221,18 @@ public class ContentContainerPage extends AbstractMergePage {
         }
       }
     }
-
+    // add the IFrame
     final InlineFrame inline =
         new InlineFrame(IFRAME_WICKETID, PageMap.forName(IFRAME_PAGEMAP_NAME),
             new IPageLink() {
 
               private static final long serialVersionUID = 1L;
 
+              /*
+               * (non-Javadoc)
+               *
+               * @see org.apache.wicket.markup.html.link.IPageLink#getPage()
+               */
               public Page getPage() {
                 AbstractContentPage page;
                 if (ContentContainerPage.this.webForm) {
@@ -170,19 +240,25 @@ public class ContentContainerPage extends AbstractMergePage {
                 } else {
                   page = new TablePage(parametersForPage);
                 }
-                page.setListMenuKey(ContentContainerPage.this.listMenuKey);
+                page.setListMenuKey(ContentContainerPage.this.menuTreeKey);
                 return page;
               }
 
+              /*
+               * (non-Javadoc)
+               *
+               * @see org.apache.wicket.markup.html.link.IPageLink#getPageIdentity()
+               */
               public Class<AbstractContentPage> getPageIdentity() {
                 return AbstractContentPage.class;
               }
             });
 
     parent.add(inline);
-
+    // set the Path to the IFrame
     this.inlinePath =
         inline.getPath().substring(inline.getPath().indexOf(":") + 1);
+    // set the Path to the Split
     this.splitPath =
         split.getPath().substring(inline.getPath().indexOf(":") + 1);
 
@@ -200,13 +276,13 @@ public class ContentContainerPage extends AbstractMergePage {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #listMenuKey}.
+   * This is the getter method for the instance variable {@link #menuTreeKey}.
    *
-   * @return value of instance variable {@link #listMenuKey}
+   * @return value of instance variable {@link #menuTreeKey}
    */
 
   public String getListMenuKey() {
-    return this.listMenuKey;
+    return this.menuTreeKey;
   }
 
   /**
@@ -219,6 +295,13 @@ public class ContentContainerPage extends AbstractMergePage {
     return this.splitPath;
   }
 
+  /**
+   * method to get a Command
+   *
+   * @param _uuid
+   *                Uuid of the Command we watn
+   * @return a AbstractCommand
+   */
   private AbstractCommand getCommand(final UUID _uuid) {
     AbstractCommand cmd = Command.get(_uuid);
     if (cmd == null) {

@@ -182,7 +182,7 @@ public class StructurBrowserTreeTable extends TreeTable {
             page = new ContentContainerPage(parameters);
           } else {
             page =
-                new ContentContainerPage(parameters, getPage().getPageMap(),
+                new ContentContainerPage(getPage().getPageMap(), parameters,
                     true);
           }
 

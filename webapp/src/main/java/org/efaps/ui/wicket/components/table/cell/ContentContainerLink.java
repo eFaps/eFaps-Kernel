@@ -39,29 +39,30 @@ public class ContentContainerLink extends Link {
 
   private static final long serialVersionUID = 1L;
 
-  public ContentContainerLink(final String _wicketId, final TableCellModel _model) {
+  public ContentContainerLink(final String _wicketId,
+                              final TableCellModel _model) {
     super(_wicketId, _model);
   }
 
   @Override
   public void onClick() {
     Instance instance = null;
-    final   TableCellModel cellmodel = (TableCellModel) super.getModel();
+    final TableCellModel cellmodel = (TableCellModel) super.getModel();
     if (cellmodel.getOid() != null) {
       instance = new Instance(cellmodel.getOid());
       Menu menu = null;
       try {
         menu = Menu.getTypeTreeMenu(instance.getType());
-      } catch (Exception e) {
+      } catch (final Exception e) {
         throw new RestartResponseException(new ErrorPage(e));
       }
       if (menu == null) {
-        final  Exception ex =
+        final Exception ex =
             new Exception("no tree menu defined for type "
                 + instance.getType().getName());
         throw new RestartResponseException(new ErrorPage(ex));
       }
-      final   PageParameters parameters = new PageParameters();
+      final PageParameters parameters = new PageParameters();
       parameters.add("command", menu.getUUID().toString());
       parameters.add("oid", cellmodel.getOid());
       ContentContainerPage page;
@@ -69,7 +70,7 @@ public class ContentContainerLink extends Link {
         page = new ContentContainerPage(parameters);
       } else {
         page =
-            new ContentContainerPage(parameters, this.getPage().getPageMap());
+            new ContentContainerPage(this.getPage().getPageMap(), parameters);
       }
       this.setResponsePage(page);
 
