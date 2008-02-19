@@ -96,8 +96,8 @@ public class ModalWindowContainer extends ModalWindow {
         clazz = StructurBrowserPage.class;
       }
       final PageParameters parameters = model.getPageParameters();
-      parameters.put("listMenuKey", ((AbstractContentPage) this.getPage())
-          .getListMenuKey());
+      parameters.put("eFapsMenuTreeKey", ((AbstractContentPage) this.getPage())
+          .getMenuTreeKey());
       final CharSequence url =
           this.urlFor(PageMap.forName(this.getPage().getPageMapName()), clazz,
               parameters);

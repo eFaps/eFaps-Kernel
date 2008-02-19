@@ -331,7 +331,7 @@ public class MenuTree extends AbstractTree {
 
                 public Page getPage() {
                   final TablePage page = new TablePage(para);
-                  page.setListMenuKey(getMenuKey());
+                  page.setMenuTreeKey(getMenuKey());
                   return page;
                 }
 
@@ -349,7 +349,7 @@ public class MenuTree extends AbstractTree {
 
                 public Page getPage() {
                   final FormPage page = new FormPage(para);
-                  page.setListMenuKey(getMenuKey());
+                  page.setMenuTreeKey(getMenuKey());
                   return page;
                 }
 

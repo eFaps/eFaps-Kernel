@@ -96,7 +96,7 @@ public class AjaxLinkContainer extends WebMarkupContainer {
 
         String listMenuKey =
             ((AbstractContentPage) this.getComponent().getPage())
-                .getListMenuKey();
+                .getMenuTreeKey();
         MenuTree menutree =
             (MenuTree) ((EFapsSession) this.getComponent().getSession())
                 .getFromCache(listMenuKey);
@@ -154,8 +154,8 @@ public class AjaxLinkContainer extends WebMarkupContainer {
               new FormPage(parameters, null, PageMap
                   .forName(ContentContainerPage.IFRAME_PAGEMAP_NAME));
         }
-        page.setListMenuKey(((AbstractContentPage) this.getComponent()
-            .getPage()).getListMenuKey());
+        page.setMenuTreeKey(((AbstractContentPage) this.getComponent()
+            .getPage()).getMenuTreeKey());
         super.getComponent().getRequestCycle().setResponsePage(page);
       }
     }

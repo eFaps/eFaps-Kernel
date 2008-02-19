@@ -212,7 +212,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
 
                     public Page getPage() {
                       final TablePage page = new TablePage(parameter);
-                      page.setListMenuKey(StructurBrowserTree.this.listMenuKey);
+                      page.setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
                       return page;
                     }
 
@@ -230,7 +230,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
 
                     public Page getPage() {
                       final FormPage page = new FormPage(parameter);
-                      page.setListMenuKey(StructurBrowserTree.this.listMenuKey);
+                      page.setMenuTreeKey(StructurBrowserTree.this.listMenuKey);
                       return page;
                     }
 

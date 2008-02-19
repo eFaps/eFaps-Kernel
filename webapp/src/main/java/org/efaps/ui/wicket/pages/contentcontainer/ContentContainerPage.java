@@ -240,7 +240,7 @@ public class ContentContainerPage extends AbstractMergePage {
                 } else {
                   page = new TablePage(parametersForPage);
                 }
-                page.setListMenuKey(ContentContainerPage.this.menuTreeKey);
+                page.setMenuTreeKey(ContentContainerPage.this.menuTreeKey);
                 return page;
               }
 
@@ -281,7 +281,7 @@ public class ContentContainerPage extends AbstractMergePage {
    * @return value of instance variable {@link #menuTreeKey}
    */
 
-  public String getListMenuKey() {
+  public String getMenuTreeKey() {
     return this.menuTreeKey;
   }
 

@@ -35,6 +35,9 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
 /**
+ * Abstract Class that renders the Content<br/> It adds the Menu, Header and
+ * Footer to the Page.
+ *
  * @author jmox
  * @version $Id:AbstractContentPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
@@ -42,16 +45,31 @@ public abstract class AbstractContentPage extends AbstractMergePage {
 
   private static final long serialVersionUID = -2374207555009145191L;
 
+  /**
+   * static Variable used as the Pagemap for PopUps
+   */
   public static final String POPUP_PAGEMAP_NAME = "eFapsPopUp";
 
+  /**
+   * reference to the StyleSheet of this Page stored in the eFaps-DataBase
+   */
   public static final EFapsContentReference CSS =
       new EFapsContentReference(AbstractContentPage.class,
           "AbstractContentPage.css");
 
-  private String listMenuKey;
+  /**
+   * variable contains the key to the MenuTree
+   */
+  private String menuTreeKey;
 
+  /**
+   * this instance variable contains a ModalWindow passed on by the Constructor
+   */
   private final ModalWindowContainer modalWindow;
 
+  /**
+   * this instance variable contains the ModalWindow from this Page
+   */
   private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
   public AbstractContentPage(final IModel _model) {
@@ -71,7 +89,12 @@ public abstract class AbstractContentPage extends AbstractMergePage {
     this.modalWindow = _modalWindow;
   }
 
-  protected void addComponents(FormContainer _form) {
+  /**
+   * method that adds the Components to the Page
+   *
+   * @param _form
+   */
+  protected void addComponents(final FormContainer _form) {
 
     add(StaticHeaderContributor.forCss(CSS));
 
@@ -94,28 +117,33 @@ public abstract class AbstractContentPage extends AbstractMergePage {
 
   }
 
-  public final ModalWindowContainer getModal() {
+  /**
+   * This is the getter method for the instance variable {@link #modal}.
+   *
+   * @return value of instance variable {@link #modal}
+   */
+  public ModalWindowContainer getModal() {
     return this.modal;
   }
 
   /**
-   * This is the getter method for the instance variable {@link #listMenuKey}.
+   * This is the getter method for the instance variable {@link #menuTreeKey}.
    *
-   * @return value of instance variable {@link #listMenuKey}
+   * @return value of instance variable {@link #menuTreeKey}
    */
 
-  public String getListMenuKey() {
-    return this.listMenuKey;
+  public String getMenuTreeKey() {
+    return this.menuTreeKey;
   }
 
   /**
-   * This is the setter method for the instance variable {@link #listMenuKey}.
+   * This is the setter method for the instance variable {@link #menuTreeKey}.
    *
-   * @param _listmenunkey
+   * @param _menuTreeKey
    *                the listMenuName to set
    */
-  public void setListMenuKey(final String _listmenunkey) {
-    this.listMenuKey = _listmenunkey;
+  public void setMenuTreeKey(final String _menuTreeKey) {
+    this.menuTreeKey = _menuTreeKey;
   }
 
   /*
@@ -126,9 +154,9 @@ public abstract class AbstractContentPage extends AbstractMergePage {
   @Override
   protected void onAfterRender() {
     super.onAfterRender();
-    if (this.listMenuKey == null) {
-      this.listMenuKey =
-          ((AbstractModel) this.getModel()).getParameter("listMenuKey");
+    if (this.menuTreeKey == null) {
+      this.menuTreeKey =
+          ((AbstractModel) this.getModel()).getParameter("eFapsMenuTreeKey");
 
     }
   }
