@@ -51,6 +51,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author tmo
+ * @author jmox
  * @version $Id$
  */
 public class UserLoginModule implements LoginModule {
@@ -106,21 +107,15 @@ public class UserLoginModule implements LoginModule {
     }
   }
 
-  // TODO: Rework description
   /**
-   * The instance method checks if for the given user the password is correct
-   * and the person is active (status equals 10001).<br/> All exceptions which
-   * could be thrown from the test are catched. Instead a <i>false</i> is
-   * returned.
+   * This instance method is used for two different usecases:
+   * <li>the login of a User, it checks if for the given user the password is
+   * correct</li>
+   * <li>the Change of a Password of a User, it checks first if the User can
+   * login an then sets the new Password</li>
    *
-   * @param _name
-   *                name of the person name to check
-   * @param _passwd
-   *                password of the person to check
    * @return <i>true</i> if user name and password is correct and exists,
    *         otherwise <i>false</i> is returned
-   * @return <i>true</i> if login is allowed and user name with password is
-   *         correct
    * @throws FailedLoginException
    *                 if login is not allowed with given user name and password
    *                 (if user does not exists or password is not correct)
@@ -130,6 +125,9 @@ public class UserLoginModule implements LoginModule {
    * @throws LoginException
    *                 if user or password could not be get from the callback
    *                 handler
+   * @throws UpdateException
+   *                 if the new Password could not be set by the Update, due to
+   *                 some restriction
    */
   public final boolean login() throws LoginException {
     boolean ret = false;
@@ -139,7 +137,8 @@ public class UserLoginModule implements LoginModule {
     callbacks[1] = new NameCallback("Username: ");
     callbacks[2] = new PasswordCallback("Password", false);
     callbacks[3] = new PasswordCallback("newPassword", false);
-    // Interact with the user to retrieve the username and password
+    // Interact with the user to retrieve the username and passwords
+
     String userName = null;
     String password = null;
     String newPassword = null;
@@ -179,6 +178,8 @@ public class UserLoginModule implements LoginModule {
             if ((status.isOk())) {
               update.execute();
             } else {
+              LOG
+                  .error("Password could not be set by the Update, due to restrictions e,g, Lenght???");
               throw new UpdateException();
             }
           }
@@ -229,12 +230,10 @@ public class UserLoginModule implements LoginModule {
           }
         }
       } catch (final EFapsException e) {
-        e.printStackTrace();
         LOG.error("assign of roles to user '"
             + this.principal.getName()
             + "' not possible", e);
-        // TODO: throw LoginException
-        // throw new LoginException(e);
+        throw new LoginException(e.toString());
       }
     }
 
@@ -280,6 +279,10 @@ public class UserLoginModule implements LoginModule {
     return true;
   }
 
+  /**
+   * This class is used to throw an error wich indicates that an Update was not
+   * sucessful.
+   */
   public class UpdateException extends LoginException {
 
     private static final long serialVersionUID = 1L;
