@@ -53,7 +53,7 @@
     </version>
     <name>Admin_User_PersonSetPwdForm</name>
     <!-- fields -->
-    <field name="password">
+    <field name="setpassword">
       <property name="Columns">20</property>
       <property name="Creatable">true</property>
       <property name="Editable">true</property>

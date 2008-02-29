@@ -65,7 +65,7 @@ public class XMLUserLoginModule implements LoginModule  {
   /**
    * Stores the mode in which mode the login module is called.
    */
-  private ActionCallback.Mode mode = ActionCallback.Mode.Undefined;
+  private ActionCallback.Mode mode = ActionCallback.Mode.UNDEFINED;
 
   /**
    * The subject is stored from the initialize method to store all single
@@ -132,7 +132,7 @@ public class XMLUserLoginModule implements LoginModule  {
   public final boolean login() throws LoginException  {
     boolean ret = false;
 
-    Callback[] callbacks = new Callback[3];
+    final Callback[] callbacks = new Callback[3];
     callbacks[0] = new ActionCallback();
     callbacks[1] = new NameCallback("Username: ");
     callbacks[2] = new PasswordCallback("Password: ", false);
@@ -146,15 +146,15 @@ public class XMLUserLoginModule implements LoginModule  {
       if (((PasswordCallback) callbacks[2]).getPassword() != null)  {
         password = new String(((PasswordCallback) callbacks[2]).getPassword());
       }
-    } catch (IOException e)  {
+    } catch (final IOException e)  {
       throw new LoginException(e.toString());
-    } catch (UnsupportedCallbackException e)  {
+    } catch (final UnsupportedCallbackException e)  {
       throw new LoginException(e.toString());
     }
 
-    if (this.mode == ActionCallback.Mode.AllPersons)  {
+    if (this.mode == ActionCallback.Mode.ALL_PERSONS)  {
       ret = true;
-    } else if (this.mode == ActionCallback.Mode.PersonInformation)  {
+    } else if (this.mode == ActionCallback.Mode.PERSON_INFORMATION)  {
       this.person = this.allPersons.get(userName);
       if (this.person != null)  {
         if (LOG.isDebugEnabled())  {
@@ -168,7 +168,7 @@ public class XMLUserLoginModule implements LoginModule  {
         if ((password == null)
             || ((password != null)
                 && !password.equals(this.person.getPassword())))  {
-  
+
           LOG.error("person '" + this.person + "' tried to log in with wrong password");
           this.person = null;
           throw new FailedLoginException("Username or password is incorrect");
@@ -176,7 +176,7 @@ public class XMLUserLoginModule implements LoginModule  {
         if (LOG.isDebugEnabled())  {
           LOG.debug("log in of '" + this.person + "'");
         }
-        this.mode = ActionCallback.Mode.Login;
+        this.mode = ActionCallback.Mode.LOGIN;
         ret = true;
       }
     }
@@ -196,8 +196,8 @@ public class XMLUserLoginModule implements LoginModule  {
   public final boolean commit() throws LoginException  {
     boolean ret = false;
 
-    if (this.mode == ActionCallback.Mode.AllPersons)  {
-      for (XMLPersonPrincipal person : this.allPersons.values())  {
+    if (this.mode == ActionCallback.Mode.ALL_PERSONS)  {
+      for (final XMLPersonPrincipal person : this.allPersons.values())  {
         if (!this.subject.getPrincipals().contains(person))  {
           if (LOG.isDebugEnabled())  {
             LOG.debug("commit person '" + person + "'");
@@ -212,10 +212,10 @@ public class XMLUserLoginModule implements LoginModule  {
       }
       if (!this.subject.getPrincipals().contains(this.person))  {
         this.subject.getPrincipals().add(this.person);
-        for (XMLRolePrincipal principal : this.person.getRoles())  {
+        for (final XMLRolePrincipal principal : this.person.getRoles())  {
           this.subject.getPrincipals().add(principal);
         }
-        for (XMLGroupPrincipal principal : this.person.getGroups())  {
+        for (final XMLGroupPrincipal principal : this.person.getGroups())  {
           this.subject.getPrincipals().add(principal);
         }
       }
@@ -239,10 +239,10 @@ public class XMLUserLoginModule implements LoginModule  {
         LOG.debug("abort of " + this.person);
       }
       this.subject.getPrincipals().remove(this.person);
-      for (XMLRolePrincipal principal : this.person.getRoles())  {
+      for (final XMLRolePrincipal principal : this.person.getRoles())  {
         this.subject.getPrincipals().remove(principal);
       }
-      for (XMLGroupPrincipal principal : this.person.getGroups())  {
+      for (final XMLGroupPrincipal principal : this.person.getGroups())  {
         this.subject.getPrincipals().remove(principal);
       }
       this.person = null;
@@ -266,10 +266,10 @@ public class XMLUserLoginModule implements LoginModule  {
         LOG.debug("logout of " + this.person);
       }
       this.subject.getPrincipals().remove(this.person);
-      for (XMLRolePrincipal principal : this.person.getRoles())  {
+      for (final XMLRolePrincipal principal : this.person.getRoles())  {
         this.subject.getPrincipals().remove(principal);
       }
-      for (XMLGroupPrincipal principal : this.person.getGroups())  {
+      for (final XMLGroupPrincipal principal : this.person.getGroups())  {
         this.subject.getPrincipals().remove(principal);
       }
       this.person = null;
@@ -284,11 +284,12 @@ public class XMLUserLoginModule implements LoginModule  {
    *
    * @param _fileName name of the XML file with the user data
    */
+  @SuppressWarnings("unchecked")
   private void readPersons(final String _fileName)  {
     try  {
-      File _file = new File(_fileName);
+      final File _file = new File(_fileName);
 
-      Digester digester = new Digester();
+      final Digester digester = new Digester();
       digester.setValidating(false);
       digester.addObjectCreate("persons", ArrayList.class);
       digester.addObjectCreate("persons/person", XMLPersonPrincipal.class);
@@ -330,14 +331,14 @@ public class XMLUserLoginModule implements LoginModule  {
       digester.addCallMethod("persons/person/group", "addGroup", 1);
       digester.addCallParam("persons/person/group", 0);
 
-      List < XMLPersonPrincipal > personList
+      final List < XMLPersonPrincipal > personList
               = (List < XMLPersonPrincipal > ) digester.parse(_file);
-      for (XMLPersonPrincipal person : personList)  {
+      for (final XMLPersonPrincipal person : personList)  {
         this.allPersons.put(person.getName(), person);
       }
-    } catch (IOException e)  {
+    } catch (final IOException e)  {
       LOG.error("could not open file '" + _fileName + "'", e);
-    } catch (SAXException e)  {
+    } catch (final SAXException e)  {
       LOG.error("could not read file '" + _fileName + "'", e);
     }
   }

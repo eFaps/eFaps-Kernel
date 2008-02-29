@@ -118,7 +118,7 @@ public class LoginHandler {
     try {
       LoginContext login =
           new LoginContext(getApplication(), new LoginCallbackHandler(
-              ActionCallback.Mode.Login, _name, _passwd));
+              ActionCallback.Mode.LOGIN, _name, _passwd));
       login.login();
 
       person = getPerson(login);

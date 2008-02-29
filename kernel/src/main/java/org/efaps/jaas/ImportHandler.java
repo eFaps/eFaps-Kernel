@@ -123,7 +123,7 @@ public class ImportHandler extends LoginHandler {
     try {
       final LoginContext login =
           new LoginContext(getApplication(), new LoginCallbackHandler(
-              ActionCallback.Mode.AllPersons, null, null));
+              ActionCallback.Mode.ALL_PERSONS, null, null));
       login.login();
 
       for (JAASSystem system : JAASSystem.getAllJAASSystems()) {
@@ -208,7 +208,7 @@ public class ImportHandler extends LoginHandler {
       try {
         final LoginContext login =
             new LoginContext(getApplication(), new LoginCallbackHandler(
-                ActionCallback.Mode.PersonInformation, persMapper.name, null));
+                ActionCallback.Mode.PERSON_INFORMATION, persMapper.name, null));
         login.login();
 
         Person person = getPerson(login);
