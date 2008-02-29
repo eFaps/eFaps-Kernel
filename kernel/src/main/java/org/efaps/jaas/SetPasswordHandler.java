@@ -31,6 +31,17 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
+/**
+ * This is class is used to handle the interface between JAAS and eFaps that
+ * enables a User to change his Password <br>
+ * To be able to change the Passwordx the name and password of the user method
+ * {@link #checkLogin} could be used to test if the user is allowed to login.
+ * The method returns then the related person to the given name and password (if
+ * found) or <i>null</i> (if not found)
+ *
+ * @author jmox
+ * @version $Id$
+ */
 public class SetPasswordHandler {
 
   /**
@@ -77,7 +88,7 @@ public class SetPasswordHandler {
     private final String name;
 
     /**
-     * The password used from the user is stored in this instance variable.
+     * The new password used from the user is stored in this instance variable.
      */
     private final String newpassword;
 
@@ -87,6 +98,9 @@ public class SetPasswordHandler {
      */
     private final ActionCallback.Mode mode;
 
+    /**
+     * The old password used from the user is stored in this instance variable.
+     */
     private final String oldpassword;
 
     /**
