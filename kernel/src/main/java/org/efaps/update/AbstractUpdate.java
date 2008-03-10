@@ -467,6 +467,15 @@ public abstract class AbstractUpdate {
     private String mode = null;
 
     /**
+     * this instance variable stores the type of Definition (default: "replace")
+     * possible values: "replace", "update"
+     *
+     * @see #getType()
+     * @see #setType(String)
+     */
+    private String type = "replace";
+
+    /**
      * The value depending on the attribute name for this definition.
      *
      * @see #addValue
@@ -541,8 +550,7 @@ public abstract class AbstractUpdate {
         if (LOG.isInfoEnabled() && (name != null)) {
           LOG.info("    Update "
               + _instance.getType().getName()
-              + " "
-              + "'"
+              + " '"
               + name
               + "'");
         }
@@ -563,8 +571,7 @@ public abstract class AbstractUpdate {
         if (LOG.isInfoEnabled() && (name != null)) {
           LOG.info("    Insert "
               + _insert.getInstance().getType().getName()
-              + " "
-              + "'"
+              + " '"
               + name
               + "'");
         }
@@ -605,7 +612,12 @@ public abstract class AbstractUpdate {
     protected void setLinksInDB(final Instance _instance, final Link _link,
                                 final Map<String, Map<String, String>> _links)
                                                                               throws EFapsException,
+
                                                                               Exception {
+
+      if (getType().equals("update")) {
+        System.out.println("");
+      }
       // get ids from current object
       final Map<Long, String> currents = new HashMap<Long, String>();
       SearchQuery query = new SearchQuery();
@@ -620,7 +632,7 @@ public abstract class AbstractUpdate {
         final Type typeChild = (Type) query.get(_link.childAttrName + ".Type");
         if (typeLink.isKindOf(_link.getLinkType())
             && typeChild.isKindOf(_link.getChildType())) {
-          if (_link instanceof OrderedLink) {
+          if (_link instanceof OrderedLink && getType().equals("replace")) {
             final Delete del = new Delete((String) query.get("OID"));
             del.executeWithoutAccessCheck();
           } else {
@@ -684,11 +696,12 @@ public abstract class AbstractUpdate {
           currents.remove(target.getKey());
         }
       }
-
-      // remove unneeded current links to access types
-      for (final String oid : currents.values()) {
-        final Delete del = new Delete(oid);
-        del.executeWithoutAccessCheck();
+      // in case of replace remove unneeded current links to access types
+      if (getType().equals("replace")) {
+        for (final String oid : currents.values()) {
+          final Delete del = new Delete(oid);
+          del.executeWithoutAccessCheck();
+        }
       }
     }
 
@@ -881,9 +894,25 @@ public abstract class AbstractUpdate {
       return this.properties;
     }
 
+    /**
+     * This is the getter method for the instance variable {@link #type}.
+     *
+     * @return value of instance variable {@link #type}
+     */
+    public String getType() {
+      return this.type;
+    }
+
+    /**
+     * This is the setter method for the instance variable {@link #type}.
+     *
+     * @param _type
+     *                the type to set
+     */
+    public void setType(final String _type) {
+      this.type = _type;
+    }
+
   }
-
-
-
 
 }

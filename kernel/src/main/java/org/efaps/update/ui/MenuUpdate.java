@@ -34,12 +34,13 @@ import org.efaps.update.event.EventFactory;
 
 /**
  * @author tmo
+ * @author jmox
  * @version $Id$
  * @todo description
  */
-public class MenuUpdate extends CommandUpdate  {
+public class MenuUpdate extends CommandUpdate {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -47,29 +48,27 @@ public class MenuUpdate extends CommandUpdate  {
    */
   private final static Logger LOG = LoggerFactory.getLogger(MenuUpdate.class);
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
-
   /** Link from menu to child command / menu */
-  private final static Link LINK2CHILD
-             = new OrderedLink("Admin_UI_Menu2Command",
-                               "FromMenu",
-                               "Admin_UI_Command", "ToCommand");
+  private final static Link LINK2CHILD =
+      new OrderedLink("Admin_UI_Menu2Command", "FromMenu", "Admin_UI_Command",
+          "ToCommand");
 
   /** Link from menu to type as type tree menu */
-  private final static Link LINK2TYPE
-             = new Link("Admin_UI_LinkIsTypeTreeFor",
-                        "From",
-                        "Admin_DataModel_Type", "To");
+  private final static Link LINK2TYPE =
+      new Link("Admin_UI_LinkIsTypeTreeFor", "From", "Admin_DataModel_Type",
+          "To");
 
-  protected final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
+  protected final static Set<Link> ALLLINKS = new HashSet<Link>();
+  {
     ALLLINKS.add(LINK2CHILD);
     ALLLINKS.add(LINK2TYPE);
     ALLLINKS.addAll(CommandUpdate.ALLLINKS);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
@@ -82,18 +81,18 @@ public class MenuUpdate extends CommandUpdate  {
   /**
    *
    */
-  protected MenuUpdate(final String _typeName, final Set < Link > _allLinks) {
+  protected MenuUpdate(final String _typeName, final Set<Link> _allLinks) {
     super(_typeName, _allLinks);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static MenuUpdate readXMLFile(final URL _url)  {
+  public static MenuUpdate readXMLFile(final URL _url) {
     MenuUpdate ret = null;
 
-    try  {
-      Digester digester = new Digester();
+    try {
+      final Digester digester = new Digester();
       digester.setValidating(false);
       digester.addObjectCreate("ui-menu", MenuUpdate.class);
 
@@ -103,11 +102,18 @@ public class MenuUpdate extends CommandUpdate  {
       digester.addObjectCreate("ui-menu/definition", MenuDefinition.class);
       digester.addSetNext("ui-menu/definition", "addDefinition");
 
+      digester.addCallMethod("ui-menu/definition", "setType", 1);
+      digester.addCallParam("ui-menu/definition", 0, "type");
+
       digester.addCallMethod("ui-menu/definition/version", "setVersion", 4);
       digester.addCallParam("ui-menu/definition/version/application", 0);
       digester.addCallParam("ui-menu/definition/version/global", 1);
       digester.addCallParam("ui-menu/definition/version/local", 2);
       digester.addCallParam("ui-menu/definition/version/mode", 3);
+
+      digester.addCallMethod("ui-menu/definition/update", "setUpdate", 1,
+          new Class[] { Boolean.class });
+      digester.addCallParam("ui-menu/definition/update", 0);
 
       digester.addCallMethod("ui-menu/definition/name", "setName", 1);
       digester.addCallParam("ui-menu/definition/name", 0);
@@ -118,70 +124,86 @@ public class MenuUpdate extends CommandUpdate  {
       digester.addCallMethod("ui-menu/definition/type", "assignType", 1);
       digester.addCallParam("ui-menu/definition/type", 0);
 
-      digester.addCallMethod("ui-menu/definition/target/table", "assignTargetTable", 1);
+      digester.addCallMethod("ui-menu/definition/target/table",
+          "assignTargetTable", 1);
       digester.addCallParam("ui-menu/definition/target/table", 0);
 
-      digester.addCallMethod("ui-menu/definition/target/form", "assignTargetForm", 1);
+      digester.addCallMethod("ui-menu/definition/target/form",
+          "assignTargetForm", 1);
       digester.addCallParam("ui-menu/definition/target/form", 0);
 
-      digester.addCallMethod("ui-menu/definition/target/menu", "assignTargetMenu", 1);
+      digester.addCallMethod("ui-menu/definition/target/menu",
+          "assignTargetMenu", 1);
       digester.addCallParam("ui-menu/definition/target/menu", 0);
 
-      digester.addCallMethod("ui-menu/definition/target/search", "assignTargetSearch", 1);
+      digester.addCallMethod("ui-menu/definition/target/search",
+          "assignTargetSearch", 1);
       digester.addCallParam("ui-menu/definition/target/search", 0);
 
-      digester.addCallMethod("ui-menu/definition/childs/child", "assignChild", 1);
+      digester.addCallMethod("ui-menu/definition/childs/child", "assignChild",
+          2);
       digester.addCallParam("ui-menu/definition/childs/child", 0);
+      digester.addCallParam("ui-menu/definition/childs/child", 1, "modus" );
 
       digester.addCallMethod("ui-menu/definition/property", "addProperty", 2);
       digester.addCallParam("ui-menu/definition/property", 0, "name");
       digester.addCallParam("ui-menu/definition/property", 1);
 
-      digester.addFactoryCreate("ui-menu/definition/target/evaluate", new EventFactory("Admin_UI_TableEvaluateEvent"), false);
-      digester.addCallMethod("ui-menu/definition/target/evaluate/property", "addProperty", 2);
-      digester.addCallParam("ui-menu/definition/target/evaluate/property", 0, "name");
+      digester.addFactoryCreate("ui-menu/definition/target/evaluate",
+          new EventFactory("Admin_UI_TableEvaluateEvent"), false);
+      digester.addCallMethod("ui-menu/definition/target/evaluate/property",
+          "addProperty", 2);
+      digester.addCallParam("ui-menu/definition/target/evaluate/property", 0,
+          "name");
       digester.addCallParam("ui-menu/definition/target/evaluate/property", 1);
-      digester.addSetNext("ui-menu/definition/target/evaluate", "addEvent", "org.efaps.update.event.Event");
-
+      digester.addSetNext("ui-menu/definition/target/evaluate", "addEvent",
+          "org.efaps.update.event.Event");
 
       ret = (MenuUpdate) digester.parse(_url);
 
-      if (ret != null)  {
+      if (ret != null) {
         ret.setURL(_url);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
+    } catch (final SAXException e) {
       LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class MenuDefinition extends CommandDefinition  {
+  public static class MenuDefinition extends CommandDefinition {
 
-    ///////////////////////////////////////////////////////////////////////////
+    // /////////////////////////////////////////////////////////////////////////
     // instance methods
 
     /**
-     * Assigns child commands / menus to this menu.
+     * Assigns/Removes child commands / menus to this menu.
      *
-     * @param _childName  name of the child command / menu
+     * @param _childName
+     *                name of the child command / menu
      */
-    public void assignChild(final String _childName)  {
-      addLink(LINK2CHILD, _childName);
+    public void assignChild(final String _childName, final String _modus) {
+      if ("remove".equals(_modus)) {
+
+      } else {
+        addLink(LINK2CHILD, _childName);
+      }
     }
 
     /**
      * Assigns a type the menu for which this menu instance is the type tree
      * menu.
      *
-     * @param _type   type to assign
+     * @param _type
+     *                type to assign
      */
-    public void assignType(final String _type)  {
+    public void assignType(final String _type) {
       addLink(LINK2TYPE, _type);
     }
+
   }
 }

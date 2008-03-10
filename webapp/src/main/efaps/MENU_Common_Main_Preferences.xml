@@ -26,26 +26,12 @@
 <ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
-  <uuid>abb7f23d-4675-4874-b76d-2fd8f5186075</uuid>
-
-  <!-- ************************************************************************
-    version definition used to create the menu 
-    ************************************************************************* -->
-  <definition type="replace">
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
-    <name>Common_Main_Default</name>
-  </definition>
+  <uuid>f84814f4-1bc5-481e-b37c-6ae782b25a00</uuid>
 
   <!-- ************************************************************************
     version definition used to update the menu 
     ************************************************************************* -->
-  <definition type="replace">
+  <definition type="update">
     <version>
       <application>eFaps</application>
       <global>1</global>
@@ -53,9 +39,9 @@
       <mode>true</mode>
       <mode>(version==3)</mode>
     </version>
-    <name>Common_Main_Default</name>
+    <name>Common_Main_Preferences</name>
     <childs>
-      <child>Common_Main_Default_Print</child>
+      <child modus="add">Common_Main_Default_Print</child>
     </childs>
   </definition>
 </ui-menu>

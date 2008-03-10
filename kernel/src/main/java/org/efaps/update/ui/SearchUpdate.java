@@ -73,7 +73,7 @@ public class SearchUpdate extends MenuUpdate  {
     SearchUpdate ret = null;
 
     try  {
-      Digester digester = new Digester();
+      final Digester digester = new Digester();
       digester.setValidating(false);
       digester.addObjectCreate("ui-search", SearchUpdate.class);
 
@@ -88,15 +88,16 @@ public class SearchUpdate extends MenuUpdate  {
       digester.addCallParam("ui-search/definition/version/global", 1);
       digester.addCallParam("ui-search/definition/version/local", 2);
       digester.addCallParam("ui-search/definition/version/mode", 3);
-      
+
       digester.addCallMethod("ui-search/definition/name", "setName", 1);
       digester.addCallParam("ui-search/definition/name", 0);
 
       digester.addCallMethod("ui-search/definition/icon", "assignIcon", 1);
       digester.addCallParam("ui-search/definition/icon", 0);
 
-      digester.addCallMethod("ui-search/definition/childs/child", "assignChild", 1);
+      digester.addCallMethod("ui-search/definition/childs/child", "assignChild", 2);
       digester.addCallParam("ui-search/definition/childs/child", 0);
+      digester.addCallParam("ui-search/definition/childs/child", 1, "modus");
 
       digester.addCallMethod("ui-search/definition/property", "addProperty", 2);
       digester.addCallParam("ui-search/definition/property", 0, "name");
@@ -110,9 +111,9 @@ public class SearchUpdate extends MenuUpdate  {
       if (ret != null)  {
         ret.setURL(_url);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
+    } catch (final SAXException e) {
       LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
@@ -122,13 +123,13 @@ public class SearchUpdate extends MenuUpdate  {
   // class for the definitions
 
   public static class SearchDefinition extends MenuDefinition  {
-    
+
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
     /**
      * Assigns a command as default for the serch menu
-     * 
+     *
      * @param _defaultCmd name of the default command used for the search
      */
     public void assignDefaultCMD(final String _defaultCmd) {
