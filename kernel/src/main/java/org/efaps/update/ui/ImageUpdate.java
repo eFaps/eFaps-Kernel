@@ -36,6 +36,7 @@ import org.efaps.db.Checkin;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
 
 /**
@@ -83,7 +84,7 @@ public class ImageUpdate extends AbstractUpdate  {
    * @param _root   name of the path where the image file is located
    */
   protected void setRoot(final String _root) {
-    for (AbstractDefinition def : getDefinitions()) {
+    for (final AbstractDefinition def : getDefinitions()) {
       ((ImageDefinition) def).setRoot(_root);
     }
   }
@@ -94,7 +95,7 @@ public class ImageUpdate extends AbstractUpdate  {
   public static ImageUpdate readXMLFile(final URL _url)  {
     ImageUpdate update = null;
     try  {
-      Digester digester = new Digester();
+      final Digester digester = new Digester();
       digester.setValidating(false);
       digester.addObjectCreate("ui-image", ImageUpdate.class);
 
@@ -109,7 +110,7 @@ public class ImageUpdate extends AbstractUpdate  {
       digester.addCallParam("ui-image/definition/version/global", 1);
       digester.addCallParam("ui-image/definition/version/local", 2);
       digester.addCallParam("ui-image/definition/version/mode", 3);
-      
+
       digester.addCallMethod("ui-image/definition/name", "setName", 1);
       digester.addCallParam("ui-image/definition/name", 0);
 
@@ -124,17 +125,17 @@ public class ImageUpdate extends AbstractUpdate  {
       digester.addCallParam("ui-image/definition/file", 0);
 
       update = (ImageUpdate) digester.parse(_url);
-      
+
       if (update != null)  {
         String urlStr = _url.toString();
-        int i = urlStr.lastIndexOf("/");
+        final int i = urlStr.lastIndexOf("/");
         urlStr = urlStr.substring(0, i + 1);
         update.setRoot(urlStr);
         update.setURL(_url);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
+    } catch (final SAXException e) {
       LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return update;
@@ -166,17 +167,18 @@ public class ImageUpdate extends AbstractUpdate  {
      * @param _allLinkTypes
      * @param _insert       insert instance (if new instance is to create)
      */
+    @Override
     public Instance updateInDB(final Instance _instance,
                            final Set < Link > _allLinkTypes,
                            final Insert _insert) throws EFapsException, Exception  {
 
-      Instance instance = super.updateInDB(_instance, _allLinkTypes, _insert);
+      final Instance instance = super.updateInDB(_instance, _allLinkTypes, _insert);
 
       if (this.file != null)  {
-        InputStream in = new URL(this.root + this.file).openStream();
-        Checkin checkin = new Checkin(instance);
-        checkin.executeWithoutAccessCheck(this.file, 
-                                          in, 
+        final InputStream in = new URL(this.root + this.file).openStream();
+        final Checkin checkin = new Checkin(instance);
+        checkin.executeWithoutAccessCheck(this.file,
+                                          in,
                                           in.available());
         in.close();
       }
@@ -189,7 +191,7 @@ public class ImageUpdate extends AbstractUpdate  {
      * @param _type   type to assign
      */
     public void assignType(final String _type)  {
-      addLink(LINK2TYPE, _type);
+      addLink(LINK2TYPE, new LinkInstance(_type));
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -204,10 +206,10 @@ public class ImageUpdate extends AbstractUpdate  {
     public void setFile(final String _file)  {
       this.file = _file;
     }
-    
+
     /**
      * This is the setter method for instance variable {@link #root}.
-     * 
+     *
      * @param _root   new value for instance variable {@link #root}
      * @see #root
      */
@@ -221,6 +223,7 @@ public class ImageUpdate extends AbstractUpdate  {
      *
      * @return string representation of this definition of a column
      */
+    @Override
     public String toString()  {
       return new ToStringBuilder(this)
               .appendSuper(super.toString())

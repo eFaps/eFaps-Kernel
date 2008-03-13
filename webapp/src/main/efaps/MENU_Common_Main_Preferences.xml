@@ -41,7 +41,7 @@
     </version>
     <name>Common_Main_Preferences</name>
     <childs>
-      <child modus="add">Common_Main_Default_Print</child>
+      <child modus="add" order="2">Common_Main_Default_Print</child>
     </childs>
   </definition>
 </ui-menu>

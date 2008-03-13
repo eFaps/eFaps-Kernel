@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.LinkInstance;
 import org.efaps.update.event.EventFactory;
 
 /**
@@ -130,7 +131,7 @@ public class CommandUpdate extends AbstractUpdate {
     CommandUpdate ret = null;
 
     try {
-      Digester digester = new Digester();
+      final Digester digester = new Digester();
       digester.setValidating(false);
       digester.addObjectCreate("ui-command", CommandUpdate.class);
 
@@ -212,9 +213,9 @@ public class CommandUpdate extends AbstractUpdate {
       if (ret != null) {
         ret.setURL(_url);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
+    } catch (final SAXException e) {
       LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
@@ -237,7 +238,7 @@ public class CommandUpdate extends AbstractUpdate {
      *                name of the role
      */
     public void assignAccessRole(final String _role) {
-      addLink(LINK2ACCESSROLE, _role);
+      addLink(LINK2ACCESSROLE,new LinkInstance(_role) );
     }
 
     /**
@@ -247,7 +248,7 @@ public class CommandUpdate extends AbstractUpdate {
      *                name of the target table
      */
     public void assignIcon(final String _icon) {
-      addLink(LINK2ICON, _icon);
+      addLink(LINK2ICON,new LinkInstance(_icon) );
     }
 
     /**
@@ -257,7 +258,7 @@ public class CommandUpdate extends AbstractUpdate {
      *                name of the target table
      */
     public void assignTargetTable(final String _targetTable) {
-      addLink(LINK2TARGETTABLE, _targetTable);
+      addLink(LINK2TARGETTABLE,new LinkInstance(_targetTable) );
     }
 
     /**
@@ -267,7 +268,7 @@ public class CommandUpdate extends AbstractUpdate {
      *                name of the target form
      */
     public void assignTargetForm(final String _targetForm) {
-      addLink(LINK2TARGETFORM, _targetForm);
+      addLink(LINK2TARGETFORM, new LinkInstance(_targetForm));
     }
 
     /**
@@ -277,7 +278,7 @@ public class CommandUpdate extends AbstractUpdate {
      *                name of the target menu
      */
     public void assignTargetMenu(final String _targetMenu) {
-      addLink(LINK2TARGETMENU, _targetMenu);
+      addLink(LINK2TARGETMENU, new LinkInstance(_targetMenu));
     }
 
     /**
@@ -287,7 +288,7 @@ public class CommandUpdate extends AbstractUpdate {
      *                name of the target search
      */
     public void assignTargetSearch(final String _targetSearch) {
-      addLink(LINK2TARGETSEARCH, _targetSearch);
+      addLink(LINK2TARGETSEARCH, new LinkInstance(_targetSearch));
     }
 
   }

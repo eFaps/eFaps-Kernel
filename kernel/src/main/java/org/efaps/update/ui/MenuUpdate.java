@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import org.efaps.update.LinkInstance;
 import org.efaps.update.event.EventFactory;
 
 /**
@@ -141,9 +142,10 @@ public class MenuUpdate extends CommandUpdate {
       digester.addCallParam("ui-menu/definition/target/search", 0);
 
       digester.addCallMethod("ui-menu/definition/childs/child", "assignChild",
-          2);
+          3, new Class[] { String.class, String.class, Integer.class });
       digester.addCallParam("ui-menu/definition/childs/child", 0);
-      digester.addCallParam("ui-menu/definition/childs/child", 1, "modus" );
+      digester.addCallParam("ui-menu/definition/childs/child", 1, "modus");
+      digester.addCallParam("ui-menu/definition/childs/child", 2, "order");
 
       digester.addCallMethod("ui-menu/definition/property", "addProperty", 2);
       digester.addCallParam("ui-menu/definition/property", 0, "name");
@@ -186,11 +188,14 @@ public class MenuUpdate extends CommandUpdate {
      * @param _childName
      *                name of the child command / menu
      */
-    public void assignChild(final String _childName, final String _modus) {
+    public void assignChild(final String _childName, final String _modus,
+                            final Integer _order) {
+      final LinkInstance child = new LinkInstance(_childName);
       if ("remove".equals(_modus)) {
 
       } else {
-        addLink(LINK2CHILD, _childName);
+        child.setOrder(_order);
+        addLink(LINK2CHILD, child);
       }
     }
 
@@ -202,7 +207,7 @@ public class MenuUpdate extends CommandUpdate {
      *                type to assign
      */
     public void assignType(final String _type) {
-      addLink(LINK2TYPE, _type);
+      addLink(LINK2TYPE, new LinkInstance(_type));
     }
 
   }

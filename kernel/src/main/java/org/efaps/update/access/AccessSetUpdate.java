@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.LinkInstance;
 
 /**
  * @author tmo
@@ -48,35 +49,35 @@ public class AccessSetUpdate extends AbstractUpdate  {
    */
   private final static Logger LOG = LoggerFactory.getLogger(AccessSetUpdate.class);
 
-  
+
   /** Link to access types. */
   private final static Link LINK2ACCESSTYPE
-                    = new Link("Admin_Access_AccessSet2Type", 
-                               "AccessSetLink", 
+                    = new Link("Admin_Access_AccessSet2Type",
+                               "AccessSetLink",
                                "Admin_Access_AccessType", "AccessTypeLink");
 
   /** Link to data model types. */
   private final static Link LINK2DATAMODELTYPE
-                    = new Link("Admin_Access_AccessSet2DataModelType", 
-                               "AccessSetLink", 
+                    = new Link("Admin_Access_AccessSet2DataModelType",
+                               "AccessSetLink",
                                "Admin_DataModel_Type", "DataModelTypeLink");
 
   /** Link to persons. */
   private final static Link LINK2PERSON
-                    = new Link("Admin_Access_AccessSet2UserAbstract", 
-                               "AccessSetLink", 
+                    = new Link("Admin_Access_AccessSet2UserAbstract",
+                               "AccessSetLink",
                                "Admin_User_Person", "UserAbstractLink");
 
   /** Link to roles. */
   private final static Link LINK2ROLE
-                    = new Link("Admin_Access_AccessSet2UserAbstract", 
-                               "AccessSetLink", 
+                    = new Link("Admin_Access_AccessSet2UserAbstract",
+                               "AccessSetLink",
                                "Admin_User_Role", "UserAbstractLink");
 
   /** Link to groups. */
   private final static Link LINK2GROUP
-                    = new Link("Admin_Access_AccessSet2UserAbstract", 
-                               "AccessSetLink", 
+                    = new Link("Admin_Access_AccessSet2UserAbstract",
+                               "AccessSetLink",
                                "Admin_User_Group", "UserAbstractLink");
 
   private final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
@@ -104,7 +105,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
     AccessSetUpdate ret = null;
 
     try  {
-      Digester digester = new Digester();
+      final Digester digester = new Digester();
       digester.setValidating(false);
       digester.addObjectCreate("access-set", AccessSetUpdate.class);
 
@@ -119,7 +120,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
       digester.addCallParam("access-set/definition/version/global", 1);
       digester.addCallParam("access-set/definition/version/local", 2);
       digester.addCallParam("access-set/definition/version/mode", 3);
-      
+
       digester.addCallMethod("access-set/definition/name", "setName", 1);
       digester.addCallParam("access-set/definition/name", 0);
 
@@ -143,9 +144,9 @@ public class AccessSetUpdate extends AbstractUpdate  {
       if (ret != null)  {
         ret.setURL(_url);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
+    } catch (final SAXException e) {
       LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
@@ -155,14 +156,14 @@ public class AccessSetUpdate extends AbstractUpdate  {
   // class for the definitions
 
   public static class Definition extends AbstractDefinition {
-    
+
     /**
      * @param _accessType access type to add (defined with the name of the
      *                    access type)
      * @see #accessTypes
      */
     public void addAccessType(final String _accessType)  {
-      addLink(LINK2ACCESSTYPE, _accessType);
+      addLink(LINK2ACCESSTYPE, new LinkInstance(_accessType));
     }
 
     /**
@@ -171,7 +172,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
      * @see #dataModelTypes
      */
     public void addDataModelType(final String _dataModelType)  {
-      addLink(LINK2DATAMODELTYPE, _dataModelType);
+      addLink(LINK2DATAMODELTYPE, new LinkInstance(_dataModelType));
     }
 
     /**
@@ -179,7 +180,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
      * @see #persons
      */
     public void addPerson(final String _person)  {
-      addLink(LINK2PERSON, _person);
+      addLink(LINK2PERSON, new LinkInstance(_person));
     }
 
     /**
@@ -187,7 +188,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
      * @see #roles
      */
     public void addRole(final String _role)  {
-      addLink(LINK2ROLE, _role);
+      addLink(LINK2ROLE, new LinkInstance(_role));
     }
 
     /**
@@ -195,7 +196,7 @@ public class AccessSetUpdate extends AbstractUpdate  {
      * @see #groups
      */
     public void addGroup(final String _group) {
-      addLink(LINK2GROUP, _group);
+      addLink(LINK2GROUP, new LinkInstance(_group));
     }
   }
 }

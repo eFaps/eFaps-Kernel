@@ -23,10 +23,13 @@ package org.efaps.update;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
@@ -432,6 +435,7 @@ public abstract class AbstractUpdate {
     public OrderedLink(final String _linkName, final String _parentAttrName,
                        final String _childTypeName, final String _childAttrName) {
       super(_linkName, _parentAttrName, _childTypeName, _childAttrName);
+
     }
   }
 
@@ -494,8 +498,8 @@ public abstract class AbstractUpdate {
     /**
      *
      */
-    private final Map<Link, Map<String, Map<String, String>>> links =
-        new HashMap<Link, Map<String, Map<String, String>>>();
+    private final Map<Link, Set<LinkInstance>> links =
+        new HashMap<Link, Set<LinkInstance>>();
 
     protected final List<Event> events = new ArrayList<Event>();
 
@@ -600,109 +604,163 @@ public abstract class AbstractUpdate {
      *
      * @param _instance
      *                instance for which the access types must be set
-     * @param _link
-     *                link to update
-     * @param _objNames
-     *                string list of all object names to set for this object
-     * @todo it could be that more than one current from same target is defined!
-     *       E.g. menu to child!
-     * @todo ordered link is only a hack, the current connection are always
-     *       disconnected
+     * @param _linktype
+     *                type of the link to be updated
+     * @param _links
+     *                all links of the type _linktype which will be connected to
+     *                this instance
      */
-    protected void setLinksInDB(final Instance _instance, final Link _link,
-                                final Map<String, Map<String, String>> _links)
-                                                                              throws EFapsException,
+    protected void setLinksInDB(final Instance _instance, final Link _linktype,
+                                final Set<LinkInstance> _links)
+                                                               throws EFapsException,
+                                                               Exception {
 
-                                                                              Exception {
+      final Map<Long, LinkInstance> existing =
+          new HashMap<Long, LinkInstance>();
 
-      if (getType().equals("update")) {
-        System.out.println("");
-      }
-      // get ids from current object
-      final Map<Long, String> currents = new HashMap<Long, String>();
-      SearchQuery query = new SearchQuery();
-      query.setExpand(_instance, _link.linkName + "\\" + _link.parentAttrName);
-      query.addSelect(_link.childAttrName + ".ID");
-      query.addSelect("OID");
-      query.addSelect("Type");
-      query.addSelect(_link.childAttrName + ".Type");
-      query.executeWithoutAccessCheck();
-      while (query.next()) {
-        final Type typeLink = (Type) query.get("Type");
-        final Type typeChild = (Type) query.get(_link.childAttrName + ".Type");
-        if (typeLink.isKindOf(_link.getLinkType())
-            && typeChild.isKindOf(_link.getChildType())) {
-          if (_link instanceof OrderedLink && getType().equals("replace")) {
-            final Delete del = new Delete((String) query.get("OID"));
-            del.executeWithoutAccessCheck();
-          } else {
-            currents.put((Long) query.get(_link.childAttrName + ".ID"),
-                (String) query.get("OID"));
+      boolean order = false;
+      // only if new Links are given something must be done
+      if (_links != null) {
+
+        final List<LinkInstance> allLinks = new ArrayList<LinkInstance>();
+
+        // add the existing Links as LinkInstance to the List of all Links
+        SearchQuery query = new SearchQuery();
+        query.setExpand(_instance, _linktype.linkName
+            + "\\"
+            + _linktype.parentAttrName);
+        query.addSelect("OID");
+        query.addSelect("Type");
+        query.addSelect("ID");
+        query.addSelect(_linktype.childAttrName + ".ID");
+        query.addSelect(_linktype.childAttrName + ".Type");
+        query.addSelect(_linktype.childAttrName + ".Name");
+        query.executeWithoutAccessCheck();
+        while (query.next()) {
+          final Type type = (Type) query.get("Type");
+          final Type childType =
+              (Type) query.get(_linktype.childAttrName + ".Type");
+          // check if this is a correct Link for this LinkType
+          if (type.isKindOf(_linktype.getLinkType())
+              && childType.isKindOf(_linktype.getChildType())) {
+
+            final LinkInstance oldLink =
+                new LinkInstance((String) query.get(_linktype.childAttrName
+                    + ".Name"));
+            final long childId =
+                (Long) query.get(_linktype.childAttrName + ".ID");
+            oldLink.setChildId(childId);
+            oldLink.setOid((String) query.get("OID"));
+            oldLink.setId((Long) query.get("ID"));
+            allLinks.add(oldLink);
+            existing.put(childId, oldLink);
           }
         }
-      }
-      query.close();
-      // get ids for target
-      Map<Long, Map<String, String>> targets;
-      if (_link instanceof OrderedLink) {
-        targets = new LinkedHashMap<Long, Map<String, String>>();
-      } else {
-        targets = new HashMap<Long, Map<String, String>>();
-      }
-      if (_links != null) {
-        for (final Map.Entry<String, Map<String, String>> linkEntry : _links
-            .entrySet()) {
+        query.close();
+
+        // add the new LinkInstances to the List of all Linkinstances
+        for (final LinkInstance onelink : _links) {
+
+          // search the id for the Linked Object
           query = new SearchQuery();
-          query.setQueryTypes(_link.childTypeName);
+          query.setQueryTypes(_linktype.childTypeName);
           query.setExpandChildTypes(true);
-          query.addWhereExprEqValue("Name", linkEntry.getKey());
+          query.addWhereExprEqValue("Name", onelink.getName());
           query.addSelect("ID");
           query.executeWithoutAccessCheck();
           if (query.next()) {
-            targets.put((Long) query.get("ID"), linkEntry.getValue());
+            final Long id = (Long) query.get("ID");
+            if (id != null) {
+              boolean add = true;
+              if (existing.get(id) != null) {
+                existing.get(id).setUpdate(true);
+                existing.get(id).setValues(onelink.getValuesMap());
+                add = false;
+              }
+              if (add) {
+                onelink.setChildId(id);
+                onelink.setInsert(true);
+                if (onelink.getOrder() == 0) {
+                  allLinks.add(onelink);
+                } else {
+                  allLinks.add(onelink.getOrder() - 1, onelink);
+                  order = true;
+                }
+              }
+            }
           } else {
-            LOG.error(_link.childTypeName
+            LOG.error(_linktype.childTypeName
                 + " '"
-                + linkEntry.getKey()
+                + onelink.getName()
                 + "' not found!");
           }
           query.close();
         }
+        final Map<Long, LinkInstance> orderid =
+            new TreeMap<Long, LinkInstance>();
+        if (order) {
+          for (final LinkInstance onelink : allLinks) {
+            if (onelink.getId() != null) {
+              orderid.put(onelink.getId(), onelink);
+            }
+          }
+          int i = 0;
+          for (final Entry<Long, LinkInstance> entry : orderid.entrySet()) {
+            // if they are the same don't do anything
+            if (!entry.getValue().equals(allLinks.get(i))) {
+              final Update update = new Update(entry.getValue().getOid());
+              update.add(_linktype.childAttrName, ""
+                  + allLinks.get(i).getChildId());
+              update.executeWithoutAccessCheck();
+            }
+            i++;
+          }
+
+          for (int j = i; j < allLinks.size(); j++) {
+            final Insert insert = new Insert(_linktype.linkName);
+            insert.add(_linktype.parentAttrName, "" + _instance.getId());
+            insert.add(_linktype.childAttrName, ""
+                + allLinks.get(j).getChildId());
+            insert.executeWithoutAccessCheck();
+          }
+
+        } else {
+
+          // insert, update the LinkInstances or in case of replace remove them
+          for (final LinkInstance onelink : allLinks) {
+            if (onelink.isUpdate()) {
+              final Update update =
+                  new Update(_linktype.getChildType(), onelink.getChildId()
+                      .toString());
+
+              for (final Map.Entry<String, String> value : onelink
+                  .getValuesMap().entrySet()) {
+                update.add(value.getKey(), value.getValue());
+              }
+              update.executeWithoutAccessCheck();
+            } else if (onelink.isInsert()) {
+              final Insert insert = new Insert(_linktype.linkName);
+              insert.add(_linktype.parentAttrName, "" + _instance.getId());
+              insert.add(_linktype.childAttrName, "" + onelink.getChildId());
+
+              for (final Map.Entry<String, String> value : onelink
+                  .getValuesMap().entrySet()) {
+                insert.add(value.getKey(), value.getValue());
+              }
+              insert.executeWithoutAccessCheck();
+              onelink.setOid(insert.getInstance().getOid());
+            } else {
+              if (!getType().equals("update") && onelink.getOid() != null) {
+                final Delete del = new Delete(onelink.getOid());
+                del.executeWithoutAccessCheck();
+              }
+            }
+
+          }
+
+        }
       }
 
-      // insert needed new links and update already existing
-      for (final Map.Entry<Long, Map<String, String>> target : targets
-          .entrySet()) {
-        if (currents.get(target.getKey()) == null) {
-          final Insert insert = new Insert(_link.linkName);
-          insert.add(_link.parentAttrName, "" + _instance.getId());
-          insert.add(_link.childAttrName, "" + target.getKey());
-          if (target.getValue() != null) {
-            for (final Map.Entry<String, String> value : target.getValue()
-                .entrySet()) {
-              insert.add(value.getKey(), value.getValue());
-            }
-          }
-          insert.executeWithoutAccessCheck();
-        } else {
-          if (target.getValue() != null) {
-            final Update update = new Update(currents.get(target.getKey()));
-            for (final Map.Entry<String, String> value : target.getValue()
-                .entrySet()) {
-              update.add(value.getKey(), value.getValue());
-            }
-            update.executeWithoutAccessCheck();
-          }
-          currents.remove(target.getKey());
-        }
-      }
-      // in case of replace remove unneeded current links to access types
-      if (getType().equals("replace")) {
-        for (final String oid : currents.values()) {
-          final Delete del = new Delete(oid);
-          del.executeWithoutAccessCheck();
-        }
-      }
     }
 
     /**
@@ -773,41 +831,20 @@ public abstract class AbstractUpdate {
      * @param _values
      *                values in the link itself (or null)
      */
-    protected void addLink(final Link _link, final String _name,
-                           final Map<String, String> _values) {
-      Map<String, Map<String, String>> oneLink = this.links.get(_link);
+    protected void addLink(final Link _link, final LinkInstance _linkinstance) {
+      Set<LinkInstance> oneLink = this.links.get(_link);
       if (oneLink == null) {
         if (_link instanceof OrderedLink) {
-          oneLink = new LinkedHashMap<String, Map<String, String>>();
+          oneLink = new LinkedHashSet<LinkInstance>();
         } else {
-          oneLink = new HashMap<String, Map<String, String>>();
+          oneLink = new HashSet<LinkInstance>();
         }
         this.links.put(_link, oneLink);
       }
-      oneLink.put(_name, _values);
+      oneLink.add(_linkinstance);
     }
 
-    /**
-     * @param _link
-     *                link type
-     * @param _name
-     *                name of the object which is linked to
-     * @param _values
-     *                values in the link itself (or null)
-     */
-    protected void addLink(final Link _link, final String _name,
-                           final String... _values) {
-      Map<String, String> valuesMap = null;
-      if (_values.length > 0) {
-        valuesMap = new HashMap<String, String>();
-        for (int i = 0; i < _values.length; i += 2) {
-          valuesMap.put(_values[i], _values[i + 1]);
-        }
-      }
-      addLink(_link, _name, valuesMap);
-    }
-
-    public Map<String, Map<String, String>> getLinks(final Link _linkType) {
+    public Set<LinkInstance> getLinks(final Link _linkType) {
       return this.links.get(_linkType);
     }
 

@@ -31,6 +31,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.update.LinkInstance;
+
 /**
  * TODO description
  *
@@ -143,7 +145,7 @@ public class CSSUpdate extends AbstractSourceUpdate {
     }
 
     public void assignSuper(final String _super) {
-      addLink(LINK2SUPER, _super);
+      addLink(LINK2SUPER, new LinkInstance(_super));
     }
   }
 }

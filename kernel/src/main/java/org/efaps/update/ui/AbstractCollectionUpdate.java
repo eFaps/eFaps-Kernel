@@ -22,10 +22,8 @@ package org.efaps.update.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
@@ -37,6 +35,7 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
 import org.efaps.update.event.EventFactory;
 import org.efaps.util.EFapsException;
@@ -223,7 +222,7 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
      *                name of the target table
      */
     public void assignTargetTable(final String _targetTable) {
-      addLink(LINK2TARGETTABLE, _targetTable);
+      addLink(LINK2TARGETTABLE, new LinkInstance(_targetTable));
     }
 
     /**
@@ -253,8 +252,8 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
 
     /**
      * Updates / creates the instance in the database. Uses
-     * {@link AbstractAjaxUpdateBehavior.updateInDB} for the update. Only the fields are
-     * also updated for collection defined through this definiton.
+     * {@link AbstractAjaxUpdateBehavior.updateInDB} for the update. Only the
+     * fields are also updated for collection defined through this definiton.
      *
      * @param _instance
      *                instance to update (or null if instance is to create)
@@ -302,7 +301,7 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
       query.close();
 
       // append new fields
-      for (FieldDefinition field : this.fields) {
+      for (final FieldDefinition field : this.fields) {
         Insert insert;
         if ("Target".equals(field.character)) {
           insert = new Insert(EFapsClassName.FIELDTABLE.name);
@@ -318,16 +317,16 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
         insert.add("Name", field.name);
         insert.executeWithoutAccessCheck();
         setPropertiesInDb(insert.getInstance(), field.getProperties());
-        final Map<String, Map<String, String>> iconsMap =
-            new HashMap<String, Map<String, String>>();
+
         if (field.icon != null) {
-          iconsMap.put(field.icon, null);
+          final Set<LinkInstance> iconset = new HashSet<LinkInstance>();
+          iconset.add(new LinkInstance(field.icon));
+          setLinksInDB(insert.getInstance(), LINKFIELD2ICON, iconset);
         }
 
-        setLinksInDB(insert.getInstance(), LINKFIELD2ICON, iconsMap);
         setLinksInDB(insert.getInstance(), LINK2TARGETTABLE, field
             .getLinks(LINK2TARGETTABLE));
-        for (Event event : field.getEvents()) {
+        for (final Event event : field.getEvents()) {
           final Instance newInstance =
               event.updateInDB(insert.getInstance(), field.name);
           setPropertiesInDb(newInstance, event.getProperties());

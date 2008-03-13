@@ -30,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import org.efaps.update.LinkInstance;
+
 /**
  * @author tmo
  * @version $Id$
@@ -95,9 +97,11 @@ public class SearchUpdate extends MenuUpdate  {
       digester.addCallMethod("ui-search/definition/icon", "assignIcon", 1);
       digester.addCallParam("ui-search/definition/icon", 0);
 
-      digester.addCallMethod("ui-search/definition/childs/child", "assignChild", 2);
+      digester.addCallMethod("ui-search/definition/childs/child", "assignChild", 3,
+          new Class[] {String.class, String.class, Integer.class});
       digester.addCallParam("ui-search/definition/childs/child", 0);
       digester.addCallParam("ui-search/definition/childs/child", 1, "modus");
+      digester.addCallParam("ui-search/definition/childs/child", 2, "order");
 
       digester.addCallMethod("ui-search/definition/property", "addProperty", 2);
       digester.addCallParam("ui-search/definition/property", 0, "name");
@@ -130,10 +134,11 @@ public class SearchUpdate extends MenuUpdate  {
     /**
      * Assigns a command as default for the serch menu
      *
-     * @param _defaultCmd name of the default command used for the search
+     * @param _defaultCmd
+     *                name of the default command used for the search
      */
     public void assignDefaultCMD(final String _defaultCmd) {
-      addLink(LINK2DEFAULTCMD, _defaultCmd);
+      addLink(LINK2DEFAULTCMD, new LinkInstance(_defaultCmd));
     }
   }
 }

@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.LinkInstance;
 
 /**
  * @author tmo
@@ -88,7 +89,7 @@ public class JAASSystemUpdate extends AbstractUpdate  {
     JAASSystemUpdate ret = null;
 
     try  {
-      Digester digester = new Digester();
+      final Digester digester = new Digester();
       digester.setValidating(false);
       digester.addObjectCreate("user-jaassystem", JAASSystemUpdate.class);
 
@@ -154,9 +155,9 @@ public class JAASSystemUpdate extends AbstractUpdate  {
       if (ret != null)  {
         ret.setURL(_url);
       }
-    } catch (IOException e) {
+    } catch (final IOException e) {
       LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
+    } catch (final SAXException e) {
       LOG.error(_url.toString() + " seems to be invalide XML", e);
     }
     return ret;
@@ -171,21 +172,21 @@ public class JAASSystemUpdate extends AbstractUpdate  {
      *
      */
      public void assignPerson(final String _name, final String _key)  {
-       addLink(LINK2PERSONS, _name, "Key", _key);
+       addLink(LINK2PERSONS, new LinkInstance(_name, "Key", _key));
      }
 
     /**
      *
      */
      public void assignRole(final String _name, final String _key)  {
-       addLink(LINK2ROLES, _name, "Key", _key);
+       addLink(LINK2ROLES, new LinkInstance(_name, "Key", _key));
      }
 
          /**
      *
      */
      public void assignGroup(final String _name, final String _key)  {
-       addLink(LINK2GROUPS, _name, "Key", _key);
+       addLink(LINK2GROUPS, new LinkInstance(_name, "Key", _key));
      }
 
      /**
