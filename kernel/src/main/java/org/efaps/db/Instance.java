@@ -29,9 +29,9 @@ import org.efaps.admin.datamodel.Type;
  * @version $Id$
  * @todo description
  */
-public class Instance  {
+public class Instance {
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -43,23 +43,24 @@ public class Instance  {
   private final Type type;
 
   /**
-   * The instance variable stores the database id of the instance in the 
+   * The instance variable stores the database id of the instance in the
    * database.
    *
    * @see #getId
    */
   private final long id;
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
    * Constructor used if no object exists but the type is know (e.g. if a new
    * object will be created...). The database id is set to 0.
    *
-   * @param _type type of the instance
+   * @param _type
+   *                type of the instance
    */
-  public Instance(final Type _type)  {
+  public Instance(final Type _type) {
     this.type = _type;
     this.id = 0;
   }
@@ -67,47 +68,53 @@ public class Instance  {
   /**
    * Constructor used if the type and the database id is known.
    *
-   * @param _type type of the instance
-   * @param _id   id in the database of the instance
+   * @param _type
+   *                type of the instance
+   * @param _id
+   *                id in the database of the instance
    */
-  public Instance(final Type _type, final long _id)  {
+  public Instance(final Type _type, final long _id) {
     this.type = _type;
     this.id = _id;
   }
 
   /**
-   * Constructor used if the type and the database id is known. The database id 
+   * Constructor used if the type and the database id is known. The database id
    * is defined in a string and converted to a long.
    *
-   * @param _type type of the instance
-   * @param _id   id in the database of the instance as string
+   * @param _type
+   *                type of the instance
+   * @param _id
+   *                id in the database of the instance as string
    */
-  public Instance(final Type _type, final String _id)  {
+  public Instance(final Type _type, final String _id) {
     this.type = _type;
-    if ((_id != null) && (_id.length() > 0))  {
+    if ((_id != null) && (_id.length() > 0)) {
       this.id = Long.parseLong(_id);
-    } else  {
+    } else {
       this.id = 0;
     }
   }
 
   /**
-   * Constructor used if the type and the database id is known. The type is 
-   * only known as string and searched in the cache. The database id is defined 
-   * in a string and converted to a long.
+   * Constructor used if the type and the database id is known. The type is only
+   * known as string and searched in the cache. The database id is defined in a
+   * string and converted to a long.
    *
-   * @param _type type of the instance as string
-   * @param _id   id in the database of the instance as string
+   * @param _type
+   *                type of the instance as string
+   * @param _id
+   *                id in the database of the instance as string
    */
-  public Instance(final String _type, final String _id)  {
-    if ((_type != null) && (_type.length() > 0))  {
+  public Instance(final String _type, final String _id) {
+    if ((_type != null) && (_type.length() > 0)) {
       this.type = Type.get(_type);
-    } else  {
+    } else {
       this.type = null;
     }
-    if ((_id != null) && (_id.length() > 0))  {
+    if ((_id != null) && (_id.length() > 0)) {
       this.id = Long.parseLong(_id);
-    } else  {
+    } else {
       this.id = 0;
     }
   }
@@ -115,53 +122,26 @@ public class Instance  {
   /**
    * Constructor used if the string representation of the object id is known.
    *
-   * @param _oid  objecd id in string representation
+   * @param _oid
+   *                objecd id in string representation
    */
-  public Instance(final String _oid)  {
-    if (_oid != null)  {
-      int index = _oid.indexOf(".");
-      if (index >= 0)  {
+  public Instance(final String _oid) {
+    if (_oid != null) {
+      final int index = _oid.indexOf(".");
+      if (index >= 0) {
         this.type = Type.get(Long.parseLong(_oid.substring(0, index)));
-        this.id = Long.parseLong(_oid.substring(index+1));
-      } else  {
+        this.id = Long.parseLong(_oid.substring(index + 1));
+      } else {
         this.type = null;
         this.id = 0;
       }
-    } else  {
+    } else {
       this.type = null;
       this.id = 0;
     }
   }
 
-  /**
-   * @deprecated
-   */
-  public Instance(final Context _context, final Type _type, final long _id)  {
-    this(_type, _id);
-  }
-
-  /**
-   * @deprecated
-   */
-  public Instance(final Context _context, final Type _type, final String _id)  {
-    this(_type, _id);
-  }
-
-  /**
-   * @deprecated
-   */
-  public Instance(final Context _context, final String _typeName, final String _id)  {
-    this(_typeName, _id);
-  }
-
-  /**
-   * @deprecated
-   */
-  public Instance(final Context _context, final String _oid)  {
-    this(_oid);
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -169,9 +149,9 @@ public class Instance  {
    *
    * @return string representation of the object id
    */
-  public String getOid()  {
+  public String getOid() {
     String ret = null;
-    if ((getType() != null) && (getId() != 0))  {
+    if ((getType() != null) && (getId() != 0)) {
       ret = getType().getId() + "." + getId();
     }
     return ret;
@@ -181,7 +161,8 @@ public class Instance  {
    * @return id represented by this instance
    * @see #id
    */
-  public int hashCode()  {
+  @Override
+  public int hashCode() {
     return (int) this.id;
   }
 
@@ -191,17 +172,19 @@ public class Instance  {
    * @see #id
    * @see #type
    */
-  public boolean equals(final Object _obj)  {
+  @Override
+  public boolean equals(final Object _obj) {
     boolean ret = false;
-    if (_obj instanceof Instance)  {
-      Instance other = (Instance) _obj;
-      ret = (other.getId() == getId())
-            && (other.getType().getId() == getType().getId());
+    if (_obj instanceof Instance) {
+      final Instance other = (Instance) _obj;
+      ret =
+          (other.getId() == getId())
+              && (other.getType().getId() == getType().getId());
     }
     return ret;
   }
 
-  /////////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
   // getter and setter methods
 
   /**
@@ -211,7 +194,7 @@ public class Instance  {
    * @see #type
    * @see #setType
    */
-  public Type getType()  {
+  public Type getType() {
     return this.type;
   }
 
@@ -221,7 +204,7 @@ public class Instance  {
    * @return value of instance variable {@link #id}
    * @see #id
    */
-  public long getId()  {
+  public long getId() {
     return this.id;
   }
 
@@ -231,11 +214,9 @@ public class Instance  {
    *
    * @return string representation of this instance object
    */
-  public String toString()  {
-    return new ToStringBuilder(this).
-      append("oid", getOid()).
-      append("type", getType()).
-      append("id", getId()).
-      toString();
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this).append("oid", getOid()).append("type",
+        getType()).append("id", getId()).toString();
   }
 }
