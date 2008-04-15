@@ -21,10 +21,7 @@
 package org.efaps.maven.plugin.install;
 
 import org.apache.maven.plugin.MojoExecutionException;
-
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
-
+import org.apache.maven.tools.plugin.Goal;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
 
 /**
@@ -33,8 +30,8 @@ import org.efaps.maven.plugin.goal.efaps.install.Application;
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("source-install")
-@MojoRequiresDependencyResolution("compile")
+@Goal(name = "source-install",
+      requiresDependencyResolutionScope = "compile")
 public final class SourceInstallMojo extends AbstractEFapsInstallMojo  {
 
   /////////////////////////////////////////////////////////////////////////////

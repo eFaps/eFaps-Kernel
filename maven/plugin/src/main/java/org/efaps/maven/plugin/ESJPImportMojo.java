@@ -25,9 +25,8 @@ import java.net.MalformedURLException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoParameter;
-
+import org.apache.maven.tools.plugin.Goal;
+import org.apache.maven.tools.plugin.Parameter;
 import org.efaps.admin.program.esjp.ESJPImporter;
 import org.efaps.util.EFapsException;
 
@@ -38,7 +37,7 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-@MojoGoal("esjp-import")
+@Goal(name = "esjp-import")
 public class ESJPImportMojo extends EFapsAbstractMojo  {
 
   /////////////////////////////////////////////////////////////////////////////
@@ -47,7 +46,7 @@ public class ESJPImportMojo extends EFapsAbstractMojo  {
   /**
    * URL of the ESJP to import.
    */
-  @MojoParameter(required = true)
+  @Parameter(required = true)
   private File file;
 
   /////////////////////////////////////////////////////////////////////////////
@@ -61,7 +60,7 @@ public class ESJPImportMojo extends EFapsAbstractMojo  {
     try {
       reloadCache();
       startTransaction();
-      final ESJPImporter esjpImport = new ESJPImporter(file.toURL());
+      final ESJPImporter esjpImport = new ESJPImporter(this.file.toURL());
       esjpImport.execute();
       getLog().info("ESJP '" + this.file.toString() + "' inserted.");
       commitTransaction();

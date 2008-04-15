@@ -1,5 +1,5 @@
 /*
- * Copyright 2003 - 2008 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@
 package org.efaps.maven.plugin.goal.efaps;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-
+import org.apache.maven.tools.plugin.Goal;
 import org.efaps.maven.plugin.EFapsAbstractMojo;
 
 /**
@@ -32,7 +31,7 @@ import org.efaps.maven.plugin.EFapsAbstractMojo;
  * @version $Id$
  * @todo must be reworked!
  */
-@MojoGoal("import-data")
+@Goal(name = "import-data")
 public class ImportDataMojo extends EFapsAbstractMojo {
 
 /*  private final static Option PROPERTY_BASENAME = OptionBuilder.withArgName(

@@ -21,10 +21,7 @@
 package org.efaps.maven.plugin.install;
 
 import org.apache.maven.plugin.MojoExecutionException;
-
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
-
+import org.apache.maven.tools.plugin.Goal;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
 import org.efaps.util.EFapsException;
 
@@ -35,10 +32,10 @@ import org.efaps.util.EFapsException;
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("update")
-@MojoRequiresDependencyResolution("compile")
+@Goal(name = "update",
+      requiresDependencyResolutionScope = "compile")
 public final class UpdateMojo extends AbstractEFapsInstallMojo  {
-  
+
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
@@ -51,7 +48,7 @@ public final class UpdateMojo extends AbstractEFapsInstallMojo  {
     try  {
       reloadCache();
       startTransaction();
-     
+
       Application appl = getApplication();
       if (appl != null)  {
         appl.updateLastVersion(getUserName(), getPassWord());

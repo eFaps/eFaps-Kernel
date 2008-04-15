@@ -26,10 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoParameter;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
-
+import org.apache.maven.tools.plugin.Goal;
+import org.apache.maven.tools.plugin.Parameter;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
 
 /**
@@ -38,8 +36,8 @@ import org.efaps.maven.plugin.goal.efaps.install.Application;
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("install")
-@MojoRequiresDependencyResolution("compile")
+@Goal(name = "install",
+      requiresDependencyResolutionScope = "compile")
 public final class InstallMojo extends AbstractEFapsInstallMojo {
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -49,7 +47,7 @@ public final class InstallMojo extends AbstractEFapsInstallMojo {
    * Comma separated list of applications to install. The default value is the
    * kernel application.
    */
-  @MojoParameter(defaultValue = "efaps")
+  @Parameter(defaultValue = "efaps")
   private String applications;
 
   // ///////////////////////////////////////////////////////////////////////////

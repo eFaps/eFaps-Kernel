@@ -21,12 +21,9 @@
 package org.efaps.maven.plugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
-
+import org.apache.maven.tools.plugin.Goal;
 import org.efaps.maven.plugin.goal.efaps.install.ApplicationVersion;
 import org.efaps.util.EFapsException;
-
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
 
 /**
  * Compiles all ESPJ's and Cascade Style Sheets within eFaps.
@@ -34,8 +31,8 @@ import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("compile")
-@MojoRequiresDependencyResolution("compile")
+@Goal(name = "compile",
+    requiresDependencyResolutionScope = "compile")
 public final class CompileMojo extends EFapsAbstractMojo {
 
   /////////////////////////////////////////////////////////////////////////////
@@ -49,7 +46,7 @@ public final class CompileMojo extends EFapsAbstractMojo {
 
     try {
       reloadCache();
-      
+
       final ApplicationVersion applVers = new ApplicationVersion();
       applVers.setClasspathElements(getClasspathElements());
       applVers.compileAll(getUserName());

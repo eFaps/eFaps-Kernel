@@ -1,5 +1,5 @@
 /*
- * Copyright 2006 The eFaps Team
+ * Copyright 2003-2008 The eFaps Team
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@
 package org.efaps.maven.plugin.goal.efaps;
 
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.tools.plugin.Goal;
+import org.apache.maven.tools.plugin.Parameter;
 import org.efaps.jaas.ImportHandler;
 import org.efaps.maven.plugin.EFapsAbstractMojo;
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoParameter;
 
 /**
  * The class is used to start the import of persons directly as parameter from
@@ -41,17 +41,17 @@ import org.jfrog.maven.annomojo.annotations.MojoParameter;
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("import-persons")
+@Goal(name = "import-persons")
 public final class ImportPersonsMojo extends EFapsAbstractMojo  {
-  
+
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
-  
+
   /**
    * Defines the name of the JAAS application defined in the JAAS configuration
    * used to import.
    */
-  @MojoParameter(defaultValue = "eFaps")
+  @Parameter(defaultValue = "eFaps")
   private String application;
 
   /////////////////////////////////////////////////////////////////////////////

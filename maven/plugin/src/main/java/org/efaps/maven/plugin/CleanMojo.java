@@ -21,8 +21,7 @@
 package org.efaps.maven.plugin;
 
 import org.apache.maven.plugin.MojoExecutionException;
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-
+import org.apache.maven.tools.plugin.Goal;
 import org.efaps.db.Context;
 
 /**
@@ -32,7 +31,7 @@ import org.efaps.db.Context;
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("clean")
+@Goal(name = "clean")
 public class CleanMojo extends EFapsAbstractMojo  {
 
   /**
@@ -54,5 +53,5 @@ public class CleanMojo extends EFapsAbstractMojo  {
                                        + "failed", e);
     }
   }
-  
+
 }

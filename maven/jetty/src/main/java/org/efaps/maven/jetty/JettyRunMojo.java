@@ -22,61 +22,59 @@ package org.efaps.maven.jetty;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.jfrog.maven.annomojo.annotations.MojoExecute;
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoParameter;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresDirectInvocation;
+import org.apache.maven.tools.plugin.Execute;
+import org.apache.maven.tools.plugin.Goal;
+import org.apache.maven.tools.plugin.Parameter;
+import org.apache.maven.tools.plugin.lifecycle.Phase;
+import org.efaps.maven.jetty.configuration.ServerDefinition;
+import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
 import org.mortbay.jetty.nio.SelectChannelConnector;
 import org.mortbay.jetty.servlet.Context;
 
-import org.efaps.maven.jetty.configuration.ServerDefinition;
-import org.efaps.maven.plugin.EFapsAbstractMojo;
-
 /**
  * The goal starts the Jetty web server.
- * 
+ *
  * @author tmo
  * @version $Id$
  * @todo description
  */
-@MojoGoal("run")
-@MojoRequiresDependencyResolution("compile")
-@MojoRequiresDirectInvocation
-@MojoExecute(phase="install")
+@Goal(name = "run",
+      requiresDependencyResolutionScope = "compile",
+      requiresDirectInvocation = true)
+@Execute(phase = Phase.INSTALL)
 public class JettyRunMojo extends EFapsAbstractMojo {
 
   /**
    * Defines the Port on which the Jetty is started. Default value is
    * <i>8888</i>.
    */
-  @MojoParameter(defaultValue = "8888")
+  @Parameter(defaultValue = "8888")
   private int port;
-  
+
   /**
    * Defines the Host (Adapter) on which the jetty is started. Default value
    * is <i>localhost</i>.
    */
-  @MojoParameter(defaultValue = "127.0.0.1")
+  @Parameter(defaultValue = "127.0.0.1")
   private String host;
 
   /**
-   * 
+   *
    */
-  @MojoParameter(required = true)
+  @Parameter(required = true)
   private String jaasConfigFile;
 
   /**
-   * 
+   *
    */
-  @MojoParameter(required = true)
+  @Parameter(required = true)
   private String configFile;
 
   /**
-   * 
+   *
    */
   public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -94,12 +92,12 @@ public class JettyRunMojo extends EFapsAbstractMojo {
 
     ContextHandlerCollection contexts = new ContextHandlerCollection();
     server.setHandler(contexts);
-    
-    System.setProperty("java.security.auth.login.config", 
+
+    System.setProperty("java.security.auth.login.config",
                        this.jaasConfigFile);
-    
+
     Context handler = new Context(contexts,"/eFaps", Context.SESSIONS);
-    
+
     ServerDefinition serverDef = ServerDefinition.read(this.configFile);
     serverDef.updateServer(handler);
 
@@ -112,5 +110,5 @@ public class JettyRunMojo extends EFapsAbstractMojo {
       throw new MojoExecutionException("Could not Start Jetty Server", e);
     }
   }
-  
+
 }

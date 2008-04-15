@@ -137,7 +137,7 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
-      <version>2.0.7</version>
+      <version>${dependency.version.maven-plugin-api}</version>
     </dependency>
 
   </dependencies>

@@ -35,20 +35,18 @@ import javax.sql.DataSource;
 
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
-//import org.apache.slide.transaction.SlideTransactionManager;
-import org.jfrog.maven.annomojo.annotations.MojoParameter;
-import org.mortbay.naming.NamingUtil;
-import org.objectweb.jotm.Current;
-
+import org.apache.maven.tools.plugin.Parameter;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.VFSStoreFactoryBean;
 import org.efaps.maven.logger.SLF4JOverMavenLog;
 import org.efaps.util.EFapsException;
+import org.mortbay.naming.NamingUtil;
+import org.objectweb.jotm.Current;
 
 /**
- * 
+ *
  * @author tmo
  * @version $Id$
  */
@@ -97,7 +95,7 @@ public abstract class EFapsAbstractMojo implements Mojo {
 
   /**
    * The apache maven logger is stored in this instance variable.
-   * 
+   *
    * @see #getLog
    * @see #setLog
    */
@@ -110,42 +108,42 @@ public abstract class EFapsAbstractMojo implements Mojo {
    * @see javax.sql.DataSource
    * @see #initDatabase
    */
-  @MojoParameter(required = true,
-                 expression = "${org.efaps.db.factory}",
+  @Parameter(required = true,
+             expression = "${org.efaps.db.factory}"/*,
                  description = "SQL database factory class name (implementing "
-                               + "interface javax.sql.DataSource)")
+                               + "interface javax.sql.DataSource)"*/)
   private String factory;
 
   /**
    * Holds all properties of the connection to the database. The properties
    * are separated by a comma.
    */
-  @MojoParameter(expression = "${org.efaps.db.connection}",
-                 required = true)
+  @Parameter(expression = "${org.efaps.db.connection}",
+             required = true)
   private String connection;
 
   /**
    * Stores the name of the logged in user.
-   * 
+   *
    * @see #login
    */
-  @MojoParameter(required = true)
+  @Parameter(required = true)
   private String userName;
 
   /**
    * Stores the name of the logged in user.
-   * 
+   *
    * @see #login
    */
-  @MojoParameter(required = true)
+  @Parameter(required = true)
   private String passWord;
 
   /**
-   * Defines the database type (used to define database specific 
+   * Defines the database type (used to define database specific
    * implementations).
    */
-  @MojoParameter(expression = "${org.efaps.db.type}",
-                 required = true)
+  @Parameter(expression = "${org.efaps.db.type}",
+             required = true)
   private String type;
 
   /**
@@ -153,18 +151,18 @@ public abstract class EFapsAbstractMojo implements Mojo {
    *
    * @see #initStores
    */
-  @MojoParameter(expression = "${org.efaps.stores}",
-                 required = false,
+  @Parameter(expression = "${org.efaps.stores}",
+             required = false/*,
                  description = "Comma separated list of properties defining "
-                               + "all store configurations.")
+                               + "all store configurations."*/)
   private String stores;
 
   /**
    * Project classpath.
    */
-  @MojoParameter(expression = "${project.compileClasspathElements}",
-                 required = true,
-                 readonly = true)
+  @Parameter(expression = "${project.compileClasspathElements}",
+             required = true,
+             readonly = true)
   private List<String> classpathElements;
 
   /////////////////////////////////////////////////////////////////////////////
@@ -188,7 +186,7 @@ public abstract class EFapsAbstractMojo implements Mojo {
       SLF4JOverMavenLog.LOGGER = getLog();
     } catch (ClassNotFoundException e)  {
     }
-    
+
     initDatabase();
     initStores();
   }
@@ -251,7 +249,7 @@ public abstract class EFapsAbstractMojo implements Mojo {
     }
 
     // buildup reference and initialize data source object
-    Reference ref = new Reference(DataSource.class.getName(), 
+    Reference ref = new Reference(DataSource.class.getName(),
                                   this.factory,
                                   null);
     for (Map.Entry<String, String> entry : convertToMap(this.connection).entrySet()) {
@@ -286,7 +284,7 @@ public abstract class EFapsAbstractMojo implements Mojo {
 NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
       } catch (NamingException e)  {
         getLog().error(
-            "could not bind JDBC pooling class " + "'" 
+            "could not bind JDBC pooling class " + "'"
                 + this.factory + "'",
             e);
       } catch (Exception e) {
@@ -301,7 +299,7 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
 
   /**
    * Initialize all stores.
-   * 
+   *
    * @see #stores
    */
   private boolean initStores()  {
@@ -354,7 +352,7 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
     }
     return initialized;
   }
-  
+
   /**
    * Reloads the internal eFaps cache.
    */
@@ -366,8 +364,8 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
   }
 
   /**
-   * 
-   * 
+   *
+   *
    * @todo description
    */
   protected void startTransaction() throws EFapsException {
@@ -387,7 +385,7 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
   protected void commitTransaction() throws EFapsException {
     Context.commit();
   }
-  
+
 
   /**
    * Separates all key / value pairs of given text string.<br/>
@@ -411,7 +409,7 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
       if (group.length() > 0)  {
         // separated key from value
         final int index = group.indexOf('=');
-        final String key = (index > 0) 
+        final String key = (index > 0)
                            ? group.substring(0, index).trim()
                            : group.trim();
         final String value = (index > 0)
@@ -429,7 +427,7 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
 
   /**
    * This is the setter method for instance variable {@link #log}.
-   * 
+   *
    * @param _log
    *          new value for instance variable {@link #log}
    * @see #log
@@ -441,7 +439,7 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
 
   /**
    * This is the getter method for instance variable {@link #log}.
-   * 
+   *
    * @return value of instance variable {@link #log}
    * @see #log
    * @see #setLog
@@ -452,7 +450,7 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
 
   /**
    * This is the getter method for instance variable {@link #userName}.
-   * 
+   *
    * @return value of instance variable {@link #userName}
    * @see #userName
    */
@@ -462,7 +460,7 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
 
   /**
    * This is the getter method for instance variable {@link #passWord}.
-   * 
+   *
    * @return value of instance variable {@link #passWord}
    * @see #passWord
    */
@@ -472,7 +470,7 @@ NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
 
   /**
    * This is the getter method for instance variable {@link #classpathElements}.
-   * 
+   *
    * @return value of instance variable {@link #classpathElements}
    * @see #classpathElements
    */

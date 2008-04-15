@@ -43,10 +43,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.tools.plugin.Goal;
+import org.apache.maven.tools.plugin.Parameter;
 import org.apache.tools.ant.DirectoryScanner;
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoParameter;
-import org.jfrog.maven.annomojo.annotations.MojoRequiresDependencyResolution;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -57,8 +56,8 @@ import org.w3c.dom.NodeList;
  * @version $Id$
  * @todo description
  */
-@MojoGoal("generate-installation")
-@MojoRequiresDependencyResolution("compile")
+@Goal(name = "generate-installation",
+      requiresDependencyResolutionScope = "compile")
 public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -106,7 +105,7 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
    *
    * @see #getCopyFiles()
    */
-  @MojoParameter()
+  @Parameter
   private final List<String> copyIncludes = null;
 
   /**
@@ -114,7 +113,7 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
    *
    * @see #getCopyFiles()
    */
-  @MojoParameter()
+  @Parameter
   private final List<String> copyExcludes = null;
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -125,25 +124,25 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
    * the classes directory so that the Maven standard jar goal could pack the
    * eFaps installation files.
    */
-  @MojoParameter(expression = "${basedir}/target/classes")
+  @Parameter(expression = "${basedir}/target/classes")
   private File targetDirectory;
 
   /**
    * Name of the XML installation file (within the target directory).
    */
-  @MojoParameter(defaultValue = "META-INF/efaps/install.xml")
+  @Parameter(defaultValue = "META-INF/efaps/install.xml")
   private String targetInstallFile;
 
   /**
    * Encoding of the target XML installation file.
    */
-  @MojoParameter(defaultValue = "UTF-8")
+  @Parameter(defaultValue = "UTF-8")
   private String targetEncoding;
 
   /**
    * Name of the root package where the installation is copied.
    */
-  @MojoParameter(defaultValue = "org/efaps/installations/applications")
+  @Parameter(defaultValue = "org/efaps/installations/applications")
   private String rootPackage;
 
   // ///////////////////////////////////////////////////////////////////////////

@@ -30,51 +30,6 @@
 >
   <modelVersion>4.0.0</modelVersion>
 
-  <repositories>
-    <repository>
-      <id>central</id>
-      <name>Maven Repository Switchboard</name>
-      <layout>default</layout>
-      <url>http://repo1.maven.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>apache-snapshots</id>
-      <name>apache-snapshots</name>
-      <layout>default</layout>
-      <url>http://people.apache.org/maven-snapshot-repository</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-
-    <!-- needed for the org.jfrog.maven.annomojo mojo annotation plugin -->
-    <repository>
-      <id>jfrog-plugins</id>
-      <name>jfrog-plugins-dist</name>
-      <layout>default</layout>
-      <url>http://www.jfrog.org/artifactory/plugins-releases</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-
-  </repositories>
-
-  <!-- needed for the org.jfrog.maven.annomojo mojo annotation plugin -->
-  <pluginRepositories>
-    <pluginRepository>
-      <id>jfrog-plugins</id>
-      <name>jfrog-plugins-dist</name>
-      <url>http://www.jfrog.org/artifactory/plugins-releases</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-
   <!-- ************************************************************************
     * Properties
     ************************************************************************+ -->
@@ -83,6 +38,10 @@
     <dependency.version.derby>10.3.1.4</dependency.version.derby>
     <!-- definition of the dependency version of jetty -->
     <dependency.version.jetty>6.1.5</dependency.version.jetty>
+    <!-- defnition of the dependency version of maven core -->
+    <dependency.version.maven-core>2.0.9</dependency.version.maven-core>
+    <!-- defnition of the dependency version of maven plugin api -->
+    <dependency.version.maven-plugin-api>2.0.9</dependency.version.maven-plugin-api>
   </properties>
 
 
@@ -415,11 +374,11 @@
       <scope>provided</scope>
     </dependency>
 
-   <dependency>
-     <groupId>com.yahoo.platform.yui</groupId>
-     <artifactId>yuicompressor</artifactId>
-     <version>2.2.5</version>
-   </dependency>
+    <dependency>
+      <groupId>com.yahoo.platform.yui</groupId>
+      <artifactId>yuicompressor</artifactId>
+      <version>2.2.5</version>
+    </dependency>
    
   </dependencies>
   

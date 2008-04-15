@@ -24,9 +24,8 @@ import java.util.UUID;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-
-import org.jfrog.maven.annomojo.annotations.MojoGoal;
-import org.jfrog.maven.annomojo.annotations.MojoParameter;
+import org.apache.maven.tools.plugin.Goal;
+import org.apache.maven.tools.plugin.Parameter;
 
 /**
  * A new universally unique identifier (UUID) is created and printed out.
@@ -34,7 +33,7 @@ import org.jfrog.maven.annomojo.annotations.MojoParameter;
  * @author tmo
  * @version $Id$
  */
-@MojoGoal("generateUUID")
+@Goal(name = "generateUUID")
 public final class GenerateUUIDMojo extends AbstractMojo  {
 
   /////////////////////////////////////////////////////////////////////////////
@@ -43,14 +42,14 @@ public final class GenerateUUIDMojo extends AbstractMojo  {
   /**
    * Number of UUID's to generate.
    */
-  @MojoParameter
-  private int count = 1;
+  @Parameter(defaultValue = "1")
+  private int count;
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
-   * The new universally unique identifier is created and printed out with a 
+   * The new universally unique identifier is created and printed out with a
    * normal call to the mojo log info.
    */
   public void execute() throws MojoExecutionException  {

@@ -27,9 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.maven.tools.plugin.Parameter;
 import org.apache.tools.ant.DirectoryScanner;
-import org.jfrog.maven.annomojo.annotations.MojoParameter;
-
 import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
 import org.efaps.update.Install.FileType;
@@ -87,32 +86,32 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
   /**
    * Location of the version file (defining all versions to install).
    */
-  @MojoParameter(expression = "${basedir}/src/main/efaps/versions.xml")
+  @Parameter(expression = "${basedir}/src/main/efaps/versions.xml")
   private File versionFile;
 
   /**
    * Root Directory with the XML installation files.
    */
-  @MojoParameter(expression = "${basedir}/src/main/efaps")
+  @Parameter(expression = "${basedir}/src/main/efaps")
   private File eFapsDir;
 
   /**
    * List of includes.
    */
-  @MojoParameter()
+  @Parameter()
   private final List<String> includes = null;
 
   /**
    * List of excludes.
    */
-  @MojoParameter()
+  @Parameter()
   private final List<String> excludes = null;
 
 
   /**
    * Map of TypeMapping
    */
-  @MojoParameter()
+  @Parameter()
   private final Map<String, String> typeMapping = null;
 
   /////////////////////////////////////////////////////////////////////////////
