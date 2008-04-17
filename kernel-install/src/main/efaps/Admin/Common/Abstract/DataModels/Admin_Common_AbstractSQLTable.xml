@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2008 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>e76ff99d-0d3d-4154-b2ef-d65633d357c3</uuid>
+
+  <!-- create the SQL Table -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>1</local>
+      <mode>(version==1)</mode>
+    </version>
+    <database>
+       <table-name>T_CMABSTRACT</table-name>
+      <create>true</create>
+      <update>true</update>
+      <!-- columns -->
+      <column name="TYPEID"     type="INTEGER"                    not-null="true"/>
+      <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
+      <column name="UUID"       type="STRING_SHORT" length="128"/>
+      <column name="REVISION"   type="STRING_SHORT" length="40"/>
+      <column name="ABSTRACT"   type="BOOLEAN"/>
+      <column name="CREATOR"    type="INTEGER"                    not-null="true"/>
+      <column name="CREATED"    type="DATETIME"                   not-null="true"/>
+      <column name="MODIFIER"   type="INTEGER"                    not-null="true"/>
+      <column name="MODIFIED"   type="DATETIME"                   not-null="true"/>
+    </database>
+  </definition>
+
+  <!-- make the contraints for the SQL table -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>2</global>
+      <local>1</local>
+      <mode>(version==4)</mode>
+    </version>
+    <database>
+      <!-- update type id for sql tables -->
+      <sql>
+        update T_CMABSTRACT
+            set TYPEID=(select ID from T_CMABSTRACT where NAME='Admin_DataModel_SQLTable')
+            where TYPEID=-20000
+      </sql>
+      <!-- update type id for types -->
+      <sql>
+        update T_CMABSTRACT
+            set TYPEID=(select ID from T_CMABSTRACT where NAME='Admin_DataModel_Type')
+            where TYPEID=-21000
+      </sql>
+      <!-- update type id for attributes -->
+      <sql>
+        update T_CMABSTRACT
+            set TYPEID=(select ID from T_CMABSTRACT where NAME='Admin_DataModel_Attribute')
+            where TYPEID=-22000
+      </sql>
+      <!-- update of the sql table -->
+      <table-name>T_CMABSTRACT</table-name>
+      <create>false</create>
+      <update>false</update>
+      <!-- constraints -->
+      <foreign name="ABSTR_FK_TYPEID"       key="TYPEID"        reference="T_DMTYPE(ID)"/>
+      <foreign name="ABSTR_FK_CRTR"         key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="ABSTR_FK_MDFR"         key="MODIFIER"      reference="T_USERPERSON(ID)"/>
+    </database>
+  </definition>
+
+  <!-- define datamodel -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev$</local>
+      <mode>(version==5)</mode>
+    </version>
+    <name>Admin_Common_AbstractSQLTable</name>
+    <database>
+      <table-name>T_CMABSTRACT</table-name>
+    </database>
+  </definition>
+</datamodel-sqltable>

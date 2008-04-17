@@ -23,11 +23,12 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>e333fffe-9223-4af0-bffa-7d0adce91da5</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  <uuid>01685e45-cf05-46b1-8ee9-de68508afbc1</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +38,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_UI_MenuTree</name>
+    <name>Admin_Common_PropertyTree_Menu_Action_Edit</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the command 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,26 +52,15 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_UI_MenuTree</name>
-    <!-- targets -->
+    <name>Admin_Common_PropertyTree_Menu_Action_Edit</name>
+    <!-- target definitions -->
     <target>
-      <menu>Admin_UI_MenuTree_Menu</menu>
-      <form>Admin_UI_AbstractForm</form>         
+      <form>Admin_Common_PropertyForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Edit"/>
     </target>
-    <!-- type tree for -->
-    <type>Admin_UI_Menu</type>
-    <!-- childs -->
-    <childs>
-      <child>Admin_UI_MenuTree_Childs</child>
-      <child>Admin_UI_CommandTree_Parents</child>
-      <child>Admin_Common_AbstractTree_Properties</child>
-      <child>Admin_UI_CommandTree_Links</child>
-      <child>Admin_UI_DirectTree_Used</child>
-      <child>Admin_AbstractTree_Events</child>
-    </childs>
     <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
+    <property name="Target">modal</property>
+    <property name="TargetMode">edit</property>
   </definition>
 
-</ui-menu>
+</ui-command>

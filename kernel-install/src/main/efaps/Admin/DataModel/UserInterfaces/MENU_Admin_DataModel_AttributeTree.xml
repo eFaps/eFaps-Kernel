@@ -63,7 +63,7 @@
     <type>Admin_DataModel_Attribute</type>
     <!-- childs -->
     <childs>
-      <child>Admin_DataModel_AbstractTree_Properties</child>
+      <child>Admin_Common_AbstractTree_Properties</child>
       <child>Admin_AbstractTree_Events</child>
     </childs>
     <!-- properties -->

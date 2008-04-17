@@ -63,7 +63,7 @@
     <type>Admin_Event_Definition</type>
     <!-- childs -->
     <childs>
-      <child>Admin_UI_AbstractTree_Properties</child>
+      <child>Admin_Common_AbstractTree_Properties</child>
     </childs>
     <!-- properties -->
     <property name="Target">content</property>

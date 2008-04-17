@@ -64,7 +64,7 @@
     <childs>
       <child>Admin_DataModel_SQLTableTree_Attributes</child>
       <child>Admin_DataModel_SQLTableTree_SQLTables</child>
-      <child>Admin_DataModel_AbstractTree_Properties</child>
+      <child>Admin_Common_AbstractTree_Properties</child>
     </childs>
     <!-- properties -->
     <property name="Target">content</property>

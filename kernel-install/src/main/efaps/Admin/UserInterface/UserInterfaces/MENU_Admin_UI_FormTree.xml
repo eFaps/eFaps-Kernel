@@ -64,7 +64,7 @@
     <!-- childs -->
     <childs>
       <child>Admin_UI_CollectionTree_Fields</child>
-      <child>Admin_UI_AbstractTree_Properties</child>
+      <child>Admin_Common_AbstractTree_Properties</child>
       <child>Admin_UI_DirectTree_Used</child>
     </childs>
     <!-- properties -->

@@ -23,11 +23,14 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>e333fffe-9223-4af0-bffa-7d0adce91da5</uuid>
+<ui-table xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>42a80857-450c-4f1d-9d3e-cb070d1e8d95</uuid>
 
   <!-- ************************************************************************
-    version definition used to create the menu 
+    version definition used to create the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -37,11 +40,11 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_UI_MenuTree</name>
+    <name>Admin_Common_VersionTable</name>
   </definition>
     
   <!-- ************************************************************************
-    version definition used to define the menu 
+    version definition used to define the table 
   ************************************************************************* -->
   <definition>
     <version>
@@ -51,26 +54,23 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_UI_MenuTree</name>
-    <!-- targets -->
-    <target>
-      <menu>Admin_UI_MenuTree_Menu</menu>
-      <form>Admin_UI_AbstractForm</form>         
-    </target>
-    <!-- type tree for -->
-    <type>Admin_UI_Menu</type>
-    <!-- childs -->
-    <childs>
-      <child>Admin_UI_MenuTree_Childs</child>
-      <child>Admin_UI_CommandTree_Parents</child>
-      <child>Admin_Common_AbstractTree_Properties</child>
-      <child>Admin_UI_CommandTree_Links</child>
-      <child>Admin_UI_DirectTree_Used</child>
-      <child>Admin_AbstractTree_Events</child>
-    </childs>
-    <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
+    <name>Admin_Common_VersionTable</name>
+    <!-- fields -->
+    <field name="name">
+      <property name="Expression">Name</property>
+      <property name="Label">Admin_Common_Version/Name.Label</property>
+      <property name="Width">2</property>
+    </field>
+    <field name="revision">
+      <property name="Expression">Revision</property>
+      <property name="Label">Admin_Common_Version/Revision.Label</property>
+      <property name="Width">1</property>
+    </field>
+    <field name="created">
+      <property name="Expression">Created</property>
+      <property name="Label">Admin_Common_Version/Created.Label</property>
+      <property name="Width">3</property>
+    </field>
   </definition>
 
-</ui-menu>
+</ui-table>
