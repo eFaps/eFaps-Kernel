@@ -23,9 +23,11 @@
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>b867fcef-5388-4b2c-9053-f93ca52f9111</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>60ade0d7-7b1b-43e7-b342-d4aa10ef3df6</uuid>
 
   <!-- ************************************************************************
     version definition used to create the command 
@@ -38,7 +40,7 @@
       <mode>true</mode>
       <mode>(version==10)</mode>
     </version>
-    <name>Admin_Integration_WebDAVMyDesk</name>
+    <name>Admin_Integration_WebDAVMyDesk_Menu_Action_Create</name>
   </definition>
     
   <!-- ************************************************************************
@@ -52,23 +54,17 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Integration_WebDAVMyDesk</name>
-    <icon>Admin_Integration_WebDAVImage</icon>
-    <!-- access definitions -->
-    <access>
-      <role>Administration</role>
-    </access>
+    <name>Admin_Integration_WebDAVMyDesk_Menu_Action_Create</name>
+    <icon>Admin_Integration_WebDAV+Create+Image</icon>
     <!-- target definitions -->
     <target>
-      <table>Admin_Integration_WebDAVTable</table>
-      <!--menu>TeamWork_RootCollectionMyDesk_Menu</menu-->
-      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
-        <property name="Types">Admin_Integration_WebDAV</property>
-      </evaluate>
+      <form>Admin_Integration_WebDAVForm</form>
+      <execute program="org.efaps.esjp.common.uiform.Create"/>
     </target>
     <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetShowCheckBoxes">true</property>
+    <property name="Target">modal</property>
+    <property name="TargetCreateType">Admin_Integration_WebDAV</property>
+    <property name="TargetMode">create</property>
   </definition>
 
 </ui-command>
