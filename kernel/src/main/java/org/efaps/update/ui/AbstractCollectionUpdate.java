@@ -28,7 +28,6 @@ import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.efaps.admin.AbstractAdminObject.EFapsClassName;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -251,25 +250,21 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
     // instance methods
 
     /**
-     * Updates / creates the instance in the database. Uses
-     * {@link AbstractAjaxUpdateBehavior.updateInDB} for the update. Only the
+     * Updates / creates the instance in the database. Only the
      * fields are also updated for collection defined through this definiton.
      *
-     * @param _instance
-     *                instance to update (or null if instance is to create)
+     * @param _instance instance to update (or null if instance is to create)
      * @param _allLinkTypes
-     * @param _insert
-     *                insert instance (if new instance is to create)
      * @see #setFieldsInDB
      */
     @Override
     public Instance updateInDB(final Instance _instance,
-                               final Set<Link> _allLinkTypes,
-                               final Insert _insert) throws EFapsException,
-                                                    Exception {
+                               final Set<Link> _allLinkTypes)
+        throws EFapsException,Exception
+    {
 
       final Instance instance =
-          super.updateInDB(_instance, _allLinkTypes, _insert);
+          super.updateInDB(_instance, _allLinkTypes);
       setFieldsInDB(instance);
 
       return instance;

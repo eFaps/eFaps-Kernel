@@ -24,11 +24,12 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.digester.Digester;
+import org.efaps.db.Insert;
+import org.efaps.update.AbstractUpdate;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import org.efaps.update.AbstractUpdate;
 
 /**
  * @author jmox
@@ -108,6 +109,19 @@ public class SystemAttributeUpdate extends AbstractUpdate {
   }
 
   public static class Definition extends AbstractDefinition {
+
+    /**
+     * Because the attribute 'Value' of the system attribute is a required
+     * attribute, the attribute value is also set for the create.
+     *
+     * @param _insert  insert instance
+     */
+    @Override
+    protected void createInDB(final Insert _insert) throws EFapsException
+    {
+      _insert.add("Value", getValue("Value"));
+      super.createInDB(_insert);
+    }
 
     public void addValue(final String _value) {
       super.addValue("Value", _value);

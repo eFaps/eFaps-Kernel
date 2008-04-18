@@ -35,9 +35,6 @@ import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -46,6 +43,8 @@ import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is the major class for importing or updating of types, commands
@@ -165,19 +164,52 @@ public abstract class AbstractUpdate {
   public void updateInDB(final JexlContext _jexlContext) throws EFapsException,
                                                         Exception {
     try {
-
+      // first create objects
       for (final AbstractDefinition def : this.definitions) {
-
-        final Expression jexlExpr =
-            ExpressionFactory.createExpression(def.mode);
-        final boolean exec =
-            Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
+        final Expression jexlExpr = ExpressionFactory.createExpression(def.mode);
+        final boolean exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
+        if (exec) {
+          if ((this.url != null) && LOG.isDebugEnabled()) {
+            LOG.debug("Executing '" + this.url.toString() + "'");
+          }
+          def.createInDB(Type.get(this.dataModelTypeName),
+                         this.uuid,
+                         this.abstractType);
+        }
+      }
+      // and then update objects
+      for (final AbstractDefinition def : this.definitions) {
+        final Expression jexlExpr = ExpressionFactory.createExpression(def.mode);
+        final boolean exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
         if (exec) {
           if ((this.url != null) && LOG.isInfoEnabled()) {
             LOG.info("Executing '" + this.url.toString() + "'");
           }
-          def.updateInDB(Type.get(this.dataModelTypeName), this.uuid,
-              this.allLinkTypes, this.abstractType);
+          def.updateInDB(Type.get(this.dataModelTypeName),
+                         this.uuid,
+                         this.allLinkTypes,
+                         this.abstractType);
+        }
+      }
+    } catch (final Exception e) {
+      LOG.error("updateInDB", e);
+      throw e;
+    }
+  }
+
+  public void createInDB(final JexlContext _jexlContext) throws Exception  {
+    try {
+      // first create objects
+      for (final AbstractDefinition def : this.definitions) {
+        final Expression jexlExpr = ExpressionFactory.createExpression(def.mode);
+        final boolean exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
+        if (exec) {
+          if ((this.url != null) && LOG.isDebugEnabled()) {
+            LOG.debug("Executing '" + this.url.toString() + "'");
+          }
+          def.createInDB(Type.get(this.dataModelTypeName),
+                         this.uuid,
+                         this.abstractType);
         }
       }
     } catch (final Exception e) {
@@ -503,7 +535,52 @@ public abstract class AbstractUpdate {
 
     protected final List<Event> events = new ArrayList<Event>();
 
-    public void updateInDB(final Type _dataModelType, final String _uuid,
+    public void createInDB(final Type _dataModelType,
+                           final String _uuid,
+                           final boolean _abstractType) throws EFapsException
+    {
+      Instance instance = null;
+
+      // search for the instance
+      final SearchQuery query = new SearchQuery();
+      query.setQueryTypes(_dataModelType.getName());
+      query.addWhereExprEqValue("UUID", _uuid);
+      query.addSelect("OID");
+      query.executeWithoutAccessCheck();
+      if (query.next()) {
+        instance = new Instance((String) query.get("OID"));
+      }
+      query.close();
+
+      // if no instance exists, a new insert must be done
+      if (instance == null) {
+        final Insert insert = new Insert(_dataModelType);
+        insert.add("UUID", _uuid);
+        if (_dataModelType.getAttribute("Abstract") != null) {
+          insert.add("Abstract", ((Boolean) _abstractType).toString());
+        }
+        createInDB(insert);
+      }
+    }
+
+    protected void createInDB(final Insert _insert) throws EFapsException
+    {
+      if (_insert.getInstance().getType().getAttribute("Revision") != null) {
+        _insert.add("Revision", this.globalVersion + "#" + this.localVersion);
+      }
+      final String name = this.values.get("Name");
+      _insert.add("Name", (name == null) ? "-" : name);
+  //    if (LOG.isInfoEnabled() && (name != null)) {
+        LOG.info("    Insert "
+            + _insert.getInstance().getType().getName()
+            + " '" + name + "'");
+ //     }
+      _insert.executeWithoutAccessCheck();
+    }
+
+
+    public void updateInDB(final Type _dataModelType,
+                           final String _uuid,
                            final Set<Link> _allLinkTypes,
                            final boolean _abstractType) throws EFapsException,
                                                        Exception {
@@ -530,58 +607,35 @@ public abstract class AbstractUpdate {
         }
       }
 
-      updateInDB(instance, _allLinkTypes, insert);
+      updateInDB(instance, _allLinkTypes);
     }
 
     /**
      *
      */
     public Instance updateInDB(final Instance _instance,
-                               final Set<Link> _allLinkTypes,
-                               final Insert _insert) throws EFapsException,
-                                                    Exception {
+                               final Set<Link> _allLinkTypes)
+        throws EFapsException,Exception
+    {
       Instance instance = _instance;
 
-      if (_insert == null) {
-        final String name = this.values.get("Name");
-        final Update update = new Update(_instance);
-        if (_instance.getType().getAttribute("Revision") != null) {
-          update.add("Revision", this.globalVersion + "#" + this.localVersion);
-        }
-        for (final Map.Entry<String, String> entry : this.values.entrySet()) {
-          update.add(entry.getKey(), entry.getValue());
-        }
-        if (LOG.isInfoEnabled() && (name != null)) {
-          LOG.info("    Update "
-              + _instance.getType().getName()
-              + " '"
-              + name
-              + "'");
-        }
-        update.executeWithoutAccessCheck();
-
-      } else {
-
-        if (_insert.getInstance().getType().getAttribute("Revision") != null) {
-          _insert.add("Revision", this.globalVersion + "#" + this.localVersion);
-        }
-        final String name = this.values.get("Name");
-        if (name == null) {
-          _insert.add("Name", "-");
-        }
-        for (final Map.Entry<String, String> entry : this.values.entrySet()) {
-          _insert.add(entry.getKey(), entry.getValue());
-        }
-        if (LOG.isInfoEnabled() && (name != null)) {
-          LOG.info("    Insert "
-              + _insert.getInstance().getType().getName()
-              + " '"
-              + name
-              + "'");
-        }
-        _insert.executeWithoutAccessCheck();
-        instance = _insert.getInstance();
+      final String name = this.values.get("Name");
+      final Update update = new Update(_instance);
+      if (_instance.getType().getAttribute("Revision") != null) {
+        update.add("Revision", this.globalVersion + "#" + this.localVersion);
       }
+      for (final Map.Entry<String, String> entry : this.values.entrySet()) {
+        update.add(entry.getKey(), entry.getValue());
+      }
+      if (LOG.isInfoEnabled() && (name != null)) {
+        LOG.info("    Update "
+            + _instance.getType().getName()
+            + " '"
+            + name
+            + "'");
+      }
+      update.executeWithoutAccessCheck();
+
       if (_allLinkTypes != null) {
         for (final Link linkType : _allLinkTypes) {
           setLinksInDB(instance, linkType, this.links.get(linkType));

@@ -21,21 +21,21 @@
 package org.efaps.update.program;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.ESJPImporter;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * The class updates java program from type <code>Admin_Program_Java</code>
@@ -153,17 +153,39 @@ public class JavaUpdate extends AbstractUpdate {
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
+    @Override
+    public void createInDB(final Type _dataModelType,
+                           final String _uuid,
+                           final boolean _abstractType)
+        throws EFapsException
+    {
+      ESJPImporter javaCode = null;
+      try {
+        javaCode = new ESJPImporter(new URL(this.root + this.file));
+      } catch (MalformedURLException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      setName(javaCode.getClassName());
+      // if no instance exists, a new insert must be done
+      Instance instance = javaCode.searchInstance();
+      Insert insert = null;
+      if (instance == null) {
+        insert = new Insert(_dataModelType);
+        insert.add("Name", javaCode.getClassName());
+        insert.executeWithoutAccessCheck();
+      }
+    }
+
     /**
      * The method overwrites the method from the super class, because Java
      * programs are searched by the name (and not by UUID like in the super
      * class).
      *
-     * @param _dataModelType
-     *                instance of the type of the object which must be updated
-     * @param _uuid
-     *                uuid of the object to update
-     * @param _allLinkTypes
-     *                all link types to update
+     * @param _dataModelType  instance of the type of the object which must be
+     *                        updated
+     * @param _uuid           uuid of the object to update
+     * @param _allLinkTypes   all link types to update
      */
     @Override
     public void updateInDB(final Type _dataModelType, final String _uuid,
@@ -173,15 +195,7 @@ public class JavaUpdate extends AbstractUpdate {
       final ESJPImporter javaCode = new ESJPImporter(new URL(this.root + this.file));
       setName(javaCode.getClassName());
 
-      // if no instance exists, a new insert must be done
-      Instance instance = javaCode.searchInstance();
-      Insert insert = null;
-      if (instance == null) {
-        insert = new Insert(_dataModelType);
-        insert.add("Name", javaCode.getClassName());
-      }
-
-      instance = updateInDB(instance, _allLinkTypes, insert);
+      final Instance instance = updateInDB(javaCode.searchInstance(), _allLinkTypes);
 
       // checkin source code
       javaCode.updateDB(instance);

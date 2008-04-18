@@ -29,16 +29,14 @@ import java.util.Set;
 import org.apache.commons.jexl.Expression;
 import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
-import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO description
@@ -198,12 +196,13 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
     }
 
     @Override
-    public void updateInDB(final Type _dataModelType, final String _uuid,
+    public void updateInDB(final Type _dataModelType,
+                           final String _uuid,
                            final Set<Link> _allLinkTypes,
-                           final boolean _abstractType) throws EFapsException,
-                                                       Exception {
+                           final boolean _abstractType)
+    throws EFapsException,Exception
+    {
       Instance instance = null;
-      Insert insert = null;
 
       if (getName() == null) {
         setDefaultName();
@@ -220,32 +219,24 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
       }
       query.close();
 
-      // if no instance exists, a new insert must be done
-      if (instance == null) {
-        insert = new Insert(_dataModelType);
-      }
-      updateInDB(instance, _allLinkTypes, insert);
+      updateInDB(instance, _allLinkTypes);
     }
 
     /**
-     * Updates / creates the instance in the database. Uses
-     * {@link AbstractAjaxUpdateBehavior.updateInDB} for the update. If a file
+     * Updates / creates the instance in the database. If a file
      * name is given, this file is checked in
      *
-     * @param _instance
-     *                instance to update (or null if instance is to create)
+     * @param _instance     instance to update (or null if instance is to create)
      * @param _allLinkTypes
-     * @param _insert
-     *                insert instance (if new instance is to create)
      */
     @Override
     public Instance updateInDB(final Instance _instance,
-                               final Set<Link> _allLinkTypes,
-                               final Insert _insert) throws EFapsException,
-                                                    Exception {
+                               final Set<Link> _allLinkTypes)
+        throws EFapsException,Exception
+    {
 
       final Instance instance =
-          super.updateInDB(_instance, _allLinkTypes, _insert);
+          super.updateInDB(_instance, _allLinkTypes);
 
       if (this.name != null) {
         final InputStream in = this.url.openStream();

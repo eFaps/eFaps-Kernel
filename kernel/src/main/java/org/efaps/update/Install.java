@@ -177,9 +177,16 @@ public class Install {
       jexlContext.getVars().put("version", _number);
     }
 
-    // make update
-    for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : this.updateClasses
-        .entrySet()) {
+    // create all objects
+    for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : this.updateClasses.entrySet()) {
+      final Class<? extends AbstractUpdate> updateClass = entry.getKey();
+      for (final AbstractUpdate update : this.cache.get(updateClass)) {
+        update.createInDB(jexlContext);
+      }
+    }
+
+    // and update them
+    for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : this.updateClasses.entrySet()) {
       final Class<? extends AbstractUpdate> updateClass = entry.getKey();
       for (final AbstractUpdate update : this.cache.get(updateClass)) {
         update.updateInDB(jexlContext);

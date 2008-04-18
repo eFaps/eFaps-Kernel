@@ -30,18 +30,18 @@ import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
+import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * This class is responsible for generating and updating of SQLTables in eFpas.<br>
@@ -425,12 +425,37 @@ public class SQLTableUpdate extends AbstractUpdate {
     }
 
     /**
+     * A new SQL table could only be created if a name is specified.
+     *
+     * @param _dataModelType  type to create
+     */
+    @Override
+    public void createInDB(final Type _dataModelType,
+                           final String _uuid,
+                           final boolean _abstractType)
+        throws EFapsException
+    {
+      if (getValue("Name") != null) {
+        super.createInDB(_dataModelType, _uuid, _abstractType);
+      }
+    }
+
+    @Override
+    protected void createInDB(final Insert _insert) throws EFapsException
+    {
+      _insert.add("SQLTable", getValue("SQLTable"));
+      _insert.add("SQLColumnID", getValue("SQLColumnID"));
+      super.createInDB(_insert);
+    }
+
+    /**
      * @see #executeSQL
      * @see #createSQLTable
      * @see #updateSQLTable
      */
     @Override
-    public void updateInDB(final Type _dataModelType, final String _uuid,
+    public void updateInDB(final Type _dataModelType,
+                           final String _uuid,
                            final Set<Link> _allLinkTypes,
                            final boolean _abstractType) throws EFapsException,
                                                        Exception {

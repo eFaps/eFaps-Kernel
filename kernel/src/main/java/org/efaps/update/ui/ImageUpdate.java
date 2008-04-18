@@ -28,16 +28,14 @@ import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 import org.efaps.db.Checkin;
-import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * @author tmo
@@ -158,8 +156,7 @@ public class ImageUpdate extends AbstractUpdate  {
     // instance methods
 
     /**
-     * Updates / creates the instance in the database. Uses
-     * {@link AbstractAjaxUpdateBehavior.updateInDB} for the update. If a file name is
+     * Updates / creates the instance in the database. If a file name is
      * given, this file is checked in the created image instance.
      *
      * @param _instance     instance to update (or null if instance is to
@@ -169,10 +166,11 @@ public class ImageUpdate extends AbstractUpdate  {
      */
     @Override
     public Instance updateInDB(final Instance _instance,
-                           final Set < Link > _allLinkTypes,
-                           final Insert _insert) throws EFapsException, Exception  {
+                               final Set<Link> _allLinkTypes)
+        throws EFapsException,Exception
+    {
 
-      final Instance instance = super.updateInDB(_instance, _allLinkTypes, _insert);
+      final Instance instance = super.updateInDB(_instance, _allLinkTypes);
 
       if (this.file != null)  {
         final InputStream in = new URL(this.root + this.file).openStream();

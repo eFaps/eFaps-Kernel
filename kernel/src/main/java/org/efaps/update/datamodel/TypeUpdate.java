@@ -29,10 +29,6 @@ import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -42,6 +38,9 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.update.event.Event;
 import org.efaps.update.event.EventFactory;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * This Class is responsible for the Update of Type in the Database.<br>
@@ -436,7 +435,7 @@ public class TypeUpdate extends AbstractUpdate {
      */
     private final List<Attribute> attributes = new ArrayList<Attribute>();
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
     /**
@@ -451,9 +450,9 @@ public class TypeUpdate extends AbstractUpdate {
      */
     @Override
     public Instance updateInDB(final Instance _instance,
-                               final Set<Link> _allLinkTypes,
-                               final Insert _insert) throws EFapsException,
-                                                    Exception {
+                               final Set<Link> _allLinkTypes)
+        throws EFapsException,Exception
+    {
       // set the id of the parent type (if defined)
       if ((this.parentType != null) && (this.parentType.length() > 0)) {
         final SearchQuery query = new SearchQuery();
@@ -472,7 +471,7 @@ public class TypeUpdate extends AbstractUpdate {
         addValue("ParentType", null);
       }
 
-      Instance instance = super.updateInDB(_instance, _allLinkTypes, _insert);
+      final Instance instance = super.updateInDB(_instance, _allLinkTypes);
 
       for (Attribute attr : this.attributes) {
         attr.updateInDB(instance, getValue("Name"));

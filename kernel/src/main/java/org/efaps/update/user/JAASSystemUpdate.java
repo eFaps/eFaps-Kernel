@@ -26,12 +26,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
+import org.efaps.db.Insert;
+import org.efaps.update.AbstractUpdate;
+import org.efaps.update.LinkInstance;
+import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import org.efaps.update.AbstractUpdate;
-import org.efaps.update.LinkInstance;
 
 /**
  * @author tmo
@@ -167,6 +168,22 @@ public class JAASSystemUpdate extends AbstractUpdate  {
   // class for the definitions
 
   public static class Definition extends AbstractDefinition  {
+
+    /**
+     * Because the attributes 'ClassNamePerson', 'MethodNamePersonKey' and
+     * 'MethodNamePersonName' of the JAAS system are required attributes,
+     * all attribute values of this attributes are set.
+     *
+     * @param _insert  insert instance
+     */
+    @Override
+    protected void createInDB(final Insert _insert) throws EFapsException
+    {
+      _insert.add("ClassNamePerson",      getValue("ClassNamePerson"));
+      _insert.add("MethodNamePersonKey",  getValue("MethodNamePersonKey"));
+      _insert.add("MethodNamePersonName", getValue("MethodNamePersonName"));
+      super.createInDB(_insert);
+    }
 
     /**
      *
