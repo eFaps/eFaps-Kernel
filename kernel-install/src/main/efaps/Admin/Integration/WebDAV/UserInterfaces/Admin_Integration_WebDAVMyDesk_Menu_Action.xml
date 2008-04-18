@@ -29,23 +29,6 @@
 
   <uuid>c9b84a46-b67a-4a72-8e5b-b33cd9d3b827</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the menu 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_Integration_WebDAVMyDesk_Menu_Action</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the menu 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
