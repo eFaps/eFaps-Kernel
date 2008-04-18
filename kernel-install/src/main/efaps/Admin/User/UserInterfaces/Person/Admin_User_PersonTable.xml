@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2008 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          tmo
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<ui-table xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>7bfad1dc-3ef2-4ddd-9013-2ac8ec5a8084</uuid>
+
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>true</mode>
+      <mode>(version==11)</mode>
+    </version>
+    <name>Admin_User_PersonTable</name>
+    <!-- fields -->
+    <field name="name">
+      <property name="Expression">Name</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Label">Admin_User_Person/Name.Label</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="lastname">
+      <property name="Expression">LastName</property>
+      <property name="Label">Admin_User_Person/LastName.Label</property>
+    </field>
+    <field name="firstname">
+      <property name="Expression">FirstName</property>
+      <property name="Label">Admin_User_Person/FirstName.Label</property>
+    </field>
+    <field name="email">
+      <property name="Expression">Email</property>
+      <property name="Label">Admin_User_Person/Email.Label</property>
+    </field>
+    <field name="status">
+      <property name="Expression">Status</property>
+      <property name="Label">Admin_User_Person/Status.Label</property>
+      <property name="Filterable">true</property>
+    </field>
+    <field name="buttonOpenInNewWindow">
+      <icon>eFapsActionNewWindow</icon>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Target">popup</property>
+      <property name="SortAble">false</property>
+      <property name="Width">15px</property>
+    </field>
+  </definition>
+
+</ui-table>
