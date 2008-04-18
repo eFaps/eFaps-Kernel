@@ -23,28 +23,12 @@
   
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
-  <uuid>b0156ec7-02d4-4dfa-8a0f-ec17fc4f079d</uuid>
+<ui-menu xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create the menu 
-    ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_Program_CSSTree</name>
-  </definition>
+  <uuid>8615147b-e02a-40fd-b289-3c85814f88ad</uuid>
 
-  <!-- ************************************************************************
-    version definition used to define the menu 
-    ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -53,15 +37,14 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Program_CSSTree</name>
+    <name>Admin_Program_JavaScriptTree</name>
     <!-- targets -->
     <target>
-      <form>Admin_Program_CSSForm</form>
+      <form>Admin_Program_JavaScriptForm</form>
       <!--menu>TeamWork_CollectionTree_Menu</menu-->
     </target>
     <!-- type tree for -->
-    <type>Admin_Program_CSS</type>
-   
+    <type>Admin_Program_JavaScript</type>
     <!-- properties -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>

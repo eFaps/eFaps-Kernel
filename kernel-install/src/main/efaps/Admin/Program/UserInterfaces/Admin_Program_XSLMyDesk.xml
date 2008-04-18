@@ -23,27 +23,12 @@
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>d00a1557-dab1-4d31-bff3-ddc74a4ec127</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the command 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_Program_XSLMyDesk</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the command 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -53,7 +38,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Program_XSLMyDesk</name>
-   
     <!-- access -->
     <access>
       <role>Administration</role>

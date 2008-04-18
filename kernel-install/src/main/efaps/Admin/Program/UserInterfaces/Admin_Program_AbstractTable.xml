@@ -23,26 +23,12 @@
 
 -->
 
-<ui-table  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-table xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>86fb77a3-be63-4d55-8fcb-a6aaf85120a7</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the table 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_Program_AbstractTable</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the table 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>

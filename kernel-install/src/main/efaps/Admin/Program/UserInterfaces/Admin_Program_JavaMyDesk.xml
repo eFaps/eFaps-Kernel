@@ -23,27 +23,12 @@
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>23a6aefd-48cc-441f-90ce-ed7c45e6be98</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create the command 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_Program_CSSMyDesk</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the command 
-  ************************************************************************* -->
+  <uuid>ee7291bf-e73d-46f8-97bb-b24c82030139</uuid>
+
   <definition>
     <version>
       <application>eFaps</application>
@@ -52,8 +37,8 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Program_CSSMyDesk</name>
-   
+    <name>Admin_Program_JavaMyDesk</name>
+    <icon>Admin_Program_JavaImage</icon>
     <!-- access -->
     <access>
       <role>Administration</role>
@@ -61,8 +46,9 @@
     <!-- target definitions -->
     <target>
       <table>Admin_Program_AbstractTable</table>
+      <!--menu>TeamWork_RootCollectionMyDesk_Menu</menu-->
       <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
-        <property name="Types">Admin_Program_CSS</property>
+        <property name="Types">Admin_Program_Java</property>
       </evaluate>
     </target>
     <!-- properties -->

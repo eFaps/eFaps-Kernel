@@ -23,28 +23,12 @@
   
 -->
 
-<ui-form xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
-  <uuid>1878d5a6-e14d-4d35-a6e0-0007afbaea0a</uuid>
+<ui-form xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create the table 
-    ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_Program_XSLForm</name>
-  </definition>
+  <uuid>a5caf3a8-0e7c-4cfe-812a-bc8900ee5d0b</uuid>
 
-  <!-- ************************************************************************
-    version definition used to define the table 
-    ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -53,7 +37,7 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_Program_XSLForm</name>
+    <name>Admin_Program_JavaScriptForm</name>
     <!-- fields -->
     <field name="type">
       <property name="Creatable">false</property>
@@ -116,6 +100,25 @@
       <property name="Expression">Modified</property>
       <property name="Searchable">true</property>
     </field>
+    <field name="compiledheader" character="Heading">
+      <property name="Level">1</property>
+      <property name="Label">Admin_Program_JavaScript/Compiled.Heading</property>
+    </field>
+    <field name="compiledtable" character="Target">
+      <table>Admin_Program_JavaClassTable</table>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
+        <property name="Expand">Admin_Program_JavaScriptCompiled\ProgramLink</property>
+      </evaluate>
+    </field>
+    <field name="extendheader" character="Heading">
+      <property name="Level">1</property>
+      <property name="Label">Admin_Program_JavaScript/Extends.Heading</property>
+    </field>
+    <field name="extendtable" character="Target">
+      <table>Admin_Program_AbstractTable</table>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
+        <property name="Expand">Admin_Program_JavaScript2JavaScript\From.To</property>
+      </evaluate>
+    </field>
   </definition>
-
 </ui-form>
