@@ -23,26 +23,12 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-menu xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>ff583ed7-1fca-43b4-a494-3d84967d72f6</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the menu 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_Common_PropertyTree</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the menu 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
