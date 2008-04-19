@@ -27,24 +27,35 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>24653ad8-4568-41e1-bfd8-1331d2a74beb</uuid>
+  <uuid>56851b99-c5fe-41f5-9e95-d7d94137acc1</uuid>
 
-  <definition>
+ <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Common_SystemAttribute</name>
-    <parent>Admin_Abstract</parent>
+    <name>Admin_Language</name>
+    <!-- attributes -->
     <attribute>
-      <name>Value</name>
-      <type>String</type>
-      <sqltable>Admin_Common_SystemAttributeSQLTable</sqltable>
-      <sqlcolumn>VALUE</sqlcolumn>
+      <name>OID</name>
+      <type>OID</type>
+      <sqltable>Admin_LanguageSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
     </attribute>
-    
+    <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>Admin_LanguageSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Language</name>
+      <type>String</type>
+      <sqltable>Admin_LanguageSQLTable</sqltable>
+      <sqlcolumn>LANG</sqlcolumn>
+    </attribute>
   </definition>
-
+  
 </datamodel-type>

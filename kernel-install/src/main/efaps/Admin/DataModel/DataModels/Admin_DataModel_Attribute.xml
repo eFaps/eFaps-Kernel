@@ -27,7 +27,7 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>86eafabf-e20e-4107-9cd1-8a28a17f6f3d</uuid>
+  <uuid>518a9802-cf0e-4359-9b3c-880f71e1387f</uuid>
 
   <definition>
     <version>
@@ -36,50 +36,49 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Common_Abstract2Abstract</name>
+    <name>Admin_DataModel_Attribute</name>
+    <parent>Admin_DataModel_Abstract</parent>
     <!-- attributes -->
     <attribute>
-      <name>Type</name>
-      <type>Type</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
-      <sqlcolumn>TYPEID</sqlcolumn>
+      <name>SQLColumn</name>
+      <type>String</type>
+      <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
+      <sqlcolumn>SQLCOLUMN</sqlcolumn>
     </attribute>
     <attribute>
-      <name>OID</name>
-      <type>OID</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
-      <sqlcolumn>TYPEID,ID</sqlcolumn>
+      <name>Table</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_SQLTable</typelink>
+      <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
+      <sqlcolumn>DMTABLE</sqlcolumn>
     </attribute>
     <attribute>
-      <name>ID</name>
-      <type>Integer</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
-      <sqlcolumn>ID</sqlcolumn>
+      <name>ParentType</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
+      <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
+      <sqlcolumn>DMTYPE</sqlcolumn>
     </attribute>
     <attribute>
-      <name>Creator</name>
-      <type>CreatorLink</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
-      <sqlcolumn>CREATOR</sqlcolumn>
+      <name>AttributeType</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_AttributeType</typelink>
+      <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
+      <sqlcolumn>DMATTRIBUTETYPE</sqlcolumn>
     </attribute>
     <attribute>
-      <name>Created</name>
-      <type>Created</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
-      <sqlcolumn>CREATED</sqlcolumn>
+      <name>TypeLink</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
+      <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
+      <sqlcolumn>DMTYPELINK</sqlcolumn>
     </attribute>
     <attribute>
-      <name>Modifier</name>
-      <type>ModifierLink</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
-      <sqlcolumn>MODIFIER</sqlcolumn>
+      <name>DefaultValue</name>
+      <type>String</type>
+      <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
+      <sqlcolumn>DEFAULTVAL</sqlcolumn>
     </attribute>
-    <attribute>
-      <name>Modified</name>
-      <type>Modified</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
-      <sqlcolumn>MODIFIED</sqlcolumn>
-    </attribute>
-  </definition>
+   </definition>
 
 </datamodel-type>

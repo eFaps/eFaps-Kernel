@@ -27,7 +27,7 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>24653ad8-4568-41e1-bfd8-1331d2a74beb</uuid>
+  <uuid>03c51ba4-00a6-47ac-b987-270308fe68d8</uuid>
 
   <definition>
     <version>
@@ -36,15 +36,37 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Common_SystemAttribute</name>
-    <parent>Admin_Abstract</parent>
+    <name>Admin_DBProperties_Bundle</name>
     <attribute>
-      <name>Value</name>
-      <type>String</type>
-      <sqltable>Admin_Common_SystemAttributeSQLTable</sqltable>
-      <sqlcolumn>VALUE</sqlcolumn>
+      <name>OID</name>
+      <type>OID</type>
+      <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+   </attribute>
+    <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
     </attribute>
-    
+    <attribute>
+      <name>Name</name>
+      <type>String</type>
+      <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
+      <sqlcolumn>NAME</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>UUID</name>
+      <type>String</type>
+      <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
+      <sqlcolumn>UUID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Sequence</name>
+      <type>Integer</type>
+      <sqltable>Admin_DBProperties_BundleSQLTable</sqltable>
+      <sqlcolumn>SEQUENCE</sqlcolumn>
+    </attribute>
   </definition>
-
+  
 </datamodel-type>

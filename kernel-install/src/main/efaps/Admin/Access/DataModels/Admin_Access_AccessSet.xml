@@ -27,7 +27,7 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>86eafabf-e20e-4107-9cd1-8a28a17f6f3d</uuid>
+  <uuid>40aa4ff1-4786-4169-9a34-b6fd9d8a75f1</uuid>
 
   <definition>
     <version>
@@ -36,50 +36,64 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Common_Abstract2Abstract</name>
+    <name>Admin_Access_AccessSet</name>
     <!-- attributes -->
-    <attribute>
-      <name>Type</name>
-      <type>Type</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
-      <sqlcolumn>TYPEID</sqlcolumn>
-    </attribute>
     <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
-      <sqlcolumn>TYPEID,ID</sqlcolumn>
+      <sqltable>Admin_Access_AccessSetSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
+      <sqltable>Admin_Access_AccessSetSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Name</name>
+      <type>String</type>
+      <sqltable>Admin_Access_AccessSetSQLTable</sqltable>
+      <sqlcolumn>NAME</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>UUID</name>
+      <type>String</type>
+      <sqltable>Admin_Access_AccessSetSQLTable</sqltable>
+      <sqlcolumn>UUID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Revision</name>
+      <type>String</type>
+      <sqltable>Admin_Access_AccessSetSQLTable</sqltable>
+      <sqlcolumn>REVISION</sqlcolumn>
     </attribute>
     <attribute>
       <name>Creator</name>
       <type>CreatorLink</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
+      <sqltable>Admin_Access_AccessSetSQLTable</sqltable>
       <sqlcolumn>CREATOR</sqlcolumn>
     </attribute>
     <attribute>
       <name>Created</name>
       <type>Created</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
+      <sqltable>Admin_Access_AccessSetSQLTable</sqltable>
       <sqlcolumn>CREATED</sqlcolumn>
     </attribute>
     <attribute>
       <name>Modifier</name>
       <type>ModifierLink</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
+      <sqltable>Admin_Access_AccessSetSQLTable</sqltable>
       <sqlcolumn>MODIFIER</sqlcolumn>
     </attribute>
     <attribute>
       <name>Modified</name>
       <type>Modified</type>
-      <sqltable>Admin_Common_Abstract2AbstractSQLTable</sqltable>
+      <sqltable>Admin_Access_AccessSetSQLTable</sqltable>
       <sqlcolumn>MODIFIED</sqlcolumn>
     </attribute>
-  </definition>
+    <!-- properties -->
+    <property name="Icon">${ROOTURL}/servlet/image/Admin_Access_AccessSetImage</property>
+   </definition>
 
 </datamodel-type>

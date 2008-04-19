@@ -27,7 +27,7 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>24653ad8-4568-41e1-bfd8-1331d2a74beb</uuid>
+  <uuid>83ba670b-4ee5-4089-8f69-b0cbaaa4e1a7</uuid>
 
   <definition>
     <version>
@@ -36,15 +36,39 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Common_SystemAttribute</name>
-    <parent>Admin_Abstract</parent>
+    <name>Common_History_Attributes</name>
+    <attribute>
+      <name>OID</name>
+      <type>OID</type>
+      <sqltable>Common_History_AttributesSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>Common_History_AttributesSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>HistoryID</name>
+      <type>Link</type>
+      <typelink>Common_History_Abstract</typelink>
+      <sqltable>Common_History_AttributesSQLTable</sqltable>
+      <sqlcolumn>HISTORYID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>Attribute</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_Attribute</typelink>
+      <sqltable>Common_History_AttributesSQLTable</sqltable>
+      <sqlcolumn>ATTRIBUTEID</sqlcolumn>
+    </attribute>
     <attribute>
       <name>Value</name>
       <type>String</type>
-      <sqltable>Admin_Common_SystemAttributeSQLTable</sqltable>
+      <sqltable>Common_History_AttributesSQLTable</sqltable>
       <sqlcolumn>VALUE</sqlcolumn>
     </attribute>
-    
   </definition>
 
 </datamodel-type>

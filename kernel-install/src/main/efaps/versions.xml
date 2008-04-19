@@ -35,8 +35,11 @@
   </version>
   <version number="4" reloadCache="false" login="false" />
   <version number="5" reloadCache="true" />
+  
+  <!-- install data model -->
   <version number="6" reloadCache="true" />
-  <version number="7" reloadCache="false" />
+  <!-- version number="7" reloadCache="false" / -->
+
   <version number="8" reloadCache="true" />
   <version number="9" reloadCache="false" />
   <version number="10" reloadCache="false" login="false">

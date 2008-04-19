@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmox
+ Author:          tmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,7 +27,7 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>24653ad8-4568-41e1-bfd8-1331d2a74beb</uuid>
+  <uuid>c482e3d3-8387-4406-a1c2-b0e708af78f3</uuid>
 
   <definition>
     <version>
@@ -36,15 +36,33 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Common_SystemAttribute</name>
-    <parent>Admin_Abstract</parent>
+    <name>Admin_DataModel_AttributeType</name>
+    <parent>Admin_DataModel_Abstract</parent>
+    <!-- attributes -->
     <attribute>
-      <name>Value</name>
+      <name>Classname</name>
       <type>String</type>
-      <sqltable>Admin_Common_SystemAttributeSQLTable</sqltable>
-      <sqlcolumn>VALUE</sqlcolumn>
+      <sqltable>Admin_DataModel_AttributeTypeSQLTable</sqltable>
+      <sqlcolumn>CLASSNAME</sqlcolumn>
     </attribute>
-    
+    <attribute>
+      <name>ClassnameUI</name>
+      <type>String</type>
+      <sqltable>Admin_DataModel_AttributeTypeSQLTable</sqltable>
+      <sqlcolumn>CLASSNAMEUI</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>AlwaysUpdate</name>
+      <type>Boolean</type>
+      <sqltable>Admin_DataModel_AttributeTypeSQLTable</sqltable>
+      <sqlcolumn>ALWAYSUPDATE</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>CreateUpdate</name>
+      <type>Boolean</type>
+      <sqltable>Admin_DataModel_AttributeTypeSQLTable</sqltable>
+      <sqlcolumn>CREATEUPDATE</sqlcolumn>
+    </attribute>
   </definition>
 
 </datamodel-type>

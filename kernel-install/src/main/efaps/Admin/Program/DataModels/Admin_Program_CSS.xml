@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmox
+ Author:          tmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,7 +27,7 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>24653ad8-4568-41e1-bfd8-1331d2a74beb</uuid>
+  <uuid>f5a5bcf6-3cc7-4530-a5a0-7808a392381b</uuid>
 
   <definition>
     <version>
@@ -36,15 +36,16 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Common_SystemAttribute</name>
-    <parent>Admin_Abstract</parent>
-    <attribute>
-      <name>Value</name>
-      <type>String</type>
-      <sqltable>Admin_Common_SystemAttributeSQLTable</sqltable>
-      <sqlcolumn>VALUE</sqlcolumn>
-    </attribute>
-    
+    <name>Admin_Program_CSS</name>
+    <parent>Admin_Program_Abstract</parent>
+    <!-- properties -->
+    <property name="StoreAttributeFileLength">FileLength</property>
+    <property name="StoreAttributeFileName">FileName</property>
+    <property name="StoreCompress">NONE</property>
+    <property name="StoreJDBCBlob">CODE</property>
+    <property name="StoreJDBCKey">ID</property>
+    <property name="StoreJDBCTable">T_PRGABSTRACT</property>
+    <property name="StoreResource">org.efaps.db.transaction.JDBCStoreResource</property>
   </definition>
 
 </datamodel-type>

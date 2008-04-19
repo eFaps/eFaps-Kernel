@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmox
+ Author:          tmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,8 +27,9 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>24653ad8-4568-41e1-bfd8-1331d2a74beb</uuid>
+  <uuid>fec64148-a39b-4f69-bedd-9c3bcfe8e1602</uuid>
 
+  <!-- define type (is already defined) -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -36,15 +37,23 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Common_SystemAttribute</name>
-    <parent>Admin_Abstract</parent>
+    <name>Admin_User_Person2Group</name>
+    <parent>Admin_User_Abstract2Abstract</parent>
+    <!-- attributes -->
     <attribute>
-      <name>Value</name>
-      <type>String</type>
-      <sqltable>Admin_Common_SystemAttributeSQLTable</sqltable>
-      <sqlcolumn>VALUE</sqlcolumn>
+      <name>UserFromLink</name>
+      <type>Link</type>
+      <typelink>Admin_User_Person</typelink>
+      <sqltable>Admin_User_Abstract2AbstractSQLTable</sqltable>
+      <sqlcolumn>USERABSTRACTFROM</sqlcolumn>
     </attribute>
-    
-  </definition>
+    <attribute>
+      <name>UserToLink</name>
+      <type>Link</type>
+      <typelink>Admin_User_Group</typelink>
+      <sqltable>Admin_User_Abstract2AbstractSQLTable</sqltable>
+      <sqlcolumn>USERABSTRACTTO</sqlcolumn>
+    </attribute>
+   </definition>
 
 </datamodel-type>

@@ -27,7 +27,7 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>24653ad8-4568-41e1-bfd8-1331d2a74beb</uuid>
+  <uuid>da18fd98-8e42-44ba-be74-443aecc87b4d</uuid>
 
   <definition>
     <version>
@@ -36,15 +36,40 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Common_SystemAttribute</name>
-    <parent>Admin_Abstract</parent>
+    <name>Admin_DBProperties_Local</name>
+    <!-- attributes -->
+    <attribute>
+      <name>OID</name>
+      <type>OID</type>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>ID</name>
+      <type>Integer</type>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
+      <sqlcolumn>ID</sqlcolumn>
+    </attribute>
     <attribute>
       <name>Value</name>
       <type>String</type>
-      <sqltable>Admin_Common_SystemAttributeSQLTable</sqltable>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
       <sqlcolumn>VALUE</sqlcolumn>
     </attribute>
-    
+    <attribute>
+      <name>PropertyID</name>
+      <type>Link</type>
+      <typelink>Admin_DBProperties</typelink>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
+      <sqlcolumn>PROPID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>LanguageID</name>
+      <type>Link</type>
+      <typelink>Admin_Language</typelink>
+      <sqltable>Admin_DBProperties_LocalSQLTable</sqltable>
+      <sqlcolumn>LANGID</sqlcolumn>
+    </attribute>
   </definition>
-
+  
 </datamodel-type>

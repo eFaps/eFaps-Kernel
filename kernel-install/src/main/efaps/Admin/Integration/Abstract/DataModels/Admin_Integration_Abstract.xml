@@ -23,27 +23,18 @@
 
 -->
 
-<datamodel-type  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-type xmlns="http://www.efaps.org/xsd"
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>6be67940-0f1d-477b-85ec-159032826b79</uuid>
 
-  <!-- create type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>(version==6)</mode>
-    </version>
-    <name>Admin_Integration_Abstract</name>
-  </definition>
-
-  <!-- define type -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==7)</mode>
     </version>
     <name>Admin_Integration_Abstract</name>
     <parent>Admin_Abstract</parent>

@@ -29,24 +29,12 @@
 
   <uuid>edd58da5-0922-488c-933e-969e90c73d45</uuid>
 
-  <!-- create type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>(version==6)</mode>
-    </version>
-    <name>Admin_Integration_WebDAV</name>
-  </definition>
-
-  <!-- define type -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==7)</mode>
     </version>
     <name>Admin_Integration_WebDAV</name>
     <parent>Admin_Integration_Abstract</parent>

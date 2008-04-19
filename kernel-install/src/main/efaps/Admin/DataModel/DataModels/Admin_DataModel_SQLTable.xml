@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          jmox
+ Author:          tmo
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,7 +27,7 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>24653ad8-4568-41e1-bfd8-1331d2a74beb</uuid>
+  <uuid>ebf29cc2-cf42-4cd0-9b6e-92d9b644062b</uuid>
 
   <definition>
     <version>
@@ -36,15 +36,34 @@
       <local>$Rev$</local>
       <mode>(version==6)</mode>
     </version>
-    <name>Admin_Common_SystemAttribute</name>
-    <parent>Admin_Abstract</parent>
+    <name>Admin_DataModel_SQLTable</name>
+    <parent>Admin_DataModel_Abstract</parent>
+    <!-- attributes -->
     <attribute>
-      <name>Value</name>
+      <name>SQLTable</name>
       <type>String</type>
-      <sqltable>Admin_Common_SystemAttributeSQLTable</sqltable>
-      <sqlcolumn>VALUE</sqlcolumn>
+      <sqltable>Admin_DataModel_SQLTableSQLTable</sqltable>
+      <sqlcolumn>SQLTABLE</sqlcolumn>
     </attribute>
-    
-  </definition>
+    <attribute>
+      <name>SQLColumnID</name>
+      <type>String</type>
+      <sqltable>Admin_DataModel_SQLTableSQLTable</sqltable>
+      <sqlcolumn>SQLCOLUMNID</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>SQLColumnType</name>
+      <type>String</type>
+      <sqltable>Admin_DataModel_SQLTableSQLTable</sqltable>
+      <sqlcolumn>SQLCOLUMNTYPE</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>DMTableMain</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_SQLTable</typelink>
+       <sqltable>Admin_DataModel_SQLTableSQLTable</sqltable>
+      <sqlcolumn>DMTABLEMAIN</sqlcolumn>
+   </attribute>
+   </definition>
 
 </datamodel-type>
