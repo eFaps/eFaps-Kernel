@@ -23,26 +23,12 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-menu xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>8d9e5c9f-bcd8-4787-9a9a-2efa41ce2de9</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the menu 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_Integration_AbstractMyDesk</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the menu 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -53,6 +39,7 @@
     </version>
     <name>Admin_Integration_AbstractMyDesk</name>
     <childs>
+      <child>Admin_Integration_ServletMyDesk</child>
       <child>Admin_Integration_WebDAVMyDesk</child>
     </childs>
   </definition>
