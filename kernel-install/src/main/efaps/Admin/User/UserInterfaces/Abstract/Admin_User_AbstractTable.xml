@@ -29,23 +29,6 @@
 
   <uuid>0ccfc727-5db5-4976-a0b8-4c6705cfbcbd</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the table 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_User_AbstractTable</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the table 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
