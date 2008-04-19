@@ -23,12 +23,12 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>87001cc3-c45c-44de-b8f1-776df507f268</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create / update the menu 
-  ************************************************************************* -->
+  <uuid>e7e44152-d765-4d61-beaf-c3ce8d490876</uuid>
+
   <definition>
     <version>
       <application>eFaps</application>
@@ -37,13 +37,14 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>MainToolBar</name>
-    <childs>
-      <child>Admin_Common_MyDesk</child>
-      <child>Admin_Common_ReloadCache</child>
-      <child>Common_Main_Preferences</child>
-      <child>Common_Main_LogoutToolBar</child>
-    </childs>
+    <name>Common_History_Abstract</name>
+    <!-- target definitions -->
+    <target>
+      <table>Common_History_AbstractTable</table>
+      <evaluate program="org.efaps.esjp.common.history.HistoryQuery"/>
+    </target>
+    <!-- properties -->
+    <property name="Target">content</property>
   </definition>
-    
-</ui-menu>
+
+</ui-command>
