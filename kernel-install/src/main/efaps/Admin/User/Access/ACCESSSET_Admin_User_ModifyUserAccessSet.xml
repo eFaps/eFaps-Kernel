@@ -23,9 +23,10 @@
   
 -->
 
-<access-set xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<access-set xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>ecc52b75-9778-4895-8a8c-0ddbc2e5c98c</uuid>
 
   <definition>
@@ -33,21 +34,19 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==9)</mode>
+      <mode>(version==7)</mode>
     </version>
-
     <name>Admin_User_ModifyUserAccessSet</name>
-
+    <!-- for access types -->
     <access-type>create</access-type>
     <access-type>read</access-type>
     <access-type>show</access-type>
     <access-type>modify</access-type>
     <access-type>delete</access-type>
-
+    <!-- for types -->
     <type>Admin_User_Group</type>
     <type>Admin_User_Person</type>
     <type>Admin_User_Role</type>
-
     <role>Administration</role>
     <role>Admin_User_ModifyUsers</role>
   </definition>

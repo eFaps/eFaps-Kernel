@@ -23,20 +23,20 @@
   
 -->
 
-<user-role xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
-  <uuid>2819571d-f5c4-4ff8-b7a3-383c195782be</uuid>
+<user-role xmlns="http://www.efaps.org/xsd"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>140ed35c-d07b-4856-8fee-99b297dfb686</uuid>
 
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==8)</mode>
+      <mode>(version==7)</mode>
     </version>
-
-    <name>Admin_User_ModifyUsers</name>
+    <name>Admin_User_ViewUsers</name>
     <status>true</status>
   </definition>
 

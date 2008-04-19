@@ -23,9 +23,10 @@
   
 -->
 
-<user-jaassystem xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<user-jaassystem xmlns="http://www.efaps.org/xsd"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>d57f4299-8480-470e-ab9a-295c1754c0dc</uuid>
 
   <definition>
@@ -33,11 +34,9 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==9)</mode>
+      <mode>(version==7)</mode>
     </version>
-
     <name>xml</name>
-
     <!-- person class and methods definitions -->
     <person>
       <classname>org.efaps.jaas.xml.XMLPersonPrincipal</classname>
@@ -52,26 +51,21 @@
       <mobile-method>getMobile</mobile-method>
       <fax-method>getFax</fax-method>
     </person>
-
     <!-- role class and methods definitions -->
     <role>
       <classname>org.efaps.jaas.xml.XMLRolePrincipal</classname>
       <key-method>getName</key-method>
     </role>
-
     <!-- group class and methods definitions -->
     <group>
       <classname>org.efaps.jaas.xml.XMLGroupPrincipal</classname>
       <key-method>getName</key-method>
     </group>
-
     <!-- keys for usable roles -->
     <assigned-role>
       <name>Administration</name>
       <key>Administration</key>
     </assigned-role>
-
   </definition>
 
 </user-jaassystem>
-

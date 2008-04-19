@@ -38,10 +38,10 @@
   
   <!-- install data model -->
   <version number="6" reloadCache="true" />
-  <!-- version number="7" reloadCache="false" / -->
 
-  <version number="8" reloadCache="true" />
-  <version number="9" reloadCache="false" />
+  <!-- access types, access sets and users -->
+  <version number="7" reloadCache="true"/>
+
   <version number="10" reloadCache="false" login="false">
     <description>Update Password of Administrator and Activate Administrator and Administration Role.</description>
     <script>

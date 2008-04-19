@@ -23,8 +23,10 @@
 
 -->
 
-<access-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd" >
+<access-type xmlns="http://www.efaps.org/xsd"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd" >
+
   <uuid>47d74dd6-4929-4927-a490-82998363c409</uuid>
 
   <definition>
@@ -32,11 +34,9 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==8)</mode>
+      <mode>(version==7)</mode>
     </version>
-
     <name>delete</name>
-
   </definition>
 
 </access-type>

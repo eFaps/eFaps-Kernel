@@ -23,9 +23,10 @@
   
 -->
 
-<common-systemattribute xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<common-systemattribute xmlns="http://www.efaps.org/xsd"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>acf2b19b-f7c4-4e4a-a724-fb2d9ed30079</uuid>
   <description>
     This Attribute defines the time in Minutes wich must elapse after trying n-times to login with the wrong passwird,before the User has again the
@@ -37,7 +38,7 @@
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==9)</mode>
+      <mode>(version==7)</mode>
     </version>
     <name>Admin_User_LoginTimeBeforeRetry</name>
     <value>60</value>

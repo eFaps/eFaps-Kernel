@@ -23,8 +23,10 @@
 
 -->
 
-<access-type xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd" >
+<access-type xmlns="http://www.efaps.org/xsd"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd" >
+
   <uuid>cbec0a52-3249-4959-9a4d-c9aadb894104</uuid>
 
   <definition>
@@ -32,11 +34,9 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==8)</mode>
+      <mode>(version==7)</mode>
     </version>
-
     <name>checkin</name>
-
   </definition>
 
 </access-type>

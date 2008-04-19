@@ -23,9 +23,10 @@
   
 -->
 
-<common-systemattribute xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<common-systemattribute xmlns="http://www.efaps.org/xsd"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>bb26c4a4-65a8-41e9-bc64-5fe0148cf805</uuid>
   <description>This Attribute defines the minimum length of a Password in eFaps.</description>
   <definition>
@@ -34,9 +35,10 @@
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==9)</mode>
+      <mode>(version==7)</mode>
     </version>
     <name>Admin_User_PwdLengthMin</name>
     <value>6</value>
   </definition>
+
 </common-systemattribute>

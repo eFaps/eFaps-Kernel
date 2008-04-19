@@ -23,9 +23,10 @@
   
 -->
 
-<user-role xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<user-role xmlns="http://www.efaps.org/xsd"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>2c101471-43e3-4c97-9045-f48f5b12b6ed</uuid>
 
   <definition>
@@ -33,9 +34,8 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==8)</mode>
+      <mode>(version==7)</mode>
     </version>
-
     <name>Common_Main_PwdChg</name>
     <status>true</status>
   </definition>

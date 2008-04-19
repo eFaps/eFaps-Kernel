@@ -29,18 +29,14 @@
 
   <uuid>d46f8344-2fcd-4c30-8833-b31ec52476e5</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create / update the Program 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==9)</mode>
+      <mode>(version==latest)</mode>
     </version>
-    
     <file>FileField.java</file>
   </definition>
 

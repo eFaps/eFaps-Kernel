@@ -23,22 +23,20 @@
   
 -->
 
-<esjp xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<esjp xmlns="http://www.efaps.org/xsd"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>691472c1-3e02-4ef0-942a-b2e589ee8072</uuid>
-  <!-- ************************************************************************
-    version definition used to create / update the Program 
-    ************************************************************************* -->
+
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==9)</mode>
+      <mode>(version==latest)</mode>
     </version>
-
     <file>HistoryTrigger.java</file>
   </definition>
 

@@ -23,9 +23,10 @@
   
 -->
 
-<common-systemattribute xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<common-systemattribute xmlns="http://www.efaps.org/xsd"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>85d94368-bc1e-49bf-88d7-a3912b50e938</uuid>
   <description>
     This Attribute defines the maximum number of tries to login with the wrong Password into eFaps, before the User is going to be deactivated. To
@@ -37,9 +38,10 @@
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==9)</mode>
+      <mode>(version==7)</mode>
     </version>
     <name>Admin_User_LoginTries</name>
     <value>3</value>
   </definition>
+
 </common-systemattribute>

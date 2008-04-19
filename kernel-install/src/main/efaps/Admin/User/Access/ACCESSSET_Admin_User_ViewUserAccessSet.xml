@@ -23,9 +23,10 @@
   
 -->
 
-<access-set xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<access-set xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>602db9a3-478e-4651-ad72-dd03ef4d4cba</uuid>
 
   <definition>
@@ -33,20 +34,18 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==9)</mode>
+      <mode>(version==7)</mode>
     </version>
-
     <name>Admin_User_ViewUserAccessSet</name>
-
+    <!-- for access types -->
     <access-type>read</access-type>
     <access-type>show</access-type>
-
+    <!-- for types -->
     <type>Admin_User_Group</type>
     <type>Admin_User_Person</type>
     <type>Admin_User_Role</type>
-
+    <!-- depending users -->
     <role>Admin_User_ViewUsers</role>
-
   </definition>
 
 </access-set>
