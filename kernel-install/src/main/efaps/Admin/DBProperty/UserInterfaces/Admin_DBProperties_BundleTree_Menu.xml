@@ -23,26 +23,12 @@
 
 -->
 
-<ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-menu xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>0b9d7af0-e9ce-41bf-8443-36af7130c163</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the menu 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_DBProperties_BundleTree_Menu</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the menu 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>

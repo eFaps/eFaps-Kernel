@@ -23,27 +23,12 @@
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>2927a733-2681-4d2c-9c9d-5fefb98c0bbc</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the command 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_DBProperties_Menu_Action_Create</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the command 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>

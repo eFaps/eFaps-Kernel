@@ -23,27 +23,12 @@
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>95713a10-d98e-4a16-8599-c3c424195e22</uuid>
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create the command 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_DBPropertiesTree_Menu_Action_Edit</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the command 
-  ************************************************************************* -->
+  <uuid>b249f0d1-99d1-40a5-a30c-9b32566f3156</uuid>
+
   <definition>
     <version>
       <application>eFaps</application>
@@ -52,10 +37,10 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DBPropertiesTree_Menu_Action_Edit</name>
+    <name>Admin_DBProperties_Local_Menu_Action_Edit</name>
     <!-- target definitions -->
     <target>
-      <form>Admin_DBPropertiesForm</form>
+      <form>Admin_DBProperties_LocalForm</form>
       <execute program="org.efaps.esjp.common.uiform.Edit"/>
     </target>
     <!-- properties -->

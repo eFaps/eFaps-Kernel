@@ -23,26 +23,12 @@
 
 -->
 
-<ui-table  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>54d40bc5-5124-456e-8919-8190fa80187f</uuid>
+<ui-table xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create the table 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_DBProperties_BundleTable</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the table 
-  ************************************************************************* -->
+  <uuid>5325f1ef-507e-454c-a3cc-afb10c758a39</uuid>
+
   <definition>
     <version>
       <application>eFaps</application>
@@ -51,22 +37,22 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DBProperties_BundleTable</name>
+    <name>Admin_DBPropertiesTable</name>
     <!-- fields -->
-    <field name="name">
-      <property name="Expression">Name</property>
+    <field name="key">
+      <property name="Expression">Key</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
-      <property name="Label">Admin_DBProperties_Bundle/Name.Label</property>
+      <property name="Label">Admin_DBProperties/Key.Label</property>
       <property name="Width">3</property>
     </field>
-    <field name="uuid">
-      <property name="Expression">UUID</property>
-      <property name="Label">Admin_DBProperties_Bundle/UUID.Label</property>
+    <field name="defaultvalue">
+      <property name="Expression">Default</property>
+      <property name="Label">Admin_DBProperties/Default.Label</property>
       <property name="Width">3</property>
     </field>
-    <field name="sequence">
-      <property name="Expression">Sequence</property>
-      <property name="Label">Admin_DBProperties_Bundle/Sequence.Label</property>
+    <field name="bundle">
+      <property name="Expression">BundleID.Name</property>
+      <property name="Label">Admin_DBProperties/BundleID.Label</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>

@@ -23,28 +23,12 @@
   
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
-  <uuid>5c0e2890-e8f4-439d-a3be-a6ddc467d392</uuid>
+<ui-menu xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create the menu 
-    ************************************************************************* -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==10)</mode>
-    </version>
-    <name>Admin_DBPropertiesTree</name>
-  </definition>
+  <uuid>bf2b4084-49a2-4bbb-b1ad-7c5e27f2ab97</uuid>
 
-  <!-- ************************************************************************
-    version definition used to define the menu 
-    ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -53,17 +37,17 @@
       <mode>true</mode>
       <mode>(version==11)</mode>
     </version>
-    <name>Admin_DBPropertiesTree</name>
+    <name>Admin_DBProperties_BundleTree</name>
     <!-- targets -->
     <target>
-      <menu>Admin_DBPropertiesTree_Menu</menu>
-      <form>Admin_DBPropertiesForm</form>
+      <menu>Admin_DBProperties_BundleTree_Menu</menu>
+      <form>Admin_DBProperties_BundleForm</form>
     </target>
     <!-- type tree for -->
-    <type>Admin_DBProperties</type>
+    <type>Admin_DBProperties_Bundle</type>
     <!-- childs -->
     <childs>
-      <child>Admin_DBPropertiesTree_Local</child>
+      <child>Admin_DBProperties_BundleTree_DBProperties</child>
     </childs>
     <!-- properties -->
     <property name="Target">content</property>
