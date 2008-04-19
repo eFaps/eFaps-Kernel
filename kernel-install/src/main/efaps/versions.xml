@@ -42,7 +42,7 @@
   <!-- access types, access sets and users -->
   <version number="7" reloadCache="true"/>
 
-  <version number="10" reloadCache="false" login="false">
+  <version number="8" reloadCache="false" login="false">
     <description>Update Password of Administrator and Activate Administrator and Administration Role.</description>
     <script>
       importClass(Packages.org.efaps.admin.datamodel.Type); importClass(Packages.org.efaps.db.Context); importClass(Packages.org.efaps.db.Update);
@@ -60,6 +60,6 @@
       Context.commit();
     </script>
   </version>
-  <version number="11" reloadCache="true" compile="true" />
+  <version number="9" reloadCache="true" compile="true" />
 
 </install>

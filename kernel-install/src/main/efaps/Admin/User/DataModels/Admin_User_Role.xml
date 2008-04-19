@@ -46,11 +46,15 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==11)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>Admin_User_Role</name>
     <parent>Admin_User_Abstract</parent>
     <!-- triggers -->
-    <trigger name="Admin_User_Role_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" method="execute" index="1"/>
+    <trigger name="Admin_User_Role_AccessCheck"
+             event="ACCESSCHECK"
+             program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType"
+             method="execute"
+             index="1"/>
   </definition>
 </datamodel-type>

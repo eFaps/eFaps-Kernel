@@ -89,7 +89,7 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==11)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>Admin_User_Person</name>
     <parent>Admin_User_Abstract</parent>

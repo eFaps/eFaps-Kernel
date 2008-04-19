@@ -35,7 +35,7 @@
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==11)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>MainToolBar</name>
     <childs>
