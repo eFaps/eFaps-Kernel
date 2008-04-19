@@ -36,11 +36,13 @@
   <version number="4" reloadCache="false" login="false" />
   <version number="5" reloadCache="true" />
   
-  <!-- install data model -->
-  <version number="6" reloadCache="true" />
+  <version number="6" reloadCache="true">
+    <description>Install complete Data Model</description>
+  </version>
 
-  <!-- access types, access sets and users -->
-  <version number="7" reloadCache="true"/>
+  <version number="7" reloadCache="true">
+    <description>Install Access Types, Access Sets and Users</description>
+  </version>
 
   <version number="8" reloadCache="false" login="false">
     <description>Update Password of Administrator and Activate Administrator and Administration Role.</description>
@@ -60,6 +62,7 @@
       Context.commit();
     </script>
   </version>
+
   <version number="9" reloadCache="true" compile="true" />
 
 </install>
