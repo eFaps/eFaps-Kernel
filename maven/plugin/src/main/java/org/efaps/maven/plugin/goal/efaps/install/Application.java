@@ -144,21 +144,20 @@ public class Application {
       digester.addObjectCreate("install/version", ApplicationVersion.class);
       digester.addSetNext("install/version", "addVersion");
 
-      digester.addCallMethod("install/version", "setNumber", 1,
-          new Class[] { Long.class });
+      digester.addCallMethod("install/version", "setNumber", 1, new Class[] {Long.class});
       digester.addCallParam("install/version", 0, "number");
 
-      digester.addCallMethod("install/version", "setCompile", 1,
-          new Class[] { Boolean.class });
+      digester.addCallMethod("install/version", "setCompile", 1, new Class[] {Boolean.class});
       digester.addCallParam("install/version", 0, "compile");
 
-      digester.addCallMethod("install/version", "setReloadCacheNeeded", 1,
-          new Class[] { Boolean.class });
+      digester.addCallMethod("install/version", "setReloadCacheNeeded", 1, new Class[] {Boolean.class});
       digester.addCallParam("install/version", 0, "reloadCache");
 
-      digester.addCallMethod("install/version", "setLoginNeeded", 1,
-          new Class[] { Boolean.class });
+      digester.addCallMethod("install/version", "setLoginNeeded", 1, new Class[] {Boolean.class});
       digester.addCallParam("install/version", 0, "login");
+
+      digester.addCallMethod("install/version/description", "appendDescription", 1);
+      digester.addCallParam("install/version/description", 0);
 
       digester.addCallMethod("install/version/script", "addScript", 3);
       digester.addCallParam("install/version/script", 0);
@@ -229,6 +228,10 @@ public class Application {
       } else {
         if (LOG.isInfoEnabled()) {
           LOG.info("Starting installation of version " + version.getNumber());
+          final String desc = version.getDescription();
+          if (!"".equals(desc))  {
+            LOG.info(desc);
+          }
         }
         version.install(this.install, getLastVersion().getNumber(), _userName, _password);
         storeVersion(_userName, version.getNumber());

@@ -110,6 +110,11 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
    */
   private final List<Script> scripts = new ArrayList<Script>();
 
+  /**
+   * Description of this version.
+   */
+  private final StringBuilder description = new StringBuilder();
+
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
@@ -188,8 +193,33 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
    */
   public void addScript(final String _code,
                         final String _name,
-                        final String _function)  {
+                        final String _function)
+  {
     this.scripts.add(new Script(_code, _name, _function));
+  }
+
+  /**
+   * Append a description for this version.
+   *
+   * @param _desc text of description to append
+   * @see #description
+   */
+  public void appendDescription(final String _desc)
+  {
+    if (_desc != null)  {
+      this.description.append(_desc.trim()).append("\n");
+    }
+  }
+
+  /**
+   * The description for this version is returned. If no description exists,
+   * a zero length description is returned.
+   *
+   * @return string value of instance variable {@link #description}
+   * @see #description
+   */
+  public String getDescription() {
+    return this.description.toString().trim();
   }
 
   /**
