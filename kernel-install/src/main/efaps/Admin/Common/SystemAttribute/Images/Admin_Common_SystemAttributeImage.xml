@@ -35,16 +35,12 @@
 
   <uuid>4d838606-30f6-4de0-9f16-c424506d7057</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==8)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>Admin_Common_SystemAttributeImage</name>
     <file>Admin_Common_SystemAttributeImage.gif</file>

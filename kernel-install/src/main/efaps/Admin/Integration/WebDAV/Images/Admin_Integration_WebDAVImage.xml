@@ -36,16 +36,12 @@
 
   <uuid>4c6e0790-0632-44b3-82b9-6ad2c912454b</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==8)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>Admin_Integration_WebDAVImage</name>
     <file>Admin_Integration_WebDAVImage.gif</file>
