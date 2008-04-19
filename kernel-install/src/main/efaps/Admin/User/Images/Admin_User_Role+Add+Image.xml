@@ -22,6 +22,7 @@
  Last Changed By: $Author$
  Original Author: Mark James (mjames@gmail.com)
  Original Name:   chart_organisation.png
+                  link.png
  Original Web:    Silk icon set 1.3
                   [ http://www.famfamfam.com/lab/icons/silk/ ] 
  Original License:Creative Commons Attribution 2.5 License 
@@ -29,22 +30,22 @@
 
 -->
 
-<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>dcbf544c-1882-4243-88a3-b46961b9a881</uuid>
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-  ************************************************************************* -->
+  <uuid>564cd3a8-9aa3-42dd-b8e2-1a26678a52d3</uuid>
+
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==8)</mode>
+      <mode>(version==latest)</mode>
     </version>
-    <name>Admin_User_Role+Edit+Image</name>
-    <file>IMAGE_Admin_User_Role+Edit+Image.gif</file>
+    <name>Admin_User_Role+Add+Image</name>
+    <file>Admin_User_Role+Add+Image.gif</file>
   </definition>
 
 </ui-image>

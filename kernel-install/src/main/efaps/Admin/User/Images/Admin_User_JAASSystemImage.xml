@@ -21,30 +21,31 @@
  Last Changed:    $Date$
  Last Changed By: $Author$
  Original Author: Mark James (mjames@gmail.com)
- Original Name:   group_add.png
+ Original Name:   server_connect.png
  Original Web:    Silk icon set 1.3
                   [ http://www.famfamfam.com/lab/icons/silk/ ] 
  Original License:Creative Commons Attribution 2.5 License 
                   [ http://creativecommons.org/licenses/by/2.5/ ]
-
 -->
 
-<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>0898d0bb-d9b4-49db-8a09-fb54410f38af</uuid>
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-  ************************************************************************* -->
+  <uuid>6b58349c-b9f1-4e1a-a435-11193a9bb5e0</uuid>
+
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==8)</mode>
+      <mode>(version==latest)</mode>
     </version>
-    <name>Admin_User_Group+Create+Image</name>
-    <file>IMAGE_Admin_User_Group+Create+Image.gif</file>
+    <name>Admin_User_JAASSystemImage</name>
+    <file>Admin_User_JAASSystemImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_User_JAASSystem</type>
   </definition>
 
 </ui-image>

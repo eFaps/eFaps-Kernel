@@ -29,22 +29,22 @@
                   [ http://creativecommons.org/licenses/by/2.5/ ]
 -->
 
-<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>2d507172-f091-46d5-9446-0b51d9f0585a</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-  ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==8)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>Admin_User_JAASSystem+Create+Image</name>
-    <file>IMAGE_Admin_User_JAASSystem+Create+Image.gif</file>
+    <file>Admin_User_JAASSystem+Create+Image.gif</file>
   </definition>
 
 </ui-image>

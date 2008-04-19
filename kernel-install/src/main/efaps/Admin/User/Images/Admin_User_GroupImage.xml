@@ -21,7 +21,7 @@
  Last Changed:    $Date$
  Last Changed By: $Author$
  Original Author: Mark James (mjames@gmail.com)
- Original Name:   user.png
+ Original Name:   group.png
  Original Web:    Silk icon set 1.3
                   [ http://www.famfamfam.com/lab/icons/silk/ ] 
  Original License:Creative Commons Attribution 2.5 License 
@@ -29,24 +29,24 @@
 
 -->
 
-<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>44c3b724-0eb2-4b5b-9e2f-70e94626bd46</uuid>
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-  ************************************************************************* -->
+  <uuid>4e7e7de9-c728-4f7f-9de9-26416d52b858</uuid>
+
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==8)</mode>
+      <mode>(version==latest)</mode>
     </version>
-    <name>Admin_User_PersonImage</name>
-    <file>IMAGE_Admin_User_PersonImage.gif</file>
+    <name>Admin_User_GroupImage</name>
+    <file>Admin_User_GroupImage.gif</file>
     <!-- is type icon for -->
-    <type>Admin_User_Person</type>
+    <type>Admin_User_Group</type>
   </definition>
 
 </ui-image>

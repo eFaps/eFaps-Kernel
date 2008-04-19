@@ -21,30 +21,32 @@
  Last Changed:    $Date$
  Last Changed By: $Author$
  Original Author: Mark James (mjames@gmail.com)
- Original Name:   server_connect.png
-                  pencil.png
+ Original Name:   chart_organisation.png
  Original Web:    Silk icon set 1.3
                   [ http://www.famfamfam.com/lab/icons/silk/ ] 
  Original License:Creative Commons Attribution 2.5 License 
                   [ http://creativecommons.org/licenses/by/2.5/ ]
+
 -->
 
-<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>edcf10b7-519c-43ce-9673-65a72ce76e0c</uuid>
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-  ************************************************************************* -->
+  <uuid>32b375ac-caa7-4a69-b19a-e34d834e0f67</uuid>
+
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==8)</mode>
+      <mode>(version==latest)</mode>
     </version>
-    <name>Admin_User_JAASSystem+Edit+Image</name>
-    <file>IMAGE_Admin_User_JAASSystem+Edit+Image.gif</file>
+    <name>Admin_User_RoleImage</name>
+    <file>Admin_User_RoleImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_User_Role</type>
   </definition>
 
 </ui-image>
