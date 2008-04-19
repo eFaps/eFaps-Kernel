@@ -38,7 +38,6 @@
       <mode>(version==11)</mode>
     </version>
     <name>Admin_Access_AccessSetTree_Users</name>
-    <icon>Admin_User_AbstractListImage</icon>
     <!-- target definitions -->
     <target>
       <menu>Admin_Access_AccessSetTree_Users_Menu</menu>
