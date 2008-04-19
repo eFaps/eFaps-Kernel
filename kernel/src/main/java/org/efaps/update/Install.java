@@ -162,19 +162,29 @@ public class Install {
   // instance methods
 
   /**
-   * Installs the xml update scripts of the schema definitions for this version
+   * Installs the XML update scripts of the schema definitions for this version
    * defined in {@link #number}.
+   *
+   * @param _number       number to install
+   * @param _latestNumber latest version number to install (e..g. defined in
+   *                      the version.xml file)
    */
   @SuppressWarnings("unchecked")
-  public void install(final Long _number) throws EFapsException, Exception {
+  public void install(final Long _number,
+                      final Long _latestNumber)
+      throws EFapsException, Exception
+  {
 
-    // initialse cache
+    // initialize cache
     initialise();
 
-    // initiliase JexlContext (used to evalute version)
+    // initialize JexlContext (used to evaluate version)
     final JexlContext jexlContext = JexlHelper.createContext();
     if (_number != null) {
       jexlContext.getVars().put("version", _number);
+    }
+    if (_latestNumber != null)  {
+      jexlContext.getVars().put("latest", _latestNumber);
     }
 
     // create all objects

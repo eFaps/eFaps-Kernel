@@ -32,9 +32,6 @@ import java.util.UUID;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
@@ -42,6 +39,8 @@ import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
 import org.efaps.update.Install;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -231,7 +230,7 @@ public class Application {
         if (LOG.isInfoEnabled()) {
           LOG.info("Starting installation of version " + version.getNumber());
         }
-        version.install(this.install, _userName, _password);
+        version.install(this.install, getLastVersion().getNumber(), _userName, _password);
         storeVersion(_userName, version.getNumber());
 
         if (LOG.isInfoEnabled()) {
@@ -277,7 +276,7 @@ public class Application {
             + this.application
             + "'");
       }
-      version.install(this.install, _userName, _password);
+      version.install(this.install, version.getNumber(), _userName, _password);
       if (LOG.isInfoEnabled()) {
         LOG.info("Finished update of version " + version.getNumber());
       }

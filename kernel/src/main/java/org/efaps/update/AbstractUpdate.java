@@ -164,26 +164,13 @@ public abstract class AbstractUpdate {
   public void updateInDB(final JexlContext _jexlContext) throws EFapsException,
                                                         Exception {
     try {
-      // first create objects
+      // and then update objects
       for (final AbstractDefinition def : this.definitions) {
         final Expression jexlExpr = ExpressionFactory.createExpression(def.mode);
         final boolean exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
         if (exec) {
           if ((this.url != null) && LOG.isDebugEnabled()) {
             LOG.debug("Executing '" + this.url.toString() + "'");
-          }
-          def.createInDB(Type.get(this.dataModelTypeName),
-                         this.uuid,
-                         this.abstractType);
-        }
-      }
-      // and then update objects
-      for (final AbstractDefinition def : this.definitions) {
-        final Expression jexlExpr = ExpressionFactory.createExpression(def.mode);
-        final boolean exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
-        if (exec) {
-          if ((this.url != null) && LOG.isInfoEnabled()) {
-            LOG.info("Executing '" + this.url.toString() + "'");
           }
           def.updateInDB(Type.get(this.dataModelTypeName),
                          this.uuid,
@@ -213,7 +200,7 @@ public abstract class AbstractUpdate {
         }
       }
     } catch (final Exception e) {
-      LOG.error("updateInDB", e);
+      LOG.error("createInDB", e);
       throw e;
     }
   }

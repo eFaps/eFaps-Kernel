@@ -20,6 +20,10 @@
 
 package org.efaps.maven.plugin.goal.efaps.install;
 
+import static org.mozilla.javascript.Context.enter;
+import static org.mozilla.javascript.Context.javaToJS;
+import static org.mozilla.javascript.ScriptableObject.putProperty;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -28,21 +32,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.Scriptable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.program.esjp.Compiler;
 import org.efaps.admin.program.staticsource.AbstractSourceCompiler;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.update.Install;
 import org.efaps.util.EFapsException;
-
-import static org.mozilla.javascript.Context.enter;
-import static org.mozilla.javascript.Context.javaToJS;
-import static org.mozilla.javascript.ScriptableObject.putProperty;
+import org.mozilla.javascript.ImporterTopLevel;
+import org.mozilla.javascript.Scriptable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -115,14 +114,18 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
   // instance methods
 
   /**
-   * Installs the xml update scripts of the schema definitions for this version
+   * Installs the XML update scripts of the schema definitions for this version
    * defined in {@link #number}.
    *
-   * @param _install    install instance with all cached XML definitions
-   * @param _userName   name of logged in user
-   * @param _password   password of logged in user
+   * @param _install              install instance with all cached XML
+   *                              definitions
+   * @param _latestVersionNumber  latest version number (defined in the
+   *                              version.xml file)
+   * @param _userName             name of logged in user
+   * @param _password             password of logged in user
    */
   public void install(final Install _install,
+                      final long _latestVersionNumber,
                       final String _userName,
                       final String _password) throws EFapsException, Exception {
     // reload cache if needed
@@ -140,7 +143,7 @@ public class ApplicationVersion implements Comparable /* < ApplicationVersion > 
       Context.begin();
     }
 
-    _install.install(this.number);
+    _install.install(this.number, _latestVersionNumber);
 
     // commit transaction
     Context.commit();
