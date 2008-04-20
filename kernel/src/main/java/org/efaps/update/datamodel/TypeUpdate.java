@@ -69,7 +69,8 @@ public class TypeUpdate extends AbstractUpdate {
   /**
    *
    */
-  public TypeUpdate() {
+  public TypeUpdate()
+  {
     super("Admin_DataModel_Type", ALLLINKS);
   }
 
@@ -85,7 +86,8 @@ public class TypeUpdate extends AbstractUpdate {
    *                XML-File to be read by the digester
    * @return TypUdate Definition read by digester
    */
-  public static TypeUpdate readXMLFile(final URL _url) {
+  public static TypeUpdate readXMLFile(final URL _url)
+  {
     TypeUpdate ret = null;
 
     try {
@@ -224,13 +226,25 @@ public class TypeUpdate extends AbstractUpdate {
     /** Events for this Attribute */
     private final List<Event> events = new ArrayList<Event>();
 
-    /** Defaultvalue for this Attribute */
+    /** default value for this Attribute */
     private String defaultValue;
 
-    public void setDefinitions(final String _name, final String _type,
-                               final String _sqltable, final String _sqlcolumn,
+    /**
+     *
+     * @param _name
+     * @param _type
+     * @param _sqltable
+     * @param _sqlcolumn
+     * @param _typelink
+     * @param _defaultvalue
+     */
+    public void setDefinitions(final String _name,
+                               final String _type,
+                               final String _sqltable,
+                               final String _sqlcolumn,
                                final String _typelink,
-                               final String _defaultvalue) {
+                               final String _defaultvalue)
+    {
       this.name = _name;
       this.type = _type;
       this.sqlTable = _sqltable;
@@ -249,17 +263,17 @@ public class TypeUpdate extends AbstractUpdate {
      * searched by name. If the attribute exists, the attribute is updated.
      * Otherwise the attribute is created for this type.
      *
-     * @param _instance
-     *                type instance to update with this attribute
-     * @param _typeName
-     *                name of the type to update
+     * @param _instance   type instance to update with this attribute
+     * @param _typeName   name of the type to update
      * @see #getAttrTypeId
      * @see #getSqlTableId
      * @see #getTypeLinkId
      * @todo throw Exception is not allowed
      */
-    protected void updateInDB(final Instance _instance, final String _typeName)
-                                                                               throws Exception {
+    protected void updateInDB(final Instance _instance,
+                              final String _typeName)
+        throws EFapsException
+    {
       final long attrTypeId = getAttrTypeId(_typeName);
       final long sqlTableId = getSqlTableId(_typeName);
       final long typeLinkId = getTypeLinkId(_typeName);
@@ -308,7 +322,9 @@ public class TypeUpdate extends AbstractUpdate {
      * @return id of the attribute type
      * @see #type
      */
-    private long getAttrTypeId(final String _typeName) throws EFapsException {
+    private long getAttrTypeId(final String _typeName)
+        throws EFapsException
+    {
       final SearchQuery query = new SearchQuery();
       query.setQueryTypes("Admin_DataModel_AttributeType");
       query.addWhereExprEqValue("Name", this.type);
@@ -337,7 +353,9 @@ public class TypeUpdate extends AbstractUpdate {
      * @return id of the SQL table
      * @see #sqlTable
      */
-    private long getSqlTableId(final String _typeName) throws EFapsException {
+    private long getSqlTableId(final String _typeName)
+        throws EFapsException
+    {
       final SearchQuery query = new SearchQuery();
       query.setQueryTypes("Admin_DataModel_SQLTable");
       query.addWhereExprEqValue("Name", this.sqlTable);
@@ -366,7 +384,9 @@ public class TypeUpdate extends AbstractUpdate {
      * @return id of the linked type (or 0 if no type link is defined)
      * @see #typeLink
      */
-    private long getTypeLinkId(final String _typeName) throws EFapsException {
+    private long getTypeLinkId(final String _typeName)
+        throws EFapsException
+    {
       long typeLinkId = 0;
       if ((this.typeLink != null) && (this.typeLink.length() > 0)) {
         final SearchQuery query = new SearchQuery();
@@ -399,10 +419,15 @@ public class TypeUpdate extends AbstractUpdate {
      * @return string representation of this definition of an attribute
      */
     @Override
-    public String toString() {
-      return new ToStringBuilder(this).append("name", this.name).append("type",
-          this.type).append("sqlTable", this.sqlTable).append("sqlColumn",
-          this.sqlColumn).append("typeLink", this.typeLink).toString();
+    public String toString()
+    {
+      return new ToStringBuilder(this)
+                .append("name", this.name)
+                .append("type", this.type)
+                .append("sqlTable", this.sqlTable)
+                .append("sqlColumn", this.sqlColumn)
+                .append("typeLink", this.typeLink)
+                .toString();
     }
   }
 
@@ -451,7 +476,7 @@ public class TypeUpdate extends AbstractUpdate {
     @Override
     public Instance updateInDB(final Instance _instance,
                                final Set<Link> _allLinkTypes)
-        throws EFapsException,Exception
+        throws EFapsException
     {
       // set the id of the parent type (if defined)
       if ((this.parentType != null) && (this.parentType.length() > 0)) {
@@ -483,24 +508,23 @@ public class TypeUpdate extends AbstractUpdate {
     /**
      * Setter method for instance variable {@link #parentType}.
      *
-     * @param _parentType
-     *                new value to set
+     * @param _parentType new value to set
      * @see #parentType
      */
-    public void setParent(final String _parentType) {
+    public void setParent(final String _parentType)
+    {
       this.parentType = _parentType;
     }
 
     /**
      * adds a Attribute to the Definition
      *
-     * @param _attribute
-     *                Attribute to add
+     * @param _attribute  Attribute to add
      */
-    public void addAttribute(final Attribute _attribute) {
+    public void addAttribute(final Attribute _attribute)
+    {
       this.attributes.add(_attribute);
     }
-
   }
 
 }

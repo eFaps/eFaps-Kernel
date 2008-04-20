@@ -524,7 +524,8 @@ public abstract class AbstractUpdate {
 
     public void createInDB(final Type _dataModelType,
                            final String _uuid,
-                           final boolean _abstractType) throws EFapsException
+                           final boolean _abstractType)
+        throws EFapsException
     {
       Instance instance = null;
 
@@ -550,7 +551,8 @@ public abstract class AbstractUpdate {
       }
     }
 
-    protected void createInDB(final Insert _insert) throws EFapsException
+    protected void createInDB(final Insert _insert)
+        throws EFapsException
     {
       if (_insert.getInstance().getType().getAttribute("Revision") != null) {
         _insert.add("Revision", this.globalVersion + "#" + this.localVersion);
@@ -569,8 +571,9 @@ public abstract class AbstractUpdate {
     public void updateInDB(final Type _dataModelType,
                            final String _uuid,
                            final Set<Link> _allLinkTypes,
-                           final boolean _abstractType) throws EFapsException,
-                                                       Exception {
+                           final boolean _abstractType)
+        throws EFapsException,Exception
+    {
       Instance instance = null;
       Insert insert = null;
 
@@ -598,11 +601,11 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     *
+     * @param _instance instance to update
      */
     public Instance updateInDB(final Instance _instance,
                                final Set<Link> _allLinkTypes)
-        throws EFapsException,Exception
+        throws EFapsException
     {
       Instance instance = _instance;
 
@@ -640,21 +643,36 @@ public abstract class AbstractUpdate {
     }
 
     /**
+     * Remove all links from given object (defined by the instance).
+     *
+     * @param _instance   instance for which all links must be removed
+     * @param _linkType   type of link which must be removed
+     * @throws EFapsException if existing links could not be removed (deleted)
+     * @see #setLinksInDB used to remove all links for given instance with a
+     *                    zero length set of link instances
+     */
+    protected void removeLinksInDB(final Instance _instance,
+                                   final Link _linkType)
+        throws EFapsException
+    {
+      setLinksInDB(_instance, _linkType, new HashSet<LinkInstance>());
+    }
+
+    /**
      * Sets the links from this object to the given list of objects (with the
      * object name) in the eFaps database.
      *
-     * @param _instance
-     *                instance for which the access types must be set
-     * @param _linktype
-     *                type of the link to be updated
-     * @param _links
-     *                all links of the type _linktype which will be connected to
-     *                this instance
+     * @param _instance   instance for which the links must be defined
+     * @param _linktype   type of the link to be updated
+     * @param _links      all links of the type _linktype which will be
+     *                    connected to this instance
+     * @throws EFapsException if links could not be defined
      */
-    protected void setLinksInDB(final Instance _instance, final Link _linktype,
+    protected void setLinksInDB(final Instance _instance,
+                                final Link _linktype,
                                 final Set<LinkInstance> _links)
-                                                               throws EFapsException,
-                                                               Exception {
+        throws EFapsException
+    {
 
       final Map<Long, LinkInstance> existing =
           new HashMap<Long, LinkInstance>();
@@ -808,18 +826,17 @@ public abstract class AbstractUpdate {
      * The properties are only set if the object to update could own properties
      * (meaning derived from 'Admin_Abstract').
      *
-     * @param _instance
-     *                instance for which the propertie must be set
-     * @param _properties
-     *                new properties to set
+     * @param _instance   instance for which the properties must be set
+     * @param _properties new properties to set
+     * @throws EFapsException if properties could not be set
      * @todo rework of the update algorithmus (not always a complete delete and
      *       and new create is needed)
      * @todo description
      */
     protected void setPropertiesInDb(final Instance _instance,
                                      final Map<String, String> _properties)
-                                                                           throws EFapsException,
-                                                                           Exception {
+        throws EFapsException
+    {
 
       if (_instance.getType().isKindOf(Type.get("Admin_Abstract"))) {
         // remove old properties
@@ -990,7 +1007,6 @@ public abstract class AbstractUpdate {
     public void setType(final String _type) {
       this.type = _type;
     }
-
   }
 
 }

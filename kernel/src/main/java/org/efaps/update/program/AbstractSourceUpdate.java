@@ -21,6 +21,7 @@
 package org.efaps.update.program;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
@@ -86,7 +87,8 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
    *
    * @return value of instance variable {@link #setVersion}
    */
-  public boolean isSetVersion() {
+  public boolean isSetVersion()
+  {
     return this.setVersion;
   }
 
@@ -96,7 +98,8 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
    * @param setVersion
    *                the setVersion to set
    */
-  public void setSetVersion(boolean setVersion) {
+  public void setSetVersion(boolean setVersion)
+  {
     this.setVersion = setVersion;
   }
 
@@ -106,8 +109,9 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
    * @see org.efaps.update.AbstractUpdate#updateInDB(org.apache.commons.jexl.JexlContext)
    */
   @Override
-  public void updateInDB(final JexlContext _jexlContext) throws EFapsException,
-                                                        Exception {
+  public void updateInDB(final JexlContext _jexlContext)
+      throws EFapsException, Exception
+  {
     try {
 
       for (final AbstractDefinition def : getDefinitions()) {
@@ -119,11 +123,8 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
               + this.localVersion, "(version==" + getVersion() + ")");
         }
         final Expression jexlExpr =
-            ExpressionFactory.createExpression("(version=="
-                + getVersion()
-                + ")");
-        final boolean exec =
-            Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
+            ExpressionFactory.createExpression("(version==" + getVersion() + ")");
+        final boolean exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
         if (exec) {
           if ((getURL() != null) && LOG.isInfoEnabled()) {
             LOG.info("Checkin of: '" + getURL().toString() + "' ");
@@ -232,17 +233,21 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
     @Override
     public Instance updateInDB(final Instance _instance,
                                final Set<Link> _allLinkTypes)
-        throws EFapsException,Exception
+        throws EFapsException
     {
 
       final Instance instance =
           super.updateInDB(_instance, _allLinkTypes);
 
       if (this.name != null) {
-        final InputStream in = this.url.openStream();
         final Checkin checkin = new Checkin(instance);
-        checkin.executeWithoutAccessCheck(this.name, in, in.available());
-        in.close();
+        try {
+          final InputStream in = this.url.openStream();
+          checkin.executeWithoutAccessCheck(this.name, in, in.available());
+          in.close();
+        } catch (IOException e) {
+          throw new EFapsException(getClass(), "updateInDB.IOException", e, this.name);
+        }
       }
 
       if (_allLinkTypes != null) {

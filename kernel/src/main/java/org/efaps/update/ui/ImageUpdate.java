@@ -167,18 +167,22 @@ public class ImageUpdate extends AbstractUpdate  {
     @Override
     public Instance updateInDB(final Instance _instance,
                                final Set<Link> _allLinkTypes)
-        throws EFapsException,Exception
+        throws EFapsException
     {
 
       final Instance instance = super.updateInDB(_instance, _allLinkTypes);
 
       if (this.file != null)  {
-        final InputStream in = new URL(this.root + this.file).openStream();
-        final Checkin checkin = new Checkin(instance);
-        checkin.executeWithoutAccessCheck(this.file,
-                                          in,
-                                          in.available());
-        in.close();
+        try  {
+          final InputStream in = new URL(this.root + this.file).openStream();
+          final Checkin checkin = new Checkin(instance);
+          checkin.executeWithoutAccessCheck(this.file,
+                                            in,
+                                            in.available());
+          in.close();
+        } catch (IOException e) {
+          throw new EFapsException(getClass(), "updateInDB.IOException", e, this.root + this.file);
+        }
       }
       return instance;
     }

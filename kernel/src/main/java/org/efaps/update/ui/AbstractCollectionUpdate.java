@@ -260,11 +260,10 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
     @Override
     public Instance updateInDB(final Instance _instance,
                                final Set<Link> _allLinkTypes)
-        throws EFapsException,Exception
+        throws EFapsException
     {
 
-      final Instance instance =
-          super.updateInDB(_instance, _allLinkTypes);
+      final Instance instance = super.updateInDB(_instance, _allLinkTypes);
       setFieldsInDB(instance);
 
       return instance;
@@ -274,14 +273,13 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
      * The fields for this collection are created and / or updated in the
      * database.
      *
-     * @param _instance
-     *                instance for which the fields must be updated / created
+     * @param _instance   instance for which the fields must be updated /
+     *                    created
      * @todo rework that a complete cleanup and create is not needed
-     * @todo remove throwing Exception
      */
     protected void setFieldsInDB(final Instance _instance)
-                                                          throws EFapsException,
-                                                          Exception {
+        throws EFapsException
+    {
       // cleanup fields (remove all fields from table)
       final SearchQuery query = new SearchQuery();
       query.setExpand(_instance, "Admin_UI_Field\\Collection");
@@ -290,7 +288,8 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
       while (query.next()) {
         final Instance field = new Instance((String) query.get("OID"));
         setPropertiesInDb(field, null);
-        setLinksInDB(field, LINKFIELD2ICON, null);
+        removeLinksInDB(field, LINKFIELD2ICON);
+        removeLinksInDB(field, LINK2TARGETTABLE);
         (new Delete(field)).executeWithoutAccessCheck();
       }
       query.close();
@@ -319,11 +318,14 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
           setLinksInDB(insert.getInstance(), LINKFIELD2ICON, iconset);
         }
 
-        setLinksInDB(insert.getInstance(), LINK2TARGETTABLE, field
-            .getLinks(LINK2TARGETTABLE));
+        // link to table
+        setLinksInDB(insert.getInstance(),
+                     LINK2TARGETTABLE,
+                     field.getLinks(LINK2TARGETTABLE));
+
+        // append events
         for (final Event event : field.getEvents()) {
-          final Instance newInstance =
-              event.updateInDB(insert.getInstance(), field.name);
+          final Instance newInstance = event.updateInDB(insert.getInstance(), field.name);
           setPropertiesInDb(newInstance, event.getProperties());
         }
 
