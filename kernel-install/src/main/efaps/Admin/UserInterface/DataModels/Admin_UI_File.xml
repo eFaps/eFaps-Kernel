@@ -34,7 +34,7 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==6)</mode>
+      <mode>(version==6) || (version==latest)</mode>
     </version>
     <name>Admin_UI_File</name>
     <parent>Admin_UI_Direct</parent>
@@ -42,17 +42,16 @@
     <attribute>
       <name>FileName</name>
       <type>String</type>
-      <sqltable>Admin_UI_FileTable</sqltable>
+      <sqltable>Admin_UI_FileSQLTable</sqltable>
       <sqlcolumn>FILENAME</sqlcolumn>
     </attribute>
     <attribute>
       <name>FileLength</name>
       <type>Long</type>
-      <sqltable>Admin_UI_FileTable</sqltable>
+      <sqltable>Admin_UI_FileSQLTable</sqltable>
       <sqlcolumn>FILELENGTH</sqlcolumn>
     </attribute>
     <!-- properties -->
-    <property name="Icon">${ROOTURL}/servlet/image/Admin_UI_FileImage</property>
     <property name="StoreAttributeFileLength">FileLength</property>
     <property name="StoreAttributeFileName">FileName</property>
     <property name="StoreJDBCBlob">FILECONTENT</property>

@@ -29,20 +29,18 @@
   <uuid>2c5c3411-e38d-40b2-b303-1086126d6b2a</uuid>
 
   <!-- table used to import files for user interface objects -->
-
-  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>2</global>
+      <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==1)</mode>
+      <mode>(version==5) || (version==latest)</mode>
     </version>
+    <name>Admin_UI_FileSQLTable</name>
+    <parent>Admin_Common_AbstractSQLTable</parent>
     <database>
       <table-name>T_UIFILE</table-name>
       <parent-table>T_CMABSTRACT</parent-table>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="FILENAME" type="STRING_SHORT" length="128" />
       <column name="FILELENGTH" type="INTEGER" />
@@ -50,18 +48,4 @@
     </database>
   </definition>
 
-  <!-- define data model -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==5)</mode>
-    </version>
-    <name>Admin_UI_FileTable</name>
-    <parent>Admin_Common_AbstractSQLTable</parent>
-    <database>
-      <table-name>T_UIFILE</table-name>
-    </database>
-  </definition>
 </datamodel-sqltable>

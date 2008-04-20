@@ -27,52 +27,22 @@
   <uuid>93add055-d39c-44b8-9e01-6410182f8076</uuid>
 
   <!-- fields for forms and tables -->
-  
-  <!-- create table -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
-    <database>
-      <table-name>T_UIFIELD</table-name>
-      <parent-table>T_CMABSTRACT</parent-table>
-      <create>true</create>
-      <update>true</update>
-      <!-- columns -->
-      <column name="COLLECTION" type="INTEGER"                      not-null="true"/>
-    </database>
-  </definition>
-
-  <!-- define constraints -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==4)</mode>
-    </version>
-    <database>
-      <table-name>T_UIFIELD</table-name>
-      <update>true</update>
-      <foreign name="UIFLD_FK_CLCT"         key="COLLECTION"    reference="T_CMABSTRACT(ID)"/>
-     </database>
-  </definition>
-
-  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==5)</mode>
+      <mode>(version==5) || (version==latest)</mode>
     </version>
-    <name>Admin_UI_FieldTable</name>
+    <name>Admin_UI_FieldSQLTable</name>
     <parent>Admin_Common_AbstractSQLTable</parent>
     <database>
       <table-name>T_UIFIELD</table-name>
+      <parent-table>T_CMABSTRACT</parent-table>
+      <!-- columns -->
+      <column name="COLLECTION" type="INTEGER"                      not-null="true"/>
+      <!-- foreign keys -->
+      <foreign name="UIFLD_FK_CLCT"         key="COLLECTION"    reference="T_CMABSTRACT(ID)"/>
     </database>
   </definition>
 </datamodel-sqltable>

@@ -34,7 +34,7 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==6)</mode>
+      <mode>(version==6) || (version==latest)</mode>
     </version>
     <name>Admin_UI_LinkTargetSearch</name>
     <parent>Admin_UI_Link</parent>
