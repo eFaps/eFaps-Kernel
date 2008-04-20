@@ -20,10 +20,11 @@
 
 package org.efaps.maven.plugin.install;
 
+import java.util.List;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.tools.plugin.Goal;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
-import org.efaps.util.EFapsException;
 
 /**
  * Makes an update of an eFaps application for the last version of the
@@ -34,29 +35,21 @@ import org.efaps.util.EFapsException;
  */
 @Goal(name = "update",
       requiresDependencyResolutionScope = "compile")
-public final class UpdateMojo extends AbstractEFapsInstallMojo  {
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
-
+public final class UpdateMojo extends AbstractEFapsInstallMojo
+{
   /**
    * Executes the update goal.
    */
-  public void execute() throws MojoExecutionException  {
+  public void execute() throws MojoExecutionException
+  {
     init();
-
     try  {
-      reloadCache();
-      startTransaction();
+      final List<Application> appls = getApplicationsFromClassPath();
 
-      Application appl = getApplication();
-      if (appl != null)  {
+      // install applications
+      for (final Application appl : appls) {
         appl.updateLastVersion(getUserName(), getPassWord());
       }
-
-      commitTransaction();
-    } catch (EFapsException e)  {
-      getLog().error(e);
     } catch (Exception e)  {
       getLog().error(e);
     }

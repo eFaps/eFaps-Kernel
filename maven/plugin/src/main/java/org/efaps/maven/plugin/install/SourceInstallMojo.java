@@ -44,7 +44,7 @@ public final class SourceInstallMojo extends AbstractEFapsInstallMojo  {
     init();
 
     try {
-      final Application appl = getApplication();
+      final Application appl = getApplicationFromSource();
       if (appl != null) {
         appl.install(getUserName(), getPassWord());
       }

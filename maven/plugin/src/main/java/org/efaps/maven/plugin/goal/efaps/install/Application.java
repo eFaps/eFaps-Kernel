@@ -127,7 +127,8 @@ public class Application {
    */
   public static Application getApplication(final URL _url,
                                            final List<String> _classpathElements,
-                                           final File _efapsdir) {
+                                           final File _efapsdir)
+  {
     Application appl = null;
     try {
       final Digester digester = new Digester();
@@ -188,17 +189,16 @@ public class Application {
    * {@link #loadInstalledVersions}). If not already installed, the version is
    * installed.
    *
-   * @param _userName
-   *                name of logged in user
-   * @param _password
-   *                password of logged in user
+   * @param _userName   name of logged in user
+   * @param _password   password of logged in user
    * @see #loadInstalledVersions
    * @see #versions
    * @see ApplicationVersion#install
    */
-  public void install(final String _userName, final String _password)
-                                                                     throws EFapsException,
-                                                                     Exception {
+  public void install(final String _userName,
+                      final String _password)
+      throws EFapsException, Exception
+  {
 
     // reload cache (if possible)
     Context.begin();
@@ -260,16 +260,25 @@ public class Application {
   /**
    * Updates the last installed version.
    *
-   * @param _userName
-   *                name of logged in user
-   * @param _password
-   *                password of logged in user
+   * @param _userName   name of logged in user
+   * @param _password   password of logged in user
    * @todo throw Exceptions instead of logging errors
    */
-  public void updateLastVersion(final String _userName, final String _password)
-                                                                               throws EFapsException,
-                                                                               Exception {
+  public void updateLastVersion(final String _userName,
+                                final String _password)
+      throws EFapsException,Exception
+  {
+    // reload cache (if possible)
+    Context.begin();
+    if (RunLevel.isInitialisable()) {
+      RunLevel.init("shell");
+      RunLevel.execute();
+    }
+    Context.rollback();
+
+    // load installed versions
     loadInstalledVersions(_userName);
+
     final ApplicationVersion version = getLastVersion();
     if (this.installed.contains(version.getNumber())) {
       if (LOG.isInfoEnabled()) {
@@ -295,11 +304,12 @@ public class Application {
   /**
    * Load the already installed versions for this application from eFaps.
    *
-   * @param _userName
-   *                logged in user name
+   * @param _userName logged in user name
    * @see #installed
    */
-  private void loadInstalledVersions(final String _userName) throws Exception {
+  private void loadInstalledVersions(final String _userName)
+      throws EFapsException
+  {
     final Type versionType = Type.get(VERSION_UUID);
     if (versionType != null) {
       Context.begin(_userName);
@@ -323,14 +333,15 @@ public class Application {
    * version type could be get from the type cache, all cached versions are
    * stores in eFaps.
    *
-   * @param _userName
-   *                logged in user name
-   * @param _version
-   *                version id to store
+   * @param _userName logged in user name
+   * @param _version  version id to store
    */
-  private void storeVersion(final String _userName, final Long _version)
-                                                                        throws Exception {
+  private void storeVersion(final String _userName,
+                            final Long _version)
+      throws EFapsException
+  {
     final Type versionType = Type.get(VERSION_UUID);
+
     if (versionType != null) {
       Context.begin(_userName);
 
@@ -363,7 +374,8 @@ public class Application {
    * @param _version
    *                new application version to add
    */
-  public void addVersion(final ApplicationVersion _version) {
+  public void addVersion(final ApplicationVersion _version)
+  {
     this.versions.add(_version);
   }
 
@@ -372,18 +384,20 @@ public class Application {
    *
    * @return last application version to install
    */
-  public final ApplicationVersion getLastVersion() {
+  public final ApplicationVersion getLastVersion()
+  {
     return (ApplicationVersion) this.versions.toArray()[this.versions.size() - 1];
   }
 
   /**
    * Adds a new URL with the XML definition file.
    *
-   * @param _url
-   *                url of XML definition files used to install
+   * @param _url    url of XML definition files used to install
    * @see #install
    */
-  public void addURL(final URL _url, final String _type) {
+  public void addURL(final URL _url,
+                     final String _type)
+  {
     this.install.addFile(_url, _type);
   }
 
@@ -392,11 +406,12 @@ public class Application {
    * path and adds them as URL to the list of XML installation / update /
    * definition files ({@link #install}).
    *
-   * @param _classPathFile
-   *                file name from the class path to add
+   * @param _classPathFile    file name from the class path to add
    * @see #addURL
    */
-  public void addClassPathFile(final String _classPathFile, final String _type) {
+  public void addClassPathFile(final String _classPathFile,
+                               final String _type)
+  {
     addURL(getClass().getClassLoader().getResource(_classPathFile), _type);
   }
 
@@ -406,11 +421,11 @@ public class Application {
   /**
    * This is the setter method for instance variable {@link #application}.
    *
-   * @param _application
-   *                new value for instance variable {@link #application}
+   * @param _application  new value for instance variable {@link #application}
    * @see #application
    */
-  public void setApplication(final String _application) {
+  public void setApplication(final String _application)
+  {
     this.application = _application;
   }
 
@@ -430,7 +445,8 @@ public class Application {
    *
    * @return value of instance variable {@link #eFapsDir}
    */
-  public File getEFapsDir() {
+  public File getEFapsDir()
+  {
     return this.eFapsDir;
   }
 
@@ -439,10 +455,10 @@ public class Application {
    * This is the setter method for the instance variable
    * {@link #eFapsDir}.
    *
-   * @param _efapsdir
-   *                the eFapsDir to set
+   * @param _efapsdir   the eFapsDir to set
    */
-  public void setEFapsDir(final File _efapsdir) {
+  public void setEFapsDir(final File _efapsdir)
+  {
     this.eFapsDir = _efapsdir;
   }
 
@@ -463,7 +479,8 @@ public class Application {
    * @param maxVersion
    *                the maxVersion to set
    */
-  public void setMaxVersion(Long maxVersion) {
+  public void setMaxVersion(final Long maxVersion)
+  {
     this.maxVersion = maxVersion;
   }
 
@@ -472,7 +489,8 @@ public class Application {
    *
    * @return value of instance variable {@link #maxVersion}
    */
-  public Long getMaxVersion() {
+  public Long getMaxVersion()
+  {
     return this.maxVersion;
   }
 
@@ -482,12 +500,12 @@ public class Application {
    * @return string representation of this Application
    */
   @Override
-  public String toString() {
-    return new ToStringBuilder(this).append("application", this.application)
-        .append("versions", this.versions).append("install", this.install)
-        .toString();
+  public String toString()
+  {
+    return new ToStringBuilder(this)
+              .append("application", this.application)
+              .append("versions", this.versions)
+              .append("install", this.install)
+              .toString();
   }
-
-
-
 }

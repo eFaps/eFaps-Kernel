@@ -21,12 +21,16 @@ package org.efaps.maven.plugin.install;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.tools.plugin.Parameter;
 import org.apache.tools.ant.DirectoryScanner;
 import org.efaps.maven.plugin.EFapsAbstractMojo;
@@ -114,6 +118,14 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
   @Parameter()
   private final Map<String, String> typeMapping = null;
 
+  /**
+   * Comma separated list of applications to install. The default value is the
+   * kernel application. The value is used to define the applications to
+   * install or update.
+   */
+  @Parameter(defaultValue = "efaps")
+  private String applications;
+
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
@@ -124,12 +136,12 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
    * @return application instance with all version information
    * @todo description
    */
-  protected Application getApplication() {
+  protected Application getApplicationFromSource()
+  {
     Application appl = null;
     try {
-      appl =
-          Application.getApplication(this.versionFile.toURL(),
-              getClasspathElements(), getEFapsDir());
+      appl = Application.getApplication(this.versionFile.toURL(),
+                                        getClasspathElements(), getEFapsDir());
 
       for (final String fileName : getFiles()) {
         final String type =
@@ -144,6 +156,47 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
       getLog().error(e);
     }
     return appl;
+  }
+
+  /**
+   *
+   * @return
+   */
+  protected List<Application> getApplicationsFromClassPath()
+      throws MojoExecutionException
+  {
+    final List<Application> ret = new ArrayList<Application>();
+    final ClassLoader cl = getClass().getClassLoader();
+
+    // get install application (read from all install xml files)
+    final Map<String, Application> appls = new HashMap<String, Application>();
+    try  {
+      final Enumeration<URL> urlEnum = cl.getResources("META-INF/efaps/install.xml");
+      while (urlEnum.hasMoreElements()) {
+        final Application appl =
+            Application.getApplication(urlEnum.nextElement(),
+                getClasspathElements(), getEFapsDir());
+        appls.put(appl.getApplication(), appl);
+      }
+    } catch (IOException e)  {
+      throw new MojoExecutionException("Could not access the install.xml file "
+              + "(in path META-INF/efaps/ path of each eFaps install jar).", e);
+    }
+
+    // test if all defined applications could be found
+    final String[] applicationNames = this.applications.split(",");
+    for (final String applName : applicationNames) {
+      if (!appls.containsKey(applName)) {
+        throw new MojoExecutionException("Could not found defined "
+            + "application '"
+            + applName
+            + "'. Installation not possible!");
+      }
+      ret.add(appls.get(applName));
+    }
+
+
+    return ret;
   }
 
   /**
@@ -183,7 +236,8 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
    * @return value of instance variable eFapsDir
    * @see #eFapsDir
    */
-  protected File getEFapsDir() {
+  protected File getEFapsDir()
+  {
     return this.eFapsDir;
   }
 
@@ -197,8 +251,11 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
    * @see #typeMapping
    * @see #DEFAULT_TYPE_MAPPING
    */
-  protected Map<String, String> getTypeMapping() {
-    return (this.typeMapping == null) ? DEFAULT_TYPE_MAPPING : this.typeMapping;
+  protected Map<String, String> getTypeMapping()
+  {
+    return (this.typeMapping == null)
+           ? DEFAULT_TYPE_MAPPING
+           : this.typeMapping;
   }
 
   /**
@@ -207,7 +264,8 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
    * @return value of instance variable versionFile
    * @see #versionFile
    */
-  protected File getVersionFile() {
+  protected File getVersionFile()
+  {
     return this.versionFile;
   }
 }
