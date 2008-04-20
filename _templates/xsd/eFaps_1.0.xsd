@@ -23,9 +23,10 @@
   
 -->
 
-<xsd:schema targetNamespace="http://www.efaps.org/xsd" elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:eFaps="http://www.efaps.org/xsd"
->
+<xsd:schema targetNamespace="http://www.efaps.org/xsd"
+            elementFormDefault="qualified" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:eFaps="http://www.efaps.org/xsd">
+
   <!-- RootElements -->
   <xsd:element name="access-set">
     <xsd:complexType>
@@ -349,8 +350,6 @@
       <xsd:element name="sql" type="xsd:string" maxOccurs="unbounded" minOccurs="0"></xsd:element>
       <xsd:element name="table-name" type="xsd:string" maxOccurs="1"></xsd:element>
       <xsd:element name="parent-table" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
-      <xsd:element name="create" type="xsd:boolean" minOccurs="0" maxOccurs="1"></xsd:element>
-      <xsd:element name="update" type="xsd:boolean" minOccurs="0" maxOccurs="1"></xsd:element>
       <xsd:element name="column" type="eFaps:column" minOccurs="0" maxOccurs="unbounded"></xsd:element>
       <xsd:element name="unique" type="eFaps:unique" minOccurs="0" maxOccurs="unbounded"></xsd:element>
       <xsd:element name="foreign" type="eFaps:foreign" minOccurs="0" maxOccurs="unbounded"></xsd:element>
