@@ -20,12 +20,16 @@
 
 package org.efaps.util;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.sql.SQLException;
+
 /**
  * The class is the exception class used to throw exception. This exceptions
  * are shown in the user interface (web browser). The exception text stands
  * in the properties. The key value in the property is the name of the class
  * ({@link #className}) plus the id ({@link #id}) plus the strings <i>.Id</i>,
- * <i>.Error</i> and <i>.Action</i> to show the user a internationlised
+ * <i>.Error</i> and <i>.Action</i> to show the user a internationalized
  * description of the exception.
  *
  * @author tmo
@@ -37,7 +41,7 @@ public class EFapsException extends Exception  {
   // instance variables
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1906998311318776048L;
 
@@ -68,7 +72,15 @@ public class EFapsException extends Exception  {
   /////////////////////////////////////////////////////////////////////////////
   // constructor / destructor
 
-  public EFapsException(Class<?> _className, String _id, Object... _args)  {
+  /**
+   * @param _className  name of class in which the exception is thrown
+   * @param _id         id of the exception which is thrown
+   * @param _args       argument arrays
+   */
+  public EFapsException(final Class<?> _className,
+                        final String _id,
+                        final Object... _args)
+  {
     super("error in "+_className.getName()+"("+_id+","+_args+")");
     this.id = _id;
     this.className = _className;
@@ -78,16 +90,83 @@ public class EFapsException extends Exception  {
     this.args = _args;
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
+
   /**
-   * The cause is returned. The method only exists to support old interface
-   * (in pre Java 1.4 it was not possible to store a cause in class
-   * {@link java.lang.Throwable}).
+   * If a caused exception is a SQLException, also all next exceptions of the
+   * SQLExceptions are printed into the stack trace.
    *
-   * @see java.lang.Throwable#getCause()
-   * @deprecated
+   * @param _stream <code>PrintStream</code> to use for output
+   * @see makeInfo  to get all information about this EFapsException
    */
-  public Throwable getThrowable()  {
-    return getCause();
+  @Override
+  public void printStackTrace(final PrintStream _stream)
+  {
+    _stream.append(makeInfo());
+    super.printStackTrace(_stream);
+    if ((getCause() != null) && (getCause() instanceof SQLException))  {
+      SQLException ex = (SQLException) getCause();
+      ex = ex.getNextException();
+      while (ex != null)  {
+        _stream.append("Next SQL Exception is: ");
+        ex.printStackTrace(_stream);
+        ex = ex.getNextException();
+      }
+    }
+  }
+
+  /**
+   * If a caused exception is a SQLException, also all next exceptions of the
+   * SQLExceptions are printed into the stack trace.
+   *
+   * @param _writer <code>PrintWriter</code> to use for output
+   * @see makeInfo  to get all information about this EFapsException
+   */
+  @Override
+  public void printStackTrace(final PrintWriter _writer)
+  {
+    _writer.append(makeInfo());
+    if (this.className != null)  {
+      _writer.append("Thrown within class ").append(this.className.getName()).append('\n');
+    }
+    super.printStackTrace(_writer);
+    if ((getCause() != null) && (getCause() instanceof SQLException))  {
+      SQLException ex = (SQLException) getCause();
+      ex = ex.getNextException();
+      while (ex != null)  {
+        _writer.append("Next SQL Exception is: ");
+        ex.printStackTrace(_writer);
+        ex = ex.getNextException();
+      }
+    }
+  }
+
+  /**
+   * Prepares a string of all information of this EFapsException. The returned
+   * string includes information about the class which throws this exception,
+   * the exception id and all arguments.
+   *
+   * @return string representation about the EFapsException
+   */
+  protected String makeInfo()  {
+    final StringBuilder str = new StringBuilder();
+    if (this.className != null)  {
+      str.append("Thrown within class ").append(this.className.getName()).append('\n');
+    }
+    if (this.id != null)  {
+      str.append("Id of Exception is ").append(this.id).append('\n');
+    }
+    if ((this.args != null) && (this.args.length > 0))  {
+      str.append("Arguments are:\n");
+      for (Integer index = 0; index < this.args.length; index++)  {
+        final String arg = (this.args[index] == null)
+                           ? "null"
+                           : this.args[index].toString();
+        str.append("\targs[").append(index.toString()).append("] = '").append(arg).append("'\n");
+      }
+    }
+    return str.toString();
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -100,7 +179,8 @@ public class EFapsException extends Exception  {
    * @see #className
    * @see #setClassName
    */
-  public Class<?> getClassName()  {
+  public Class<?> getClassName()
+  {
     return this.className;
   }
 
@@ -112,7 +192,8 @@ public class EFapsException extends Exception  {
    * @see #id
    * @see #setId
    */
-  public String getId()  {
+  public String getId()
+  {
     return this.id;
   }
 
@@ -123,7 +204,8 @@ public class EFapsException extends Exception  {
    * @see #args
    * @see #setArgs
    */
-  public Object[] getArgs()  {
+  public Object[] getArgs()
+  {
     return this.args;
   }
 }
