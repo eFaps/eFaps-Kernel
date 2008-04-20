@@ -27,20 +27,18 @@
   <uuid>d3a64746-3666-4678-9603-f304bf16bb92</uuid>
 
   <!-- attributes of types -->
-
-  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>2</global>
+      <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==1)</mode>
+      <mode>(version==5) || (version==latest)</mode>
     </version>
+    <name>Admin_DataModel_AttributeSQLTable</name>
+    <parent>Admin_Common_AbstractSQLTable</parent>
     <database>
       <table-name>T_DMATTRIBUTE</table-name>
       <parent-table>T_CMABSTRACT</parent-table>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="DMTABLE"            type="INTEGER"                      not-null="true"/>
       <column name="DMTYPE"             type="INTEGER"                      not-null="true"/>
@@ -48,19 +46,24 @@
       <column name="DMTYPELINK"         type="INTEGER"/>
       <column name="SQLCOLUMN"          type="STRING_SHORT" length="50"     not-null="true"/>
       <column name="DEFAULTVAL"         type="STRING_SHORT" length="240" />
-     </database>
+      <!-- constraints -->
+      <foreign name="DMATTR_FK_DMTABLE"     key="DMTABLE"           reference="T_DMTABLE(ID)"/>
+      <foreign name="DMATTR_FK_DMTYPE"      key="DMTYPE"            reference="T_DMTYPE(ID)"/>
+      <foreign name="DMATTR_FK_DMATTRTP"    key="DMATTRIBUTETYPE"   reference="T_DMATTRIBUTETYPE(ID)"/>
+      <foreign name="DMATTR_FK_DMTPLINK"    key="DMTYPELINK"        reference="T_DMTYPE(ID)"/>
+    </database>
   </definition>
 
-  <!-- define constraints / views-->
+  <!-- create view representing all attributes -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==4)</mode>
+      <mode>(version==2)</mode>
     </version>
     <database>
-      <!-- create representing all attributes -->
+      <table-name>T_DMATTRIBUTE</table-name>
       <sql>
         create view V_ADMINATTRIBUTE as
           select
@@ -75,30 +78,29 @@
             from T_DMATTRIBUTE,T_CMABSTRACT
             where T_CMABSTRACT.ID=T_DMATTRIBUTE.ID
       </sql>
-      <!-- update of the sql table -->
-      <table-name>T_DMATTRIBUTE</table-name>
-      <update>true</update>
-      <!-- constraints -->
-      <foreign name="DMATTR_FK_DMTABLE"     key="DMTABLE"           reference="T_DMTABLE(ID)"/>
-      <foreign name="DMATTR_FK_DMTYPE"      key="DMTYPE"            reference="T_DMTYPE(ID)"/>
-      <foreign name="DMATTR_FK_DMATTRTP"    key="DMATTRIBUTETYPE"   reference="T_DMATTRIBUTETYPE(ID)"/>
-      <foreign name="DMATTR_FK_DMTPLINK"    key="DMTYPELINK"        reference="T_DMTYPE(ID)"/>
     </database>
   </definition>
 
-  <!-- define data model -->
+  <!-- create base SQL table -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>3</global>
+      <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==5)</mode>
+      <mode>(version==1)</mode>
     </version>
-    <name>Admin_DataModel_AttributeSQLTable</name>
-    <parent>Admin_Common_AbstractSQLTable</parent>
     <database>
       <table-name>T_DMATTRIBUTE</table-name>
-    </database>
+      <parent-table>T_CMABSTRACT</parent-table>
+      <!-- columns -->
+      <column name="DMTABLE"            type="INTEGER"                      not-null="true"/>
+      <column name="DMTYPE"             type="INTEGER"                      not-null="true"/>
+      <column name="DMATTRIBUTETYPE"    type="INTEGER"                      not-null="true"/>
+      <column name="DMTYPELINK"         type="INTEGER"/>
+      <column name="SQLCOLUMN"          type="STRING_SHORT" length="50"     not-null="true"/>
+      <column name="DEFAULTVAL"         type="STRING_SHORT" length="240" />
+     </database>
   </definition>
+
 </datamodel-sqltable>
 

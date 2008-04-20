@@ -33,15 +33,14 @@
   <definition>
     <version>
       <application>eFaps</application>
-      <global>2</global>
+      <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==1)</mode>
+      <mode>(version==5) || (version==latest)</mode>
     </version>
+    <name>Admin_DataModel_AttributeTypeSQLTable</name>
     <database>
       <table-name>T_DMATTRIBUTETYPE</table-name>
       <parent-table>T_CMABSTRACT</parent-table>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="CLASSNAME"      type="STRING_SHORT" length="128"    not-null="true"/>
       <column name="CLASSNAMEUI"    type="STRING_SHORT" length="128"    not-null="true"/>
@@ -50,6 +49,7 @@
     </database>
   </definition>
 
+  <!-- create view representing all types -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -58,7 +58,7 @@
       <mode>(version==2)</mode>
     </version>
     <database>
-      <!-- create view  representing all types -->
+      <table-name>T_DMATTRIBUTETYPE</table-name>
       <sql>
         create view V_DMATTRIBUTETYPE as
             select 
@@ -72,21 +72,26 @@
             from T_DMATTRIBUTETYPE,T_CMABSTRACT
             where T_CMABSTRACT.ID=T_DMATTRIBUTETYPE.ID
       </sql>
-      <table-name>T_DMATTRIBUTETYPE</table-name>
     </database>
   </definition>
 
+  <!--  create base SQL tables -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>3</global>
+      <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==5)</mode>
+      <mode>(version==1)</mode>
     </version>
-    <name>Admin_DataModel_AttributeTypeSQLTable</name>
     <database>
       <table-name>T_DMATTRIBUTETYPE</table-name>
+      <parent-table>T_CMABSTRACT</parent-table>
+      <!-- columns -->
+      <column name="CLASSNAME"      type="STRING_SHORT" length="128"    not-null="true"/>
+      <column name="CLASSNAMEUI"    type="STRING_SHORT" length="128"    not-null="true"/>
+      <column name="ALWAYSUPDATE"   type="INTEGER"/>
+      <column name="CREATEUPDATE"   type="INTEGER"/>
     </database>
   </definition>
-</datamodel-sqltable>
 
+</datamodel-sqltable>

@@ -29,7 +29,34 @@
 
   <uuid>8770839d-60fd-4bb4-81fd-3903d4c916ec</uuid>
 
-  <!-- define type (is already defined) -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==latest)</mode>
+    </version>
+    <name>Admin_DataModel_Type</name>
+    <parent>Admin_DataModel_Abstract</parent>
+    <!-- attributes -->
+    <attribute>
+      <name>SQLCacheExpr</name>
+      <type>String</type>
+      <sqltable>Admin_DataModel_TypeSQLTable</sqltable>
+      <sqlcolumn>SQLCACHEEXPR</sqlcolumn>
+    </attribute>
+    <attribute>
+      <name>ParentType</name>
+      <type>Link</type>
+      <typelink>Admin_DataModel_Type</typelink>
+      <sqltable>Admin_DataModel_TypeSQLTable</sqltable>
+      <sqlcolumn>PARENTDMTYPE</sqlcolumn>
+    </attribute>
+    <!-- triggers -->
+    <trigger name="Admin_DataModel_Type_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" />
+  </definition>
+
+  <!-- define type (is already defined), and trigger could not be created.. -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -54,18 +81,4 @@
       <sqlcolumn>PARENTDMTYPE</sqlcolumn>
     </attribute>
   </definition>
-
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-    </version>
-    <name>Admin_DataModel_Type</name>
-    <parent>Admin_DataModel_Abstract</parent>
-    <!-- triggers -->
-    <trigger name="Admin_DataModel_Type_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" />
-  </definition>
-
 </datamodel-type>
