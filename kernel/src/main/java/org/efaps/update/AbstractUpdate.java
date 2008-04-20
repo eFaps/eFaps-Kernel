@@ -141,7 +141,8 @@ public abstract class AbstractUpdate {
    *                definition to add
    * @see #definitions
    */
-  public void addDefinition(final AbstractDefinition _definition) {
+  public void addDefinition(final AbstractDefinition _definition)
+  {
     this.definitions.add(_definition);
   }
 
@@ -158,17 +159,15 @@ public abstract class AbstractUpdate {
    * is first updates in the version definition.<br/> The new created object is
    * stored as instance information in {@link #instance}.
    *
-   * @param _jexlContext
-   *                expression context used to evaluate
+   * @param _jexlContext  context used to evaluate JEXL expressions
+   * @throws EFapsException from called update methods
    */
-  public void updateInDB(final JexlContext _jexlContext) throws EFapsException,
-                                                        Exception {
+  public void updateInDB(final JexlContext _jexlContext)
+      throws EFapsException
+  {
     try {
-      // and then update objects
       for (final AbstractDefinition def : this.definitions) {
-        final Expression jexlExpr = ExpressionFactory.createExpression(def.mode);
-        final boolean exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
-        if (exec) {
+        if (def.isValidVersion(_jexlContext)) {
           if ((this.url != null) && LOG.isDebugEnabled()) {
             LOG.debug("Executing '" + this.url.toString() + "'");
           }
@@ -178,19 +177,23 @@ public abstract class AbstractUpdate {
                          this.abstractType);
         }
       }
-    } catch (final Exception e) {
+    } catch (final EFapsException e) {
       LOG.error("updateInDB", e);
       throw e;
     }
   }
 
-  public void createInDB(final JexlContext _jexlContext) throws Exception  {
+  /**
+   *
+   * @param _jexlContext  context used to evaluate JEXL expressions
+   * @throws EFapsException from called create methods
+   */
+  public void createInDB(final JexlContext _jexlContext)
+      throws EFapsException
+  {
     try {
-      // first create objects
       for (final AbstractDefinition def : this.definitions) {
-        final Expression jexlExpr = ExpressionFactory.createExpression(def.mode);
-        final boolean exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
-        if (exec) {
+        if (def.isValidVersion(_jexlContext)) {
           if ((this.url != null) && LOG.isDebugEnabled()) {
             LOG.debug("Executing '" + this.url.toString() + "'");
           }
@@ -199,7 +202,7 @@ public abstract class AbstractUpdate {
                          this.abstractType);
         }
       }
-    } catch (final Exception e) {
+    } catch (final EFapsException e) {
       LOG.error("createInDB", e);
       throw e;
     }
@@ -522,6 +525,33 @@ public abstract class AbstractUpdate {
 
     protected final List<Event> events = new ArrayList<Event>();
 
+    /**
+     * Evaluates the JEXP expression defined in {@link #mode}. If this
+     * expression returns true, the definition is a valid version and could
+     * be executed.
+     *
+     * @param _jexlContext    context used to evaluate JEXL expressions
+     * @return <i>true</i> if the definition is valid
+     * @throws EFapsException if the JEXL expression in {@link #mode} could
+     *                        not be evaluated
+     */
+    public boolean isValidVersion(final JexlContext _jexlContext)
+        throws EFapsException
+    {
+      boolean exec;
+      try {
+        final Expression jexlExpr = ExpressionFactory.createExpression(this.mode);
+        exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
+      } catch (Exception e) {
+        throw new EFapsException(getClass(),
+                                 "isValidVersion.JEXLExpressionNotEvaluatable",
+                                 e,
+                                 this.mode);
+      }
+      return exec;
+    }
+
+
     public void createInDB(final Type _dataModelType,
                            final String _uuid,
                            final boolean _abstractType)
@@ -572,7 +602,7 @@ public abstract class AbstractUpdate {
                            final String _uuid,
                            final Set<Link> _allLinkTypes,
                            final boolean _abstractType)
-        throws EFapsException,Exception
+        throws EFapsException
     {
       Instance instance = null;
       Insert insert = null;
@@ -874,7 +904,9 @@ public abstract class AbstractUpdate {
      */
     public void setVersion(final String _application,
                            final String _globalVersion,
-                           final String _localVersion, final String _mode) {
+                           final String _localVersion,
+                           final String _mode)
+    {
       this.application = _application;
       this.globalVersion = Long.valueOf(_globalVersion);
       this.localVersion = _localVersion;
@@ -907,10 +939,8 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     * @param _name
-     *                name of the attribute
-     * @param _value
-     *                value of the attribute
+     * @param _name   name of the attribute
+     * @param _value  value of the attribute
      * @see #values
      */
     protected void addValue(final String _name, final String _value) {
@@ -918,8 +948,7 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     * @param _name
-     *                name of the attribtue
+     * @param _name   name of the attribtue
      * @return value of the set attribute value in this definition
      * @see #values
      */
@@ -930,10 +959,8 @@ public abstract class AbstractUpdate {
     /**
      * Add a new property with given name and value to this definition.
      *
-     * @param _name
-     *                name of the property to add
-     * @param _value
-     *                value of the property to add
+     * @param _name   name of the property to add
+     * @param _value  value of the property to add
      * @see #properties
      */
     public void addProperty(final String _name, final String _value) {
@@ -954,12 +981,17 @@ public abstract class AbstractUpdate {
      * @return string representation of this definition of an access type update
      */
     @Override
-    public String toString() {
-      return new ToStringBuilder(this).append("application", this.application)
-          .append("global version", this.globalVersion).append("local version",
-              this.localVersion).append("mode", this.mode).append("values",
-              this.values).append("properties", this.properties).append(
-              "links", this.links).toString();
+    public String toString()
+    {
+      return new ToStringBuilder(this)
+                .append("application", this.application)
+                .append("global version", this.globalVersion)
+                .append("local version", this.localVersion)
+                .append("mode", this.mode)
+                .append("values", this.values)
+                .append("properties", this.properties)
+                .append("links", this.links)
+                .toString();
     }
 
     /**

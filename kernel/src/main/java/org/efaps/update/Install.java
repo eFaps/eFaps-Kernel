@@ -20,6 +20,7 @@
 
 package org.efaps.update;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
@@ -172,7 +173,7 @@ public class Install {
   @SuppressWarnings("unchecked")
   public void install(final Long _number,
                       final Long _latestNumber)
-      throws EFapsException, Exception
+      throws EFapsException
   {
 
     // initialize cache
@@ -207,7 +208,9 @@ public class Install {
   /**
    * @see #initialised
    */
-  public void initialise() throws Exception {
+  public void initialise()
+      throws EFapsException
+  {
     if (!this.initialised) {
       this.initialised = true;
       this.cache.clear();
@@ -219,11 +222,31 @@ public class Install {
         final Class<? extends AbstractUpdate> updateClass = entry.getKey();
         this.cache.put(updateClass, list);
 
-        final Method method =
-            updateClass.getMethod(entry.getValue().method, URL.class);
+        Method method = null;
+        try {
+          method = updateClass.getMethod(entry.getValue().method, URL.class);
+        } catch (SecurityException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
         for (final InstallFile file : this.files) {
           if (file.getType().equals(entry.getValue().type)) {
-            final Object obj = method.invoke(null, file.getUrl());
+            Object obj = null;
+            try {
+              obj = method.invoke(null, file.getUrl());
+            } catch (IllegalArgumentException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            } catch (IllegalAccessException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            } catch (InvocationTargetException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
             if (obj != null) {
               final AbstractUpdate update = (AbstractUpdate) obj;
               update.setApplication(this.application);

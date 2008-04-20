@@ -20,6 +20,8 @@
 
 package org.efaps.update.datamodel;
 
+import static org.efaps.db.Context.getDbType;
+
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Statement;
@@ -36,6 +38,9 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.databases.AbstractDatabase;
+import org.efaps.db.databases.information.ColumnInformation;
+import org.efaps.db.databases.information.TableInformation;
+import org.efaps.db.databases.information.UniqueKeyInformation;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
@@ -435,6 +440,7 @@ public class SQLTableUpdate extends AbstractUpdate {
                            final boolean _abstractType)
         throws EFapsException
     {
+      createSQLTable();
       if (getValue("Name") != null) {
         super.createInDB(_dataModelType, _uuid, _abstractType);
       }
@@ -457,13 +463,10 @@ public class SQLTableUpdate extends AbstractUpdate {
     public void updateInDB(final Type _dataModelType,
                            final String _uuid,
                            final Set<Link> _allLinkTypes,
-                           final boolean _abstractType) throws EFapsException,
-                                                       Exception {
-
+                           final boolean _abstractType)
+        throws EFapsException
+    {
       executeSQLs();
-      if (this.create) {
-        createSQLTable();
-      }
       if (this.update) {
         updateSQLTable();
       }
@@ -522,22 +525,27 @@ public class SQLTableUpdate extends AbstractUpdate {
     }
 
     /**
-     * Create the SQL table in the database.
+     * If the SQL table does not exists in the database, create the SQL table.
      *
      * @see #updateInDB
+     * @todo check for parent table if defined
      */
     protected void createSQLTable() throws EFapsException {
       final Context context = Context.getThreadContext();
       ConnectionResource con = null;
-      String tableName = getValue("SQLTable");
-      if (LOG.isInfoEnabled()) {
-        LOG.info("    Create DB SQL Table '" + tableName + "'");
-      }
+      final String tableName = getValue("SQLTable");
       try {
         con = context.getConnectionResource();
 
-        Context.getDbType().createTable(con.getConnection(), tableName,
-            this.parentSQLTableName);
+        if (!getDbType().existsTable(con.getConnection(), tableName))  {
+          if (LOG.isInfoEnabled()) {
+            LOG.info("    Create DB SQL Table '" + tableName + "'");
+          }
+
+          getDbType().createTable(con.getConnection(),
+                                          tableName,
+                                          this.parentSQLTableName);
+        }
         con.commit();
 
       } catch (EFapsException e) {
@@ -570,28 +578,48 @@ public class SQLTableUpdate extends AbstractUpdate {
       try {
         con = context.getConnectionResource();
 
-        // add columns
-        for (final Column column : this.columns) {
-          Context.getDbType().addTableColumn(con.getConnection(), tableName,
-              column.name, column.type, null, column.length, column.isNotNull);
+        TableInformation tableInfo = getDbType().getTableInformation(con.getConnection(), tableName);
+//System.out.println(""+tableInfo);
+
+        for (final Column column : this.columns)  {
+          final ColumnInformation colInfo = tableInfo.getColInfo(column.name);
+          if (colInfo != null)  {
+            if (LOG.isDebugEnabled())  {
+              LOG.debug("column '" + column.name + "' already defined in "
+                        + "table '" + tableName + "'");
+            }
+// TODO: check for column types, column length and isNotNull
+          } else  {
+            getDbType().addTableColumn(con.getConnection(), tableName,
+                column.name, column.type, null, column.length, column.isNotNull);
+          }
         }
 
         // add unique keys
-        for (final UniqueKey uniqueKey : this.uniqueKeys) {
-          Context.getDbType().addUniqueKey(con.getConnection(), tableName,
-              uniqueKey.name, uniqueKey.columns);
+        for (final UniqueKey uniqueKey : this.uniqueKeys)  {
+          final UniqueKeyInformation ukInfo = tableInfo.getUKInfo(uniqueKey.name);
+          if (ukInfo != null)  {
+            if (LOG.isDebugEnabled())  {
+              LOG.debug("unique key '" + uniqueKey.name + "' already defined in "
+                        + "table '" + tableName + "'");
+            }
+// TODO: check for column names
+          } else  {
+            getDbType().addUniqueKey(con.getConnection(), tableName,
+                uniqueKey.name, uniqueKey.columns);
+          }
         }
 
         // add foreign keys
         for (final ForeignKey foreignKey : this.foreignKeys) {
-          Context.getDbType().addForeignKey(con.getConnection(), tableName,
+          getDbType().addForeignKey(con.getConnection(), tableName,
               foreignKey.name, foreignKey.key, foreignKey.reference,
               foreignKey.cascade);
         }
 
         // update check keys
         for (final CheckKey checkKey : this.checkKeys) {
-          Context.getDbType().addCheckKey(con.getConnection(), tableName,
+          getDbType().addCheckKey(con.getConnection(), tableName,
               checkKey.name, checkKey.condition);
         }
 

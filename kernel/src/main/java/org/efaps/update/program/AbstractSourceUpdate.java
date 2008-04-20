@@ -27,8 +27,6 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Set;
 
-import org.apache.commons.jexl.Expression;
-import org.apache.commons.jexl.ExpressionFactory;
 import org.apache.commons.jexl.JexlContext;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkin;
@@ -110,7 +108,7 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
    */
   @Override
   public void updateInDB(final JexlContext _jexlContext)
-      throws EFapsException, Exception
+      throws EFapsException
   {
     try {
 
@@ -119,21 +117,22 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
           ((SourceDefinition) def).setRootDir(getRootDir());
         }
         if (this.setVersion) {
-          ((SourceDefinition) def).setVersion(getApplication(), "1", "eFaps:"
-              + this.localVersion, "(version==" + getVersion() + ")");
+          ((SourceDefinition) def).setVersion(getApplication(),
+                                              "1",
+                                              "eFaps:" + this.localVersion,
+                                              "(version==" + getVersion() + ")");
         }
-        final Expression jexlExpr =
-            ExpressionFactory.createExpression("(version==" + getVersion() + ")");
-        final boolean exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
-        if (exec) {
+        if (def.isValidVersion(_jexlContext)) {
           if ((getURL() != null) && LOG.isInfoEnabled()) {
             LOG.info("Checkin of: '" + getURL().toString() + "' ");
           }
-          def.updateInDB(Type.get(super.getDataModelTypeName()), null,
-              getAllLinkTypes(), false);
+          def.updateInDB(Type.get(super.getDataModelTypeName()),
+                         null,
+                         getAllLinkTypes(),
+                         false);
         }
       }
-    } catch (final Exception e) {
+    } catch (final EFapsException e) {
       LOG.error("updateInDB", e);
       throw e;
     }
@@ -201,7 +200,7 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
                            final String _uuid,
                            final Set<Link> _allLinkTypes,
                            final boolean _abstractType)
-    throws EFapsException,Exception
+        throws EFapsException
     {
       Instance instance = null;
 

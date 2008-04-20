@@ -150,6 +150,11 @@ public class JavaUpdate extends AbstractUpdate {
      */
     private String root = null;
 
+    /**
+     *
+     */
+    private ESJPImporter javaCode = null;
+
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
@@ -159,20 +164,14 @@ public class JavaUpdate extends AbstractUpdate {
                            final boolean _abstractType)
         throws EFapsException
     {
-      ESJPImporter javaCode = null;
-      try {
-        javaCode = new ESJPImporter(new URL(this.root + this.file));
-      } catch (MalformedURLException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      setName(javaCode.getClassName());
+      readJavaCode();
+      setName(this.javaCode.getClassName());
       // if no instance exists, a new insert must be done
-      Instance instance = javaCode.searchInstance();
+      Instance instance = this.javaCode.searchInstance();
       Insert insert = null;
       if (instance == null) {
         insert = new Insert(_dataModelType);
-        insert.add("Name", javaCode.getClassName());
+        insert.add("Name", this.javaCode.getClassName());
         insert.executeWithoutAccessCheck();
       }
     }
@@ -190,15 +189,40 @@ public class JavaUpdate extends AbstractUpdate {
     @Override
     public void updateInDB(final Type _dataModelType, final String _uuid,
                            final Set<Link> _allLinkTypes,
-                           final boolean _abstractType) throws EFapsException,
-                                                       Exception {
-      final ESJPImporter javaCode = new ESJPImporter(new URL(this.root + this.file));
-      setName(javaCode.getClassName());
-
-      final Instance instance = updateInDB(javaCode.searchInstance(), _allLinkTypes);
-
+                           final boolean _abstractType)
+        throws EFapsException
+    {
+      readJavaCode();
+      setName(this.javaCode.getClassName());
+      final Instance instance = updateInDB(this.javaCode.searchInstance(), _allLinkTypes);
       // checkin source code
-      javaCode.updateDB(instance);
+      this.javaCode.updateDB(instance);
+    }
+
+    /**
+     * Reads the Java source code which is in the path {@link #root} with file
+     * name {@link #file}.
+     *
+     * @throws EFapsException if the Java source code could not be read or the
+     *                        file could not be accessed because of the wrong
+     *                        URL
+     * @see #javaCode
+     * @see #root
+     * @see #file
+     */
+    protected void readJavaCode()
+        throws EFapsException
+    {
+      if (this.javaCode == null)  {
+        try {
+          this.javaCode = new ESJPImporter(new URL(this.root + this.file));
+        } catch (MalformedURLException e) {
+          throw new EFapsException(getClass(),
+                                   "readJavaCode.MalformedURLException",
+                                   e,
+                                   this.root + this.file);
+        }
+      }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -210,7 +234,8 @@ public class JavaUpdate extends AbstractUpdate {
      * @param _number new value for instance variable {@link #file}
      * @see #file
      */
-    public void setFile(final String _file) {
+    public void setFile(final String _file)
+    {
       this.file = _file;
     }
 
@@ -220,12 +245,14 @@ public class JavaUpdate extends AbstractUpdate {
      * @param _root   new value for instance variable {@link #root}
      * @see #root
      */
-    public void setRoot(final String _root) {
+    public void setRoot(final String _root)
+    {
       this.root = _root;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
       return new ToStringBuilder(this)
               .appendSuper(super.toString())
               .append("file", this.file)
