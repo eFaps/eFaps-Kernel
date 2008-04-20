@@ -23,7 +23,10 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>a3a1ab4b-f3c3-49ad-a5cf-fc776ba1990c</uuid>
 
   <!-- Person object -->
@@ -34,13 +37,11 @@
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==2)</mode>
+      <mode>(version==1)</mode>
     </version>
     <database>
       <table-name>T_USERPERSON</table-name>
       <parent-table>T_USERABSTRACT</parent-table>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="FIRSTNAME"  type="STRING_SHORT" length="128" not-null="true"/>
       <column name="LASTNAME"   type="STRING_SHORT" length="128" not-null="true"/>

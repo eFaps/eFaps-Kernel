@@ -23,13 +23,20 @@
   
 -->
 
-<install xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<install xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <application>efaps</application>
 
-  <version number="1" reloadCache="false" login="false" />
-  <version number="2" reloadCache="false" login="false" />
+  <version number="1" reloadCache="false" login="false">
+    <description>Create the base SQL tables.</description>
+  </version>
+
+  <version number="2" reloadCache="false" login="false">
+    <description>Create views depending on the base SQL tables.</description>
+  </version>
+
   <version number="3" reloadCache="false" login="false">
     <script name="org/efaps/installations/efaps/CreateAll.js" function="eFapsCreateAll()" />
   </version>
@@ -64,5 +71,6 @@
   </version>
 
   <version number="9" reloadCache="true" compile="true" />
+
 
 </install>

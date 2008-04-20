@@ -23,7 +23,10 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>7bf13230-062d-4c9d-b196-ce4721fcd1df</uuid>
 
   <!-- SQL Table to hold the Values for the ResourceBundle -->
@@ -33,7 +36,7 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==2)</mode>
+      <mode>(version==1)</mode>
     </version>
     <database>
       <table-name>T_ADPROPLOC</table-name>

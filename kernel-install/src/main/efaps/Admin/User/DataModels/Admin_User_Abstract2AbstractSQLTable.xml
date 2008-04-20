@@ -23,9 +23,10 @@
   
 -->
 
-<datamodel-sqltable xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>62f66541-4005-4071-b99f-b5cbc266f0a9</uuid>
 
   <!-- Connection between Abstract User and Abstract User -->
@@ -40,8 +41,6 @@
     </version>
     <database>
       <table-name>T_USERABSTRACT2ABSTRACT</table-name>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="TYPEID"           type="INTEGER"  not-null="true" />
       <column name="CREATOR"          type="INTEGER"  not-null="true" />

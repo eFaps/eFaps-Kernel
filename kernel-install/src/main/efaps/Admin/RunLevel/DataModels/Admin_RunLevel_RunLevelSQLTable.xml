@@ -23,8 +23,11 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>ffdf2e8f-ff2b-4cc8-85bf-481c167302ab</uuid>
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>22ef4964-0401-435b-a668-6ba4f121cf4d</uuid>
 
   <!-- SQL Table to hold the RunLevel Basic Definitons -->
 
@@ -34,18 +37,14 @@
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==2)</mode>
+      <mode>(version==1)</mode>
     </version>
     <database>
-      <table-name>T_RUNLEVELDEF</table-name>
-      <create>true</create>
-      <update>true</update>
+      <table-name>T_RUNLEVEL</table-name>
       <!-- columns -->
-      <column name="RUNLEVELID" type="INTEGER"      not-null="true" />
-      <column name="PRIORITY"   type="INTEGER"      not-null="true" />
-      <column name="CLASS"      type="STRING_SHORT" not-null="true" length="254"/> 
-      <column name="METHOD"     type="STRING_SHORT" not-null="true" length="128"/> 
-      <column name="PARAMETER"  type="STRING_SHORT"                 length="128"/>
+      <column name="RUNLEVEL" type="STRING_SHORT" not-null="true" length="128"/>
+      <column name="UUID"     type="STRING_SHORT" not-null="true" length="128"/> 
+      <column name="PARENT"   type="INTEGER" />
      </database>
   </definition>
 
@@ -58,10 +57,10 @@
       <mode>(version==4)</mode>
     </version>
     <database>
-      <table-name>T_RUNLEVELDEF</table-name>
+      <table-name>T_RUNLEVEL</table-name>
       <update>true</update>
       <!-- constraints -->
-      <foreign name="T_RUNLEVELDEF_FK_RNLVL"    key="RUNLEVELID"    reference="T_RUNLEVEL(ID)"/>
+      <foreign name="T_RUNLEVEL_FK_PARENT"  key="PARENT"    reference="T_RUNLEVEL(ID)"/>
     </database>
   </definition>
 
@@ -73,9 +72,9 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_RunLevel_DefinitionSQLTable</name>
+    <name>Admin_RunLevel_RunLevelSQLTable</name>
     <database>
-      <table-name>T_RUNLEVELDEF</table-name>
+      <table-name>T_RUNLEVEL</table-name>
     </database>
   </definition>
 

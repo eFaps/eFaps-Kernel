@@ -23,7 +23,10 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>1f84b7ce-cc40-4453-a58c-97a3aca0e5a8</uuid>
 
 <!-- JAAS systems -->
@@ -38,8 +41,6 @@
     </version>
     <database>
       <table-name>T_USERJAASSYSTEM</table-name>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="NAME"                   type="STRING_SHORT" length="128"    not-null="true"/>
       <column name="UUID"                   type="STRING_SHORT" length="128"/>
@@ -70,9 +71,10 @@
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==4)</mode>
+      <mode>(version==2)</mode>
     </version>
     <database>
+      <!-- create view representing all JAAS systems -->
        <sql>
         create view V_USERJAASSYSTEM as
            select
@@ -91,11 +93,6 @@
            from T_USERJAASSYSTEM
       </sql>
       <table-name>T_USERJAASSYSTEM</table-name>
-      <update>true</update>
-       <!-- constraints -->
-      <foreign name="USERJAASSYS_FK_CRTR"   key="CREATOR"       reference="T_USERPERSON(ID)"/>
-      <foreign name="USERJAASSYS_FK_MDFR"   key="MODIFIER"      reference="T_USERPERSON(ID)"/>
-      <!-- create view representing all JAAS systems -->
      </database>
   </definition>
 
@@ -110,6 +107,9 @@
     <name>Admin_User_JAASSystemSQLTable</name>
     <database>
       <table-name>T_USERJAASSYSTEM</table-name>
+       <!-- foreign keys -->
+      <foreign name="USERJAASSYS_FK_CRTR"   key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="USERJAASSYS_FK_MDFR"   key="MODIFIER"      reference="T_USERPERSON(ID)"/>
     </database>
   </definition>
 </datamodel-sqltable>

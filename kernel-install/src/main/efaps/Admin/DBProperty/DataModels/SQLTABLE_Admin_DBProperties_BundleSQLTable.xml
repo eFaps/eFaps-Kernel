@@ -23,7 +23,10 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>5e717f5c-970b-4c5f-a23f-fe7db8ac2ed9</uuid>
 
   <!-- SQL Table to hold the Bundle-Defenition for the Properties -->
@@ -33,9 +36,8 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==2)</mode>
+      <mode>(version==1)</mode>
     </version>
-
     <database>
       <table-name>T_ADPROPBUN</table-name>
       <create>true</create>
@@ -54,7 +56,6 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    
     <name>Admin_DBProperties_BundleSQLTable</name>
     <database>
       <table-name>T_ADPROPBUN</table-name>

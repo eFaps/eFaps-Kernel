@@ -34,7 +34,7 @@
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==2)</mode>
+      <mode>(version==1)</mode>
     </version>
     <database>
       <table-name>T_ITWEBDAV</table-name>

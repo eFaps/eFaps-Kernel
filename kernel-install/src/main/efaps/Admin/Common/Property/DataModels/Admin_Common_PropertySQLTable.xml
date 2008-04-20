@@ -24,36 +24,30 @@
 -->
 
 <datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
-  <uuid>5b782a85-eaf3-4574-901a-605776f4c72a</uuid>
+  <uuid>5cf99cd6-06d6-4322-a344-55d206666c9c</uuid>
 
-  <!-- Mapping to external JAAS systems -->
+  <!-- Common Properties -->
 
   <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>2</global>
+      <global>1</global>
       <local>$Rev$</local>
       <mode>(version==1)</mode>
     </version>
     <database>
-      <table-name>T_USERJAASKEY</table-name>
-      <create>true</create>
-      <update>true</update>
+      <table-name>T_CMPROPERTY</table-name>
       <!-- columns -->
-      <column name="JAASKEY"        type="STRING_SHORT" length="128"    not-null="true"/>
-      <column name="CREATOR"        type="INTEGER"                      not-null="true"/>
-      <column name="CREATED"        type="DATETIME"                     not-null="true"/>
-      <column name="MODIFIER"       type="INTEGER"                      not-null="true"/>
-      <column name="MODIFIED"       type="DATETIME"                     not-null="true"/>
-      <column name="USERABSTRACT"   type="INTEGER"                      not-null="true"/>
-      <column name="USERJAASSYSTEM" type="INTEGER"                      not-null="true"/>
+      <column name="ABSTRACT"   type="INTEGER"                    not-null="true"/>
+      <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
+      <column name="VALUE"      type="STRING_SHORT" length="128"/>
       <!-- constraints -->
-      <unique name="USRJAASKY_UK_SYSKEY" columns="USERJAASSYSTEM,JAASKEY"/>
+      <unique name="T_CMPROPERTY_UK_ABNAME" columns="ABSTRACT,NAME"/>
     </database>
   </definition>
 
-  <!-- define constraints -->
+  <!-- make the contraints for the SQL table -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -62,15 +56,14 @@
       <mode>(version==4)</mode>
     </version>
     <database>
-      <table-name>T_USERJAASKEY</table-name>
-      <update>true</update>
+      <table-name>T_CMPROPERTY</table-name>
       <!-- constraints -->
-      <foreign name="USRJAASKY_FK_USER"     key="USERABSTRACT"      reference="T_USERABSTRACT(ID)"/>
-      <foreign name="USRJAASKY_FK_SYSTEM"   key="USERJAASSYSTEM"    reference="T_USERJAASSYSTEM(ID)"/>
-   </database>
+      <foreign name="T_CMPROPERTY_FK_ABSTR"     key="ABSTRACT"      reference="T_CMABSTRACT(ID)"/>
+<!-- on delete cascade -->
+     </database>
   </definition>
 
-  <!-- define data model -->
+  <!-- define datamodel -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -78,10 +71,9 @@
       <local>$Rev$</local>
       <mode>(version==5)</mode>
     </version>
-    <name>Admin_User_JAASKeySQLTable</name>
+    <name>Admin_Common_PropertySQLTable</name>
     <database>
-      <table-name>T_USERJAASKEY</table-name>
+      <table-name>T_CMPROPERTY</table-name>
     </database>
   </definition>
 </datamodel-sqltable>
-

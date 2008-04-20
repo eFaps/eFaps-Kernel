@@ -23,9 +23,10 @@
   
 -->
 
-<datamodel-sqltable xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>35f15728-243b-4d67-ba55-e2715d865e99</uuid>
 
   <!-- Common Properties -->
@@ -36,12 +37,9 @@
       <local>$Rev$</local>
       <mode>(version==1)</mode>
     </version>
-
     <database>
       <table-name>T_CMSYSATTRIBUTE</table-name>
       <parent-table>T_CMABSTRACT</parent-table>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="VALUE" type="STRING_LONG" length="2048" not-null="true" />
     </database>
@@ -69,6 +67,7 @@
       <table-name>T_CMSYSATTRIBUTE</table-name>
     </database>
   </definition>
+
   <definition>
     <version>
       <application>eFaps</application>

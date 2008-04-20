@@ -41,8 +41,6 @@
     </version>
     <database>
       <table-name>T_CMVERSION</table-name>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="NAME"     type="STRING_SHORT" length="128" not-null="true" />
       <column name="REVISION" type="INTEGER"                   not-null="true" />
@@ -74,17 +72,26 @@
     </database>
   </definition>
 
-  <!-- make the contraints for the SQL table -->
+  <!-- define complete SQL table -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>2</global>
       <local>1</local>
-      <mode>(version==5)</mode>
+      <mode>(version==5) || (version==latest)</mode>
     </version>
     <name>Admin_Common_VersionSQLTable</name>
     <database>
       <table-name>T_CMVERSION</table-name>
+      <!-- columns -->
+      <column name="NAME"     type="STRING_SHORT" length="128" not-null="true" />
+      <column name="REVISION" type="INTEGER"                   not-null="true" />
+      <column name="CREATOR"  type="INTEGER"                   not-null="true" />
+      <column name="CREATED"  type="DATETIME"                  not-null="true" />
+      <column name="MODIFIER" type="INTEGER"                   not-null="true" />
+      <column name="MODIFIED" type="DATETIME"                  not-null="true" />
+      <!-- constraints -->
+      <unique name="COMVER_UK_NAMEREV" columns="NAME,REVISION" />
     </database>
   </definition>
 
