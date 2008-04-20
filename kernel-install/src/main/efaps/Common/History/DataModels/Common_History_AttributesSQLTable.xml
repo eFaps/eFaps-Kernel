@@ -23,58 +23,29 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>fc7afd62-a520-4321-8723-a4e2e59b8449</uuid>
 
   <!-- History of Events for Objects -->
-
-  <!-- create table -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
-    <database>
-      <table-name>T_HISTORYATTRIBUTES</table-name>
-      <create>true</create>
-      <update>true</update>
-      <!-- columns -->
-      <column name="HISTORYID"   type="INTEGER"                      not-null="true"/>
-      <column name="ATTRIBUTEID" type="INTEGER"                      not-null="true"/>
-      <column name="VALUE"       type="STRING_LONG" length="2000"    not-null="true"/>
-      
-     </database>
-  </definition>
-
-  <!-- define constraints -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==4)</mode>
-    </version>
-    <database>
-      <table-name>T_HISTORYATTRIBUTES</table-name>
-      <update>true</update>
-      <!-- constraints -->
-      <foreign name="HISTATT_FK_HISTORYID"  key="HISTORYID"     reference="T_HISTORYABSTRACT(ID)"/>
-    </database>
-  </definition>
-
-  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==5)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>Common_History_AttributesSQLTable</name>
     <database>
       <table-name>T_HISTORYATTRIBUTES</table-name>
+      <!-- columns -->
+      <column name="HISTORYID"   type="INTEGER"                      not-null="true"/>
+      <column name="ATTRIBUTEID" type="INTEGER"                      not-null="true"/>
+      <column name="VALUE"       type="STRING_LONG" length="2000"    not-null="true"/>
+      <!-- constraints -->
+      <foreign name="HISTATT_FK_HISTORYID"  key="HISTORYID"     reference="T_HISTORYABSTRACT(ID)"/>
     </database>
   </definition>
 </datamodel-sqltable>

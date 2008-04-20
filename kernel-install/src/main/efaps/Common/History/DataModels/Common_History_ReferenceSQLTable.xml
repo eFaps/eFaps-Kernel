@@ -23,57 +23,30 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>251e7dfc-8bb8-4430-83c3-52b5588aa7da</uuid>
 
   <!-- History of Events for Objects -->
 
-  <!-- create table -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
-    <database>
-      <table-name>T_HISTORYREFERENCE</table-name>
-      <create>true</create>
-      <update>true</update>
-      <!-- columns -->
-      <column name="TOTYPEID"          type="INTEGER"                      not-null="true"/>
-      <column name="TOID"              type="INTEGER"                      not-null="true"/>
-     </database>
-  </definition>
-
-  <!-- define constraints -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==4)</mode>
-    </version>
-    <database>
-      <table-name>T_HISTORYREFERENCE</table-name>
-      <update>true</update>
-      <!-- constraints -->
-      <foreign name="HIST_FK_TOTYPEID"     key="TOTYPEID"        reference="T_DMTYPE(ID)"/>
-    </database>
-  </definition>
-
-  <!-- define data model -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==6)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>Common_History_ReferenceSQLTable</name>
     <parent>Common_History_AbstractSQLTable</parent>
     <database>
       <table-name>T_HISTORYREFERENCE</table-name>
+      <!-- columns -->
+      <column name="TOTYPEID"          type="INTEGER"                      not-null="true"/>
+      <column name="TOID"              type="INTEGER"                      not-null="true"/>
+      <!-- constraints -->
+      <foreign name="HIST_FK_TOTYPEID"     key="TOTYPEID"        reference="T_DMTYPE(ID)"/>
     </database>
   </definition>
 </datamodel-sqltable>

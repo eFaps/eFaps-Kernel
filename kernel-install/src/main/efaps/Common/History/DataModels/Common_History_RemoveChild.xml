@@ -34,7 +34,7 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==6)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>Common_History_RemoveChild</name>
     <parent>Common_History_Reference</parent>
