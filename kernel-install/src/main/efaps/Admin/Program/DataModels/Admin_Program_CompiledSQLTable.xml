@@ -23,23 +23,24 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>7b157fca-d01f-42fb-b464-8f4660f51d7e</uuid>
 
   <!-- SQL Table to hold compiled Java classes. -->
-
-  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>2</global>
+      <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==2)</mode>
+      <mode>(version==5) || (version==latest)</mode>
     </version>
+    <name>Admin_Program_CompiledSQLTable</name>
+    <typeid-column>TYPEID</typeid-column>
     <database>
       <table-name>T_PRGCOMPILED</table-name>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="TYPEID"     type="INTEGER"/>
       <column name="NAME"       type="STRING_SHORT" length="128"  not-null="true"/>
@@ -51,40 +52,11 @@
       <column name="CREATED"    type="DATETIME"                   not-null="true"/>
       <column name="MODIFIER"   type="INTEGER"                    not-null="true"/>
       <column name="MODIFIED"   type="DATETIME"                   not-null="true"/>
-     </database>
-  </definition>
-
-  <!-- define constraints -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==4)</mode>
-    </version>
-    <database>
-      <table-name>T_PRGCOMPILED</table-name>
-      <update>true</update>
       <!-- constraints -->
       <unique  name="T_PRGCL_UK_NAME"     columns="NAME"/>
       <foreign name="T_PRGCL_FK_PRG"      key="PROGRAM"       reference="T_PRGABSTRACT(ID)"/>
       <foreign name="T_PRGCL_FK_CRTR"     key="CREATOR"       reference="T_USERPERSON(ID)"/>
       <foreign name="T_PRGCL_FK_MDFR"     key="MODIFIER"      reference="T_USERPERSON(ID)"/>
-    </database>
-  </definition>
-
-  <!-- define data model -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==5)</mode>
-    </version>
-    <name>Admin_Program_CompiledSQLTable</name>
-    <typeid-column>TYPEID</typeid-column>
-    <database>
-      <table-name>T_PRGCOMPILED</table-name>
     </database>
   </definition>
 </datamodel-sqltable>
