@@ -56,14 +56,33 @@ public class TableInformation
   final Map<String, UniqueKeyInformation> ukMap = new HashMap<String, UniqueKeyInformation>();
 
   /**
-   * Initialize this table information instance.
+   * Stores the map between a name of a foreign key and the information about
+   * the foreign key itself. The name of all foreign keys are in upper case.
+   *
+   * @see #evaluateForeignKeys
+   */
+  final Map<String, ForeignKeyInformation> fkMap = new HashMap<String, ForeignKeyInformation>();
+
+  /**
+   * Initialize this table information instance. The constructor should not
+   * called be directly. Instead method
+   * {@link org.efaps.db.databases.AbstractDatabase#getTableInformation}
+   * should be used (because it is possible that a specific implementation of
+   * this class is needed, depending on the database vendor).
    *
    * @param _con          SQL connection
    * @param _tableName    name of SQL table for which the information
    *                      is searched
-   * @throws SQLException
-   * @see #evaluateColInfo  called with upper and lower case table name to
-   *                        fetch information about the SQL table
+   * @throws SQLException if meta data of SQL table could not be evaluated
+   *                      (fetched) from database
+   * @see #evaluateColInfo      called with upper and lower case table name to
+   *                            fetch information about the SQL table
+   * @see #evaluateUniqueKeys   called with upper and lower case able name to
+   *                            fetch information about unique keys of this SQL
+   *                            table
+   * @see #evaluateForeignKeys  called with upper and lowe case table name to
+   *                            fetch information about foreign keys of this
+   *                            SQL table
    */
   public TableInformation(final Connection _con,
                           final String _tableName)
@@ -74,6 +93,8 @@ public class TableInformation
     evaluateColInfo(metaData, _tableName.toUpperCase());
     evaluateUniqueKeys(metaData, _tableName.toLowerCase());
     evaluateUniqueKeys(metaData, _tableName.toUpperCase());
+    evaluateForeignKeys(metaData, _tableName.toLowerCase());
+    evaluateForeignKeys(metaData, _tableName.toUpperCase());
   }
 
   /**
@@ -82,7 +103,7 @@ public class TableInformation
    *
    * @param _metaData   database meta data
    * @param _tableName  name of table which must be evaluated
-   * @throws SQLException
+   * @throws SQLException if column information could not be fetched
    * @see #colMap
    */
   protected void evaluateColInfo(final DatabaseMetaData _metaData,
@@ -111,7 +132,7 @@ public class TableInformation
    *
    * @param _metaData   database meta data
    * @param _tableName  name of table which must be evaluated
-   * @throws SQLException
+   * @throws SQLException if unique keys could not be fetched
    * @see #ukMap
    */
   protected void evaluateUniqueKeys(final DatabaseMetaData _metaData,
@@ -129,6 +150,30 @@ public class TableInformation
       } else  {
         ukInfo.appendColumnName(colName);
       }
+    }
+  }
+
+  /**
+   * Fetches all foreign keys for this table.
+   *
+   * @param _metaData   database meta data
+   * @param _tableName  name of table which must be evaluated
+   * @throws SQLException if foreign keys could not be fetched
+   * @see #fkMap
+   */
+  protected void evaluateForeignKeys(final DatabaseMetaData _metaData,
+                                    final String _tableName)
+      throws SQLException
+  {
+    final ResultSet result = _metaData.getImportedKeys(null, null, _tableName);
+    while (result.next())  {
+      final String fkName = result.getString("FK_NAME").toUpperCase();
+      final String colName = result.getString("FKCOLUMN_NAME");
+      final String refTableName = result.getString("PKTABLE_NAME");
+      final String refColName = result.getString("PKCOLUMN_NAME");
+      final boolean cascade = (result.getInt("DELETE_RULE") == DatabaseMetaData.importedKeyCascade);
+     this.fkMap.put(fkName,
+                     new ForeignKeyInformation(fkName, colName, refTableName, refColName, cascade));
     }
   }
 
@@ -161,6 +206,7 @@ public class TableInformation
    *
    * @param _ukName   name of unique key which is searched
    * @return unique key information
+   * @see #ukMap
    */
   public UniqueKeyInformation getUKInfo(final String _ukName)
   {
@@ -170,15 +216,34 @@ public class TableInformation
   }
 
   /**
+   * Returns for given name of foreign key (of the SQL table) the information
+   * about the foreign key, or if the given name of foreign key is not defined,
+   * a <code>null</code> is returned.<br/>
+   * The name of the given foreign key is searched independently of upper and /
+   * or lower case.
+   *
+   * @param _fkName   name of foreign key which is searched
+   * @return foreign key information
+   * @see #fkMap
+   */
+  public ForeignKeyInformation getFKInfo(final String _fkName)
+  {
+    return (_fkName != null)
+           ? this.fkMap.get(_fkName.toUpperCase())
+           : null;
+  }
+
+  /**
    * Returns the string representation of this class instance. The
-   * information includes {@link #colMap} and {@link #ukMap}.
+   * information includes {@link #colMap}, {@link #ukMap} and {@link #fkMap}.
    */
   @Override
   public String toString()
   {
     return new ToStringBuilder(this)
           .append("columns", this.colMap.values())
-          .append("unique Keys", this.ukMap.values())
+          .append("unique keys", this.ukMap.values())
+          .append("foreign keys", this.fkMap.values())
           .toString();
   }
 }

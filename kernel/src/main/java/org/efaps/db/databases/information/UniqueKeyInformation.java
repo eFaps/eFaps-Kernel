@@ -42,6 +42,8 @@ public class UniqueKeyInformation
   private final StringBuilder columnNames = new StringBuilder();
 
   /**
+   * Constructor to initialize all instance variables.
+   *
    * @param _ukName   name of unique key
    * @param _colName  first name of column of a unique key
    */

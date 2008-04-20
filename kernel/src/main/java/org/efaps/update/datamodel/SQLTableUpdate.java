@@ -39,6 +39,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.databases.information.ColumnInformation;
+import org.efaps.db.databases.information.ForeignKeyInformation;
 import org.efaps.db.databases.information.TableInformation;
 import org.efaps.db.databases.information.UniqueKeyInformation;
 import org.efaps.db.transaction.ConnectionResource;
@@ -125,20 +126,11 @@ public class SQLTableUpdate extends AbstractUpdate {
       digester.addCallMethod(database + "/table-name", "setSQLTableName", 1);
       digester.addCallParam(database + "/table-name", 0);
 
-      digester.addCallMethod(database + "/parent-table",
-          "setParentSQLTableName", 1);
+      digester.addCallMethod(database + "/parent-table", "setParentSQLTableName", 1);
       digester.addCallParam(database + "/parent-table", 0);
 
       digester.addCallMethod(database + "/table-name", "setSQLTableName", 1);
       digester.addCallParam(database + "/table-name", 0);
-
-      digester.addCallMethod(database + "/create", "setCreate", 1,
-          new Class[] { Boolean.class });
-      digester.addCallParam(database + "/create", 0);
-
-      digester.addCallMethod(database + "/update", "setUpdate", 1,
-          new Class[] { Boolean.class });
-      digester.addCallParam(database + "/update", 0);
 
       digester.addCallMethod(database + "/column", "addColumn", 4, new Class[] {
           String.class, String.class, Integer.class, Boolean.class });
@@ -283,8 +275,11 @@ public class SQLTableUpdate extends AbstractUpdate {
      */
     @Override
     public String toString() {
-      return new ToStringBuilder(this).append("name", this.name).append("key",
-          this.key).append("reference", this.reference).toString();
+      return new ToStringBuilder(this)
+                .append("name", this.name)
+                .append("key", this.key)
+                .append("reference", this.reference)
+                .toString();
     }
   }
 
@@ -345,10 +340,6 @@ public class SQLTableUpdate extends AbstractUpdate {
      */
     private final List<String> sqls = new ArrayList<String>();
 
-    private boolean create = false;
-
-    private boolean update = false;
-
     private final List<Column> columns = new ArrayList<Column>();
 
     private final List<UniqueKey> uniqueKeys = new ArrayList<UniqueKey>();
@@ -400,14 +391,6 @@ public class SQLTableUpdate extends AbstractUpdate {
       if ((_parent != null) && (_parent.length() > 0)) {
         this.parent = _parent;
       }
-    }
-
-    public void setCreate(final boolean _create) {
-      this.create = _create;
-    }
-
-    public void setUpdate(final boolean _update) {
-      this.update = _update;
     }
 
     public void addColumn(final String _name, final String _type,
@@ -467,9 +450,7 @@ public class SQLTableUpdate extends AbstractUpdate {
         throws EFapsException
     {
       executeSQLs();
-      if (this.update) {
-        updateSQLTable();
-      }
+      updateSQLTable();
       if (getValue("Name") != null) {
 
         // search for the parent SQL table name instance (if defined)
@@ -612,9 +593,18 @@ public class SQLTableUpdate extends AbstractUpdate {
 
         // add foreign keys
         for (final ForeignKey foreignKey : this.foreignKeys) {
-          getDbType().addForeignKey(con.getConnection(), tableName,
-              foreignKey.name, foreignKey.key, foreignKey.reference,
-              foreignKey.cascade);
+          final ForeignKeyInformation fkInfo = tableInfo.getFKInfo(foreignKey.name);
+          if (fkInfo != null)  {
+            if (LOG.isDebugEnabled())  {
+              LOG.debug("foreign key '" + foreignKey.name + "' already defined in "
+                        + "table '" + tableName + "'");
+            }
+// TODO: further updates
+          } else  {
+            getDbType().addForeignKey(con.getConnection(), tableName,
+                foreignKey.name, foreignKey.key, foreignKey.reference,
+                foreignKey.cascade);
+          }
         }
 
         // update check keys
