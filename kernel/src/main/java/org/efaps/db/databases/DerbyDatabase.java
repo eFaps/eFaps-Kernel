@@ -23,8 +23,8 @@ package org.efaps.db.databases;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,16 +89,17 @@ public class DerbyDatabase extends AbstractDatabase  {
    * @todo specificy real column type
    */
   public DerbyDatabase()  {
-    this.columnMap.put(ColumnType.INTEGER,      "bigint");
+    addMapping(ColumnType.INTEGER,      "bigint",     "bigint");
 //    this.columnMap.put(ColumnType.REAL,         "real");
-    this.columnMap.put(ColumnType.STRING_SHORT, "char");
-    this.columnMap.put(ColumnType.STRING_LONG,  "varchar");
-    this.columnMap.put(ColumnType.DATETIME,     "timestamp");
-    this.columnMap.put(ColumnType.BLOB,         "blob(2G)");
-    this.columnMap.put(ColumnType.CLOB,         "clob(2G)");
-    this.columnMap.put(ColumnType.BOOLEAN,      "smallint");
+    addMapping(ColumnType.STRING_SHORT, "char",       "char");
+    addMapping(ColumnType.STRING_LONG,  "varchar",    "varchar");
+    addMapping(ColumnType.DATETIME,     "timestamp",  "timestamp");
+    addMapping(ColumnType.BLOB,         "blob(2G)",   "blob(2G)");
+    addMapping(ColumnType.CLOB,         "clob(2G)",   "clob(2G)");
+    addMapping(ColumnType.BOOLEAN,      "smallint",   "smallint");
   }
 
+  @Override
   public String getCurrentTimeStamp()  {
     return "current_timestamp";
   }
@@ -120,6 +121,7 @@ public class DerbyDatabase extends AbstractDatabase  {
    * @param _con  sql connection
    * @throws SQLException
    */
+  @Override
   public void deleteAll(final Connection _con) throws SQLException  {
 
     Statement stmtSel = _con.createStatement();
@@ -188,6 +190,7 @@ public class DerbyDatabase extends AbstractDatabase  {
    *
    * @throws SQLException if the table could not be created
    */
+  @Override
   public void createTable(final Connection _con, final String _table,
           final String _parentTable) throws SQLException  {
 
@@ -230,7 +233,7 @@ public class DerbyDatabase extends AbstractDatabase  {
    * default value is defined. Is such column is created, the default value for
    * real and integer is <code>0</code>, for datetime, short and long string
    * a zero length string.
-   * 
+   *
    * @param _con            SQL connection
    * @param _tableName      name of table to update
    * @param _columnName     column to add
@@ -253,7 +256,7 @@ public class DerbyDatabase extends AbstractDatabase  {
       throws SQLException  {
 
     String defaultValue = _defaultValue;
-    
+
     if (_isNotNull && (defaultValue == null))  {
       switch (_columnType)  {
         case INTEGER:
@@ -267,15 +270,15 @@ public class DerbyDatabase extends AbstractDatabase  {
           break;
       }
     }
-    
-    super.addTableColumn(_con, _tableName, _columnName, _columnType, 
+
+    super.addTableColumn(_con, _tableName, _columnName, _columnType,
         defaultValue, _length, _isNotNull);
   }
 
   /**
    * Adds a new unique key to given table name, but only if for the column a
    * <code>NOT NULL</code> is defined.
-   * 
+   *
    * @param _con            SQL connection
    * @param _tableName      name of table for which the unique key must be
    *                        created
@@ -308,6 +311,7 @@ public class DerbyDatabase extends AbstractDatabase  {
   /**
    * @return always <i>true</i> because supported by Derby database
    */
+  @Override
   public boolean supportsGetGeneratedKeys()  {
     return true;
   }
@@ -315,6 +319,7 @@ public class DerbyDatabase extends AbstractDatabase  {
   /**
    * @return always <i>true</i> because supported by PostgreSQL database
    */
+  @Override
   public boolean supportsBinaryInputStream()  {
     return false;
   }

@@ -20,15 +20,17 @@
 
 package org.efaps.db.databases;
 
-import java.util.Map;
-import java.util.HashMap;
-
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
+import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +66,7 @@ public abstract class AbstractDatabase {
     /** long string */
     STRING_LONG,
 
-    /** data and time */
+    /** date and time */
     DATETIME,
 
     /** binary large object */
@@ -78,28 +80,83 @@ public abstract class AbstractDatabase {
   }
 
   /**
-   * The map stores the mapping between the column types used in eFaps the
+   * The map stores the mapping between the column types used in eFaps and the
    * database specific column types.
+   *
+   * @see #addMapping
    */
-  protected final Map<ColumnType, String> columnMap =
-      new HashMap<ColumnType, String>();
+  private final Map<ColumnType, String> writeColTypeMap = new HashMap<ColumnType, String>();
+
+  /**
+   * The map stores the mapping between column types used in the database and
+   * eFaps.
+   *
+   * @see #addMapping
+   */
+  private final Map<String, Set<ColumnType>> readColTypeMap = new HashMap<String, Set<ColumnType>>();
 
   protected AbstractDatabase() {
   }
 
   /**
-   * @param _columnType
-   *          column type for which the vendor specific column type should be
-   *          returned
+   * Adds a new mapping for given eFaps column type used for mapping from and
+   * to the SQL database.
+   *
+   * @param _columnType       column type within eFaps
+   * @param _writeTypeName    SQL type name used to write (create new column
+   *                          within a SQL table)
+   * @param _readTypeNames    list of SQL type names returned from the database
+   *                          meta data reading
+   * @see #readColTypeMap   to map from an eFaps column type to a SQL type name
+   * @see #writeColTypeMap  to map from a SQL type name to possible eFaps
+   *                        column types
    */
-  public String getColumnType(final ColumnType _columnType) {
-    return this.columnMap.get(_columnType);
+  protected void addMapping(final ColumnType _columnType,
+                            final String _writeTypeName,
+                            final String... _readTypeNames)
+  {
+    this.writeColTypeMap.put(_columnType, _writeTypeName);
+    for (final String readTypeName : _readTypeNames)  {
+      Set<ColumnType> colTypes = this.readColTypeMap.get(readTypeName);
+      if (colTypes == null)  {
+        colTypes = new HashSet<ColumnType>();
+        this.readColTypeMap.put(readTypeName, colTypes);
+      }
+      colTypes.add(_columnType);
+    }
+  }
+
+
+  /**
+   * @param _columnType   column type for which the vendor specific column type
+   *                      should be returned
+   * @return SQL specific column type name
+   * @see #writeColTypeMap
+   * @see #addMapping       used to define the map
+   */
+  protected String getWriteSQLTypeName(final ColumnType _columnType)
+  {
+    return this.writeColTypeMap.get(_columnType);
+  }
+
+  /**
+   * Converts given SQL column type name in a set of eFaps column types. If no
+   * mapping is specified, a <code>null</code> is returned.
+   *
+   * @param _readTypeName SQL column type name read from the database
+   * @return set of eFaps column types (or <code>null</code> if not specified)
+   * @see #writeColTypeMap
+   * @see #addMapping       used to define the map
+   */
+  public Set<ColumnType> getReadColumnTypes(final String _readTypeName)
+  {
+    return this.readColTypeMap.get(_readTypeName);
   }
 
   /**
    * The method returns the database vendor specific value for the current time
    * stamp.
-   * 
+   *
    * @return vendor specific string of the current time stamp
    */
   public abstract String getCurrentTimeStamp();
@@ -108,7 +165,7 @@ public abstract class AbstractDatabase {
    * The method implements a delete all of database user specific objects (e.g.
    * tables, views etc...). The method is called before a complete rebuild is
    * done.
-   * 
+   *
    * @param _con
    *          sql connection
    * @throws SQLException
@@ -117,13 +174,15 @@ public abstract class AbstractDatabase {
 
   /**
    * The method tests, if a view with given name exists.
-   * 
+   *
    * @param _con        sql connection
    * @param _viewName   name of view to test
    * @return <i>true</i> if view exists, otherwise <i>false</i>
    */
   public boolean existsView(final Connection _con,
-                            final String _viewName) throws SQLException  {
+                            final String _viewName)
+      throws SQLException
+  {
     boolean ret = false;
 
     final DatabaseMetaData metaData = _con.getMetaData();
@@ -149,13 +208,15 @@ public abstract class AbstractDatabase {
 
   /**
    * The method tests, if a view with given name exists.
-   * 
+   *
    * @param _con        sql connection
-   * @param _tableName  name of view to test
-   * @return <i>true</i> if view exists, otherwise <i>false</i>
+   * @param _tableName  name of table to test
+   * @return <i>true</i> if SQL table exists, otherwise <i>false</i>
    */
   public boolean existsTable(final Connection _con,
-                             final String _tableName) throws SQLException  {
+                             final String _tableName)
+      throws SQLException
+  {
     boolean ret = false;
 
     final DatabaseMetaData metaData = _con.getMetaData();
@@ -180,25 +241,41 @@ public abstract class AbstractDatabase {
   }
 
   /**
-   * A new sql table with column <code>ID</code> is created. If no parent
+   * Evaluates for given table name all information about the table and returns
+   * them as instance of {@link TableInformation}
+   *
+   * @param _con        SQL connection
+   * @param _tableName  name of SQL table for which the information is fetched
+   * @return instance of {@link TableInformation} with table information
+   * @throws SQLException if information about the table could not be fetched
+   * @see TableInformation
+   */
+  public TableInformation getTableInformation(final Connection _con,
+                                              final String _tableName)
+      throws SQLException
+  {
+    return new TableInformation(_con, _tableName);
+  }
+
+
+  /**
+   * A new SQL table with column <code>ID</code> is created. If no parent
    * table is given (set to <i>null</i>), the column <code>ID</code> of the
    * table is automatically incremented, otherwise a foreign key to the parent
    * table on column <code>ID</code> is set.
-   * 
-   * @param _con
-   *          sql connection
-   * @param _table
-   *          name of the table to create
-   * @param _parentTable
-   *          name of the parent table (could be null to define a table without
-   *          parent, but with autoincrement)
+   *
+   * @param _con          sql connection
+   * @param _table        name of the table to create
+   * @param _parentTable  name of the parent table (could be null to define a
+   *                      table without parent, but with auto increment)
    */
-  public abstract void createTable(final Connection _con, final String _table,
-      final String _parentTable) throws SQLException;
+  public abstract void createTable(final Connection _con,
+                                   final String _table,
+                                   final String _parentTable) throws SQLException;
 
   /**
    * Adds a column to a SQL table.
-   * 
+   *
    * @param _con            SQL connection
    * @param _tableName      name of table to update
    * @param _columnName     column to add
@@ -217,12 +294,13 @@ public abstract class AbstractDatabase {
                              final String _defaultValue,
                              final int _length,
                              final boolean _isNotNull)
-      throws SQLException  {
+      throws SQLException
+  {
 
     final StringBuilder cmd = new StringBuilder();
     cmd.append("alter table ").append(_tableName).append(" ")
        .append("add ").append(_columnName).append(" ")
-       .append(getColumnType(_columnType));
+       .append(getWriteSQLTypeName(_columnType));
     if (_length > 0)  {
       cmd.append("(").append(_length).append(")");
     }
@@ -232,7 +310,7 @@ public abstract class AbstractDatabase {
     if (_isNotNull)  {
       cmd.append(" not null");
     }
-    
+
     // log statement
     if (LOG.isDebugEnabled())  {
       LOG.info("    ..SQL> " + cmd.toString());
@@ -249,7 +327,7 @@ public abstract class AbstractDatabase {
 
   /**
    * Adds a new unique key to given table name.
-   * 
+   *
    * @param _con            SQL connection
    * @param _tableName      name of table for which the unique key must be
    *                        created
@@ -262,8 +340,9 @@ public abstract class AbstractDatabase {
                            final String _tableName,
                            final String _uniqueKeyName,
                            final String _columns)
-      throws SQLException  {
-    
+      throws SQLException
+  {
+
     final StringBuilder cmd = new StringBuilder();
     cmd.append("alter table ").append(_tableName).append(" ")
        .append("add constraint ").append(_uniqueKeyName).append(" ")
@@ -282,10 +361,10 @@ public abstract class AbstractDatabase {
       stmt.close();
     }
   }
-  
+
   /**
    * Adds a foreign key to given SQL table.
-   * 
+   *
    * @param _con            SQL connection
    * @param _tableName      name of table for which the foreign key must be
    *                        created
@@ -302,8 +381,9 @@ public abstract class AbstractDatabase {
                             final String _key,
                             final String _reference,
                             final boolean _cascade)
-      throws SQLException  {
-      
+      throws SQLException
+  {
+
     final StringBuilder cmd = new StringBuilder();
     cmd.append("alter table ").append(_tableName).append(" ")
        .append("add constraint ").append(_foreignKeyName).append(" ")
@@ -312,12 +392,12 @@ public abstract class AbstractDatabase {
     if (_cascade)  {
       cmd.append(" on delete cascade");
     }
-  
+
     // log statement
     if (LOG.isDebugEnabled())  {
       LOG.info("    ..SQL> " + cmd.toString());
     }
-    
+
     // excecute statement
     final Statement stmt = _con.createStatement();
     try {
@@ -326,7 +406,7 @@ public abstract class AbstractDatabase {
       stmt.close();
     }
   }
-  
+
   /**
    * Adds a new check key to given SQL table.
    *
@@ -341,7 +421,8 @@ public abstract class AbstractDatabase {
                           final String _tableName,
                           final String _checkKeyName,
                           final String _condition)
-      throws SQLException  {
+      throws SQLException
+  {
     final StringBuilder cmd = new StringBuilder();
     cmd.append("alter table ").append(_tableName).append(" ")
        .append("add constraint ").append(_checkKeyName).append(" ")
@@ -351,7 +432,7 @@ public abstract class AbstractDatabase {
     if (LOG.isDebugEnabled())  {
       LOG.info("    ..SQL> " + cmd.toString());
     }
-    
+
     // excecute statement
     final Statement stmt = _con.createStatement();
     try {
@@ -366,10 +447,11 @@ public abstract class AbstractDatabase {
    * The value is used in the OneRounQuery. The SQL-Statemenat looks like
    * "SELECT...WHERE..IN (val1,val2,val3,...valn)" The int is the maximum Value
    * for n before making a new Select.
-   * 
+   *
    * @return max Number of Value in an Expression, 0 if no max is kown
    */
-  public int getMaxExpressions() {
+  public int getMaxExpressions()
+  {
     return 0;
   }
 
@@ -378,29 +460,29 @@ public abstract class AbstractDatabase {
    * This abstract class always throws a SQLException, because for default, it
    * is not needed to implement (only if the JDBC drive does not implement
    * method 'getGeneratedKeys' for java.sql.Statements).
-   * 
-   * @param _con
-   *          sql connection
-   * @param _table
-   *          sql table for which a new id must returned
-   * @param _column
-   *          sql table column for which a new id must returned
-   * @throws SQLException
-   *           always, because method itself is not implemented not not allowed
-   *           to call
+   *
+   * @param _con    sql connection
+   * @param _table  sql table for which a new id must returned
+   * @param _column sql table column for which a new id must returned
+   * @throws SQLException always, because method itself is not implemented not
+   *                      not allowed to call
    */
-  public long getNewId(final Connection _con, final String _table,
-      final String _column) throws SQLException {
+  public long getNewId(final Connection _con,
+                       final String _table,
+                       final String _column)
+      throws SQLException
+  {
     throw new SQLException("method 'getNewId' not imlemented");
   }
 
   /**
    * The method returns if a database implementation supports to get generated
    * keys while inserting a new line in a SQL table.
-   * 
+   *
    * @return always <i>false</i> because not implemented in this class
    */
-  public boolean supportsGetGeneratedKeys() {
+  public boolean supportsGetGeneratedKeys()
+  {
     return false;
   }
 
@@ -409,7 +491,7 @@ public abstract class AbstractDatabase {
    * auto generated keys. If defined to <i>true</i>, the insert is done with
    * defined column names for the auto generated columns. Otherwise only
    * {@link java.sql.Statement#RETURN_GENERATED_KEYS} is given for the insert.
-   * 
+   *
    * @return always <i>false</i> because not implemented in this class
    * @see #supportsGetGeneratedKeys
    */
@@ -420,38 +502,39 @@ public abstract class AbstractDatabase {
   /**
    * The method returns if a database implementation supports for blobs binary
    * input stream supports the available method or not.
-   * 
+   *
    * @return always <i>false</i> because not implemented in this class
    * @see #supportsBinaryInputStream
    */
-  public boolean supportsBlobInputStreamAvailable() {
+  public boolean supportsBlobInputStreamAvailable()
+  {
     return false;
   }
 
   /**
    * The method returns if a database implementation supports directly binary
    * stream for result sets (instead of using first blobs).
-   * 
+   *
    * @return always <i>false</i> because not implemented in this class
    * @see #supportsBlobInputStreamAvailable
    */
-  public boolean supportsBinaryInputStream() {
+  public boolean supportsBinaryInputStream()
+  {
     return false;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static methods
 
   /**
    * Instanciate the given db classname and returns them.
-   * 
-   * @param _dbClassName
-   *          name of the class to instanciate
+   *
+   * @param _dbClassName  name of the class to instanciate
    * @return new database definition instance
    */
   public static AbstractDatabase findByClassName(final String _dbClassName)
-      throws ClassNotFoundException, InstantiationException,
-      IllegalAccessException {
+      throws ClassNotFoundException, InstantiationException, IllegalAccessException
+  {
     return (AbstractDatabase) Class.forName(_dbClassName).newInstance();
   }
 }

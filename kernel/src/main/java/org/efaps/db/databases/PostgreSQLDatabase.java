@@ -23,8 +23,8 @@ package org.efaps.db.databases;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,16 +52,17 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
    * @todo specificy real column type
    */
   public PostgreSQLDatabase()  {
-    this.columnMap.put(ColumnType.INTEGER,      "bigint");
-    this.columnMap.put(ColumnType.REAL,         "real");
-    this.columnMap.put(ColumnType.STRING_SHORT, "char");
-    this.columnMap.put(ColumnType.STRING_LONG,  "varchar");
-    this.columnMap.put(ColumnType.DATETIME,     "timestamp");
-    this.columnMap.put(ColumnType.BLOB,         "bytea");
-    this.columnMap.put(ColumnType.CLOB,         "text");
-    this.columnMap.put(ColumnType.BOOLEAN,      "boolean");
+    addMapping(ColumnType.INTEGER,      "bigint",     "int8", "bigserial");
+    addMapping(ColumnType.REAL,         "real",       "float4");
+    addMapping(ColumnType.STRING_SHORT, "char",       "bpchar");
+    addMapping(ColumnType.STRING_LONG,  "varchar",    "varchar");
+    addMapping(ColumnType.DATETIME,     "timestamp",  "timestamp");
+    addMapping(ColumnType.BLOB,         "bytea",      "bytea");
+    addMapping(ColumnType.CLOB,         "text",       "text");
+    addMapping(ColumnType.BOOLEAN,      "boolean",    "bool");
   }
 
+  @Override
   public String getCurrentTimeStamp()  {
     return "current_timestamp";
   }
@@ -82,6 +83,7 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
    * @param _con  sql connection
    * @throws SQLException
    */
+  @Override
   public void deleteAll(final Connection _con) throws SQLException  {
 
     final Statement stmtSel = _con.createStatement();
@@ -92,9 +94,9 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
       if (LOG.isInfoEnabled())  {
         LOG.info("Remove all Tables");
       }
-      
+
       final DatabaseMetaData metaData = _con.getMetaData();
-      
+
       // delete all views
       final ResultSet rsViews = metaData.getTables(null, null, "%", new String[]{"VIEW"});
       while (rsViews.next())  {
@@ -105,7 +107,7 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
         stmtExec.execute("drop view " + viewName);
       }
       rsViews.close();
-      
+
       // delete all tables
       final ResultSet rsTables = metaData.getTables(null, null, "%", new String[]{"TABLE"});
       while (rsTables.next())  {
@@ -136,6 +138,7 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
    *
    * @throws SQLException if the table could not be created
    */
+  @Override
   public void createTable(final Connection _con, final String _table,
           final String _parentTable) throws SQLException  {
 
@@ -184,6 +187,7 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
    * @param _column       sql table column for which a new id must returned
    * @throws SQLException if a new id could not be retrieved
    */
+  @Override
   public long getNewId(final Connection _con, final String _table,
           final String _column)  throws SQLException  {
 
@@ -211,6 +215,7 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
   /**
    * @return always <i>true</i> because supported by PostgreSQL database
    */
+  @Override
   public boolean supportsBinaryInputStream()  {
     return true;
   }

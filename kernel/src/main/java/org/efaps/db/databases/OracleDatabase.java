@@ -22,8 +22,8 @@ package org.efaps.db.databases;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,31 +55,33 @@ public class OracleDatabase extends AbstractDatabase  {
    */
   public OracleDatabase()  {
     super();
-    this.columnMap.put(ColumnType.INTEGER,      "number");
-    this.columnMap.put(ColumnType.REAL,         "number");
-    this.columnMap.put(ColumnType.STRING_SHORT, "nvarchar2");
-    this.columnMap.put(ColumnType.STRING_LONG,  "nvarchar2");
-    this.columnMap.put(ColumnType.DATETIME,     "timestamp");
-    this.columnMap.put(ColumnType.BLOB,         "blob");
-    this.columnMap.put(ColumnType.CLOB,         "nclob");
-    this.columnMap.put(ColumnType.BOOLEAN,      "number");
+    addMapping(ColumnType.INTEGER,      "number",     "number");
+    addMapping(ColumnType.REAL,         "number",     "number");
+    addMapping(ColumnType.STRING_SHORT, "nvarchar2",  "nvarchar2");
+    addMapping(ColumnType.STRING_LONG,  "nvarchar2",  "nvarchar2");
+    addMapping(ColumnType.DATETIME,     "timestamp",  "timestamp");
+    addMapping(ColumnType.BLOB,         "blob",       "blob");
+    addMapping(ColumnType.CLOB,         "nclob",      "nclob");
+    addMapping(ColumnType.BOOLEAN,      "number",     "number");
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
+  @Override
   public int getMaxExpressions() {
     return 1000;
   }
-  
-  
-  
+
+
+
   /**
    * The method returns string <code>sysdate</code> which let Oracle set the
    * timestamp automatically from the database server.
    *
    * @return string <code>sysdate</code>
    */
+  @Override
   public String getCurrentTimeStamp()  {
     return "sysdate";
   }
@@ -99,6 +101,7 @@ public class OracleDatabase extends AbstractDatabase  {
    * @param _con  sql connection
    * @throws SQLException
    */
+  @Override
   public void deleteAll(final Connection _con) throws SQLException  {
 
     Statement stmtSel = _con.createStatement();
@@ -175,6 +178,7 @@ public class OracleDatabase extends AbstractDatabase  {
    * @param _parenTable name of the parent table
    * @throws SQLException if the table or sequence could not be created
    */
+  @Override
   public void createTable(final Connection _con, final String _table,
           final String _parentTable) throws SQLException  {
 
@@ -222,6 +226,7 @@ public class OracleDatabase extends AbstractDatabase  {
    * @param _column       sql table column for which a new id must returned
    * @throws SQLException if a new id could not be retrieved
    */
+  @Override
   public long getNewId(final Connection _con, final String _table,
           final String _column)  throws SQLException  {
 
