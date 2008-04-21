@@ -29,9 +29,37 @@
 
   <uuid>bf738e04-44ff-4264-b159-348e52fb9c2d</uuid>
 
-<!-- Abstract User -->
+  <!-- Abstract User -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev$</local>
+      <mode>(version==5) || (version==latest)</mode>
+    </version>
+    <name>Admin_User_AbstractSQLTable</name>
+    <typeid-column>TYPEID</typeid-column>
+    <database>
+      <table-name>T_USERABSTRACT</table-name>
+      <!-- columns -->
+      <column name="TYPEID"     type="INTEGER"                      not-null="true"/>
+      <column name="NAME"       type="STRING_SHORT" length="128"    not-null="true"/>
+      <column name="UUID"       type="STRING_SHORT" length="128"/>
+      <column name="REVISION"   type="STRING_SHORT" length="40"/>
+      <column name="STATUS"     type="BOOLEAN"                     />
+      <column name="CREATOR"    type="INTEGER"                      not-null="true"/>
+      <column name="CREATED"    type="DATETIME"                     not-null="true"/>
+      <column name="MODIFIER"   type="INTEGER"                      not-null="true"/>
+      <column name="MODIFIED"   type="DATETIME"                     not-null="true"/>
+      <!-- unique keys -->
+      <unique name="USERABSTR_UK_NAME" columns="NAME"/>
+      <!-- foreign keys -->
+      <foreign name="USRABSTR_FK_CRTR"      key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="USRABSTR_MDFR"         key="MODIFIER"      reference="T_USERPERSON(ID)"/>
+    </database>
+  </definition>
 
-  <!-- create table -->
+  <!-- create base data model -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -51,40 +79,9 @@
       <column name="CREATED"    type="DATETIME"                     not-null="true"/>
       <column name="MODIFIER"   type="INTEGER"                      not-null="true"/>
       <column name="MODIFIED"   type="DATETIME"                     not-null="true"/>
-      <!-- constraints -->
+      <!-- unique keys -->
       <unique name="USERABSTR_UK_NAME" columns="NAME"/>
      </database>
   </definition>
 
-  <!-- define constraints -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==4)</mode>
-    </version>
-    <database>
-      <table-name>T_USERABSTRACT</table-name>
-      <!-- constraints -->
-      <foreign name="USRABSTR_FK_CRTR"      key="CREATOR"       reference="T_USERPERSON(ID)"/>
-      <foreign name="USRABSTR_MDFR"         key="MODIFIER"      reference="T_USERPERSON(ID)"/>
-    </database>
-  </definition>
-
-  <!-- define datamodel -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==5)</mode>
-    </version>
-    <name>Admin_User_AbstractSQLTable</name>
-    <typeid-column>TYPEID</typeid-column>
-    <database>
-      <table-name>T_USERABSTRACT</table-name>
-    </database>
-  </definition>
 </datamodel-sqltable>
-

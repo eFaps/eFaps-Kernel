@@ -30,15 +30,15 @@
   <uuid>a3a1ab4b-f3c3-49ad-a5cf-fc776ba1990c</uuid>
 
   <!-- Person object -->
-
-  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>2</global>
+      <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==1)</mode>
+      <mode>(version==5) || (version==latest)</mode>
     </version>
+    <name>Admin_User_PersonSQLTable</name>
+    <parent>Admin_User_AbstractSQLTable</parent>
     <database>
       <table-name>T_USERPERSON</table-name>
       <parent-table>T_USERABSTRACT</parent-table>
@@ -50,10 +50,10 @@
       <column name="LASTLOGIN"  type="DATETIME"/>
       <column name="LOGINTRY"   type="DATETIME"/>
       <column name="LOGINTRIES" type="INTEGER"/>
-     </database>
+    </database>
   </definition>
 
-  <!-- define constraints and view-->
+  <!-- define view-->
   <definition>
     <version>
       <application>eFaps</application>
@@ -83,19 +83,26 @@
     </database>
   </definition>
 
-  <!-- define data model -->
+  <!-- create base data model -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>3</global>
+      <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==5)</mode>
+      <mode>(version==1)</mode>
     </version>
-    <name>Admin_User_PersonSQLTable</name>
-    <parent>Admin_User_AbstractSQLTable</parent>
     <database>
       <table-name>T_USERPERSON</table-name>
-    </database>
+      <parent-table>T_USERABSTRACT</parent-table>
+      <!-- columns -->
+      <column name="FIRSTNAME"  type="STRING_SHORT" length="128" not-null="true"/>
+      <column name="LASTNAME"   type="STRING_SHORT" length="128" not-null="true"/>
+      <column name="EMAIL"      type="STRING_SHORT" length="128" not-null="true"/>
+      <column name="PASSWORD"   type="STRING_SHORT" length="128"/>
+      <column name="LASTLOGIN"  type="DATETIME"/>
+      <column name="LOGINTRY"   type="DATETIME"/>
+      <column name="LOGINTRIES" type="INTEGER"/>
+     </database>
   </definition>
-</datamodel-sqltable>
 
+</datamodel-sqltable>

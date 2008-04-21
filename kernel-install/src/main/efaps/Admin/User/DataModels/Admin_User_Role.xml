@@ -29,18 +29,6 @@
 
   <uuid>e4d6ecbe-f198-4f84-aa69-5a9fd3165112</uuid>
 
-  <!-- define type (is already defined) -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==6)</mode>
-    </version>
-    <name>Admin_User_Role</name>
-    <parent>Admin_User_Abstract</parent>
-  </definition>
-
   <definition>
     <version>
       <application>eFaps</application>
@@ -57,4 +45,17 @@
              method="execute"
              index="1"/>
   </definition>
+
+  <!-- define type (is already defined) -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==6)</mode>
+    </version>
+    <name>Admin_User_Role</name>
+    <parent>Admin_User_Abstract</parent>
+  </definition>
+
 </datamodel-type>

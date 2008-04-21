@@ -27,9 +27,25 @@
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>1c8bc95e-1c4d-4605-a003-22c0af1d3d10</uuid>
+  <uuid>68d6f94e-74d8-40c7-82c7-77f33840ffa6</uuid>
 
-  <!-- create table -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev$</local>
+      <mode>(version==5) || (version==latest)</mode>
+    </version>
+    <name>Admin_User_AttributeSQLTable</name>
+    <database>
+      <table-name>T_USERATTR</table-name>
+      <!-- column definitions -->
+      <column name="ATTRIBUTEKEY"   type="STRING_SHORT" not-null="true" length="128" />
+      <column name="VALUE"          type="STRING_LONG"                  length="2048" />
+    </database>
+  </definition>
+
+  <!-- create base data model -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -38,37 +54,11 @@
       <mode>(version==1)</mode>
     </version>
     <database>
-      <table-name>T_USERATTR2REL</table-name>
-      <column name="RELATIONID"   type="INTEGER" not-null="true" />
+      <table-name>T_USERATTR</table-name>
+      <!-- column definitions -->
+      <column name="ATTRIBUTEKEY"   type="STRING_SHORT" not-null="true" length="128" />
+      <column name="VALUE"          type="STRING_LONG"                  length="2048" />
       </database>
   </definition>
 
-  <!-- define constraints -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==4)</mode>
-    </version>
-    <database>
-      <table-name>T_USERATTR2REL</table-name>
-      <parent-table>T_USERATTRABSTRACT</parent-table>
-     </database>
-  </definition>
-
-  <!-- define datamodel -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==5)</mode>
-    </version>
-    <name>Admin_User_Attribute2Relation_SQLTable</name>
-    <database>
-      <table-name>T_USERATTR2REL</table-name>
-    </database>
-  </definition>
 </datamodel-sqltable>
-

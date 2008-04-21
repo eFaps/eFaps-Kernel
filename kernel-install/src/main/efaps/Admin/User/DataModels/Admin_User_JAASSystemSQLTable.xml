@@ -29,16 +29,15 @@
 
   <uuid>1f84b7ce-cc40-4453-a58c-97a3aca0e5a8</uuid>
 
-<!-- JAAS systems -->
-
-  <!-- create table -->
+  <!-- JAAS systems -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>2</global>
+      <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==1)</mode>
+      <mode>(version==5) || (version==latest)</mode>
     </version>
+    <name>Admin_User_JAASSystemSQLTable</name>
     <database>
       <table-name>T_USERJAASSYSTEM</table-name>
       <!-- columns -->
@@ -59,10 +58,13 @@
       <column name="METHODPERSONEMAIL"      type="STRING_SHORT" length="128"/>
       <column name="METHODROLEKEY"          type="STRING_SHORT" length="128"/>
       <column name="METHODGROUPKEY"         type="STRING_SHORT" length="128"/>
-      <!-- constraints -->
+      <!-- unique keys -->
       <unique name="USERJAASSYS_UK_NAME"    columns="NAME"/>
       <unique name="USERJAASSYS_UK_UUID"    columns="UUID"/>
-     </database>
+       <!-- foreign keys -->
+      <foreign name="USERJAASSYS_FK_CRTR"   key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="USERJAASSYS_FK_MDFR"   key="MODIFIER"      reference="T_USERPERSON(ID)"/>
+    </database>
   </definition>
 
   <!-- define constraints and needed views -->
@@ -96,21 +98,38 @@
      </database>
   </definition>
 
-  <!-- define data model -->
+  <!-- create base data model -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>3</global>
+      <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==5)</mode>
+      <mode>(version==1)</mode>
     </version>
-    <name>Admin_User_JAASSystemSQLTable</name>
     <database>
       <table-name>T_USERJAASSYSTEM</table-name>
-       <!-- foreign keys -->
-      <foreign name="USERJAASSYS_FK_CRTR"   key="CREATOR"       reference="T_USERPERSON(ID)"/>
-      <foreign name="USERJAASSYS_FK_MDFR"   key="MODIFIER"      reference="T_USERPERSON(ID)"/>
-    </database>
+      <!-- columns -->
+      <column name="NAME"                   type="STRING_SHORT" length="128"    not-null="true"/>
+      <column name="UUID"                   type="STRING_SHORT" length="128"/>
+      <column name="REVISION"               type="STRING_SHORT" length="40"/>
+      <column name="CREATOR"                type="INTEGER"                      not-null="true"/>
+      <column name="CREATED"                type="DATETIME"                     not-null="true"/>
+      <column name="MODIFIER"               type="INTEGER"                      not-null="true"/>
+      <column name="MODIFIED"               type="DATETIME"                     not-null="true"/>
+      <column name="CLASSNAMEPERSON"        type="STRING_SHORT" length="128"    not-null="true"/>
+      <column name="CLASSNAMEROLE"          type="STRING_SHORT" length="128"/>
+      <column name="CLASSNAMEGROUP"         type="STRING_SHORT" length="128"/>
+      <column name="METHODPERSONKEY"        type="STRING_SHORT" length="128"    not-null="true"/>
+      <column name="METHODPERSONNAME"       type="STRING_SHORT" length="128"    not-null="true"/>
+      <column name="METHODPERSONFIRSTNAME"  type="STRING_SHORT" length="128"/>
+      <column name="METHODPERSONLASTNAME"   type="STRING_SHORT" length="128"/>
+      <column name="METHODPERSONEMAIL"      type="STRING_SHORT" length="128"/>
+      <column name="METHODROLEKEY"          type="STRING_SHORT" length="128"/>
+      <column name="METHODGROUPKEY"         type="STRING_SHORT" length="128"/>
+      <!-- unique keys -->
+      <unique name="USERJAASSYS_UK_NAME"    columns="NAME"/>
+      <unique name="USERJAASSYS_UK_UUID"    columns="UUID"/>
+     </database>
   </definition>
-</datamodel-sqltable>
 
+</datamodel-sqltable>

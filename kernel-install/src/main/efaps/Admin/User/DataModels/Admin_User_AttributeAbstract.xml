@@ -35,57 +35,57 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==6)</mode>
+      <mode>(version==6) || (version==latest)</mode>
     </version>
     <name>Admin_User_AttributeAbstract</name>
     <!-- attributes -->
     <attribute>
       <name>Type</name>
       <type>Type</type>
-      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstractSQLTable</sqltable>
       <sqlcolumn>TYPEID</sqlcolumn>
     </attribute>
     <attribute>
       <name>OID</name>
       <type>OID</type>
-      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstractSQLTable</sqltable>
       <sqlcolumn>TYPEID,ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>ID</name>
       <type>Integer</type>
-      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstractSQLTable</sqltable>
       <sqlcolumn>ID</sqlcolumn>
     </attribute>
     <attribute>
       <name>UserLink</name>
       <type>Link</type>
       <typelink>Admin_User_Abstract</typelink>
-      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstractSQLTable</sqltable>
       <sqlcolumn>USERABSTRACTID</sqlcolumn>
     </attribute>
     <attribute>
       <name>Creator</name>
       <type>CreatorLink</type>
-      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstractSQLTable</sqltable>
       <sqlcolumn>CREATOR</sqlcolumn>
     </attribute>
     <attribute>
       <name>Created</name>
       <type>Created</type>
-      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstractSQLTable</sqltable>
       <sqlcolumn>CREATED</sqlcolumn>
     </attribute>
     <attribute>
       <name>Modifier</name>
       <type>ModifierLink</type>
-      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstractSQLTable</sqltable>
       <sqlcolumn>MODIFIER</sqlcolumn>
     </attribute>
     <attribute>
       <name>Modified</name>
       <type>Modified</type>
-      <sqltable>Admin_User_AttributeAbstract_SQLTable</sqltable>
+      <sqltable>Admin_User_AttributeAbstractSQLTable</sqltable>
       <sqlcolumn>MODIFIED</sqlcolumn>
     </attribute>
   </definition>

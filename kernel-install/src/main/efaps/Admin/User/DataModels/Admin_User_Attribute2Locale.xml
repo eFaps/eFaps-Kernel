@@ -43,7 +43,7 @@
       <name>Locale</name>
       <type>LinkWithRanges</type>
       <typelink>Admin_Language</typelink>
-      <sqltable>Admin_User_Attribute2Relation_SQLTable</sqltable>
+      <sqltable>Admin_User_Attribute2RelationSQLTable</sqltable>
       <sqlcolumn>RELATIONID</sqlcolumn>
       <trigger name="Admin_User_Attribute2Locale_RV" event="RANGE_VALUE" program="org.efaps.esjp.admin.datamodel.RangesValue">
         <property name="Value">Language</property>
