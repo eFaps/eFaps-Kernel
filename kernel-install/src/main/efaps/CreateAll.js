@@ -29,7 +29,7 @@ var CURRENT_TIMESTAMP = Context.getDbType().getCurrentTimeStamp();
  * @param _text (String) text to print out
  */
 function _eFapsPrint(_text)  {
-  EFAPS_LOGGER.info(_text);
+  EFAPS_LOGGER.info("    " + _text);
 }
 
 /**
