@@ -32,6 +32,26 @@
   <!-- SQL Table to hold the Default-Values and Keys for the Properties -->
 
   <definition>
+	<version>
+      <application>lucene</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==5) || (version==latest)</mode>
+    </version>
+    <name>Admin_DBPropertiesSQLTable</name>
+    <database>
+      <table-name>T_ADPROP</table-name>
+      <!-- columns -->
+      <column name="BUNDLEID"   type="INTEGER"      not-null="true" />
+      <column name="PROPKEY"    type="STRING_SHORT" not-null="true" length="254"/>
+      <column name="DEFAULTV"   type="STRING_LONG"  not-null="true" length="2048"/>
+      <!-- foreign keys -->
+      <foreign name="T_ADPROP_FK_BUNDLEID"	key="BUNDLEID"  	reference="T_ADPROPBUN(ID)"/>
+    </database>
+  </definition>
+
+  <!-- base data model -->
+  <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
@@ -40,8 +60,6 @@
     </version>
     <database>
       <table-name>T_ADPROP</table-name>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="BUNDLEID"   type="INTEGER"      not-null="true" />
       <column name="PROPKEY"    type="STRING_SHORT" not-null="true" length="254"/>
@@ -49,18 +67,4 @@
       </database>
   </definition>
 
-  <definition>
-	<version>
-      <application>lucene</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==6)</mode>
-    </version>
-    <name>Admin_DBPropertiesSQLTable</name>
-    <database>
-      <table-name>T_ADPROP</table-name>
-      <update>true</update>
-      <foreign name="T_ADPROP_FK_BUNDLEID"	key="BUNDLEID"  	reference="T_ADPROPBUN(ID)"/>
-    </database>
-  </definition>
- </datamodel-sqltable>
+</datamodel-sqltable>
