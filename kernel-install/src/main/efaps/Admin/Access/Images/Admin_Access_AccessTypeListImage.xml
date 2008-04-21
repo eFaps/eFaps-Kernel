@@ -38,6 +38,8 @@
     </version>
     <name>Admin_Access_AccessTypeListImage</name>
     <file>Admin_Access_AccessTypeListImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_Access_AccessTypeList</type>
   </definition>
 
 </ui-image>

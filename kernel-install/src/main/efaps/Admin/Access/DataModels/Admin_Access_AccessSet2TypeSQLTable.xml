@@ -31,7 +31,34 @@
 
   <!-- Link from Access Sets to Access Types object -->
 
-  <!-- create table -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev$</local>
+      <mode>(version==5) || (version==latest)</mode>
+    </version>
+    <name>Admin_Access_AccessSet2TypeSQLTable</name>
+    <database>
+      <table-name>T_ACCESSSET2TYPE</table-name>
+      <!-- columns -->
+      <column name="ACCESSSET"      type="INTEGER"                      not-null="true"/>
+      <column name="ACCESSTYPE"     type="INTEGER"                      not-null="true"/>
+      <column name="CREATOR"        type="INTEGER"                      not-null="true"/>
+      <column name="CREATED"        type="DATETIME"                     not-null="true"/>
+      <column name="MODIFIER"       type="INTEGER"                      not-null="true"/>
+      <column name="MODIFIED"       type="DATETIME"                     not-null="true"/>
+       <!-- constraints -->
+      <unique name="ACSST2TP_UK_ST2TP"      columns="ACCESSSET,ACCESSTYPE"/>
+      <!-- foreign keys -->
+      <foreign name="ACSST2TP_FK_SET"       key="ACCESSSET"     reference="T_ACCESSSET(ID)"/>
+      <foreign name="ACSST2TP_FK_TYPE"      key="ACCESSTYPE"    reference="T_ACCESSTYPE(ID)"/>
+      <foreign name="ACSST2TP_FK_CRTR"      key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="ACSST2TP_FK_MDFR"      key="MODIFIER"      reference="T_USERPERSON(ID)"/>
+    </database>
+  </definition>
+
+  <!-- base data model -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -41,8 +68,6 @@
     </version>
     <database>
       <table-name>T_ACCESSSET2TYPE</table-name>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="ACCESSSET"      type="INTEGER"                      not-null="true"/>
       <column name="ACCESSTYPE"     type="INTEGER"                      not-null="true"/>
@@ -60,18 +85,5 @@
      </database>
   </definition>
 
-  <!-- define data model -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==5)</mode>
-    </version>
-    <name>Admin_Access_AccessSet2TypeSQLTable</name>
-    <database>
-      <table-name>T_ACCESSSET2TYPE</table-name>
-    </database>
-  </definition>
 </datamodel-sqltable>
 

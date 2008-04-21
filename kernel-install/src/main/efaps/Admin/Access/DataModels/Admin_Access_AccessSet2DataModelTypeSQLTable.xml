@@ -31,18 +31,16 @@
 
   <!-- Link from Access Sets to Data Model Types object -->
 
-  <!-- create table -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>2</global>
+      <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==1)</mode>
+      <mode>(version==5) || (version==latest)</mode>
     </version>
+    <name>Admin_Access_AccessSet2DataModelTypeSQLTable</name>
     <database>
       <table-name>T_ACCESSSET2DMTYPE</table-name>
-      <create>true</create>
-      <update>true</update>
       <!-- columns -->
       <column name="ACCESSSET"      type="INTEGER"                      not-null="true"/>
       <column name="DMTYPE"         type="INTEGER"                      not-null="true"/>
@@ -60,18 +58,32 @@
     </database>
   </definition>
 
-  <!-- define data model -->
+  <!-- base data model -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>3</global>
+      <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==5)</mode>
+      <mode>(version==1)</mode>
     </version>
-    <name>Admin_Access_AccessSet2DataModelTypeSQLTable</name>
     <database>
       <table-name>T_ACCESSSET2DMTYPE</table-name>
+      <!-- columns -->
+      <column name="ACCESSSET"      type="INTEGER"                      not-null="true"/>
+      <column name="DMTYPE"         type="INTEGER"                      not-null="true"/>
+      <column name="CREATOR"        type="INTEGER"                      not-null="true"/>
+      <column name="CREATED"        type="DATETIME"                     not-null="true"/>
+      <column name="MODIFIER"       type="INTEGER"                      not-null="true"/>
+      <column name="MODIFIED"       type="DATETIME"                     not-null="true"/>
+       <!-- constraints -->
+      <unique name="ACSST2DMTP_UK_ST2TP"    columns="ACCESSSET,DMTYPE"/>
+      <!-- foreign keys -->
+      <foreign name="ACSST2DMTP_FK_SET"     key="ACCESSSET"     reference="T_ACCESSSET(ID)"/>
+      <foreign name="ACSST2DMTP_FK_TYPE"    key="DMTYPE"        reference="T_DMTYPE(ID)"/>
+      <foreign name="ACSST2DMTP_FK_CRTR"    key="CREATOR"       reference="T_USERPERSON(ID)"/>
+      <foreign name="ACSST2DMTP_FK_MDFR"    key="MODIFIER"      reference="T_USERPERSON(ID)"/>
     </database>
   </definition>
+
 </datamodel-sqltable>
 
