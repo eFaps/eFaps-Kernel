@@ -59,7 +59,7 @@
       <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
-      <mode>(version==4)</mode>
+      <mode>(version==2)</mode>
     </version>
     <database>
       <!-- create view representing all persons -->

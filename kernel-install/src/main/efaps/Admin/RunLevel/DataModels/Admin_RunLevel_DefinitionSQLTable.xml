@@ -30,8 +30,28 @@
   <uuid>ffdf2e8f-ff2b-4cc8-85bf-481c167302ab</uuid>
 
   <!-- SQL Table to hold the RunLevel Basic Definitons -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev$</local>
+      <mode>(version==5) || (version==latest)</mode>
+    </version>
+    <name>Admin_RunLevel_DefinitionSQLTable</name>
+    <database>
+      <table-name>T_RUNLEVELDEF</table-name>
+      <!-- columns -->
+      <column name="RUNLEVELID" type="INTEGER"      not-null="true" />
+      <column name="PRIORITY"   type="INTEGER"      not-null="true" />
+      <column name="CLASS"      type="STRING_SHORT" not-null="true" length="254"/> 
+      <column name="METHOD"     type="STRING_SHORT" not-null="true" length="128"/> 
+      <column name="PARAMETER"  type="STRING_SHORT"                 length="128"/>
+      <!-- foreign keys -->
+      <foreign name="T_RUNLEVELDEF_FK_RNLVL"    key="RUNLEVELID"    reference="T_RUNLEVEL(ID)"/>
+    </database>
+  </definition>
 
-  <!-- create table -->
+  <!-- create base data model -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -48,35 +68,6 @@
       <column name="METHOD"     type="STRING_SHORT" not-null="true" length="128"/> 
       <column name="PARAMETER"  type="STRING_SHORT"                 length="128"/>
      </database>
-  </definition>
-
-  <!-- define constraints -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==4)</mode>
-    </version>
-    <database>
-      <table-name>T_RUNLEVELDEF</table-name>
-      <!-- constraints -->
-      <foreign name="T_RUNLEVELDEF_FK_RNLVL"    key="RUNLEVELID"    reference="T_RUNLEVEL(ID)"/>
-    </database>
-  </definition>
-
-  <!-- define datamodel -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==5)</mode>
-    </version>
-    <name>Admin_RunLevel_DefinitionSQLTable</name>
-    <database>
-      <table-name>T_RUNLEVELDEF</table-name>
-    </database>
   </definition>
 
 </datamodel-sqltable>

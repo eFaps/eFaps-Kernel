@@ -30,8 +30,26 @@
   <uuid>22ef4964-0401-435b-a668-6ba4f121cf4d</uuid>
 
   <!-- SQL Table to hold the RunLevel Basic Definitons -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev$</local>
+      <mode>(version==5) || (version==latest)</mode>
+    </version>
+    <name>Admin_RunLevel_RunLevelSQLTable</name>
+    <database>
+      <table-name>T_RUNLEVEL</table-name>
+      <!-- columns -->
+      <column name="RUNLEVEL" type="STRING_SHORT" not-null="true" length="128"/>
+      <column name="UUID"     type="STRING_SHORT" not-null="true" length="128"/> 
+      <column name="PARENT"   type="INTEGER" />
+      <!-- foreign keys -->
+      <foreign name="T_RUNLEVEL_FK_PARENT"  key="PARENT"    reference="T_RUNLEVEL(ID)"/>
+    </database>
+  </definition>
 
-  <!-- create table -->
+  <!-- create base data model -->
   <definition>
     <version>
       <application>eFaps</application>
@@ -46,36 +64,6 @@
       <column name="UUID"     type="STRING_SHORT" not-null="true" length="128"/> 
       <column name="PARENT"   type="INTEGER" />
      </database>
-  </definition>
-
-  <!-- define constraints -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==4)</mode>
-    </version>
-    <database>
-      <table-name>T_RUNLEVEL</table-name>
-      <update>true</update>
-      <!-- constraints -->
-      <foreign name="T_RUNLEVEL_FK_PARENT"  key="PARENT"    reference="T_RUNLEVEL(ID)"/>
-    </database>
-  </definition>
-
-  <!-- define datamodel -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==5)</mode>
-    </version>
-    <name>Admin_RunLevel_RunLevelSQLTable</name>
-    <database>
-      <table-name>T_RUNLEVEL</table-name>
-    </database>
   </definition>
 
 </datamodel-sqltable>

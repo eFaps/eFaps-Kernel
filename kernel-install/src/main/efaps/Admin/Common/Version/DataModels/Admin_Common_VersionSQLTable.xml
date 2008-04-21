@@ -30,15 +30,14 @@
   <uuid>8abe60c3-1c83-473d-9f2b-dcd70dbeb09c</uuid>
 
   <!-- Common Version Table -->
-
-  <!-- create the SQL Table -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>1</global>
+      <global>2</global>
       <local>1</local>
-      <mode>(version==1)</mode>
+      <mode>(version==5) || (version==latest)</mode>
     </version>
+    <name>Admin_Common_VersionSQLTable</name>
     <database>
       <table-name>T_CMVERSION</table-name>
       <!-- columns -->
@@ -48,7 +47,7 @@
       <column name="CREATED"  type="DATETIME"                  not-null="true" />
       <column name="MODIFIER" type="INTEGER"                   not-null="true" />
       <column name="MODIFIED" type="DATETIME"                  not-null="true" />
-      <!-- constraints -->
+      <!-- unique keys -->
       <unique name="COMVER_UK_NAMEREV" columns="NAME,REVISION" />
     </database>
   </definition>
@@ -59,7 +58,7 @@
       <application>eFaps</application>
       <global>2</global>
       <local>1</local>
-      <mode>(version==4)</mode>
+      <mode>(version==2)</mode>
     </version>
     <database>
       <!-- view representing all versions -->
@@ -72,15 +71,14 @@
     </database>
   </definition>
 
-  <!-- define complete SQL table -->
+  <!-- create the SQL Table -->
   <definition>
     <version>
       <application>eFaps</application>
-      <global>2</global>
+      <global>1</global>
       <local>1</local>
-      <mode>(version==5) || (version==latest)</mode>
+      <mode>(version==1)</mode>
     </version>
-    <name>Admin_Common_VersionSQLTable</name>
     <database>
       <table-name>T_CMVERSION</table-name>
       <!-- columns -->

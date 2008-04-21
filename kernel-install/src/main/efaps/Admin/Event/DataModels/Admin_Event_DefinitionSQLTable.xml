@@ -31,6 +31,22 @@
   <definition>
     <version>
       <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev$</local>
+      <mode>(version==5) || (version==latest)</mode>
+    </version>
+    <name>Admin_Event_DefinitionSQLTable</name>
+    <parent>Admin_Common_AbstractSQLTable</parent>
+    <database>
+      <table-name>T_EVENTDEF</table-name>
+      <foreign name="T_EVENTDEF_FK_PRG" key="PRG" reference="T_CMABSTRACT(ID)"/>
+    </database>
+  </definition>
+
+  <!-- create base data model -->
+  <definition>
+    <version>
+      <application>eFaps</application>
       <global>2</global>
       <local>$Rev$</local>
       <mode>(version==1)</mode>
@@ -46,19 +62,4 @@
     </database>
   </definition>
 
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==5)</mode>
-    </version>
-    <name>Admin_Event_DefinitionSQLTable</name>
-    <parent>Admin_Common_AbstractSQLTable</parent>
-    <database>
-      <table-name>T_EVENTDEF</table-name>
-      <update>true</update>
-      <foreign name="T_EVENTDEF_FK_PRG" key="PRG" reference="T_CMABSTRACT(ID)"/>
-    </database>
-  </definition>
 </datamodel-sqltable>

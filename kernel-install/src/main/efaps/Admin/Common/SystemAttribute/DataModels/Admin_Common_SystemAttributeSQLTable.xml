@@ -33,6 +33,46 @@
   <definition>
     <version>
       <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev$</local>
+      <mode>(version==5) || (version==latest)</mode>
+    </version>
+    <name>Admin_Common_SystemAttributeSQLTable</name>
+    <database>
+      <table-name>T_CMSYSATTRIBUTE</table-name>
+      <parent-table>T_CMABSTRACT</parent-table>
+      <!-- columns -->
+      <column name="VALUE" type="STRING_LONG" length="2048" not-null="true" />
+    </database>
+  </definition>
+
+  <!-- create views -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>3</global>
+      <local>$Rev$</local>
+      <mode>(version==2)</mode>
+    </version>
+    <database>
+      <table-name>T_CMSYSATTRIBUTE</table-name>
+      <sql>
+        create view V_COMMONSYSATTRIBUTE as 
+          select T_CMABSTRACT.ID, 
+                 T_CMABSTRACT.NAME, 
+                 T_CMABSTRACT.UUID, 
+                 T_CMSYSATTRIBUTE.VALUE 
+            from T_CMABSTRACT
+            join T_CMSYSATTRIBUTE 
+              on T_CMABSTRACT.ID = T_CMSYSATTRIBUTE.ID;
+      </sql>
+    </database>
+  </definition>
+
+  <!-- create base data model -->
+  <definition>
+    <version>
+      <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>(version==1)</mode>
@@ -45,39 +85,4 @@
     </database>
   </definition>
 
-  <!-- define datamodel -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
-    <database>
-      <sql>
-        create view V_COMMONSYSATTRIBUTE as 
-          select T_CMABSTRACT.ID, 
-                 T_CMABSTRACT.NAME, 
-                 T_CMABSTRACT.UUID, 
-                 T_CMSYSATTRIBUTE.VALUE 
-            from T_CMABSTRACT
-            join T_CMSYSATTRIBUTE 
-              on T_CMABSTRACT.ID = T_CMSYSATTRIBUTE.ID;
-      </sql>
-      <table-name>T_CMSYSATTRIBUTE</table-name>
-    </database>
-  </definition>
-
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==5)</mode>
-    </version>
-    <name>Admin_Common_SystemAttributeSQLTable</name>
-    <database>
-      <table-name>T_CMSYSATTRIBUTE</table-name>
-    </database>
-  </definition>
 </datamodel-sqltable>
