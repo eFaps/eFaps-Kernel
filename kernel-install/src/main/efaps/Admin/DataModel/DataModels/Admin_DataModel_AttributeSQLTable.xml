@@ -32,7 +32,7 @@
       <application>eFaps</application>
       <global>3</global>
       <local>$Rev$</local>
-      <mode>(version==5) || (version==latest)</mode>
+      <mode>(version==4) || (version==latest)</mode>
     </version>
     <name>Admin_DataModel_AttributeSQLTable</name>
     <parent>Admin_Common_AbstractSQLTable</parent>

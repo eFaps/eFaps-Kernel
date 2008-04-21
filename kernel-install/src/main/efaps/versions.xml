@@ -30,7 +30,7 @@
   <application>efaps</application>
 
   <version number="1" reloadCache="false" login="false">
-    <description>Create the base SQL tables.</description>
+    <description>Create base SQL tables.</description>
   </version>
 
   <version number="2" reloadCache="false" login="false">
@@ -40,8 +40,10 @@
   <version number="3" reloadCache="false" login="false">
     <script name="org/efaps/installations/efaps/CreateAll.js" function="eFapsCreateAll()" />
   </version>
-  <version number="4" reloadCache="false" login="false" />
-  <version number="5" reloadCache="true" />
+
+  <version number="4" reloadCache="true">
+    <description>Install SQL Tables.</description>
+  </version>
   
   <version number="6" reloadCache="true">
     <description>Install complete Data Model</description>
