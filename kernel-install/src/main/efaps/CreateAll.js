@@ -483,6 +483,9 @@ function _eFapsCreateDataModelTablesStep2()  {
   _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'SQLColumnType',    'SQLCOLUMNTYPE',    'String', null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdSQLTable, typeIdSQLTable, 'DMTableMain',      'DMTABLEMAIN',      'Link', "Admin_DataModel_SQLTable");
 
+  _exec(stmt, "Update type id for sql tables",
+              null, "update T_CMABSTRACT set TYPEID=" + typeIdSQLTable + " where TYPEID=-20000");
+
   /////////////////////////////////////////
   // insert 'type' 
 
@@ -493,6 +496,9 @@ function _eFapsCreateDataModelTablesStep2()  {
   var typeIdType = _eFapsCreateInsertType(stmt, text, "8770839d-60fd-4bb4-81fd-3903d4c916ec", "Admin_DataModel_Type", "Admin_Abstract");
   _eFapsCreateInsertAttr(stmt, sqlTableIdType, typeIdType, 'SQLCacheExpr',     'SQLCACHEEXPR',     'String', null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdType, typeIdType, 'ParentType',       'PARENTDMTYPE',     'Link', "Admin_DataModel_Type");
+
+  _exec(stmt, "Update type id for types",
+              null, "update T_CMABSTRACT set TYPEID=" + typeIdType + " where TYPEID=-21000");
 
   /////////////////////////////////////////
   // insert 'attribute' 
@@ -508,6 +514,9 @@ function _eFapsCreateDataModelTablesStep2()  {
   _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'TypeLink',          'DMTYPELINK',      'Link', "Admin_DataModel_Type");
   _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'SQLColumn',         'SQLCOLUMN',       'String', null);
   _eFapsCreateInsertAttr(stmt, sqlTableIdAttr, typeIdAttr, 'DefaultValue',      'DEFAULTVAL',      'String', null);
+
+  _exec(stmt, "Update type id for attributes",
+              null, "update T_CMABSTRACT set TYPEID=" + typeIdAttr + " where TYPEID=-22000");
 
   /////////////////////////////////////////
   // insert 'admin property' 
@@ -561,7 +570,6 @@ function _eFapsCreateCommonTablesStep2()  {
 
   conRsrc.commit();
 }
-
 
 function _eFapsInitRunLevel()  {
   var conRsrc = Context.getThreadContext().getConnectionResource();

@@ -56,37 +56,6 @@
     </database>
   </definition>
 
-  <!-- make the contraints for the SQL table -->
-  <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>1</local>
-      <mode>(version==4)</mode>
-    </version>
-    <database>
-      <table-name>T_CMABSTRACT</table-name>
-      <!-- update type id for sql tables -->
-      <sql>
-        update T_CMABSTRACT
-            set TYPEID=(select ID from T_CMABSTRACT where NAME='Admin_DataModel_SQLTable')
-            where TYPEID=-20000
-      </sql>
-      <!-- update type id for types -->
-      <sql>
-        update T_CMABSTRACT
-            set TYPEID=(select ID from T_CMABSTRACT where NAME='Admin_DataModel_Type')
-            where TYPEID=-21000
-      </sql>
-      <!-- update type id for attributes -->
-      <sql>
-        update T_CMABSTRACT
-            set TYPEID=(select ID from T_CMABSTRACT where NAME='Admin_DataModel_Attribute')
-            where TYPEID=-22000
-      </sql>
-    </database>
-  </definition>
-
   <!-- create base data model -->
   <definition>
     <version>
