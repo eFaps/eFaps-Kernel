@@ -25,6 +25,7 @@ import java.util.Map;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -34,23 +35,24 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class Person {
+@EFapsUUID("1b777261-6da1-4003-87e4-2937e44ff269")
+public class Person
+{
 
   public Return connectPerson2RoleUI(final Parameter _parameter)
-                                                                throws EFapsException {
+      throws EFapsException
+  {
     final Return ret = new Return();
 
-    final Map<?, ?> properties =
-        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+    final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
     final Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    final String childOids[] =
-        (String[]) _parameter.get(ParameterValues.OTHERS);
+    final String childOids[] = (String[]) _parameter.get(ParameterValues.OTHERS);
 
     final String type = (String) properties.get("ConnectType");
 
     for (String childOid : childOids) {
-      Instance child = new Instance(childOid);
-      Insert insert = new Insert(type);
+      final Instance child = new Instance(childOid);
+      final Insert insert = new Insert(type);
       insert.add("UserFromLink", "" + parent.getId());
       insert.add("UserToLink", "" + child.getId());
       insert.add("UserJAASSystem", "" + getJAASSystemID());
@@ -70,18 +72,15 @@ public class Person {
    * @throws EFapsException
    */
   public Return insertJaaskeyTrg(final Parameter _parameter)
-                                                            throws EFapsException {
-    final Instance instance =
-        (Instance) _parameter.get(ParameterValues.INSTANCE);
-    final Map<?, ?> values =
-        (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
+      throws EFapsException
+  {
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final Map<?, ?> values =(Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
 
     final String jaassystemid = getJAASSystemID();
     if (jaassystemid != null) {
-      Insert insert = new Insert("Admin_User_JAASKey");
-
-      insert.add("Key", values.get(instance.getType().getAttribute("Name"))
-          .toString());
+      final Insert insert = new Insert("Admin_User_JAASKey");
+      insert.add("Key", values.get(instance.getType().getAttribute("Name")).toString());
       insert.add("JAASSystemLink", getJAASSystemID());
       insert.add("UserLink", ((Long) instance.getId()).toString());
       insert.execute();
@@ -95,19 +94,21 @@ public class Person {
    * @return ID of the JAASSYSTEM, NULL if not found
    * @throws EFapsException
    */
-  private String getJAASSystemID() throws EFapsException {
-    String ID = null;
+  private String getJAASSystemID()
+      throws EFapsException
+  {
+    String objId = null;
 
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     query.setQueryTypes("Admin_User_JAASSystem");
     query.addWhereExprEqValue("Name", "eFaps");
     query.addSelect("ID");
     query.execute();
     if (query.next()) {
-      ID = query.get("ID").toString();
+      objId = query.get("ID").toString();
     }
     query.close();
 
-    return ID;
+    return objId;
   }
 }

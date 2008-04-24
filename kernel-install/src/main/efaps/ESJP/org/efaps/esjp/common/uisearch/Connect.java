@@ -26,6 +26,7 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
@@ -35,12 +36,15 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public class Connect implements EventExecution {
+@EFapsUUID("9993f975-855d-4d19-865a-c509bf410149")
+public class Connect implements EventExecution
+{
 
   /**
    * @param _parameter
    */
-  public Return execute(final Parameter _parameter) throws EFapsException {
+  public Return execute(final Parameter _parameter) throws EFapsException
+  {
     Return ret = new Return();
 
     Map<?, ?> properties =

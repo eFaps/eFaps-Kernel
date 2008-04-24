@@ -20,26 +20,27 @@
 
 package org.efaps.esjp.admin.common;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Class to relaod the Cache.<br>
- * This Class is a Java eFaps Program wich is stored inside the eFaps-Database.
- * It is executed on Userinteraction through a trigger on a Command.
- * 
+ * Class to reload the Cache.<br>
+ * This Class is a Java eFaps Program which is stored inside the eFaps-Database.
+ * It is executed on user interaction through a trigger on a Command.
+ *
  * @author jmox
  * @version $Id:ReloadCache.java 1563 2007-10-28 14:07:41Z tmo $
  * @todo use EFapsException
  */
-public class ReloadCache implements EventExecution {
-
+@EFapsUUID("1d4f1263-9315-4f59-bd5e-bd364f907bac")
+public class ReloadCache implements EventExecution
+{
   /**
    * Logger for this class
    */
@@ -48,12 +49,14 @@ public class ReloadCache implements EventExecution {
   /**
    * @param _parameter
    */
-  public Return execute(final Parameter _parameter) throws EFapsException  {
+  public Return execute(final Parameter _parameter)
+      throws EFapsException
+  {
     try  {
       RunLevel.init("webapp");
       RunLevel.execute();
     } catch (Exception e)  {
-      LOG.error("execute\nparameter:\n" + _parameter 
+      LOG.error("execute\nparameter:\n" + _parameter
                   + "\nException is:\n" + e);
     }
     return null;

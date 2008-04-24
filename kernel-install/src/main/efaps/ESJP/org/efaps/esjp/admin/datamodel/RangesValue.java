@@ -20,6 +20,7 @@
 
 package org.efaps.esjp.admin.datamodel;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
@@ -45,9 +47,13 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class RangesValue implements EventExecution {
+@EFapsUUID("6e9283bb-06a7-40a5-8420-becc4cff72f5")
+public class RangesValue implements EventExecution
+{
 
-  public Return execute(final Parameter _parameter) throws EFapsException {
+  public Return execute(final Parameter _parameter)
+      throws EFapsException
+  {
     final Return ret = new Return();
 
     final String type =
@@ -73,7 +79,7 @@ public class RangesValue implements EventExecution {
     final List<Map.Entry<String, String>> list =
         new Vector<Map.Entry<String, String>>(map.entrySet());
 
-    java.util.Collections.sort(list,
+    Collections.sort(list,
         new Comparator<Map.Entry<String, String>>() {
 
           public int compare(Map.Entry<String, String> entry,

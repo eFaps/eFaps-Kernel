@@ -24,17 +24,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The ESJP is used to launch an expand-query against the eFaps-Database, wich
@@ -65,11 +65,13 @@ import org.efaps.util.EFapsException;
  * &nbsp;&nbsp;&lt;/evaluate&gt;<br>
  * &lt;/target&gt;
  * </code>
- * 
+ *
  * @author tmo
  * @version $Id:QueryExpand.java 1563 2007-10-28 14:07:41Z tmo $
  */
-public class QueryExpand implements EventExecution {
+@EFapsUUID("41945470-bcc3-4d91-b16b-6357932ead5e")
+public class QueryExpand implements EventExecution
+{
   /**
    * Logger for this class
    */
@@ -78,24 +80,24 @@ public class QueryExpand implements EventExecution {
   /**
    * @param _parameter
    */
-  public Return execute(final Parameter _parameter) throws EFapsException {
-    Return ret = new Return();
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+  public Return execute(final Parameter _parameter) throws EFapsException
+  {
+    final Return ret = new Return();
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
 
-    Map<?, ?> properties =
-        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+    final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
-    String expand = (String) properties.get("Expand");
+    final String expand = (String) properties.get("Expand");
 
     if (LOG.isDebugEnabled()) {
       LOG.debug("Expand=" + expand);
     }
 
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     query.setExpand(instance, expand);
     query.execute();
 
-    List<List<Instance>> list = new ArrayList<List<Instance>>();
+    final List<List<Instance>> list = new ArrayList<List<Instance>>();
     while (query.next()) {
       list.add(query.getExpandInstances());
     }

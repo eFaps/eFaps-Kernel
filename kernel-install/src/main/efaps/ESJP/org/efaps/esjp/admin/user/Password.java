@@ -31,6 +31,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
@@ -40,7 +41,9 @@ import org.efaps.jaas.SetPasswordHandler;
 import org.efaps.jaas.efaps.UserLoginModule.UpdateException;
 import org.efaps.util.EFapsException;
 
-public class Password {
+@EFapsUUID("ff1b1140-3da0-491f-8bf4-c42f71ea4343")
+public class Password
+{
 
   private static String PWDOLD = "passwordold";
 
@@ -48,7 +51,9 @@ public class Password {
 
   private static String PWDNEWREPEAT = "passwordnew2";
 
-  public Return changePwdUI(final Parameter _parameter) throws EFapsException {
+  public Return changePwdUI(final Parameter _parameter)
+      throws EFapsException
+  {
 
     final Context context = Context.getThreadContext();
     final String passwordold = context.getParameter(PWDOLD);
@@ -64,17 +69,18 @@ public class Password {
     } catch (final LoginException e) {
       if (e instanceof UpdateException) {
         ret.put(ReturnValues.VALUES,
-            "Admin_User_PwdChgForm/Password.validatePwdValue.ShortPwd");
+                "Admin_User_PwdChgForm/Password.validatePwdValue.ShortPwd");
       } else {
         ret.put(ReturnValues.VALUES,
-            "Admin_User_PwdChgForm/Password.changePwdUI.checkPassword");
+                "Admin_User_PwdChgForm/Password.changePwdUI.checkPassword");
       }
     }
     return ret;
   }
 
   public Return validateFormUI(final Parameter _parameter)
-                                                          throws EFapsException {
+      throws EFapsException
+  {
     final Return ret = new Return();
     final Context context = Context.getThreadContext();
     final String passwordnew = context.getParameter(PWDNEW);
@@ -84,7 +90,7 @@ public class Password {
       ret.put(ReturnValues.TRUE, "true");
     } else {
       ret.put(ReturnValues.VALUES,
-          "Admin_User_PwdChgForm/Password.validateFormUI.unequal");
+              "Admin_User_PwdChgForm/Password.validateFormUI.unequal");
     }
     return ret;
   }
@@ -124,7 +130,8 @@ public class Password {
    * @throws EFapsException
    */
   public Return validatePwdValue(final Parameter _parameter)
-                                                            throws EFapsException {
+      throws EFapsException
+  {
     final Return ret = new Return();
     final Context context = Context.getThreadContext();
     final String passwordnew = context.getParameter(PWDNEW);
@@ -135,7 +142,7 @@ public class Password {
       ret.put(ReturnValues.TRUE, "true");
     } else {
       ret.put(ReturnValues.VALUES,
-          "Admin_User_PwdChgForm/Password.validatePwdValue.ShortPwd");
+              "Admin_User_PwdChgForm/Password.validatePwdValue.ShortPwd");
     }
     return ret;
   }
@@ -148,18 +155,17 @@ public class Password {
    * @return
    * @throws EFapsException
    */
-  public Return setPwdValueUI(final Parameter _parameter) throws EFapsException {
+  public Return setPwdValueUI(final Parameter _parameter)
+      throws EFapsException
+  {
     final Return ret = new Return();
-    final Instance instance =
-        (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
 
     // Common_Main_PwdChg
-    final Role setpwdRole =
-        Role.get(UUID.fromString("2c101471-43e3-4c97-9045-f48f5b12b6ed"));
+    final Role setpwdRole = Role.get(UUID.fromString("2c101471-43e3-4c97-9045-f48f5b12b6ed"));
     if (Context.getThreadContext().getPerson().isAssigned(setpwdRole)) {
 
-      final String password =
-          Context.getThreadContext().getParameter("setpassword");
+      final String password = Context.getThreadContext().getParameter("setpassword");
 
       final Update update = new Update(instance);
       final Status status = update.add("Password", password);
@@ -171,7 +177,7 @@ public class Password {
       }
     } else {
       ret.put(ReturnValues.VALUES,
-          "Admin_User_PersonSetPwdForm/Password.setPwdValueUI.NoRight");
+              "Admin_User_PersonSetPwdForm/Password.setPwdValueUI.NoRight");
     }
     return ret;
   }

@@ -25,6 +25,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.field.Field;
 
 /**
@@ -46,10 +47,12 @@ import org.efaps.admin.ui.field.Field;
  * @author tmo
  * @version $Id$
  */
-public class FileField  {
+@EFapsUUID("7f08c93d-96fd-474a-a1f0-772d610deaba")
+public class FileField
+{
 
-  public Return getFieldValueUI(final Parameter _parameter)  {
-
+  public Return getFieldValueUI(final Parameter _parameter)
+  {
     final FieldValue fieldvalue = (FieldValue) _parameter.get(ParameterValues.UIOBJECT);
     final Field field = fieldvalue.getFieldDef().getField();
 
@@ -64,5 +67,4 @@ public class FileField  {
     retVal.put(ReturnValues.VALUES, ret);
     return retVal;
   }
-
 }

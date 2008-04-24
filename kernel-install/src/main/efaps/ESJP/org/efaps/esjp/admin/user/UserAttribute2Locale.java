@@ -23,6 +23,7 @@ package org.efaps.esjp.admin.user;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
@@ -34,9 +35,12 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  *
  */
-public class UserAttribute2Locale implements EventExecution {
+@EFapsUUID("55bbfe77-f44a-429a-bfd6-d6a11bfaf39e")
+public class UserAttribute2Locale implements EventExecution
+{
 
-  public Return execute(final Parameter _parameter) throws EFapsException {
+  public Return execute(final Parameter _parameter) throws EFapsException
+  {
 
     final Context context = Context.getThreadContext();
     final Return ret = new Return();

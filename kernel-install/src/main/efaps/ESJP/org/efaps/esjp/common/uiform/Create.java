@@ -28,6 +28,7 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Checkin;
@@ -42,9 +43,12 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class Create implements EventExecution {
+@EFapsUUID("d74132b7-caf1-4f83-866d-8bc83bb26cdf")
+public class Create implements EventExecution
+{
 
-  public Return execute(final Parameter _parameter) throws EFapsException {
+  public Return execute(final Parameter _parameter) throws EFapsException
+  {
     final Return ret = new Return();
     final Instance parent = (Instance) _parameter.get(ParameterValues.INSTANCE);
     final AbstractCommand command =

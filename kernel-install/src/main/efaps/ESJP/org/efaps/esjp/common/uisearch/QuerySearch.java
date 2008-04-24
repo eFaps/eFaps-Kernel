@@ -24,27 +24,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
  * @version $Id:QuerySearch.java 1563 2007-10-28 14:07:41Z tmo $
  * @todo description
  */
-public class QuerySearch implements EventExecution {
+@EFapsUUID("d6988849-9412-4f83-980f-a596750f6340")
+public class QuerySearch implements EventExecution
+{
   /**
    * Logger for this class
    */
@@ -53,29 +55,27 @@ public class QuerySearch implements EventExecution {
   /**
    * @param _parameter
    */
-  public Return execute(final Parameter _parameter) throws EFapsException {
-    Return ret = new Return();
+  public Return execute(final Parameter _parameter) throws EFapsException
+  {
+    final Return ret = new Return();
 
-    Context context = Context.getThreadContext();
-    AbstractCommand command =
-        (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
-    Map<?, ?> properties =
-        (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
+    final Context context = Context.getThreadContext();
+    final AbstractCommand command = (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
+    final Map<?, ?> properties = (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
-    String types = (String) properties.get("Types");
+    final String types = (String) properties.get("Types");
 
-    boolean expandChildTypes =
-        "true".equals(properties.get("ExpandChildTypes"));
+    final boolean expandChildTypes = "true".equals(properties.get("ExpandChildTypes"));
 
     if (LOG.isDebugEnabled()) {
       LOG.debug("types=" + types);
     }
 
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     query.setQueryTypes(types);
     query.setExpandChildTypes(expandChildTypes);
     for (Field field : command.getTargetForm().getFields()) {
-      String value = context.getParameter(field.getName());
+      final String value = context.getParameter(field.getName());
       if ((value != null) && (value.length() > 0) && (!value.equals("*"))) {
         query.addWhereExprMatchValue(field.getExpression(), value);
       }
@@ -84,9 +84,9 @@ public class QuerySearch implements EventExecution {
     query.addSelect("OID");
     query.execute();
 
-    List<List<Instance>> list = new ArrayList<List<Instance>>();
+    final List<List<Instance>> list = new ArrayList<List<Instance>>();
     while (query.next()) {
-      List<Instance> instances = new ArrayList<Instance>(1);
+      final List<Instance> instances = new ArrayList<Instance>(1);
       instances.add(new Instance((String) query.get("OID")));
       list.add(instances);
     }

@@ -29,6 +29,7 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -39,11 +40,14 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public class HistoryTrigger implements EventExecution {
+@EFapsUUID("11b5668b-de34-4cb5-985c-b3f10686e72c")
+public class HistoryTrigger implements EventExecution
+{
   /**
    * @param _parameter
    */
-  public Return execute(final Parameter _parameter) throws EFapsException {
+  public Return execute(final Parameter _parameter) throws EFapsException
+  {
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     Map<?, ?> values = (Map<?, ?>) _parameter.get(ParameterValues.NEW_VALUES);
     Map<?, ?> properties =

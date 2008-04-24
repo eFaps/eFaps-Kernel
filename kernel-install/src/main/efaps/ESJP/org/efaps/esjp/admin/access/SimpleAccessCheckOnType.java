@@ -24,9 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.datamodel.Type;
@@ -35,25 +32,29 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This Class is used to check if a user can Access this Type.<br>
  * The method execute is called with the Instance and the Accesstype as
  * parameters. For the instance object it is checked if the current context user
  * has the access defined in the list of access types.
- * 
+ *
  * @author tmo
  * @version $Id:SimpleAccessCheckOnType.java 1563 2007-10-28 14:07:41Z tmo $
  */
-public class SimpleAccessCheckOnType implements EventExecution {
-
-  // ///////////////////////////////////////////////////////////////////////////
+@EFapsUUID("fd1ecee1-a882-4fbe-8b3c-5e5c3ed4d6b7")
+public class SimpleAccessCheckOnType implements EventExecution
+{
+  /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -62,7 +63,7 @@ public class SimpleAccessCheckOnType implements EventExecution {
   private static final Logger LOG
           = LoggerFactory.getLogger(SimpleAccessCheckOnType.class);
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -71,12 +72,12 @@ public class SimpleAccessCheckOnType implements EventExecution {
    */
   private boolean checkAccess(final Instance _instance,
                               final AccessType _accessType)
-      throws EFapsException {
+      throws EFapsException
+  {
+    final Context context = Context.getThreadContext();
 
-    Context context = Context.getThreadContext();
-
-    Type type = _instance.getType();
-    StringBuilder toTests = new StringBuilder();
+    final Type type = _instance.getType();
+    final StringBuilder toTests = new StringBuilder();
     toTests.append(0);
     for (AccessSet accessSet : type.getAccessSets()) {
       if (accessSet.getAccessTypes().contains(_accessType)) {
@@ -84,12 +85,12 @@ public class SimpleAccessCheckOnType implements EventExecution {
       }
     }
 
-    StringBuilder users = new StringBuilder();
+    final StringBuilder users = new StringBuilder();
     users.append(context.getPersonId());
-    for (Role role : context.getPerson().getRoles()) {
+    for (final Role role : context.getPerson().getRoles()) {
       users.append(",").append(role.getId());
     }
-    for (Group group : context.getPerson().getGroups()) {
+    for (final Group group : context.getPerson().getGroups()) {
       users.append(",").append(group.getId());
     }
 
@@ -99,10 +100,11 @@ public class SimpleAccessCheckOnType implements EventExecution {
   private boolean executeStatement(final Context _context,
                                    final StringBuilder _accessSets,
                                    final StringBuilder _users)
-      throws EFapsException {
+      throws EFapsException
+  {
     boolean hasAccess = false;
 
-    StringBuilder cmd = new StringBuilder();
+    final StringBuilder cmd = new StringBuilder();
     cmd.append("select count(*) from T_ACCESSSET2USER ").append(
         "where ACCESSSET in (").append(_accessSets).append(") ").append(
         "and USERABSTRACT in (").append(_users).append(")");
@@ -142,11 +144,12 @@ public class SimpleAccessCheckOnType implements EventExecution {
     return hasAccess;
   }
 
-  public Return execute(final Parameter _parameter) throws EFapsException  {
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    AccessType accessType =
-        (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
-    Return ret = new Return();
+  public Return execute(final Parameter _parameter)
+      throws EFapsException
+  {
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final AccessType accessType = (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
+    final Return ret = new Return();
 
     if (checkAccess(instance, accessType)) {
       ret.put(ReturnValues.TRUE, true);

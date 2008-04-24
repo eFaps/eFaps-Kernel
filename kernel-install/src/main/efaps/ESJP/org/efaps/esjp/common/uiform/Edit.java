@@ -20,28 +20,30 @@
 
 package org.efaps.esjp.common.uiform;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.attributetype.AbstractFileType;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author jmox
  * @version $Id:Edit.java 1563 2007-10-28 14:07:41Z tmo $
  * @todo description
  */
-public class Edit implements EventExecution {
+@EFapsUUID("d9ba2b85-8b9a-46b0-929e-8e938e7d5577")
+public class Edit implements EventExecution
+{
   /**
    * Logger for this class
    */
@@ -50,7 +52,8 @@ public class Edit implements EventExecution {
   /**
    * @param _parameter
    */
-  public Return execute(final Parameter _parameter) throws EFapsException {
+  public Return execute(final Parameter _parameter) throws EFapsException
+  {
     Return ret = new Return();
     Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     AbstractCommand command =

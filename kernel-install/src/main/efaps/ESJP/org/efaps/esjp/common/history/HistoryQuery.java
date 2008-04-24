@@ -28,6 +28,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -37,12 +38,15 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-public class HistoryQuery implements EventExecution {
+@EFapsUUID("6a954943-d7b8-45e2-b211-3b5f4731e64a")
+public class HistoryQuery implements EventExecution
+{
 
   /**
    * @param _parameter
    */
-  public Return execute(final Parameter _parameter) throws EFapsException {
+  public Return execute(final Parameter _parameter) throws EFapsException
+  {
     final Return ret = new Return();
 
     final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
