@@ -30,7 +30,77 @@
       <content-type
             base-type="org.eclipse.core.runtime.xml"
             file-extensions="xml"
-            id="org.efaps.eclipse.contenttypes.type"
+            id="org.efaps.eclipse.contenttypes.user.group"
+            name="eFaps User Group Content"
+            priority="high">
+         <describer
+               class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+            <parameter
+                  name="element"
+                  value="user-group">
+            </parameter>
+         </describer>
+      </content-type>
+      <content-type
+            base-type="org.eclipse.core.runtime.xml"
+            file-extensions="xml"
+            id="org.efaps.eclipse.contenttypes.user.jaassystem"
+            name="eFaps User JAAS System Content"
+            priority="high">
+         <describer
+               class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+            <parameter
+                  name="element"
+                  value="user-jaassystem">
+            </parameter>
+         </describer>
+      </content-type>
+      <content-type
+            base-type="org.eclipse.core.runtime.xml"
+            file-extensions="xml"
+            id="org.efaps.eclipse.contenttypes.user.role"
+            name="eFaps User Role Content"
+            priority="high">
+         <describer
+               class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+            <parameter
+                  name="element"
+                  value="user-role">
+            </parameter>
+         </describer>
+      </content-type>
+      <content-type
+            base-type="org.eclipse.core.runtime.xml"
+            file-extensions="xml"
+            id="org.efaps.eclipse.contenttypes.common.dbproperties"
+            name="eFaps Common DB Properties Content"
+            priority="high">
+         <describer
+               class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+            <parameter
+                  name="element"
+                  value="dbproperties">
+            </parameter>
+         </describer>
+      </content-type>
+      <content-type
+            base-type="org.eclipse.core.runtime.xml"
+            file-extensions="xml"
+            id="org.efaps.eclipse.contenttypes.common.systemattribute"
+            name="eFaps Common System Attribute Content"
+            priority="high">
+         <describer
+               class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+            <parameter
+                  name="element"
+                  value="common-systemattribute">
+            </parameter>
+         </describer>
+      </content-type>
+      <content-type
+            base-type="org.eclipse.core.runtime.xml"
+            file-extensions="xml"
+            id="org.efaps.eclipse.contenttypes.datamodel.type"
             name="eFaps Data Model Type Content"
             priority="high">
        <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
@@ -40,7 +110,7 @@
       <content-type
             base-type="org.eclipse.core.runtime.xml"
             file-extensions="xml"
-            id="org.efaps.eclipse.contenttypes.sqltable"
+            id="org.efaps.eclipse.contenttypes.datamodel.sqltable"
             name="eFaps Data Model SQL Table Content">
        <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
          <parameter name="element" value="datamodel-sqltable"/>
@@ -105,8 +175,108 @@
          point="org.eclipse.ui.decorators">
       <decorator
             adaptable="true"
-            icon="icons/datamodel/IMAGE_Admin_DataModel_TypeImage.gif"
-            id="org.efaps.eclipse.decorators.type"
+            icon="icons/user/Admin_User_GroupImage.gif"
+            id="org.efaps.eclipse.decorators.user.group"
+            label="eFaps User Group Decorator"
+            lightweight="true"
+            location="TOP_LEFT"
+            state="true">
+         <enablement>
+            <and>
+               <objectClass
+                     name="org.eclipse.core.resources.IFile">
+               </objectClass>
+               <objectState
+                     name="contentTypeId"
+                     value="org.efaps.eclipse.contenttypes.user.group">
+               </objectState>
+            </and>
+         </enablement>
+      </decorator>
+      <decorator
+            adaptable="true"
+            icon="icons/user/Admin_User_JAASSystemImage.gif"
+            id="org.efaps.eclipse.decorators.user.jaassystem"
+            label="eFaps User JAAS System Decorator"
+            lightweight="true"
+            location="TOP_LEFT"
+            state="true">
+         <enablement>
+            <and>
+               <objectClass
+                     name="org.eclipse.core.resources.IFile">
+               </objectClass>
+               <objectState
+                     name="contentTypeId"
+                     value="org.efaps.eclipse.contenttypes.user.jaassystem">
+               </objectState>
+            </and>
+         </enablement>
+      </decorator>
+      <decorator
+            adaptable="true"
+            icon="icons/user/Admin_User_RoleImage.gif"
+            id="org.efaps.eclipse.decorators.user.role"
+            label="eFaps User Role Decorator"
+            lightweight="true"
+            location="TOP_LEFT"
+            state="true">
+         <enablement>
+            <and>
+               <objectClass
+                     name="org.eclipse.core.resources.IFile">
+               </objectClass>
+               <objectState
+                     name="contentTypeId"
+                     value="org.efaps.eclipse.contenttypes.user.role">
+               </objectState>
+            </and>
+         </enablement>
+      </decorator>
+      <decorator
+            adaptable="true"
+            icon="icons/common_dbproperties/Admin_Common_DBPropertiesBundleImage.gif"
+            id="org.efaps.eclipse.decorators.common.dbproperties"
+            label="eFaps Common DB Properties Decorator"
+            lightweight="true"
+            location="TOP_LEFT"
+            state="true">
+         <enablement>
+            <and>
+               <objectClass
+                     name="org.eclipse.core.resources.IFile">
+               </objectClass>
+               <objectState
+                     name="contentTypeId"
+                     value="org.efaps.eclipse.contenttypes.common.dbproperties">
+               </objectState>
+            </and>
+         </enablement>
+      </decorator>
+      <decorator
+            adaptable="true"
+            icon="icons/common_systemattribute/Admin_Common_SystemAttributeImage.gif"
+            id="org.efaps.eclipse.decorators.common.systemattribute"
+            label="eFaps Common System Attribute Decorator"
+            lightweight="true"
+            location="TOP_LEFT"
+            state="true">
+         <enablement>
+            <and>
+               <objectClass
+                     name="org.eclipse.core.resources.IFile">
+               </objectClass>
+               <objectState
+                     name="contentTypeId"
+                     value="org.efaps.eclipse.contenttypes.common.systemattribute">
+               </objectState>
+            </and>
+         </enablement>
+      </decorator>
+      <decorator
+            adaptable="true"
+            icon="icons/datamodel/Admin_DataModel_TypeImage.gif"
+            id="org.efaps.eclipse.decorators.datamodel.type"
             label="eFaps Data Model Type Decorator"
             lightweight="true"
             location="TOP_LEFT"
@@ -118,15 +288,15 @@
                </objectClass>
                <objectState
                      name="contentTypeId"
-                     value="org.efaps.eclipse.contenttypes.type">
+                     value="org.efaps.eclipse.contenttypes.datamodel.type">
                </objectState>
             </and>
          </enablement>
       </decorator>
       <decorator
             adaptable="true"
-            icon="icons/datamodel/IMAGE_Admin_DataModel_SQLTableImage.gif"
-            id="org.efaps.eclipse.decorators.sqltable"
+            icon="icons/datamodel/Admin_DataModel_SQLTableImage.gif"
+            id="org.efaps.eclipse.decorators.datamodel.sqltable"
             label="eFaps Data Model SQL Table Decorator"
             lightweight="true"
             location="TOP_LEFT"
@@ -138,14 +308,14 @@
                </objectClass>
                <objectState
                      name="contentTypeId"
-                     value="org.efaps.eclipse.contenttypes.sqltable">
+                     value="org.efaps.eclipse.contenttypes.datamodel.sqltable">
                </objectState>
             </and>
          </enablement>
       </decorator>
       <decorator
             adaptable="true"
-            icon="icons/userinterface/IMAGE_Admin_UI_CommandImage.gif"
+            icon="icons/userinterface/Admin_UI_CommandImage.gif"
             id="org.efaps.eclipse.decorators.command"
             label="eFaps User Interface Command Decorator"
             lightweight="true"
@@ -165,7 +335,7 @@
       </decorator>
       <decorator
             adaptable="true"
-            icon="icons/userinterface/IMAGE_Admin_UI_FormImage.gif"
+            icon="icons/userinterface/Admin_UI_FormImage.gif"
             id="org.efaps.eclipse.decorators.form"
             label="eFaps User Interface Form Decorator"
             lightweight="true"
@@ -185,7 +355,27 @@
       </decorator>
       <decorator
             adaptable="true"
-            icon="icons/userinterface/IMAGE_Admin_UI_MenuImage.gif"
+            icon="icons/userinterface/Admin_UI_ImageImage.gif"
+            id="org.efaps.eclipse.decorators.image"
+            label="eFaps User Interface Image Decorator"
+            lightweight="true"
+            location="TOP_LEFT"
+            state="true">
+         <enablement>
+            <and>
+               <objectClass
+                     name="org.eclipse.core.resources.IFile">
+               </objectClass>
+               <objectState
+                     name="contentTypeId"
+                     value="org.efaps.eclipse.contenttypes.image">
+               </objectState>
+            </and>
+         </enablement>
+      </decorator>
+      <decorator
+            adaptable="true"
+            icon="icons/userinterface/Admin_UI_MenuImage.gif"
             id="org.efaps.eclipse.decorators.menu"
             label="eFaps User Interface Menu Decorator"
             lightweight="true"
@@ -205,7 +395,7 @@
       </decorator>
       <decorator
             adaptable="true"
-            icon="icons/userinterface/IMAGE_Admin_UI_SearchImage.gif"
+            icon="icons/userinterface/Admin_UI_SearchImage.gif"
             id="org.efaps.eclipse.decorators.search"
             label="eFaps User Interface Search Decorator"
             lightweight="true"
@@ -225,7 +415,7 @@
       </decorator>
       <decorator
             adaptable="true"
-            icon="icons/userinterface/IMAGE_Admin_UI_TableImage.gif"
+            icon="icons/userinterface/Admin_UI_TableImage.gif"
             id="org.efaps.eclipse.decorators.table"
             label="eFaps User Interface Table Decorator"
             lightweight="true"
@@ -243,53 +433,83 @@
             </and>
          </enablement>
       </decorator>
-      <decorator
-            adaptable="true"
-            icon="icons/userinterface/IMAGE_Admin_UI_ImageImage.gif"
-            id="org.efaps.eclipse.decorators.image"
-            label="eFaps User Interface Image Decorator"
-            lightweight="true"
-            location="TOP_LEFT"
-            state="true">
-         <enablement>
-            <and>
-               <objectClass
-                     name="org.eclipse.core.resources.IFile">
-               </objectClass>
-               <objectState
-                     name="contentTypeId"
-                     value="org.efaps.eclipse.contenttypes.image">
-               </objectState>
-            </and>
-         </enablement>
-      </decorator>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
       <editor
             class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
             contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
-            icon="icons/datamodel/IMAGE_Admin_DataModel_TypeImage.gif"
-            id="org.efaps.eclipse.editors.type"
+            icon="icons/user/Admin_User_GroupImage.gif"
+            id="org.efaps.eclipse.editors.user.group"
+            name="eFaps User Group Editor">
+         <contentTypeBinding
+               contentTypeId="org.efaps.eclipse.contenttypes.user.group">
+         </contentTypeBinding>
+      </editor>
+      <editor
+            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
+            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            icon="icons/user/Admin_User_JAASSystemImage.gif"
+            id="org.efaps.eclipse.editors.user.jaassystem"
+            name="eFaps User JAAS System Editor">
+         <contentTypeBinding
+               contentTypeId="org.efaps.eclipse.contenttypes.user.jaassystem">
+         </contentTypeBinding>
+      </editor>
+      <editor
+            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
+            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            icon="icons/user/Admin_User_RoleImage.gif"
+            id="org.efaps.eclipse.editors.user.role"
+            name="eFaps User Role Editor">
+         <contentTypeBinding
+               contentTypeId="org.efaps.eclipse.contenttypes.user.role">
+         </contentTypeBinding>
+      </editor>
+      <editor
+            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
+            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            icon="icons/common_dbproperties/Admin_Common_DBPropertiesBundleImage.gif"
+            id="org.efaps.eclipse.editors.common.dbproperties"
+            name="eFaps Common DB Properties Editor">
+         <contentTypeBinding
+               contentTypeId="org.efaps.eclipse.contenttypes.common.dbproperties">
+         </contentTypeBinding>
+      </editor>
+      <editor
+            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
+            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            icon="icons/common_systemattribute/Admin_Common_SystemAttributeImage.gif"
+            id="org.efaps.eclipse.editors.common.systemattribute"
+            name="eFaps Common System Attribute Editor">
+         <contentTypeBinding
+               contentTypeId="org.efaps.eclipse.contenttypes.common.systemattribute">
+         </contentTypeBinding>
+      </editor>
+      <editor
+            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
+            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            icon="icons/datamodel/Admin_DataModel_TypeImage.gif"
+            id="org.efaps.eclipse.editors.datamodel.type"
             name="eFaps Data Model Type Editor">
          <contentTypeBinding
-               contentTypeId="org.efaps.eclipse.contenttypes.type">
+               contentTypeId="org.efaps.eclipse.contenttypes.datamodel.type">
          </contentTypeBinding>
       </editor>
       <editor
             class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
             contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
-            icon="icons/datamodel/IMAGE_Admin_DataModel_SQLTableImage.gif"
-            id="org.efaps.eclipse.editors.sqltable"
+            icon="icons/datamodel/Admin_DataModel_SQLTableImage.gif"
+            id="org.efaps.eclipse.editors.datamodel.sqltable"
             name="eFaps Data Model SQL Table Editor">
          <contentTypeBinding
-               contentTypeId="org.efaps.eclipse.contenttypes.sqltable">
+               contentTypeId="org.efaps.eclipse.contenttypes.datamodel.sqltable">
          </contentTypeBinding>
       </editor>
       <editor
             class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
             contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
-            icon="icons/userinterface/IMAGE_Admin_UI_CommandImage.gif"
+            icon="icons/userinterface/Admin_UI_CommandImage.gif"
             id="org.efaps.eclipse.editors.command"
             name="eFaps User Interface Command Editor">
          <contentTypeBinding
@@ -299,7 +519,7 @@
       <editor
             class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
             contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
-            icon="icons/userinterface/IMAGE_Admin_UI_FormImage.gif"
+            icon="icons/userinterface/Admin_UI_FormImage.gif"
             id="org.efaps.eclipse.editors.form"
             name="eFaps User Interface Form Editor">
          <contentTypeBinding
@@ -309,7 +529,17 @@
       <editor
             class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
             contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
-            icon="icons/userinterface/IMAGE_Admin_UI_MenuImage.gif"
+            icon="icons/userinterface/Admin_UI_ImageImage.gif"
+            id="org.efaps.eclipse.editors.image"
+            name="eFaps User Interface Image Editor">
+         <contentTypeBinding
+               contentTypeId="org.efaps.eclipse.contenttypes.image">
+         </contentTypeBinding>
+      </editor>
+      <editor
+            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
+            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
+            icon="icons/userinterface/Admin_UI_MenuImage.gif"
             id="org.efaps.eclipse.editors.menu"
             name="eFaps User Interface Menu Editor">
          <contentTypeBinding
@@ -319,7 +549,7 @@
       <editor
             class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
             contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
-            icon="icons/userinterface/IMAGE_Admin_UI_SearchImage.gif"
+            icon="icons/userinterface/Admin_UI_SearchImage.gif"
             id="org.efaps.eclipse.editors.search"
             name="eFaps User Interface Search Editor">
          <contentTypeBinding
@@ -329,21 +559,11 @@
       <editor
             class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
             contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
-            icon="icons/userinterface/IMAGE_Admin_UI_TableImage.gif"
+            icon="icons/userinterface/Admin_UI_TableImage.gif"
             id="org.efaps.eclipse.editors.table"
             name="eFaps User Interface Table Editor">
          <contentTypeBinding
                contentTypeId="org.efaps.eclipse.contenttypes.table">
-         </contentTypeBinding>
-      </editor>
-      <editor
-            class="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart"
-            contributorClass="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorActionBarContributor"
-            icon="icons/userinterface/IMAGE_Admin_UI_ImageImage.gif"
-            id="org.efaps.eclipse.editors.image"
-            name="eFaps User Interface Image Editor">
-         <contentTypeBinding
-               contentTypeId="org.efaps.eclipse.contenttypes.image">
          </contentTypeBinding>
       </editor>
    </extension>
