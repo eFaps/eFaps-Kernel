@@ -31,17 +31,15 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 import org.apache.commons.digester.Digester;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
-
 import org.efaps.update.Install.ImportInterface;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * Class for importing or updating of Properties from a properties-file into the
@@ -68,17 +66,17 @@ public class DBPropertiesUpdate implements ImportInterface {
   /**
    * name for the Type
    */
-  public static final String TYPE_PROPERTIES = "Admin_DBProperties";
+  public static final String TYPE_PROPERTIES = "Admin_Common_DBProperties";
 
   /**
    * name for the Type
    */
-  public static final String TYPE_PROPERTIES_BUNDLE = "Admin_DBProperties_Bundle";
+  public static final String TYPE_PROPERTIES_BUNDLE = "Admin_Common_DBPropertiesBundle";
 
   /**
    * name for the Type
    */
-  public static final String TYPE_PROPERTIES_LOCAL = "Admin_DBProperties_Local";
+  public static final String TYPE_PROPERTIES_LOCAL = "Admin_Common_DBPropertiesLocal";
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables

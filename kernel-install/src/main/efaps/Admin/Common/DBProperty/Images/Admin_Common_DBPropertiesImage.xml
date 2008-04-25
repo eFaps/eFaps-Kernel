@@ -45,7 +45,7 @@
     <name>Admin_Common_DBPropertiesImage</name>
     <file>Admin_Common_DBPropertiesImage.gif</file>
     <!-- is type icon for -->
-    <type>Admin_DBProperties</type>
+    <type>Admin_Common_DBProperties</type>
   </definition>
 
 </ui-image>

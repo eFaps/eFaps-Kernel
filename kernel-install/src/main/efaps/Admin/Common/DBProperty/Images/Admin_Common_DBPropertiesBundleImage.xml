@@ -45,7 +45,7 @@
     <name>Admin_Common_DBPropertiesBundleImage</name>
     <file>Admin_Common_DBPropertiesBundleImage.gif</file>
     <!-- is type icon for -->
-    <type>Admin_DBProperties_Bundle</type>
+    <type>Admin_Common_DBPropertiesBundle</type>
   </definition>
 
 </ui-image>

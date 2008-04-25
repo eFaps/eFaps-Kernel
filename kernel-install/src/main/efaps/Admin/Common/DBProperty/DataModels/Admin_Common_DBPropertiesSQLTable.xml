@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2008 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmox
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
+
+-->
+
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>f7f298b4-19de-42b3-9e50-d9a2278f106f</uuid>
+
+  <!-- SQL Table to hold the Default-Values and Keys for the Properties -->
+
+  <definition>
+	<version>
+      <application>lucene</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==4) || (version==latest)</mode>
+    </version>
+    <name>Admin_Common_DBPropertiesSQLTable</name>
+    <database>
+      <table-name>T_ADPROP</table-name>
+      <!-- columns -->
+      <column name="BUNDLEID"   type="INTEGER"      not-null="true" />
+      <column name="PROPKEY"    type="STRING_SHORT" not-null="true" length="254"/>
+      <column name="DEFAULTV"   type="STRING_LONG"  not-null="true" length="2048"/>
+      <!-- foreign keys -->
+      <foreign name="T_ADPROP_FK_BUNDLEID"	key="BUNDLEID"  	reference="T_ADPROPBUN(ID)"/>
+    </database>
+  </definition>
+
+  <!-- base data model -->
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==1)</mode>
+    </version>
+    <database>
+      <table-name>T_ADPROP</table-name>
+      <!-- columns -->
+      <column name="BUNDLEID"   type="INTEGER"      not-null="true" />
+      <column name="PROPKEY"    type="STRING_SHORT" not-null="true" length="254"/>
+      <column name="DEFAULTV"   type="STRING_LONG"  not-null="true" length="2048"/>
+      </database>
+  </definition>
+
+</datamodel-sqltable>

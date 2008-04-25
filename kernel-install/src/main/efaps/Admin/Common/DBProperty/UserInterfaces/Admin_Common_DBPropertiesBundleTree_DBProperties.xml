@@ -16,18 +16,18 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
 
 -->
 
-<ui-menu xmlns="http://www.efaps.org/xsd"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-command xmlns="http://www.efaps.org/xsd"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>8d9aae87-fa36-4b62-aba0-dbd9c0ca273a</uuid>
+  <uuid>95f4b661-7111-4717-a0d0-7e16fb721eb5</uuid>
 
   <definition>
     <version>
@@ -37,17 +37,19 @@
       <mode>true</mode>
       <mode>(version==latest)</mode>
     </version>
-    <name>Admin_Common_MyDesk</name>
-    <childs>
-      <child>Admin_Common_SearchMyDesk</child>
-      <child>Admin_User_AbstractMyDesk</child>
-      <child>Admin_Common_AbstractMyDesk</child>
-      <child>Admin_DataModel_AbstractMyDesk</child>
-      <child>Admin_Program_AbstractMyDesk</child>
-      <child>Admin_Access_AbstractMyDesk</child>
-      <child>Admin_UI_AbstractMyDesk</child>
-      <child>Admin_Integration_AbstractMyDesk</child>
-      <child>Admin_Common_VersionMyDesk</child>
-    </childs>
+    <name>Admin_Common_DBPropertiesBundleTree_DBProperties</name>
+    <!-- target definitions -->
+    <target>
+      <menu>Admin_Common_DBPropertiesBundleTree_DBProperties_Menu</menu>
+      <table>Admin_Common_DBPropertiesTable</table>
+      <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
+        <property name="Expand">Admin_Common_DBProperties\BundleID</property>
+      </evaluate>
+    </target>
+    <!-- properties -->
+    <property name="Target">content</property>
+    <property name="TargetMode">view</property>
+    <property name="TargetShowCheckBoxes">true</property>
   </definition>
-</ui-menu>
+
+</ui-command>
