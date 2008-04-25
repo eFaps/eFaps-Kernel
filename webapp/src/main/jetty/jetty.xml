@@ -41,6 +41,13 @@
     <parameter key="login.name">wicket:eFaps:org.efaps.ui.wicket.LoginAttributeName</parameter>
   </filter>
 
+  <filter path="/test/*"
+          name="testFilter"
+          classname="org.efaps.ui.filter.TestFilter">
+          
+  </filter>
+
+
   <servlet path="/*"
           name="eFapsRequestHandlerInitServlet"
           displayname="eFapsRequestHandlerInitServlet"

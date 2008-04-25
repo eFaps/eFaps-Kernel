@@ -28,9 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.efaps.admin.program.esjp.EFapsClassLoader;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.ui.webdav.resource.AbstractResource;
@@ -41,6 +39,8 @@ import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The class is used as gateway to all WebDAV integrations. Each implementation
@@ -154,7 +154,11 @@ public class WebDAVImpl implements WebDAVInterface, CacheReloadInterface  {
         String name = (String) query.get("Name");
         String value = (String) query.get("Value");
         if ("Class".equals(name))  {
-          Object obj = Class.forName(value).newInstance();
+          Object obj = Class.forName(value,
+                                     true,
+                                     new EFapsClassLoader(this.getClass().getClassLoader()))
+                            .newInstance();
+
           if (obj instanceof WebDAVInterface)  {
             ret = (WebDAVInterface) obj;
           } else  {

@@ -27,12 +27,12 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.efaps.db.Context;
 import org.efaps.jaas.LoginHandler;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -46,13 +46,13 @@ public abstract class AbstractAuthenticationFilter extends AbstractFilter  {
   /**
    * Logging instance used in this class.
    */
-  private final static Logger LOG 
+  private final static Logger LOG
                       = LoggerFactory.getLogger(AbstractAuthenticationFilter.class);
 
   /**
    * The string is name of the parameter used to define the application.
    *
-   * @see #init 
+   * @see #init
    */
   final private static String INIT_PARAM_APPLICATION = "application";
 
@@ -62,7 +62,7 @@ public abstract class AbstractAuthenticationFilter extends AbstractFilter  {
   /**
    * Login handler used to check the login in method {@link #checkLogin}.
    *
-   * @see #init 
+   * @see #init
    * @see #checkLogin
    */
   private LoginHandler loginHandler = null;
@@ -85,25 +85,28 @@ public abstract class AbstractAuthenticationFilter extends AbstractFilter  {
    * @see #loginhandler
    * @todo description
    */
+  @Override
   public void init(final FilterConfig _filterConfig) throws ServletException  {
     super.init(_filterConfig);
     String applInit = _filterConfig.getInitParameter(INIT_PARAM_APPLICATION);
     this.loginHandler = new LoginHandler(applInit);
   }
 
+  @Override
   public void destroy()  {
     super.destroy();
     this.loginHandler = null;
   }
 
   /**
-   * If the current user is already logged in, nothing is filtered. 
+   * If the current user is already logged in, nothing is filtered.
    *
    * @see #doAuthenticate
    */
-  protected void doFilter(final HttpServletRequest _request, 
+  @Override
+  protected void doFilter(final HttpServletRequest _request,
                           final HttpServletResponse _response,
-                          final FilterChain _chain) 
+                          final FilterChain _chain)
                                         throws IOException, ServletException  {
     if (isLoggedIn(_request))  {
       _chain.doFilter(_request, _response);
@@ -132,12 +135,12 @@ public abstract class AbstractAuthenticationFilter extends AbstractFilter  {
    */
   protected boolean checkLogin(final String _name,
                              final String _passwd)  {
-  
+
     boolean loginOk = false;
 
     Context context = null;
     try  {
-      Context.begin();
+      context = Context.begin();
 
       boolean ok = false;
 
@@ -147,7 +150,7 @@ public abstract class AbstractAuthenticationFilter extends AbstractFilter  {
         }
         ok = true;
       } finally  {
-  
+
         if (ok && context.allConnectionClosed() && Context.isTMActive())  {
           Context.commit();
         } else  {
@@ -166,7 +169,7 @@ public abstract class AbstractAuthenticationFilter extends AbstractFilter  {
     } finally  {
       context.close();
     }
-    
+
     return loginOk;
   }
 }
