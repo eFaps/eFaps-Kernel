@@ -43,6 +43,7 @@
       <property name="Expression">Name</property>
       <property name="Label">Admin_Common_Version/Name.Label</property>
       <property name="Width">2</property>
+      <property name="ShowTypeIcon">true</property>
     </field>
     <field name="revision">
       <property name="Expression">Revision</property>

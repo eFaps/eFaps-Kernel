@@ -40,6 +40,7 @@
       <property name="Expression">Name</property>
       <property name="Label">Admin_Common_SystemAttribute/Name.Label</property>
       <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="ShowTypeIcon">true</property>
     </field>
     <field name="uuid">
       <property name="Expression">UUID</property>

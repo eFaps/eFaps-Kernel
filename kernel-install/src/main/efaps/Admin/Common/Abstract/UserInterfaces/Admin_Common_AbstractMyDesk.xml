@@ -42,6 +42,7 @@
       <child>Admin_Common_DBPropertiesMyDesk</child>
       <child>Admin_Common_DBPropertiesBundleMyDesk</child>
       <child>Admin_Common_SystemAttributeMyDesk</child>
+      <child>Admin_Common_VersionMyDesk</child>
     </childs>
   </definition>
 

@@ -20,39 +20,32 @@
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
+ Original Author: Mark James (mjames at gmail.com)
+ Original Name:   box.png
+ Original Web:    Silk icon set 1.3
+                  [ http://www.famfamfam.com/lab/icons/silk/ ] 
+ Original License:Creative Commons Attribution 2.5 License 
+                  [ http://creativecommons.org/licenses/by/2.5/ ]
 
 -->
 
-<ui-command xmlns="http://www.efaps.org/xsd"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>25250c4a-249a-4cfc-90fe-fa331a234e1c</uuid>
+  <uuid>45809378-557f-46d0-9132-9138245533ca</uuid>
 
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>true</mode>
       <mode>(version==latest)</mode>
     </version>
-    <name>Admin_Common_SystemAttributeMyDesk</name>
-    <icon>Admin_Common_SystemAttributeImage</icon>
-    <!-- access -->
-    <access>
-      <role>Administration</role>
-    </access>
-    <!-- target definitions -->
-    <target>
-      <table>Admin_Common_SystemAttributeTable</table>
-      <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
-        <property name="Types">Admin_Common_SystemAttribute</property>
-      </evaluate>
-    </target>
-    <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetTableSortKey">name</property>
+    <name>Admin_Common_VersionImage</name>
+    <file>Admin_Common_VersionImage.gif</file>
+    <!-- is type icon for -->
+    <type>Admin_Common_Version</type>
   </definition>
 
-</ui-command>
+</ui-image>

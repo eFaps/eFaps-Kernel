@@ -38,6 +38,7 @@
       <mode>(version==latest)</mode>
     </version>
     <name>Admin_Common_VersionMyDesk</name>
+    <icon>Admin_Common_VersionImage</icon>
     <!-- access -->
     <access>
       <role>Administration</role>
