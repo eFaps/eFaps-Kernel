@@ -23,24 +23,25 @@
   
 -->
 
-<esjp xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<ui-menu xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
-  <uuid>e649207d-b7a1-407b-b1a2-a2cbd8024431</uuid>
+  <uuid>f84814f4-1bc5-481e-b37c-6ae782b25a00</uuid>
 
   <!-- ************************************************************************
-    version definition used to create / update the Program 
+    version definition used to update the menu 
     ************************************************************************* -->
-  <definition>
+  <definition type="update">
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==1)</mode>
+      <mode>(version==latest)</mode>
     </version>
-
-    <file>CreateXML.java</file>
+    <name>Common_Main_Preferences</name>
+    <childs>
+      <child modus="add" order="2">Common_Main_Default_Print</child>
+    </childs>
   </definition>
-
-</esjp>
+</ui-menu>

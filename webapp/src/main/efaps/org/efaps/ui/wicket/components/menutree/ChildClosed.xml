@@ -23,25 +23,22 @@
 
 -->
 
-<ui-image xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
-  <uuid>028efe10-443c-425f-bf10-48e6233522b7</uuid>
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-    ************************************************************************* -->
+  <uuid>8b361ddd-94e4-4dd8-9c36-63cf4b6d25b3</uuid>
+
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==1)</mode>
+      <mode>(version==latest)</mode>
     </version>
-    <name>org.efaps.ui.wicket.components.menutree.GoInto.gif</name>
-    <file>GoInto.gif</file>
-
+    <name>org.efaps.ui.wicket.components.menutree.ChildClosed.gif</name>
+    <file>ChildClosed.gif</file>
   </definition>
 
 </ui-image>

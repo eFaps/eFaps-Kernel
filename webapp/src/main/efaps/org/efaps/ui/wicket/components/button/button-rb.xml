@@ -23,21 +23,19 @@
   
 -->
 
-<ui-image xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>e2f430e5-f645-4685-b5f4-5e85edc73c67</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-    ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==1)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>org.efaps.ui.wicket.components.button.button-rb.png</name>
     <file>button-rb.png</file>

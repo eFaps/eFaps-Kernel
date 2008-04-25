@@ -28,8 +28,6 @@
 >
   <application>eFaps-WebApp</application>
 
-  <version number="1" />
-  <version number="2" />
-  <version number="3" compile="true" />
+  <version number="1" compile="true" />
 
 </install>

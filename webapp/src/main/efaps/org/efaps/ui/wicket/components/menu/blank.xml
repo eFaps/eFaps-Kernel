@@ -23,25 +23,22 @@
 
 -->
 
-<ui-image xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
-  <uuid>0e6c5def-4a89-48a0-9126-5d7057a3f342</uuid>
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-    ************************************************************************* -->
+  <uuid>79243ba1-658d-40cf-b3f3-b4733c428486</uuid>
+
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==1)</mode>
+      <mode>(version==latest)</mode>
     </version>
-    <name>org.efaps.ui.wicket.components.split.Expand_vert.png</name>
-    <file>Expand_vert.png</file>
-
+    <name>org.efaps.ui.wicket.components.menu.blank.gif</name>
+    <file>blank.gif</file>
   </definition>
 
 </ui-image>

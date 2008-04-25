@@ -37,7 +37,7 @@
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==1)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>WebApp_CacheDuration</name>
     <value>3600</value>

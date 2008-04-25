@@ -23,25 +23,22 @@
 
 -->
 
-<ui-image xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>15bbf414-72a4-4f3b-9232-89a6ac4de5dc</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-    ************************************************************************* -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==1)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>org.efaps.ui.wicket.components.table.header.FilterActive.gif</name>
     <file>FilterActive.gif</file>
-
   </definition>
 
 </ui-image>

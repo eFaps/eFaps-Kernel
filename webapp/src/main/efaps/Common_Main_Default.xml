@@ -28,30 +28,13 @@
 >
   <uuid>abb7f23d-4675-4874-b76d-2fd8f5186075</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the menu 
-    ************************************************************************* -->
   <definition type="replace">
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
-    <name>Common_Main_Default</name>
-  </definition>
-
-  <!-- ************************************************************************
-    version definition used to update the menu 
-    ************************************************************************* -->
-  <definition type="replace">
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==3)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>Common_Main_Default</name>
     <childs>

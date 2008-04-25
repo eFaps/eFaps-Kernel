@@ -29,30 +29,13 @@
 
   <uuid>e6d7937d-b9e5-4e4e-bfb1-b8973def5cf6</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the command 
-    ************************************************************************* -->
   <definition>
     <version>
       <application>efaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
-    <name>Common_Main_Default_PrintPDF</name>
-  </definition>
-
-  <!-- ************************************************************************
-    version definition used to define the command 
-    ************************************************************************* -->
-  <definition>
-    <version>
-      <application>efaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==3)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>Common_Main_Default_PrintPDF</name>
     <target>

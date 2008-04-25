@@ -23,25 +23,22 @@
 
 -->
 
-<ui-image xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
-  <uuid>a7c0bc85-6e4a-4dc1-a15d-5c768e004336</uuid>
+<ui-image xmlns="http://www.efaps.org/xsd"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-    ************************************************************************* -->
+  <uuid>b2d6f42a-bad0-470e-9ce8-880335dad656</uuid>
+
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
       <mode>true</mode>
-      <mode>(version==1)</mode>
+      <mode>(version==latest)</mode>
     </version>
-    <name>org.efaps.ui.wicket.components.menu.spacer.gif</name>
-    <file>spacer.gif</file>
-
+    <name>org.efaps.ui.wicket.components.menutree.Remove.gif</name>
+    <file>Remove.gif</file>
   </definition>
 
 </ui-image>
