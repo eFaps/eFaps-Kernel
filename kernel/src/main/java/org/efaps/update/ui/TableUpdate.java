@@ -56,7 +56,8 @@ public class TableUpdate extends AbstractCollectionUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static TableUpdate readXMLFile(final URL _url)  {
+  public static TableUpdate readXMLFile(final URL _root, final URL _url)
+  {
     TableUpdate ret = null;
 
     try {

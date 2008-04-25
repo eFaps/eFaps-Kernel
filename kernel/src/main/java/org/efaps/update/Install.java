@@ -87,28 +87,28 @@ public class Install {
    *
    * @see #install(Long)
    */
-  private final Map<Class<? extends AbstractUpdate>, FileType> updateClasses =
+  private final static Map<Class<? extends AbstractUpdate>, FileType> updateClasses =
       new LinkedHashMap<Class<? extends AbstractUpdate>, FileType>();
-  {
-    if (this.updateClasses.size() == 0) {
-      this.updateClasses.put(RoleUpdate.class, FileType.XML);
-      this.updateClasses.put(SQLTableUpdate.class, FileType.XML);
-      this.updateClasses.put(TypeUpdate.class, FileType.XML);
-      this.updateClasses.put(JAASSystemUpdate.class, FileType.XML);
-      this.updateClasses.put(AccessTypeUpdate.class, FileType.XML);
-      this.updateClasses.put(AccessSetUpdate.class, FileType.XML);
-      this.updateClasses.put(ImageUpdate.class, FileType.XML);
-      this.updateClasses.put(FormUpdate.class, FileType.XML);
-      this.updateClasses.put(TableUpdate.class, FileType.XML);
-      this.updateClasses.put(SearchUpdate.class, FileType.XML);
-      this.updateClasses.put(MenuUpdate.class, FileType.XML);
-      this.updateClasses.put(CommandUpdate.class, FileType.XML);
-      this.updateClasses.put(WebDAVUpdate.class, FileType.XML);
-      this.updateClasses.put(JavaUpdate.class, FileType.XML);
-      this.updateClasses.put(SystemAttributeUpdate.class, FileType.XML);
-      this.updateClasses.put(CSSUpdate.class, FileType.CSS);
-      this.updateClasses.put(XSLUpdate.class, FileType.XSL);
-      this.updateClasses.put(JavaScriptUpdate.class, FileType.JS);
+  static  {
+    if (updateClasses.isEmpty()) {
+      updateClasses.put(RoleUpdate.class, FileType.XML);
+      updateClasses.put(SQLTableUpdate.class, FileType.XML);
+      updateClasses.put(TypeUpdate.class, FileType.XML);
+      updateClasses.put(JAASSystemUpdate.class, FileType.XML);
+      updateClasses.put(AccessTypeUpdate.class, FileType.XML);
+      updateClasses.put(AccessSetUpdate.class, FileType.XML);
+      updateClasses.put(ImageUpdate.class, FileType.XML);
+      updateClasses.put(FormUpdate.class, FileType.XML);
+      updateClasses.put(TableUpdate.class, FileType.XML);
+      updateClasses.put(SearchUpdate.class, FileType.XML);
+      updateClasses.put(MenuUpdate.class, FileType.XML);
+      updateClasses.put(CommandUpdate.class, FileType.XML);
+      updateClasses.put(WebDAVUpdate.class, FileType.XML);
+      updateClasses.put(JavaUpdate.class, FileType.JAVA);
+      updateClasses.put(SystemAttributeUpdate.class, FileType.XML);
+      updateClasses.put(CSSUpdate.class, FileType.CSS);
+      updateClasses.put(XSLUpdate.class, FileType.XSL);
+      updateClasses.put(JavaScriptUpdate.class, FileType.JS);
     }
   }
 
@@ -157,7 +157,7 @@ public class Install {
 
   private Long maxVersion;
 
-  private String rootDir;
+  private URL rootDir;
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
@@ -189,7 +189,7 @@ public class Install {
     }
 
     // create all objects
-    for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : this.updateClasses.entrySet()) {
+    for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : updateClasses.entrySet()) {
       final Class<? extends AbstractUpdate> updateClass = entry.getKey();
       for (final AbstractUpdate update : this.cache.get(updateClass)) {
         update.createInDB(jexlContext);
@@ -197,7 +197,7 @@ public class Install {
     }
 
     // and update them
-    for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : this.updateClasses.entrySet()) {
+    for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : updateClasses.entrySet()) {
       final Class<? extends AbstractUpdate> updateClass = entry.getKey();
       for (final AbstractUpdate update : this.cache.get(updateClass)) {
         update.updateInDB(jexlContext);
@@ -215,8 +215,7 @@ public class Install {
       this.initialised = true;
       this.cache.clear();
 
-      for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : this.updateClasses
-          .entrySet()) {
+      for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : updateClasses.entrySet()) {
         final List<AbstractUpdate> list = new ArrayList<AbstractUpdate>();
 
         final Class<? extends AbstractUpdate> updateClass = entry.getKey();
@@ -224,7 +223,7 @@ public class Install {
 
         Method method = null;
         try {
-          method = updateClass.getMethod(entry.getValue().method, URL.class);
+          method = updateClass.getMethod(entry.getValue().method, URL.class, URL.class);
         } catch (SecurityException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();
@@ -236,7 +235,7 @@ public class Install {
           if (file.getType().equals(entry.getValue().type)) {
             Object obj = null;
             try {
-              obj = method.invoke(null, file.getUrl());
+              obj = method.invoke(null, this.rootDir, file.getUrl());
             } catch (IllegalArgumentException e) {
               // TODO Auto-generated catch block
               e.printStackTrace();
@@ -251,7 +250,6 @@ public class Install {
               final AbstractUpdate update = (AbstractUpdate) obj;
               update.setApplication(this.application);
               update.setMaxVersion(this.maxVersion);
-              update.setRootDir(this.rootDir);
               list.add(update);
             }
           }
@@ -325,21 +323,11 @@ public class Install {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #rootDir}.
-   *
-   * @return value of instance variable {@link #rootDir}
-   */
-  public String getRootDir() {
-    return this.rootDir;
-  }
-
-  /**
    * This is the setter method for the instance variable {@link #rootDir}.
    *
-   * @param _rootDir
-   *                the rootDir to set
+   * @param _rootDir  the rootDir to set
    */
-  public void setRootDir(String _rootDir) {
+  public void setRootDir(final URL _rootDir) {
     this.rootDir = _rootDir;
   }
 

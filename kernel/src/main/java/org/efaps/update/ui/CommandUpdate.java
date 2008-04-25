@@ -26,13 +26,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.event.EventFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * This Class is responsible for the Update of "Command" in the Database.<br/>It
@@ -127,7 +126,8 @@ public class CommandUpdate extends AbstractUpdate {
    * @throws IOException
    *                 if file is not readable
    */
-  public static CommandUpdate readXMLFile(final URL _url) {
+  public static CommandUpdate readXMLFile(final URL _root, final URL _url)
+  {
     CommandUpdate ret = null;
 
     try {

@@ -36,10 +36,11 @@ public class XSLUpdate extends AbstractSourceUpdate {
     super(TYPENAME);
   }
 
-  public static XSLUpdate readFile(final URL _url) {
+  public static XSLUpdate readFile(final URL _root, final URL _url)
+  {
     final XSLUpdate ret = new XSLUpdate();
     ret.setURL(_url);
-    final XSLDefinition definition = new XSLDefinition(_url);
+    final XSLDefinition definition = new XSLDefinition(_root, _url);
     ret.addDefinition(definition);
 
     return ret;
@@ -47,8 +48,10 @@ public class XSLUpdate extends AbstractSourceUpdate {
 
   public static class XSLDefinition extends SourceDefinition {
 
-    public XSLDefinition(final URL _url) {
-      super(_url);
+    public XSLDefinition(final URL _rootUrl,
+                         final URL _url)
+    {
+      super(_rootUrl, _url);
     }
 
   }

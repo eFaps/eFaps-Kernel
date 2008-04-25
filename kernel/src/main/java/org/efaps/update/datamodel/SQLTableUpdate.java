@@ -84,7 +84,8 @@ public class SQLTableUpdate extends AbstractUpdate {
   // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static SQLTableUpdate readXMLFile(final URL _url) {
+  public static SQLTableUpdate readXMLFile(final URL _root, final URL _url)
+  {
     SQLTableUpdate ret = null;
 
     try {
@@ -412,6 +413,7 @@ public class SQLTableUpdate extends AbstractUpdate {
       this.checkKeys.add(new CheckKey(_name, _condition));
     }
 
+
     /**
      * A new SQL table could only be created if a name is specified.
      *
@@ -443,10 +445,7 @@ public class SQLTableUpdate extends AbstractUpdate {
      * @see #updateSQLTable
      */
     @Override
-    public void updateInDB(final Type _dataModelType,
-                           final String _uuid,
-                           final Set<Link> _allLinkTypes,
-                           final boolean _abstractType)
+    public void updateInDB(final Set<Link> _allLinkTypes)
         throws EFapsException
     {
       executeSQLs();
@@ -467,7 +466,7 @@ public class SQLTableUpdate extends AbstractUpdate {
           query.close();
         }
 
-        super.updateInDB(_dataModelType, _uuid, _allLinkTypes, _abstractType);
+        super.updateInDB(_allLinkTypes);
       }
     }
 

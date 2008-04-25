@@ -24,11 +24,10 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.digester.Digester;
+import org.efaps.update.AbstractUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import org.efaps.update.AbstractUpdate;
 
 /**
  * @author tmo
@@ -49,7 +48,7 @@ public class AccessTypeUpdate extends AbstractUpdate {
   // constructors
 
   /**
-   * 
+   *
    */
   public AccessTypeUpdate() {
     super("Admin_Access_AccessType");
@@ -58,7 +57,8 @@ public class AccessTypeUpdate extends AbstractUpdate {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static AccessTypeUpdate readXMLFile(final URL _url)  {
+  public static AccessTypeUpdate readXMLFile(final URL _root, final URL _url)
+  {
     AccessTypeUpdate ret = null;
 
     try {

@@ -60,8 +60,8 @@ public class Application {
   /**
    * UUID of eFaps type 'Admin_Common_Version'.
    */
-  private final static UUID VERSION_UUID =
-      UUID.fromString("1bb051f3-b664-43db-b409-c0c4009f5972");
+  private final static UUID VERSION_UUID
+      = UUID.fromString("1bb051f3-b664-43db-b409-c0c4009f5972");
 
   // ///////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -213,7 +213,7 @@ public class Application {
 
     this.install.setApplication(this.application);
     this.install.setMaxVersion(this.maxVersion);
-    this.install.setRootDir(this.eFapsDir.getAbsolutePath());
+    this.install.setRootDir(this.eFapsDir.toURL());
 
     LOG.info("Install application '" + this.application + "'");
 
@@ -469,7 +469,8 @@ public class Application {
    * @return value of instance variable {@link #versions}
    * @see #versions
    */
-  public Set<ApplicationVersion> getVersions() {
+  public Set<ApplicationVersion> getVersions()
+  {
     return this.versions;
   }
 

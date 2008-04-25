@@ -56,7 +56,8 @@ public class FormUpdate extends AbstractCollectionUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static FormUpdate readXMLFile(final URL _url)  {
+  public static FormUpdate readXMLFile(final URL _root, final URL _url)
+  {
     FormUpdate ret = null;
 
     try {

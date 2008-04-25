@@ -29,7 +29,6 @@ import java.util.Set;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.db.Checkin;
-import org.efaps.db.Instance;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
@@ -90,7 +89,8 @@ public class ImageUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static ImageUpdate readXMLFile(final URL _url)  {
+  public static ImageUpdate readXMLFile(final URL _root, final URL _url)
+  {
     ImageUpdate update = null;
     try  {
       final Digester digester = new Digester();
@@ -165,17 +165,16 @@ public class ImageUpdate extends AbstractUpdate  {
      * @param _insert       insert instance (if new instance is to create)
      */
     @Override
-    public Instance updateInDB(final Instance _instance,
-                               final Set<Link> _allLinkTypes)
+    protected void updateInDB(final Set<Link> _allLinkTypes)
         throws EFapsException
     {
 
-      final Instance instance = super.updateInDB(_instance, _allLinkTypes);
+      super.updateInDB(_allLinkTypes);
 
       if (this.file != null)  {
         try  {
           final InputStream in = new URL(this.root + this.file).openStream();
-          final Checkin checkin = new Checkin(instance);
+          final Checkin checkin = new Checkin(this.instance);
           checkin.executeWithoutAccessCheck(this.file,
                                             in,
                                             in.available());
@@ -184,7 +183,6 @@ public class ImageUpdate extends AbstractUpdate  {
           throw new EFapsException(getClass(), "updateInDB.IOException", e, this.root + this.file);
         }
       }
-      return instance;
     }
 
     /**

@@ -28,10 +28,9 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.efaps.update.LinkInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.efaps.update.LinkInstance;
 
 /**
  * TODO description
@@ -67,10 +66,11 @@ public class CSSUpdate extends AbstractSourceUpdate {
     super(TYPENAME, ALLLINKS);
   }
 
-  public static CSSUpdate readFile(final URL _url) {
+  public static CSSUpdate readFile(final URL _root, final URL _url)
+  {
     final CSSUpdate ret = new CSSUpdate();
     ret.setURL(_url);
-    final CSSDefinition definition = new CSSDefinition(_url);
+    final CSSDefinition definition = new CSSDefinition(_root, _url);
     ret.addDefinition(definition);
 
     String thisLine;
@@ -140,8 +140,10 @@ public class CSSUpdate extends AbstractSourceUpdate {
    */
   public static class CSSDefinition extends SourceDefinition {
 
-    public CSSDefinition(final URL _url) {
-      super(_url);
+    public CSSDefinition(final URL _rootUrl,
+                         final URL _url)
+    {
+      super(_rootUrl, _url);
     }
 
     public void assignSuper(final String _super) {

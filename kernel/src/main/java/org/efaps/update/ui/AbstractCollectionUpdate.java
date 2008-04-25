@@ -258,31 +258,25 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
      * @see #setFieldsInDB
      */
     @Override
-    public Instance updateInDB(final Instance _instance,
-                               final Set<Link> _allLinkTypes)
+    public void updateInDB(final Set<Link> _allLinkTypes)
         throws EFapsException
     {
-
-      final Instance instance = super.updateInDB(_instance, _allLinkTypes);
-      setFieldsInDB(instance);
-
-      return instance;
+      super.updateInDB(_allLinkTypes);
+      setFieldsInDB();
     }
 
     /**
      * The fields for this collection are created and / or updated in the
      * database.
      *
-     * @param _instance   instance for which the fields must be updated /
-     *                    created
      * @todo rework that a complete cleanup and create is not needed
      */
-    protected void setFieldsInDB(final Instance _instance)
+    protected void setFieldsInDB()
         throws EFapsException
     {
       // cleanup fields (remove all fields from table)
       final SearchQuery query = new SearchQuery();
-      query.setExpand(_instance, "Admin_UI_Field\\Collection");
+      query.setExpand(this.instance, "Admin_UI_Field\\Collection");
       query.addSelect("OID");
       query.executeWithoutAccessCheck();
       while (query.next()) {
@@ -307,7 +301,7 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
           insert = new Insert("Admin_UI_Field");
         }
 
-        insert.add("Collection", "" + _instance.getId());
+        insert.add("Collection", "" + this.instance.getId());
         insert.add("Name", field.name);
         insert.executeWithoutAccessCheck();
         setPropertiesInDb(insert.getInstance(), field.getProperties());

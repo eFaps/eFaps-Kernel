@@ -26,11 +26,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
+import org.efaps.update.AbstractUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import org.efaps.update.AbstractUpdate;
 
 /**
  * @author tmo
@@ -49,8 +48,8 @@ public class RoleUpdate extends AbstractUpdate  {
 
   /** Link from menu to child command / menu */
 /*  private final static Link LINK2CHILD
-             = new OrderedLink("Admin_UI_Menu2Command", 
-                               "FromMenu", 
+             = new OrderedLink("Admin_UI_Menu2Command",
+                               "FromMenu",
                                "Admin_UI_Command", "ToCommand");
 */
   private final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
@@ -71,7 +70,8 @@ public class RoleUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static RoleUpdate readXMLFile(final URL _url)  {
+  public static RoleUpdate readXMLFile(final URL _root, final URL _url)
+  {
     RoleUpdate ret = null;
 
     try  {
@@ -90,7 +90,7 @@ public class RoleUpdate extends AbstractUpdate  {
       digester.addCallParam("user-role/definition/version/global", 1);
       digester.addCallParam("user-role/definition/version/local", 2);
       digester.addCallParam("user-role/definition/version/mode", 3);
-      
+
       digester.addCallMethod("user-role/definition/name", "setName", 1);
       digester.addCallParam("user-role/definition/name", 0);
 
@@ -113,7 +113,7 @@ public class RoleUpdate extends AbstractUpdate  {
   // class for the definitions
 
   public static class RoleDefinition extends AbstractDefinition  {
-    
+
     public void setStatus(final String _status){
       addValue("Status", _status);
     }

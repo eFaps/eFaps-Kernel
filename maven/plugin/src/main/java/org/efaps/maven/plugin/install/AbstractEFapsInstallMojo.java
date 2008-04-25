@@ -69,6 +69,7 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
   private final static Set<String> DEFAULT_INCLUDES = new HashSet<String>();
   static {
     DEFAULT_INCLUDES.add("**/*.css");
+    DEFAULT_INCLUDES.add("**/*.java");
     DEFAULT_INCLUDES.add("**/*.js");
     DEFAULT_INCLUDES.add("**/*.xml");
     DEFAULT_INCLUDES.add("**/*.xsl");
@@ -173,9 +174,9 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
     try  {
       final Enumeration<URL> urlEnum = cl.getResources("META-INF/efaps/install.xml");
       while (urlEnum.hasMoreElements()) {
-        final Application appl =
-            Application.getApplication(urlEnum.nextElement(),
-                getClasspathElements(), getEFapsDir());
+        final Application appl = Application.getApplication(urlEnum.nextElement(),
+                                                            getClasspathElements(),
+                                                            getEFapsDir());
         appls.put(appl.getApplication(), appl);
       }
     } catch (IOException e)  {

@@ -86,7 +86,8 @@ public class JAASSystemUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static JAASSystemUpdate readXMLFile(final URL _url)  {
+  public static JAASSystemUpdate readXMLFile(final URL _root, final URL _url)
+  {
     JAASSystemUpdate ret = null;
 
     try  {

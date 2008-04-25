@@ -86,7 +86,7 @@ public class TypeUpdate extends AbstractUpdate {
    *                XML-File to be read by the digester
    * @return TypUdate Definition read by digester
    */
-  public static TypeUpdate readXMLFile(final URL _url)
+  public static TypeUpdate readXMLFile(final URL _root, final URL _url)
   {
     TypeUpdate ret = null;
 
@@ -474,8 +474,7 @@ public class TypeUpdate extends AbstractUpdate {
      * @see #attributes
      */
     @Override
-    public Instance updateInDB(final Instance _instance,
-                               final Set<Link> _allLinkTypes)
+    public void updateInDB(final Set<Link> _allLinkTypes)
         throws EFapsException
     {
       // set the id of the parent type (if defined)
@@ -496,13 +495,11 @@ public class TypeUpdate extends AbstractUpdate {
         addValue("ParentType", null);
       }
 
-      final Instance instance = super.updateInDB(_instance, _allLinkTypes);
+      super.updateInDB(_allLinkTypes);
 
       for (Attribute attr : this.attributes) {
-        attr.updateInDB(instance, getValue("Name"));
+        attr.updateInDB(this.instance, getValue("Name"));
       }
-
-      return instance;
     }
 
     /**

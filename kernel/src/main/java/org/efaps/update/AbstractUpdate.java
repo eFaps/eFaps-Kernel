@@ -109,7 +109,6 @@ public abstract class AbstractUpdate {
 
   private Long maxVersion;
 
-  private String rootDir;
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
@@ -171,10 +170,7 @@ public abstract class AbstractUpdate {
           if ((this.url != null) && LOG.isDebugEnabled()) {
             LOG.debug("Executing '" + this.url.toString() + "'");
           }
-          def.updateInDB(Type.get(this.dataModelTypeName),
-                         this.uuid,
-                         this.allLinkTypes,
-                         this.abstractType);
+          def.updateInDB(this.allLinkTypes);
         }
       }
     } catch (final EFapsException e) {
@@ -324,25 +320,6 @@ public abstract class AbstractUpdate {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #rootDir}.
-   *
-   * @return value of instance variable {@link #rootDir}
-   */
-  public String getRootDir() {
-    return this.rootDir;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #rootDir}.
-   *
-   * @param rootDir
-   *                the rootDir to set
-   */
-  public void setRootDir(String rootDir) {
-    this.rootDir = rootDir;
-  }
-
-  /**
    * This is the getter method for the instance variable {@link #allLinkTypes}.
    *
    * @return value of instance variable {@link #allLinkTypes}
@@ -358,8 +335,10 @@ public abstract class AbstractUpdate {
    */
   @Override
   public String toString() {
-    return new ToStringBuilder(this).append("uuid", this.uuid).append(
-        "definitions", this.definitions).toString();
+    return new ToStringBuilder(this)
+            .append("uuid", this.uuid)
+            .append("definitions", this.definitions)
+            .toString();
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -526,6 +505,42 @@ public abstract class AbstractUpdate {
     protected final List<Event> events = new ArrayList<Event>();
 
     /**
+     * Name of attribute by which the search in the database is done. If not
+     * specified (defined to <code>null</code>), the attribute &quot;UUID&quot;
+     * is used.
+     *
+     * @see #searchInstance
+     */
+    private final String searchAttrName;
+
+    /**
+     * Instance of this definition.
+     */
+    protected Instance instance = null;
+
+    /**
+     * Default constructor for the attribute by which the object is
+     * searched is &quot;UUID&quot;.
+     */
+    protected AbstractDefinition()
+    {
+      this(null);
+    }
+
+    /**
+     * Constructor defining the search attribute.
+     *
+     * @param _searchAttrName   name of attribute by which the object is
+     *                          searched
+     * @see #searchInstance   method using the search attribute
+     * @see #searchAttrName
+     */
+    protected AbstractDefinition(final String _searchAttrName)
+    {
+      this.searchAttrName = _searchAttrName;
+    }
+
+    /**
      * Evaluates the JEXP expression defined in {@link #mode}. If this
      * expression returns true, the definition is a valid version and could
      * be executed.
@@ -540,8 +555,13 @@ public abstract class AbstractUpdate {
     {
       boolean exec;
       try {
-        final Expression jexlExpr = ExpressionFactory.createExpression(this.mode);
-        exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
+        if (this.mode == null)  {
+          final Expression jexlExpr = ExpressionFactory.createExpression("version==latest");
+          exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
+        } else  {
+          final Expression jexlExpr = ExpressionFactory.createExpression(this.mode);
+          exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
+        }
       } catch (Exception e) {
         throw new EFapsException(getClass(),
                                  "isValidVersion.JEXLExpressionNotEvaluatable",
@@ -551,27 +571,55 @@ public abstract class AbstractUpdate {
       return exec;
     }
 
+    /**
+     * Search for given data model type. If an attribute name for the search
+     * is defined in {@link #searchAttrName}, the search is done with this
+     * given attribute. If no attribute name is defined (value is
+     * <code>null</code>, the method searches for given UUID. The result is
+     * stored in {@link #instance}Ê(or set to null, if not found).<br/>
+     * The search is only done, if no instance is defined (meaning if
+     * {@link #instance} has no value).
+     *
+     * @param _dataModelType  type for which the a search is done
+     * @param _uuid           UUID which is used for the search if no search
+     *                        attributes is defined in {@link #searchAttrName}
+     * @see #instance         variable in which the search result is stored
+     *                        (and the search is only done if the value is
+     *                        <code>null</code>)
+     * @see #searchAttrName   name of the attribute which them the search is
+     *                        done
+     */
+    protected void searchInstance(final Type _dataModelType,
+                                  final String _uuid)
+         throws EFapsException
+     {
+       if (this.instance == null)  {
+         final SearchQuery query = new SearchQuery();
+         query.setQueryTypes(_dataModelType.getName());
+         if (this.searchAttrName == null)  {
+           query.addWhereExprEqValue("UUID", _uuid);
+         } else  {
+           query.addWhereExprEqValue(this.searchAttrName,
+                                     this.values.get(this.searchAttrName));
+         }
+         query.addSelect("OID");
+         query.executeWithoutAccessCheck();
+         if (query.next()) {
+           this.instance = new Instance((String) query.get("OID"));
+         }
+         query.close();
+       }
+     }
 
     public void createInDB(final Type _dataModelType,
                            final String _uuid,
                            final boolean _abstractType)
         throws EFapsException
     {
-      Instance instance = null;
-
-      // search for the instance
-      final SearchQuery query = new SearchQuery();
-      query.setQueryTypes(_dataModelType.getName());
-      query.addWhereExprEqValue("UUID", _uuid);
-      query.addSelect("OID");
-      query.executeWithoutAccessCheck();
-      if (query.next()) {
-        instance = new Instance((String) query.get("OID"));
-      }
-      query.close();
+      searchInstance(_dataModelType, _uuid);
 
       // if no instance exists, a new insert must be done
-      if (instance == null) {
+      if (this.instance == null) {
         final Insert insert = new Insert(_dataModelType);
         insert.add("UUID", _uuid);
         if (_dataModelType.getAttribute("Abstract") != null) {
@@ -595,53 +643,18 @@ public abstract class AbstractUpdate {
             + " '" + name + "'");
  //     }
       _insert.executeWithoutAccessCheck();
-    }
-
-
-    public void updateInDB(final Type _dataModelType,
-                           final String _uuid,
-                           final Set<Link> _allLinkTypes,
-                           final boolean _abstractType)
-        throws EFapsException
-    {
-      Instance instance = null;
-      Insert insert = null;
-
-      // search for the instance
-      final SearchQuery query = new SearchQuery();
-      query.setQueryTypes(_dataModelType.getName());
-      query.addWhereExprEqValue("UUID", _uuid);
-      query.addSelect("OID");
-      query.executeWithoutAccessCheck();
-      if (query.next()) {
-        instance = new Instance((String) query.get("OID"));
-      }
-      query.close();
-
-      // if no instance exists, a new insert must be done
-      if (instance == null) {
-        insert = new Insert(_dataModelType);
-        insert.add("UUID", _uuid);
-        if (insert.getInstance().getType().getAttribute("Abstract") != null) {
-          insert.add("Abstract", ((Boolean) _abstractType).toString());
-        }
-      }
-
-      updateInDB(instance, _allLinkTypes);
+      this.instance = _insert.getInstance();
     }
 
     /**
      * @param _instance instance to update
      */
-    public Instance updateInDB(final Instance _instance,
-                               final Set<Link> _allLinkTypes)
+    protected void updateInDB(final Set<Link> _allLinkTypes)
         throws EFapsException
     {
-      Instance instance = _instance;
-
       final String name = this.values.get("Name");
-      final Update update = new Update(_instance);
-      if (_instance.getType().getAttribute("Revision") != null) {
+      final Update update = new Update(this.instance);
+      if (this.instance.getType().getAttribute("Revision") != null) {
         update.add("Revision", this.globalVersion + "#" + this.localVersion);
       }
       for (final Map.Entry<String, String> entry : this.values.entrySet()) {
@@ -649,7 +662,7 @@ public abstract class AbstractUpdate {
       }
       if (LOG.isInfoEnabled() && (name != null)) {
         LOG.info("    Update "
-            + _instance.getType().getName()
+            + this.instance.getType().getName()
             + " '"
             + name
             + "'");
@@ -658,18 +671,16 @@ public abstract class AbstractUpdate {
 
       if (_allLinkTypes != null) {
         for (final Link linkType : _allLinkTypes) {
-          setLinksInDB(instance, linkType, this.links.get(linkType));
+          setLinksInDB(this.instance, linkType, this.links.get(linkType));
         }
       }
-      setPropertiesInDb(instance, this.properties);
+      setPropertiesInDb(this.instance, this.properties);
 
       for (final Event event : this.events) {
         final Instance newInstance =
-            event.updateInDB(instance, getValue("Name"));
+            event.updateInDB(this.instance, getValue("Name"));
         setPropertiesInDb(newInstance, event.getProperties());
       }
-
-      return instance;
     }
 
     /**

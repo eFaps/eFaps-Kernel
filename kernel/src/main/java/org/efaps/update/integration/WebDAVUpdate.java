@@ -26,11 +26,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
+import org.efaps.update.AbstractUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import org.efaps.update.AbstractUpdate;
 
 /**
  * @author tmo
@@ -60,7 +59,7 @@ public class WebDAVUpdate extends AbstractUpdate {
   // constructors
 
   /**
-   * 
+   *
    */
   public WebDAVUpdate() {
     super("Admin_Integration_WebDAV", ALLLINKS);
@@ -69,7 +68,8 @@ public class WebDAVUpdate extends AbstractUpdate {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static WebDAVUpdate readXMLFile(final URL _url)  {
+  public static WebDAVUpdate readXMLFile(final URL _root, final URL _url)
+  {
     WebDAVUpdate ret = null;
 
     try {
@@ -127,7 +127,7 @@ public class WebDAVUpdate extends AbstractUpdate {
   public static class Definition extends AbstractDefinition {
 
     /**
-     * 
+     *
      * @see #values
      */
     public void setPath(final String _path) {

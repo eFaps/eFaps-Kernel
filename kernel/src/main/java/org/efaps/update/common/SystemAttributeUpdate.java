@@ -59,7 +59,8 @@ public class SystemAttributeUpdate extends AbstractUpdate {
    *                XML-File to be read by the digester
    * @return SystemAttributeUpdate Definition read by digester
    */
-  public static SystemAttributeUpdate readXMLFile(final URL _url) {
+  public static SystemAttributeUpdate readXMLFile(final URL _root, final URL _url)
+  {
     SystemAttributeUpdate ret = null;
     try {
       Digester digester = new Digester();

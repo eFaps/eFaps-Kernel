@@ -26,12 +26,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
+import org.efaps.update.LinkInstance;
+import org.efaps.update.event.EventFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import org.efaps.update.LinkInstance;
-import org.efaps.update.event.EventFactory;
 
 /**
  * @author tmo
@@ -89,7 +88,8 @@ public class MenuUpdate extends CommandUpdate {
   // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static MenuUpdate readXMLFile(final URL _url) {
+  public static MenuUpdate readXMLFile(final URL _root, final URL _url)
+  {
     MenuUpdate ret = null;
 
     try {

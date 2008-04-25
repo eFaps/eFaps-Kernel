@@ -82,6 +82,11 @@ public class ESJPImporter {
    */
   final String className;
 
+  /**
+   * eFaps UUID of the class.
+   */
+  public final UUID eFapsUUID;
+
   /////////////////////////////////////////////////////////////////////////////
   // constructor / destructor
 
@@ -93,10 +98,12 @@ public class ESJPImporter {
    * @see #readCode
    * @see #evalClassName
    */
-  public ESJPImporter(final URL _url) throws EFapsException  {
+  public ESJPImporter(final URL _url) throws EFapsException
+  {
     this.url = _url;
     readCode();
     this.className = evalClassName();
+    this.eFapsUUID = evalUUID();
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -113,7 +120,7 @@ public class ESJPImporter {
     try {
       final InputStream is = new ByteArrayInputStream(this.code.toString().getBytes(ENCODING));
       final Checkin checkin = new Checkin(_instance);
-      checkin.executeWithoutAccessCheck(this.className, 
+      checkin.executeWithoutAccessCheck(this.className,
                                         is,
                                         this.code.length());
     } catch (UnsupportedEncodingException e) {
@@ -149,7 +156,7 @@ public class ESJPImporter {
   }
 
   /**
-   * 
+   *
    * @throws EFapsException
    * @see #searchInstance
    * @see #createInstance
@@ -175,6 +182,9 @@ public class ESJPImporter {
     final Type esjpType = Type.get(UUID_ESJPTYPE);
     final Insert insert = new Insert(esjpType);
     insert.add("Name", this.className);
+    if (this.eFapsUUID != null)  {
+      insert.add("UUID", this.eFapsUUID.toString());
+    }
     insert.execute();
 
     return insert.getInstance();
@@ -189,9 +199,9 @@ public class ESJPImporter {
   protected void readCode() throws EFapsException  {
     try  {
       final char[] buf = new char[1024];
-  
+
       final InputStream input = this.url.openStream();
-  
+
       final Reader reader = new InputStreamReader(input);
       int length;
       while ((length = reader.read(buf)) > 0) {
@@ -209,24 +219,45 @@ public class ESJPImporter {
   /**
    * This Method extracts the package name and sets the name of this Java
    * definition (the name is the package name together with the name of the
-   * file exluding the <code>.java</code>).
+   * file excluding the <code>.java</code>).
    */
-  protected String evalClassName() {
-
+  protected String evalClassName()
+  {
     final String urlPath = this.url.getPath();
     String name = urlPath.substring(urlPath.lastIndexOf('/') + 1);
     name = name.substring(0, name.lastIndexOf('.'));
 
     // regular expression for the package name
-    final Pattern pattern = Pattern.compile("package +[^;]+;");
-    final Matcher matcher = pattern.matcher(this.code);
-    if (matcher.find()) {
-      String pkg = matcher.group();
-      pkg = pkg.replaceFirst("^(package) +", "");
-      pkg = pkg.replaceFirst(";$", "");
+    final Pattern pckPattern = Pattern.compile("package +[^;]+;");
+    final Matcher pckMatcher = pckPattern.matcher(this.code);
+    if (pckMatcher.find()) {
+      final String pkg = pckMatcher.group()
+                                   .replaceFirst("^(package) +", "")
+                                   .replaceFirst(";$", "");
       name = pkg + "." + name;
     }
+
+    // regular expression for the eFaps UUID (defined as type annotation)
+//@EFapsUUID("6e9283bb-06a7-40a5-8420-becc4cff72f5")
+
+
     return name;
+  }
+
+  protected UUID evalUUID()
+  {
+    UUID uuid = null;
+
+    final Pattern uuidPattern = Pattern.compile("@EFapsUUID ?\\( ?\\\"[0-9a-z\\-]*\\\" ?\\)");
+    final Matcher uuidMatcher = uuidPattern.matcher(this.code);
+    if (uuidMatcher.find()) {
+      final String uuidStr = uuidMatcher.group()
+                                        .replaceFirst("^@EFapsUUID ?\\( ?\\\"", "")
+                                        .replaceFirst("\\\" ?\\)", "");
+      uuid = UUID.fromString(uuidStr);
+    }
+
+    return uuid;
   }
 
   /////////////////////////////////////////////////////////////////////////////

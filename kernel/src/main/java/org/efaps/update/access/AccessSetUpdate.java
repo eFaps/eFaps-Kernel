@@ -26,13 +26,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.xml.sax.SAXException;
-
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 /**
  * @author tmo
@@ -101,7 +99,8 @@ public class AccessSetUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static AccessSetUpdate readXMLFile(final URL _url)  {
+  public static AccessSetUpdate readXMLFile(final URL _root, final URL _url)
+  {
     AccessSetUpdate ret = null;
 
     try  {

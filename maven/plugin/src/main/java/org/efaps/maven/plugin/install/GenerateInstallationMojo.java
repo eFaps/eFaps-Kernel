@@ -229,8 +229,7 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
       installNode.appendChild(files);
 
       // append all file name and the type to files node (sorted alphabetical)
-      final Set<String> filesSet =
-          new TreeSet<String>(Arrays.asList(getFiles()));
+      final Set<String> filesSet = new TreeSet<String>(Arrays.asList(getFiles()));
       for (final String fileName : filesSet) {
         final Node file = doc.createElement("file");
 
@@ -265,15 +264,13 @@ public class GenerateInstallationMojo extends AbstractEFapsInstallMojo {
       }
 
       // open transformer (to convert XML in memory to a stream).
-      final Transformer transformer =
-          TransformerFactory.newInstance().newTransformer();
+      final Transformer transformer = TransformerFactory.newInstance().newTransformer();
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
       // initialize StreamResult with File object to save to file
       // flush output stream and write to file (and close file)
       final OutputStream os = new FileOutputStream(targetInstallFile);
-      final StreamResult result =
-          new StreamResult(new OutputStreamWriter(os, this.targetEncoding));
+      final StreamResult result = new StreamResult(new OutputStreamWriter(os, this.targetEncoding));
       final DOMSource source = new DOMSource(doc);
       transformer.transform(source, result);
       os.flush();
