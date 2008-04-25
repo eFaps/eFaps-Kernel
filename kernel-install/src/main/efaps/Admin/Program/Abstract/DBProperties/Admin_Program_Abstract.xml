@@ -23,17 +23,22 @@
 
 -->
 
-<dbproperties  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<dbproperties xmlns="http://www.efaps.org/xsd"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>56126d03-a08d-4ac9-9882-a97ebd0a995c</uuid>
-  <bundle name="efaps_Program" sequence="1"/>
+
+  <bundle name="efaps_Admin_Program_Abstract" sequence="1"/>
   <resource>
     <type>Properties</type>
     <language></language> 
-    <file>Program.properties</file>
+    <file>Admin_Program_Abstract.properties</file>
   </resource>
   <resource>
     <type>Properties</type>
     <language>de</language> 
-    <file>Program_de.properties</file>
+    <file>Admin_Program_Abstract_de.properties</file>
   </resource>
+
 </dbproperties>

@@ -38,6 +38,7 @@
       <mode>(version==latest)</mode>
     </version>
     <name>Admin_Program_XSLMyDesk</name>
+    <icon>Admin_Program_XSLImage</icon>
     <!-- access -->
     <access>
       <role>Administration</role>

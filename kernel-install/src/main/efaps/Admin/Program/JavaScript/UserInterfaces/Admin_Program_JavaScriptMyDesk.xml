@@ -38,6 +38,7 @@
       <mode>(version==latest)</mode>
     </version>
     <name>Admin_Program_JavaScriptMyDesk</name>
+    <icon>Admin_Program_JavaScriptImage</icon>
     <!-- access -->
     <access>
       <role>Administration</role>
