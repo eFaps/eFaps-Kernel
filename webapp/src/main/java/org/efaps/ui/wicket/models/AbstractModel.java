@@ -28,7 +28,6 @@ import java.util.UUID;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.model.Model;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Return;
@@ -101,9 +100,18 @@ public abstract class AbstractModel extends Model {
   /**
    * This instance variable stores the OID of the Instance
    *
+   * @see #initialise
    * @see #getOid()
    */
   private String oid;
+
+  /**
+   * Store the instance which calls this form, table, menu etc.
+   *
+   * @see #initialise
+   * @see #getCallInstance
+   */
+  private Instance callInstance = null;
 
   /**
    * This instance variable stores the PageParameters wich are used to create
@@ -154,6 +162,9 @@ public abstract class AbstractModel extends Model {
    */
   private void initialise() {
     this.oid = getParameter("oid");
+    if ((this.oid != null) && (this.oid.length() > 0))  {
+      this.callInstance = new Instance(this.oid);
+    }
     final AbstractCommand command =
         getCommand(UUID.fromString(getParameter("command")));
     this.commandUUID = command.getUUID();
@@ -326,6 +337,15 @@ public abstract class AbstractModel extends Model {
   }
 
   /**
+   * This is the getter method for the instance variable {@link #callInstance}.
+   *
+   * @return value of instance variable {@link #callInstance}
+   */
+  public Instance getCallInstance() {
+    return this.callInstance;
+  }
+
+  /**
    * This is the getter method for the instance variable {@link #parameters}.
    *
    * @return value of instance variable {@link #parameters}
@@ -385,14 +405,14 @@ public abstract class AbstractModel extends Model {
    * @return Value of the Title
    * @throws Exception
    */
-  public String getTitle() {
-    String title =
-        DBProperties.getProperty(this.getCommand().getName() + ".Title");
+  public String getTitle()
+  {
+    String title = DBProperties.getProperty(this.getCommand().getName() + ".Title");
     try {
 
-      if ((title != null) && (this.getOid() != null)) {
+      if ((title != null) && (getCallInstance() != null)) {
         final SearchQuery query = new SearchQuery();
-        query.setObject(this.getOid());
+        query.setObject(getCallInstance());
         final ValueParser parser = new ValueParser(new StringReader(title));
         ValueList list;
         list = parser.ExpressionString();
@@ -400,7 +420,7 @@ public abstract class AbstractModel extends Model {
         if (query.selectSize() > 0) {
           query.execute();
           if (query.next()) {
-            title = list.makeString(query);
+            title = list.makeString(getCallInstance(), query);
           }
           query.close();
         }
@@ -519,7 +539,7 @@ public abstract class AbstractModel extends Model {
         Context.getThreadContext().getParameters().put("oid", contextoid);
         ret =
             command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-                ParameterValues.INSTANCE, new Instance(this.getOid()),
+                ParameterValues.INSTANCE, getCallInstance(),
                 ParameterValues.OTHERS, _others);
       }
     }

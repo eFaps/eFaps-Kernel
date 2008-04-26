@@ -28,18 +28,28 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 /**
  * Class witch is used for parsing Parameters to the Events.
- * 
+ *
  * @author jmo
  * @version $Id$
- * 
+ *
  */
 public class Parameter  {
   /**
-   * This enum holds the Defenitions of Parameters, to be accessed
+   * This enum holds the definitions of Parameters, to be accessed
    */
   public enum ParameterValues {
     /** Holds an AccessType, used for AccessCheck-Programs */
     ACCESSTYPE,
+    /**
+     * Call instance, means
+     * <ul>
+     * <li>for a web table, the instance for which the table values are
+     *     evaluated</li>
+     * <li>for a web form, on which the web form is executed (if exists);
+     *     e.g. in edit mode it is the instance of the called object</li>
+     * </ul>
+     */
+    CALL_INSTANCE,
     /** Holds an Instance */
     INSTANCE,
     /**
@@ -55,15 +65,15 @@ public class Parameter  {
     UIOBJECT;
 
   }
-  private Map<ParameterValues, Object> map = new HashMap<ParameterValues, Object>();
+  private final Map<ParameterValues, Object> map = new HashMap<ParameterValues, Object>();
 
   public void put(ParameterValues _key, Object _value) {
-    map.put(_key, _value);
+    this.map.put(_key, _value);
 
   }
 
   public Object get(ParameterValues _key) {
-    return map.get(_key);
+    return this.map.get(_key);
   }
 
   public Set<?> entrySet() {
@@ -72,9 +82,10 @@ public class Parameter  {
 
   /**
    * Returns a string representation of this parameter instance.
-   * 
+   *
    * @return string representation of this parameter instance.
    */
+  @Override
   public String toString() {
     return new ToStringBuilder(this)
         .appendSuper(super.toString())

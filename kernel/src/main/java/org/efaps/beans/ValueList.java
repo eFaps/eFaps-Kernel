@@ -28,6 +28,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
 import org.efaps.db.AbstractQuery;
+import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
 
 /**
@@ -120,22 +121,27 @@ public class ValueList {
    * This method retrieves the Values from the given AbstractQuery and combines
    * them with the Text partes.
    *
-   * @param _query
-   *                AbstractQuery the ValueString should be retrieved
+   * @param _callInstance instance on which the query was called
+   * @param _query        AbstractQuery the ValueString should be retrieved
    * @return String with the actuall Value of this ValueList
    * @throws Exception
    * @see {@link #makeSelect(AbstractQuery)}
    */
-  public String makeString(final AbstractQuery _query) throws Exception {
-    StringBuffer buf = new StringBuffer();
+  public String makeString(final Instance _callInstance,
+                           final AbstractQuery _query)
+      throws Exception
+  {
+    final StringBuilder buf = new StringBuilder();
 
     for (Token token : this.tokens) {
       switch (token.type) {
         case EXPRESSION:
           Attribute attr = _query.getAttribute(token.value);
           Object value = _query.get(token.value);
-          buf.append((new FieldValue(new FieldDefinition(null, null), attr,
-              value, null)).getViewHtml());
+          buf.append((new FieldValue(new FieldDefinition(null, null),
+                                     attr,
+                                     value,
+                                     null)).getViewHtml(_callInstance));
           break;
         case TEXT:
           buf.append(token.value);

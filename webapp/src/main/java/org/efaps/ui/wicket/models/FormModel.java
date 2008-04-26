@@ -131,7 +131,7 @@ public class FormModel extends AbstractModel {
         }
       } else {
         query = new SearchQuery();
-        query.setObject(super.getOid());
+        query.setObject(getCallInstance());
 
         for (final Field field : form.getFields()) {
           if (field.getExpression() != null) {
@@ -182,16 +182,18 @@ public class FormModel extends AbstractModel {
 
             // get attribute, attribute value and instance
             Attribute attr = null;
-            Instance instance = null;
+            Instance fieldInstance = null;
             Object value = null;
+            // mode edit / view
             if (queryhasresult) {
-              if (field.getAlternateOID() == null) {
-                instance = new Instance((String) query.get("OID"));
-              } else {
-                instance = new Instance((String) query.get(field.getAlternateOID()));
+              if (field.getAlternateOID() != null) {
+                fieldInstance = new Instance((String) query.get(field.getAlternateOID()));
+              } else  {
+                fieldInstance = getCallInstance();
               }
               value = query.get(field.getExpression());
               attr = query.getAttribute(field.getExpression());
+            // mode search / create
             } else if (type != null)  {
               attr = type.getAttribute(field.getExpression());
             }
@@ -209,16 +211,16 @@ public class FormModel extends AbstractModel {
             final FieldValue fieldvalue = new FieldValue(new FieldDefinition("egal", field),
                                                          attr,
                                                          value,
-                                                         instance);
+                                                         fieldInstance);
 
             if (super.isCreateMode() && field.isCreatable()) {
-              strValue = fieldvalue.getCreateHtml();
+              strValue = fieldvalue.getCreateHtml(getCallInstance());
             } else if (super.isEditMode() && field.isEditable()) {
-              strValue = fieldvalue.getEditHtml();
+              strValue = fieldvalue.getEditHtml(getCallInstance());
             } else if (super.isSearchMode() && field.isSearchable()) {
-              strValue = fieldvalue.getSearchHtml();
+              strValue = fieldvalue.getSearchHtml(getCallInstance());
             } else {
-              strValue = fieldvalue.getViewHtml();
+              strValue = fieldvalue.getViewHtml(getCallInstance());
             }
 
             // we search in the string if it is like <input type="file".. and
@@ -231,10 +233,10 @@ public class FormModel extends AbstractModel {
             }
             String oid = null;
             String icon = field.getIcon();
-            if (instance != null) {
-              oid = instance.getOid();
-              if (field.isShowTypeIcon() && instance.getType() != null) {
-                final Image image = Image.getTypeIcon(instance.getType());
+            if (fieldInstance != null) {
+              oid = fieldInstance.getOid();
+              if (field.isShowTypeIcon() && fieldInstance.getType() != null) {
+                final Image image = Image.getTypeIcon(fieldInstance.getType());
                 if (image != null) {
                   icon = image.getUrl();
                 }

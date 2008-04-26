@@ -22,9 +22,6 @@ package org.efaps.admin.datamodel.ui;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -34,6 +31,8 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.db.Instance;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -64,28 +63,28 @@ public class FieldValue implements Comparable<Object> {
 
   /**
    * The instance variable stores the class to represent this form value.
-   * 
+   *
    * @see #getClassUI
    */
   private final Attribute attribute;
 
   /**
-   * The variable stores the instance for this value.
-   * 
+   * The variable stores the field instance for this value.
+   *
    * @see #getInstance
    */
   private final Instance instance;
 
   /**
    * The instance variable stores the field for this value.
-   * 
+   *
    * @see #getFieldDef
    */
   private final FieldDefinition fieldDef;
 
   /**
    * The instance variable stores the value for this form value.
-   * 
+   *
    * @see #getValue
    */
   private final Object value;
@@ -107,19 +106,29 @@ public class FieldValue implements Comparable<Object> {
   // /////////////////////////////////////////////////////////////////////////
   // instance methods
 
-  protected String executeEvents(final HtmlType _htmlType) throws EFapsException {
+  /**
+   * Executes the field value events for a field.
+   *
+   * @param _callInstance   instance for which this field is called (not the
+   *                        same as the instance of the field...)
+   * @param _htmlType       which HTML output must be done (create, edit,
+   *                        view...)
+   */
+  protected String executeEvents(final Instance _callInstance,
+                                 final HtmlType _htmlType)
+      throws EFapsException
+  {
     this.htmlType = _htmlType;
-    StringBuilder ret = new StringBuilder();
-    if (this.fieldDef.getField() != null
+    final StringBuilder ret = new StringBuilder();
+    if ((this.fieldDef.getField() != null)
         && this.fieldDef.getField().hasEvents(EventType.UI_FIELD_VALUE)) {
 
-      List<EventDefinition> events =
-          this.fieldDef.getField().getEvents(EventType.UI_FIELD_VALUE);
+      final List<EventDefinition> events = this.fieldDef.getField().getEvents(EventType.UI_FIELD_VALUE);
 
       if (events != null) {
-
-        Parameter parameter = new Parameter();
+        final Parameter parameter = new Parameter();
         parameter.put(ParameterValues.UIOBJECT, this);
+        parameter.put(ParameterValues.CALL_INSTANCE, _callInstance);
         for (EventDefinition evenDef : events) {
           Return retu = evenDef.execute(parameter);
           if (retu.get(ReturnValues.VALUES) != null) {
@@ -139,10 +148,10 @@ public class FieldValue implements Comparable<Object> {
   /**
    *
    */
-  public String getCreateHtml() throws EFapsException {
+  public String getCreateHtml(final Instance _callInstance) throws EFapsException {
     String ret = null;
 
-    ret = executeEvents(HtmlType.CREATEHTML);
+    ret = executeEvents(_callInstance, HtmlType.CREATEHTML);
     if (ret == null) {
       ret = getClassUI().getCreateHtml(this);
     }
@@ -152,10 +161,10 @@ public class FieldValue implements Comparable<Object> {
   /**
    *
    */
-  public String getViewHtml() throws EFapsException {
+  public String getViewHtml(final Instance _callInstance) throws EFapsException {
     String ret = null;
 
-    ret = executeEvents(HtmlType.VIEWHTML);
+    ret = executeEvents(_callInstance, HtmlType.VIEWHTML);
     if (ret == null) {
       ret = getClassUI().getViewHtml(this);
     }
@@ -165,10 +174,10 @@ public class FieldValue implements Comparable<Object> {
   /**
    *
    */
-  public String getEditHtml() throws EFapsException {
+  public String getEditHtml(final Instance _callInstance) throws EFapsException {
     String ret = null;
 
-    ret = executeEvents(HtmlType.EDITHTML);
+    ret = executeEvents(_callInstance, HtmlType.EDITHTML);
     if (ret == null) {
       ret = getClassUI().getEditHtml(this);
     }
@@ -178,10 +187,10 @@ public class FieldValue implements Comparable<Object> {
   /**
    *
    */
-  public String getSearchHtml() throws EFapsException {
+  public String getSearchHtml(final Instance _callInstance) throws EFapsException {
     String ret = null;
 
-    ret = executeEvents(HtmlType.SEARCHHTML);
+    ret = executeEvents(_callInstance, HtmlType.SEARCHHTML);
     if (ret == null) {
       ret = getClassUI().getSearchHtml(this);
     }
@@ -193,7 +202,7 @@ public class FieldValue implements Comparable<Object> {
 
   /**
    * This is the getter method for the instance variable {@link #classUI}.
-   * 
+   *
    * @return value of instance variable {@link #classUI}
    * @see #classUI
    */
@@ -203,7 +212,7 @@ public class FieldValue implements Comparable<Object> {
 
   /**
    * This is the getter method for the instance variable {@link #instance}.
-   * 
+   *
    * @return value of instance variable {@link #instance}
    * @see #instance
    */
@@ -213,7 +222,7 @@ public class FieldValue implements Comparable<Object> {
 
   /**
    * This is the getter method for the field variable {@link #fieldDef}.
-   * 
+   *
    * @return value of field variable {@link #fieldDef}
    * @see #field
    */
@@ -223,7 +232,7 @@ public class FieldValue implements Comparable<Object> {
 
   /**
    * This is the getter method for the instance variable {@link #value}.
-   * 
+   *
    * @return value of instance variable {@link #value}
    * @see #value
    */

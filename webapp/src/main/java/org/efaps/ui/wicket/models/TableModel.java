@@ -32,9 +32,6 @@ import java.util.UUID;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.model.Model;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
@@ -54,6 +51,8 @@ import org.efaps.db.ListQuery;
 import org.efaps.ui.wicket.models.cell.TableCellModel;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author jmox
@@ -308,11 +307,11 @@ public class TableModel extends AbstractModel {
             strValue = "";
           } else {
             if (this.isCreateMode() && field.isEditable()) {
-              strValue = fieldvalue.getCreateHtml();
+              strValue = fieldvalue.getCreateHtml(getCallInstance());
             } else if (this.isEditMode() && field.isEditable()) {
-              strValue = fieldvalue.getEditHtml();
+              strValue = fieldvalue.getEditHtml(getCallInstance());
             } else {
-              strValue = fieldvalue.getViewHtml();
+              strValue = fieldvalue.getViewHtml(getCallInstance());
             }
           }
           String icon = field.getIcon();

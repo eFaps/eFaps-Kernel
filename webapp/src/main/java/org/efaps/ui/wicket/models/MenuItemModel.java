@@ -30,14 +30,12 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.RestartResponseException;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractMenu;
 import org.efaps.admin.ui.Image;
 import org.efaps.beans.ValueList;
 import org.efaps.beans.valueparser.ValueParser;
-import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -205,11 +203,11 @@ public class MenuItemModel extends AbstractModel {
    *
    * @return URL of the Image
    */
-  public String getTypeImage() {
+  public String getTypeImage()
+  {
     String ret = null;
-    if (super.getOid() != null) {
-      final Image image =
-          Image.getTypeIcon(new Instance(super.getOid()).getType());
+    if (getCallInstance() != null) {
+      final Image image = Image.getTypeIcon(getCallInstance().getType());
       if (image != null) {
         ret = image.getUrl();
       }
@@ -276,7 +274,7 @@ public class MenuItemModel extends AbstractModel {
         for (AbstractCommand subCmd : ((AbstractMenu) command).getCommands()) {
           if (subCmd != null && subCmd.hasAccess()) {
             this.childs
-                .add(new MenuItemModel(subCmd.getUUID(), super.getOid()));
+                .add(new MenuItemModel(subCmd.getUUID(), getOid()));
           }
         }
       }
@@ -285,20 +283,20 @@ public class MenuItemModel extends AbstractModel {
     }
   }
 
-  public void requeryLabel() {
+  public void requeryLabel()
+  {
     try {
       this.label = DBProperties.getProperty(getCommand().getLabel());
-      if (super.getOid() != null) {
+      if (getCallInstance() != null) {
         final SearchQuery query = new SearchQuery();
-        query.setObject(super.getOid());
-        final ValueParser parser =
-            new ValueParser(new StringReader(this.label));
+        query.setObject(getCallInstance());
+        final ValueParser parser = new ValueParser(new StringReader(this.label));
         final ValueList list = parser.ExpressionString();
         list.makeSelect(query);
         if (query.selectSize() > 0) {
           query.execute();
           if (query.next()) {
-            this.label = list.makeString(query);
+            this.label = list.makeString(getCallInstance(), query);
           }
           query.close();
         }

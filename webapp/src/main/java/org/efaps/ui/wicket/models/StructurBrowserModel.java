@@ -33,7 +33,6 @@ import javax.swing.tree.TreeModel;
 
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
@@ -200,19 +199,18 @@ public class StructurBrowserModel extends AbstractModel {
   /**
    * method used to initialise this StructurBrowserModel
    */
-  private void initialise() {
+  private void initialise()
+  {
     final AbstractCommand command = getCommand();
-    if (command != null && command.getTargetTable() != null) {
+    if ((command != null) && (command.getTargetTable() != null)) {
       this.tableuuid = command.getTargetTable().getUUID();
       this.browserFieldName = command.getProperty("TargetStructurBrowserField");
     } else {
       if ("true".equals(command.getProperty("TargetStructurBrowser"))) {
-        final String label =
-            Menu.getTypeTreeMenu(new Instance(getOid()).getType()).getLabel();
+        final String label = Menu.getTypeTreeMenu(getCallInstance().getType()).getLabel();
         this.valueLabel = DBProperties.getProperty(label);
       }
     }
-
   }
 
   /**
@@ -226,13 +224,14 @@ public class StructurBrowserModel extends AbstractModel {
    * @see #executeTreeTable(List)
    */
   @SuppressWarnings("unchecked")
-  public void execute() {
+  public void execute()
+  {
     List<Return> ret;
     try {
       if (this.tableuuid == null) {
         final List<List<Object[]>> list = new ArrayList<List<Object[]>>();
         final List<Object[]> instances = new ArrayList<Object[]>(1);
-        instances.add(new Object[] { new Instance(getOid()), null });
+        instances.add(new Object[] { getCallInstance(), null });
         list.add(instances);
         executeTree(list);
       } else {
@@ -274,7 +273,7 @@ public class StructurBrowserModel extends AbstractModel {
       while (query.next()) {
         Object value = null;
         final Instance instance = query.getInstance();
-        value = valuelist.makeString(query);
+        value = valuelist.makeString(getCallInstance(), query);
         final StructurBrowserModel child =
             new StructurBrowserModel(Menu.getTypeTreeMenu(instance.getType())
                 .getUUID(), instance.getOid());
@@ -356,11 +355,11 @@ public class StructurBrowserModel extends AbstractModel {
                   instance);
           if (value != null) {
             if (this.isCreateMode() && field.isEditable()) {
-              strValue = fieldvalue.getCreateHtml();
+              strValue = fieldvalue.getCreateHtml(getCallInstance());
             } else if (this.isEditMode() && field.isEditable()) {
-              strValue = fieldvalue.getEditHtml();
+              strValue = fieldvalue.getEditHtml(getCallInstance());
             } else {
-              strValue = fieldvalue.getViewHtml();
+              strValue = fieldvalue.getViewHtml(getCallInstance());
             }
           } else {
             strValue = "";
@@ -505,7 +504,7 @@ public class StructurBrowserModel extends AbstractModel {
     try {
       ret =
           getCommand().executeEvents(EventType.UI_TABLE_EVALUATE,
-              ParameterValues.INSTANCE, new Instance(super.getOid()),
+              ParameterValues.INSTANCE, getCallInstance(),
               ParameterValues.OTHERS, "addChildren");
       final List<List<Object[]>> lists =
           (List<List<Object[]>>) ret.get(0).get(ReturnValues.VALUES);
@@ -627,16 +626,15 @@ public class StructurBrowserModel extends AbstractModel {
    */
   public void requeryLabel() {
     try {
-      final ValueParser parser =
-          new ValueParser(new StringReader(this.valueLabel));
+      final ValueParser parser = new ValueParser(new StringReader(this.valueLabel));
       final ValueList valuelist = parser.ExpressionString();
 
       final SearchQuery query = new SearchQuery();
-      query.setObject(super.getOid());
+      query.setObject(getCallInstance());
       valuelist.makeSelect(query);
       query.execute();
       if (query.next()) {
-        setLabel(valuelist.makeString(query).toString());
+        setLabel(valuelist.makeString(new Instance(getOid()), query).toString());
       }
     } catch (final Exception e) {
       throw new RestartResponseException(new ErrorPage(e));
