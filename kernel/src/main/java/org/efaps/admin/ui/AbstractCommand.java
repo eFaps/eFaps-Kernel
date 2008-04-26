@@ -979,21 +979,18 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
   }
 
   /**
-   * @param _linkType
-   *                type of the link property
-   * @param _toId
-   *                to id
-   * @param _toType
-   *                to type
-   * @param _toName
-   *                to name
+   * @param _linkType   type of the link property
+   * @param _toId       to id
+   * @param _toType     to type
+   * @param _toName     to name
    */
   @Override
   protected void setLinkProperty(final EFapsClassName _linkType,
                                  final long _toId,
                                  final EFapsClassName _toType,
-                                 final String _toName) throws Exception {
-System.out.println("setLinkProperty=("+getName()+")"+_linkType);
+                                 final String _toName)
+      throws Exception
+  {
     switch (_linkType) {
       case LINK_ICON:
         setIcon(RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE
@@ -1019,16 +1016,14 @@ System.out.println("setLinkProperty=("+getName()+")"+_linkType);
   /**
    * The instance method sets a new property value.
    *
-   * @param _context
-   *                eFaps context for this request
-   * @param _name
-   *                name of the property
-   * @param _value
-   *                value of the property
+   * @param _name     name of the property
+   * @param _value    value of the property
    */
   @Override
-  protected void setProperty(final String _name, final String _value)
-                                                                     throws CacheReloadException {
+  protected void setProperty(final String _name,
+                             final String _value)
+      throws CacheReloadException
+  {
     if ("AskUser".equals(_name)) {
       if ("true".equalsIgnoreCase(_value)) {
         setAskUser(true);
