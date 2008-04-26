@@ -39,7 +39,8 @@ import org.slf4j.LoggerFactory;
  * @todo description
  * @version $Id$
  */
-public class FieldValue implements Comparable<Object> {
+public class FieldValue implements Comparable<Object>
+{
   /**
    * Logger for this class
    */
@@ -53,12 +54,17 @@ public class FieldValue implements Comparable<Object> {
     EDITHTML,
 
     SEARCHHTML;
-
   }
 
-  // /////////////////////////////////////////////////////////////////////////
+  ///////////////////////////////////////////////////////////////////////////
   // instance variables
 
+  /**
+   * Store the HTML type for which the events must be executed.
+   *
+   * @see #executeEvents
+   * @see #getHtmlType
+   */
   private HtmlType htmlType;
 
   /**
@@ -93,10 +99,18 @@ public class FieldValue implements Comparable<Object> {
   // constructors / desctructors
 
   /**
+   * Constructor initilize all instance variables.
    *
+   * @see #fieldDef
+   * @see #attribute
+   * @see #value
+   * @see #instance
    */
-  public FieldValue(final FieldDefinition _fieldDef, final Attribute _attr,
-                    final Object _value, final Instance _instance) {
+  public FieldValue(final FieldDefinition _fieldDef,
+                    final Attribute _attr,
+                    final Object _value,
+                    final Instance _instance)
+  {
     this.fieldDef = _fieldDef;
     this.attribute = _attr;
     this.value = _value;
@@ -113,143 +127,141 @@ public class FieldValue implements Comparable<Object> {
    *                        same as the instance of the field...)
    * @param _htmlType       which HTML output must be done (create, edit,
    *                        view...)
+   * @return string from called field value events or <code>null</code> if no
+   *         field value event is defined
    */
   protected String executeEvents(final Instance _callInstance,
                                  final HtmlType _htmlType)
       throws EFapsException
   {
+    String ret = null;
     this.htmlType = _htmlType;
-    final StringBuilder ret = new StringBuilder();
     if ((this.fieldDef.getField() != null)
         && this.fieldDef.getField().hasEvents(EventType.UI_FIELD_VALUE)) {
 
       final List<EventDefinition> events = this.fieldDef.getField().getEvents(EventType.UI_FIELD_VALUE);
 
+      final StringBuilder html = new StringBuilder();
       if (events != null) {
         final Parameter parameter = new Parameter();
         parameter.put(ParameterValues.UIOBJECT, this);
         parameter.put(ParameterValues.CALL_INSTANCE, _callInstance);
-        for (EventDefinition evenDef : events) {
-          Return retu = evenDef.execute(parameter);
+        for (final EventDefinition evenDef : events) {
+          final Return retu = evenDef.execute(parameter);
           if (retu.get(ReturnValues.VALUES) != null) {
-            ret.append(retu.get(ReturnValues.VALUES));
+            html.append(retu.get(ReturnValues.VALUES));
           }
         }
+      }
 
+      if (html.length() > 0)  {
+        ret = html.toString();
       }
     }
-    if (ret.length() > 0) {
-      return ret.toString();
-    }
-    return null;
 
+    return ret;
   }
 
   /**
    *
+   * @see #executeEvents
+   * @see #getClassUI
    */
-  public String getCreateHtml(final Instance _callInstance) throws EFapsException {
+  public String getCreateHtml(final Instance _callInstance)
+      throws EFapsException
+  {
     String ret = null;
 
     ret = executeEvents(_callInstance, HtmlType.CREATEHTML);
     if (ret == null) {
-      ret = getClassUI().getCreateHtml(this);
+      final UIInterface classUI = getClassUI();
+      if (classUI != null)  {
+        ret = classUI.getCreateHtml(this);
+      }
     }
     return ret;
   }
 
   /**
    *
+   * @see #executeEvents
+   * @see #getClassUI
    */
-  public String getViewHtml(final Instance _callInstance) throws EFapsException {
+  public String getViewHtml(final Instance _callInstance)
+      throws EFapsException
+  {
     String ret = null;
 
     ret = executeEvents(_callInstance, HtmlType.VIEWHTML);
     if (ret == null) {
-      ret = getClassUI().getViewHtml(this);
+      final UIInterface classUI = getClassUI();
+      if (classUI != null)  {
+        ret = classUI.getViewHtml(this);
+      }
     }
     return ret;
   }
 
   /**
    *
+   * @see #executeEvents
+   * @see #getClassUI
    */
-  public String getEditHtml(final Instance _callInstance) throws EFapsException {
+  public String getEditHtml(final Instance _callInstance)
+      throws EFapsException
+  {
     String ret = null;
 
     ret = executeEvents(_callInstance, HtmlType.EDITHTML);
     if (ret == null) {
-      ret = getClassUI().getEditHtml(this);
+      final UIInterface classUI = getClassUI();
+      if (classUI != null)  {
+        ret = classUI.getEditHtml(this);
+      }
     }
     return ret;
   }
 
   /**
-   *
+   * @see #executeEvents
+   * @see #getClassUI
    */
-  public String getSearchHtml(final Instance _callInstance) throws EFapsException {
+  public String getSearchHtml(final Instance _callInstance)
+      throws EFapsException
+  {
     String ret = null;
 
     ret = executeEvents(_callInstance, HtmlType.SEARCHHTML);
     if (ret == null) {
-      ret = getClassUI().getSearchHtml(this);
+      final UIInterface classUI = getClassUI();
+      if (classUI != null)  {
+        ret = classUI.getSearchHtml(this);
+      }
     }
     return ret;
   }
 
-  // /////////////////////////////////////////////////////////////////////////
-  // getter and setter methods
-
   /**
-   * This is the getter method for the instance variable {@link #classUI}.
+   * The user interface implementing this attribute is returned. If no
+   * attribute for this field is defined, a <code>null</code> is returned.
    *
-   * @return value of instance variable {@link #classUI}
-   * @see #classUI
+   * @return class implementing the user interface for given attribute instance
+   *         or <code>null</code> if not attribute is defined
+   * @see #attribute
    */
-  public UIInterface getClassUI() {
-    return this.attribute.getAttributeType().getUI();
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #instance}.
-   *
-   * @return value of instance variable {@link #instance}
-   * @see #instance
-   */
-  public Instance getInstance() {
-    return this.instance;
+  public UIInterface getClassUI()
+  {
+    return (this.attribute == null)
+           ? null
+           : this.attribute.getAttributeType().getUI();
   }
 
   /**
-   * This is the getter method for the field variable {@link #fieldDef}.
-   *
-   * @return value of field variable {@link #fieldDef}
-   * @see #field
+   * @param _target target field value to compare to
    */
-  public FieldDefinition getFieldDef() {
-    return this.fieldDef;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #value}.
-   *
-   * @return value of instance variable {@link #value}
-   * @see #value
-   */
-  public Object getValue() {
-    return this.value;
-  }
-
-  public Attribute getAttribute() {
-    return this.attribute;
-  }
-
-  public HtmlType getHtmlType() {
-    return this.htmlType;
-  }
-
-  public int compareTo(Object _target) {
-    FieldValue target = (FieldValue) _target;
+  public int compareTo(final Object _target)
+  {
+    final FieldValue target = (FieldValue) _target;
 
     int ret = 0;
     if (this.value == null || target.getValue() == null) {
@@ -268,5 +280,63 @@ public class FieldValue implements Comparable<Object> {
       }
     }
     return ret;
+  }
+
+  ///////////////////////////////////////////////////////////////////////////
+  // getter and setter methods
+
+  /**
+   * This is the getter method for the instance variable {@link #instance}.
+   *
+   * @return value of instance variable {@link #instance}
+   * @see #instance
+   */
+  public Instance getInstance()
+  {
+    return this.instance;
+  }
+
+  /**
+   * This is the getter method for the field variable {@link #fieldDef}.
+   *
+   * @return value of field variable {@link #fieldDef}
+   * @see #field
+   */
+  public FieldDefinition getFieldDef()
+  {
+    return this.fieldDef;
+  }
+
+  /**
+   * This is the getter method for the instance variable {@link #value}.
+   *
+   * @return value of instance variable {@link #value}
+   * @see #value
+   */
+  public Object getValue()
+  {
+    return this.value;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #attribute}.
+   *
+   * @return value of instance variable {@link #attribute}
+   * @see #attribute
+   */
+  public Attribute getAttribute()
+  {
+    return this.attribute;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #htmlType}.
+   *
+   * @return value of instance variable {@link #htmlType}
+   * @see #htmlType
+   */
+  public HtmlType getHtmlType()
+  {
+    return this.htmlType;
   }
 }
