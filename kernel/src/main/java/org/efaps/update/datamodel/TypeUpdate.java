@@ -67,8 +67,8 @@ public class TypeUpdate extends AbstractUpdate {
    */
   private final static Link LINK2ALLOWEDEVENT
       = new Link("Admin_DataModel_TypeEventIsAllowedFor",
-                 "From",
-                 "Admin_DataModel_Type", "To");
+                 "To",
+                 "Admin_DataModel_Type", "From");
 
   /**
    * List of all links for the type.
@@ -178,8 +178,8 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addCallParam("datamodel-type/definition/property", 1);
 
       // allowed event type for this type
-      digester.addCallMethod("datamodel-type/definition/allowed-event", "addAllowedEvent", 1);
-      digester.addCallParam("datamodel-type/definition/allowed-event", 0, "type");
+      digester.addCallMethod("datamodel-type/definition/event-for", "addEventFor", 1);
+      digester.addCallParam("datamodel-type/definition/event-for", 0, "type");
 
       // add Trigger-Event to the Type-Definition
       digester.addFactoryCreate("datamodel-type/definition/trigger", new EventFactory(), false);
@@ -540,7 +540,7 @@ public class TypeUpdate extends AbstractUpdate {
      *
      * @param _eventTypeName  name of allowed event type
      */
-    public void addAllowedEvent(final String _eventTypeName)
+    public void addEventFor(final String _eventTypeName)
     {
       addLink(LINK2ALLOWEDEVENT, new LinkInstance(_eventTypeName));
     }
