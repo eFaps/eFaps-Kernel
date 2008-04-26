@@ -31,7 +31,6 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.user.Role;
-
 import org.efaps.util.RequestHandler;
 import org.efaps.util.cache.CacheReloadException;
 
@@ -994,6 +993,7 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
                                  final long _toId,
                                  final EFapsClassName _toType,
                                  final String _toName) throws Exception {
+System.out.println("setLinkProperty=("+getName()+")"+_linkType);
     switch (_linkType) {
       case LINK_ICON:
         setIcon(RequestHandler.replaceMacrosInUrl(RequestHandler.URL_IMAGE

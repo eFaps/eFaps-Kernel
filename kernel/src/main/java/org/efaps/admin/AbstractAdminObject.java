@@ -20,6 +20,9 @@
 
 package org.efaps.admin;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,13 +30,14 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.ui.AbstractUserInterfaceObject;
+import org.efaps.db.Context;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
@@ -54,11 +58,12 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
                               "LinkWithRanges",
                               "9d6b2e3e-68ce-4509-a5f0-eae42323a696"),
     ATTRTYPE_CREATOR_LINK("CreatorLink", "76122fe9-8fde-4dd4-a229-e48af0fb4083"),
-    ATTRTYPE_MODIFIER_LINK(
-                           "ModifierLink",
+    ATTRTYPE_MODIFIER_LINK("ModifierLink",
                            "447a7c87-8395-48c4-b2ed-d4e96d46332c"),
 
     DATAMODEL_TYPE("Admin_DataModel_Type", null),
+    DATAMODEL_TYPEEVENTISALLOWEDFOR("Admin_DataModel_TypeEventIsAllowedFor",
+                                    "bf3d70ce-206e-4328-aa35-761c4aeb9d1d"),
     DATAMODEL_ATTRIBUTE("Admin_DataModel_Attribute", null),
 
     USER_ABSTRACT("Admin_User_Abstract", null),
@@ -187,7 +192,9 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
   protected AbstractAdminObject(final long _id, final String _uuid,
                                 final String _name) {
     this.id = _id;
-    this.uuid = (_uuid == null) ? null : UUID.fromString(_uuid.trim());
+    this.uuid = (_uuid == null)
+                ? null
+                : UUID.fromString(_uuid.trim());
     setName(_name);
   }
 
@@ -197,19 +204,17 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
   /**
    * Sets the link properties for this object.
    *
-   * @param _linkType
-   *                type of the link property
-   * @param _toId
-   *                to id
-   * @param _toType
-   *                to type
-   * @param _toName
-   *                to name
+   * @param _linkType   type of the link property
+   * @param _toId       to id
+   * @param _toType     to type
+   * @param _toName     to name
    */
   protected void setLinkProperty(final EFapsClassName _linkType,
                                  final long _toId,
                                  final EFapsClassName _toType,
-                                 final String _toName) throws Exception {
+                                 final String _toName)
+      throws Exception
+  {
   }
 
   /**
@@ -249,7 +254,8 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    *                EventDefinition to add
    */
   public void addEvent(final EventType _eventtype,
-                       final EventDefinition _eventdef) {
+                       final EventDefinition _eventdef)
+  {
     List<EventDefinition> events = this.events.get(_eventtype);
     if (events == null) {
       events = new ArrayList<EventDefinition>();
@@ -326,7 +332,98 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
     return ret;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * The instance method reads the properties for this administration object.
+   * Each found property is set with instance method {@link #setProperty}.
+   *
+   * @see #setProperty
+   */
+  protected void readFromDB4Properties()
+      throws CacheReloadException
+  {
+    Statement stmt = null;
+    try  {
+      stmt = Context.getThreadContext().getConnection().createStatement();
+      final ResultSet rs = stmt.executeQuery(
+          "select "+
+            "T_CMPROPERTY.NAME,"+
+            "T_CMPROPERTY.VALUE "+
+          "from T_CMPROPERTY "+
+          "where T_CMPROPERTY.ABSTRACT=" + getId() + ""
+      );
+      while (rs.next())  {
+        final String name =   rs.getString(1).trim();
+        final String value =  rs.getString(2).trim();
+        setProperty(name, value);
+      }
+      rs.close();
+    } catch (EFapsException e)  {
+      throw new CacheReloadException("could not read properties for "
+          + "'" + getName() + "'", e);
+    } catch (SQLException e)  {
+      throw new CacheReloadException("could not read properties for "
+          + "'" + getName() + "'", e);
+    } finally  {
+      if (stmt != null)  {
+        try  {
+          stmt.close();
+        } catch (SQLException e)  {
+        }
+      }
+    }
+  }
+
+  /**
+   * Reads all links for this administration object. Each found link property
+   * is set with instance method {@link setLinkProperty}.
+   *
+   * @see #setLinkProperty
+   */
+  protected void readFromDB4Links()
+      throws CacheReloadException
+  {
+    Statement stmt = null;
+    try {
+      stmt = Context.getThreadContext().getConnection().createStatement();
+      final ResultSet resultset = stmt.executeQuery(
+          "select "
+              + "T_CMABSTRACT2ABSTRACT.TYPEID,"
+              + "T_CMABSTRACT2ABSTRACT.TOID,"
+              + "T_CMABSTRACT.TYPEID,"
+              + "T_CMABSTRACT.NAME "
+          + "from T_CMABSTRACT2ABSTRACT, T_CMABSTRACT "
+          + "where T_CMABSTRACT2ABSTRACT.FROMID=" + getId()
+              + " and T_CMABSTRACT2ABSTRACT.TOID=T_CMABSTRACT.ID");
+      while (resultset.next()) {
+        final long conTypeId = resultset.getLong(1);
+        final long toId = resultset.getLong(2);
+        final long toTypeId = resultset.getLong(3);
+        final String toName = resultset.getString(4);
+        final Type conType = Type.get(conTypeId);
+        final Type toType = Type.get(toTypeId);
+        if (EFapsClassName.getEnum(conType.getName()) != null) {
+          setLinkProperty(EFapsClassName.getEnum(conType.getName()),
+                          toId,
+                          EFapsClassName.getEnum(toType.getName()),
+                          toName.trim());
+        }
+      }
+      resultset.close();
+    } catch (Exception e) {
+      throw new CacheReloadException("could not read db links for "
+          + "'" + getName() + "'", e);
+    }
+    finally {
+      if (stmt != null) {
+        try {
+          stmt.close();
+        } catch (SQLException e) {
+        }
+      }
+    }
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
   // getter and setter instance methods
 
   /**
@@ -419,9 +516,13 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    */
   @Override
   public String toString() {
-    return new ToStringBuilder(this).append("name", getName()).append("uuid",
-        getUUID()).append("id", getId()).append("properties", getProperties())
-        .append("events", this.events).toString();
+    return new ToStringBuilder(this)
+                .append("name", getName())
+                .append("uuid", getUUID())
+                .append("id", getId())
+                .append("properties", getProperties())
+                .append("events", this.events)
+                .toString();
   }
 
 }

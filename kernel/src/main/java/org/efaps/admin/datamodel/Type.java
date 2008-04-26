@@ -226,6 +226,13 @@ public class Type extends DataModelObject {
    */
   private final Set<AccessSet> accessSets = new HashSet<AccessSet>();
 
+  /**
+   * Stores all type of events which are allowed to fire on this type.
+   *
+   * @see #setLinkProperty
+   */
+  private final Set<Type> allowedEventTypes = new HashSet<Type>();
+
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
@@ -353,26 +360,6 @@ public class Type extends DataModelObject {
   }
 
   /**
-   *
-   */
-  public void readCache(final Context _context, final String _cacheExpr)
-                                                                        throws SQLException {
-    // Cache cache = new Cache(_context.getConnection(), getTableName(),
-    // _cacheExpr);
-    // setCache(cache);
-  }
-
-  /**
-   * Returns the name of the type.
-   *
-   * @param _context
-   * @see #getName
-   */
-  public String getViewableName(final Context _context) {
-    return getName();
-  }
-
-  /**
    * Tests, if this type is kind of the type in the parameter (question is, is
    * this type a child of the parameter type).
    *
@@ -380,7 +367,8 @@ public class Type extends DataModelObject {
    *                type to test for parent
    * @return true if this type is a child, otherwise false
    */
-  public boolean isKindOf(final Type _type) {
+  public boolean isKindOf(final Type _type)
+  {
     boolean ret = false;
     Type type = this;
     while ((type != null) && (type.getId() != _type.getId())) {
@@ -397,13 +385,13 @@ public class Type extends DataModelObject {
    * the value of the property of the parent type (see {@link #getParentType})
    * is returned (if a parent type exists).
    *
-   * @see org.efaps.admin.AbstractAdminObject#getProperty
-   * @param _name
-   *                name of the property (key)
+   * @param _name   name of the property (key)
    * @return value of the property with the given name / key.
+   * @see org.efaps.admin.AbstractAdminObject#getProperty
    */
   @Override
-  public String getProperty(final String _name) {
+  public String getProperty(final String _name)
+  {
     String value = super.getProperty(_name);
     if ((value == null) && (getParentType() != null)) {
       value = getParentType().getProperty(_name);
@@ -419,9 +407,11 @@ public class Type extends DataModelObject {
    */
   @Override
   public String toString() {
-    return new ToStringBuilder(this).appendSuper(super.toString()).append(
-        "parentType", getParentType() != null ? getParentType().getName() : "")
-        .append("uniqueKey", getUniqueKeys()).toString();
+    return new ToStringBuilder(this)
+                .appendSuper(super.toString())
+                .append("parentType", getParentType() != null ? getParentType().getName() : "")
+                .append("uniqueKey", getUniqueKeys())
+                .toString();
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -431,25 +421,24 @@ public class Type extends DataModelObject {
    * Checks, if the current context user has all access defined in the list of
    * access types for the given instance.
    *
-   * @param _instance
-   *                instance for which the access must be checked
-   * @param _accessTypes
-   *                list of access types which must be checked
-   * @param <i>true
-   *                </i> if the current context user has access, otherwise
+   * @param _instance     instance for which the access must be checked
+   * @param _accessTypes  list of access types which must be checked
+   * @param <i>true </i> if the current context user has access, otherwise
    *                <i>false</i>.
    * @see #accessChecks
    */
   public boolean hasAccess(final Instance _instance,
-                           final AccessType _accessType) throws EFapsException {
+                           final AccessType _accessType)
+      throws EFapsException
+  {
     boolean hasAccess = true;
     List<EventDefinition> events = super.getEvents(EventType.ACCESSCHECK);
     if (events != null) {
-      Parameter parameter = new Parameter();
+      final Parameter parameter = new Parameter();
       parameter.put(ParameterValues.INSTANCE, _instance);
       parameter.put(ParameterValues.ACCESSTYPE, _accessType);
 
-      for (EventDefinition event : events) {
+      for (final EventDefinition event : events) {
         Return ret = event.execute(parameter);
         hasAccess = ret.get(ReturnValues.TRUE) != null;
       }
@@ -460,11 +449,11 @@ public class Type extends DataModelObject {
   /**
    * A new access set is assigned to this type instance.
    *
-   * @param _accessSet
-   *                new access to assign to this type instance
+   * @param _accessSet    new access to assign to this type instance
    * @see #accessSets
    */
-  public void addAccessSet(final AccessSet _accessSet) {
+  public void addAccessSet(final AccessSet _accessSet)
+  {
     this.accessSets.add(_accessSet);
   }
 
@@ -474,28 +463,52 @@ public class Type extends DataModelObject {
    * @return value of instance variable {@link #accessSets}
    * @see #accessSets
    */
-  public Set<AccessSet> getAccessSets() {
+  public Set<AccessSet> getAccessSets()
+  {
     return this.accessSets;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods used to initialise this type instance
+
+  /**
+   * Sets the link properties for this object.
+   *
+   * @param _linkType   type of the link property
+   * @param _toId       to id
+   * @param _toType     to type
+   * @param _toName     to name
+   */
+  @Override
+  protected void setLinkProperty(final EFapsClassName _linkType,
+                                 final long _toId,
+                                 final EFapsClassName _toType,
+                                 final String _toName)
+      throws Exception
+  {
+    switch (_linkType) {
+      case DATAMODEL_TYPEEVENTISALLOWEDFOR:
+        final Type eventType = get(_toId);
+        this.allowedEventTypes.add(eventType);
+        break;
+      default:
+        super.setLinkProperty(_linkType, _toId, _toType, _toName);
+    }
+  }
 
   /**
    * The instance method sets a new property value.
    *
-   * @param _context
-   *                context for this request
-   * @param _name
-   *                name of the property
-   * @param _value
-   *                value of the property
+   * @param _name   name of the property
+   * @param _value  value of the property
    * @see #addUniqueKey
    * @see #setViewAttribute
    */
   @Override
-  protected void setProperty(final String _name, final String _value)
-                                                                     throws CacheReloadException {
+  protected void setProperty(final String _name,
+                             final String _value)
+      throws CacheReloadException
+  {
     if (_name.startsWith("UniqueKey")) {
       addUniqueKey(_value);
     } else if (_name.equals("ViewAttribute")) {
@@ -562,26 +575,14 @@ public class Type extends DataModelObject {
   }
 
   /**
-   * This is the setter method for instance variable {@link #parentType}. Only
-   * the DB reader is allowed to set this!
-   *
-   * @param _tableName
-   *                new value for instance variable {@link #parentType}
-   * @see #parentType
-   * @see #getParentType
-   */
-  private void setParentType(final Type _parentType) {
-    this.parentType = _parentType;
-  }
-
-  /**
    * This is the getter method for instance variable {@link #parentType}.
    *
    * @return value of instance variable {@link #parentType}
    * @see #parentType
    * @see #setParentType
    */
-  public Type getParentType() {
+  public Type getParentType()
+  {
     return this.parentType;
   }
 
@@ -591,7 +592,8 @@ public class Type extends DataModelObject {
    * @return value of instance variable {@link #childTypes}
    * @see #childTypes
    */
-  public Set<Type> getChildTypes() {
+  public Set<Type> getChildTypes()
+  {
     return this.childTypes;
   }
 
@@ -601,7 +603,8 @@ public class Type extends DataModelObject {
    * @return value of instance variable {@link #attributes}
    * @see #attributes
    */
-  public Map<String, Attribute> getAttributes() {
+  public Map<String, Attribute> getAttributes()
+  {
     return this.attributes;
   }
 
@@ -612,7 +615,8 @@ public class Type extends DataModelObject {
    * @see #setCache
    * @see #cache
    */
-  public Cache<?> getCache() {
+  public Cache<?> getCache()
+  {
     return this.cache;
   }
 
@@ -624,7 +628,8 @@ public class Type extends DataModelObject {
    * @see #getCache
    * @see #cache
    */
-  private void setCache(final Cache<?> _cache) {
+  private void setCache(final Cache<?> _cache)
+  {
     this.cache = _cache;
   }
 
@@ -634,7 +639,8 @@ public class Type extends DataModelObject {
    * @return value of instance variable {@link #tables}
    * @see #tables
    */
-  public Set<SQLTable> getTables() {
+  public Set<SQLTable> getTables()
+  {
     return this.tables;
   }
 
@@ -645,7 +651,8 @@ public class Type extends DataModelObject {
    * @see #setMainTable
    * @see #mainTable
    */
-  public SQLTable getMainTable() {
+  public SQLTable getMainTable()
+  {
     return this.mainTable;
   }
 
@@ -657,7 +664,8 @@ public class Type extends DataModelObject {
    * @see #getMainTable
    * @see #mainTable
    */
-  private void setMainTable(final SQLTable _mainTable) {
+  private void setMainTable(final SQLTable _mainTable)
+  {
     this.mainTable = _mainTable;
   }
 
@@ -668,7 +676,8 @@ public class Type extends DataModelObject {
    * @see #setFormView
    * @see #formView
    */
-  public Form getFormView() {
+  public Form getFormView()
+  {
     return this.formView;
   }
 
@@ -690,7 +699,8 @@ public class Type extends DataModelObject {
    * @see #setFormCreate
    * @see #formCreate
    */
-  public Form getFormCreate() {
+  public Form getFormCreate()
+  {
     return this.formCreate;
   }
 
@@ -701,7 +711,8 @@ public class Type extends DataModelObject {
    * @see #setViewAttribute
    * @see #viewAttribute
    */
-  public Attribute getViewAttribute() {
+  public Attribute getViewAttribute()
+  {
     return this.viewAttribute;
   }
 
@@ -712,7 +723,8 @@ public class Type extends DataModelObject {
    * @see #setUniqueKeys
    * @see #uniqueKeys
    */
-  public Collection<UniqueKey> getUniqueKeys() {
+  public Collection<UniqueKey> getUniqueKeys()
+  {
     return this.uniqueKeys;
   }
 
@@ -724,7 +736,8 @@ public class Type extends DataModelObject {
    * @see #getUniqueKeys
    * @see #uniqueKeys
    */
-  private void setUniqueKeys(final Collection<UniqueKey> _uniqueKeys) {
+  private void setUniqueKeys(final Collection<UniqueKey> _uniqueKeys)
+  {
     this.uniqueKeys = _uniqueKeys;
   }
 
@@ -734,8 +747,20 @@ public class Type extends DataModelObject {
    * @return value of instance variable {@link #links}
    * @see #links
    */
-  public Map<String, Attribute> getLinks() {
+  public Map<String, Attribute> getLinks()
+  {
     return this.links;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #allowedEventTypes}.
+   *
+   * @return value of instance variable {@link #allowedEventTypes}
+   * @see #allowedEventTypes
+   */
+  public Set<Type> getAllowedEventTypes()
+  {
+    return this.allowedEventTypes;
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -747,7 +772,10 @@ public class Type extends DataModelObject {
   public static void initialise() throws CacheReloadException {
     ConnectionResource con = null;
     try {
-      Map<Long, Long> parents = new HashMap<Long, Long>();
+      // to store parent informations
+      final Map<Long, Long> parents = new HashMap<Long, Long>();
+      // to store all read types
+      final Set<Type> allTypes = new HashSet<Type>();
 
       con = Context.getThreadContext().getConnectionResource();
 
@@ -777,9 +805,7 @@ public class Type extends DataModelObject {
           }
 
           getTypeCache().add(type);
-
-          // type.readDBPolicies(_context);
-          type.readFromDB4Properties();
+          allTypes.add(type);
 
           if (parentTypeId != 0) {
             parents.put(id, parentTypeId);
@@ -794,18 +820,23 @@ public class Type extends DataModelObject {
         }
       }
 
-      // initialise parents
+      // initialize parents
       for (Map.Entry<Long, Long> entry : parents.entrySet()) {
-        Type child = Type.get(entry.getKey());
-        Type parent = Type.get(entry.getValue());
-        // TODO: test if loop
+        final Type child = Type.get(entry.getKey());
+        final Type parent = Type.get(entry.getValue());
+// TODO: test if loop
         if (child.getId() == parent.getId()) {
           throw new CacheReloadException(
               "child and parent type is equal!child is " + child);
         }
-
-        child.setParentType(parent);
+        child.parentType = parent;
         parent.addChildType(child);
+      }
+
+      // initialize properties and links
+      for (final Type type : allTypes)  {
+        type.readFromDB4Properties();
+        type.readFromDB4Links();
       }
 
       con.commit();

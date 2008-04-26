@@ -20,14 +20,7 @@
 
 package org.efaps.admin.datamodel;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
 import org.efaps.admin.AbstractAdminObject;
-import org.efaps.db.Context;
-import org.efaps.util.EFapsException;
-import org.efaps.util.cache.CacheReloadException;
 
 /**
  * @author tmo
@@ -47,58 +40,4 @@ public abstract class DataModelObject extends AbstractAdminObject  {
                             final String _name)  {
     super(_id, _uuid, _name);
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-//protected void readFromDB4Properties(Context _context) throws Exception  {
-//  readFromDB4Properties(_context.getConnection());
-//}
-
-  /**
-   * The instance method reads the properteies for this data model object.
-   * Each found property is set with instance method {@link #setProperty}.
-   *
-   * @param _context for this request
-   * @see #setProperty
-   */
-  protected void readFromDB4Properties() throws CacheReloadException  {
-    Statement stmt = null;
-    try  {
-      stmt = Context.getThreadContext().getConnection().createStatement();
-      ResultSet rs = stmt.executeQuery(
-          "select "+
-            "T_CMPROPERTY.NAME,"+
-            "T_CMPROPERTY.VALUE "+
-          "from T_CMPROPERTY "+
-          "where T_CMPROPERTY.ABSTRACT=" + getId() + ""
-      );
-      while (rs.next())  {
-        String name =   rs.getString(1).trim();
-        String value =  rs.getString(2).trim();
-//        setProperty(_context, name, value);
-setProperty(name, value);
-      }
-      rs.close();
-    } catch (EFapsException e)  {
-      throw new CacheReloadException("could not read properties", e);
-    } catch (SQLException e)  {
-      throw new CacheReloadException("could not read properties", e);
-    } finally  {
-      if (stmt != null)  {
-        try  {
-          stmt.close();
-        } catch (SQLException e)  {
-        }
-      }
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-
-  /**
-   * The static method initialise the data model cache in the correct order.
-   */
-/*  public static void initialise() throws Exception  {
-  }
-*/
 }
