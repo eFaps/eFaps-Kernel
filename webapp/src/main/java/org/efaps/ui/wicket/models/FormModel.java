@@ -213,14 +213,16 @@ public class FormModel extends AbstractModel {
                                                          value,
                                                          fieldInstance);
 
-            if (super.isCreateMode() && field.isCreatable()) {
+            if (isCreateMode() && field.isCreatable())  {
               strValue = fieldvalue.getCreateHtml(getCallInstance());
-            } else if (super.isEditMode() && field.isEditable()) {
+            } else if (isEditMode() && field.isEditable())  {
               strValue = fieldvalue.getEditHtml(getCallInstance());
-            } else if (super.isSearchMode() && field.isSearchable()) {
+            } else if (isSearchMode() && field.isSearchable())  {
               strValue = fieldvalue.getSearchHtml(getCallInstance());
-            } else {
+            } else if (field.isViewable())  {
               strValue = fieldvalue.getViewHtml(getCallInstance());
+            } else  {
+              strValue = null;
             }
 
             // we search in the string if it is like <input type="file".. and
@@ -244,7 +246,7 @@ public class FormModel extends AbstractModel {
             }
             // if we have ViewMode and the field is not Viewable than we don't
             // add the Cell to the row
-            if (!(super.isViewMode() && !field.isViewable())) {
+            if (!(isViewMode() && !field.isViewable())) {
               if (queryhasresult) {
                 final FormCellModel cell =
                     new FormCellModel(field, oid, strValue, icon, super
