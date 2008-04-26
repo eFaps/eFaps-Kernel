@@ -86,7 +86,7 @@ public class CommandUpdate extends AbstractUpdate {
                                                          "To");
 
   protected final static Set<Link> ALLLINKS = new HashSet<Link>();
-  {
+  static  {
     ALLLINKS.add(LINK2ACCESSROLE);
     ALLLINKS.add(LINK2ICON);
     ALLLINKS.add(LINK2TARGETTABLE);

@@ -57,7 +57,8 @@ public class ImageUpdate extends AbstractUpdate  {
    */
   private final static Logger LOG = LoggerFactory.getLogger(ImageUpdate.class);
 
-  private final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
+  private final static Set <Link> ALLLINKS = new HashSet < Link > ();
+  static  {
     ALLLINKS.add(LINK2TYPE);
   }
 

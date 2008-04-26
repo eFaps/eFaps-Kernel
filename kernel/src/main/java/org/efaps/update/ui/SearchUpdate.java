@@ -52,7 +52,8 @@ public class SearchUpdate extends MenuUpdate  {
                                                        "Admin_UI_Command",
                                                        "To");
 
-  protected final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
+  protected final static Set <Link> ALLLINKS = new HashSet < Link > ();
+  static  {
     ALLLINKS.add(LINK2DEFAULTCMD);
     ALLLINKS.addAll(MenuUpdate.ALLLINKS);
   }

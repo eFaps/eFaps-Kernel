@@ -52,17 +52,19 @@ public class MenuUpdate extends CommandUpdate {
   // static variables
 
   /** Link from menu to child command / menu */
-  private final static Link LINK2CHILD =
-      new OrderedLink("Admin_UI_Menu2Command", "FromMenu", "Admin_UI_Command",
-          "ToCommand");
+  private final static Link LINK2CHILD
+      = new OrderedLink("Admin_UI_Menu2Command",
+                        "FromMenu",
+                        "Admin_UI_Command", "ToCommand");
 
   /** Link from menu to type as type tree menu */
-  private final static Link LINK2TYPE =
-      new Link("Admin_UI_LinkIsTypeTreeFor", "From", "Admin_DataModel_Type",
-          "To");
+  private final static Link LINK2TYPE
+      = new Link("Admin_UI_LinkIsTypeTreeFor",
+                 "From",
+                 "Admin_DataModel_Type", "To");
 
   protected final static Set<Link> ALLLINKS = new HashSet<Link>();
-  {
+  static  {
     ALLLINKS.add(LINK2CHILD);
     ALLLINKS.add(LINK2TYPE);
     ALLLINKS.addAll(CommandUpdate.ALLLINKS);
