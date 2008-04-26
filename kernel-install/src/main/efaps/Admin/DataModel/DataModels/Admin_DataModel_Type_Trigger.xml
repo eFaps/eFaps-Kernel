@@ -34,10 +34,25 @@
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==6) || (version==latest)</mode>
+      <mode>(version==latest)</mode>
     </version>
     <name>Admin_DataModel_Type_Trigger</name>
     <parent>Admin_Event_Definition</parent>
+    <abstract>true</abstract>
+    <!-- event for type? -->
+    <event-for type="Admin_DataModel_Type"/>
+  </definition>
+
+  <definition>
+    <version>
+      <application>eFaps</application>
+      <global>1</global>
+      <local>$Rev$</local>
+      <mode>(version==6)</mode>
+    </version>
+    <name>Admin_DataModel_Type_Trigger</name>
+    <parent>Admin_Event_Definition</parent>
+    <abstract>true</abstract>
   </definition>
 
 </datamodel-type>

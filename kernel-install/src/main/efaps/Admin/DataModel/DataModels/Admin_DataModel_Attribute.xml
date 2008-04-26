@@ -79,6 +79,6 @@
       <sqltable>Admin_DataModel_AttributeSQLTable</sqltable>
       <sqlcolumn>DEFAULTVAL</sqlcolumn>
     </attribute>
-   </definition>
+  </definition>
 
 </datamodel-type>

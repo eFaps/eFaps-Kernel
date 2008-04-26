@@ -29,6 +29,10 @@
 
   <uuid>8770839d-60fd-4bb4-81fd-3903d4c916ec</uuid>
 
+  <description>
+    Abstract definition of the data model type.
+  </description>
+
   <definition>
     <version>
       <application>eFaps</application>
@@ -53,7 +57,9 @@
       <sqlcolumn>PARENTDMTYPE</sqlcolumn>
     </attribute>
     <!-- triggers -->
-    <trigger name="Admin_DataModel_Type_AccessCheck" event="ACCESSCHECK" program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" />
+    <trigger name="Admin_DataModel_Type_AccessCheck"
+             event="ACCESSCHECK"
+             program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" />
   </definition>
 
   <!-- define type (is already defined), and trigger could not be created.. -->
@@ -81,4 +87,5 @@
       <sqlcolumn>PARENTDMTYPE</sqlcolumn>
     </attribute>
   </definition>
+
 </datamodel-type>
