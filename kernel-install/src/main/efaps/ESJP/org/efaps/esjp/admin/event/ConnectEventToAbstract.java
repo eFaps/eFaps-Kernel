@@ -20,6 +20,8 @@
 
 package org.efaps.esjp.admin.event;
 
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import org.efaps.admin.datamodel.Type;
@@ -67,7 +69,9 @@ public class ConnectEventToAbstract
 
     final Instance callInstance = _parameter.getCallInstance();
 
+    // get parent instance and current selected instance
     Instance parentInstance = null;
+    long selectedId = 0;
     if (htmlType == HtmlType.CREATEHTML)  {
       parentInstance = callInstance;
     } else if (htmlType == HtmlType.EDITHTML)  {
@@ -78,17 +82,27 @@ public class ConnectEventToAbstract
       query.next();
       parentInstance = new Instance((String) query.get("Abstract.OID"));
       query.close();
+      selectedId = callInstance.getType().getId();
     }
 
-
-final String allowedEvenTypes = parentInstance.getType().getProperty("AllowedEvents");
-
-final String typeLabel = DBProperties.getProperty(new StringBuilder(allowedEvenTypes).append(".Label").toString());
+    // evaluate all possible event types
+    final Map<String,Long> map = new TreeMap<String,Long>();
+    for (final Type type : parentInstance.getType().getAllowedEventTypes())  {
+      collectAllowedEventTypes(map, type);
+    }
 
     final String fieldName = fieldvalue.getFieldDef().getField().getName();
     final StringBuilder ret = new StringBuilder();
     ret.append("<select name=\"").append(fieldName).append("\" size=\"1\">");
-    ret.append("<option value=\"").append(allowedEvenTypes).append("\">").append(typeLabel).append("</option>");
+
+    for (Map.Entry<String, Long> entry : map.entrySet())  {
+        ret.append("<option value=\"").append(entry.getValue()).append("\"");
+        if (selectedId == entry.getValue())  {
+          ret.append(" selected=\"selected\"");
+        }
+        ret.append(">").append(entry.getKey()).append("</option>");
+    }
+
     ret.append("</select>");
 
     final Return retVal = new Return();
@@ -97,6 +111,26 @@ final String typeLabel = DBProperties.getProperty(new StringBuilder(allowedEvenT
     }
     return retVal;
   }
+
+  /**
+   * Evaluates given event type and adds them to the allowed event types map.
+   *
+   * @param map   map in which the information about the event types are stored
+   * @param _type current event type to collect to the map
+   */
+  protected void collectAllowedEventTypes(final Map<String,Long> map,
+                                          final Type _type)
+  {
+    if (!_type.isAbstractType())  {
+      final String labelName = new StringBuilder(_type.getName()).append(".Label").toString();
+      map.put(DBProperties.getProperty(labelName),
+              _type.getId());
+    }
+    for (final Type childType : _type.getChildTypes())  {
+      collectAllowedEventTypes(map, childType);
+    }
+  }
+
 
   /**
    * Search for all existing programs in eFaps and returns them as drop down
@@ -165,11 +199,13 @@ final String typeLabel = DBProperties.getProperty(new StringBuilder(allowedEvenT
       throws EFapsException
   {
     final Instance callInstance  = _parameter.getCallInstance();
-    final Type eventType         = Type.get(_parameter.getParameterValue("type4NotView"));
+    final String eventTypeId     = _parameter.getParameterValue("type4NotView");
     final String name            = _parameter.getParameterValue("name");
     final String index           = _parameter.getParameterValue("index");
     final String programId       = _parameter.getParameterValue("program4NotView");
     final String method          = _parameter.getParameterValue("method");
+
+    final Type eventType = Type.get(Long.parseLong(eventTypeId));
 
     final Insert insert = new Insert(eventType);
     insert.add("Name", name);
