@@ -28,7 +28,6 @@
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>d9dd0971-0bb9-4ac1-ba46-8aefd5e8badb</uuid>
-  <abstract>true</abstract>
 
   <definition>
     <version>
@@ -38,6 +37,7 @@
       <mode>(version==6) || (version==latest)</mode>
     </version>
     <name>Admin_User_AttributeAbstract</name>
+    <abstract>true</abstract>
     <!-- attributes -->
     <attribute>
       <name>Type</name>

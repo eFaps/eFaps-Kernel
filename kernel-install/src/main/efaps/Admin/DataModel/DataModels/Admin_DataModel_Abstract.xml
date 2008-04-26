@@ -28,7 +28,6 @@
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>f4d7c43a-4773-49c6-a3a5-0c91317ada0f</uuid>
-  <abstract>true</abstract>
 
   <definition>
     <version>
@@ -39,6 +38,7 @@
     </version>
     <name>Admin_DataModel_Abstract</name>
     <parent>Admin_Abstract</parent>
+    <abstract>true</abstract>
   </definition>
 
 </datamodel-type>

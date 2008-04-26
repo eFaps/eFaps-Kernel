@@ -112,10 +112,6 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addObjectCreate("datamodel-type", TypeUpdate.class);
 
       // set the UUID for the Type
-      digester.addCallMethod("datamodel-type/abstract", "setAbstractType", 1);
-      digester.addCallParam("datamodel-type/abstract", 0);
-
-      // set the UUID for the Type
       digester.addCallMethod("datamodel-type/uuid", "setUUID", 1);
       digester.addCallParam("datamodel-type/uuid", 0);
 
@@ -124,8 +120,7 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addSetNext("datamodel-type/definition", "addDefinition");
 
       // set the Version of the Type-Definition
-      digester.addCallMethod("datamodel-type/definition/version", "setVersion",
-          4);
+      digester.addCallMethod("datamodel-type/definition/version", "setVersion", 4);
       digester.addCallParam("datamodel-type/definition/version/application", 0);
       digester.addCallParam("datamodel-type/definition/version/global", 1);
       digester.addCallParam("datamodel-type/definition/version/local", 2);
@@ -139,9 +134,12 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addCallMethod("datamodel-type/definition/parent", "setParent", 1);
       digester.addCallParam("datamodel-type/definition/parent", 0);
 
+      // is the type abstract?
+      digester.addCallMethod("datamodel-type/definition/abstract", "setAbstractType", 1, new Class[]{Boolean.class});
+      digester.addCallParam("datamodel-type/definition/abstract", 0);
+
       // add an Attribute to the Type-Definition
-      digester.addObjectCreate("datamodel-type/definition/attribute",
-          Attribute.class);
+      digester.addObjectCreate("datamodel-type/definition/attribute", Attribute.class);
 
       // set Name, Type, Tabel etc, of the Attribute
       digester.addCallMethod("datamodel-type/definition/attribute", "setDefinitions", 6);
@@ -150,8 +148,7 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addCallParam("datamodel-type/definition/attribute/sqltable", 2);
       digester.addCallParam("datamodel-type/definition/attribute/sqlcolumn", 3);
       digester.addCallParam("datamodel-type/definition/attribute/typelink", 4);
-      digester.addCallParam("datamodel-type/definition/attribute/defaultvalue",
-          5);
+      digester.addCallParam("datamodel-type/definition/attribute/defaultvalue", 5);
 
       // add a Trigger-Event to the Attribute
       digester.addFactoryCreate("datamodel-type/definition/attribute/trigger", new EventFactory(), false);
@@ -517,6 +514,15 @@ public class TypeUpdate extends AbstractUpdate {
     public void setParent(final String _parentType)
     {
       this.parentType = _parentType;
+    }
+
+    /**
+     * This is the setter method for the instance variable {@link #abstractType}.
+     *
+     * @param _abstractType the abstractType to set
+     */
+    public void setAbstractType(final Boolean _abstractType) {
+      addValue("Abstract", _abstractType.toString());
     }
 
     /**

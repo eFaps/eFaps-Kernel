@@ -421,13 +421,12 @@ public class SQLTableUpdate extends AbstractUpdate {
      */
     @Override
     public void createInDB(final Type _dataModelType,
-                           final String _uuid,
-                           final boolean _abstractType)
+                           final String _uuid)
         throws EFapsException
     {
       createSQLTable();
       if (getValue("Name") != null) {
-        super.createInDB(_dataModelType, _uuid, _abstractType);
+        super.createInDB(_dataModelType, _uuid);
       }
     }
 

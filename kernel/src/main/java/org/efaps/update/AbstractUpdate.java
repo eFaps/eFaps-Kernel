@@ -100,11 +100,6 @@ public abstract class AbstractUpdate {
   private final List<AbstractDefinition> definitions =
       new ArrayList<AbstractDefinition>();
 
-  /**
-   * This instance variable stores if the Type to be updated is abstract or not
-   */
-  private boolean abstractType = false;
-
   private String application;
 
   private Long maxVersion;
@@ -194,8 +189,7 @@ public abstract class AbstractUpdate {
             LOG.debug("Executing '" + this.url.toString() + "'");
           }
           def.createInDB(Type.get(this.dataModelTypeName),
-                         this.uuid,
-                         this.abstractType);
+                         this.uuid);
         }
       }
     } catch (final EFapsException e) {
@@ -239,26 +233,6 @@ public abstract class AbstractUpdate {
    */
   public String getUUID() {
     return this.uuid;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #abstractType}.
-   *
-   * @return value of instance variable {@link #abstractType}
-   */
-
-  public boolean isAbstractType() {
-    return this.abstractType;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #abstractType}.
-   *
-   * @param _abstractType
-   *                the abstractType to set
-   */
-  public void setAbstractType(final String _abstractType) {
-    this.abstractType = Boolean.parseBoolean(_abstractType);
   }
 
   /**
@@ -612,8 +586,7 @@ public abstract class AbstractUpdate {
      }
 
     public void createInDB(final Type _dataModelType,
-                           final String _uuid,
-                           final boolean _abstractType)
+                           final String _uuid)
         throws EFapsException
     {
       searchInstance(_dataModelType, _uuid);
@@ -622,9 +595,6 @@ public abstract class AbstractUpdate {
       if (this.instance == null) {
         final Insert insert = new Insert(_dataModelType);
         insert.add("UUID", _uuid);
-        if (_dataModelType.getAttribute("Abstract") != null) {
-          insert.add("Abstract", ((Boolean) _abstractType).toString());
-        }
         createInDB(insert);
       }
     }
