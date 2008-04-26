@@ -28,7 +28,6 @@ import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.model.Model;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
@@ -119,12 +118,11 @@ public class FormModel extends AbstractModel {
     try {
       final Form form = Form.get(this.formUUID);
 
-      if (super.isCreateMode() || super.isSearchMode()) {
-        if (super.isCreateMode()) {
-          type = super.getCommand().getTargetCreateType();
+      if (isCreateMode() || isSearchMode()) {
+        if (isCreateMode()) {
+          type = getCommand().getTargetCreateType();
         } else if (super.isSearchMode()) {
-          final List<EventDefinition> events =
-              getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
+          final List<EventDefinition> events = getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
           for (final EventDefinition eventDef : events) {
             final String tmp = eventDef.getProperty("Types");
             if (tmp != null) {
@@ -132,7 +130,6 @@ public class FormModel extends AbstractModel {
             }
           }
         }
-
       } else {
         query = new SearchQuery();
         query.setObject(super.getOid());
@@ -150,15 +147,13 @@ public class FormModel extends AbstractModel {
           queryhasresult = true;
         }
       }
-      if (queryhasresult || type != null) {
+
+      // only if a query was positive evaluate (mode view / edit)
+      // or it is a create / search mode all fields could be shown
+      if (queryhasresult || isCreateMode() || isSearchMode()) {
         boolean addNew = true;
         FormElementModel formelement = null;
-        for (int i = 0; i < form.getFields().size(); i++) {
-          final Field field = form.getFields().get(i);
-          Object value = null;
-          Attribute attr = null;
-          Instance instance = null;
-
+        for (final Field field : form.getFields()) {
           if (field instanceof FieldGroup) {
             final FieldGroup group = (FieldGroup) field;
             if (getMaxGroupCount() < group.getGroupCount()) {
@@ -186,32 +181,36 @@ public class FormModel extends AbstractModel {
               addNew = false;
             }
 
+            // get attribute, attribute value and instance
+            Attribute attr = null;
+            Instance instance = null;
+            Object value = null;
             if (queryhasresult) {
-
               if (field.getAlternateOID() == null) {
                 instance = new Instance((String) query.get("OID"));
               } else {
-                instance =
-                    new Instance((String) query.get(field.getAlternateOID()));
+                instance = new Instance((String) query.get(field.getAlternateOID()));
               }
               value = query.get(field.getExpression());
               attr = query.getAttribute(field.getExpression());
-
-            } else {
+            } else if (type != null)  {
               attr = type.getAttribute(field.getExpression());
             }
 
+            // evaluate the label of the field
             String label;
-            if (field.getLabel() == null) {
-              label =
-                  attr.getParent().getName() + "/" + attr.getName() + ".Label";
-            } else {
+            if (field.getLabel() != null) {
               label = field.getLabel();
+            } else if (attr != null)  {
+              label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
+            } else {
+              label = "Unknown";
             }
 
-            final FieldValue fieldvalue =
-                new FieldValue(new FieldDefinition("egal", field), attr, value,
-                    instance);
+            final FieldValue fieldvalue = new FieldValue(new FieldDefinition("egal", field),
+                                                         attr,
+                                                         value,
+                                                         instance);
 
             if (super.isCreateMode() && field.isCreatable()) {
               strValue = fieldvalue.getCreateHtml();
