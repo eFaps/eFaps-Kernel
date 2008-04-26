@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.components.tree;
@@ -46,7 +46,6 @@ import org.apache.wicket.markup.html.link.IPageLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.AbstractReadOnlyModel;
-
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.TargetMode;
@@ -68,7 +67,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * Tristate.
  *
  * @author jmox
- * @version $Id:StructurBrowserTree.java 1510 2007-10-18 14:35:40Z jmox $
+ * @version $Id$
  */
 public class StructurBrowserTree extends DefaultAbstractTree {
 

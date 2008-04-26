@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:1510 $
- * Last Changed:    $Date:2007-10-18 09:35:40 -0500 (Thu, 18 Oct 2007) $
- * Last Changed By: $Author:jmox $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models;
@@ -49,7 +49,7 @@ import org.efaps.util.EFapsException;
 
 /**
  * @author jmox
- * @version $Id:AbstractModel.java 1510 2007-10-18 14:35:40Z jmox $
+ * @version $Id$
  */
 public abstract class AbstractModel extends Model {
 
