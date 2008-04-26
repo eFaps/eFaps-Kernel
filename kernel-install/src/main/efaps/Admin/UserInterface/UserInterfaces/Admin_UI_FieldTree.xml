@@ -49,7 +49,7 @@
     <childs>
       <child>Admin_Common_AbstractTree_Properties</child>
       <child>Admin_UI_FieldTree_Links</child>
-      <child>Admin_AbstractTree_Events</child>
+      <child>Admin_Common_AbstractTree_Events</child>
     </childs>
     <!-- properties -->
     <property name="Target">content</property>

@@ -16,7 +16,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- Author:          tmo
+ Author:          jmox
  Revision:        $Rev$
  Last Changed:    $Date$
  Last Changed By: $Author$
@@ -27,7 +27,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>e333fffe-9223-4af0-bffa-7d0adce91da5</uuid>
+  <uuid>4368cb89-ab7d-4b26-980f-af4403aecee0</uuid>
 
   <definition>
     <version>
@@ -37,26 +37,11 @@
       <mode>true</mode>
       <mode>(version==latest)</mode>
     </version>
-    <name>Admin_UI_MenuTree</name>
-    <!-- targets -->
-    <target>
-      <menu>Admin_UI_MenuTree_Menu</menu>
-      <form>Admin_UI_AbstractForm</form>         
-    </target>
-    <!-- type tree for -->
-    <type>Admin_UI_Menu</type>
+    <name>Admin_Event_DefinitionTree_Menu</name>
     <!-- childs -->
     <childs>
-      <child>Admin_UI_MenuTree_Childs</child>
-      <child>Admin_UI_CommandTree_Parents</child>
-      <child>Admin_Common_AbstractTree_Properties</child>
-      <child>Admin_UI_CommandTree_Links</child>
-      <child>Admin_UI_DirectTree_Used</child>
-      <child>Admin_Common_AbstractTree_Events</child>
+      <child>Admin_Event_DefinitionTree_Menu_Action</child>
     </childs>
-    <!-- properties -->
-    <property name="Target">content</property>
-    <property name="TargetMode">view</property>
   </definition>
 
 </ui-menu>

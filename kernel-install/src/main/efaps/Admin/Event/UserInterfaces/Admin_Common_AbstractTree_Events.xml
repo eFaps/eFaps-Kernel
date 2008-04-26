@@ -37,9 +37,10 @@
       <mode>true</mode>
       <mode>(version==latest)</mode>
     </version>
-    <name>Admin_AbstractTree_Events</name>
+    <name>Admin_Common_AbstractTree_Events</name>
     <!-- target definitions -->
     <target>
+      <menu>Admin_Common_AbstractTree_Events_Menu</menu>
       <table>Admin_Event_DefinitionTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_Event_Definition\Abstract</property>

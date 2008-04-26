@@ -52,7 +52,7 @@
       <child>Admin_UI_CommandTree_Links</child>
       <child>Admin_UI_DirectTree_Used</child>
       <child>Admin_UI_AbstractTree_Access</child>
-      <child>Admin_AbstractTree_Events</child>
+      <child>Admin_Common_AbstractTree_Events</child>
     </childs>
     <!-- properties -->
     <property name="Target">content</property>

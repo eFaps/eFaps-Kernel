@@ -63,7 +63,7 @@
     </field>
     <field name="index">
       <property name="Expression">IndexPosition</property>
-      <property name="Label">Admin_Event_Definition/Index.Label</property>
+      <property name="Label">Admin_Event_Definition/IndexPosition.Label</property>
     </field>
     <field name="javaprog">
       <property name="Expression">JavaProg.Name</property>

@@ -40,7 +40,7 @@
     <name>Admin_Event_DefinitionTree</name>
     <!-- targets -->
     <target>
-      <menu>Admin_Event_DefinitionTree_Menu_Action</menu>
+      <menu>Admin_Event_DefinitionTree_Menu</menu>
       <form>Admin_Event_DefinitionForm</form>
     </target>
     <!-- type tree for -->
