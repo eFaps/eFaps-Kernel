@@ -515,12 +515,13 @@ public abstract class AbstractModel extends Model {
    * This method throws an eFpasError to provide the possibilty for different
    * responses in the components.
    *
-   * @param _others
-   *                The values will be atached to the call as
-   *                ParameterValues.OTHERS
+   * @param _others   The values will be attached to the call as
+   *                  {@link ParameterValues#OTHERS}
    * @throws EFapsException
    */
-  public List<Return> executeEvents(final Object _others) throws EFapsException {
+  public List<Return> executeEvents(final Object _others)
+      throws EFapsException
+  {
     List<Return> ret = new ArrayList<Return>();
     AbstractCommand command;
     if (this.callingCommandUUID == null) {
@@ -530,17 +531,18 @@ public abstract class AbstractModel extends Model {
     }
 
     if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
-      if (this.getOid() == null) {
-        ret =
-            command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-                ParameterValues.OTHERS, _others);
+      if (getCallInstance() == null) {
+        ret = command.executeEvents(EventType.UI_COMMAND_EXECUTE,
+                                    ParameterValues.OTHERS, _others,
+                                    ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
       } else {
         final String[] contextoid = { this.getOid() };
         Context.getThreadContext().getParameters().put("oid", contextoid);
-        ret =
-            command.executeEvents(EventType.UI_COMMAND_EXECUTE,
-                ParameterValues.INSTANCE, getCallInstance(),
-                ParameterValues.OTHERS, _others);
+        ret = command.executeEvents(EventType.UI_COMMAND_EXECUTE,
+                                    ParameterValues.CALL_INSTANCE, getCallInstance(),
+                                    ParameterValues.INSTANCE, getCallInstance(),
+                                    ParameterValues.OTHERS, _others,
+                                    ParameterValues.PARAMETERS, Context.getThreadContext().getParameters());
       }
     }
     return ret;
@@ -552,7 +554,8 @@ public abstract class AbstractModel extends Model {
    *
    * @return List with Return from the esjp
    */
-  public List<Return> validate() {
+  public List<Return> validate()
+  {
     final AbstractCommand command = this.getCommand();
     try {
       return command.executeEvents(EventType.UI_VALIDATE, (Object) null);

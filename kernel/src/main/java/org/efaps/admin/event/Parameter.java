@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.db.Instance;
 
 /**
  * Class witch is used for parsing Parameters to the Events.
@@ -38,8 +39,11 @@ public class Parameter  {
    * This enum holds the definitions of Parameters, to be accessed
    */
   public enum ParameterValues {
-    /** Holds an AccessType, used for AccessCheck-Programs */
+    /**
+     * Holds an AccessType, used for AccessCheck-Programs
+     */
     ACCESSTYPE,
+
     /**
      * Call instance, means
      * <ul>
@@ -47,33 +51,89 @@ public class Parameter  {
      *     evaluated</li>
      * <li>for a web form, on which the web form is executed (if exists);
      *     e.g. in edit mode it is the instance of the called object</li>
+     * <li>for a command the instance on which the command was executed</li>
      * </ul>
      */
     CALL_INSTANCE,
-    /** Holds an Instance */
+
+    /**
+     * Holds an Instance
+     * */
     INSTANCE,
+
     /**
      * Holds the new Values for an Instance, used e.g. by Creation of a new
      * Object
      */
     NEW_VALUES,
-    /** Holds the Properties of the trigger */
-    PROPERTIES,
-    /** Placemark for aditional Informations */
-    OTHERS,
-    /** Holds an UserInterfaceObject */
-    UIOBJECT;
 
+    /**
+     * Further Parameters as map (key is string, value is string array), e.g.
+     * from called form, command etc.
+     */
+    PARAMETERS,
+
+    /**
+     * Holds the Properties of the trigger
+     */
+    PROPERTIES,
+
+    /**
+     * Place mark for additional Informations
+     */
+    OTHERS,
+
+    /**
+     * Holds the UserInterfaceObject on which the event is called
+     */
+    UIOBJECT;
   }
+
   private final Map<ParameterValues, Object> map = new HashMap<ParameterValues, Object>();
 
-  public void put(ParameterValues _key, Object _value) {
+  public void put(final ParameterValues _key,
+                  final Object _value)
+  {
     this.map.put(_key, _value);
-
   }
 
-  public Object get(ParameterValues _key) {
+  public Object get(final ParameterValues _key)
+  {
     return this.map.get(_key);
+  }
+
+  /**
+   * Returns the value of map with the key
+   * {@link ParameterValues#CALL_INSTANCE}.
+   *
+   * @return call instance of this parameter; or if not defined
+   *         <code>null</code>
+   */
+  public Instance getCallInstance()
+  {
+    return (Instance) this.map.get(ParameterValues.CALL_INSTANCE);
+  }
+
+  /**
+   * Returns the value of map with the key {@link ParameterValues#INSTANCE}.
+   *
+   * @return instance of this parameter; or if not defined <code>null</code>
+   */
+  public Instance getInstance()
+  {
+    return (Instance) this.map.get(ParameterValues.INSTANCE);
+  }
+
+  /**
+   * Returns the value of map with the key {@link ParameterValues#PARAMETERS}.
+   *
+   * @return further parameters of this parameter; or if not defined
+   *         <code>null</code>
+   */
+  @SuppressWarnings("unchecked")
+  public Map<String,String[]> getParameters()
+  {
+    return (Map<String,String[]>) this.map.get(ParameterValues.PARAMETERS);
   }
 
   public Set<?> entrySet() {
@@ -88,8 +148,8 @@ public class Parameter  {
   @Override
   public String toString() {
     return new ToStringBuilder(this)
-        .appendSuper(super.toString())
-        .append("map", this.map.toString())
-        .toString();
+                .appendSuper(super.toString())
+                .append("map", this.map.toString())
+                .toString();
   }
 }
