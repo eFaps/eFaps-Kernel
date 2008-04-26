@@ -20,7 +20,11 @@
 
 package org.efaps.db;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Type;
@@ -52,7 +56,7 @@ public class Instance implements Serializable
    *
    * @see #getType
    */
-  private final Type type;
+  transient private Type type;
 
   /**
    * The instance variable stores the database id of the instance in the
@@ -199,7 +203,37 @@ public class Instance implements Serializable
     return ret;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * First, all not transient instance variables are stored, then the UUID of
+   * the type is stored.
+   *
+   * @param _out    object output stream
+   * @throws IOException            from inside called methods
+   */
+  private void writeObject(final ObjectOutputStream _out)
+      throws IOException
+  {
+    _out.defaultWriteObject();
+    _out.writeObject(this.type.getUUID());
+  }
+
+  /**
+   * First all not transient instance variables are read, then the UUID of the
+   * type is read and the type is initialized.
+   *
+   * @param _in   object input stream
+   * @throws IOException            from inside called methods
+   * @throws ClassNotFoundException if a class not found
+   * @todo update type instance if it is final....
+   */
+  private void readObject(final ObjectInputStream _in)
+      throws IOException, ClassNotFoundException
+  {
+    _in.defaultReadObject();
+    this.type = Type.get((UUID) _in.readObject());
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
   // getter and setter methods
 
   /**
