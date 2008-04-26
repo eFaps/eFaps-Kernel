@@ -48,7 +48,6 @@
     </target>
     <!-- properties -->
     <property name="Target">modal</property>
-    <property name="TargetCreateType">Admin_User_Person</property>
     <property name="TargetMode">create</property>
     <property name="WindowHeight">255</property>
     <property name="WindowWidth">380</property>

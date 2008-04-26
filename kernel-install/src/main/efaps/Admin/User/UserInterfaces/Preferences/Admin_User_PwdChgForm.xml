@@ -42,20 +42,18 @@
     <field name="passwordold">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
-      <property name="Expression">Password</property>
       <property name="Required">true</property>
-      <property name="Label">Admin_User_PwdChgForm/passwordold.Label</property>
+      <property name="Label">Admin_User_PwdChgForm.passwordold.Label</property>
       <trigger name="Common_Main_PwdChgForm/passwordold" event="UI_FIELD_VALUE" program="org.efaps.esjp.admin.user.Password"
         method="getFieldValueUI"
-      >
+      > 
       </trigger>
     </field>
     <field name="passwordnew">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
-      <property name="Expression">Password</property>
       <property name="Required">true</property>
-      <property name="Label">Admin_User_PwdChgForm/passwordnew.Label</property>
+      <property name="Label">Admin_User_PwdChgForm.passwordnew.Label</property>
       <trigger name="Common_Main_PwdChgForm/passwordnew" event="UI_FIELD_VALUE" program="org.efaps.esjp.admin.user.Password"
         method="getFieldValueUI"
       >
@@ -64,9 +62,8 @@
     <field name="passwordnew2">
       <property name="Columns">40</property>
       <property name="Creatable">true</property>
-      <property name="Expression">Password</property>
       <property name="Required">true</property>
-      <property name="Label">Admin_User_PwdChgForm/passwordnew2.Label</property>
+      <property name="Label">Admin_User_PwdChgForm.passwordnew2.Label</property>
       <trigger name="Common_Main_PwdChgForm/passwordnew2" event="UI_FIELD_VALUE" program="org.efaps.esjp.admin.user.Password"
         method="getFieldValueUI"
       >
