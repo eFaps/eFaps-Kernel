@@ -35,6 +35,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
 import org.efaps.update.event.EventFactory;
 import org.efaps.util.EFapsException;
@@ -61,7 +62,21 @@ public class TypeUpdate extends AbstractUpdate {
    */
   private final static Logger LOG = LoggerFactory.getLogger(TypeUpdate.class);
 
+  /**
+   * Link the data model type to allowed event types
+   */
+  private final static Link LINK2ALLOWEDEVENT
+      = new Link("Admin_DataModel_TypeEventIsAllowedFor",
+                 "From",
+                 "Admin_DataModel_Type", "To");
+
+  /**
+   * List of all links for the type.
+   */
   private final static Set<Link> ALLLINKS = new HashSet<Link>();
+  static  {
+    ALLLINKS.add(LINK2ALLOWEDEVENT);
+  }
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
@@ -105,7 +120,7 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addCallParam("datamodel-type/uuid", 0);
 
       // add a new Definition for the Type
-      digester.addObjectCreate("datamodel-type/definition", Definition.class);
+      digester.addObjectCreate("datamodel-type/definition", TypeDefinition.class);
       digester.addSetNext("datamodel-type/definition", "addDefinition");
 
       // set the Version of the Type-Definition
@@ -121,8 +136,7 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addCallParam("datamodel-type/definition/name", 0);
 
       // set the parent of the Type-Definition
-      digester
-          .addCallMethod("datamodel-type/definition/parent", "setParent", 1);
+      digester.addCallMethod("datamodel-type/definition/parent", "setParent", 1);
       digester.addCallParam("datamodel-type/definition/parent", 0);
 
       // add an Attribute to the Type-Definition
@@ -130,8 +144,7 @@ public class TypeUpdate extends AbstractUpdate {
           Attribute.class);
 
       // set Name, Type, Tabel etc, of the Attribute
-      digester.addCallMethod("datamodel-type/definition/attribute",
-          "setDefinitions", 6);
+      digester.addCallMethod("datamodel-type/definition/attribute", "setDefinitions", 6);
       digester.addCallParam("datamodel-type/definition/attribute/name", 0);
       digester.addCallParam("datamodel-type/definition/attribute/type", 1);
       digester.addCallParam("datamodel-type/definition/attribute/sqltable", 2);
@@ -141,17 +154,11 @@ public class TypeUpdate extends AbstractUpdate {
           5);
 
       // add a Trigger-Event to the Attribute
-      digester.addFactoryCreate("datamodel-type/definition/attribute/trigger",
-          new EventFactory(), false);
-      digester.addCallMethod(
-          "datamodel-type/definition/attribute/trigger/property",
-          "addProperty", 2);
-      digester.addCallParam(
-          "datamodel-type/definition/attribute/trigger/property", 0, "name");
-      digester.addCallParam(
-          "datamodel-type/definition/attribute/trigger/property", 1);
-      digester.addSetNext("datamodel-type/definition/attribute/trigger",
-          "addEvent", "org.efaps.update.event.Event");
+      digester.addFactoryCreate("datamodel-type/definition/attribute/trigger", new EventFactory(), false);
+      digester.addCallMethod("datamodel-type/definition/attribute/trigger/property", "addProperty", 2);
+      digester.addCallParam("datamodel-type/definition/attribute/trigger/property", 0, "name");
+      digester.addCallParam("datamodel-type/definition/attribute/trigger/property", 1);
+      digester.addSetNext("datamodel-type/definition/attribute/trigger", "addEvent", "org.efaps.update.event.Event");
 
       // add a Validate-Event to the Attribute
       digester.addFactoryCreate("datamodel-type/definition/attribute/validate",
@@ -166,25 +173,24 @@ public class TypeUpdate extends AbstractUpdate {
       digester.addSetNext("datamodel-type/definition/attribute/validate",
           "addEvent", "org.efaps.update.event.Event");
 
-      digester
-          .addSetNext("datamodel-type/definition/attribute", "addAttribute");
+      digester.addSetNext("datamodel-type/definition/attribute", "addAttribute");
 
       // add Properties to the Type-Definition
-      digester.addCallMethod("datamodel-type/definition/property",
-          "addProperty", 2);
+      digester.addCallMethod("datamodel-type/definition/property", "addProperty", 2);
       digester.addCallParam("datamodel-type/definition/property", 0, "name");
       digester.addCallParam("datamodel-type/definition/property", 1);
 
+      // allowed event type for this type
+      digester.addCallMethod("datamodel-type/definition/allowed-event", "addAllowedEvent", 1);
+      digester.addCallParam("datamodel-type/definition/allowed-event", 0, "type");
+
       // add Trigger-Event to the Type-Definition
-      digester.addFactoryCreate("datamodel-type/definition/trigger",
-          new EventFactory(), false);
-      digester.addCallMethod("datamodel-type/definition/trigger/property",
-          "addProperty", 2);
-      digester.addCallParam("datamodel-type/definition/trigger/property", 0,
-          "name");
+      digester.addFactoryCreate("datamodel-type/definition/trigger", new EventFactory(), false);
+      digester.addCallMethod("datamodel-type/definition/trigger/property", "addProperty", 2);
+      digester.addCallParam("datamodel-type/definition/trigger/property", 0, "name");
       digester.addCallParam("datamodel-type/definition/trigger/property", 1);
-      digester.addSetNext("datamodel-type/definition/trigger", "addEvent",
-          "org.efaps.update.event.Event");
+      digester.addSetNext("datamodel-type/definition/trigger", "addEvent", "org.efaps.update.event.Event");
+
 
       ret = (TypeUpdate) digester.parse(_url);
 
@@ -436,7 +442,7 @@ public class TypeUpdate extends AbstractUpdate {
   // ///////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition extends AbstractDefinition {
+  public static class TypeDefinition extends AbstractDefinition {
 
     // /////////////////////////////////////////////////////////////////////////
     // instance variables
@@ -521,6 +527,16 @@ public class TypeUpdate extends AbstractUpdate {
     public void addAttribute(final Attribute _attribute)
     {
       this.attributes.add(_attribute);
+    }
+
+    /**
+     * Adds the name of a allowed event type.
+     *
+     * @param _eventTypeName  name of allowed event type
+     */
+    public void addAllowedEvent(final String _eventTypeName)
+    {
+      addLink(LINK2ALLOWEDEVENT, new LinkInstance(_eventTypeName));
     }
   }
 
