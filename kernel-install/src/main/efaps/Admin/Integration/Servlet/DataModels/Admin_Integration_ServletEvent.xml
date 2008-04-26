@@ -27,27 +27,17 @@
                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid>30a265d1-c503-4949-a02c-f7bb3f5759ea</uuid>
+  <uuid>a9ac6e63-78f0-4a29-8b17-f319e590b17f</uuid>
 
-  <!-- create and define type -->
   <definition>
     <version>
       <application>eFaps</application>
       <global>1</global>
       <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-    </version>
-    <name>Admin_Integration_Servlet</name>
-    <parent>Admin_Integration_Abstract</parent>
-    <!-- attributes -->
-    <attribute>
-      <name>Path</name>
-      <type>String</type>
-      <sqltable>Admin_Integration_ServletSQLTable</sqltable>
-      <sqlcolumn>PATH</sqlcolumn>
-    </attribute>
-    <!--  properties -->
-    <property name="AllowedEvents">Admin_Integration_ServletEvent</property>
+      <mode>(version==6) || (version==latest)</mode>
+     </version>
+    <name>Admin_Integration_ServletEvent</name>
+    <parent>Admin_Event_Definition</parent>
   </definition>
 
 </datamodel-type>

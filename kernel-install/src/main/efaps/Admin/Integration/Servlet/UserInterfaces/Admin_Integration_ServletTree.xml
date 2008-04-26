@@ -45,6 +45,10 @@
     </target>
     <!-- type tree for -->
     <type>Admin_Integration_Servlet</type>
+    <!-- childs -->
+    <childs>
+      <child>Admin_Common_AbstractTree_Events</child>
+    </childs>
     <!-- properties -->
     <property name="Target">content</property>
     <property name="TargetMode">view</property>
