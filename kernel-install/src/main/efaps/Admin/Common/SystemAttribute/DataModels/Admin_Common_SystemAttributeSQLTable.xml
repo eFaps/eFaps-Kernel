@@ -64,7 +64,7 @@
                  T_CMSYSATTRIBUTE.VALUE 
             from T_CMABSTRACT
             join T_CMSYSATTRIBUTE 
-              on T_CMABSTRACT.ID = T_CMSYSATTRIBUTE.ID;
+              on T_CMABSTRACT.ID = T_CMSYSATTRIBUTE.ID
       </sql>
     </database>
   </definition>

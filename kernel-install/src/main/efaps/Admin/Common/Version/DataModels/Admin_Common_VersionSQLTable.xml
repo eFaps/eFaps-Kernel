@@ -62,11 +62,13 @@
     </version>
     <database>
       <!-- view representing all versions -->
-      <sql>create view V_COMMONVERSION 
+      <sql>
+        create view V_COMMONVERSION 
              as select NAME, 
                        max(REVISION) as VERSION 
                   from T_CMVERSION 
-                  group by NAME</sql>
+                  group by NAME
+      </sql>
       <table-name>T_CMVERSION</table-name>
     </database>
   </definition>
