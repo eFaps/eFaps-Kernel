@@ -88,11 +88,19 @@
   * Dependencies
   ************************************************************************* -->
   <dependencies>
-    <!-- eFaps Maven PLugin -->
+
+    <!-- annotations used to identify maven plugin syntax -->
     <dependency>
       <groupId>org.efaps.maven</groupId>
-      <artifactId>maven-efaps-plugin</artifactId>
+      <artifactId>maven-java5</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <!-- maven plugin api -->
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-plugin-api</artifactId>
+      <version>${dependency.version.maven-plugin-api}</version>
     </dependency>
 
     <!-- to compile the derby start / shutdown goals -->
@@ -100,8 +108,21 @@
       <groupId>org.apache.derby</groupId>
       <artifactId>derbynet</artifactId>
       <version>${dependency.version.derby}</version>
-      <scope>compile</scope>
     </dependency>
- 
+
+    <!-- to start the ij (SQL console for Apache Derby) -->
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbytools</artifactId>
+      <version>${dependency.version.derby}</version>
+    </dependency>
+
+    <!-- to get connection to the derby data base -->
+    <dependency>
+      <groupId>org.apache.derby</groupId>
+      <artifactId>derbyclient</artifactId>
+      <version>${dependency.version.derby}</version>
+    </dependency>
+
   </dependencies>
 </project>

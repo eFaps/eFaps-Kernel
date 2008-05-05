@@ -20,47 +20,25 @@
 
 package org.efaps.maven.derby;
 
-import java.util.Properties;
-
 import org.apache.derby.drda.NetworkServerControl;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.tools.plugin.Goal;
-import org.apache.maven.tools.plugin.Parameter;
 
 /**
+ * Starts the derby database. The derby database runs without security manager.
  *
  * @author tmo
- * @version $Id:DerbyShutdownMojo.java 1522 2007-10-23 21:27:31Z tmo $
+ * @version $Id:DerbyStartMojo.java 1522 2007-10-23 21:27:31Z tmo $
  */
-@Goal(name = "derby-shutdown")
-public class DerbyShutdownMojo extends AbstractMojo {
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance variables
-
+@Goal(name = "start")
+public class StartMojo extends DerbyAbstractMojo
+{
   /**
-   * Derby specific Properties.
-   */
-  @Parameter
-  private Properties properties;
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
-
-  /**
-   *
+   * Executes the start of a derby database.
    */
   public void execute() throws MojoExecutionException  {
-    getLog().info("Shutdown Derby Database");
-    if (this.properties != null)  {
-      for (Object propName : this.properties.keySet())  {
-        String propValue = this.properties.getProperty((String) propName);
-        getLog().info("- using " + propName + " = " + propValue);
-        System.setProperty((String) propName,
-                           propValue);
-      }
-    }
-    NetworkServerControl.main(new String[]{"shutdown"});
+    getLog().info("Start Derby Database");
+    initSystemProperties();
+    NetworkServerControl.main(new String[]{"-noSecurityManager", "start"});
   }
 }
