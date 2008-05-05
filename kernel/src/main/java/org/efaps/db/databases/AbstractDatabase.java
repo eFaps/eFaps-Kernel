@@ -257,7 +257,6 @@ public abstract class AbstractDatabase {
     return new TableInformation(_con, _tableName);
   }
 
-
   /**
    * A new SQL table with column <code>ID</code> is created. If no parent
    * table is given (set to <i>null</i>), the column <code>ID</code> of the
@@ -308,7 +307,7 @@ public abstract class AbstractDatabase {
       cmd.append(" default ").append(_defaultValue);
     }
     if (_isNotNull)  {
-      cmd.append(" not null");
+//      cmd.append(" not null");
     }
 
     // log statement

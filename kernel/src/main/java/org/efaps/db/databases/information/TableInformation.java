@@ -24,6 +24,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -56,6 +57,14 @@ public class TableInformation
   final Map<String, UniqueKeyInformation> ukMap = new HashMap<String, UniqueKeyInformation>();
 
   /**
+   * Stores the map between comma separated string of column names of a unique
+   * key and the unique key itself.
+   *
+   * @see #evaluateUniqueKeys
+   */
+  final Map<String, UniqueKeyInformation> ukColMap = new HashMap<String, UniqueKeyInformation>();
+
+  /**
    * Stores the map between a name of a foreign key and the information about
    * the foreign key itself. The name of all foreign keys are in upper case.
    *
@@ -68,7 +77,9 @@ public class TableInformation
    * called be directly. Instead method
    * {@link org.efaps.db.databases.AbstractDatabase#getTableInformation}
    * should be used (because it is possible that a specific implementation of
-   * this class is needed, depending on the database vendor).
+   * this class is needed, depending on the database vendor).<br/>
+   * The mapping between the column names and the unique key is generated after
+   * fetching all unique keys by calling method {@link #evaluateUniqueKeys}.
    *
    * @param _con          SQL connection
    * @param _tableName    name of SQL table for which the information
@@ -83,6 +94,7 @@ public class TableInformation
    * @see #evaluateForeignKeys  called with upper and lowe case table name to
    *                            fetch information about foreign keys of this
    *                            SQL table
+   * @see #ukColMap             unique key map by column names of unique key
    */
   public TableInformation(final Connection _con,
                           final String _tableName)
@@ -91,8 +103,15 @@ public class TableInformation
     final DatabaseMetaData metaData = _con.getMetaData();
     evaluateColInfo(metaData, _tableName.toLowerCase());
     evaluateColInfo(metaData, _tableName.toUpperCase());
-    evaluateUniqueKeys(metaData, _tableName.toLowerCase());
-    evaluateUniqueKeys(metaData, _tableName.toUpperCase());
+
+    // evaluate all unique keys
+    evaluateUniqueKeys(metaData, _tableName.toLowerCase(), null);
+    evaluateUniqueKeys(metaData, _tableName.toUpperCase(), null);
+    // create map between column names and unique keys
+    for (final UniqueKeyInformation uk : this.ukMap.values())  {
+      this.ukColMap.put(uk.getColumnNames(), uk);
+    }
+
     evaluateForeignKeys(metaData, _tableName.toLowerCase());
     evaluateForeignKeys(metaData, _tableName.toUpperCase());
   }
@@ -113,7 +132,7 @@ public class TableInformation
     final ResultSet result = _metaData.getColumns(null, null, _tableName, "%");
     while (result.next())  {
       final String colName = result.getString("COLUMN_NAME").toUpperCase();
-      final String typeName = result.getString("TYPE_NAME");
+      final String typeName = result.getString("TYPE_NAME").toLowerCase();
       final Set<AbstractDatabase.ColumnType> colTypes = Context.getDbType().getReadColumnTypes(typeName);
       if (colTypes == null)  {
         throw new SQLException("read unknown column type '" + typeName + "'");
@@ -128,18 +147,33 @@ public class TableInformation
   }
 
   /**
-   * Fetches all unique keys for this table.
+   * Fetches all unique keys for this table. If a SQL statement is given, this
+   * SQL statement is used instead of using the JDBC meta data methods. The SQL
+   * select statement must define the two columns <code>INDEX_NAME</code> for
+   * the real name of the unique key name and <code>COLUMN_NAME</code> for the
+   * name of a column within the unique key. If more than one column is used
+   * to define the unique key, one line for each column name with same index
+   * name must be used.
    *
-   * @param _metaData   database meta data
-   * @param _tableName  name of table which must be evaluated
+   * @param _metaData       database meta data
+   * @param _tableName      name of table which must be evaluated
+   * @param _sqlStatement   sql statement which must be executed if the JDBC
+   *                        functionality does not work (or null if JDBC meta
+   *                        data is used to fetch the unique keys)
    * @throws SQLException if unique keys could not be fetched
-   * @see #ukMap
+   * @see #ukMap      unique key map by name of unique key
    */
   protected void evaluateUniqueKeys(final DatabaseMetaData _metaData,
-                                    final String _tableName)
+                                    final String _tableName,
+                                    final String _sqlStatement)
       throws SQLException
   {
-    final ResultSet result = _metaData.getIndexInfo(null, null, _tableName, true, false);
+    final Statement stmt = (_sqlStatement == null)
+                           ? null
+                           : _metaData.getConnection().createStatement();
+    final ResultSet result = (_sqlStatement == null)
+                             ? _metaData.getIndexInfo(null, null, _tableName, true, false)
+                             : stmt.executeQuery(_sqlStatement);
     while (result.next())  {
       final String ukName = result.getString("INDEX_NAME").toUpperCase();
       final String colName = result.getString("COLUMN_NAME").toUpperCase();
@@ -150,6 +184,11 @@ public class TableInformation
       } else  {
         ukInfo.appendColumnName(colName);
       }
+    }
+
+    result.close();
+    if (stmt != null)  {
+      stmt.close();
     }
   }
 
@@ -212,6 +251,25 @@ public class TableInformation
   {
     return (_ukName != null)
            ? this.ukMap.get(_ukName.toUpperCase())
+           : null;
+  }
+
+  /**
+   * Returns for given name of unique key (of the SQL table) the information
+   * about the unique key, or if the given name of unique key is not defined,
+   * a <code>null</code> is returned.<br/>
+   * The name of the given unique key is searched independently of upper and /
+   * or lower case.
+   *
+   * @param _ukColName  name of column names for which the unique key is
+   *                    searched
+   * @return unique key information
+   * @see #ukColMap
+   */
+  public UniqueKeyInformation getUKInfoByColNames(final String _ukColName)
+  {
+    return (_ukColName != null)
+           ? this.ukColMap.get(_ukColName.toUpperCase())
            : null;
   }
 

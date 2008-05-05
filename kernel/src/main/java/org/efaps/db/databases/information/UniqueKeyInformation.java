@@ -65,6 +65,16 @@ public class UniqueKeyInformation
   }
 
   /**
+   * Getter method for instance variable {@link #columnNames}.
+   *
+   * @return value of instance variable columnNames
+   * @see #columnNames
+   */
+  public String getColumnNames()  {
+    return this.columnNames.toString();
+  }
+
+  /**
    * Returns string representation of this class instance. The information
    * includes {@link #ukName} and {@link #columnNames}.
    */

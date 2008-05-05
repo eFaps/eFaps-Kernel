@@ -26,13 +26,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.efaps.db.databases.information.TableInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * The class implements Apache Derby specific methods for data base access.
+ *
  * @author tmo
  * @version $Id$
- * @todo description
  */
 public class DerbyDatabase extends AbstractDatabase  {
 
@@ -94,8 +96,8 @@ public class DerbyDatabase extends AbstractDatabase  {
     addMapping(ColumnType.STRING_SHORT, "char",       "char");
     addMapping(ColumnType.STRING_LONG,  "varchar",    "varchar");
     addMapping(ColumnType.DATETIME,     "timestamp",  "timestamp");
-    addMapping(ColumnType.BLOB,         "blob(2G)",   "blob(2G)");
-    addMapping(ColumnType.CLOB,         "clob(2G)",   "clob(2G)");
+    addMapping(ColumnType.BLOB,         "blob(2G)",   "blob");
+    addMapping(ColumnType.CLOB,         "clob(2G)",   "clob");
     addMapping(ColumnType.BOOLEAN,      "smallint",   "smallint");
   }
 
@@ -276,36 +278,23 @@ public class DerbyDatabase extends AbstractDatabase  {
   }
 
   /**
-   * Adds a new unique key to given table name, but only if for the column a
-   * <code>NOT NULL</code> is defined.
+   * Evaluates for given table name all information about the table and returns
+   * them as instance of {@link TableInformation}.<br/>
+   * This method overwrites the original method because the standard JDBC
+   * methods do not work for the Derby database to get unique keys.
    *
-   * @param _con            SQL connection
-   * @param _tableName      name of table for which the unique key must be
-   *                        created
-   * @param _uniqueKeyName  name of unique key
-   * @param _columns        comma separated list of column names for which the
-   *                        unique key is created
-   * @throws SQLException if the unique key could not be created
+   * @param _con        SQL connection
+   * @param _tableName  name of SQL table for which the information is fetched
+   * @return instance of {@link TableInformation} with table information
+   * @throws SQLException if information about the table could not be fetched
+   * @see TableInformation
    */
   @Override
-  public void addUniqueKey(final Connection _con,
-                           final String _tableName,
-                           final String _uniqueKeyName,
-                           final String _columns)
-      throws SQLException  {
-
-    if (_columns.indexOf(',') < 0)  {
-      final ResultSet rs = _con.getMetaData().getColumns(null, null, _tableName, _columns);
-      rs.next();
-      // unique key is only allowed if 'not null' for the column is defined!
-      if (rs.getInt("NULLABLE") == DatabaseMetaData.columnNoNulls)  {
-        super.addUniqueKey(_con, _tableName, _uniqueKeyName, _columns);
-      }
-// TODO: else??? what to do instead of unique key?
-      rs.close();
-    } else  {
-      super.addUniqueKey(_con, _tableName, _uniqueKeyName, _columns);
-    }
+  public TableInformation getTableInformation(final Connection _con,
+                                              final String _tableName)
+      throws SQLException
+  {
+    return new DerbyTableInformation(_con, _tableName);
   }
 
   /**
@@ -322,5 +311,58 @@ public class DerbyDatabase extends AbstractDatabase  {
   @Override
   public boolean supportsBinaryInputStream()  {
     return false;
+  }
+
+  /**
+   * The class overwrites the original {@link TableInformation} class because
+   * the JDBC meta data methods could not be used to get information about
+   * unique key.
+   */
+  private class DerbyTableInformation extends TableInformation
+  {
+    /**
+     * Only defined to call the constructor of the super class.
+     *
+     * @param _con        SQL connection
+     * @param _tableName  name of table for which the table information must be
+     *                    fetched
+     * @throws SQLException if the information about the table could not be
+     *                      fetched
+     */
+    public DerbyTableInformation(final Connection _con,
+                                 final String _tableName)
+        throws SQLException
+    {
+      super(_con, _tableName);
+    }
+
+    /**
+     * Fetches all unique keys for this table. Instead of using the JDBC
+     * meta data functionality, a SQL statement on system tables are used,
+     * because the JDBC meta data functionality returns for unique keys
+     * internal names and not the real names. Also if a unique key includes
+     * also columns with null values, this unique keys are not included.
+     *
+     * @param _metaData   database meta data
+     * @param _tableName  name of table which must be evaluated
+     * @throws SQLException if unique keys could not be fetched
+     */
+    @Override
+    protected void evaluateUniqueKeys(final DatabaseMetaData _metaData,
+                                      final String _tableName,
+                                      final String _sqlStatement)
+        throws SQLException
+    {
+      final String sqlStmt = new StringBuilder()
+          .append("select c.CONSTRAINTNAME INDEX_NAME, g.DESCRIPTOR COLUMN_NAME")
+          .append(" from SYS.SYSTABLES t, SYS.SYSCONSTRAINTS c, SYS.SYSKEYS k, SYS.SYSCONGLOMERATES g ")
+          .append(" where t.tablename='").append(_tableName).append("'")
+              .append(" AND t.TABLEID=c.TABLEID")
+              .append(" AND c.TYPE='U'")
+              .append(" AND c.CONSTRAINTID = k.CONSTRAINTID")
+              .append(" AND k.CONGLOMERATEID = g.CONGLOMERATEID")
+          .toString();
+      super.evaluateUniqueKeys(_metaData, _tableName, sqlStmt);
+    }
   }
 }
