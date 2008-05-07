@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
 
-import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
@@ -59,8 +58,9 @@ public class SystemAttribute implements CacheObjectInterface {
           return CacheReloadInterface.Priority.SystemAttribute.number;
         };
 
-        public void reloadCache() throws CacheReloadException {
-          Type.initialise();
+        public void reloadCache() throws CacheReloadException
+        {
+          SystemAttribute.initialise();
         };
       });
 
