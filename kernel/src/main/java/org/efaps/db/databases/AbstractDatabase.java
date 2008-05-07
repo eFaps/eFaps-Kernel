@@ -307,7 +307,7 @@ public abstract class AbstractDatabase {
       cmd.append(" default ").append(_defaultValue);
     }
     if (_isNotNull)  {
-//      cmd.append(" not null");
+      cmd.append(" not null");
     }
 
     // log statement
