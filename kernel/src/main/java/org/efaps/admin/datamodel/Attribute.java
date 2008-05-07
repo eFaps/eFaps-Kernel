@@ -30,24 +30,23 @@ import java.util.StringTokenizer;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the class for the type description. The type description holds
  * information about creation of a new instance of a type with default values.
- * 
+ *
  * @author tmo
  * @version $Id$
  */
-public class Attribute extends DataModelObject {
+public class Attribute extends AbstractDataModelObject {
 
   /**
    * Logging instance used in this class.
@@ -56,7 +55,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * Stores all instances of attribute.
-   * 
+   *
    * @see #get
    */
   private static AttributeCache attributeCache = new AttributeCache();
@@ -71,7 +70,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the instance variable for the table, where attribute is stored.
-   * 
+   *
    * @see #getTable
    * @see #setTable
    */
@@ -79,7 +78,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * Instance variable for the link to onther type.
-   * 
+   *
    * @see #getLink
    * @see #setLink
    */
@@ -87,7 +86,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * Instance variable for the parent type.
-   * 
+   *
    * @see #getParent
    * @see #setParent
    */
@@ -95,15 +94,15 @@ public class Attribute extends DataModelObject {
 
   /**
    * This instance variable stores the sql column name.
-   * 
+   *
    * @see #getSqlColName
    * @see #setSqlColName
    */
-  private ArrayList<String> sqlColNames = new ArrayList<String>();
+  private final ArrayList<String> sqlColNames = new ArrayList<String>();
 
   /**
    * The instance variable stores the attribute type for this attribute.
-   * 
+   *
    * @see #getAttributeType
    * @see #setAttributeType
    */
@@ -112,7 +111,7 @@ public class Attribute extends DataModelObject {
   /**
    * The collection intance variables holds all unique keys, for which this
    * attribute belongs to.
-   * 
+   *
    * @see #getUniqueKeys
    * @see #setUniqueKeys
    */
@@ -120,7 +119,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * The String holds the Defaultvalue for this Attribute
-   * 
+   *
    * @see #getDefaultValue()
    * @see #setDefaultValue(String)
    */
@@ -130,7 +129,7 @@ public class Attribute extends DataModelObject {
    * This is the constructor for class {@link Attribute}. Every instance of
    * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
    * identifier (parameter <i>_id</i>).
-   * 
+   *
    * @param _id
    *          id of the attribute
    * @param _name
@@ -151,7 +150,7 @@ public class Attribute extends DataModelObject {
    * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
    * identifier (parameter <i>_id</i>).<br/> This constructor is used for the
    * copy method (clone of an attribute instance).
-   * 
+   *
    * @param _id
    *          id of the attribute
    * @param _name
@@ -167,7 +166,7 @@ public class Attribute extends DataModelObject {
   /**
    * This method returns <i>true</i> if a link exists. This is made with a test
    * of the return value of method {@link #getLink} on null.
-   * 
+   *
    * @return <i>true</i> if this attribute has a link, otherwise <i>false</i>
    */
   public boolean hasLink() {
@@ -178,11 +177,11 @@ public class Attribute extends DataModelObject {
     return ret;
   }
 
-  
+
   /**
    * A unique key can added to this attribute instance. If no unique key is
    * added before, the instance variable {@link #uniqueKeys} is initialised.
-   * 
+   *
    * @param _uniqueKey
    *          unique key to add to this attribute
    * @see #uniqueKeys
@@ -196,7 +195,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * Creates a new instance of this attribute from type {@link #attributeType}.
-   * 
+   *
    * @return new created instance of this attribute
    */
   public AttributeTypeInterface newInstance() throws EFapsException {
@@ -207,7 +206,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * The method makes a clone of the current attribute instance.
-   * 
+   *
    * @return clone of current attribute instance
    */
   public Attribute copy() {
@@ -224,7 +223,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the setter method for instance variable {@table #table}.
-   * 
+   *
    * @param _table
    *          new instance of class {@table Table} to set for table
    * @see #table
@@ -236,7 +235,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@table #table}.
-   * 
+   *
    * @return value of instance variable {@table #table}
    * @see #table
    * @see #setTable
@@ -247,7 +246,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the setter method for instance variable {@link #link}.
-   * 
+   *
    * @param _link
    *          new instance of class {@link Type} to set for link
    * @see #link
@@ -259,7 +258,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #link}.
-   * 
+   *
    * @return value of instance variable {@link #link}
    * @see #link
    * @see #setLink
@@ -270,7 +269,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the setter method for instance variable {@link #parent}.
-   * 
+   *
    * @param _parent
    *          new instance of class {@link Type} to set for parent
    * @see #parent
@@ -282,7 +281,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #parent}.
-   * 
+   *
    * @return value of instance variable {@link #parent}
    * @see #parent
    * @see #setParent
@@ -293,7 +292,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #sqlColNames}.
-   * 
+   *
    * @return value of instance variable {@link #sqlColNames}
    * @see #sqlColNames
    */
@@ -303,7 +302,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the setter method for instance variable {@link #attributeType}.
-   * 
+   *
    * @param _attributeType
    *          new value for instance variable {@link #attributeType}
    * @see #attributeType
@@ -315,7 +314,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #attributeType}.
-   * 
+   *
    * @return value of instance variable {@link #attributeType}
    * @see #attributeType
    * @see #setAttributeType
@@ -326,7 +325,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #uniqueKeys}.
-   * 
+   *
    * @return value of instance variable {@link #uniqueKeys}
    * @see #uniqueKeys
    */
@@ -336,7 +335,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the setter method for instance variable {@link #uniqueKeys}.
-   * 
+   *
    * @param _uniqueKeys
    *          new value for instance variable {@link #uniqueKeys}
    * @see #uniqueKeys
@@ -348,7 +347,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the getter method for instance variable {@link #defaultValue}.
-   * 
+   *
    * @return
    */
   public String getDefaultValue() {
@@ -357,7 +356,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * This is the setter method for instance variable {@link #defaultValue}.
-   * 
+   *
    * @param _defaultvalue
    */
   private void setDefaultValue(String _defaultvalue) {
@@ -368,11 +367,8 @@ public class Attribute extends DataModelObject {
 
   /**
    * Initialise the cache of types.
-   * 
-   * @param _context
-   *          eFaps context for this request
    */
-  public static void initialise() throws CacheReloadException {
+  protected static void initialise() throws CacheReloadException {
     ConnectionResource con = null;
     try {
       con = Context.getThreadContext().getConnectionResource();
@@ -462,7 +458,7 @@ public class Attribute extends DataModelObject {
   /**
    * Returns for given parameter <i>_id</i> the instance of class
    * {@link Attribute}.
-   * 
+   *
    * @param _id
    *          id to search in the cache
    * @return instance of class {@link Attribute}
@@ -475,7 +471,7 @@ public class Attribute extends DataModelObject {
   /**
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Attribute}.
-   * 
+   *
    * @param _name
    *          name to search in the cache
    * @return instance of class {@link Attribute}
@@ -487,7 +483,7 @@ public class Attribute extends DataModelObject {
 
   /**
    * Static getter method for the attribute hashtable {@link #cache}.
-   * 
+   *
    * @return value of static variable {@link #cache}
    */
   static AttributeCache getCache() {
@@ -498,9 +494,10 @@ public class Attribute extends DataModelObject {
    * The instance method returns the string representation of this attribute.
    * The string representation of this attribute is the name of the type plus
    * slash plus name of this attribute.
-   * 
+   *
    * @see #name
    */
+  @Override
   public String toString() {
     return new ToStringBuilder(this).append("attribute name",
         getParent().getName() + "/" + getName()).appendSuper(super.toString())
@@ -567,12 +564,13 @@ public class Attribute extends DataModelObject {
      * Add a new object implements the {@link CacheInterface} to the hashtable.
      * This is used from method {@link #get(long)} and {@link #get(String) to
      * return the cache object for an id or a string out of the cache.
-     * 
+     *
      * @param _cacheObj
      *          cache object to add
      * @see #get
      */
     // protected void add(CacheInterface _cacheObj) {
+    @Override
     public void add(Attribute _attr) {
       getCache4Id().put(new Long(_attr.getId()), _attr);
       getCache4Name().put(_attr.getParent().getName() + "/" + _attr.getName(),

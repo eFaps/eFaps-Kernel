@@ -25,9 +25,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
@@ -35,13 +32,15 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class AttributeType extends DataModelObject  {
+public class AttributeType extends AbstractDataModelObject  {
 
   /**
    * Logging instance used in this class.
@@ -63,6 +62,21 @@ public class AttributeType extends DataModelObject  {
                                               "from V_DMATTRIBUTETYPE";
 
   /**
+   * Stores all instances of class {@link AttributeType}.
+   *
+   * @see #getCache
+   */
+  static private Cache<AttributeType> cache = new Cache<AttributeType>(
+    new CacheReloadInterface()  {
+        public int priority()  {
+          return CacheReloadInterface.Priority.AttributeType.number;
+        };
+        public void reloadCache() throws CacheReloadException  {
+        };
+    }
+  );
+
+  /**
    * This is the constructor for class {@link Attribute}. Every instance of
    * class {@link Attribute} must have a name (parameter <i>_name</i>) and
    * an identifier (parameter <i>_id</i>).
@@ -71,7 +85,7 @@ public class AttributeType extends DataModelObject  {
    * @param _uuid       universal unique identifier
    * @param _name       name of the instance
    */
-  protected AttributeType(final long _id, 
+  protected AttributeType(final long _id,
                           final String _uuid,
                           final String _name)  {
     super(_id, _uuid, _name);
@@ -146,6 +160,7 @@ return getName();
   /**
    *
    */
+  @Override
   public String toString()  {
     return new ToStringBuilder(this).
         appendSuper(super.toString()).
@@ -285,10 +300,9 @@ return getName();
 
   /**
    * Initialise the cache of attribute types.
-   *
-   * @param _context  eFaps context for this request
    */
-  static public void initialise() throws CacheReloadException  {
+  protected static void initialise() throws CacheReloadException
+  {
     ConnectionResource con = null;
     try  {
       con = Context.getThreadContext().getConnectionResource();
@@ -353,7 +367,7 @@ return getName();
    * @see #getCache
    * @see #read
    */
-  static public AttributeType get(long _id)  {
+  static public AttributeType get(final long _id)  {
     return getCache().get(_id);
   }
 
@@ -367,7 +381,7 @@ return getName();
    * @see #getCache
    * @see #read
    */
-  static public AttributeType get(String _name)  {
+  static public AttributeType get(final String _name)  {
     return getCache().get(_name);
   }
 
@@ -379,19 +393,4 @@ return getName();
   static Cache<AttributeType> getCache()  {
     return cache;
   }
-
-  /**
-   * Stores all instances of class {@link AttributeType}.
-   *
-   * @see #getCache
-   */
-  static private Cache<AttributeType> cache = new Cache<AttributeType>(
-    new CacheReloadInterface()  {
-        public int priority()  {
-          return CacheReloadInterface.Priority.AttributeType.number;
-        };
-        public void reloadCache() throws CacheReloadException  {
-        };
-    }
-  );
 }

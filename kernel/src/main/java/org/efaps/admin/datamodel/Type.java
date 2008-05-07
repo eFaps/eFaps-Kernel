@@ -62,7 +62,7 @@ import org.efaps.util.cache.CacheReloadInterface;
  * @author tmo
  * @version $Id$
  */
-public class Type extends DataModelObject {
+public class Type extends AbstractDataModelObject {
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables
@@ -769,7 +769,8 @@ public class Type extends DataModelObject {
   /**
    * Initialise the cache of types.
    */
-  public static void initialise() throws CacheReloadException {
+  protected static void initialise() throws CacheReloadException
+  {
     ConnectionResource con = null;
     try {
       // to store parent informations

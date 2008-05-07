@@ -45,7 +45,7 @@ import org.efaps.util.cache.CacheReloadException;
  * @author tmo
  * @version $Id$
  */
-public class SQLTable extends DataModelObject {
+public class SQLTable extends AbstractDataModelObject {
 
   /**
    * This is the sql select statement to select all SQL tables from the
@@ -277,11 +277,8 @@ public class SQLTable extends DataModelObject {
 
   /**
    * Initialise the cache of types.
-   *
-   * @param _context
-   *          eFaps context for this request
    */
-  public static void initialise() throws CacheReloadException
+  protected static void initialise() throws CacheReloadException
   {
     ConnectionResource con = null;
     try {

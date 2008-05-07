@@ -604,19 +604,7 @@ function _eFapsInitRunLevel()  {
   _insert(stmt, null, null,
           "T_RUNLEVELDEF",
           "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",6, 'org.efaps.admin.datamodel.AttributeType', 'initialise'");
-  _insert(stmt, null, null,
-          "T_RUNLEVELDEF",
-          "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",7, 'org.efaps.admin.datamodel.SQLTable', 'initialise'");
-  _insert(stmt, null, null,
-          "T_RUNLEVELDEF",
-          "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",8, 'org.efaps.admin.datamodel.Type', 'initialise'");
-  _insert(stmt, null, null,
-          "T_RUNLEVELDEF",
-          "RUNLEVELID,PRIORITY,CLASS,METHOD",
-          "" + id + ",9, 'org.efaps.admin.datamodel.Attribute', 'initialise'");
+          "" + id + ",6, 'org.efaps.admin.datamodel.AbstractDataModelObject', 'initialiseAll'");
 
   conRsrc.commit();
 }
