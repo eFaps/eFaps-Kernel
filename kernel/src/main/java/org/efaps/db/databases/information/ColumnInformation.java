@@ -35,6 +35,8 @@ public class ColumnInformation
 {
   /**
    * Name of column in upper case.
+   *
+   * @see #getName
    */
   private final String name;
 
@@ -45,11 +47,15 @@ public class ColumnInformation
 
   /**
    * Size of the column (for string).
+   *
+   * @see #size
    */
   private final int size;
 
   /**
    * Could the column have a null value?
+   *
+   * @see #isNullable
    */
   private final boolean isNullable;
 
@@ -69,6 +75,39 @@ public class ColumnInformation
     this.types = _types;
     this.size = _size;
     this.isNullable = _isNullable;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #name}.
+   *
+   * @return value of instance variable {@link #name}
+   * @see #name
+   */
+  public String getName()
+  {
+    return this.name;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #size}.
+   *
+   * @return value of instance variable {@link #size}
+   * @see #size
+   */
+  public int getSize()
+  {
+    return this.size;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #isNullable}.
+   *
+   * @return value of instance variable {@link #isNullable}
+   * @see #isNullable
+   */
+  public boolean isNullable()
+  {
+    return this.isNullable;
   }
 
   /**
