@@ -152,7 +152,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * @see #setName
    * @see #getName
    */
-  private String name = null;
+  private final String name;
 
   /**
    * This is the instance variable for the properties.
@@ -179,23 +179,24 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * Constructor to set instance variables {@link #id}, {@link #uuid} and
    * {@link #name} of this administrational object.
    *
-   * @param _id
-   *                id to set
-   * @param _uuid
-   *                universal unique identifier
-   * @param _name
-   *                name to set
+   * @param _id     id to set
+   * @param _uuid   universal unique identifier
+   * @param _name   name to set
    * @see #id
    * @see #uuid
    * @see #name
    */
-  protected AbstractAdminObject(final long _id, final String _uuid,
-                                final String _name) {
+  protected AbstractAdminObject(final long _id,
+                                final String _uuid,
+                                final String _name)
+  {
     this.id = _id;
     this.uuid = (_uuid == null)
                 ? null
                 : UUID.fromString(_uuid.trim());
-    setName(_name);
+    this.name = (_name == null)
+                ? null
+                : _name.trim();
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -444,18 +445,6 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    */
   public UUID getUUID() {
     return this.uuid;
-  }
-
-  /**
-   * This is the setter method for instance variable {@link #name}.
-   *
-   * @param _name
-   *                new value for instance variable {@link #name}
-   * @see #name
-   * @see #getName
-   */
-  protected void setName(final String _name) {
-    this.name = (_name == null) ? null : _name.trim();
   }
 
   /**
