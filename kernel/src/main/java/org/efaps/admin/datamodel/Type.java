@@ -247,11 +247,10 @@ public class Type extends AbstractDataModelObject {
    * @param _name
    *                name of the type name of the instance
    */
-  private Type(final long _id, final String _uuid, final String _name) {
+  private Type(final long _id, final String _uuid, final String _name)
+  {
     super(_id, _uuid, _name);
-    Attribute typeAttr = new Attribute(0, "Type", "");
-    typeAttr.setAttributeType(AttributeType.get("Type"));
-    addAttribute(typeAttr);
+    addAttribute(new Attribute(0, "Type", "", (SQLTable) null, AttributeType.get("Type"), null));
   }
 
   // ///////////////////////////////////////////////////////////////////////////

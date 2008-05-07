@@ -63,18 +63,23 @@ public class Attribute extends AbstractDataModelObject {
   /**
    * This is the sql select statement to select all types from the database.
    */
-  private final static String SQL_SELECT =
-      "select " + "ID," + "NAME," + "DMTABLE," + "DMTYPE," + "DMATTRIBUTETYPE,"
-          + "DMTYPELINK," + "SQLCOLUMN, " + "DEFAULTVAL "
-          + "from V_ADMINATTRIBUTE";
+  private final static String SQL_SELECT
+      = "select ID,"
+             + "NAME,"
+             + "DMTABLE,"
+             + "DMTYPE,"
+             + "DMATTRIBUTETYPE,"
+             + "DMTYPELINK,"
+             + "SQLCOLUMN,"
+             + "DEFAULTVAL "
+       + "from V_ADMINATTRIBUTE";
 
   /**
    * This is the instance variable for the table, where attribute is stored.
    *
    * @see #getTable
-   * @see #setTable
    */
-  private SQLTable table = null;
+  private final SQLTable sqlTable;
 
   /**
    * Instance variable for the link to onther type.
@@ -104,9 +109,8 @@ public class Attribute extends AbstractDataModelObject {
    * The instance variable stores the attribute type for this attribute.
    *
    * @see #getAttributeType
-   * @see #setAttributeType
    */
-  private AttributeType attributeType = null;
+  private final AttributeType attributeType;
 
   /**
    * The collection intance variables holds all unique keys, for which this
@@ -118,31 +122,51 @@ public class Attribute extends AbstractDataModelObject {
   private Collection<UniqueKey> uniqueKeys = null;
 
   /**
-   * The String holds the Defaultvalue for this Attribute
+   * The String holds the default value as string for this Attribute
    *
-   * @see #getDefaultValue()
-   * @see #setDefaultValue(String)
+   * @see #getDefaultValue
    */
-  private String defaultValue = null;
+  private final String defaultValue;
+
+  /**
+   * Is the attribute required? This means at minimum one part of the
+   * attribute is not allowed to be a null value.
+   *
+   * @see #isRequired
+   */
+  private final boolean required;
 
   /**
    * This is the constructor for class {@link Attribute}. Every instance of
    * class {@link Attribute} must have a name (parameter <i>_name</i>) and an
    * identifier (parameter <i>_id</i>).
    *
-   * @param _id
-   *          id of the attribute
-   * @param _name
-   *          name of the instance
-   * @param _sqlColNames
-   *          name of the sql columns
+   * @param _id           id of the attribute
+   * @param _name         name of the instance
+   * @param _sqlColNames  name of the SQL columns
    */
-  protected Attribute(long _id, String _name, String _sqlColNames) {
+  protected Attribute(final long _id,
+                      final String _name,
+                      final String _sqlColNames,
+                      final SQLTable _sqlTable,
+                      final AttributeType _attributeType,
+                      final String _defaultValue)
+  {
     super(_id, null, _name);
-    StringTokenizer tokens = new StringTokenizer(_sqlColNames, ",");
+    this.sqlTable = _sqlTable;
+    this.attributeType = _attributeType;
+    this.defaultValue = (_defaultValue != null)
+                        ? _defaultValue.trim()
+                        : null;
+    // add SQL columns and evaluate if attribute is required
+    boolean required = false;
+    final StringTokenizer tokens = new StringTokenizer(_sqlColNames.trim(), ",");
     while (tokens.hasMoreTokens()) {
-      getSqlColNames().add(tokens.nextToken());
+      final String colName = tokens.nextToken().trim();
+      getSqlColNames().add(colName);
+      required |= !this.sqlTable.getTableInformation().getColInfo(colName).isNullable();
     }
+    this.required = required;
   }
 
   /**
@@ -151,14 +175,24 @@ public class Attribute extends AbstractDataModelObject {
    * identifier (parameter <i>_id</i>).<br/> This constructor is used for the
    * copy method (clone of an attribute instance).
    *
-   * @param _id
-   *          id of the attribute
-   * @param _name
-   *          name of the instance
+   * @param _id     id of the attribute
+   * @param _name   name of the instance
    * @see #copy
    */
-  protected Attribute(long _id, String _name) {
+  private Attribute(final long _id,
+                    final String _name,
+                    final SQLTable _sqlTable,
+                    final AttributeType _attributeType,
+                    final String _defaultValue,
+                    final boolean _required)
+  {
     super(_id, null, _name);
+    this.sqlTable = _sqlTable;
+    this.attributeType = _attributeType;
+    this.defaultValue = (_defaultValue != null)
+                        ? _defaultValue.trim()
+                        : null;
+    this.required = _required;
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -210,38 +244,27 @@ public class Attribute extends AbstractDataModelObject {
    * @return clone of current attribute instance
    */
   public Attribute copy() {
-    Attribute ret = new Attribute(getId(), getName());
+    Attribute ret = new Attribute(getId(),
+                                  getName(),
+                                  this.sqlTable,
+                                  this.attributeType,
+                                  this.defaultValue,
+                                  this.required);
     ret.getSqlColNames().addAll(getSqlColNames());
-    ret.setTable(getTable());
     ret.setLink(getLink());
-    ret.setAttributeType(getAttributeType());
     ret.setUniqueKeys(getUniqueKeys());
     ret.getProperties().putAll(getProperties());
-    ret.setDefaultValue(this.getDefaultValue());
     return ret;
   }
 
   /**
-   * This is the setter method for instance variable {@table #table}.
+   * This is the getter method for instance variable {@link #sqlTable}.
    *
-   * @param _table
-   *          new instance of class {@table Table} to set for table
-   * @see #table
-   * @see #getTable
-   */
-  private void setTable(SQLTable _table) {
-    this.table = _table;
-  }
-
-  /**
-   * This is the getter method for instance variable {@table #table}.
-   *
-   * @return value of instance variable {@table #table}
-   * @see #table
-   * @see #setTable
+   * @return value of instance variable {@link #sqlTable}
+   * @see #sqlTable
    */
   public SQLTable getTable() {
-    return this.table;
+    return this.sqlTable;
   }
 
   /**
@@ -301,23 +324,10 @@ public class Attribute extends AbstractDataModelObject {
   }
 
   /**
-   * This is the setter method for instance variable {@link #attributeType}.
-   *
-   * @param _attributeType
-   *          new value for instance variable {@link #attributeType}
-   * @see #attributeType
-   * @see #getAttributeType
-   */
-  protected void setAttributeType(AttributeType _attributeType) {
-    this.attributeType = _attributeType;
-  }
-
-  /**
    * This is the getter method for instance variable {@link #attributeType}.
    *
    * @return value of instance variable {@link #attributeType}
    * @see #attributeType
-   * @see #setAttributeType
    */
   public AttributeType getAttributeType() {
     return this.attributeType;
@@ -348,22 +358,26 @@ public class Attribute extends AbstractDataModelObject {
   /**
    * This is the getter method for instance variable {@link #defaultValue}.
    *
-   * @return
+   * @return value of instance variable {@link #defaultValue}
+   * @see #defaultValue
    */
   public String getDefaultValue() {
     return this.defaultValue;
   }
 
+
   /**
-   * This is the setter method for instance variable {@link #defaultValue}.
+   * This is the getter method for instance variable {@link #required}.
    *
-   * @param _defaultvalue
+   * @return value of instance variable {@link #required}
+   * @see #required
    */
-  private void setDefaultValue(String _defaultvalue) {
-    this.defaultValue = _defaultvalue;
+  public boolean isRequired()
+  {
+    return this.required;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * Initialise the cache of types.
@@ -377,40 +391,38 @@ public class Attribute extends AbstractDataModelObject {
       try {
         stmt = con.getConnection().createStatement();
 
-        ResultSet rs = stmt.executeQuery(SQL_SELECT);
+        final ResultSet rs = stmt.executeQuery(SQL_SELECT);
         while (rs.next()) {
-          long id = rs.getLong(1);
-          String name = rs.getString(2).trim();
-          long tableId = rs.getLong(3);
-          long typeId = rs.getLong(4);
-          long attrType = rs.getLong(5);
-          long typeLinkId = rs.getLong(6);
-          String sqlCol = rs.getString(7).trim();
-          String defaultval = rs.getString(8);
+          final long id = rs.getLong(1);
+          final String name = rs.getString(2);
+          final long tableId = rs.getLong(3);
+          final long typeId = rs.getLong(4);
+          final long attrTypeId = rs.getLong(5);
+          final long typeLinkId = rs.getLong(6);
+          final String sqlCol = rs.getString(7);
+          final String defaultval = rs.getString(8);
           Type type = Type.get(typeId);
 
           log.debug("read attribute '" + type.getName() + "/" + name + "' "
               + "(id = " + id + ")");
 
-          Attribute attr = new Attribute(id, name, sqlCol);
-          attr.setTable(SQLTable.get(tableId));
-          attr.setAttributeType(AttributeType.get(attrType));
+          Attribute attr = new Attribute(id, name, sqlCol,
+                                         SQLTable.get(tableId),
+                                         AttributeType.get(attrTypeId),
+                                         defaultval);
           attr.setParent(type);
-          if (defaultval != null) {
-            attr.setDefaultValue(defaultval.trim());
-          }
           UUID uuid = attr.getAttributeType().getUUID();
           if (uuid.equals(EFapsClassName.ATTRTYPE_LINK.uuid)
               || uuid.equals(EFapsClassName.ATTRTYPE_LINK_WITH_RANGES.uuid)) {
-            Type linkType = Type.get(typeLinkId);
+            final Type linkType = Type.get(typeLinkId);
             attr.setLink(linkType);
             linkType.addLink(attr);
           } else if (uuid.equals(EFapsClassName.ATTRTYPE_CREATOR_LINK.uuid)) {
-            Type linkType = Type.get("Admin_User_Person");
+            final Type linkType = Type.get("Admin_User_Person");
             attr.setLink(linkType);
             linkType.addLink(attr);
           } else if (uuid.equals(EFapsClassName.ATTRTYPE_MODIFIER_LINK.uuid)) {
-            Type linkType = Type.get("Admin_User_Person");
+            final Type linkType = Type.get("Admin_User_Person");
             attr.setLink(linkType);
             linkType.addLink(attr);
           }
@@ -440,16 +452,16 @@ public class Attribute extends AbstractDataModelObject {
       }
       con.commit();
     } catch (SQLException e) {
-      throw new CacheReloadException("could not read roles", e);
+      throw new CacheReloadException("could not read attributes", e);
     } catch (EFapsException e) {
-      throw new CacheReloadException("could not read roles", e);
+      throw new CacheReloadException("could not read attributes", e);
     }
     finally {
       if ((con != null) && con.isOpened()) {
         try {
           con.abort();
         } catch (EFapsException e) {
-          throw new CacheReloadException("could not read roles", e);
+          throw new CacheReloadException("could not read attributes", e);
         }
       }
     }
@@ -499,9 +511,12 @@ public class Attribute extends AbstractDataModelObject {
    */
   @Override
   public String toString() {
-    return new ToStringBuilder(this).append("attribute name",
-        getParent().getName() + "/" + getName()).appendSuper(super.toString())
-        .append("attributetype", getAttributeType().toString()).toString();
+    return new ToStringBuilder(this)
+            .appendSuper(super.toString())
+            .append("attribute name", getParent().getName() + "/" + getName())
+            .append("attributetype", getAttributeType().toString())
+            .append("required", this.required)
+            .toString();
   }
 
   static protected class AttributeCache extends Cache<Attribute> {
