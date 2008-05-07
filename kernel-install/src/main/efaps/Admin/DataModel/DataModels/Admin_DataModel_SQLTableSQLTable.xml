@@ -69,6 +69,7 @@
         create view V_ADMINSQLTABLE as
           select
                 T_CMABSTRACT.ID,
+                T_CMABSTRACT.UUID,
                 T_CMABSTRACT.NAME,
                 T_DMTABLE.SQLTABLE,
                 T_DMTABLE.SQLCOLUMNID,
