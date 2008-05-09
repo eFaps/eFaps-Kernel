@@ -301,7 +301,8 @@ public class DerbyDatabase extends AbstractDatabase  {
    * @return always <i>true</i> because supported by Derby database
    */
   @Override
-  public boolean supportsGetGeneratedKeys()  {
+  public boolean supportsGetGeneratedKeys()
+  {
     return true;
   }
 
@@ -309,7 +310,18 @@ public class DerbyDatabase extends AbstractDatabase  {
    * @return always <i>true</i> because supported by PostgreSQL database
    */
   @Override
-  public boolean supportsBinaryInputStream()  {
+  public boolean supportsBinaryInputStream()
+  {
+    return false;
+  }
+
+  /**
+   * @return always <i>false</i> because Apache Derby has some problems to
+   *         handle to big transactions
+   */
+  @Override
+  public boolean supportsBigTransactions()
+  {
     return false;
   }
 

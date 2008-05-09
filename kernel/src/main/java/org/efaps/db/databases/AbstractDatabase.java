@@ -326,7 +326,6 @@ public abstract class AbstractDatabase {
                              final boolean _isNotNull)
       throws SQLException
   {
-
     final StringBuilder cmd = new StringBuilder();
     cmd.append("alter table ").append(_tableName).append(" ")
        .append("add ").append(_columnName).append(" ")
@@ -372,7 +371,6 @@ public abstract class AbstractDatabase {
                            final String _columns)
       throws SQLException
   {
-
     final StringBuilder cmd = new StringBuilder();
     cmd.append("alter table ").append(_tableName).append(" ")
        .append("add constraint ").append(_uniqueKeyName).append(" ")
@@ -413,7 +411,6 @@ public abstract class AbstractDatabase {
                             final boolean _cascade)
       throws SQLException
   {
-
     final StringBuilder cmd = new StringBuilder();
     cmd.append("alter table ").append(_tableName).append(" ")
        .append("add constraint ").append(_foreignKeyName).append(" ")
@@ -525,7 +522,8 @@ public abstract class AbstractDatabase {
    * @return always <i>false</i> because not implemented in this class
    * @see #supportsGetGeneratedKeys
    */
-  public boolean supportsMultiGeneratedKeys() {
+  public boolean supportsMultiGeneratedKeys()
+  {
     return false;
   }
 
@@ -551,6 +549,18 @@ public abstract class AbstractDatabase {
   public boolean supportsBinaryInputStream()
   {
     return false;
+  }
+
+  /**
+   * Returns <i>true</i> if a database could handle big transactions used
+   * within the eFaps updates.
+   *
+   * @return always <i>true</i> because normally a database should implement
+   *          big transactions
+   */
+  public boolean supportsBigTransactions()
+  {
+    return true;
   }
 
   /////////////////////////////////////////////////////////////////////////////
