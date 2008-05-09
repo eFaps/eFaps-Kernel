@@ -59,10 +59,11 @@ public class IJMojo extends DerbyAbstractMojo
 
     final Map<String,String> map = convertToMap(this.connection);
 
-    System.setProperty("ij.driver",           map.get("driverClassName"));
-    System.setProperty("ij.connection.eFaps", map.get("url"));
-    System.setProperty("ij.user",             map.get("username"));
-    System.setProperty("ij.password",         map.get("password"));
+    System.setProperty("ij.driver",                   map.get("driverClassName"));
+    System.setProperty("ij.connection.eFaps",         map.get("url"));
+    System.setProperty("ij.user",                     map.get("username"));
+    System.setProperty("ij.password",                 map.get("password"));
+    System.setProperty("ij.showNoConnectionsAtStart", "true");
 
     try {
       org.apache.derby.tools.ij.main(new String[]{});
