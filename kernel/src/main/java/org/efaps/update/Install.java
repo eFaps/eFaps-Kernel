@@ -33,6 +33,8 @@ import java.util.Map.Entry;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.db.Context;
+import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.importer.DataImport;
 import org.efaps.update.access.AccessSetUpdate;
 import org.efaps.update.access.AccessTypeUpdate;
@@ -164,17 +166,29 @@ public class Install {
 
   /**
    * Installs the XML update scripts of the schema definitions for this version
-   * defined in {@link #number}.
+   * defined in {@link #number}. The install itself is done for given version
+   * normally in one big transaction. If the database does not support to big
+   * transactions (method {@link AbstractDatabase#supportsBigTransactions},
+   * each modification of one update is commited within small single
+   * transactions.
    *
    * @param _number       number to install
    * @param _latestNumber latest version number to install (e..g. defined in
    *                      the version.xml file)
+   * @see AbstractDatabase#supportsBigTransactions  is used to get information
+   *                                                about the support of very
+   *                                                big transactions from the
+   *                                                database
    */
   @SuppressWarnings("unchecked")
   public void install(final Long _number,
                       final Long _latestNumber)
       throws EFapsException
   {
+    final boolean bigTrans = Context.getDbType().supportsBigTransactions();
+    final String user = (org.efaps.db.Context.getThreadContext().getPerson() != null)
+                        ? org.efaps.db.Context.getThreadContext().getPerson().getName()
+                        : null;
 
     // initialize cache
     initialise();
@@ -193,6 +207,10 @@ public class Install {
       final Class<? extends AbstractUpdate> updateClass = entry.getKey();
       for (final AbstractUpdate update : this.cache.get(updateClass)) {
         update.createInDB(jexlContext);
+        if (!bigTrans)  {
+          Context.commit();
+          Context.begin(user);
+        }
       }
     }
 
@@ -201,6 +219,10 @@ public class Install {
       final Class<? extends AbstractUpdate> updateClass = entry.getKey();
       for (final AbstractUpdate update : this.cache.get(updateClass)) {
         update.updateInDB(jexlContext);
+        if (!bigTrans)  {
+          Context.commit();
+          Context.begin(user);
+        }
       }
     }
   }
@@ -376,8 +398,6 @@ public class Install {
    * This interface is used in {@link #org.efaps.update.Install.importData()}.
    *
    * @see #importClasses
-   * @author jmox
-   * @version $Id$
    */
   public interface ImportInterface {
 
