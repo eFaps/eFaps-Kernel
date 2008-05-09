@@ -374,7 +374,7 @@ public class SQLTableUpdate extends AbstractUpdate {
     }
 
     /**
-     * Defines sql statements which is directly executed (e.g. to create a
+     * Defines SQL statements which is directly executed (e.g. to create a
      * view).
      *
      * @param _sql
@@ -557,8 +557,8 @@ public class SQLTableUpdate extends AbstractUpdate {
       try {
         con = context.getConnectionResource();
 
-        TableInformation tableInfo = getDbType().getTableInformation(con.getConnection(), tableName);
-//System.out.println(""+tableInfo);
+        final TableInformation tableInfo = getDbType().getTableInformation(con.getConnection(), tableName);
+
 
         for (final Column column : this.columns)  {
           final ColumnInformation colInfo = tableInfo.getColInfo(column.name);
@@ -584,8 +584,14 @@ public class SQLTableUpdate extends AbstractUpdate {
             }
 // TODO: check for column names
           } else  {
-            getDbType().addUniqueKey(con.getConnection(), tableName,
-                uniqueKey.name, uniqueKey.columns);
+            // check if a unique key exists for same column names
+            final UniqueKeyInformation ukInfo2 = tableInfo.getUKInfoByColNames(uniqueKey.columns);
+            if (ukInfo2 != null)  {
+              LOG.error("unique key for columns " + uniqueKey.columns + " exists");
+            } else  {
+              getDbType().addUniqueKey(con.getConnection(), tableName,
+                  uniqueKey.name, uniqueKey.columns);
+            }
           }
         }
 
