@@ -55,14 +55,14 @@ public class OracleDatabase extends AbstractDatabase  {
    */
   public OracleDatabase()  {
     super();
-    addMapping(ColumnType.INTEGER,      "number",     "number");
-    addMapping(ColumnType.REAL,         "number",     "number");
-    addMapping(ColumnType.STRING_SHORT, "nvarchar2",  "nvarchar2");
-    addMapping(ColumnType.STRING_LONG,  "nvarchar2",  "nvarchar2");
-    addMapping(ColumnType.DATETIME,     "timestamp",  "timestamp");
-    addMapping(ColumnType.BLOB,         "blob",       "blob");
-    addMapping(ColumnType.CLOB,         "nclob",      "nclob");
-    addMapping(ColumnType.BOOLEAN,      "number",     "number");
+    addMapping(ColumnType.INTEGER,      "number",     "null", "number");
+    addMapping(ColumnType.REAL,         "number",     "null", "number");
+    addMapping(ColumnType.STRING_SHORT, "nvarchar2",  "null", "nvarchar2");
+    addMapping(ColumnType.STRING_LONG,  "nvarchar2",  "null", "nvarchar2");
+    addMapping(ColumnType.DATETIME,     "timestamp",  "null", "timestamp");
+    addMapping(ColumnType.BLOB,         "blob",       "null", "blob");
+    addMapping(ColumnType.CLOB,         "nclob",      "null", "nclob");
+    addMapping(ColumnType.BOOLEAN,      "number",     "null", "number");
   }
 
   /////////////////////////////////////////////////////////////////////////////

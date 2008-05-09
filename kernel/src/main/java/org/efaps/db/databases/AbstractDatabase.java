@@ -84,6 +84,7 @@ public abstract class AbstractDatabase {
    * database specific column types.
    *
    * @see #addMapping
+   * @see #getWriteSQLTypeName
    */
   private final Map<ColumnType, String> writeColTypeMap = new HashMap<ColumnType, String>();
 
@@ -92,8 +93,17 @@ public abstract class AbstractDatabase {
    * eFaps.
    *
    * @see #addMapping
+   * @see #getReadColumnTypes
    */
   private final Map<String, Set<ColumnType>> readColTypeMap = new HashMap<String, Set<ColumnType>>();
+
+  /**
+   * The map stores the mapping between column types used in eFaps and the
+   * related null value select statement of the database.
+   *
+   * @see #addMapping
+   */
+  private final Map<ColumnType, String> nullValueColTypeMap = new HashMap<ColumnType, String>();
 
   protected AbstractDatabase() {
   }
@@ -105,6 +115,10 @@ public abstract class AbstractDatabase {
    * @param _columnType       column type within eFaps
    * @param _writeTypeName    SQL type name used to write (create new column
    *                          within a SQL table)
+   * @param _nullValueSelect  null value select used within the query if a link
+   *                          target could be a null (and so all selected
+   *                          values must null in the SQL statement for objects
+   *                          without this link)
    * @param _readTypeNames    list of SQL type names returned from the database
    *                          meta data reading
    * @see #readColTypeMap   to map from an eFaps column type to a SQL type name
@@ -113,9 +127,11 @@ public abstract class AbstractDatabase {
    */
   protected void addMapping(final ColumnType _columnType,
                             final String _writeTypeName,
+                            final String _nullValueSelect,
                             final String... _readTypeNames)
   {
     this.writeColTypeMap.put(_columnType, _writeTypeName);
+    this.nullValueColTypeMap.put(_columnType, _nullValueSelect);
     for (final String readTypeName : _readTypeNames)  {
       Set<ColumnType> colTypes = this.readColTypeMap.get(readTypeName);
       if (colTypes == null)  {
@@ -128,6 +144,8 @@ public abstract class AbstractDatabase {
 
 
   /**
+   * Returns for given column type the database vendor specific type name.
+   *
    * @param _columnType   column type for which the vendor specific column type
    *                      should be returned
    * @return SQL specific column type name
@@ -145,12 +163,26 @@ public abstract class AbstractDatabase {
    *
    * @param _readTypeName SQL column type name read from the database
    * @return set of eFaps column types (or <code>null</code> if not specified)
-   * @see #writeColTypeMap
+   * @see #readColTypeMap
    * @see #addMapping       used to define the map
    */
   public Set<ColumnType> getReadColumnTypes(final String _readTypeName)
   {
     return this.readColTypeMap.get(_readTypeName);
+  }
+
+  /**
+   * Returns for given column type the database vendor specific null value
+   * select statement.
+   *
+   * @param _columnType   column type for which the database vendor specific
+   *                      null value select is searched
+   * @return null value select
+   * @see #nullValueColTypeMap
+   */
+  public String getNullValueSelect(final ColumnType _columnType)
+  {
+    return this.nullValueColTypeMap.get(_columnType);
   }
 
   /**
@@ -166,8 +198,7 @@ public abstract class AbstractDatabase {
    * tables, views etc...). The method is called before a complete rebuild is
    * done.
    *
-   * @param _con
-   *          sql connection
+   * @param _con    sql connection
    * @throws SQLException
    */
   public abstract void deleteAll(final Connection _con) throws SQLException;

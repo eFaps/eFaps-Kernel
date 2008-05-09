@@ -91,14 +91,14 @@ public class DerbyDatabase extends AbstractDatabase  {
    * @todo specificy real column type
    */
   public DerbyDatabase()  {
-    addMapping(ColumnType.INTEGER,      "bigint",     "bigint");
+    addMapping(ColumnType.INTEGER,      "bigint",     "cast(null as bigint)",     "bigint");
 //    this.columnMap.put(ColumnType.REAL,         "real");
-    addMapping(ColumnType.STRING_SHORT, "char",       "char");
-    addMapping(ColumnType.STRING_LONG,  "varchar",    "varchar");
-    addMapping(ColumnType.DATETIME,     "timestamp",  "timestamp");
-    addMapping(ColumnType.BLOB,         "blob(2G)",   "blob");
-    addMapping(ColumnType.CLOB,         "clob(2G)",   "clob");
-    addMapping(ColumnType.BOOLEAN,      "smallint",   "smallint");
+    addMapping(ColumnType.STRING_SHORT, "char",       "cast(null as char)",       "char");
+    addMapping(ColumnType.STRING_LONG,  "varchar",    "cast(null as varchar)",    "varchar");
+    addMapping(ColumnType.DATETIME,     "timestamp",  "cast(null as timestamp)",  "timestamp");
+    addMapping(ColumnType.BLOB,         "blob(2G)",   "cast(null as blob)",       "blob");
+    addMapping(ColumnType.CLOB,         "clob(2G)",   "cast(null as clob)",       "clob");
+    addMapping(ColumnType.BOOLEAN,      "smallint",   "cast(null as smallint)",   "smallint");
   }
 
   @Override

@@ -23,6 +23,7 @@ package org.efaps.db.databases.information;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase.ColumnType;
 
 /**
@@ -78,7 +79,25 @@ public class ColumnInformation
   }
 
   /**
-   * This is the getter method for instance variable {@link #name}.
+   * Returns for the first found column type in {@link #types} the related SQL
+   * select statement for null values.
+   *
+   * @return null value select statement
+   * @see #types
+   */
+  public String getNullValueSelect()
+  {
+    String ret = null;
+    for (final ColumnType colType : this.types)  {
+      ret = Context.getDbType().getNullValueSelect(colType);
+      break;
+    }
+    return ret;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #name}. The method
+   * returns the name of the SQL column always in upper case.
    *
    * @return value of instance variable {@link #name}
    * @see #name
@@ -89,7 +108,10 @@ public class ColumnInformation
   }
 
   /**
-   * This is the getter method for instance variable {@link #size}.
+   * This is the getter method for instance variable {@link #size}. The method
+   * returns the column size for this column (used only for string column types
+   * defined for eFaps column types {@link ColumnType#STRING_LONG} and
+   * {@link ColumnType#STRING_SHORT}).
    *
    * @return value of instance variable {@link #size}
    * @see #size
@@ -100,7 +122,8 @@ public class ColumnInformation
   }
 
   /**
-   * This is the getter method for instance variable {@link #isNullable}.
+   * This is the getter method for instance variable {@link #isNullable}. The
+   * method returns true, if a null value for this column is allowed.
    *
    * @return value of instance variable {@link #isNullable}
    * @see #isNullable

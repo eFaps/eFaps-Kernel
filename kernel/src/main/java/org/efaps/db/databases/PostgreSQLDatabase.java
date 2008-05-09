@@ -52,14 +52,14 @@ public class PostgreSQLDatabase extends AbstractDatabase  {
    * @todo specificy real column type
    */
   public PostgreSQLDatabase()  {
-    addMapping(ColumnType.INTEGER,      "bigint",     "int8", "bigserial");
-    addMapping(ColumnType.REAL,         "real",       "float4");
-    addMapping(ColumnType.STRING_SHORT, "char",       "bpchar");
-    addMapping(ColumnType.STRING_LONG,  "varchar",    "varchar");
-    addMapping(ColumnType.DATETIME,     "timestamp",  "timestamp");
-    addMapping(ColumnType.BLOB,         "bytea",      "bytea");
-    addMapping(ColumnType.CLOB,         "text",       "text");
-    addMapping(ColumnType.BOOLEAN,      "boolean",    "bool");
+    addMapping(ColumnType.INTEGER,      "bigint",     "null", "int8", "bigserial");
+    addMapping(ColumnType.REAL,         "real",       "null", "float4");
+    addMapping(ColumnType.STRING_SHORT, "char",       "null", "bpchar");
+    addMapping(ColumnType.STRING_LONG,  "varchar",    "null", "varchar");
+    addMapping(ColumnType.DATETIME,     "timestamp",  "null", "timestamp");
+    addMapping(ColumnType.BLOB,         "bytea",      "null", "bytea");
+    addMapping(ColumnType.CLOB,         "text",       "null", "text");
+    addMapping(ColumnType.BOOLEAN,      "boolean",    "null", "bool");
   }
 
   @Override
