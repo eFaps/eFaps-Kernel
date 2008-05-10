@@ -140,32 +140,32 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
     final PlexusContainer container = (PlexusContainer) _context.get(PlexusConstants.PLEXUS_KEY);
     try  {
       this.artifactRepositoryLayout = (ArtifactRepositoryLayout) container.lookup(ArtifactRepositoryLayout.ROLE);
-    } catch (ComponentLookupException e) {
+    } catch (final ComponentLookupException e) {
       throw new ContextException("Could not get ArtifactRepositoryLayout from PlexusContainer", e);
     }
     try {
       this.artifactRepositoryFactory = (ArtifactRepositoryFactory) container.lookup(ArtifactRepositoryFactory.ROLE);
-    } catch (ComponentLookupException e) {
+    } catch (final ComponentLookupException e) {
       throw new ContextException("Could not get ArtifactResolver from PlexusContainer", e);
     }
     try {
       this.settingsBuilder = (MavenSettingsBuilder) container.lookup(MavenSettingsBuilder.ROLE);
-    } catch (ComponentLookupException e) {
+    } catch (final ComponentLookupException e) {
       throw new ContextException("Could not get ArtifactResolver from PlexusContainer", e);
     }
     try {
       this.artifactResolver = (ArtifactResolver) container.lookup(ArtifactResolver.ROLE);
-    } catch (ComponentLookupException e) {
+    } catch (final ComponentLookupException e) {
       throw new ContextException("Could not get ArtifactResolver from PlexusContainer", e);
     }
     try {
         this.artifactFactory = (ArtifactFactory) container.lookup(ArtifactFactory.ROLE);
-    } catch (ComponentLookupException e) {
+    } catch (final ComponentLookupException e) {
         throw new ContextException("Could not get ArtifactFactory from PlexusContainer", e);
     }
     try  {
       this.artifactMetadataSource = (ArtifactMetadataSource) container.lookup(ArtifactMetadataSource.ROLE, "maven");
-    } catch (ComponentLookupException e) {
+    } catch (final ComponentLookupException e) {
       throw new ContextException("Could not get ArtifactMetadataSource from PlexusContainer", e);
     }
   }
@@ -182,8 +182,6 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
 
     final List<MojoDescriptor> descriptors = new ArrayList<MojoDescriptor>();
 
-    final ClassLoader cl = getClassLoader(_project);
-
     // check all compiled classes for mojos
     final File classesDirectory = new File( _project.getBuild().getOutputDirectory() );
     final DirectoryScanner scanner = new DirectoryScanner();
@@ -193,19 +191,25 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
     if (getLogger().isDebugEnabled())  {
       getLogger().debug( "Scanning " + scanner.getIncludedFiles().length + " classes" );
     }
-    for (final String file : scanner.getIncludedFiles())  {
-      final MojoDescriptor desc = scan(cl,
-                                       file.substring( 0, file.lastIndexOf( ".class" ) ).replace( '/', '.' ) );
-      if (desc != null)  {
-        desc.setPluginDescriptor( _pluginDescriptor );
-        descriptors.add( desc );
-        if (getLogger().isInfoEnabled())  {
-          getLogger().info("Found mojo " + desc.getImplementation());
+    final String[] included = scanner.getIncludedFiles();
+    if (included.length > 0) {
+
+      final ClassLoader cl = getClassLoader(_project);
+
+      for (final String file : scanner.getIncludedFiles()) {
+        final MojoDescriptor desc =
+            scan(cl, file.substring(0, file.lastIndexOf(".class")).replace('/', '.'));
+        if (desc != null) {
+          desc.setPluginDescriptor(_pluginDescriptor);
+          descriptors.add(desc);
+          if (getLogger().isInfoEnabled()) {
+            getLogger().info("Found mojo " + desc.getImplementation());
+          }
         }
       }
     }
 
-    Resource resource = new Resource();
+    final Resource resource = new Resource();
     resource.setDirectory( classesDirectory.getAbsolutePath() );
     resource.setIncludes( Collections.EMPTY_LIST );
     resource.setExcludes( Collections.EMPTY_LIST );
@@ -229,7 +233,7 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
     Class<?> c;
     try {
       c = _cl.loadClass( _className );
-    } catch ( ClassNotFoundException e)  {
+    } catch ( final ClassNotFoundException e)  {
       throw new InvalidPluginDescriptorException( "Error scanning class " + _className, e );
     }
 
@@ -256,7 +260,7 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
         mojoDescriptor.setPhase( goalAnno.defaultPhase().key() );
       }
 
-      Deprecated deprecatedAnno = c.getAnnotation( Deprecated.class );
+      final Deprecated deprecatedAnno = c.getAnnotation( Deprecated.class );
 
       if ( deprecatedAnno != null )  {
         mojoDescriptor.setDeprecated( "true" );
@@ -314,7 +318,7 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
       throws InvalidPluginDescriptorException
   {
     for (final Field f : _cur.getDeclaredFields())  {
-      org.apache.maven.plugin.descriptor.Parameter paramDescriptor =
+      final org.apache.maven.plugin.descriptor.Parameter paramDescriptor =
             new org.apache.maven.plugin.descriptor.Parameter();
 
       paramDescriptor.setName( f.getName() );
@@ -375,7 +379,7 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
       final Dependency dependency = (Dependency)obj;
       final String scope = dependency.getScope();
       if (isCompileScope(scope))  {
-        Artifact artifact = this.artifactFactory.createArtifact(
+        final Artifact artifact = this.artifactFactory.createArtifact(
                   dependency.getGroupId(),
                   dependency.getArtifactId(),
                   dependency.getVersion(),
@@ -397,7 +401,7 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
         final Artifact artifact = (Artifact) obj;
         urls.add(artifact.getFile().toURL());
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new InvalidPluginDescriptorException(
           "Failed to resolve transitively artifacts: " + e.getMessage(), e);
     }
@@ -407,7 +411,7 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
       final Artifact cpe = (Artifact) obj;
       try  {
         urls.add( cpe.getFile().toURL() ); // URI().toURL() );
-      } catch (MalformedURLException e)  {
+      } catch (final MalformedURLException e)  {
         getLogger().warn( "Cannot convert '" + cpe + "' to URL", e );
       }
     }
@@ -415,7 +419,7 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
     // append target output directory (where the compiled files are)
     try  {
       urls.add(new File(_project.getBuild().getOutputDirectory()).toURL());
-    } catch (MalformedURLException e)  {
+    } catch (final MalformedURLException e)  {
       getLogger().warn( "Cannot convert '" + _project.getBuild().getOutputDirectory() + "' to URL", e );
     }
 
@@ -457,7 +461,7 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
                   d.getScope(),
                   d.isOptional());
           map.put(d.getManagementKey(), artifact);
-        } catch (InvalidVersionSpecificationException e)  {
+        } catch (final InvalidVersionSpecificationException e)  {
           throw new InvalidPluginDescriptorException("Unable to parse version '" + d.getVersion() +
                   "' for dependency '" + d.getManagementKey() + "' in project " + projectId + " : " + e.getMessage(), e);
         }
@@ -487,9 +491,9 @@ public class EfapsAnnotationDescriptorExtractor extends AbstractLogEnabled imple
       try {
         final Settings settings = this.settingsBuilder.buildSettings(userSettingsPath);
         localRepositoryPath = settings.getLocalRepository();
-      } catch (IOException e)  {
+      } catch (final IOException e)  {
         throw new InvalidPluginDescriptorException("Error reading settings file", e);
-      }  catch (XmlPullParserException e)   {
+      }  catch (final XmlPullParserException e)   {
         throw new InvalidPluginDescriptorException(e.getMessage() + e.getDetail() + e.getLineNumber() +
                    e.getColumnNumber());
       }

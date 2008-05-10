@@ -69,7 +69,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-plugin-plugin</artifactId>
-        <version>2.3</version>
         <dependencies>
           <!-- used to get annotations within Java source code -->
           <dependency>
@@ -79,6 +78,19 @@
             <scope>runtime</scope>
           </dependency>
         </dependencies>
+        <executions>
+          <execution>
+          <!-- 
+            due to Java5 annotations, which can only be read after compilation, 
+            the maven-plugin-plugin must be executed a second time after compilation
+          -->
+            <id>extract-after-copmile</id>
+            <phase>compile</phase>
+            <goals>
+              <goal>descriptor</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
 
     </plugins>
