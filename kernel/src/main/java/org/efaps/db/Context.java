@@ -43,9 +43,6 @@ import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Person;
 import org.efaps.admin.user.UserAttributesSet;
@@ -55,13 +52,17 @@ import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.db.transaction.JDBCStoreResource;
 import org.efaps.db.transaction.StoreResource;
 import org.efaps.db.transaction.VFSStoreResource;
+import org.efaps.init.INamingBinds;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
  * @version $Id$
  */
-public class Context {
+public class Context implements INamingBinds
+{
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
@@ -70,22 +71,6 @@ public class Context {
    * Logging instance used in this class.
    */
   private static final Logger LOG = LoggerFactory.getLogger(Context.class);
-
-  /**
-   * The static variable holds the resource name for the JDBC database
-   * connection.
-   */
-  private static final String RESOURCE_DATASOURCE   = "eFaps/jdbc";
-
-  /**
-   * The static variable holds the resource name for the database type.
-   */
-  private static final String RESOURCE_DBTYPE = "eFaps/dbType";
-
-  /**
-   * Resource name of the transaction manager.
-   */
-  private static final String RESOURCE_TRANSMANAG = "eFaps/transactionManager";
 
   /**
    * Static variable storing the database type.
@@ -987,7 +972,7 @@ if (provider.equals("org.efaps.db.transaction.JDBCStoreResource"))  {
     /**
      * Returns the content type of the file for which this file parameter is
      * defined.
-     * 
+     *
      * @return content type of the file
      */
     public abstract String getContentType();
