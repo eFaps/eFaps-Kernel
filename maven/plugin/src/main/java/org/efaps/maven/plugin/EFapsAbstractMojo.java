@@ -28,22 +28,18 @@ import java.util.regex.Pattern;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.naming.Reference;
-import javax.naming.StringRefAddr;
-import javax.naming.spi.ObjectFactory;
-import javax.sql.DataSource;
 
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.tools.plugin.Parameter;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
-import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.db.transaction.VFSStoreFactoryBean;
+import org.efaps.init.StartupDatabaseConnection;
+import org.efaps.init.StartupException;
 import org.efaps.maven.logger.SLF4JOverMavenLog;
 import org.efaps.util.EFapsException;
 import org.mortbay.naming.NamingUtil;
-import org.objectweb.jotm.Current;
 
 /**
  *
@@ -177,8 +173,12 @@ public abstract class EFapsAbstractMojo implements Mojo {
   /**
    * @todo better way instead of catching class not found exception (needed for
    *       the shell!)
-   * @see #initDatabase
    * @see #initStores
+   * @see #convertToMap   used to convert the connection string to a property
+   *                      map
+   * @see #type           database class
+   * @see #factory        factory class name
+   * @see #connection     connection properties
    */
   protected void init()  {
     try  {
@@ -187,114 +187,16 @@ public abstract class EFapsAbstractMojo implements Mojo {
     } catch (ClassNotFoundException e)  {
     }
 
-    initDatabase();
+    try {
+      StartupDatabaseConnection.startup(this.type,
+                           this.factory,
+                           convertToMap(this.connection),
+                           "org.objectweb.jotm.Current");
+    } catch (StartupException e) {
+      getLog().error("Initialize Database Connection failed: " + e.toString());
+    }
+
     initStores();
-  }
-
-  /**
-   * Initialize the database information set from maven in the parameter
-   * instance variables.
-   * <ul>
-   * <li>configure the database type</li>
-   * <li>initialize the sql datasource (JDBC connection to the database)</li>
-   * <li>initialize transaction manager</li>
-   * </ul>
-   *
-   * @return <i>true</i> if database connection is initialized
-   * @see #convertToMap
-   * @see #type       database class
-   * @see #factory    factory class name
-   * @see #connection connection properties
-   */
-  protected boolean initDatabase() {
-
-    boolean initialised = false;
-
-    getLog().info("Initialise Database Connection");
-
-    final javax.naming.Context compCtx;
-    try {
-      final InitialContext context = new InitialContext();
-      compCtx = (javax.naming.Context)context.lookup ("java:comp");
-    } catch (NamingException e) {
-      throw new Error("Could not initialize JNDI", e);
-    }
-
-    // configure database type
-    try {
-      AbstractDatabase dbType
-              = (AbstractDatabase)(Class.forName(this.type)).newInstance();
-      if (dbType == null) {
-        getLog().error("could not initaliase database type");
-      } else  {
-        NamingUtil.bind(compCtx, "env/eFaps/dbType", dbType);
-        initialised = true;
-      }
-    } catch (ClassNotFoundException e) {
-      getLog().error(
-          "could not found database description class " + "'" + this.type + "'",
-          e);
-    } catch (InstantiationException e) {
-      getLog().error(
-          "could not initialise database description class " + "'" + this.type
-              + "'", e);
-    } catch (IllegalAccessException e) {
-      getLog().error(
-          "could not access database description class " + "'" + this.type + "'",
-          e);
-    } catch (NamingException e) {
-      getLog().error(
-          "could not bind database description class " + "'" + this.type + "'",
-          e);
-    }
-
-    // buildup reference and initialize data source object
-    Reference ref = new Reference(DataSource.class.getName(),
-                                  this.factory,
-                                  null);
-    for (Map.Entry<String, String> entry : convertToMap(this.connection).entrySet()) {
-      ref.add(new StringRefAddr(entry.getKey(), entry.getValue()));
-    }
-    ObjectFactory of = null;
-    try {
-      Class<?> factClass = Class.forName(ref.getFactoryClassName());
-      of = (ObjectFactory) factClass.newInstance();
-    } catch (ClassNotFoundException e) {
-      getLog().error(
-          "could not found data source class " + "'"
-              + this.factory + "'", e);
-    } catch (InstantiationException e) {
-      getLog().error(
-          "could not initialise data source class " + "'"
-              + this.factory + "'", e);
-    } catch (IllegalAccessException e) {
-      getLog().error(
-          "could not access data source class " + "'"
-              + this.factory + "'", e);
-    }
-    if (of != null) {
-      try {
-        final DataSource ds = (DataSource) of.getObjectInstance(ref, null, null, null);
-        if (ds != null) {
-          NamingUtil.bind(compCtx, "env/eFaps/jdbc", ds);
-          initialised = initialised && true;
-        }
-// TODO: must be referenced by class frmo outside
-//        NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new SlideTransactionManager());
-NamingUtil.bind(compCtx, "env/eFaps/transactionManager", new Current());
-      } catch (NamingException e)  {
-        getLog().error(
-            "could not bind JDBC pooling class " + "'"
-                + this.factory + "'",
-            e);
-      } catch (Exception e) {
-        getLog().error(
-            "coud not get object instance of factory " + "'"
-                + this.factory + "'", e);
-      }
-    }
-
-    return initialised;
   }
 
   /**
