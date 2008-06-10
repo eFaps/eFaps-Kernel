@@ -27,13 +27,14 @@ import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.InlineFrame;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -49,13 +50,13 @@ public class StandardLink extends AbstractMenuItemLink {
 
   private static final long serialVersionUID = 1L;
 
-  public StandardLink(String _id, final MenuItemModel _model) {
+  public StandardLink(String _id, final IModel<UIMenuItem> _model) {
     super(_id, _model);
   }
 
   @Override
   public void onClick() {
-    final MenuItemModel model = (MenuItemModel) super.getModel();
+    final UIMenuItem model = (UIMenuItem) super.getModelObject();
 
     final AbstractCommand command = model.getCommand();
     if (command.getTarget() == Target.POPUP) {
@@ -96,9 +97,9 @@ public class StandardLink extends AbstractMenuItemLink {
       }
     } else {
       try {
-        List<Return> rets = model.executeEvents(this);
+        final List<Return> rets = model.executeEvents(this);
         if ("true".equals(command.getProperty("TargetShowFile"))) {
-          Object object = rets.get(0).get(ReturnValues.VALUES);
+          final Object object = rets.get(0).get(ReturnValues.VALUES);
           if (object instanceof File) {
             getRequestCycle().setRequestTarget(
                 new FileRequestTarget((File) object));
@@ -106,7 +107,7 @@ public class StandardLink extends AbstractMenuItemLink {
 
         }
 
-      } catch (EFapsException e) {
+      } catch (final EFapsException e) {
         throw new RestartResponseException(new ErrorPage(e));
       }
       if ("true".equals(command.getProperty("NoUpdateAfterCOMMAND"))) {

@@ -25,7 +25,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
  * @author jmox
@@ -44,7 +44,7 @@ public class AjaxMenuTreeLink extends AjaxLink {
 
   @Override
   public void onClick(final AjaxRequestTarget _target) {
-    final MenuItemModel model = (MenuItemModel) this.node.getUserObject();
+    final UIMenuItem model = (UIMenuItem) this.node.getUserObject();
     final MenuTree menutree = (MenuTree) this.findParent(MenuTree.class);
 
     menutree.changeContent(model, _target);

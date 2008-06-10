@@ -22,19 +22,20 @@ package org.efaps.ui.wicket.components.menu;
 
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
+import org.apache.wicket.model.IModel;
 
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
  * @author jmox
  * @version $Id$
  */
-public abstract class AbstractMenuItemAjaxComponent extends WebComponent {
+public abstract class AbstractMenuItemAjaxComponent extends WebComponent<UIMenuItem> {
 
   private static final long serialVersionUID = 1L;
 
   public AbstractMenuItemAjaxComponent(final String _id,
-                                       final MenuItemModel _model) {
+                                       final IModel<UIMenuItem> _model) {
     super(_id, _model);
   }
 

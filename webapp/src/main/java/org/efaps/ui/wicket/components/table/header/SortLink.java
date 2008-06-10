@@ -21,10 +21,14 @@
 package org.efaps.ui.wicket.components.table.header;
 
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
-import org.efaps.ui.wicket.models.HeaderModel;
+import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
@@ -34,43 +38,42 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
  * @author jmox
  * @version $Id:SortLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class SortLink extends Link {
+public class SortLink extends Link<UITableHeader> {
 
   private static final long serialVersionUID = 1L;
 
-  public SortLink(final String _id, final HeaderModel _model) {
+  public SortLink(final String _id, final IModel<UITableHeader> _model) {
     super(_id, _model);
   }
 
   @Override
   public void onClick() {
 
-    final TableModel tablemodel =
-        (TableModel) this.findParent(HeaderPanel.class).getModel();
-    final HeaderModel model = (HeaderModel) super.getModel();
-    tablemodel.setSortKey(model.getName());
+    final UITable uiTable = ((HeaderPanel)this.findParent(HeaderPanel.class)).getModelObject();
+    final UITableHeader uiTableHeader = super.getModelObject();
+    uiTable.setSortKey(uiTableHeader.getName());
 
-    for (HeaderModel headermodel : tablemodel.getHeaders()) {
-      if (!headermodel.equals(model)) {
+    for (final UITableHeader headermodel : uiTable.getHeaders()) {
+      if (!headermodel.equals(uiTableHeader)) {
         headermodel.setSortDirection(SortDirection.NONE);
       }
     }
 
-    if (model.getSortDirection() == SortDirection.NONE
-        || model.getSortDirection() == SortDirection.DESCENDING) {
-      model.setSortDirection(SortDirection.ASCENDING);
+    if (uiTableHeader.getSortDirection() == SortDirection.NONE
+        || uiTableHeader.getSortDirection() == SortDirection.DESCENDING) {
+      uiTableHeader.setSortDirection(SortDirection.ASCENDING);
     } else {
-      model.setSortDirection(SortDirection.DESCENDING);
+      uiTableHeader.setSortDirection(SortDirection.DESCENDING);
     }
 
-    tablemodel.setSortDirection(model.getSortDirection());
+    uiTable.setSortDirection(uiTableHeader.getSortDirection());
 
-    tablemodel.sort();
+    uiTable.sort();
     if (this.getPage() instanceof TablePage) {
-      this.getRequestCycle().setResponsePage(new TablePage(tablemodel));
+      this.getRequestCycle().setResponsePage(new TablePage(new TableModel(uiTable)));
     } else {
       this.getRequestCycle().setResponsePage(
-          new FormPage(this.getPage().getModel()));
+          new FormPage(new FormModel((UIForm) this.getPage().getModelObject())));
     }
 
   }

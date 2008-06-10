@@ -36,6 +36,7 @@ import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
 import org.efaps.ui.wicket.components.menu.MenuContainer;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.empty.EmptyPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -52,7 +53,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class MainPage extends AbstractMergePage {
+public class MainPage extends AbstractMergePage<Object> {
 
   private static final long serialVersionUID = -4231606613730698766L;
 
@@ -112,31 +113,31 @@ public class MainPage extends AbstractMergePage {
 
     this.add(new ChildCallBackHeaderContributer());
 
-    this.add(new Label("welcome", DBProperties
+    this.add(new Label<String>("welcome", DBProperties
         .getProperty("Logo.Welcome.Label")));
 
     try {
-      this.add(new Label("firstname", Context.getThreadContext().getPerson()
+      this.add(new Label<String>("firstname", Context.getThreadContext().getPerson()
           .getFirstName()));
-      this.add(new Label("lastname", Context.getThreadContext().getPerson()
+      this.add(new Label<String>("lastname", Context.getThreadContext().getPerson()
           .getLastName()));
     } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
 
-    this.add(new Label("version", DBProperties
+    this.add(new Label<String>("version", DBProperties
         .getProperty("Logo.Version.Label")));
 
     // add the MainToolBar to the Page
     final MenuContainer menu =
-        new MenuContainer("menu", new MenuItemModel(UUID
-            .fromString("87001cc3-c45c-44de-b8f1-776df507f268")));
+        new MenuContainer("menu",new MenuItemModel( new UIMenuItem(UUID
+            .fromString("87001cc3-c45c-44de-b8f1-776df507f268"))));
     this.add(menu);
 
-    this.add(new InlineFrame(IFRAME_WICKETID, PageMap
+    this.add(new InlineFrame<Object>(IFRAME_WICKETID, PageMap
         .forName(IFRAME_PAGEMAP_NAME), EmptyPage.class));
 
-    this.add(new InlineFrame("hidden", getPageMap(), EmptyPage.class));
+    this.add(new InlineFrame<Object>("hidden", getPageMap(), EmptyPage.class));
 
   }
 

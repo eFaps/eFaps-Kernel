@@ -22,46 +22,51 @@ package org.efaps.ui.wicket.components.menu;
 
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.components.FormContainer;
-import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.MenuItemModel;
-import org.efaps.ui.wicket.models.SearchItemModel;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UISearchItem;
 
 /**
  * @author jmox
  * @version $Id:MenuPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class MenuPanel extends Panel {
+public class MenuPanel<T> extends Panel<T> {
 
   private static final long serialVersionUID = 1L;
 
-  public MenuPanel(final String _id, final AbstractModel _model) {
+  public MenuPanel(final String _id, final IModel<T> _model) {
     this(_id, _model, null);
   }
 
-  public MenuPanel(final String _id, final AbstractModel _model,
+  public MenuPanel(final String _id, final IModel<T> _model,
                    final FormContainer _form) {
-    super(_id, _model);
+    super(_id,  _model);
 
-    final AbstractModel model = _model;
+    final AbstractUIObject model = (AbstractUIObject) _model.getObject();
 
     if (model.getCommand().getTargetMenu() != null) {
       final MenuContainer menu =
-          new MenuContainer("eFapsMenu", new MenuItemModel(model.getCommand()
-              .getTargetMenu().getUUID(), model.getOid()), _form);
+          new MenuContainer("eFapsMenu", new MenuItemModel(new UIMenuItem(model.getCommand()
+              .getTargetMenu().getUUID(), model.getOid())), _form);
       add(menu);
     } else if (model.getMode() == TargetMode.SEARCH
         && model.getCallingCommandUUID() != null) {
       final MenuContainer menu =
-          new MenuContainer("eFapsMenu", new SearchItemModel(model
-              .getCallingCommand().getTargetSearch().getUUID()), _form);
+          new MenuContainer("eFapsMenu", new MenuItemModel(new UISearchItem(model
+              .getCallingCommand().getTargetSearch().getUUID())), _form);
 
       add(menu);
     } else {
-      add(new WebMarkupContainer("eFapsMenu"));
+      add(new WebMarkupContainer<Object>("eFapsMenu"));
     }
 
   }
+
+
+
 }

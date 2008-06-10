@@ -31,7 +31,7 @@ import org.apache.wicket.markup.html.link.InlineFrame;
 
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -61,7 +61,7 @@ public class AjaxGoIntoLink extends AjaxLink {
   public void onClick(final AjaxRequestTarget _target) {
 
     // update the Content
-    MenuItemModel model = (MenuItemModel) this.node.getUserObject();
+    UIMenuItem model = (UIMenuItem) this.node.getUserObject();
 
     AbstractCommand cmd = model.getCommand();
     PageParameters para = new PageParameters();

@@ -56,7 +56,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:ContentContainerPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ContentContainerPage extends AbstractMergePage {
+public class ContentContainerPage extends AbstractMergePage<Object> {
 
   private static final long serialVersionUID = 3169723830151134904L;
 
@@ -180,7 +180,7 @@ public class ContentContainerPage extends AbstractMergePage {
 
     this.menuTreeKey = "MenuTree_" + this.getPageMapName();
     // add a Split
-    final WebMarkupContainer split = new WebMarkupContainer("split");
+    final WebMarkupContainer<Object> split = new WebMarkupContainer<Object>("split");
     this.add(split);
     split.add(new SplitContainerBehavior());
     // add a StructurBowser?
@@ -191,12 +191,12 @@ public class ContentContainerPage extends AbstractMergePage {
       split
           .add(new ListOnlyPanel("left", this.menuTreeKey, getPageParameters()));
     }
-    final WebMarkupContainer right = new WebMarkupContainer("right");
+    final WebMarkupContainer<Object> right = new WebMarkupContainer<Object>("right");
     split.add(right);
 
     right.add(new ContentPaneBehavior(80, 20));
 
-    final WebMarkupContainer parent = new WebMarkupContainer("splitrightact");
+    final WebMarkupContainer<Object> parent = new WebMarkupContainer<Object>("splitrightact");
     right.add(parent);
     parent.setOutputMarkupId(true);
 
@@ -233,8 +233,8 @@ public class ContentContainerPage extends AbstractMergePage {
                *
                * @see org.apache.wicket.markup.html.link.IPageLink#getPage()
                */
-              public Page getPage() {
-                AbstractContentPage page;
+              public Page<?> getPage() {
+                AbstractContentPage<?> page;
                 if (ContentContainerPage.this.webForm) {
                   page = new FormPage(parametersForPage);
                 } else {
@@ -249,7 +249,7 @@ public class ContentContainerPage extends AbstractMergePage {
                *
                * @see org.apache.wicket.markup.html.link.IPageLink#getPageIdentity()
                */
-              public Class<AbstractContentPage> getPageIdentity() {
+              public Class getPageIdentity() {
                 return AbstractContentPage.class;
               }
             });

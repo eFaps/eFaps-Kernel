@@ -27,7 +27,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
  * @author jmox
@@ -56,7 +56,7 @@ public class AjaxGoUpLink extends AjaxLink {
     TreeNode selected =
         (TreeNode) menutree.getTreeState().getSelectedNodes().iterator().next();
 
-    MenuItemModel model = (MenuItemModel) this.node.getUserObject();
+    UIMenuItem model = (UIMenuItem) this.node.getUserObject();
     model.setStepInto(false);
     MenuTree newMenuTree =
         new MenuTree(menutree.getId(),

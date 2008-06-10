@@ -23,13 +23,14 @@ package org.efaps.ui.wicket.components;
 import java.util.List;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IFormSubmitListener;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 
-import org.efaps.ui.wicket.models.AbstractModel;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 
 
 /**
@@ -39,11 +40,11 @@ import org.efaps.ui.wicket.models.AbstractModel;
  * @version $Id$
  *
  */
-public class FormContainer extends Form {
+public class FormContainer extends Form<Object> {
 
   private static final long serialVersionUID = 1L;
 
-  private Component defaultSubmit;
+  private Component<?> defaultSubmit;
 
   private String actionUrl;
 
@@ -77,21 +78,21 @@ public class FormContainer extends Form {
   @Override
   protected void onComponentTag(final ComponentTag _tag) {
     super.onComponentTag(_tag);
-    if (((AbstractModel) this.getPage().getModel()).isCreateMode()
-        || ((AbstractModel) this.getPage().getModel()).isEditMode()) {
+    if (((AbstractUIObject) this.getPage().getModelObject()).isCreateMode()
+        || ((AbstractUIObject) this.getPage().getModelObject()).isEditMode()) {
       _tag.put("enctype", "multipart/form-data");
     }
 
     this.actionUrl = urlFor(IFormSubmitListener.INTERFACE).toString();
     // only on SearchMode we want normal submit, in any other case we use
     // AjaxSubmit
-    if (!((AbstractModel) this.getPage().getModel()).isSearchMode()) {
+    if (!((AbstractUIObject) this.getPage().getModelObject()).isSearchMode()) {
       _tag.put("onSubmit", "return false;");
       _tag.put("action", "");
     }
   }
 
-  public void setDefaultSubmit(final Component _component) {
+  public void setDefaultSubmit(final Component<?> _component) {
     this.defaultSubmit = _component;
   }
 
@@ -125,20 +126,15 @@ public class FormContainer extends Form {
     return this.actionUrl;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.apache.wicket.markup.html.form.Form#onSubmit()
-   */
-  @SuppressWarnings("unchecked")
+
   @Override
   protected void onSubmit() {
     super.onSubmit();
     if (this.fileUpload) {
-      final List<FileUploadListener> uploadListeners =
+      final List<IBehavior> uploadListeners =
           this.getBehaviors(FileUploadListener.class);
-      for (final FileUploadListener listener : uploadListeners) {
-        listener.onSubmit();
+      for (final IBehavior listener : uploadListeners) {
+        ((FileUploadListener)listener).onSubmit();
       }
     }
   }

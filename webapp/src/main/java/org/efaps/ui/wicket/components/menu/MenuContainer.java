@@ -38,7 +38,8 @@ import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.AbstractParentMarkupContainer;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
-import org.efaps.ui.wicket.models.SearchItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
+import org.efaps.ui.wicket.models.objects.UISearchItem;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
@@ -47,7 +48,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:MenuContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class MenuContainer extends AbstractParentMarkupContainer {
+public class MenuContainer extends AbstractParentMarkupContainer<UIMenuItem> {
 
   private static final long serialVersionUID = 1L;
 
@@ -90,11 +91,11 @@ public class MenuContainer extends AbstractParentMarkupContainer {
 
   private Integer childID = 0;
 
-  public MenuContainer(final String _id, final IModel _model) {
+  public MenuContainer(final String _id, final IModel<UIMenuItem> _model) {
     this(_id, _model, null);
   }
 
-  public MenuContainer(final String _id, final IModel _model,
+  public MenuContainer(final String _id, final IModel<UIMenuItem> _model,
                        final FormContainer _form) {
     super(_id, _model);
     this.form = _form;
@@ -107,8 +108,8 @@ public class MenuContainer extends AbstractParentMarkupContainer {
   }
 
   private void initialise() {
-    final MenuItemModel model = (MenuItemModel) super.getModel();
-    for (final MenuItemModel menuItem : model.getChilds()) {
+    final UIMenuItem model = super.getModelObject();
+    for (final UIMenuItem menuItem : model.getChilds()) {
       addLink(menuItem);
     }
   }
@@ -117,46 +118,47 @@ public class MenuContainer extends AbstractParentMarkupContainer {
     return "ItemLink" + (this.childID++).toString();
   }
 
-  private void addLink(final MenuItemModel _menuItemModel) {
-    if (!_menuItemModel.hasChilds()) {
-      if (_menuItemModel.getTarget() != Target.UNKNOWN) {
-        if (_menuItemModel.getTarget() == Target.MODAL) {
+  private void addLink(final UIMenuItem _menuItem) {
+    final MenuItemModel model = new MenuItemModel(_menuItem);
+    if (!_menuItem.hasChilds()) {
+      if (_menuItem.getTarget() != Target.UNKNOWN) {
+        if (_menuItem.getTarget() == Target.MODAL) {
           final AjaxOpenModalComponent item =
-              new AjaxOpenModalComponent(getNewChildId(), _menuItemModel);
+              new AjaxOpenModalComponent(getNewChildId(), model);
           this.add(item);
         } else {
           final StandardLink item =
-              new StandardLink(getNewChildId(), _menuItemModel);
+              new StandardLink(getNewChildId(), model);
           this.add(item);
         }
       } else {
-        if (_menuItemModel.getCommand().isSubmit()) {
+        if (_menuItem.getCommand().isSubmit()) {
           final AjaxSubmitComponent item =
-              new AjaxSubmitComponent(getNewChildId(), _menuItemModel,
+              new AjaxSubmitComponent(getNewChildId(), new MenuItemModel(_menuItem),
                   this.form);
           this.add(item);
-        } else if (super.getModel() instanceof SearchItemModel) {
+        } else if (super.getModelObject().getObject() instanceof UISearchItem) {
 
           final SearchLink item =
-              new SearchLink(getNewChildId(), _menuItemModel);
+              new SearchLink(getNewChildId(), new MenuItemModel(_menuItem));
           this.add(item);
 
         }
       }
-    } else if (_menuItemModel.getCommand().hasEvents(
+    } else if (_menuItem.getCommand().hasEvents(
         EventType.UI_COMMAND_EXECUTE)) {
 
       final StandardLink item =
-          new StandardLink(getNewChildId(), _menuItemModel);
+          new StandardLink(getNewChildId(), model);
       this.add(item);
     }
-    if (_menuItemModel.getReference() != null) {
-      _menuItemModel.setURL(_menuItemModel.getReference());
-      if (_menuItemModel.getReference().equals("/eFaps/logout?")) {
-        this.add(new LogOutLink(getNewChildId(), _menuItemModel));
+    if (_menuItem.getReference() != null) {
+      _menuItem.setURL(_menuItem.getReference());
+      if (_menuItem.getReference().equals("/eFaps/logout?")) {
+        this.add(new LogOutLink(getNewChildId(), model));
       }
     }
-    for (final MenuItemModel childs : _menuItemModel.getChilds()) {
+    for (final UIMenuItem childs : _menuItem.getChilds()) {
       addLink(childs);
     }
   }
@@ -169,7 +171,7 @@ public class MenuContainer extends AbstractParentMarkupContainer {
       final Object child = childs.next();
       if (child instanceof StandardLink) {
         final StandardLink item = (StandardLink) child;
-        final MenuItemModel childModel = (MenuItemModel) item.getModel();
+        final UIMenuItem childModel = (UIMenuItem) item.getModelObject();
 
         String url = (String) item.urlFor(ILinkListener.INTERFACE);
         if (childModel.getTarget() == Target.POPUP) {
@@ -188,7 +190,7 @@ public class MenuContainer extends AbstractParentMarkupContainer {
 
       } else if (child instanceof AjaxOpenModalComponent) {
         final AjaxOpenModalComponent item = (AjaxOpenModalComponent) child;
-        final MenuItemModel childModel = (MenuItemModel) item.getModel();
+        final UIMenuItem childModel = (UIMenuItem) item.getModelObject();
 
         final String url = item.getJavaScript();
 
@@ -196,14 +198,14 @@ public class MenuContainer extends AbstractParentMarkupContainer {
 
       } else if (child instanceof AjaxSubmitComponent) {
         final AjaxSubmitComponent item = (AjaxSubmitComponent) child;
-        final MenuItemModel childModel = (MenuItemModel) item.getModel();
+        final UIMenuItem childModel = (UIMenuItem) item.getModelObject();
 
         final String url = item.getJavaScript();
 
         childModel.setURL(url);
       } else if (child instanceof SearchLink) {
         final SearchLink item = (SearchLink) child;
-        final MenuItemModel childModel = (MenuItemModel) item.getModel();
+        final UIMenuItem childModel = (UIMenuItem) item.getModelObject();
 
         final String url = (String) item.urlFor(ILinkListener.INTERFACE);
 
@@ -225,14 +227,14 @@ public class MenuContainer extends AbstractParentMarkupContainer {
   public String convertToHtml(final ComponentTag _openTag) {
     final CharSequence id = _openTag.getString("id");
 
-    final MenuItemModel model = (MenuItemModel) super.getModel();
+    final UIMenuItem model = super.getModelObject();
 
     final StringBuilder html = new StringBuilder();
 
     html.append(JavascriptUtils.SCRIPT_OPEN_TAG).append("var ").append(id)
         .append("=[");
 
-    for (final MenuItemModel menuItem : model.getChilds()) {
+    for (final UIMenuItem menuItem : model.getChilds()) {
       convertToHtml(menuItem, html, true, new StringBuilder());
       html.append(",\n");
     }
@@ -244,7 +246,7 @@ public class MenuContainer extends AbstractParentMarkupContainer {
     return html.toString();
   }
 
-  public void convertToHtml(final MenuItemModel _menuItem,
+  public void convertToHtml(final UIMenuItem _menuItem,
                             final StringBuilder _html, final boolean _isMain,
                             final StringBuilder _prefix) {
 
@@ -281,7 +283,7 @@ public class MenuContainer extends AbstractParentMarkupContainer {
       _html.append(_menuItem.getDescription());
     }
     _html.append("'");
-    for (final MenuItemModel menuItem : _menuItem.getChilds()) {
+    for (final UIMenuItem menuItem : _menuItem.getChilds()) {
       _html.append("\n").append(_prefix).append("  ,");
       convertToHtml(menuItem, _html, false, new StringBuilder(_prefix)
           .append("  "));

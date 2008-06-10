@@ -27,11 +27,13 @@ import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.form.row.RowPanel;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.FormModel.FormElementModel;
-import org.efaps.ui.wicket.models.FormModel.FormRowModel;
+import org.efaps.ui.wicket.models.FormRowModel;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
+import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
@@ -43,7 +45,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @version $Id$
  *
  */
-public class FormPanel extends Panel {
+public class FormPanel extends Panel<UIForm> {
 
   private static final long serialVersionUID = 1550111712776698728L;
 
@@ -53,29 +55,29 @@ public class FormPanel extends Panel {
   public static final EFapsContentReference FILEINPUT =
       new EFapsContentReference(FormPanel.class, "EFapsFileInput.js");
 
-  private final Map<String, Label> requiredComponents =
-      new HashMap<String, Label>();
+  private final Map<String, Label<String>> requiredComponents =
+      new HashMap<String, Label<String>>();
 
   public FormPanel(final String _wicketId, final Page _page,
-                   final FormModel _model,
-                   final FormElementModel _formelementmodel) {
+                   final IModel<UIForm> _model,
+                   final FormElement _formelementmodel) {
     super(_wicketId, _model);
-
-    if (!_model.isInitialised()) {
-      _model.execute();
+    final UIForm uiForm = _model.getObject();
+    if (!uiForm.isInitialised()) {
+      uiForm.execute();
     }
 
     add(StaticHeaderContributor.forCss(CSS));
-    if (_model.isFileUpload()) {
+    if (uiForm.isFileUpload()) {
       add(StaticHeaderContributor.forJavaScript(FILEINPUT));
     }
-    final RepeatingView rowRepeater = new RepeatingView("rowRepeater");
+    final RepeatingView<Object> rowRepeater = new RepeatingView<Object>("rowRepeater");
     this.add(rowRepeater);
 
-    for (final FormRowModel rowmodel : _formelementmodel.getRowModels()) {
+    for (final FormRow rowmodel : _formelementmodel.getRowModels()) {
 
       final RowPanel row =
-          new RowPanel(rowRepeater.newChildId(), rowmodel, _model, _page, this);
+          new RowPanel(rowRepeater.newChildId(), new FormRowModel(rowmodel), uiForm, _page, this);
       rowRepeater.add(row);
 
     }
@@ -89,11 +91,11 @@ public class FormPanel extends Panel {
    * @return value of instance variable {@link #requiredComponents}
    */
 
-  public Map<String, Label> getRequiredComponents() {
+  public Map<String, Label<String>> getRequiredComponents() {
     return this.requiredComponents;
   }
 
-  public void addRequiredComponent(final String _name, final Label _label) {
+  public void addRequiredComponent(final String _name, final Label<String> _label) {
     this.requiredComponents.put(_name, _label);
   }
 

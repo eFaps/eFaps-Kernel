@@ -31,7 +31,7 @@ import org.apache.wicket.markup.html.WebComponent;
  * @author jmox
  * @version $Id$
  */
-public class Seperator extends WebComponent {
+public class Seperator extends WebComponent<Object> {
 
   private static final long serialVersionUID = 1L;
 

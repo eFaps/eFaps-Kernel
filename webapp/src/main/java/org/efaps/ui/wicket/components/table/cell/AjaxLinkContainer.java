@@ -35,7 +35,7 @@ import org.efaps.db.Instance;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.AbstractAjaxCallBackBehavior;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
-import org.efaps.ui.wicket.models.cell.TableCellModel;
+import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -46,11 +46,11 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
  * @author jmox
  * @version $Id:AjaxLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxLinkContainer extends WebMarkupContainer {
+public class AjaxLinkContainer<T> extends WebMarkupContainer<T> {
 
   private static final long serialVersionUID = 1L;
 
-  public AjaxLinkContainer(final String id, final IModel model) {
+  public AjaxLinkContainer(final String id, final IModel<T> model) {
     super(id, model);
     this.add(new AjaxSelfCallBackBehavior());
     this.add(new AjaxParentCallBackBehavior());
@@ -72,7 +72,7 @@ public class AjaxLinkContainer extends WebMarkupContainer {
 
     @Override
     protected void onEvent(final AjaxRequestTarget _target) {
-      TableCellModel cellmodel = (TableCellModel) super.getComponent().getModel();
+      final UITableCell cellmodel = (UITableCell) super.getComponent().getModelObject();
       Instance instance = null;
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());
@@ -80,24 +80,24 @@ public class AjaxLinkContainer extends WebMarkupContainer {
         Menu menu = null;
         try {
           menu = Menu.getTypeTreeMenu(instance.getType());
-        } catch (Exception e) {
+        } catch (final Exception e) {
           throw new RestartResponseException(new ErrorPage(e));
         }
         if (menu == null) {
-          Exception ex =
+          final Exception ex =
               new Exception("no tree menu defined for type "
                   + instance.getType().getName());
           throw new RestartResponseException(new ErrorPage(ex));
         }
 
-        PageParameters para = new PageParameters();
+        final PageParameters para = new PageParameters();
         para.add("command", menu.getUUID().toString());
         para.add("oid", cellmodel.getOid());
 
-        String listMenuKey =
+        final String listMenuKey =
             ((AbstractContentPage) this.getComponent().getPage())
                 .getMenuTreeKey();
-        MenuTree menutree =
+        final MenuTree menutree =
             (MenuTree) ((EFapsSession) this.getComponent().getSession())
                 .getFromCache(listMenuKey);
 
@@ -117,31 +117,31 @@ public class AjaxLinkContainer extends WebMarkupContainer {
 
     @Override
     protected void onEvent(AjaxRequestTarget arg0) {
-      TableCellModel cellmodel = (TableCellModel) super.getComponent().getModel();
+      final UITableCell cellmodel = (UITableCell) super.getComponent().getModelObject();
       Instance instance = null;
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());
         AbstractCommand menu = null;
         try {
           menu = Menu.getTypeTreeMenu(instance.getType());
-        } catch (Exception e) {
+        } catch (final Exception e) {
           throw new RestartResponseException(new ErrorPage(e));
         }
         if (menu == null) {
-          Exception ex =
+          final Exception ex =
               new Exception("no tree menu defined for type "
                   + instance.getType().getName());
           throw new RestartResponseException(new ErrorPage(ex));
         }
 
-        for (AbstractCommand childcmd : ((Menu) menu).getCommands()) {
+        for (final AbstractCommand childcmd : ((Menu) menu).getCommands()) {
           if (childcmd.isDefaultSelected()) {
             menu = childcmd;
             break;
           }
         }
 
-        PageParameters parameters = new PageParameters();
+        final PageParameters parameters = new PageParameters();
         parameters.add("command", menu.getUUID().toString());
         parameters.add("oid", cellmodel.getOid());
         AbstractContentPage page;

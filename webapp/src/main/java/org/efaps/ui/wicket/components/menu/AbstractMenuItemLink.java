@@ -22,18 +22,19 @@ package org.efaps.ui.wicket.components.menu;
 
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.model.IModel;
 
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
  * @author jmox
  * @version $Id$
  */
-public abstract class AbstractMenuItemLink extends Link {
+public abstract class AbstractMenuItemLink extends Link<UIMenuItem> {
 
   private static final long serialVersionUID = 1L;
 
-  public AbstractMenuItemLink(final String _id, final MenuItemModel _model) {
+  public AbstractMenuItemLink(final String _id, final IModel<UIMenuItem> _model) {
     super(_id, _model);
   }
 

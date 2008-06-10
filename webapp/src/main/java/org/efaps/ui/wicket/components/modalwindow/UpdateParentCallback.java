@@ -25,9 +25,11 @@ import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 
-import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
@@ -39,18 +41,18 @@ public class UpdateParentCallback implements ModalWindow.WindowClosedCallback {
 
   private static final long serialVersionUID = 1L;
 
-  private final Component panel;
+  private final Component<?> panel;
 
   private final ModalWindowContainer modalwindow;
 
   private final boolean clearmodel;
 
-  public UpdateParentCallback(final Component _panel,
+  public UpdateParentCallback(final Component<?> _panel,
                               ModalWindowContainer _modalwindow) {
     this(_panel, _modalwindow, true);
   }
 
-  public UpdateParentCallback(final Component _panel,
+  public UpdateParentCallback(final Component<?> _panel,
                               ModalWindowContainer _modalwindow,
                               final boolean _clearmodel) {
     this.panel = _panel;
@@ -60,17 +62,19 @@ public class UpdateParentCallback implements ModalWindow.WindowClosedCallback {
 
   public void onClose(AjaxRequestTarget _target) {
     if (this.modalwindow.isUpdateParent()) {
+
+      final AbstractUIObject uiObject = (AbstractUIObject) this.panel.getPage().getModelObject();
       if (this.clearmodel) {
-        ((AbstractModel) this.panel.getPage().getModel()).resetModel();
+        uiObject.resetModel();
       }
 
       Page page = null;
-      if (this.panel.getPage().getModel() instanceof TableModel) {
+      if (uiObject instanceof UITable) {
 
-        page = new TablePage(this.panel.getPage().getModel());
+        page = new TablePage(new TableModel((UITable) uiObject));
 
-      } else if (this.panel.getPage().getModel() instanceof FormModel) {
-        page = new FormPage(this.panel.getPage().getModel());
+      } else if (uiObject instanceof UIForm) {
+        page = new FormPage(new FormModel((UIForm) uiObject));
       }
       this.panel.setResponsePage(page);
     }

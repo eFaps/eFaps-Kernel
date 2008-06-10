@@ -53,7 +53,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class AbstractMergePage extends WebPage {
+public abstract class AbstractMergePage<T> extends WebPage<T> {
 
   private static final long serialVersionUID = 1L;
 
@@ -72,14 +72,14 @@ public class AbstractMergePage extends WebPage {
   /**
    * Constructor that passes to the SuperConstructor
    */
-  public AbstractMergePage(final IModel _model) {
+  public AbstractMergePage(final IModel<T> _model) {
     super(_model);
   }
 
   /**
    * Constructor that passes to the SuperConstructor
    */
-  public AbstractMergePage(final IPageMap _pagemap, final IModel _model) {
+  public AbstractMergePage(final IPageMap _pagemap, final IModel<T> _model) {
     super(_pagemap, _model);
   }
 

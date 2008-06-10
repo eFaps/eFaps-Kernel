@@ -79,8 +79,8 @@ public class EFapsSession extends WebSession {
    * @see #putIntoCache(String, Component)
    * @see #removeFromCache(String)
    */
-  private final Map<String, Component> componentcache =
-      new HashMap<String, Component>();
+  private final Map<String, Component<?>> componentcache =
+      new HashMap<String, Component<?>>();
 
   /**
    * This instance variable holds an IModel wich must be past from one Page in
@@ -89,7 +89,7 @@ public class EFapsSession extends WebSession {
    * @see #getOpenerModel()
    * @see #setOpenerModel(IModel)
    */
-  private IModel openerModel;
+  private IModel<?> openerModel;
 
   /**
    * This instance variable holds the Name of the logged in user. It is also
@@ -191,7 +191,7 @@ public class EFapsSession extends WebSession {
    *                Component to be stored
    * @see #componentcache
    */
-  public void putIntoCache(final String _key, final Component _component) {
+  public void putIntoCache(final String _key, final Component<?> _component) {
     this.componentcache.remove(_key);
     this.componentcache.put(_key, _component);
   }
@@ -204,7 +204,7 @@ public class EFapsSession extends WebSession {
    * @return Component if found, else null
    * @see #componentcache
    */
-  public Component getFromCache(final String _key) {
+  public Component<?> getFromCache(final String _key) {
     return this.componentcache.get(_key);
   }
 
@@ -225,7 +225,7 @@ public class EFapsSession extends WebSession {
    * @return value of instance variable {@link #openerModel}
    */
 
-  public IModel getOpenerModel() {
+  public IModel<?> getOpenerModel() {
     return this.openerModel;
   }
 
@@ -235,7 +235,7 @@ public class EFapsSession extends WebSession {
    * @param openerModel
    *                the openerModel to set
    */
-  public void setOpenerModel(final IModel openerModel) {
+  public void setOpenerModel(final IModel<?> openerModel) {
     this.openerModel = openerModel;
   }
 

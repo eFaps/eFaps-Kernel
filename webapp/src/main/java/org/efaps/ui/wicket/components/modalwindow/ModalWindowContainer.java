@@ -20,16 +20,18 @@
 
 package org.efaps.ui.wicket.components.modalwindow;
 
+import org.apache.wicket.Page;
 import org.apache.wicket.PageMap;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.util.string.AppendingStringBuffer;
 
-import org.efaps.ui.wicket.models.AbstractModel;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.StructurBrowserModel;
-import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.models.objects.UITable;
+
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.structurbrowser.StructurBrowserPage;
@@ -84,15 +86,15 @@ public class ModalWindowContainer extends ModalWindow {
   }
 
   public String getReloadJavaScript() {
-    final AbstractModel model = (AbstractModel) this.getPage().getModel();
+    final AbstractUIObject model = (AbstractUIObject) this.getPage().getModelObject();
     String javascript = "";
     if (model != null) {
-      Class<?> clazz = null;
-      if (model instanceof TableModel) {
+      Class<? extends Page> clazz = null;
+      if (model instanceof UITable) {
         clazz = TablePage.class;
-      } else if (model instanceof FormModel) {
+      } else if (model instanceof UIForm) {
         clazz = FormPage.class;
-      } else if (model instanceof StructurBrowserModel) {
+      } else if (model instanceof UIStructurBrowser) {
         clazz = StructurBrowserPage.class;
       }
       final PageParameters parameters = model.getPageParameters();

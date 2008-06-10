@@ -23,9 +23,11 @@ package org.efaps.ui.wicket.components.footer;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
+import org.apache.wicket.model.IModel;
 
-import org.efaps.ui.wicket.models.AbstractModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
 /**
@@ -34,12 +36,12 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
  * @author jmox
  * @version $Id$
  */
-public class SearchSubmitLink extends SubmitLink {
+public class SearchSubmitLink<T> extends SubmitLink<T> {
 
   private static final long serialVersionUID = 1L;
 
-  public SearchSubmitLink(final String _id, final AbstractModel _model,
-                          final Form _form) {
+  public SearchSubmitLink(final String _id, final IModel<T> _model,
+                          final Form<?> _form) {
     super(_id, _form);
     super.setModel(_model);
   }
@@ -47,19 +49,19 @@ public class SearchSubmitLink extends SubmitLink {
   @Override
   public void onSubmit() {
     super.onSubmit();
-    final AbstractModel model = (AbstractModel) super.getModel();
+    final AbstractUIObject uiObject = (AbstractUIObject) super.getModelObject();
 
     final PageParameters parameters = new PageParameters();
-    parameters.add("command", model.getCommand().getUUID().toString());
-    parameters.add("oid", model.getOid());
+    parameters.add("command", uiObject.getCommand().getUUID().toString());
+    parameters.add("oid", uiObject.getOid());
 
-    final TableModel newmodel = new TableModel(parameters);
-    if (model.isSubmit()) {
-      newmodel.setSubmit(true);
-      newmodel.setCallingCommandUUID(model.getCallingCommandUUID());
+    final UITable newTable = new UITable(parameters);
+    if (uiObject.isSubmit()) {
+      newTable.setSubmit(true);
+      newTable.setCallingCommandUUID(uiObject.getCallingCommandUUID());
     }
 
-    final TablePage page = new TablePage(newmodel);
+    final TablePage page = new TablePage(new TableModel(newTable));
 
     this.getRequestCycle().setResponsePage(page);
 

@@ -27,50 +27,54 @@ import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
-import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.TableModel.RowModel;
+import org.efaps.ui.wicket.models.RowModel;
+import org.efaps.ui.wicket.models.objects.UIRow;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
-public class TablePanel extends Panel {
+public class TablePanel extends Panel<UITable> {
 
   private static final long serialVersionUID = 1L;
 
   public static final EFapsContentReference CSS =
       new EFapsContentReference(TablePanel.class, "TablePanel.css");
 
-  public TablePanel(final String _id, final TableModel _model, final Page _page) {
+  public TablePanel(final String _id, final IModel<UITable> _model, final Page _page) {
     super(_id, _model);
 
-    if (!_model.isInitialised()) {
-      _model.execute();
+    final UITable  model =super.getModelObject();
+
+    if (!model.isInitialised()) {
+      model.execute();
     }
     this.setOutputMarkupId(true);
     this.add(new SimpleAttributeModifier("class", "eFapsTableBody"));
 
     add(StaticHeaderContributor.forCss(CSS));
 
-    final RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
+    final RepeatingView<Object> rowsRepeater = new RepeatingView<Object>("rowRepeater");
     add(rowsRepeater);
 
-    if (_model.getValues().isEmpty()) {
-      final Label nodata =
-          new Label(rowsRepeater.newChildId(), DBProperties
+    if (model.getValues().isEmpty()) {
+      final Label<String> nodata =
+          new Label<String>(rowsRepeater.newChildId(), DBProperties
               .getProperty("WebTable.NoData"));
       nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
       rowsRepeater.add(nodata);
     } else {
       boolean odd = true;
 
-      for (final Iterator<RowModel> rowIter = _model.getValues().iterator(); rowIter
+      for (final Iterator<UIRow> rowIter = model.getValues().iterator(); rowIter
           .hasNext(); odd = !odd) {
 
         final RowPanel row =
-            new RowPanel(rowsRepeater.newChildId(), rowIter.next(), this,
+            new RowPanel(rowsRepeater.newChildId(), new RowModel(rowIter.next()), this,
                 ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
                     .getPageMapName()));
         row.setOutputMarkupId(true);

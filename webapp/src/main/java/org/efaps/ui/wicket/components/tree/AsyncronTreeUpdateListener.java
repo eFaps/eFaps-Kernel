@@ -26,13 +26,24 @@ import javax.swing.tree.TreeNode;
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.markup.html.tree.ITreeStateListener;
 
-import org.efaps.ui.wicket.models.StructurBrowserModel;
-import org.efaps.ui.wicket.models.StructurBrowserModel.BogusNode;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser.BogusNode;
 
 public class AsyncronTreeUpdateListener implements ITreeStateListener,
     IClusterable {
 
   private static final long serialVersionUID = 1L;
+
+  public void nodeExpanded(final Object _treenode) {
+    final TreeNode node = (TreeNode) _treenode;
+    if (!node.isLeaf() && node.getChildAt(0) instanceof BogusNode) {
+
+      final UIStructurBrowser model =
+          (UIStructurBrowser) ((DefaultMutableTreeNode) node).getUserObject();
+      model.addChildren((DefaultMutableTreeNode) node);
+    }
+
+  }
 
   public void allNodesCollapsed() {
     // not needed here
@@ -42,26 +53,15 @@ public class AsyncronTreeUpdateListener implements ITreeStateListener,
     // not needed here
   }
 
-  public void nodeCollapsed(final TreeNode _node) {
+  public void nodeCollapsed(Object obj) {
     // not needed here
   }
 
-  public void nodeExpanded(final TreeNode _node) {
-    if (!_node.isLeaf() && _node.getChildAt(0) instanceof BogusNode) {
-
-      StructurBrowserModel model =
-          (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
-              .getUserObject();
-      model.addChildren((DefaultMutableTreeNode) _node);
-    }
-
-  }
-
-  public void nodeSelected(final TreeNode _node) {
+  public void nodeSelected(Object obj) {
     // not needed here
   }
 
-  public void nodeUnselected(final TreeNode _node) {
+  public void nodeUnselected(Object obj) {
     // not needed here
   }
 

@@ -29,7 +29,8 @@ import org.efaps.ui.wicket.components.AbstractParentMarkupContainer;
  * @version $Id$
  *
  */
-public class RowContainer extends AbstractParentMarkupContainer {
+public class RowContainer extends AbstractParentMarkupContainer<Object> {
+
   private static final long serialVersionUID = 1L;
 
   public RowContainer(String id) {

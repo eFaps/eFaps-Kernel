@@ -20,9 +20,12 @@
 
 package org.efaps.ui.wicket.components.menu;
 
+import org.apache.wicket.model.IModel;
+
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 
 /**
@@ -34,19 +37,19 @@ public class SearchLink extends AbstractMenuItemLink {
 
   private static final long serialVersionUID = 1L;
 
-  public SearchLink(final String _id, final MenuItemModel _model) {
+  public SearchLink(final String _id, final IModel<UIMenuItem> _model) {
     super(_id, _model);
   }
 
   @Override
   public void onClick() {
-    FormModel formmodel =
-        (FormModel) this.findParent(MenuPanel.class).getModel();
-    formmodel.resetModel();
-    AbstractCommand command = ((MenuItemModel) super.getModel()).getCommand();
-    formmodel.setCommandUUID(command.getUUID());
-    formmodel.setFormUUID(command.getTargetForm().getUUID());
-    FormPage page = new FormPage(formmodel);
+    final UIForm form =
+        (UIForm) ((MenuPanel)this.findParent(MenuPanel.class)).getModelObject();
+    form.resetModel();
+    final AbstractCommand command = super.getModelObject().getCommand();
+    form.setCommandUUID(command.getUUID());
+    form.setFormUUID(command.getTargetForm().getUUID());
+    final FormPage page = new FormPage(new FormModel(form));
 
     this.getRequestCycle().setResponsePage(page);
 

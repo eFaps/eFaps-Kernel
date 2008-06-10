@@ -41,10 +41,11 @@ package org.efaps.ui.wicket.components.menu;
 
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowAjaxPageCreator;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
@@ -56,7 +57,7 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
 
   private static final long serialVersionUID = 1L;
 
-  public AjaxOpenModalComponent(final String _id, final MenuItemModel _menuItem) {
+  public AjaxOpenModalComponent(final String _id, final IModel <UIMenuItem> _menuItem) {
     super(_id, _menuItem);
     this.add(new AjaxOpenModalBehavior());
   }
@@ -91,11 +92,11 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
       }
       modal.reset();
       final ModalWindowAjaxPageCreator pageCreator =
-          new ModalWindowAjaxPageCreator((MenuItemModel) super.getComponent()
-              .getModel(), modal);
+          new ModalWindowAjaxPageCreator((UIMenuItem) super.getComponent()
+              .getModelObject(), modal);
       modal.setPageCreator(pageCreator);
-      modal.setInitialHeight(((MenuItemModel) getModel()).getWindowHeight());
-      modal.setInitialWidth(((MenuItemModel) getModel()).getWindowWidth());
+      modal.setInitialHeight(((UIMenuItem) getModelObject()).getWindowHeight());
+      modal.setInitialWidth(((UIMenuItem) getModelObject()).getWindowWidth());
       modal.show(_target);
 
     }

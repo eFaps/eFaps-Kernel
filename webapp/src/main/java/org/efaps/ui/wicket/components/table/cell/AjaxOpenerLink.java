@@ -28,7 +28,7 @@ import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.cell.TableCellModel;
+import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 
@@ -37,37 +37,37 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
  * @version $Id$
  *
  */
-public class AjaxOpenerLink extends AjaxLink {
+public class AjaxOpenerLink extends AjaxLink<UITableCell> {
 
   private static final long serialVersionUID = 1L;
 
-  public AjaxOpenerLink(final String id, final IModel _model) {
+  public AjaxOpenerLink(final String id, final IModel<UITableCell> _model) {
     super(id, _model);
   }
 
   @Override
   public void onClick(final AjaxRequestTarget _target) {
     Instance instance = null;
-    TableCellModel cellmodel = (TableCellModel) super.getModel();
+    final UITableCell cellmodel = (UITableCell) super.getModelObject();
     if (cellmodel.getOid() != null) {
       instance = new Instance(cellmodel.getOid());
       Menu menu = null;
       try {
         menu = Menu.getTypeTreeMenu(instance.getType());
-      } catch (Exception e) {
+      } catch (final Exception e) {
         throw new RestartResponseException(new ErrorPage(e));
       }
       if (menu == null) {
-        Exception ex =
+        final Exception ex =
             new Exception("no tree menu defined for type "
                 + instance.getType().getName());
         throw new RestartResponseException(new ErrorPage(ex));
       }
-      PageParameters parameters = new PageParameters();
+      final PageParameters parameters = new PageParameters();
       parameters.add("command", menu.getUUID().toString());
       parameters.add("oid", cellmodel.getOid());
 
-      String url = (String) this.urlFor(ContentContainerPage.class, parameters);
+      final String url = (String) this.urlFor(ContentContainerPage.class, parameters);
       _target.prependJavascript("opener.eFapsFrameContent.location.href = '"
           + url
           + "'");

@@ -44,7 +44,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id:ErrorPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ErrorPage extends WebPage {
+public class ErrorPage extends WebPage<Object> {
 
   private static final long serialVersionUID = 1L;
 
@@ -106,17 +106,17 @@ public class ErrorPage extends WebPage {
         + DBProperties.getProperty("ErrorPage.Titel")
         + "</title>"));
 
-    add(new Label("errorIDLabel", DBProperties
+    add(new Label<String>("errorIDLabel", DBProperties
         .getProperty("ErrorPage.Id.Label")));
-    add(new Label("errorID", errorId));
+    add(new Label<String>("errorID", errorId));
 
-    add(new Label("errorMsgLabel", DBProperties
+    add(new Label<String>("errorMsgLabel", DBProperties
         .getProperty("ErrorPage.Message.Label")));
-    add(new MultiLineLabel("errorMsg", errorMessage));
+    add(new MultiLineLabel<String>("errorMsg", errorMessage));
 
-    final WebMarkupContainer advanced = new WebMarkupContainer("advanced");
+    final WebMarkupContainer<Object> advanced = new WebMarkupContainer<Object>("advanced");
 
-    final AjaxLink ajaxlink = new AjaxLink("openclose") {
+    final AjaxLink<Object> ajaxlink = new AjaxLink<Object>("openclose") {
 
       private boolean expanded = false;
 
@@ -133,7 +133,7 @@ public class ErrorPage extends WebPage {
         }
         advanced.setVisible(this.expanded);
 
-        Label label = new Label("opencloseLabel", text);
+        Label<String> label = new Label<String>("opencloseLabel", text);
 
         label.setOutputMarkupId(true);
 
@@ -146,7 +146,7 @@ public class ErrorPage extends WebPage {
     };
     this.add(ajaxlink);
 
-    ajaxlink.add(new Label("opencloseLabel", "more").setOutputMarkupId(true));
+    ajaxlink.add(new Label<String>("opencloseLabel", "more").setOutputMarkupId(true));
 
     if (!(errorAdvanced.length() > 0)) {
       ajaxlink.setVisible(false);
@@ -156,11 +156,11 @@ public class ErrorPage extends WebPage {
     advanced.setVisible(false);
     advanced.setOutputMarkupPlaceholderTag(true);
 
-    advanced.add(new MultiLineLabel("advancedMsg", errorAdvanced));
+    advanced.add(new MultiLineLabel<String>("advancedMsg", errorAdvanced));
 
-    add(new Label("errorActLabel", DBProperties
+    add(new Label<String>("errorActLabel", DBProperties
         .getProperty("ErrorPage.Action.Label")));
-    add(new Label("errorAct", errorAction));
+    add(new Label<String>("errorAct", errorAction));
 
   }
 

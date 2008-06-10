@@ -62,7 +62,7 @@ public class StaticHeaderContributor extends HeaderContributor {
   /**
    * Component this StaticHeaderContributor is bind to
    */
-  private Component component;
+  private Component<?> component;
 
   /**
    * The HeaderType of this StaticHeaderContributor
@@ -75,7 +75,7 @@ public class StaticHeaderContributor extends HeaderContributor {
    * @see org.apache.wicket.behavior.AbstractBehavior#bind(org.apache.wicket.Component)
    */
   @Override
-  public void bind(final Component _component) {
+  public void bind(final Component<?> _component) {
     this.component = _component;
   }
 
@@ -147,13 +147,13 @@ public class StaticHeaderContributor extends HeaderContributor {
    *
    * @param _reference
    *                Reference to the Content
-   * @param _merged
-   *                should this StaticHeaderContributor merged
+   * @param _nomerge
+   *                should this StaticHeaderContributor not bemerged
    * @return
    */
   public static final StaticHeaderContributor forJavaScript(
                                                             final EFapsContentReference _reference,
-                                                            boolean _merged) {
+                                                            boolean _nomerge) {
 
     final StaticHeaderContributor ret =
         new StaticHeaderContributor(new IHeaderContributor() {
@@ -166,6 +166,7 @@ public class StaticHeaderContributor extends HeaderContributor {
           }
         }, _reference);
     ret.setHeaderType(HeaderType.JS);
+    ret.merged=_nomerge;
     return ret;
   }
 
@@ -193,7 +194,7 @@ public class StaticHeaderContributor extends HeaderContributor {
    *
    * @return value of instance variable {@link #component}
    */
-  public Component getComponent() {
+  public Component<?> getComponent() {
     return this.component;
   }
 

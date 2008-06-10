@@ -22,19 +22,20 @@ package org.efaps.ui.wicket.components.table.cell;
 
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
-import org.efaps.ui.wicket.models.cell.TableCellModel;
+import org.efaps.ui.wicket.models.cell.UITableCell;
 
 /**
  * @author jmox
  * @version $Id$
  */
-public class CheckOutLink extends WebMarkupContainer {
+public class CheckOutLink extends WebMarkupContainer<UITableCell> {
 
   private static final long serialVersionUID = 1L;
 
-  public CheckOutLink(final String _wicketId, final TableCellModel _model) {
+  public CheckOutLink(final String _wicketId, final IModel <UITableCell> _model) {
     super(_wicketId, _model);
   }
 
@@ -46,7 +47,7 @@ public class CheckOutLink extends WebMarkupContainer {
   @Override
   protected void onComponentTag(final ComponentTag _tag) {
     super.onComponentTag(_tag);
-    final TableCellModel model = (TableCellModel) getModel();
+    final UITableCell model =  super.getModelObject();
     final StringBuilder href = new StringBuilder();
 
     href.append(model.getReference()).append("oid=").append(model.getOid());;

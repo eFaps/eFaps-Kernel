@@ -25,6 +25,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
@@ -32,7 +33,7 @@ import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.components.table.cell.AjaxLinkContainer;
 import org.efaps.ui.wicket.components.table.cell.ContentContainerLink;
-import org.efaps.ui.wicket.models.cell.FormCellModel;
+import org.efaps.ui.wicket.models.cell.UIFormCell;
 
 /**
  * TODO description
@@ -40,47 +41,52 @@ import org.efaps.ui.wicket.models.cell.FormCellModel;
  * @author jmox
  * @version $Id$
  */
-public class ValueCellPanel extends Panel {
+public class ValueCellPanel extends Panel<UIFormCell> {
 
   private static final long serialVersionUID = 1L;
 
-  public ValueCellPanel(final String _wicketId, final FormCellModel _model,
+  public ValueCellPanel(final String _wicketId, final IModel<UIFormCell> _model,
                         final boolean _ajaxLink) {
     super(_wicketId, _model);
-    if (_model.getReference() == null) {
-      if (_model.getIcon() == null) {
-        this.add(new WebComponent("icon").setVisible(false));
+
+    final UIFormCell uiFormCell = super.getModelObject();
+
+    if (uiFormCell.getReference() == null) {
+      if (uiFormCell.getIcon() == null) {
+        this.add(new WebComponent<Object>("icon").setVisible(false));
       } else {
-        this.add(new StaticImageComponent("icon", _model.getIcon()));
+        this.add(new StaticImageComponent("icon", uiFormCell.getIcon()));
       }
 
-      this.add(new LabelComponent("label", new Model(_model.getCellValue())));
-      this.add(new WebMarkupContainer("link").setVisible(false));
+      this.add(new LabelComponent("label", new Model<String>(uiFormCell.getCellValue())));
+      this.add(new WebMarkupContainer<Object>("link").setVisible(false));
 
     } else {
-      this.add(new WebComponent("icon").setVisible(false));
-      this.add(new WebComponent("label").setVisible(false));
+      this.add(new WebComponent<Object>("icon").setVisible(false));
+      this.add(new WebComponent<Object>("label").setVisible(false));
 
-      WebMarkupContainer link;
-      if (_ajaxLink && _model.getTarget() != Target.POPUP) {
-        link = new AjaxLinkContainer("link", _model);
+      WebMarkupContainer<UIFormCell> link;
+      if (_ajaxLink && uiFormCell.getTarget() != Target.POPUP) {
+        link = new AjaxLinkContainer<UIFormCell>("link", _model);
       } else {
-        link = new ContentContainerLink("link", _model);
-        if (_model.getTarget() == Target.POPUP) {
+        link = new ContentContainerLink<UIFormCell>("link", _model);
+        if (uiFormCell.getTarget() == Target.POPUP) {
           final PopupSettings popup =
               new PopupSettings(PageMap.forName("popup"));
-          ((ContentContainerLink) link).setPopupSettings(popup);
+         ((ContentContainerLink<UIFormCell>) link).setPopupSettings(popup);
         }
       }
-      if (_model.getIcon() == null) {
-        link.add(new WebComponent("linkIcon").setVisible(false));
+      if (uiFormCell.getIcon() == null) {
+        link.add(new WebComponent<Object>("linkIcon").setVisible(false));
       } else {
-        link.add(new StaticImageComponent("linkIcon", _model.getIcon()));
+        link.add(new StaticImageComponent("linkIcon", uiFormCell.getIcon()));
       }
       link
-          .add(new LabelComponent("linkLabel", new Model(_model.getCellValue())));
+          .add(new LabelComponent("linkLabel", new Model<String>(uiFormCell.getCellValue())));
       this.add(link);
     }
 
   }
+
+
 }

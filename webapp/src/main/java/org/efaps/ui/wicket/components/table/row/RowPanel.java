@@ -23,32 +23,37 @@ package org.efaps.ui.wicket.components.table.row;
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.cell.CellPanel;
-import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.TableModel.RowModel;
 import org.efaps.ui.wicket.models.cell.TableCellModel;
+import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.objects.UIRow;
+import org.efaps.ui.wicket.models.objects.UITable;
 
 /**
  * @author jmox
  * @version $Id$
  */
-public class RowPanel extends Panel {
+public class RowPanel extends Panel<UIRow> {
 
   private static final long serialVersionUID = 1L;
 
-  public RowPanel(final String _id, final RowModel _model,
+  public RowPanel(final String _id, final IModel<UIRow> _model,
                   final TablePanel _tablePanel, final boolean _updateListMenu) {
     super(_id, _model);
-    final TableModel tablemodel = (TableModel) _tablePanel.getModel();
-    int i = tablemodel.getTableId();
-    final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
+    final UIRow uirow = super.getModelObject();
+
+    final UITable uiTable = _tablePanel.getModelObject();
+    int i = uiTable.getTableId();
+
+    final RepeatingView<Object> cellRepeater = new RepeatingView<Object>("cellRepeater");
     add(cellRepeater);
 
-    if (tablemodel.isShowCheckBoxes()) {
+    if (uiTable.isShowCheckBoxes()) {
       final CellPanel cellpanel =
-          new CellPanel(cellRepeater.newChildId(), _model.getOids());
+          new CellPanel(cellRepeater.newChildId(), uirow.getOids());
       cellpanel.setOutputMarkupId(true);
       cellpanel.add(new SimpleAttributeModifier("class",
           "eFapsTableCheckBoxCell"));
@@ -56,11 +61,11 @@ public class RowPanel extends Panel {
       i++;
     }
 
-    for (TableCellModel cellmodel : _model.getValues()) {
+    for (final UITableCell cellmodel : uirow.getValues()) {
 
       final CellPanel cellpanel =
-          new CellPanel(cellRepeater.newChildId(), cellmodel, _updateListMenu,
-              tablemodel);
+          new CellPanel(cellRepeater.newChildId(), new TableCellModel(cellmodel), _updateListMenu,
+              uiTable);
       cellpanel.setOutputMarkupId(true);
       if (cellmodel.isFixedWidth()) {
         cellpanel.add(new SimpleAttributeModifier("class",

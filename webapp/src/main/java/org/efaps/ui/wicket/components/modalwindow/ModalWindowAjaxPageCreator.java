@@ -25,7 +25,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 
 import org.efaps.admin.ui.AbstractCommand;
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 
@@ -37,11 +37,11 @@ public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
 
   private static final long serialVersionUID = 1L;
 
-  private final MenuItemModel imodel;
+  private final UIMenuItem imodel;
 
   private final ModalWindowContainer modalWindow;
 
-  public ModalWindowAjaxPageCreator(final MenuItemModel _model,
+  public ModalWindowAjaxPageCreator(final UIMenuItem _model,
                                     final ModalWindowContainer _modalWindow) {
     this.imodel = _model;
     this.modalWindow = _modalWindow;
@@ -49,7 +49,7 @@ public class ModalWindowAjaxPageCreator implements ModalWindow.PageCreator {
 
   public Page createPage() {
     Page ret = null;
-    MenuItemModel model = this.imodel;
+    UIMenuItem model = this.imodel;
     AbstractCommand command = model.getCommand();
     PageParameters para = new PageParameters("command=" + command.getUUID());
     para.add("oid", model.getOid());

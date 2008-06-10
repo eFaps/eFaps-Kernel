@@ -18,7 +18,7 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.models;
+package org.efaps.ui.wicket.models.objects;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,20 +40,20 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class FieldTableModel extends TableModel {
+public class UIFieldTable extends UITable implements IFormElement{
 
   private static final long serialVersionUID = 1L;
 
   /**
    * Logging instance used in this class.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(TableModel.class);
+  private static final Logger LOG = LoggerFactory.getLogger(UIFieldTable.class);
 
   private final long id;
 
   private final String name;
 
-  public FieldTableModel(final UUID _commanduuid, final String _oid,
+  public UIFieldTable(final UUID _commanduuid, final String _oid,
                          final FieldTable _fieldTable) {
     super(_commanduuid, _oid);
     setTableUUID(_fieldTable.getTargetTable().getUUID());
@@ -72,7 +72,7 @@ public class FieldTableModel extends TableModel {
                 .getEnum((Context.getThreadContext()
                     .getUserAttribute(getUserAttributeKey(UserAttributeKey.SORTDIRECTION)))));
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       // we don't throw an error because this are only Usersettings
       LOG.error("error during the retrieve of UserAttributes", e);
     }

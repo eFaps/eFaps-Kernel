@@ -57,18 +57,18 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import org.efaps.ui.wicket.EFapsApplication;
-import org.efaps.ui.wicket.models.AbstractModel;
-import org.efaps.ui.wicket.models.FieldTableModel;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.HeaderModel;
-import org.efaps.ui.wicket.models.HeadingModel;
-import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.FormModel.ElementType;
-import org.efaps.ui.wicket.models.FormModel.FormElementModel;
-import org.efaps.ui.wicket.models.FormModel.FormRowModel;
-import org.efaps.ui.wicket.models.TableModel.RowModel;
-import org.efaps.ui.wicket.models.cell.FormCellModel;
-import org.efaps.ui.wicket.models.cell.TableCellModel;
+import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIFieldTable;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIHeading;
+import org.efaps.ui.wicket.models.objects.UIRow;
+import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UITableHeader;
+import org.efaps.ui.wicket.models.objects.UIForm.ElementType;
+import org.efaps.ui.wicket.models.objects.UIForm.FormElement;
+import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 import org.efaps.ui.wicket.resources.XSLResource;
 import org.efaps.ui.wicket.util.FileFormat.MimeTypes;
 import org.efaps.util.EFapsException;
@@ -119,7 +119,7 @@ public class XMLExport {
   /**
    * this variable contains the model used in this XMLExport
    */
-  private AbstractModel model;
+  private AbstractUIObject model;
 
   /**
    * the document
@@ -129,13 +129,13 @@ public class XMLExport {
   private static String APPNAME = Application.get().getApplicationKey();
 
   // Constructor
-  public XMLExport(final AbstractModel _model) throws EFapsException {
+  public XMLExport(final AbstractUIObject _model) throws EFapsException {
     initialise(_model);
   }
 
   public XMLExport(final Object object) throws EFapsException {
     if (object instanceof Component) {
-      initialise((AbstractModel) ((Component) object).getPage().getModel());
+      initialise((AbstractUIObject) ((Component) object).getPage().getModelObject());
     }
   }
 
@@ -216,7 +216,7 @@ public class XMLExport {
    * @param _model
    * @throws EFapsException
    */
-  private void initialise(final AbstractModel _model) throws EFapsException {
+  private void initialise(final AbstractUIObject _model) throws EFapsException {
     this.msgTimeStamp = new Date();
     this.model = _model;
     // Generate the XML Document using DOM
@@ -234,11 +234,11 @@ public class XMLExport {
   /**
    * Generate a DOM XML document
    *
-   * @param _model
+   * @param _uiObject
    * @return
    * @throws EFapsException
    */
-  protected Document generateXMLDocument(AbstractModel _model)
+  protected Document generateXMLDocument(AbstractUIObject _uiObject)
                                                               throws EFapsException {
     Document xmlDoc = null;
     try {
@@ -265,27 +265,27 @@ public class XMLExport {
 
     root.appendChild(xmlDoc.createComment("titel"));
     final Element title = xmlDoc.createElement(TAG.TITLE.value);
-    title.appendChild(xmlDoc.createTextNode(_model.getTitle()));
+    title.appendChild(xmlDoc.createTextNode(_uiObject.getTitle()));
     root.appendChild(title);
 
-    if (_model instanceof TableModel) {
+    if (_uiObject instanceof UITable) {
       // add a table
       root.appendChild(xmlDoc.createComment("table"));
-      root.appendChild(getTableElement(xmlDoc, (TableModel) _model));
-    } else if (_model instanceof FormModel) {
-      for (final FormModel.Element formelement : ((FormModel) _model)
+      root.appendChild(getTableElement(xmlDoc, (UITable) _uiObject));
+    } else if (_uiObject instanceof UIForm) {
+      for (final UIForm.Element formelement : ((UIForm) _uiObject)
           .getElements()) {
         if (formelement.getType().equals(ElementType.FORM)) {
           root.appendChild(xmlDoc.createComment("form"));
-          root.appendChild(getFormElement(xmlDoc, (FormModel) _model,
-              (FormElementModel) formelement.getModel()));
+          root.appendChild(getFormElement(xmlDoc, (UIForm) _uiObject,
+              (FormElement) formelement.getElement()));
         } else if (formelement.getType().equals(ElementType.HEADING)) {
-          root.appendChild(getHeadingElement(xmlDoc, (HeadingModel) formelement
-              .getModel()));
+          root.appendChild(getHeadingElement(xmlDoc, (UIHeading) formelement
+              .getElement()));
         } else if (formelement.getType().equals(ElementType.TABLE)) {
           root.appendChild(xmlDoc.createComment("table"));
           root.appendChild(getTableElement(xmlDoc,
-              (FieldTableModel) formelement.getModel()));
+              (UIFieldTable) formelement.getElement()));
         }
       }
     }
@@ -301,7 +301,7 @@ public class XMLExport {
    * @return the Element for a Heading
    */
   protected Element getHeadingElement(final Document _xmlDoc,
-                                      final HeadingModel _model) {
+                                      final UIHeading _model) {
     final Element heading = _xmlDoc.createElement(TAG.HEADING.value);
     final Element value = _xmlDoc.createElement(TAG.VALUE.value);
     heading.setAttribute("level", ((Integer) _model.getLevel()).toString());
@@ -319,17 +319,17 @@ public class XMLExport {
    * @return the Element for a Form
    */
   protected Element getFormElement(final Document _xmlDoc,
-                                   final FormModel _formmodel,
-                                   final FormElementModel _model) {
+                                   final UIForm _formmodel,
+                                   final FormElement _model) {
     final Element form = _xmlDoc.createElement(TAG.FORM.value);
     form.setAttribute("maxGroupCount",
         ((Integer) _formmodel.getMaxGroupCount()).toString());
 
-    for (final FormRowModel rowmodel : _model.getRowModels()) {
+    for (final FormRow rowmodel : _model.getRowModels()) {
 
       final Element f_row = _xmlDoc.createElement(TAG.FORM_ROW.value);
       form.appendChild(f_row);
-      for (final FormCellModel formcellmodel : rowmodel.getValues()) {
+      for (final UIFormCell formcellmodel : rowmodel.getValues()) {
         final Integer colspan =
             2 * (_formmodel.getMaxGroupCount() - rowmodel.getGroupCount()) + 1;
 
@@ -368,14 +368,14 @@ public class XMLExport {
    * @return the Element for a Table
    */
   protected Element getTableElement(final Document _xmlDoc,
-                                    final TableModel _model) {
+                                    final UITable _model) {
 
     final Element table = _xmlDoc.createElement(TAG.TABLE.value);
 
     final Element table_header = _xmlDoc.createElement(TAG.TABLE_HEADER.value);
     table.appendChild(table_header);
 
-    for (final HeaderModel headermodel : _model.getHeaders()) {
+    for (final UITableHeader headermodel : _model.getHeaders()) {
       final Element t_cell = _xmlDoc.createElement(TAG.TABLE_CELL.value);
       t_cell.setAttribute("name", headermodel.getName());
       String width;
@@ -394,7 +394,7 @@ public class XMLExport {
     }
     boolean addBody = true;
     final Element t_body = _xmlDoc.createElement(TAG.TABLE_BODY.value);
-    for (final RowModel rowmodel : _model.getValues()) {
+    for (final UIRow rowmodel : _model.getValues()) {
       if (addBody) {
         table.appendChild(t_body);
         addBody = false;
@@ -402,7 +402,7 @@ public class XMLExport {
       final Element t_row = _xmlDoc.createElement(TAG.TABLE_ROW.value);
       t_body.appendChild(t_row);
 
-      for (final TableCellModel tablecellmodel : rowmodel.getValues()) {
+      for (final UITableCell tablecellmodel : rowmodel.getValues()) {
         final Element t_cell = _xmlDoc.createElement(TAG.TABLE_CELL.value);
         final Element value = _xmlDoc.createElement(TAG.VALUE.value);
         t_cell.appendChild(value);

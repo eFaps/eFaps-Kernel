@@ -52,8 +52,8 @@ import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
 import org.efaps.ui.wicket.components.menutree.MenuTree;
-import org.efaps.ui.wicket.models.StructurBrowserModel;
-import org.efaps.ui.wicket.models.StructurBrowserModel.BogusNode;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser.BogusNode;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -134,11 +134,12 @@ public class StructurBrowserTree extends DefaultAbstractTree {
    * @see org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree#newNodeIcon(org.apache.wicket.MarkupContainer,
    *      java.lang.String, javax.swing.tree.TreeNode)
    */
+  @SuppressWarnings("unchecked")
   @Override
   protected Component newNodeIcon(final MarkupContainer _parent,
                                   final String _wicketId, final TreeNode _node) {
-    final StructurBrowserModel model =
-        (StructurBrowserModel) ((DefaultMutableTreeNode) _node).getUserObject();
+    final UIStructurBrowser model =
+        (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
     // if we have the model contains a icon render it, else just pass it on to
     // the superMethod
     Component ret;
@@ -165,11 +166,12 @@ public class StructurBrowserTree extends DefaultAbstractTree {
    * @see org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree#newNodeLink(org.apache.wicket.MarkupContainer,
    *      java.lang.String, javax.swing.tree.TreeNode)
    */
+  @SuppressWarnings("unchecked")
   @Override
   protected MarkupContainer newNodeLink(final MarkupContainer _parent,
                                         final String _id, final TreeNode _node) {
-    final StructurBrowserModel model =
-        (StructurBrowserModel) ((DefaultMutableTreeNode) _node).getUserObject();
+    final UIStructurBrowser model =
+        (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
     // add UpdateBehavior for thi oid to the Session
     ((EFapsSession) this.getSession()).addUpdateBehaviors(model.getOid(),
         (AjaxUpdateBehavior) getBehaviors(AjaxUpdateBehavior.class).get(0));
@@ -181,8 +183,8 @@ public class StructurBrowserTree extends DefaultAbstractTree {
       private static final long serialVersionUID = 1L;
 
       public void onClick(final AjaxRequestTarget _target) {
-        final StructurBrowserModel model =
-            (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
+        final UIStructurBrowser model =
+            (UIStructurBrowser) ((DefaultMutableTreeNode) _node)
                 .getUserObject();
 
         AbstractCommand cmd = model.getCommand();
@@ -273,6 +275,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
    * @param _item
    * @param _level
    */
+  @SuppressWarnings("unchecked")
   @Override
   protected void populateTreeItem(final WebMarkupContainer _item,
                                   final int _level) {
@@ -283,11 +286,11 @@ public class StructurBrowserTree extends DefaultAbstractTree {
 
     _item.add(newJunctionLink(_item, "link", "image", node));
 
-    final WebComponent direction = new WebComponent("direction");
+    final WebComponent<Object> direction = new WebComponent<Object>("direction");
     _item.add(direction);
 
-    final StructurBrowserModel model =
-        (StructurBrowserModel) node.getUserObject();
+    final UIStructurBrowser model =
+        (UIStructurBrowser) node.getUserObject();
     if (model.getDirection() == null) {
       direction.setVisible(false);
     } else if (model.getDirection()) {
@@ -296,17 +299,17 @@ public class StructurBrowserTree extends DefaultAbstractTree {
       direction.add(new SimpleAttributeModifier("class", "directionUp"));
     }
 
-    final MarkupContainer nodeLink = newNodeLink(_item, "nodeLink", node);
+    final MarkupContainer<?> nodeLink = newNodeLink(_item, "nodeLink", node);
     _item.add(nodeLink);
 
     nodeLink.add(newNodeIcon(nodeLink, "icon", node));
 
-    nodeLink.add(new Label("label", new AbstractReadOnlyModel() {
+    nodeLink.add(new Label<String>("label", new AbstractReadOnlyModel<String>() {
 
       private static final long serialVersionUID = 1L;
 
       @Override
-      public Object getObject() {
+      public String getObject() {
         return renderNode(node);
       }
     }));
@@ -358,8 +361,8 @@ public class StructurBrowserTree extends DefaultAbstractTree {
           StructurBrowserTree.this.oidToNode.get(getOid());
       final DefaultTreeModel treemodel =
           (DefaultTreeModel) this.getComponent().getModel().getObject();
-      final StructurBrowserModel model =
-          (StructurBrowserModel) node.getUserObject();
+      final UIStructurBrowser model =
+          (UIStructurBrowser) node.getUserObject();
       final StructurBrowserTree tree =
           (StructurBrowserTree) this.getComponent();
       // in case of edit, we just update the actual node

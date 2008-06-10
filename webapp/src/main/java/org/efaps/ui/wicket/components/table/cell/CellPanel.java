@@ -25,13 +25,14 @@ import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
-import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.cell.TableCellModel;
+import org.efaps.ui.wicket.models.cell.UITableCell;
+import org.efaps.ui.wicket.models.objects.UITable;
 
 /**
  * TODO description
@@ -39,52 +40,52 @@ import org.efaps.ui.wicket.models.cell.TableCellModel;
  * @author jmox
  * @version $Id:CellPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class CellPanel extends Panel {
+public class CellPanel extends Panel<UITableCell> {
 
   private static final long serialVersionUID = 1L;
 
   public CellPanel(final String _id, final String _oid) {
     super(_id);
     this.add(new CheckBoxComponent("checkbox", _oid));
-    this.add(new WebMarkupContainer("link").setVisible(false));
-    this.add(new WebMarkupContainer("icon").setVisible(false));
-    this.add(new WebMarkupContainer("label").setVisible(false));
+    this.add(new WebMarkupContainer<Object>("link").setVisible(false));
+    this.add(new WebMarkupContainer<Object>("icon").setVisible(false));
+    this.add(new WebMarkupContainer<Object>("label").setVisible(false));
   }
 
-  public CellPanel(final String _wicketId, final TableCellModel _cellmodel,
-                   final boolean _updateListMenu, final TableModel _tablemodel) {
+  public CellPanel(final String _wicketId, final IModel<UITableCell> _cellmodel,
+                   final boolean _updateListMenu, final UITable _uitable) {
     super(_wicketId, _cellmodel);
-    final TableCellModel cellmodel = (TableCellModel) super.getModel();
+    final UITableCell cellmodel = super.getModelObject();
 
     this.add(new SimpleAttributeModifier("title", cellmodel.getCellValue()));
 
-    this.add(new WebMarkupContainer("checkbox").setVisible(false));
-    WebMarkupContainer celllink;
+    this.add(new WebMarkupContainer<Object>("checkbox").setVisible(false));
+    WebMarkupContainer<UITableCell> celllink;
     if (cellmodel.getReference() == null) {
-      celllink = new WebMarkupContainer("link");
+      celllink = new WebMarkupContainer<UITableCell>("link");
       celllink.setVisible(false);
     } else {
       if (_updateListMenu && cellmodel.getTarget() != Target.POPUP) {
-        celllink = new AjaxLinkContainer("link", cellmodel);
+        celllink = new AjaxLinkContainer<UITableCell>("link", _cellmodel);
       } else {
         if (cellmodel.isCheckOut()) {
-          celllink = new CheckOutLink("link", cellmodel);
+          celllink = new CheckOutLink("link", _cellmodel);
         } else {
-          if (_tablemodel.isSearchMode()
+          if (_uitable.isSearchMode()
               && cellmodel.getTarget() != Target.POPUP) {
             // do we have "connectmode",then we don't want a link in a popup
-            if (_tablemodel.isSubmit()) {
-              celllink = new WebMarkupContainer("link");
+            if (_uitable.isSubmit()) {
+              celllink = new WebMarkupContainer<UITableCell>("link");
               celllink.setVisible(false);
             } else {
-              celllink = new AjaxOpenerLink("link", cellmodel);
+              celllink = new AjaxOpenerLink("link", _cellmodel);
             }
           } else {
-            celllink = new ContentContainerLink("link", cellmodel);
+            celllink = new ContentContainerLink<UITableCell>("link", _cellmodel);
             if (cellmodel.getTarget() == Target.POPUP) {
               final PopupSettings popup =
                   new PopupSettings(PageMap.forName("popup"));
-              ((ContentContainerLink) celllink).setPopupSettings(popup);
+              ((ContentContainerLink<UITableCell>) celllink).setPopupSettings(popup);
             }
           }
         }
@@ -93,21 +94,21 @@ public class CellPanel extends Panel {
     this.add(celllink);
 
     if (celllink.isVisible()) {
-      celllink.add(new LabelComponent("linklabel", new Model(cellmodel
+      celllink.add(new LabelComponent("linklabel", new Model<String>(cellmodel
           .getCellValue())));
 
       if (cellmodel.getIcon() == null) {
-        celllink.add(new WebMarkupContainer("linkicon").setVisible(false));
+        celllink.add(new WebMarkupContainer<Object>("linkicon").setVisible(false));
       } else {
         celllink.add(new StaticImageComponent("linkicon", cellmodel.getIcon()));
       }
-      this.add(new WebMarkupContainer("icon").setVisible(false));
-      this.add(new WebMarkupContainer("label").setVisible(false));
+      this.add(new WebMarkupContainer<Object>("icon").setVisible(false));
+      this.add(new WebMarkupContainer<Object>("label").setVisible(false));
     } else {
       this
-          .add(new LabelComponent("label", new Model(cellmodel.getCellValue())));
+          .add(new LabelComponent("label", new Model<String>(cellmodel.getCellValue())));
       if (cellmodel.getIcon() == null) {
-        this.add(new WebMarkupContainer("icon").setVisible(false));
+        this.add(new WebMarkupContainer<Object>("icon").setVisible(false));
       } else {
         this.add(new StaticImageComponent("icon", cellmodel.getIcon()));
       }

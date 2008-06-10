@@ -20,73 +20,28 @@
 
 package org.efaps.ui.wicket.models.cell;
 
-import org.efaps.admin.dbproperty.DBProperties;
-import org.efaps.admin.ui.field.Field;
+import org.efaps.ui.wicket.models.AbstractModel;
 
-/**
- * This class represents the model wich is used for rendering the components of
- * two cells inside a form. The first is holding the label for the second one
- * which contains the value. <br>
- * It uses a {@link org.efaps.admin.ui.field.Field} as the base for the data.
- *
- * @author jmox
- * @version $Id$
- */
-public class FormCellModel extends TableCellModel {
 
+public class FormCellModel extends AbstractModel<UIFormCell>{
+
+  /**
+   *
+   */
   private static final long serialVersionUID = 1L;
 
-  /**
-   * instance variable storing the Value for the first cell as a Label
-   */
-  private final String cellLabel;
+  private UIFormCell uitable;
 
-  /**
-   * instance variable storing if in case of edit or create this field is
-   * required
-   */
-  private final boolean required;
-
-  /**
-   * instance variable storing the name of the field
-   */
-  private final String name;
-
-  public FormCellModel(final Field _field, final String _oid,
-                       final String _cellValue, final String _icon,
-                       final boolean _required, final String _label) {
-    super(_field, _oid, _cellValue, _icon);
-    this.required = _required;
-    this.cellLabel = DBProperties.getProperty(_label);
-    this.name = _field.getName();
+  public FormCellModel (final UIFormCell _uitable) {
+    this.uitable = _uitable;
   }
 
-  /**
-   * This is the getter method for the instance variable {@link #cellLabel}.
-   *
-   * @return value of instance variable {@link #cellLabel}
-   */
-  public String getCellLabel() {
-    return this.cellLabel;
+  public UIFormCell getObject() {
+    return this.uitable;
   }
 
-  /**
-   * This is the getter method for the instance variable {@link #required}.
-   *
-   * @return value of instance variable {@link #required}
-   */
-  public boolean isRequired() {
-    return this.required;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #name}.
-   *
-   * @return value of instance variable {@link #name}
-   */
-
-  public String getName() {
-    return this.name;
+  public void setObject(final UIFormCell _uitable) {
+    this.uitable = _uitable;
   }
 
 }

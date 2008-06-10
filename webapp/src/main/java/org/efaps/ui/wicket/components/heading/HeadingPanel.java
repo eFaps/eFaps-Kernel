@@ -28,7 +28,7 @@ import org.apache.wicket.markup.html.panel.Panel;
  * @author jmox
  * @version $Id:TitelPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class HeadingPanel extends Panel {
+public class HeadingPanel extends Panel<Object> {
 
   private static final long serialVersionUID = 1L;
 
@@ -51,7 +51,7 @@ public class HeadingPanel extends Panel {
   }
 
   private void addComponents(final String _heading) {
-    final WebMarkupContainer container = new WebMarkupContainer("container");
+    final WebMarkupContainer<Object> container = new WebMarkupContainer<Object>("container");
     this.add(container);
     if (this.level == 0) {
       container.add(new SimpleAttributeModifier("class", "eFapsFrameTitle"));
@@ -59,7 +59,7 @@ public class HeadingPanel extends Panel {
       container.add(new SimpleAttributeModifier("class", "eFapsHeading"
           + this.level));
     }
-    container.add(new Label("heading", _heading));
+    container.add(new Label<String>("heading", _heading));
   }
 
 }

@@ -29,7 +29,7 @@ import org.efaps.ui.wicket.components.footer.FooterPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
 import org.efaps.ui.wicket.components.menu.MenuPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.AbstractModel;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
@@ -41,7 +41,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:AbstractContentPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public abstract class AbstractContentPage extends AbstractMergePage {
+public abstract class AbstractContentPage<T> extends AbstractMergePage<T> {
 
   private static final long serialVersionUID = -2374207555009145191L;
 
@@ -72,17 +72,17 @@ public abstract class AbstractContentPage extends AbstractMergePage {
    */
   private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
-  public AbstractContentPage(final IModel _model) {
+  public AbstractContentPage(final IModel<T> _model) {
     this(_model, null);
   }
 
-  public AbstractContentPage(final IModel _model,
+  public AbstractContentPage(final IModel<T> _model,
                              final ModalWindowContainer _modalWindow) {
     super(_model);
     this.modalWindow = _modalWindow;
   }
 
-  public AbstractContentPage(final IModel _model,
+  public AbstractContentPage(final IModel<T> _model,
                              final ModalWindowContainer _modalWindow,
                              final IPageMap _pagemap) {
     super(_pagemap, _model);
@@ -101,15 +101,15 @@ public abstract class AbstractContentPage extends AbstractMergePage {
     add(this.modal);
     this.modal.setPageMapName("modal");
 
-    final AbstractModel model = (AbstractModel) super.getModel();
-    add(new HeadingPanel("titel", model.getTitle()));
+    final AbstractUIObject uiObject = (AbstractUIObject) super.getModelObject();
+    add(new HeadingPanel("titel", uiObject.getTitle()));
 
-    add(new MenuPanel("menu", model, _form));
-    WebMarkupContainer footerpanel;
-    if (model.isCreateMode() || model.isEditMode() || model.isSearchMode()) {
-      footerpanel = new FooterPanel("footer", model, this.modalWindow, _form);
+    add(new MenuPanel<Object>("menu", (IModel<Object>) super.getModel(), _form));
+    WebMarkupContainer<AbstractUIObject> footerpanel;
+    if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode()) {
+      footerpanel = new FooterPanel("footer",  super.getModel(), this.modalWindow, _form);
     } else {
-      footerpanel = new WebMarkupContainer("footer");
+      footerpanel = new WebMarkupContainer<AbstractUIObject>("footer");
       footerpanel.setVisible(false);
     }
 
@@ -156,7 +156,7 @@ public abstract class AbstractContentPage extends AbstractMergePage {
     super.onAfterRender();
     if (this.menuTreeKey == null) {
       this.menuTreeKey =
-          ((AbstractModel) this.getModel()).getParameter("eFapsMenuTreeKey");
+          ((AbstractUIObject) this.getModelObject()).getParameter("eFapsMenuTreeKey");
 
     }
   }

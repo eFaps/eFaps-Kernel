@@ -20,8 +20,10 @@
 
 package org.efaps.ui.wicket.components.menu;
 
+import org.apache.wicket.model.IModel;
+
 import org.efaps.ui.wicket.EFapsSession;
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.login.LoginPage;
 
 /**
@@ -32,7 +34,7 @@ public class LogOutLink extends StandardLink {
 
   private static final long serialVersionUID = 1L;
 
-  public LogOutLink(final String _id, final MenuItemModel _model) {
+  public LogOutLink(final String _id, final IModel<UIMenuItem> _model) {
     super(_id, _model);
   }
 

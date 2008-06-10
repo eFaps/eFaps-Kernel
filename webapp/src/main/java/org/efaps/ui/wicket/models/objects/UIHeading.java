@@ -18,14 +18,14 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.models;
+package org.efaps.ui.wicket.models.objects;
 
-import org.apache.wicket.model.Model;
+import org.apache.wicket.IClusterable;
 
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.field.FieldHeading;
 
-public class HeadingModel extends Model {
+public class UIHeading implements IFormElement, IClusterable{
 
   private static final long serialVersionUID = 1L;
 
@@ -36,7 +36,7 @@ public class HeadingModel extends Model {
 
   private final String label;
 
-  public HeadingModel(final FieldHeading _heading) {
+  public UIHeading(final FieldHeading _heading) {
     this.label = DBProperties.getProperty(_heading.getLabel());
     this.level = _heading.getLevel();
   }
@@ -58,5 +58,7 @@ public class HeadingModel extends Model {
   public String getLabel() {
     return this.label;
   }
+
+
 
 }

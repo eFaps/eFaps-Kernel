@@ -45,7 +45,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:SplitHeaderPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class SplitHeaderPanel extends Panel {
+public class SplitHeaderPanel extends Panel<Object> {
 
   private static final long serialVersionUID = 1L;
 
@@ -85,7 +85,7 @@ public class SplitHeaderPanel extends Panel {
    * style "display" to "none". This is necessary because Firefox is is showing
    * the scrollbars of a div even if it is behind another div (z-index)
    */
-  private final Set<Component> hideComponents = new HashSet<Component>();
+  private final Set<Component<?>> hideComponents = new HashSet<Component<?>>();
 
   public SplitHeaderPanel(final String _id, final boolean _hidevertical) {
     super(_id);
@@ -94,10 +94,10 @@ public class SplitHeaderPanel extends Panel {
     this.add(StaticHeaderContributor.forCss(CSS));
     this.add(new StringHeaderContributor(getJavaScript()));
 
-    this.add(new Label("titel", DBProperties.getProperty("Split.Titel")));
+    this.add(new Label<String>("titel", DBProperties.getProperty("Split.Titel")));
 
     if (this.hidevertical) {
-      final AjaxLink linkvertical = new AjaxLink("expandcontractvertical") {
+      final AjaxLink<?> linkvertical = new AjaxLink<Object>("expandcontractvertical") {
 
         private static final long serialVersionUID = 1L;
 
@@ -105,15 +105,16 @@ public class SplitHeaderPanel extends Panel {
         public void onClick(final AjaxRequestTarget _target) {
 
           String splitId = null;
-          Iterator<?> iter = findParent(StructBrowsSplitPanel.class).iterator();
+
+          Iterator<?> iter = ((StructBrowsSplitPanel)findParent(StructBrowsSplitPanel.class)).iterator();
           boolean found = false;
           while (iter.hasNext()) {
             Object child = iter.next();
             if (child instanceof WebMarkupContainer) {
-              List<?> behaviors = ((WebMarkupContainer) child).getBehaviors();
+              List<?> behaviors = ((WebMarkupContainer<?>) child).getBehaviors();
               for (Object behavior : behaviors) {
                 if (behavior instanceof ContentPaneBehavior) {
-                  splitId = ((WebMarkupContainer) child).getMarkupId();
+                  splitId = ((WebMarkupContainer<?>) child).getMarkupId();
                   found = true;
                   break;
                 }
@@ -126,7 +127,7 @@ public class SplitHeaderPanel extends Panel {
 
           String ret =
               "togglePaneVertical(\""
-                  + findParent(StructBrowsSplitPanel.class).getMarkupId()
+                  + ((StructBrowsSplitPanel)findParent(StructBrowsSplitPanel.class)).getMarkupId()
                   + "\",\""
                   + splitId
                   + "\",\""
@@ -139,11 +140,10 @@ public class SplitHeaderPanel extends Panel {
       };
       this.add(linkvertical);
     } else {
-      this.add(new WebMarkupContainer("expandcontractvertical")
-          .setVisible(false));
+      this.add(new WebMarkupContainer<Object>("expandcontractvertical").setVisible(false));
     }
 
-    final AjaxLink link = new AjaxLink("expandcontract") {
+    final AjaxLink<?> link = new AjaxLink<Object>("expandcontract") {
 
       private static final long serialVersionUID = 1L;
 
@@ -152,9 +152,9 @@ public class SplitHeaderPanel extends Panel {
 
         String panelId;
         if (findParent(ListOnlyPanel.class) == null) {
-          panelId = findParent(StructBrowsSplitPanel.class).getMarkupId();
+          panelId = ((StructBrowsSplitPanel)findParent(StructBrowsSplitPanel.class)).getMarkupId();
         } else {
-          panelId = findParent(ListOnlyPanel.class).getMarkupId();
+          panelId =  ((ListOnlyPanel)findParent(ListOnlyPanel.class)).getMarkupId();
         }
 
         final StringBuilder ret = new StringBuilder();
@@ -163,7 +163,7 @@ public class SplitHeaderPanel extends Panel {
                 .getMarkupId()).append("\",\"").append(panelId).append("\",\"")
             .append(this.getParent().getMarkupId()).append("\", new Array(");
         boolean addComma = false;
-        for (Component _component : SplitHeaderPanel.this.hideComponents) {
+        for (Component<?> _component : SplitHeaderPanel.this.hideComponents) {
           if (addComma) {
             ret.append(",");
           }
@@ -298,7 +298,7 @@ public class SplitHeaderPanel extends Panel {
    * @param _component
    *                Component wich must be hidden
    */
-  public void addHideComponent(final Component _component) {
+  public void addHideComponent(final Component<?> _component) {
     this.hideComponents.add(_component);
   }
 }

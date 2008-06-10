@@ -20,6 +20,8 @@
 
 package org.efaps.ui.wicket.components;
 
+import org.apache.wicket.behavior.IBehavior;
+
 
 /**
  * TODO description
@@ -28,7 +30,7 @@ package org.efaps.ui.wicket.components;
  * @version $Id$
  *
  */
-public interface FileUploadListener {
+public interface FileUploadListener extends IBehavior{
 
   void onSubmit();
 

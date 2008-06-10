@@ -36,7 +36,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:StructBrowsSplitPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class StructBrowsSplitPanel extends Panel {
+public class StructBrowsSplitPanel extends Panel<Object> {
 
   private static final long serialVersionUID = 1L;
 
@@ -58,7 +58,7 @@ public class StructBrowsSplitPanel extends Panel {
     final SplitHeaderPanel header = new SplitHeaderPanel("header", true);
     this.add(header);
 
-    final WebMarkupContainer top = new WebMarkupContainer("top");
+    final WebMarkupContainer<Object> top = new WebMarkupContainer<Object>("top");
     top.add(new ContentPaneBehavior(50, 20));
     this.add(top);
 
@@ -68,12 +68,12 @@ public class StructBrowsSplitPanel extends Panel {
     top.add(stuctbrows);
     header.addHideComponent(stuctbrows);
 
-    final WebMarkupContainer bottom = new WebMarkupContainer("bottom");
+    final WebMarkupContainer<Object> bottom = new WebMarkupContainer<Object>("bottom");
     bottom.add(new ContentPaneBehavior(50, 20));
     this.add(bottom);
     header.addHideComponent(bottom);
 
-    final WebMarkupContainer menuact = new WebMarkupContainer("menuact");
+    final WebMarkupContainer<Object> menuact = new WebMarkupContainer<Object>("menuact");
     menuact.setOutputMarkupId(true);
     bottom.add(menuact);
     menuact.add(new MenuTree("menu", _parameters, _listmenukey));

@@ -18,29 +18,9 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.models;
+package org.efaps.ui.wicket.models.objects;
 
-import java.util.UUID;
 
-import org.efaps.admin.ui.Search;
-
-/**
- * @author jmox
- * @version $Id$
- */
-public class SearchItemModel extends MenuItemModel {
-
-  private static final long serialVersionUID = 1L;
-
-  private final UUID searchuuid;
-
-  public SearchItemModel(final UUID _uuid) {
-    super(_uuid, null);
-    this.searchuuid = _uuid;
-  }
-
-  public Search getSearch() {
-    return Search.get(this.searchuuid);
-  }
+public interface IFormElement {
 
 }

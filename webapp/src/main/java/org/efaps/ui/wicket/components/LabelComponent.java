@@ -29,18 +29,17 @@ import org.apache.wicket.model.IModel;
  * @author jmox
  * @version $Id:LabelComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class LabelComponent extends WebComponent {
+public class LabelComponent extends WebComponent<String> {
 
   private static final long serialVersionUID = 1L;
 
-  public LabelComponent(final String _wicketId, final IModel _model) {
+  public LabelComponent(final String _wicketId, final IModel<String> _model) {
     super(_wicketId, _model);
   }
 
   @Override
   protected void onComponentTagBody(final MarkupStream _markupStream,
                                     final ComponentTag _openTag) {
-    super.replaceComponentTagBody(_markupStream, _openTag, (String) super
-        .getModelObject());
+    super.replaceComponentTagBody(_markupStream, _openTag, super.getModelObject());
   }
 }

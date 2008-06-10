@@ -34,9 +34,9 @@ import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.AbstractModel;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.dialog.DialogPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
@@ -49,7 +49,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:FooterPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class FooterPanel extends Panel {
+public class FooterPanel<T> extends Panel<T> {
 
   private static final long serialVersionUID = -1722339596237748160L;
 
@@ -71,23 +71,23 @@ public class FooterPanel extends Panel {
    * @param _id
    *                wicket:id of the Component
    * @param _model
-   *                Model of the Comoponent
+   *                Model of the Component
    * @param _modalWindow
    *                ModalWindowContainer containing this FooterPanel
    * @param _form
    *                FormContainer of the Page (needed to submit the Form)
    */
-  public FooterPanel(final String _id, final IModel _model,
+  public FooterPanel(final String _id, final IModel<T> _model,
                      final ModalWindowContainer _modalWindow,
-                     FormContainer _form) {
+                     final FormContainer _form) {
     super(_id, _model);
     this.modalWindow = _modalWindow;
 
-    final AbstractModel model = (AbstractModel) super.getModel();
+    final AbstractUIObject uiObject = (AbstractUIObject) super.getModelObject();
 
     // if we want a SucessDialog we add it here, it will be opened after closing
     // the window
-    if ("true".equals(model.getCommand().getProperty("SuccessDialog"))) {
+    if ("true".equals(uiObject.getCommand().getProperty("SuccessDialog"))) {
       FooterPanel.this.modalWindow
           .setWindowClosedCallback(new WindowClosedCallback() {
 
@@ -108,7 +108,7 @@ public class FooterPanel extends Panel {
 
                       public Page createPage() {
                         return new DialogPage(FooterPanel.this.modalWindow,
-                            model.getCommand().getName() + ".Success");
+                            uiObject.getCommand().getName() + ".Success");
                       }
                     });
 
@@ -122,46 +122,46 @@ public class FooterPanel extends Panel {
 
     String label = null;
     String closelabelkey = "Cancel";
-    if (model.isCreateMode()) {
-      label = getLabel(model.getCommand().getName(), "Create");
-    } else if (model.isEditMode()) {
-      label = getLabel(model.getCommand().getName(), "Edit");
-    } else if (model.isSubmit() && model instanceof TableModel) {
-      label = getLabel(model.getCommand().getName(), "Connect");
-    } else if (model.isSearchMode()) {
-      label = getLabel(model.getCommand().getName(), "Search");
+    if (uiObject.isCreateMode()) {
+      label = getLabel(uiObject.getCommand().getName(), "Create");
+    } else if (uiObject.isEditMode()) {
+      label = getLabel(uiObject.getCommand().getName(), "Edit");
+    } else if (uiObject.isSubmit() && uiObject instanceof UITable) {
+      label = getLabel(uiObject.getCommand().getName(), "Connect");
+    } else if (uiObject.isSearchMode()) {
+      label = getLabel(uiObject.getCommand().getName(), "Search");
     }
 
     add(StaticHeaderContributor.forCss(CSS));
 
-    if (_model instanceof FormModel && ((FormModel) _model).isFileUpload()) {
+    if (uiObject instanceof UIForm && ((UIForm) uiObject).isFileUpload()) {
       _form.add(new UploadBehavior(this.modalWindow));
     }
 
-    if ((model.isSubmit() && model instanceof TableModel)
-        || !model.isSearchMode()) {
+    if ((uiObject.isSubmit() && uiObject instanceof UITable)
+        || !uiObject.isSearchMode()) {
       final Button button =
           new Button("createeditsearch", new AjaxSubmitCloseLink(Button.LINKID,
-              model, _form), label, Button.ICON_ACCEPT);
+              uiObject, _form), label, Button.ICON_ACCEPT);
       this.add(button);
-    } else if (model.isSearchMode() && model.getCallingCommandUUID() != null) {
+    } else if (uiObject.isSearchMode() && uiObject.getCallingCommandUUID() != null) {
       final Button button =
           new Button("createeditsearch", new SearchSubmitLink(Button.LINKID,
-              model, _form), label, Button.ICON_NEXT);
+              _model, _form), label, Button.ICON_NEXT);
       this.add(button);
     } else {
       closelabelkey = "Close";
-      final Component invisible =
-          new WebMarkupContainer("createeditsearch").setVisible(false);
+      final Component<?> invisible =
+          new WebMarkupContainer<Object>("createeditsearch").setVisible(false);
       add(invisible);
     }
 
     if (_modalWindow == null) {
       add(new Button("cancel", new PopupCloseLink(Button.LINKID), getLabel(
-          model.getCommand().getName(), closelabelkey), Button.ICON_CANCEL));
+          uiObject.getCommand().getName(), closelabelkey), Button.ICON_CANCEL));
     } else {
       add(new Button("cancel", new AjaxCancelLink(Button.LINKID), getLabel(
-          model.getCommand().getName(), closelabelkey), Button.ICON_CANCEL));
+          uiObject.getCommand().getName(), closelabelkey), Button.ICON_CANCEL));
     }
 
   }

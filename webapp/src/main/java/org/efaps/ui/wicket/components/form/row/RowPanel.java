@@ -25,47 +25,50 @@ import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
-import org.efaps.ui.wicket.models.FormModel;
-import org.efaps.ui.wicket.models.FormModel.FormRowModel;
 import org.efaps.ui.wicket.models.cell.FormCellModel;
+import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
+
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
-public class RowPanel extends Panel {
+public class RowPanel extends Panel<FormRow> {
 
   private static final long serialVersionUID = 1L;
 
-  public RowPanel(final String _wicketId, final FormRowModel _model,
-                  final FormModel _formmodel, final Page _page,
+  public RowPanel(final String _wicketId, final IModel<FormRow> _model,
+                  final UIForm _formmodel, final Page _page,
                   final FormPanel _formPanel) {
     super(_wicketId, _model);
-
-    RepeatingView cellRepeater = new RepeatingView("cellRepeater");
+    final FormRow row = super.getModelObject();
+    final RepeatingView<Object> cellRepeater = new RepeatingView<Object>("cellRepeater");
     add(cellRepeater);
 
-    for (FormCellModel cellmodel : _model.getValues()) {
+    for (final UIFormCell cell : row.getValues()) {
 
-      Label labelCell =
-          new Label(cellRepeater.newChildId(), cellmodel.getCellLabel());
+      final Label<String> labelCell =
+          new Label<String>(cellRepeater.newChildId(), cell.getCellLabel());
       cellRepeater.add(labelCell);
 
-      if (cellmodel.isRequired()) {
+      if (cell.isRequired()) {
         labelCell.add(new SimpleAttributeModifier("class",
             "eFapsFormLabelRequired"));
         labelCell.setOutputMarkupId(true);
-        _formPanel.addRequiredComponent(cellmodel.getName(), labelCell);
+        _formPanel.addRequiredComponent(cell.getName(), labelCell);
       } else {
         labelCell.add(new SimpleAttributeModifier("class", "eFapsFormLabel"));
       }
 
-      ValueCellPanel valueCell =
-          new ValueCellPanel(cellRepeater.newChildId(), cellmodel,
+      final ValueCellPanel valueCell =
+          new ValueCellPanel(cellRepeater.newChildId(),new FormCellModel( cell),
               ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
                   .getPageMapName()));
-      Integer colspan =
-          2 * (_formmodel.getMaxGroupCount() - _model.getGroupCount()) + 1;
+      final Integer colspan =
+          2 * (_formmodel.getMaxGroupCount() - _model.getObject().getGroupCount()) + 1;
       valueCell.add(new SimpleAttributeModifier("colspan", colspan.toString()));
       cellRepeater.add(valueCell);
       valueCell.add(new SimpleAttributeModifier("class", "eFapsFormValue"));

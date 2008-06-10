@@ -29,13 +29,15 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.model.IModel;
+
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
-import org.efaps.ui.wicket.models.MenuItemModel;
+import org.efaps.ui.wicket.models.objects.UIMenuItem;
 import org.efaps.ui.wicket.pages.AbstractMergePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -49,7 +51,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class DialogPage extends AbstractMergePage {
+public class DialogPage extends AbstractMergePage<UIMenuItem> {
 
   private static final long serialVersionUID = 1L;
 
@@ -68,7 +70,7 @@ public class DialogPage extends AbstractMergePage {
    * this instance variable stores the Compoment wich called this DialogPage, so
    * that it can be accessed
    */
-  private Component parent;
+  private Component<?> parent;
 
   /**
    * Constructor used for a DialogPage that renders a Question like: "Are you
@@ -84,17 +86,18 @@ public class DialogPage extends AbstractMergePage {
    *                the ParentComponent
    */
   public DialogPage(final ModalWindowContainer _modal,
-                    final MenuItemModel _model, final Map<?, ?> _parameters,
-                    final Component _parent) {
+                    final IModel<UIMenuItem> _model, final Map<?, ?> _parameters,
+                    final Component<?> _parent) {
     super(_model);
     this.parent = _parent;
     this.modal = _modal;
+    final UIMenuItem menuItem = _model.getObject();
 
-    final String cmdName = _model.getCommand().getName();
+    final String cmdName = menuItem.getCommand().getName();
 
     this.add(StaticHeaderContributor.forCss(CSS));
 
-    this.add(new Label("textLabel", DBProperties.getProperty(cmdName
+    this.add(new Label<String>("textLabel", DBProperties.getProperty(cmdName
         + ".Question")));
 
     this.add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID,
@@ -126,9 +129,9 @@ public class DialogPage extends AbstractMergePage {
     this.modal = _modal;
     this.add(StaticHeaderContributor.forCss(CSS));
 
-    this.add(new Label("textLabel", _message));
+    this.add(new Label<String>("textLabel", _message));
 
-    this.add(new WebMarkupContainer("submitButton").setVisible(false));
+    this.add(new WebMarkupContainer<Object>("submitButton").setVisible(false));
 
     this.add(new Button("closeButton", new AjaxCloseLink(Button.LINKID),
         _button, Button.ICON_CANCEL));
@@ -158,7 +161,7 @@ public class DialogPage extends AbstractMergePage {
   /**
    * AjaxLink that closes the ModalWindow this Page was opened in
    */
-  public class AjaxCloseLink extends AjaxLink {
+  public class AjaxCloseLink extends AjaxLink<Object> {
 
     private static final long serialVersionUID = 1L;
 
@@ -176,7 +179,7 @@ public class DialogPage extends AbstractMergePage {
   /**
    * AjaxLink that submits the Parameters and closes the ModalWindow
    */
-  public class AjaxSubmitLink extends AjaxLink {
+  public class AjaxSubmitLink extends AjaxLink<UIMenuItem> {
 
     private static final long serialVersionUID = 1L;
 
@@ -185,7 +188,7 @@ public class DialogPage extends AbstractMergePage {
      */
     private final Map<?, ?> parameters;
 
-    public AjaxSubmitLink(final String _wicketId, final MenuItemModel _model,
+    public AjaxSubmitLink(final String _wicketId, final IModel<UIMenuItem> _model,
                           final Map<?, ?> _parameters) {
       super(_wicketId, _model);
       this.parameters = _parameters;
@@ -194,7 +197,7 @@ public class DialogPage extends AbstractMergePage {
     @Override
     public void onClick(final AjaxRequestTarget _target) {
 
-      final MenuItemModel model = ((MenuItemModel) getModel());
+      final UIMenuItem model =  getModelObject();
 
       try {
         model.executeEvents(this.parameters.get("selectedRow"));

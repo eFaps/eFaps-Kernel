@@ -43,8 +43,9 @@ import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.models.AbstractModel;
-import org.efaps.ui.wicket.models.FormModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.objects.AbstractUIObject;
+import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
@@ -65,9 +66,9 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
 
   /**
    * Instance variable storing the model, because the superclasses of a
-   * behavior, don't store the model.
+   * behavior, doesn't store the model.
    */
-  private final AbstractModel model;
+  private final AbstractUIObject uiObject;
 
   /** Instance variable storing the form to be submited. */
   private final FormContainer form;
@@ -75,13 +76,13 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
   /**
    * Constructor
    *
-   * @param _model
+   * @param _uiobject
    * @param _form
    */
-  public AjaxSubmitCloseBehavior(final AbstractModel _model,
+  public AjaxSubmitCloseBehavior(final AbstractUIObject _uiobject,
                                  final FormContainer _form) {
     super(_form, "onclick");
-    this.model = _model;
+    this.uiObject = _uiobject;
     this.form = _form;
   }
 
@@ -93,8 +94,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
             "selectedRow");
     if (checkForRequired(_target) && (validateForm(_target))) {
 
-      if (this.model instanceof FormModel
-          && ((FormModel) this.model).isFileUpload()) {
+      if (this.uiObject instanceof UIForm
+          && ((UIForm) this.uiObject).isFileUpload()) {
         doFileUpload(_target);
 
       } else {
@@ -118,24 +119,25 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
           return;
         }
 
-        final FooterPanel footer =
-            (FooterPanel) this.getComponent().findParent(FooterPanel.class);
+        final FooterPanel<?> footer =
+            this.getComponent().findParent(FooterPanel.class);
 
-        if (this.model.getCommand().getTarget() == Target.MODAL) {
+        if (this.uiObject.getCommand().getTarget() == Target.MODAL) {
           footer.getModalWindow().setReloadChild(true);
           footer.getModalWindow().close(_target);
         } else {
-          final AbstractModel openermodel =
-              (AbstractModel) ((EFapsSession) Session.get()).getOpenerModel();
-          Class<?> clazz;
+          final AbstractModel<?> openermodel =
+              (AbstractModel<?>) ((EFapsSession) Session.get()).getOpenerModel();
+          Class<? extends Page> clazz;
           if (openermodel instanceof TableModel) {
             clazz = TablePage.class;
           } else {
             clazz = FormPage.class;
           }
+         final AbstractUIObject uiobject =  (AbstractUIObject) openermodel.getObject();
           final CharSequence url =
               this.form.urlFor(PageMap.forName(MainPage.IFRAME_PAGEMAP_NAME),
-                  clazz, openermodel.getPageParameters());
+                   clazz, uiobject.getPageParameters());
           _target.appendJavascript("opener.location.href = '"
               + url
               + "'; self.close();");
@@ -146,12 +148,12 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
         // execute the CallBacks
         final List<UpdateInterface> updates =
             ((EFapsSession) getComponent().getSession())
-                .getUpdateBehavior(this.model.getOid());
+                .getUpdateBehavior(this.uiObject.getOid());
         if (updates != null) {
           for (final UpdateInterface update : updates) {
             if (update.isAjaxCallback()) {
-              update.setOid(this.model.getOid());
-              update.setMode(this.model.getMode());
+              update.setOid(this.uiObject.getOid());
+              update.setMode(this.uiObject.getMode());
               _target.prependJavascript(update.getAjaxCallback());
             }
           }
@@ -182,8 +184,8 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
   @Override
   protected CharSequence getPreconditionScript() {
     String ret = null;
-    if (this.model instanceof FormModel
-        && ((FormModel) this.model).isFileUpload()) {
+    if (this.uiObject instanceof UIForm
+        && ((UIForm) this.uiObject).isFileUpload()) {
       ret = "return eFapsFileInput()";
     }
     return ret;
@@ -204,7 +206,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
                                 final String[] _other) throws EFapsException {
     boolean ret = true;
     final List<Return> returns =
-        ((AbstractModel) this.form.getParent().getModel())
+        ((AbstractUIObject) this.form.getParent().getModelObject())
             .executeEvents(_other);
     for (final Return oneReturn : returns) {
       if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
@@ -230,7 +232,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     boolean ret = true;
 
     final List<Return> validation =
-        ((AbstractModel) this.form.getParent().getModel()).validate();
+        ((AbstractUIObject) this.form.getParent().getModelObject()).validate();
 
     for (final Return oneReturn : validation) {
       if (oneReturn.get(ReturnValues.TRUE) == null) {
@@ -263,7 +265,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     while (iterator.hasNext()) {
       final Object object = iterator.next();
       if (object instanceof WebMarkupContainer) {
-        final Iterator<?> iterator2 = ((WebMarkupContainer) object).iterator();
+        final Iterator<?> iterator2 = ((WebMarkupContainer<?>) object).iterator();
         while (iterator2.hasNext()) {
           final Object object2 = iterator2.next();
           if (object2 instanceof FormPanel) {
@@ -277,13 +279,13 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
 
     final Map<?, ?> map =
         this.getComponent().getRequestCycle().getRequest().getParameterMap();
-    for (final Entry<String, Label> entry : container.getRequiredComponents()
+    for (final Entry<String, Label<String>> entry : container.getRequiredComponents()
         .entrySet()) {
 
       final String[] values = (String[]) map.get(entry.getKey());
       final String value = values[0];
       if (value == null || value.length() == 0) {
-        final Label label = entry.getValue();
+        final Label<String> label = entry.getValue();
         label.add(new SimpleAttributeModifier("class",
             "eFapsFormLabelRequiredForce"));
         _target.addComponent(label);

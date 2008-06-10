@@ -43,7 +43,7 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.StructurBrowserModel;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
@@ -100,11 +100,12 @@ public class StructurBrowserTreeTable extends TreeTable {
    * @see org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree#newNodeIcon(org.apache.wicket.MarkupContainer,
    *      java.lang.String, javax.swing.tree.TreeNode)
    */
+  @SuppressWarnings("unchecked")
   @Override
   protected Component newNodeIcon(final MarkupContainer _parent,
                                   final String _wicketId, final TreeNode _node) {
-    final StructurBrowserModel model =
-        (StructurBrowserModel) ((DefaultMutableTreeNode) _node).getUserObject();
+    final UIStructurBrowser model =
+        (UIStructurBrowser) ((DefaultMutableTreeNode) _node).getUserObject();
     if (model.getImage() == null) {
       return super.newNodeIcon(_parent, _wicketId, _node);
     } else {
@@ -128,6 +129,7 @@ public class StructurBrowserTreeTable extends TreeTable {
    *      java.lang.String, javax.swing.tree.TreeNode, int,
    *      org.apache.wicket.extensions.markup.html.tree.table.TreeTable.IRenderNodeCallback)
    */
+  @SuppressWarnings("unchecked")
   @Override
   protected Component newTreePanel(final MarkupContainer _parent,
                                    final String _wicketId,
@@ -145,6 +147,7 @@ public class StructurBrowserTreeTable extends TreeTable {
    * @see org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree#newNodeLink(org.apache.wicket.MarkupContainer,
    *      java.lang.String, javax.swing.tree.TreeNode)
    */
+  @SuppressWarnings("unchecked")
   @Override
   protected MarkupContainer newNodeLink(final MarkupContainer _parent,
                                         final String _id, final TreeNode _node) {
@@ -155,8 +158,8 @@ public class StructurBrowserTreeTable extends TreeTable {
 
       public void onClick(AjaxRequestTarget target) {
         Instance instance = null;
-        final StructurBrowserModel model =
-            (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
+        final UIStructurBrowser model =
+            (UIStructurBrowser) ((DefaultMutableTreeNode) _node)
                 .getUserObject();
 
         if (model.getOid() != null) {
@@ -199,7 +202,7 @@ public class StructurBrowserTreeTable extends TreeTable {
    * @author jmox
    * @version $Id$
    */
-  private class StructurBrowserTreeFragment extends Panel {
+  private class StructurBrowserTreeFragment extends Panel<Object> {
 
     private static final long serialVersionUID = 1L;
 
@@ -214,10 +217,10 @@ public class StructurBrowserTreeTable extends TreeTable {
 
       add(newJunctionLink(this, "link", "image", _node));
 
-      final WebComponent direction = new WebComponent("direction");
+      final WebComponent<Object> direction = new WebComponent<Object>("direction");
       add(direction);
-      final StructurBrowserModel model =
-          (StructurBrowserModel) ((DefaultMutableTreeNode) _node)
+      final UIStructurBrowser model =
+          (UIStructurBrowser) ((DefaultMutableTreeNode) _node)
               .getUserObject();
       if (model.getDirection() == null) {
         direction.setVisible(false);
@@ -226,12 +229,12 @@ public class StructurBrowserTreeTable extends TreeTable {
       } else {
         direction.add(new SimpleAttributeModifier("class", "directionUp"));
       }
-      final MarkupContainer nodeLink = newNodeLink(this, "nodeLink", _node);
+      final MarkupContainer<?> nodeLink = newNodeLink(this, "nodeLink", _node);
       add(nodeLink);
 
       nodeLink.add(newNodeIcon(nodeLink, "icon", _node));
 
-      nodeLink.add(new Label("label", new AbstractReadOnlyModel() {
+      nodeLink.add(new Label<String>("label", new AbstractReadOnlyModel<String>() {
 
         private static final long serialVersionUID = 1L;
 
@@ -239,7 +242,7 @@ public class StructurBrowserTreeTable extends TreeTable {
          * @see org.apache.wicket.model.AbstractReadOnlyModel#getObject()
          */
         @Override
-        public Object getObject() {
+        public String getObject() {
           return _renderNodeCallback.renderNode(_node);
         }
       }));

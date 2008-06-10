@@ -28,7 +28,7 @@ import org.apache.wicket.markup.html.WebComponent;
  * @version $Id$
  *
  */
-public class CheckBoxComponent extends WebComponent {
+public class CheckBoxComponent extends WebComponent<Object> {
   private static final long serialVersionUID = 1L;
 
   private final String oid;

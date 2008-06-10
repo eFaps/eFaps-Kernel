@@ -23,11 +23,12 @@ package org.efaps.ui.wicket.components.table.cell;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.link.Link;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.admin.ui.Menu;
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.db.Instance;
-import org.efaps.ui.wicket.models.cell.TableCellModel;
+import org.efaps.ui.wicket.models.cell.UITableCell;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 
@@ -35,19 +36,19 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
  * @author jmox
  * @version $Id:LinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ContentContainerLink extends Link {
+public class ContentContainerLink<T> extends Link<T> {
 
   private static final long serialVersionUID = 1L;
 
   public ContentContainerLink(final String _wicketId,
-                              final TableCellModel _model) {
+                              final IModel<T> _model) {
     super(_wicketId, _model);
   }
 
   @Override
   public void onClick() {
     Instance instance = null;
-    final TableCellModel cellmodel = (TableCellModel) super.getModel();
+    final UITableCell cellmodel = (UITableCell) super.getModelObject();
     if (cellmodel.getOid() != null) {
       instance = new Instance(cellmodel.getOid());
       Menu menu = null;

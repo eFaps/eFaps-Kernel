@@ -108,7 +108,7 @@ public class EFapsApplication extends WebApplication {
      * @see org.apache.wicket.authorization.IAuthorizationStrategy#isActionAuthorized(org.apache.wicket.Component,
      *      org.apache.wicket.authorization.Action)
      */
-    public boolean isActionAuthorized(final Component _component,
+    public boolean isActionAuthorized(final Component<?> _component,
                                       final Action _action) {
       return true;
     }

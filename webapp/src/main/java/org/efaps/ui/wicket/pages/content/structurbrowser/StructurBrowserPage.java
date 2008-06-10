@@ -24,6 +24,7 @@ import org.apache.wicket.PageParameters;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.tree.StructurBrowserTreeTablePanel;
 import org.efaps.ui.wicket.models.StructurBrowserModel;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
@@ -32,7 +33,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:StructurBrowserPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public class StructurBrowserPage extends AbstractContentPage {
+public class StructurBrowserPage extends AbstractContentPage<UIStructurBrowser> {
 
   private static final long serialVersionUID = 7564911406648729094L;
 
@@ -41,14 +42,14 @@ public class StructurBrowserPage extends AbstractContentPage {
           "StructurBrowserPage.css");
 
   public StructurBrowserPage(final PageParameters _parameters) {
-    super(new StructurBrowserModel(_parameters));
+    super(new StructurBrowserModel(new UIStructurBrowser(_parameters)));
     this.addComponents();
   }
 
   protected void addComponents() {
     add(StaticHeaderContributor.forCss(CSS));
 
-    final StructurBrowserModel model = (StructurBrowserModel) super.getModel();
+    final UIStructurBrowser model = (UIStructurBrowser) super.getModelObject();
     if (!model.isInitialised()) {
       model.execute();
     }
@@ -57,7 +58,7 @@ public class StructurBrowserPage extends AbstractContentPage {
     this.add(form);
     super.addComponents(form);
 
-    form.add(new StructurBrowserTreeTablePanel("structurBrowserTable", model));
+    form.add(new StructurBrowserTreeTablePanel("structurBrowserTable",  new StructurBrowserModel(model)));
 
   }
 

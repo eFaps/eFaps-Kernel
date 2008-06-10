@@ -42,9 +42,13 @@ import org.efaps.ui.wicket.behaviors.dojo.DojoReference;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
 import org.efaps.ui.wicket.components.modalwindow.UpdateParentCallback;
 import org.efaps.ui.wicket.components.table.TablePanel;
-import org.efaps.ui.wicket.models.HeaderModel;
+import org.efaps.ui.wicket.models.FormModel;
+import org.efaps.ui.wicket.models.TableHeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
-import org.efaps.ui.wicket.models.TableModel.UserAttributeKey;
+import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UITableHeader;
+import org.efaps.ui.wicket.models.objects.UITable.UserAttributeKey;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -58,7 +62,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id:TableHeaderPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class HeaderPanel extends Panel {
+public class HeaderPanel extends Panel<UITable> {
 
   private static final long serialVersionUID = 1L;
 
@@ -68,15 +72,15 @@ public class HeaderPanel extends Panel {
   public static final EFapsContentReference JAVASCRIPT =
       new EFapsContentReference(HeaderPanel.class, "HeaderPanel.js");
 
-  private final Component tablepanel;
+  private final Component<?> tablepanel;
 
   private final String headerproperties;
 
   public HeaderPanel(final String _id, final TablePanel _tablePanel) {
     super(_id, _tablePanel.getModel());
     this.tablepanel = _tablePanel;
-    final TableModel model = (TableModel) super.getModel();
-    this.headerproperties = "eFapsTable" + model.getTableId();
+    final UITable uitable = super.getModelObject();
+    this.headerproperties = "eFapsTable" + uitable.getTableId();
 
     this.add(new AjaxStoreColumnWidthBehavior());
     this.add(new AjaxStoreColumnOrderBehavior());
@@ -99,10 +103,10 @@ public class HeaderPanel extends Panel {
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
             .getBrowserWidth();
 
-    final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
+    final RepeatingView<Object> cellRepeater = new RepeatingView<Object>("cellRepeater");
     add(cellRepeater);
-    int i = model.getTableId();
-    if (model.isShowCheckBoxes()) {
+    int i = uitable.getTableId();
+    if (uitable.isShowCheckBoxes()) {
       final HeaderCellPanel cell =
           new HeaderCellPanel(cellRepeater.newChildId());
       cell.setOutputMarkupId(true);
@@ -112,11 +116,11 @@ public class HeaderPanel extends Panel {
     final List<String> widths = new ArrayList<String>();
 
     int fixed = 0;
-    for (int j = 0; j < model.getHeaders().size(); j++) {
-      final HeaderModel headermodel = model.getHeaders().get(j);
+    for (int j = 0; j < uitable.getHeaders().size(); j++) {
+      final UITableHeader headermodel = uitable.getHeaders().get(j);
 
       final HeaderCellPanel cell =
-          new HeaderCellPanel(cellRepeater.newChildId(), headermodel, model);
+          new HeaderCellPanel(cellRepeater.newChildId(), new TableHeaderModel(headermodel), uitable);
 
       if (headermodel.isFixedWidth()) {
         widths.add(".eFapsCellFixedWidth"
@@ -129,11 +133,11 @@ public class HeaderPanel extends Panel {
         fixed += headermodel.getWidth();
       } else {
         Integer width = 0;
-        if (model.isUserSetWidth()) {
+        if (uitable.isUserSetWidth()) {
           width = headermodel.getWidth();
         } else {
           width =
-              browserWidth / model.getWidthWeight() * headermodel.getWidth();
+              browserWidth / uitable.getWidthWeight() * headermodel.getWidth();
         }
         widths.add(".eFapsCellWidth"
             + i
@@ -148,10 +152,10 @@ public class HeaderPanel extends Panel {
       cell.setOutputMarkupId(true);
       cellRepeater.add(cell);
 
-      if (j + 1 < model.getHeaders().size() && !headermodel.isFixedWidth()) {
+      if (j + 1 < uitable.getHeaders().size() && !headermodel.isFixedWidth()) {
         boolean add = false;
-        for (int k = j + 1; k < model.getHeaders().size(); k++) {
-          if (!model.getHeaders().get(k).isFixedWidth()) {
+        for (int k = j + 1; k < uitable.getHeaders().size(); k++) {
+          if (!uitable.getHeaders().get(k).isFixedWidth()) {
             add = true;
             break;
           }
@@ -197,7 +201,7 @@ public class HeaderPanel extends Panel {
             + "\";\n  "
             + this.headerproperties
             + ".modelID = "
-            + ((TableModel) super.getModel()).getTableId()
+            + ( super.getModelObject()).getTableId()
             + ";\n  "
             + this.headerproperties
             + ".storeColumnWidths = "
@@ -228,7 +232,7 @@ public class HeaderPanel extends Panel {
     final StringBuilder ret = new StringBuilder();
 
     ret.append(CssUtils.INLINE_OPEN_TAG).append(".eFapsCSSId").append(
-        ((TableModel) super.getModel()).getTableId()).append("{}\n");
+        super.getModelObject().getTableId()).append("{}\n");
     for (final String width : _widths) {
       ret.append(width);
     }
@@ -274,9 +278,9 @@ public class HeaderPanel extends Panel {
           this.getComponent().getRequest().getParameter(COLUMNW_PARAMETERNAME);
       try {
         Context.getThreadContext().setUserAttribute(
-            ((TableModel) this.getComponent().getModel())
+            ((UITable)this.getComponent().getModelObject())
                 .getUserAttributeKey(UserAttributeKey.COLUMNWIDTH), widths);
-        ((TableModel) this.getComponent().getModel()).resetModel();
+        ((UITable)this.getComponent().getModelObject()).resetModel();
       } catch (final EFapsException e) {
         throw new RestartResponseException(new ErrorPage(e));
       }
@@ -309,7 +313,7 @@ public class HeaderPanel extends Panel {
           this.getComponent().getRequest().getParameter(
               COLUMNORDER_PARAMETERNAME);
 
-      ((TableModel) this.getComponent().getModel()).setColumnOrder(order);
+      ((UITable)this.getComponent().getModelObject()).setColumnOrder(order);
 
     }
   }
@@ -328,12 +332,13 @@ public class HeaderPanel extends Panel {
     @Override
     protected void respond(final AjaxRequestTarget _target) {
       final TableModel model = (TableModel) this.getComponent().getModel();
-      model.resetModel();
+      model.getObject().resetModel();
       if (this.getComponent().getPage() instanceof TablePage) {
         this.getComponent().setResponsePage(new TablePage(model));
       } else {
+        final UIForm uiform = (UIForm) this.getComponent().getPage().getModelObject();
         this.getComponent().setResponsePage(
-            new FormPage(this.getComponent().getPage().getModel()));
+            new FormPage(new FormModel(uiform)));
       }
     }
   }

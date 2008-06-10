@@ -40,7 +40,7 @@ import org.apache.wicket.model.Model;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
@@ -57,35 +57,35 @@ public class FilterPage extends WebPage {
 
   private static String CHECKBOXNAME = "eFapsFilterSelection";
 
-  public FilterPage(final TableModel _model,
+  public FilterPage(final IModel<UITable> _model,
                     final ModalWindowContainer _modalwindow) {
     super(_model);
-
+    final UITable table  = (UITable)super.getModelObject();
     add(StaticHeaderContributor.forCss(CSS));
 
     final FormContainer form = new FormContainer("eFapsForm");
     this.add(form);
 
     final FilterListView checksList =
-        new FilterListView("listview", _model.getFilterList());
+        new FilterListView("listview", table.getFilterList());
 
     form.add(checksList);
 
-    final AjaxButton ajaxbutton = new AjaxButton(Button.LINKID, form) {
+    final AjaxButton<Object> ajaxbutton = new AjaxButton<Object>(Button.LINKID, form) {
 
       private static final long serialVersionUID = 1L;
 
       @Override
-      protected void onSubmit(AjaxRequestTarget _target, Form arg1) {
+      protected void onSubmit(final AjaxRequestTarget _target, final Form<?> _form) {
         String[] selection =
             this.getRequestCycle().getRequest().getParameters(CHECKBOXNAME);
 
         if (selection != null) {
           if (selection.length == checksList.getViewSize()) {
-            _model.removeFilter();
+            table.removeFilter();
           } else {
-            _model.setFilter(selection);
-            _model.filter();
+            table.setFilter(selection);
+            table.filter();
           }
           _modalwindow.setUpdateParent(true);
 
@@ -100,7 +100,7 @@ public class FilterPage extends WebPage {
     form
         .add(new Button("submitButton", ajaxbutton, "send", Button.ICON_ACCEPT));
 
-    final AjaxLink ajaxcancel = new AjaxLink(Button.LINKID) {
+    final AjaxLink<Object> ajaxcancel = new AjaxLink<Object>(Button.LINKID) {
 
       private static final long serialVersionUID = 1L;
 
@@ -116,11 +116,11 @@ public class FilterPage extends WebPage {
         .add(new Button("closeButton", ajaxcancel, "cancel", Button.ICON_CANCEL));
   }
 
-  public class ValueCheckBox extends FormComponent {
+  public class ValueCheckBox extends FormComponent<Object> {
 
     private static final long serialVersionUID = 1L;
 
-    public ValueCheckBox(final String _id, final IModel _model) {
+    public ValueCheckBox(final String _id, final IModel<?> _model) {
       super(_id, _model);
     }
 
@@ -132,6 +132,7 @@ public class FilterPage extends WebPage {
     }
   }
 
+  @SuppressWarnings("unchecked")
   public class FilterListView extends ListView {
 
     private static final long serialVersionUID = 1L;
@@ -145,7 +146,7 @@ public class FilterPage extends WebPage {
 
     @Override
     protected void populateItem(final ListItem _item) {
-      final WebMarkupContainer tr = new WebMarkupContainer("listview_tr");
+      final WebMarkupContainer<Object> tr = new WebMarkupContainer<Object>("listview_tr");
       _item.add(tr);
 
       if (this.odd) {
@@ -158,7 +159,7 @@ public class FilterPage extends WebPage {
       tr
           .add(new ValueCheckBox("listview_tr_check", new Model(_item
               .getIndex())));
-      tr.add(new Label("listview_tr_label", _item.getModelObjectAsString()));
+      tr.add(new Label<String>("listview_tr_label", _item.getModelObjectAsString()));
     }
   }
 

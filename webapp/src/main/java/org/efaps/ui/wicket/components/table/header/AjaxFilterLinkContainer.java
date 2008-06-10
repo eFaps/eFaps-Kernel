@@ -24,21 +24,23 @@ import org.apache.wicket.Page;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
-import org.efaps.ui.wicket.models.HeaderModel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.objects.UITable;
+import org.efaps.ui.wicket.models.objects.UITableHeader;
 import org.efaps.ui.wicket.pages.content.table.filter.FilterPage;
 
 /**
  * @author jmox
  * @version $Id$
  */
-public class AjaxFilterLinkContainer extends AjaxLink {
+public class AjaxFilterLinkContainer extends AjaxLink<UITableHeader> {
 
   private static final long serialVersionUID = 1L;
 
-  public AjaxFilterLinkContainer(final String _id, final HeaderModel _model) {
+  public AjaxFilterLinkContainer(final String _id, final IModel<UITableHeader> _model) {
     super(_id, _model);
 
   }
@@ -46,11 +48,11 @@ public class AjaxFilterLinkContainer extends AjaxLink {
   @Override
   public void onClick(final AjaxRequestTarget _target) {
     final HeaderPanel tableheaderpanel =
-        (HeaderPanel) this.findParent(HeaderPanel.class);
+        this.findParent(HeaderPanel.class);
 
-    final TableModel tablemodel =
-        (TableModel) this.findParent(HeaderPanel.class).getModel();
-    tablemodel.setFilterKey(((HeaderModel) super.getModel()).getName());
+    final UITable tablemodel =
+        tableheaderpanel.getModelObject();
+    tablemodel.setFilterKey(super.getModelObject().getName());
 
     final FilterPageCreator pagecreator =
         new FilterPageCreator(tablemodel, tableheaderpanel.getModal());
@@ -64,19 +66,19 @@ public class AjaxFilterLinkContainer extends AjaxLink {
 
     private static final long serialVersionUID = 1L;
 
-    private final TableModel model;
+    private final UITable uitable;
 
     private final ModalWindowContainer modalwindow;
 
-    public FilterPageCreator(final TableModel _model,
+    public FilterPageCreator(final UITable _model,
                              final ModalWindowContainer _modalwindow) {
-      this.model = _model;
+      this.uitable = _model;
       this.modalwindow = _modalwindow;
     }
 
     public Page createPage() {
 
-      return new FilterPage(this.model, this.modalwindow);
+      return new FilterPage(new TableModel(this.uitable), this.modalwindow);
     }
 
   }

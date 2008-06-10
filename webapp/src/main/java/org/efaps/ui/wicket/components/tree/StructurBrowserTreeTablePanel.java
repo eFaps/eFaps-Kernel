@@ -33,31 +33,34 @@ import org.apache.wicket.extensions.markup.html.tree.table.IRenderable;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Alignment;
 import org.apache.wicket.extensions.markup.html.tree.table.ColumnLocation.Unit;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
+
 import org.efaps.ui.wicket.models.StructurBrowserModel;
+import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
 
 /**
  * @author jmox
  * @version $Id$
  */
-public class StructurBrowserTreeTablePanel extends Panel {
+public class StructurBrowserTreeTablePanel extends Panel<UIStructurBrowser> {
 
   private static final long serialVersionUID = 1L;
 
   public StructurBrowserTreeTablePanel(final String _id,
                                        final PageParameters _parameters) {
-    this(_id, new StructurBrowserModel(_parameters));
+    this(_id,  new StructurBrowserModel(new UIStructurBrowser(_parameters)));
   }
 
   public StructurBrowserTreeTablePanel(final String _id,
-                                       StructurBrowserModel _model) {
+                                       final IModel<UIStructurBrowser> _model) {
     super(_id, _model);
 
-    final StructurBrowserModel model = (StructurBrowserModel) super.getModel();
+    final UIStructurBrowser model = super.getModelObject();
     if (!model.isInitialised()) {
       model.execute();
     }
 
-    IColumn[] columns = new IColumn[model.getHeaders().size() + 1];
+    final IColumn[] columns = new IColumn[model.getHeaders().size() + 1];
 
     columns[0] =
         new SelectColumn(new ColumnLocation(Alignment.LEFT, 16, Unit.PX), "");
@@ -116,7 +119,7 @@ public class StructurBrowserTreeTablePanel extends Panel {
     public String getNodeValue(final TreeNode _node) {
       String ret = "";
       ret =
-          ((StructurBrowserModel) ((DefaultMutableTreeNode) _node)
+          ((UIStructurBrowser) ((DefaultMutableTreeNode) _node)
               .getUserObject()).getColumnValue(this.index);
 
       return ret;
@@ -139,7 +142,7 @@ public class StructurBrowserTreeTablePanel extends Panel {
 
         public void render(final TreeNode _node, final Response _response) {
           final String oid =
-              ((StructurBrowserModel) ((DefaultMutableTreeNode) _node)
+              ((UIStructurBrowser) ((DefaultMutableTreeNode) _node)
                   .getUserObject()).getOid();
           final String checkbox =
               "<input "

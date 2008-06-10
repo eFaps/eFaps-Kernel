@@ -18,9 +18,10 @@
  * Last Changed By: $Author$
  */
 
-package org.efaps.ui.wicket.models;
+package org.efaps.ui.wicket.models.objects;
 
-import org.apache.wicket.model.Model;
+import org.apache.wicket.IClusterable;
+
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.admin.ui.AbstractCommand.SortDirection;
 import org.efaps.admin.ui.field.Field;
@@ -29,7 +30,7 @@ import org.efaps.admin.ui.field.Field;
  * @author jmox
  * @version $Id$
  */
-public class HeaderModel extends Model {
+public class UITableHeader  implements IClusterable{
 
   private static final long serialVersionUID = 1L;
 
@@ -49,7 +50,7 @@ public class HeaderModel extends Model {
 
   private String markupId;
 
-  public HeaderModel(final Field _field, final SortDirection _sortdirection) {
+  public UITableHeader(final Field _field, final SortDirection _sortdirection) {
     this.label = _field.getLabel();
     this.sortable = _field.isSortAble();
     this.name = _field.getName();
@@ -163,5 +164,21 @@ public class HeaderModel extends Model {
   public void setMarkupId(final String _markupId) {
     this.markupId = _markupId;
   }
+
+  public UITableHeader getObject() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public void setObject(UITableHeader arg0) {
+    // TODO Auto-generated method stub
+
+  }
+
+  public void detach() {
+    // TODO Auto-generated method stub
+
+  }
+
 
 }

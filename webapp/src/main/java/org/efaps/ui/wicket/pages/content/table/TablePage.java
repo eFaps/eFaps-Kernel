@@ -28,6 +28,7 @@ import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.table.TablePanel;
 import org.efaps.ui.wicket.components.table.header.HeaderPanel;
 import org.efaps.ui.wicket.models.TableModel;
+import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.AbstractContentPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
@@ -36,7 +37,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:TablePage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public class TablePage extends AbstractContentPage {
+public class TablePage extends AbstractContentPage<UITable> {
 
   private static final long serialVersionUID = 7564911406648729094L;
 
@@ -44,30 +45,31 @@ public class TablePage extends AbstractContentPage {
       new EFapsContentReference(TablePage.class, "TablePage.css");
 
   public TablePage(final PageParameters _parameters) {
-    this(new TableModel(_parameters));
+    this(new TableModel(new UITable(_parameters)));
   }
 
-  public TablePage(final IModel _model) {
+  public TablePage(final IModel<UITable> _model) {
     super(_model);
     this.addComponents();
   }
 
   public TablePage(final PageParameters _parameters, final IPageMap _pagemap) {
-    this(new TableModel(_parameters), _pagemap);
+    this(new TableModel(new UITable(_parameters)), _pagemap);
   }
 
-  public TablePage(final IModel _model, final IPageMap _pagemap) {
+  public TablePage(final TableModel _model, final IPageMap _pagemap) {
     super(_model, null, _pagemap);
     this.addComponents();
   }
 
   protected void addComponents() {
     this.add(StaticHeaderContributor.forCss(CSS));
-    final TableModel model = (TableModel) super.getModel();
-    if (!model.isInitialised()) {
-      model.execute();
+
+    final UITable table = (UITable) super.getModelObject();
+    if (!table.isInitialised()) {
+      table.execute();
     }
-    final TablePanel tablebody = new TablePanel("tablebody", model, this);
+    final TablePanel tablebody = new TablePanel("tablebody", new TableModel(table), this);
     this.add(new HeaderPanel("header", tablebody));
 
     final FormContainer form = new FormContainer("form");
