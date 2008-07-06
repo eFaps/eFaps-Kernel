@@ -20,14 +20,13 @@
 
 package org.efaps.update.datamodel;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Insert;
@@ -37,11 +36,9 @@ import org.efaps.db.Update;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
-import org.efaps.update.event.EventFactory;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * This Class is responsible for the Update of Type in the Database.<br>
@@ -52,7 +49,8 @@ import org.xml.sax.SAXException;
  * @author jmox
  * @version $Id$
  */
-public class TypeUpdate extends AbstractUpdate {
+public class TypeUpdate extends AbstractUpdate
+{
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables
@@ -78,159 +76,110 @@ public class TypeUpdate extends AbstractUpdate {
     ALLLINKS.add(LINK2ALLOWEDEVENT);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
    *
+   * @param _url        URL of the file
    */
-  public TypeUpdate()
+  public TypeUpdate(final URL _url)
   {
-    super("Admin_DataModel_Type", ALLLINKS);
+    super(_url, "Admin_DataModel_Type", ALLLINKS);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // static methods
+  /////////////////////////////////////////////////////////////////////////////
+  // intance methods
 
   /**
-   * Method that reads the given XML-File and than uses the
-   * <code>org.apache.commons.digester</code> to create the diffrent Class and
-   * invokes the Methods to Update a Type
+   * Creates new instance of class {@link TypeDefinition}.
    *
-   * @param _file
-   *                XML-File to be read by the digester
-   * @return TypUdate Definition read by digester
+   * @return new definition instance
+   * @see TypeDefinition
    */
-  public static TypeUpdate readXMLFile(final URL _root, final URL _url)
+  @Override
+  protected AbstractDefinition newDefinition()
   {
-    TypeUpdate ret = null;
-
-    try {
-      final Digester digester = new Digester();
-      digester.setValidating(false);
-      // create a new Type
-      digester.addObjectCreate("datamodel-type", TypeUpdate.class);
-
-      // set the UUID for the Type
-      digester.addCallMethod("datamodel-type/uuid", "setUUID", 1);
-      digester.addCallParam("datamodel-type/uuid", 0);
-
-      // add a new Definition for the Type
-      digester.addObjectCreate("datamodel-type/definition", TypeDefinition.class);
-      digester.addSetNext("datamodel-type/definition", "addDefinition");
-
-      // set the Version of the Type-Definition
-      digester.addCallMethod("datamodel-type/definition/version", "setVersion", 4);
-      digester.addCallParam("datamodel-type/definition/version/application", 0);
-      digester.addCallParam("datamodel-type/definition/version/global", 1);
-      digester.addCallParam("datamodel-type/definition/version/local", 2);
-      digester.addCallParam("datamodel-type/definition/version/mode", 3);
-
-      // set the Name of the Type-Definition
-      digester.addCallMethod("datamodel-type/definition/name", "setName", 1);
-      digester.addCallParam("datamodel-type/definition/name", 0);
-
-      // set the parent of the Type-Definition
-      digester.addCallMethod("datamodel-type/definition/parent", "setParent", 1);
-      digester.addCallParam("datamodel-type/definition/parent", 0);
-
-      // is the type abstract?
-      digester.addCallMethod("datamodel-type/definition/abstract", "setAbstractType", 1, new Class[]{Boolean.class});
-      digester.addCallParam("datamodel-type/definition/abstract", 0);
-
-      // add an Attribute to the Type-Definition
-      digester.addObjectCreate("datamodel-type/definition/attribute", Attribute.class);
-
-      // set Name, Type, Tabel etc, of the Attribute
-      digester.addCallMethod("datamodel-type/definition/attribute", "setDefinitions", 6);
-      digester.addCallParam("datamodel-type/definition/attribute/name", 0);
-      digester.addCallParam("datamodel-type/definition/attribute/type", 1);
-      digester.addCallParam("datamodel-type/definition/attribute/sqltable", 2);
-      digester.addCallParam("datamodel-type/definition/attribute/sqlcolumn", 3);
-      digester.addCallParam("datamodel-type/definition/attribute/typelink", 4);
-      digester.addCallParam("datamodel-type/definition/attribute/defaultvalue", 5);
-
-      // add a Trigger-Event to the Attribute
-      digester.addFactoryCreate("datamodel-type/definition/attribute/trigger", new EventFactory(), false);
-      digester.addCallMethod("datamodel-type/definition/attribute/trigger/property", "addProperty", 2);
-      digester.addCallParam("datamodel-type/definition/attribute/trigger/property", 0, "name");
-      digester.addCallParam("datamodel-type/definition/attribute/trigger/property", 1);
-      digester.addSetNext("datamodel-type/definition/attribute/trigger", "addEvent", "org.efaps.update.event.Event");
-
-      // add a Validate-Event to the Attribute
-      digester.addFactoryCreate("datamodel-type/definition/attribute/validate",
-          new EventFactory(EventType.VALIDATE.name), false);
-      digester.addCallMethod(
-          "datamodel-type/definition/attribute/validate/property",
-          "addProperty", 2);
-      digester.addCallParam(
-          "datamodel-type/definition/attribute/validate/property", 0, "name");
-      digester.addCallParam(
-          "datamodel-type/definition/attribute/validate/property", 1);
-      digester.addSetNext("datamodel-type/definition/attribute/validate",
-          "addEvent", "org.efaps.update.event.Event");
-
-      digester.addSetNext("datamodel-type/definition/attribute", "addAttribute");
-
-      // add Properties to the Type-Definition
-      digester.addCallMethod("datamodel-type/definition/property", "addProperty", 2);
-      digester.addCallParam("datamodel-type/definition/property", 0, "name");
-      digester.addCallParam("datamodel-type/definition/property", 1);
-
-      // allowed event type for this type
-      digester.addCallMethod("datamodel-type/definition/event-for", "addEventFor", 1);
-      digester.addCallParam("datamodel-type/definition/event-for", 0, "type");
-
-      // add Trigger-Event to the Type-Definition
-      digester.addFactoryCreate("datamodel-type/definition/trigger", new EventFactory(), false);
-      digester.addCallMethod("datamodel-type/definition/trigger/property", "addProperty", 2);
-      digester.addCallParam("datamodel-type/definition/trigger/property", 0, "name");
-      digester.addCallParam("datamodel-type/definition/trigger/property", 1);
-      digester.addSetNext("datamodel-type/definition/trigger", "addEvent", "org.efaps.update.event.Event");
-
-
-      ret = (TypeUpdate) digester.parse(_url);
-
-      if (ret != null) {
-        ret.setURL(_url);
-      }
-    } catch (IOException e) {
-      LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
-      LOG.error(_url.toString() + " seems to be invalide XML", e);
-    }
-    return ret;
+    return new TypeDefinition();
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * The class defines an attribute of a type.
    */
-  public static class Attribute extends AbstractDefinition {
-
+  public class Attribute extends AbstractDefinition
+  {
     /** Name of the attribute. */
-    private String name;
+    private String name = null;
 
     /** Name of the Attribute Type of the attribute. */
-    private String type;
+    private String type = null;
 
     /** Name of the SQL Table of the attribute. */
-    private String sqlTable;
+    private String sqlTable = null;
 
     /** SQL Column of the attribute. */
-    private String sqlColumn;
+    private String sqlColumn = null;
 
     /** Name of the Linked Type (used for links to another type). */
-    private String typeLink;
+    private String typeLink = null;
 
     /** Events for this Attribute */
     private final List<Event> events = new ArrayList<Event>();
 
     /** default value for this Attribute */
-    private String defaultValue;
+    private String defaultValue = null;
+
+    @Override
+    protected void readXML(final List<String> _tags,
+                           final Map<String,String> _attributes,
+                           final String _text)
+    {
+      final String value = _tags.get(0);
+      if ("defaultvalue".equals(value))  {
+      } else if ("name".equals(value))  {
+        this.name = _text;
+      } else if ("sqlcolumn".equals(value))  {
+        this.sqlColumn = _text;
+      } else if ("sqltable".equals(value))  {
+        this.sqlTable = _text;
+      } else if ("trigger".equals(value))  {
+        if (_tags.size() == 1)  {
+          this.events.add(new Event(_attributes.get("name"),
+                                    EventType.valueOf(_attributes.get("event")),
+                                    _attributes.get("program"),
+                                    _attributes.get("method"),
+                                    _attributes.get("index")));
+        } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+          this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"),
+                                                              _text);
+        } else  {
+          super.readXML(_tags, _attributes, _text);
+        }
+      } else if ("type".equals(value))  {
+        this.type = _text;
+      } else if ("typelink".equals(value))  {
+        this.typeLink = _text;
+      } else if ("validate".equals(value))  {
+        if (_tags.size() == 1)  {
+          this.events.add(new Event(_attributes.get("name"),
+                                    EventType.VALIDATE,
+                                    _attributes.get("program"),
+                                    _attributes.get("method"),
+                                    _attributes.get("index")));
+        } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+          this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"),
+                                                              _text);
+        } else  {
+          super.readXML(_tags, _attributes, _text);
+        }
+      } else  {
+        super.readXML(_tags, _attributes, _text);
+      }
+    }
 
     /**
      *
@@ -434,14 +383,14 @@ public class TypeUpdate extends AbstractUpdate {
     }
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class TypeDefinition extends AbstractDefinition {
+  public class TypeDefinition extends AbstractDefinition {
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     // instance variables
 
     /**
@@ -463,8 +412,53 @@ public class TypeUpdate extends AbstractUpdate {
      */
     private final List<Attribute> attributes = new ArrayList<Attribute>();
 
+    /**
+     * Current read attribute definition instance.
+     *
+     * @see #readXML(List, Map, String)
+     */
+    private Attribute curAttr = null;
+
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
+
+    @Override
+    protected void readXML(final List<String> _tags,
+                           final Map<String,String> _attributes,
+                           final String _text)
+    {
+      final String value = _tags.get(0);
+      if ("abstract".equals(value))  {
+        addValue("Abstract", _text);
+      } else if ("attribute".equals(value))  {
+        if (_tags.size() == 1)  {
+          this.curAttr = new Attribute();
+          this.attributes.add(this.curAttr);
+        } else  {
+          this.curAttr.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
+        }
+      } else if ("event-for".equals(value))  {
+        // Adds the name of a allowed event type
+        addLink(LINK2ALLOWEDEVENT, new LinkInstance(_attributes.get("type")));
+      } else if ("parent".equals(value))  {
+        this.parentType = _text;
+      } else if ("trigger".equals(value))  {
+        if (_tags.size() == 1)  {
+          this.events.add(new Event(_attributes.get("name"),
+                                    EventType.valueOf(_attributes.get("event")),
+                                    _attributes.get("program"),
+                                    _attributes.get("method"),
+                                    _attributes.get("index")));
+        } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+          this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"),
+                                                              _text);
+        } else  {
+          super.readXML(_tags, _attributes, _text);
+        }
+      } else  {
+        super.readXML(_tags, _attributes, _text);
+      }
+    }
 
     /**
      * If a parent type in {@link #parentType} is defined, the type id is
@@ -503,46 +497,6 @@ public class TypeUpdate extends AbstractUpdate {
       for (Attribute attr : this.attributes) {
         attr.updateInDB(this.instance, getValue("Name"));
       }
-    }
-
-    /**
-     * Setter method for instance variable {@link #parentType}.
-     *
-     * @param _parentType new value to set
-     * @see #parentType
-     */
-    public void setParent(final String _parentType)
-    {
-      this.parentType = _parentType;
-    }
-
-    /**
-     * This is the setter method for the instance variable {@link #abstractType}.
-     *
-     * @param _abstractType the abstractType to set
-     */
-    public void setAbstractType(final Boolean _abstractType) {
-      addValue("Abstract", _abstractType.toString());
-    }
-
-    /**
-     * adds a Attribute to the Definition
-     *
-     * @param _attribute  Attribute to add
-     */
-    public void addAttribute(final Attribute _attribute)
-    {
-      this.attributes.add(_attribute);
-    }
-
-    /**
-     * Adds the name of a allowed event type.
-     *
-     * @param _eventTypeName  name of allowed event type
-     */
-    public void addEventFor(final String _eventTypeName)
-    {
-      addLink(LINK2ALLOWEDEVENT, new LinkInstance(_eventTypeName));
     }
   }
 

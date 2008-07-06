@@ -23,15 +23,14 @@ package org.efaps.update.event;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class defines a Event to be connected with a Update
@@ -40,8 +39,8 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  *
  */
-public class Event {
-
+public class Event
+{
   /**
    * Logging instance used to give logging information of this class.
    */
@@ -55,92 +54,73 @@ public class Event {
   private final Map<String, String> properties = new HashMap<String, String>();
 
   /**
-   * event as defined in {@link org.efaps.admin.event.EventType}
+   * Event as defined in {@link EventType}.
    */
-  private final String              event;
+  private final EventType event;
 
   /**
-   * name of the programm invoked in this trigger
+   * Name of the program invoked in this trigger.
    */
-  private final String              program;
+  private final String program;
 
   /**
-   * name of the method to be invoked by tihs trigger
+   * Name of the method to be invoked by this trigger.
    */
-  private final String              method;
+  private final String method;
 
   /**
-   * index of the trigger
+   * Index of the trigger.
    */
-  private final String              index;
+  private final String index;
 
   /**
    * name of the Trigger
    */
   private final String              name;
 
-  private boolean                   isTrigger  = false;
-
-  public void setTrigger(final boolean _isTrigger) {
-    this.isTrigger = _isTrigger;
-  }
-
   /**
-   * Constructor of Event for a Trigger setting all instancevariables
+   * Constructor of Event for a Trigger setting all instance variables
    *
-   * @param _name
-   *          name of the Event
-   * @param _event
-   *          event as defined in {@link org.efaps.admin.event.EventType}
-   * @param _program
-   *          name of the programm invoked in this trigger
-   * @param _method
-   *          name of the method to be invoked by tihs trigger
-   * @param _index
-   *          index of the trigger
+   * @param _name     name of the event (if <code>null</code>, the event itself
+   *                  is used as name)
+   * @param _event    event as defined in {@link EventType}
+   * @param _program  name of the program invoked in this trigger
+   * @param _method   name of the method to be invoked by this trigger (if
+   *                  <code>null</code>, method name <code>execute</code> is
+   *                  used)
+   * @param _index    index of the trigger
    */
-  public Event(final String _name, final String _event, final String _program,
-      final String _method, final String _index) {
-    if (_name == null)  {
-      this.name = _event;
-    } else  {
-      this.name = _name;
-    }
+  public Event(final String _name,
+               final EventType _event,
+               final String _program,
+               final String _method,
+               final String _index)
+  {
+    this.name = (_name == null) ? _event.name : _name;
     this.event = _event;
     this.program = _program;
-    this.method = _method;
+    this.method = (_method == null) ? "execute" : _method;
     this.index = _index;
   }
 
   /**
    * For given type defined with the instance parameter, this trigger is
-   * searched by typeID and indexposition. If the trigger exists, the trigger is
+   * searched by typeID and index position. If the trigger exists, the trigger is
    * updated. Otherwise the trigger is created.
    *
-   * @param _instance
-   *          type instance to update with this attribute
-   * @param _typeName
-   *          name of the type to update
-   * @return Instance of the updateted or inserted Trigger, null incase of error
-   *
-   *
+   * @param _instance   type instance to update with this attribute
+   * @param _typeName   name of the type to update
+   * @return Instance of the updated or inserted Trigger, null in case of error
    */
-  public Instance updateInDB(final Instance _instance, final String _typeName) {
-
+  public Instance updateInDB(final Instance _instance,
+                             final String _typeName)
+  {
     try {
-
-      String eventtype;
-      if (this.isTrigger) {
-        eventtype = EventType.valueOf(this.event).name;
-      } else {
-        eventtype = this.event;
-      }
-
       final long typeID = _instance.getId();
       final long progID = getProgID(_typeName);
 
       final SearchQuery query = new SearchQuery();
-      query.setQueryTypes(eventtype);
+      query.setQueryTypes(this.event.name);
       query.addWhereExprEqValue("Abstract", typeID);
       query.addWhereExprEqValue("Name", this.name);
       query.addSelect("OID");
@@ -152,7 +132,7 @@ public class Event {
         update = new Update((String) query.get("OID"));
       } else {
 
-        update = new Insert(eventtype);
+        update = new Insert(this.event.name);
         update.add("Abstract", "" + typeID);
         update.add("IndexPosition", this.index);
         update.add("Name", this.name);
@@ -182,7 +162,9 @@ public class Event {
    * @return id of the Program, 0 if not found
    * @throws EFapsException
    */
-  private long getProgID(String _typeName) throws EFapsException {
+  private long getProgID(final String _typeName)
+      throws EFapsException
+  {
     long id = 0;
 
     final SearchQuery query = new SearchQuery();
@@ -203,12 +185,12 @@ public class Event {
   /**
    * add a Property to this Trigger
    *
-   * @param _name
-   *          Name of the Property
-   * @param _value
-   *          value of the Property
+   * @param _name   name of the Property
+   * @param _value  value of the Property
    */
-  public void addProperty(final String _name, final String _value) {
+  public void addProperty(final String _name,
+                          final String _value)
+  {
     this.properties.put(_name, _value);
   }
 
@@ -217,7 +199,8 @@ public class Event {
    *
    * @return Map containing the Properties
    */
-  public Map<String, String> getProperties() {
+  public Map<String, String> getProperties()
+  {
     return this.properties;
   }
 }

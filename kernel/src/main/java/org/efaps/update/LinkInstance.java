@@ -32,11 +32,11 @@ import java.util.Map;
  */
 public class LinkInstance {
 
+  private final Map<String, String> valuesMap = new HashMap<String, String>();
+
   private final String name;
 
   private int order = 0;;
-
-  private final Map<String, String> valuesMap = new HashMap<String, String>();
 
   private Long childId;
 
@@ -48,16 +48,18 @@ public class LinkInstance {
 
   private boolean insert = false;
 
-  public LinkInstance(final String _name) {
+  public LinkInstance(final String _name)
+  {
     this.name = _name;
   }
 
-  public LinkInstance(final String _name, final String... _values) {
+  public LinkInstance(final String _name,
+                      final String... _values)
+  {
     this.name = _name;
     for (int i = 0; i < _values.length; i += 2) {
       this.valuesMap.put(_values[i], _values[i + 1]);
     }
-
   }
 
   /**
@@ -65,17 +67,18 @@ public class LinkInstance {
    *
    * @return value of instance variable {@link #order}
    */
-  public int getOrder() {
+  public int getOrder()
+  {
     return this.order;
   }
 
   /**
    * This is the setter method for the instance variable {@link #order}.
    *
-   * @param order
-   *                the order to set
+   * @param order   the order to set
    */
-  public void setOrder(final int _order) {
+  public void setOrder(final int _order)
+  {
     this.order = _order;
   }
 
@@ -84,7 +87,8 @@ public class LinkInstance {
    *
    * @return value of instance variable {@link #name}
    */
-  public String getName() {
+  public String getName()
+  {
     return this.name;
   }
 
@@ -93,11 +97,13 @@ public class LinkInstance {
    *
    * @return value of instance variable {@link #valuesMap}
    */
-  public Map<String, String> getValuesMap() {
+  public Map<String, String> getValuesMap()
+  {
     return this.valuesMap;
   }
 
-  public void setValues(final Map<String, String> _values) {
+  public void setValues(final Map<String, String> _values)
+  {
     this.valuesMap.clear();
     this.valuesMap.putAll(_values);
   }
@@ -105,10 +111,10 @@ public class LinkInstance {
   /**
    * This is the setter method for the instance variable {@link #childId}.
    *
-   * @param _childid
-   *                the _id to set
+   * @param _childid    the _id to set
    */
-  public void setChildId(final Long _childid) {
+  public void setChildId(final Long _childid)
+  {
     this.childId = _childid;
   }
 
@@ -117,7 +123,8 @@ public class LinkInstance {
    *
    * @return value of instance variable {@link #childId}
    */
-  public Long getChildId() {
+  public Long getChildId()
+  {
     return this.childId;
   }
 
@@ -145,18 +152,19 @@ public class LinkInstance {
    *
    * @return value of instance variable {@link #insert}
    */
-  public boolean isInsert() {
+  public boolean isInsert()
+  {
     return this.insert;
   }
 
   /**
    * This is the setter method for the instance variable {@link #insert}.
    *
-   * @param insert
-   *                the insert to set
+   * @param _insert  the insert to set
    */
-  public void setInsert(boolean insert) {
-    this.insert = insert;
+  public void setInsert(final boolean _insert)
+  {
+    this.insert = _insert;
   }
 
   /**
@@ -164,18 +172,19 @@ public class LinkInstance {
    *
    * @return value of instance variable {@link #oid}
    */
-  public String getOid() {
+  public String getOid()
+  {
     return this.oid;
   }
 
   /**
    * This is the setter method for the instance variable {@link #oid}.
    *
-   * @param oid
-   *                the oid to set
+   * @param _oid    the oid to set
    */
-  public void setOid(String oid) {
-    this.oid = oid;
+  public void setOid(String _oid)
+  {
+    this.oid = _oid;
   }
 
   /**
@@ -183,17 +192,18 @@ public class LinkInstance {
    *
    * @return value of instance variable {@link #id}
    */
-  public Long getId() {
+  public Long getId()
+  {
     return this.id;
   }
 
   /**
    * This is the setter method for the instance variable {@link #id}.
    *
-   * @param _id
-   *                the id to set
+   * @param _id     the id to set
    */
-  public void setId(final Long _id) {
+  public void setId(final Long _id)
+  {
     this.id = _id;
   }
 }

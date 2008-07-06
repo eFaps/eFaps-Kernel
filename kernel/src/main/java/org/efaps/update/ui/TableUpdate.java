@@ -20,58 +20,21 @@
 
 package org.efaps.update.ui;
 
-import java.io.IOException;
 import java.net.URL;
-
-import org.apache.commons.digester.Digester;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class TableUpdate extends AbstractCollectionUpdate  {
-
-  /////////////////////////////////////////////////////////////////////////////
-  // static variables
-
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Logger LOG = LoggerFactory.getLogger(TableUpdate.class);
-
-  /////////////////////////////////////////////////////////////////////////////
-  // constructors
-
+public class TableUpdate extends AbstractCollectionUpdate
+{
   /**
    *
+   * @param _url        URL of the file
    */
-  public TableUpdate() {
-    super("Admin_UI_Table");
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // static methods
-
-  public static TableUpdate readXMLFile(final URL _root, final URL _url)
+  public TableUpdate(final URL _url)
   {
-    TableUpdate ret = null;
-
-    try {
-      Digester digester = createDigester("ui-table", TableUpdate.class);
-      ret = (TableUpdate) digester.parse(_url);
-
-      if (ret != null) {
-        ret.setURL(_url);
-      }
-    } catch (IOException e) {
-      LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
-      LOG.error(_url.toString() + " seems to be invalide XML", e);
-    }
-    return ret;
+    super(_url, "Admin_UI_Table");
   }
 }

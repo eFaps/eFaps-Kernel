@@ -35,7 +35,7 @@ import org.apache.maven.tools.plugin.Parameter;
 import org.apache.tools.ant.DirectoryScanner;
 import org.efaps.maven.plugin.EFapsAbstractMojo;
 import org.efaps.maven.plugin.goal.efaps.install.Application;
-import org.efaps.update.Install.FileType;
+import org.efaps.update.FileType;
 
 
 /**
@@ -43,7 +43,8 @@ import org.efaps.update.Install.FileType;
  * @author jmox
  * @version $Id$
  */
-public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo {
+public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo
+{
 
   // ///////////////////////////////////////////////////////////////////////////
   // static variables

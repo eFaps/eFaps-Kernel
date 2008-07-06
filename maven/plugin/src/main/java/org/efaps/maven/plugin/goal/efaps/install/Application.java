@@ -212,7 +212,6 @@ public class Application {
     loadInstalledVersions(_userName);
 
     this.install.setApplication(this.application);
-    this.install.setMaxVersion(this.maxVersion);
     this.install.setRootDir(this.eFapsDir.toURL());
 
     LOG.info("Install application '" + this.application + "'");

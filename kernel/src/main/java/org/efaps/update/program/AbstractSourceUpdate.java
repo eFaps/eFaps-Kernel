@@ -29,6 +29,7 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.db.Checkin;
 import org.efaps.update.AbstractUpdate;
+import org.efaps.update.datamodel.SQLTableUpdate.Definition;
 import org.efaps.util.EFapsException;
 
 /**
@@ -44,13 +45,17 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
    *
    * @param _modelTypeName
    */
-  protected AbstractSourceUpdate(final String _modelTypeName) {
-    this(_modelTypeName, null);
+  protected AbstractSourceUpdate(final URL _url,
+                                 final String _modelTypeName)
+  {
+    this(_url, _modelTypeName, null);
   }
 
-  protected AbstractSourceUpdate(final String modelTypeName,
-                                 final Set<Link> linkTypes) {
-    super(modelTypeName, linkTypes);
+  protected AbstractSourceUpdate(final URL _url,
+                                 final String modelTypeName,
+                                 final Set<Link> linkTypes)
+  {
+    super(_url, modelTypeName, linkTypes);
   }
 
   /**
@@ -59,15 +64,28 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
    *
    * @return
    */
-  protected Long getVersion() {
+  protected Long getVersion()
+  {
     return new Long(1);
+  }
+
+  /**
+   * Creates new instance of class {@link Definition}.
+   *
+   * @return new definition instance
+   * @see Definition
+   */
+  @Override
+  protected AbstractDefinition newDefinition()
+  {
+    throw new Error("not allowed");
   }
 
   /**
    * TODO description
    */
-  public static abstract class SourceDefinition extends AbstractDefinition {
-
+  public abstract class SourceDefinition extends AbstractDefinition
+  {
     /**
      * instance variable holding the URL to the file to be imported
      */
@@ -81,7 +99,8 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
      * @param _rootUrl  URL to the root
      * @param _fileUrl  URL to the file (incl. root).
      */
-    protected SourceDefinition(final URL _rootUrl, final URL _fileUrl)
+    protected SourceDefinition(final URL _rootUrl,
+                               final URL _fileUrl)
     {
       // searched by attribute Name
       super("Name");
@@ -153,5 +172,4 @@ public abstract class AbstractSourceUpdate extends AbstractUpdate {
               .toString();
     }
   }
-
 }

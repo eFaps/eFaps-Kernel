@@ -58,19 +58,20 @@ public class CSSUpdate extends AbstractSourceUpdate {
       new Link("Admin_Program_CSS2CSS", "From", TYPENAME, "To");
 
   protected final static Set<Link> ALLLINKS = new HashSet<Link>();
-  {
+  static {
     ALLLINKS.add(LINK2SUPER);
   }
 
-  protected CSSUpdate() {
-    super(TYPENAME, ALLLINKS);
+  protected CSSUpdate(final URL _url)
+  {
+    super(_url, TYPENAME, ALLLINKS);
   }
 
-  public static CSSUpdate readFile(final URL _root, final URL _url)
+  public static CSSUpdate readFile(final URL _root,
+                                   final URL _url)
   {
-    final CSSUpdate ret = new CSSUpdate();
-    ret.setURL(_url);
-    final CSSDefinition definition = new CSSDefinition(_root, _url);
+    final CSSUpdate ret = new CSSUpdate(_url);
+    final CSSDefinition definition = ret.new CSSDefinition(_root, _url);
     ret.addDefinition(definition);
 
     String thisLine;
@@ -122,7 +123,8 @@ public class CSSUpdate extends AbstractSourceUpdate {
    * @see org.efaps.update.program.AbstractSourceUpdate#getVersion()
    */
   @Override
-  protected Long getVersion() {
+  protected Long getVersion()
+  {
     long ret;
     if (this.version > 0) {
       ret = this.version;
@@ -138,7 +140,7 @@ public class CSSUpdate extends AbstractSourceUpdate {
    * @author jmox
    * @version $Id$
    */
-  public static class CSSDefinition extends SourceDefinition {
+  public class CSSDefinition extends SourceDefinition {
 
     public CSSDefinition(final URL _rootUrl,
                          final URL _url)

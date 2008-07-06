@@ -22,17 +22,14 @@ package org.efaps.update.datamodel;
 
 import static org.efaps.db.Context.getDbType;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -47,7 +44,6 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * This class is responsible for generating and updating of SQLTables in eFpas.<br>
@@ -58,119 +54,42 @@ import org.xml.sax.SAXException;
  * @author tmo
  * @version $Id$
  */
-public class SQLTableUpdate extends AbstractUpdate {
+public class SQLTableUpdate extends AbstractUpdate
+{
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Logger LOG =
-      LoggerFactory.getLogger(SQLTableUpdate.class);
-
-  private final static Set<Link> ALLLINKS = new HashSet<Link>();
+  private final static Logger LOG = LoggerFactory.getLogger(SQLTableUpdate.class);
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
    *
+   * @param _url        URL of the file
    */
-  public SQLTableUpdate() {
-    super("Admin_DataModel_SQLTable", ALLLINKS);
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // static methods
-
-  public static SQLTableUpdate readXMLFile(final URL _root, final URL _url)
+  public SQLTableUpdate(final URL _url)
   {
-    SQLTableUpdate ret = null;
-
-    try {
-      final Digester digester = new Digester();
-      digester.setValidating(false);
-      digester.addObjectCreate("datamodel-sqltable", SQLTableUpdate.class);
-      // set the UUID
-      digester.addCallMethod("datamodel-sqltable/uuid", "setUUID", 1);
-      digester.addCallParam("datamodel-sqltable/uuid", 0);
-
-      // create a new SQL-Table-Definition
-      final String definition = "datamodel-sqltable/definition";
-      digester.addObjectCreate(definition, Definition.class);
-      digester.addSetNext(definition, "addDefinition");
-
-      digester.addCallMethod(definition + "/version", "setVersion", 4);
-      digester.addCallParam(definition + "/version/application", 0);
-      digester.addCallParam(definition + "/version/global", 1);
-      digester.addCallParam(definition + "/version/local", 2);
-      digester.addCallParam(definition + "/version/mode", 3);
-      // set the name of the SQL-Table-Definition
-      digester.addCallMethod(definition + "/name", "setName", 1);
-      digester.addCallParam(definition + "/name", 0);
-
-      // set the column wich contains the TypeId
-      digester.addCallMethod(definition + "/typeid-column", "setTypeIdColumn",
-          1);
-      digester.addCallParam(definition + "/typeid-column", 0);
-
-      // set the parent
-      digester.addCallMethod(definition + "/parent", "setParent", 1);
-      digester.addCallParam(definition + "/parent", 0);
-
-      final String database = definition + "/database";
-
-      digester.addCallMethod(database + "/sql", "addSQL", 1);
-      digester.addCallParam(database + "/sql", 0);
-
-      digester.addCallMethod(database + "/table-name", "setSQLTableName", 1);
-      digester.addCallParam(database + "/table-name", 0);
-
-      digester.addCallMethod(database + "/parent-table", "setParentSQLTableName", 1);
-      digester.addCallParam(database + "/parent-table", 0);
-
-      digester.addCallMethod(database + "/table-name", "setSQLTableName", 1);
-      digester.addCallParam(database + "/table-name", 0);
-
-      digester.addCallMethod(database + "/column", "addColumn", 4, new Class[] {
-          String.class, String.class, Integer.class, Boolean.class });
-      digester.addCallParam(database + "/column", 0, "name");
-      digester.addCallParam(database + "/column", 1, "type");
-      digester.addCallParam(database + "/column", 2, "length");
-      digester.addCallParam(database + "/column", 3, "not-null");
-
-      digester.addCallMethod(database + "/unique", "addUniqueKey", 2);
-      digester.addCallParam(database + "/unique", 0, "name");
-      digester.addCallParam(database + "/unique", 1, "columns");
-
-      digester
-          .addCallMethod(database + "/foreign", "addForeignKey", 4,
-              new Class[] { String.class, String.class, String.class,
-                  Boolean.class });
-      digester.addCallParam(database + "/foreign", 0, "name");
-      digester.addCallParam(database + "/foreign", 1, "key");
-      digester.addCallParam(database + "/foreign", 2, "reference");
-      digester.addCallParam(database + "/foreign", 3, "cascade");
-
-      digester.addCallMethod(database + "/check", "addCheckKey", 2);
-      digester.addCallParam(database + "/check", 0, "name");
-      digester.addCallParam(database + "/check", 1, "condition");
-
-      ret = (SQLTableUpdate) digester.parse(_url);
-
-      if (ret != null) {
-        ret.setURL(_url);
-      }
-    } catch (IOException e) {
-      LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
-      LOG.error(_url.toString() + " seems to be invalide XML", e);
-    }
-    return ret;
+    super(_url, "Admin_DataModel_SQLTable");
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * Creates new instance of class {@link Definition}.
+   *
+   * @return new definition instance
+   * @see Definition
+   */
+  @Override
+  protected AbstractDefinition newDefinition()
+  {
+    return new Definition();
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
 
   /**
    * The class defines a column in a sql table.
@@ -315,12 +234,12 @@ public class SQLTableUpdate extends AbstractUpdate {
     }
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition extends AbstractDefinition {
+  public class Definition extends AbstractDefinition {
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     // instance variables
 
     /**
@@ -349,70 +268,57 @@ public class SQLTableUpdate extends AbstractUpdate {
 
     private final List<CheckKey> checkKeys = new ArrayList<CheckKey>();
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
 
-    /**
-     * @see #values
-     */
-    public void setSQLTableName(final String _value) {
-      addValue("SQLTable", _value);
-      addValue("SQLColumnID", "ID");
-    }
-
-    /**
-     *
-     */
-    public void setTypeIdColumn(final String _typeIdColumn) {
-      addValue("SQLColumnType", _typeIdColumn);
-    }
-
-    /**
-     * @see #values
-     */
-    public void setParentSQLTableName(final String _parentSQLTableName) {
-      this.parentSQLTableName = _parentSQLTableName;
-    }
-
-    /**
-     * Defines SQL statements which is directly executed (e.g. to create a
-     * view).
-     *
-     * @param _sql
-     *                sql statement to execute
-     * @see #sqls
-     */
-    public void addSQL(final String _sql) {
-      this.sqls.add(_sql);
-    }
-
-    /**
-     * @todo throw Exception is not allowed
-     */
-    public void setParent(final String _parent) throws Exception {
-      if ((_parent != null) && (_parent.length() > 0)) {
-        this.parent = _parent;
+    @Override
+    protected void readXML(final List<String> _tags,
+                           final Map<String,String> _attributes,
+                           final String _text)
+    {
+      final String value = _tags.get(0);
+      if ("database".equals(value))  {
+        if (_tags.size() > 1)  {
+          final String subValue = _tags.get(1);
+          if ("check".equals(subValue))  {
+            this.checkKeys.add(new CheckKey(_attributes.get("name"),
+                                            _attributes.get("condition")));
+          } else if ("column".equals(subValue))  {
+            final String lengthStr = _attributes.get("length");
+            final int length = (lengthStr != null)
+                               ? Integer.parseInt(lengthStr)
+                               : 0;
+            this.columns.add(new Column(_attributes.get("name"),
+                                        Enum.valueOf(AbstractDatabase.ColumnType.class,
+                                                     _attributes.get("type")),
+                                        length,
+                                        "true".equals(_attributes.get("not-null"))));
+          } else if ("foreign".equals(subValue))  {
+            this.foreignKeys.add(new ForeignKey(_attributes.get("name"),
+                                                _attributes.get("key"),
+                                                _attributes.get("reference"),
+                                                "true".equals(_attributes.get("cascade"))));
+          } else if ("parent-table".equals(subValue))  {
+            this.parentSQLTableName = _text;
+          } else if ("sql".equals(subValue))  {
+              this.sqls.add(_text);
+          } else if ("table-name".equals(subValue))  {
+            addValue("SQLTable", _text);
+            addValue("SQLColumnID", "ID");
+          } else if ("unique".equals(subValue))  {
+            this.uniqueKeys.add(new UniqueKey(_attributes.get("name"),
+                                              _attributes.get("columns")));
+          }
+        }
+      } else if ("parent".equals(value))  {
+        if ((_text != null) && !"".equals(_text)) {
+          this.parent = _text;
+        }
+      } else if ("typeid-column".equals(value))  {
+        addValue("SQLColumnType", _text);
+      } else  {
+        super.readXML(_tags, _attributes, _text);
       }
     }
-
-    public void addColumn(final String _name, final String _type,
-                          final int _length, final boolean _notNull) {
-      this.columns.add(new Column(_name, Enum.valueOf(
-          AbstractDatabase.ColumnType.class, _type), _length, _notNull));
-    }
-
-    public void addUniqueKey(final String _name, final String _columns) {
-      this.uniqueKeys.add(new UniqueKey(_name, _columns));
-    }
-
-    public void addForeignKey(final String _name, final String _key,
-                              final String _reference, final boolean _cascade) {
-      this.foreignKeys.add(new ForeignKey(_name, _key, _reference, _cascade));
-    }
-
-    public void addCheckKey(final String _name, final String _condition) {
-      this.checkKeys.add(new CheckKey(_name, _condition));
-    }
-
 
     /**
      * A new SQL table could only be created if a name is specified.
@@ -420,13 +326,12 @@ public class SQLTableUpdate extends AbstractUpdate {
      * @param _dataModelType  type to create
      */
     @Override
-    public void createInDB(final Type _dataModelType,
-                           final String _uuid)
+    public void createInDB()
         throws EFapsException
     {
       createSQLTable();
       if (getValue("Name") != null) {
-        super.createInDB(_dataModelType, _uuid);
+        super.createInDB();
       }
     }
 
@@ -483,7 +388,7 @@ public class SQLTableUpdate extends AbstractUpdate {
         final Statement stmt = con.getConnection().createStatement();
         for (String sql : this.sqls) {
           if (LOG.isDebugEnabled()) {
-            LOG.info("    ..SQL> " + sql);
+            LOG.debug("    ..SQL> " + sql);
           }
           stmt.execute(sql);
         }

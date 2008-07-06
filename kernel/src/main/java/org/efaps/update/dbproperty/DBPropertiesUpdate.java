@@ -46,22 +46,21 @@ import org.xml.sax.SAXException;
  * Database for use as eFaps-Admin_Properties.<br>
  * The import depends on the UUID of the Bundle. That means all Keys of the
  * Properties must be unique within a Bundle. Therefore the import will update a
- * key, if it is allready existing inside this bundle. The Bundle will allways
- * be idendified by the UUID and not by the name.
+ * key, if it is already existing inside this bundle. The Bundle will always
+ * be identified by the UUID and not by the name.
  *
  * @author jmox
  * @version $Id$
  */
-public class DBPropertiesUpdate implements ImportInterface {
-
-  // ///////////////////////////////////////////////////////////////////////////
+public class DBPropertiesUpdate implements ImportInterface
+{
+  /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Logger LOG =
-      LoggerFactory.getLogger(DBPropertiesUpdate.class);
+  private final static Logger LOG = LoggerFactory.getLogger(DBPropertiesUpdate.class);
 
   /**
    * name for the Type
@@ -102,7 +101,7 @@ public class DBPropertiesUpdate implements ImportInterface {
   private String bundlesequence;
 
   /**
-   * root of the XML-Filt to be imported
+   * root of the XML-file to be imported
    */
   private String root;
 
@@ -116,7 +115,8 @@ public class DBPropertiesUpdate implements ImportInterface {
    *
    * @return ID of the Language
    */
-  private String getLanguageId(final String _language) {
+  private String getLanguageId(final String _language)
+  {
     String ret = null;
     final SearchQuery query = new SearchQuery();
     try {
@@ -498,7 +498,7 @@ public class DBPropertiesUpdate implements ImportInterface {
     return id.toString();
   }
 
-  public static DBPropertiesUpdate readXMLFile(final URL _url) {
+  public static DBPropertiesUpdate readFile(final URL _url) {
     DBPropertiesUpdate ret = null;
     final Digester digester = new Digester();
 
@@ -539,12 +539,12 @@ public class DBPropertiesUpdate implements ImportInterface {
   /**
    * set the Bundle
    *
-   * @param _name
-   *                Name of the Bundle
-   * @param _sequence
-   *                Sequence of the Bundle
+   * @param _name       Name of the Bundle
+   * @param _sequence   Sequence of the Bundle
    */
-  public void setBundle(final String _name, final String _sequence) {
+  public void setBundle(final String _name,
+                        final String _sequence)
+  {
     setBundleName(_name);
     setSequence(_sequence);
   }
@@ -552,17 +552,18 @@ public class DBPropertiesUpdate implements ImportInterface {
   /**
    * add a Resource to the Properties
    *
-   * @param _resource
-   *                Resource to be added
+   * @param _resource   Resource to be added
    */
-  public void addResource(final Resource _resource) {
+  public void addResource(final Resource _resource)
+  {
     this.resources.add(_resource);
   }
 
   /**
    * Import a Bundle of Properties into the database
    */
-  public void updateInDB() {
+  public void updateInDB()
+  {
     if (LOG.isInfoEnabled()) {
       LOG.info("Importing Properties '" + this.getBundleName() + "'");
     }
@@ -643,15 +644,14 @@ public class DBPropertiesUpdate implements ImportInterface {
     /**
      * set the Resource
      *
-     * @param _type
-     *                type of the Properties
-     * @param _language
-     *                language of the Properties
-     * @param _filename
-     *                Filename of the Properties
+     * @param _type       type of the Properties
+     * @param _language   language of the Properties
+     * @param _filename   Filename of the Properties
      */
-    public void setResource(final String _type, final String _language,
-                            final String _filename) {
+    public void setResource(final String _type,
+                            final String _language,
+                            final String _filename)
+    {
       this.type = _type;
       this.language = _language;
       this.filename = _filename;

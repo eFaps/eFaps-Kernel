@@ -62,15 +62,16 @@ public class JavaScriptUpdate extends AbstractSourceUpdate {
     ALLLINKS.add(LINK2SUPER);
   }
 
-  protected JavaScriptUpdate() {
-    super(TYPENAME, ALLLINKS);
+  protected JavaScriptUpdate(final URL _url)
+  {
+    super(_url, TYPENAME, ALLLINKS);
   }
 
-  public static JavaScriptUpdate readFile(final URL _root, final URL _url)
+  public static JavaScriptUpdate readFile(final URL _root,
+                                          final URL _url)
   {
-    final JavaScriptUpdate ret = new JavaScriptUpdate();
-    ret.setURL(_url);
-    final JavaScriptDefinition definition = new JavaScriptDefinition(_root, _url);
+    final JavaScriptUpdate ret = new JavaScriptUpdate(_url);
+    final JavaScriptDefinition definition = ret.new JavaScriptDefinition(_root, _url);
     ret.addDefinition(definition);
 
     String thisLine;
@@ -121,7 +122,8 @@ public class JavaScriptUpdate extends AbstractSourceUpdate {
    * @see org.efaps.update.program.AbstractSourceUpdate#getVersion()
    */
   @Override
-  protected Long getVersion() {
+  protected Long getVersion()
+  {
     long ret;
     if (this.version > 0) {
       ret = this.version;
@@ -137,7 +139,7 @@ public class JavaScriptUpdate extends AbstractSourceUpdate {
    * @author jmox
    * @version $Id$
    */
-  public static class JavaScriptDefinition extends SourceDefinition {
+  public class JavaScriptDefinition extends SourceDefinition {
 
     public JavaScriptDefinition(final URL _rootUrl,
                                 final URL _url)

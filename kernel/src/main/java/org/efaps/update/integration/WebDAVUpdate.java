@@ -60,15 +60,23 @@ public class WebDAVUpdate extends AbstractUpdate {
 
   /**
    *
+   * @param _url        URL of the file
    */
-  public WebDAVUpdate() {
-    super("Admin_Integration_WebDAV", ALLLINKS);
+  public WebDAVUpdate(final URL _url)
+  {
+    super(_url, "Admin_Integration_WebDAV", ALLLINKS);
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static WebDAVUpdate readXMLFile(final URL _root, final URL _url)
+  /**
+   *
+   * @param _root     root URL
+   * @param _url      URL of the file depending of the root URL
+   * @return WebDAV update definition read by digester
+   */
+  public static WebDAVUpdate readFile(final URL _root, final URL _url)
   {
     WebDAVUpdate ret = null;
 
@@ -108,10 +116,7 @@ public class WebDAVUpdate extends AbstractUpdate {
 
       ret = (WebDAVUpdate) digester.parse(_url);
 
-      if (ret != null) {
-        ret.setURL(_url);
-      }
-    } catch (IOException e) {
+     } catch (IOException e) {
       LOG.error(_url.toString() + " is not readable", e);
     } catch (SAXException e) {
       LOG.error(_url.toString() + " seems to be invalide XML", e);
@@ -119,12 +124,24 @@ public class WebDAVUpdate extends AbstractUpdate {
     return ret;
   }
 
+  /**
+   * Creates new instance of class {@link Definition}.
+   *
+   * @return new definition instance
+   * @see Definition
+   */
+  @Override
+  protected AbstractDefinition newDefinition()
+  {
+    return new Definition();
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition extends AbstractDefinition {
+  public class Definition extends AbstractDefinition {
 
     /**
      *

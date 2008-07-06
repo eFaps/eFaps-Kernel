@@ -20,58 +20,25 @@
 
 package org.efaps.update.ui;
 
-import java.io.IOException;
 import java.net.URL;
-
-import org.apache.commons.digester.Digester;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class FormUpdate extends AbstractCollectionUpdate  {
-
-  /////////////////////////////////////////////////////////////////////////////
-  // static variables
-
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Logger LOG = LoggerFactory.getLogger(FormUpdate.class);
+public class FormUpdate extends AbstractCollectionUpdate
+{
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
    *
+   * @param _url        URL of the file
    */
-  public FormUpdate() {
-    super("Admin_UI_Form");
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // static methods
-
-  public static FormUpdate readXMLFile(final URL _root, final URL _url)
+  public FormUpdate(final URL _url)
   {
-    FormUpdate ret = null;
-
-    try {
-      Digester digester = createDigester("ui-form", FormUpdate.class);
-      ret = (FormUpdate) digester.parse(_url);
-
-      if (ret != null) {
-        ret.setURL(_url);
-      }
-    } catch (IOException e) {
-      LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
-      LOG.error(_url.toString() + " seems to be invalide XML", e);
-    }
-    return ret;
+    super(_url, "Admin_UI_Form");
   }
 }

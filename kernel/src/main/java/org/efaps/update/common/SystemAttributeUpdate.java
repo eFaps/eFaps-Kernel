@@ -20,96 +20,55 @@
 
 package org.efaps.update.common;
 
-import java.io.IOException;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.digester.Digester;
 import org.efaps.db.Insert;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * @author jmox
  * @version $Id$
  */
-public class SystemAttributeUpdate extends AbstractUpdate {
-
+public class SystemAttributeUpdate extends AbstractUpdate
+{
   /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Logger LOG =
-      LoggerFactory.getLogger(SystemAttributeUpdate.class);
-
-  public SystemAttributeUpdate() {
-    super("Admin_Common_SystemAttribute");
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // static methods
-
-  /**
-   * Method that reads the given XML-File and than uses the
-   * <code>org.apache.commons.digester</code> to create the different Class
-   * and invokes the Methods to Update a SystemAttribute
    *
-   * @param _url
-   *                XML-File to be read by the digester
-   * @return SystemAttributeUpdate Definition read by digester
+   * @param _url        URL of the file
    */
-  public static SystemAttributeUpdate readXMLFile(final URL _root, final URL _url)
+  public SystemAttributeUpdate(final URL _url)
   {
-    SystemAttributeUpdate ret = null;
-    try {
-      Digester digester = new Digester();
-      digester.setValidating(false);
-      digester.addObjectCreate("common-systemattribute",
-          SystemAttributeUpdate.class);
-
-      // set the UUID for the SystemAtribute
-      digester.addCallMethod("common-systemattribute/uuid", "setUUID", 1);
-      digester.addCallParam("common-systemattribute/uuid", 0);
-
-      // add a new Definition for the SystemAtribute
-      digester.addObjectCreate("common-systemattribute/definition",
-          Definition.class);
-      digester.addSetNext("common-systemattribute/definition", "addDefinition");
-
-      // set the Version of the SystemAtribute-Definition
-      digester.addCallMethod("common-systemattribute/definition/version",
-          "setVersion", 4);
-      digester.addCallParam(
-          "common-systemattribute/definition/version/application", 0);
-      digester.addCallParam("common-systemattribute/definition/version/global",
-          1);
-      digester.addCallParam("common-systemattribute/definition/version/local",
-          2);
-      digester
-          .addCallParam("common-systemattribute/definition/version/mode", 3);
-
-      // set the Name of the SystemAtribute-Definition
-      digester.addCallMethod("common-systemattribute/definition/name",
-          "setName", 1);
-      digester.addCallParam("common-systemattribute/definition/name", 0);
-
-      // set the Value for the SystemAtribute-Definition
-      digester.addCallMethod("common-systemattribute/definition/value",
-          "addValue", 1);
-      digester.addCallParam("common-systemattribute/definition/value", 0);
-
-      ret = (SystemAttributeUpdate) digester.parse(_url);
-
-    } catch (IOException e) {
-      LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
-      LOG.error(_url.toString() + " seems to be invalide XML", e);
-    }
-    return ret;
+    super(_url, "Admin_Common_SystemAttribute");
   }
 
-  public static class Definition extends AbstractDefinition {
+  /**
+   * Creates new instance of class {@link Definition}.
+   *
+   * @return new definition instance
+   * @see Definition
+   */
+  @Override
+  protected AbstractDefinition newDefinition()
+  {
+    return new Definition();
+  }
+
+  public class Definition extends AbstractDefinition
+  {
+    @Override
+    protected void readXML(final List<String> _tags,
+                           final Map<String,String> _attributes,
+                           final String _text)
+    {
+      final String value = _tags.get(0);
+      if ("value".equals(value))  {
+        addValue("Value", _text);
+      } else  {
+        super.readXML(_tags, _attributes, _text);
+      }
+    }
 
     /**
      * Because the attribute 'Value' of the system attribute is a required
@@ -122,10 +81,6 @@ public class SystemAttributeUpdate extends AbstractUpdate {
     {
       _insert.add("Value", getValue("Value"));
       super.createInDB(_insert);
-    }
-
-    public void addValue(final String _value) {
-      super.addValue("Value", _value);
     }
   }
 }

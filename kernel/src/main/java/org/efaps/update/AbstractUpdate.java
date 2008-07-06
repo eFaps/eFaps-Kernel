@@ -57,24 +57,23 @@ import org.slf4j.LoggerFactory;
  * @author jmox
  * @version $Id$
  */
-public abstract class AbstractUpdate {
-
-  // ///////////////////////////////////////////////////////////////////////////
+public abstract class AbstractUpdate
+{
+  /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
    * Logging instance used to give logging information of this class.
    */
-  private final static Logger LOG =
-      LoggerFactory.getLogger(AbstractUpdate.class);
+  private final static Logger LOG = LoggerFactory.getLogger(AbstractUpdate.class);
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
    * The URL of the xml file is stored in this instance variable.
    */
-  private URL url = null;
+  private final URL url;
 
   /**
    * The name of the data model type is store in this instance variable.
@@ -82,12 +81,12 @@ public abstract class AbstractUpdate {
   private final String dataModelTypeName;
 
   /**
-   * All known link types are set to this instance varaible.
+   * All known link types are set to this instance variable.
    */
   private final Set<Link> allLinkTypes;
 
   /**
-   * The univeral unique identifier of the object is stored in this instance
+   * The universal unique identifier of the object is stored in this instance
    * variable.
    *
    * @see #setUUID
@@ -95,60 +94,113 @@ public abstract class AbstractUpdate {
   private String uuid = null;
 
   /**
+   * Name of the file application for which this XML file is defined.
+   *
+   * @see #setFileApplication
+   */
+  private String fileApplication = null;
+
+  /**
+   * Revision of the XML file.
+   *
+   * @see #setFileRevision
+   */
+  private String fileRevision = null;
+
+  /**
    * All definitions of versions are added to this list.
    */
-  private final List<AbstractDefinition> definitions =
-      new ArrayList<AbstractDefinition>();
+  private final List<AbstractDefinition> definitions = new ArrayList<AbstractDefinition>();
 
-  private String application;
-
-  private Long maxVersion;
-
-
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
    *
    */
-  protected AbstractUpdate(final String _dataModelTypeName) {
-    this(_dataModelTypeName, null);
+  protected AbstractUpdate(final URL _url,
+                           final String _dataModelTypeName)
+  {
+    this(_url, _dataModelTypeName, null);
   }
 
   /**
    *
    */
-  protected AbstractUpdate(final String _dataModelTypeName,
-                           final Set<Link> _allLinkTypes) {
+  protected AbstractUpdate(final URL _url,
+                           final String _dataModelTypeName,
+                           final Set<Link> _allLinkTypes)
+  {
+    this.url = _url;
     this.dataModelTypeName = _dataModelTypeName;
     this.allLinkTypes = _allLinkTypes;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
+
+  /**
+   * Read event for given tags path with attributes and text.
+   *
+   * @param _tags         tags path as list
+   * @param _attributes   map of attributes for current tag
+   * @param _text         content text of this tags path
+   * @todo error could not be thrown because db properties is not read correctly
+   */
+  public void readXML(final List<String> _tags,
+                      final Map<String,String> _attributes,
+                      final String _text)
+  {
+    if (_tags.size() == 1)  {
+      final String value = _tags.get(0);
+      if ("uuid".equals(value))  {
+        this.uuid = _text;
+      } else if ("file-application".equals(value))  {
+        this.fileApplication = _text;
+      } else if ("file-revision".equals(value))  {
+        this.fileRevision = _text;
+      } else if ("definition".equals(value))  {
+        this.definitions.add(newDefinition());
+      }
+    } else if ("definition".equals(_tags.get(0))) {
+      final AbstractDefinition curDef = this.definitions.get(this.definitions.size() - 1);
+      curDef.readXML(_tags.subList(1, _tags.size()),
+                     _attributes,
+                     _text);
+    } else  {
+//      throw new Error("Unknown Tag '" + _tags + "' (file " + this.url + ")");
+    }
+  }
+
+  /**
+   * Creates a new definition instance used from
+   * {@link #readXML(List, Map, String)}.
+   *
+   * @return new definition instance
+   */
+  protected abstract AbstractDefinition newDefinition();
 
   /**
    * Adds one definition of a update for a specific version to all definitions
    * in {@link #definitions}.
    *
-   * @param _definition
-   *                definition to add
+   * @param _definition   definition to add
    * @see #definitions
    */
-  public void addDefinition(final AbstractDefinition _definition)
+  protected void addDefinition(final AbstractDefinition _definition)
   {
     this.definitions.add(_definition);
   }
 
   /**
    * The instance method returns the eFaps instance representing the read XML
-   * configuration. If not already get from the eFaps databasse, the information
+   * configuration. If not already get from the eFaps database, the information
    * is read. If no instance exists in the database, a new one is automatically
-   * created. The method searchs for the given universal unique identifier in
+   * created. The method searches for the given universal unique identifier in
    * {@link #uuid} the instance in the eFaps database and stores the result in
    * {@link #instance}. If no object is found in eFaps, {@link #instance} is
-   * set to <code>null</code>. A new instance is created in the eFaps db for
-   * given univeral unique identifier in {@link #uuid}. The name of the access
+   * set to <code>null</code>. A new instance is created in the eFaps DB for
+   * given universal unique identifier in {@link #uuid}. The name of the access
    * set is also the universal unique identifier, because the name of access set
    * is first updates in the version definition.<br/> The new created object is
    * stored as instance information in {@link #instance}.
@@ -188,8 +240,7 @@ public abstract class AbstractUpdate {
           if ((this.url != null) && LOG.isDebugEnabled()) {
             LOG.debug("Executing '" + this.url.toString() + "'");
           }
-          def.createInDB(Type.get(this.dataModelTypeName),
-                         this.uuid);
+          def.createInDB();
         }
       }
     } catch (final EFapsException e) {
@@ -206,21 +257,16 @@ public abstract class AbstractUpdate {
    *
    * @return value of instance variable {@link #url}
    */
-  public URL getURL() {
+  protected URL getURL()
+  {
     return this.url;
-  }
-
-  /**
-   * @see #url
-   */
-  protected void setURL(final URL _url) {
-    this.url = _url;
   }
 
   /**
    * @see #uuid
    */
-  public void setUUID(final String _uuid) {
+  protected void setUUID(final String _uuid)
+  {
     this.uuid = _uuid;
   }
 
@@ -231,8 +277,55 @@ public abstract class AbstractUpdate {
    * @see #uuid
    * @see #setUUID
    */
-  public String getUUID() {
+  protected String getUUID()
+  {
     return this.uuid;
+  }
+
+  /**
+   * This is the setter method for instance variable {@link #fileApplication}.
+   *
+   * @param _fileApplication    new value for instance variable
+   *                            {@link #fileApplication}
+   * @see #fileApplication
+   * @see #getFileApplication
+   */
+  public void setFileApplication(final String _fileApplication) {
+    this.fileApplication = _fileApplication;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #fileApplication}.
+   *
+   * @return value of instance variable {@link #fileApplication}
+   * @see #fileApplication
+   * @see #setFileApplication
+   */
+  public String getFileApplication() {
+    return this.fileApplication;
+  }
+
+  /**
+   * This is the setter method for instance variable {@link #fileRevision}.
+   *
+   * @param _fileRevision   new value for instance variable
+   *                        {@link #fileRevision}
+   * @see #fileRevision
+   * @see #getFileRevision
+   */
+  public void setFileRevision(final String _fileRevision) {
+    this.fileRevision = _fileRevision;
+  }
+
+  /**
+   * This is the getter method for instance variable {@link #fileRevision}.
+   *
+   * @return value of instance variable {@link #fileRevision}
+   * @see #fileRevision
+   * @see #setFileRevision
+   */
+  public String getFileRevision() {
+    return this.fileRevision;
   }
 
   /**
@@ -246,25 +339,6 @@ public abstract class AbstractUpdate {
   }
 
   /**
-   * This is the getter method for the instance variable {@link #application}.
-   *
-   * @return value of instance variable {@link #application}
-   */
-  public String getApplication() {
-    return this.application;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #application}.
-   *
-   * @param application
-   *                the application to set
-   */
-  public void setApplication(String application) {
-    this.application = application;
-  }
-
-  /**
    * This is the getter method for the instance variable
    * {@link #dataModelTypeName}.
    *
@@ -272,25 +346,6 @@ public abstract class AbstractUpdate {
    */
   public String getDataModelTypeName() {
     return this.dataModelTypeName;
-  }
-
-  /**
-   * This is the getter method for the instance variable {@link #maxVersion}.
-   *
-   * @return value of instance variable {@link #maxVersion}
-   */
-  public Long getMaxVersion() {
-    return this.maxVersion;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #maxVersion}.
-   *
-   * @param maxVersion
-   *                the maxVersion to set
-   */
-  public void setMaxVersion(Long maxVersion) {
-    this.maxVersion = maxVersion;
   }
 
   /**
@@ -311,6 +366,8 @@ public abstract class AbstractUpdate {
   public String toString() {
     return new ToStringBuilder(this)
             .append("uuid", this.uuid)
+            .append("fileApplication", this.fileApplication)
+            .append("fileRevision", this.fileRevision)
             .append("definitions", this.definitions)
             .toString();
   }
@@ -324,8 +381,8 @@ public abstract class AbstractUpdate {
    *
    * @see #setLinksInDB
    */
-  static protected class Link {
-
+  static protected class Link
+  {
     /** Name of the link. */
     private final String linkName;
 
@@ -345,23 +402,22 @@ public abstract class AbstractUpdate {
     private final String childAttrName;
 
     /**
-     * Constructor used to initialise the instance variables.
+     * Constructor used to initialize the instance variables.
      *
-     * @param _linkName
-     *                name of the link itself
-     * @param _parentAttrName
-     *                name of the parent attribute in the link
-     * @param _childTypeName
-     *                name of the child type
-     * @param _childAttrName
-     *                name of the child attribute in the link
+     * @param _linkName         name of the link itself
+     * @param _parentAttrName   name of the parent attribute in the link
+     * @param _childTypeName    name of the child type
+     * @param _childAttrName    name of the child attribute in the link
      * @see #linkName
      * @see #parentAttrName
      * @see #childTypeName
      * @see #childAttrName
      */
-    public Link(final String _linkName, final String _parentAttrName,
-                final String _childTypeName, final String _childAttrName) {
+    public Link(final String _linkName,
+                final String _parentAttrName,
+                final String _childTypeName,
+                final String _childAttrName)
+    {
       this.linkName = _linkName;
       this.parentAttrName = _parentAttrName;
       this.childTypeName = _childTypeName;
@@ -373,7 +429,8 @@ public abstract class AbstractUpdate {
      *
      * @return child type extracted from the child type name
      */
-    public Type getChildType() {
+    public Type getChildType()
+    {
       return Type.get(this.childTypeName);
     }
 
@@ -382,7 +439,8 @@ public abstract class AbstractUpdate {
      *
      * @return link type extracted from the link name
      */
-    public Type getLinkType() {
+    public Type getLinkType()
+    {
       return Type.get(this.linkName);
     }
 
@@ -407,43 +465,27 @@ public abstract class AbstractUpdate {
    */
   static protected class OrderedLink extends Link {
 
-    public OrderedLink(final String _linkName, final String _parentAttrName,
-                       final String _childTypeName, final String _childAttrName) {
+    public OrderedLink(final String _linkName,
+                       final String _parentAttrName,
+                       final String _childTypeName,
+                       final String _childAttrName)
+    {
       super(_linkName, _parentAttrName, _childTypeName, _childAttrName);
-
     }
   }
 
   /**
    *
    */
-  protected abstract static class AbstractDefinition {
-
+  protected abstract class AbstractDefinition
+  {
     /**
-     * Name of the application for which this definition is defined.
+     * Expression of this definition if this definition must be installed.
      *
-     * @see #setVersion
+     * @see #readXML(List, Map, String)     defines this expression
+     * @see #isValidVersion(JexlContext)    test this expression
      */
-    private String application = null;
-
-    /**
-     * Number of the global version of the application.
-     *
-     * @see #setVersion
-     */
-    private long globalVersion = 0;
-
-    /**
-     * Text of the local version of this definition.
-     *
-     * @see #setVersion
-     */
-    private String localVersion = null;
-
-    /**
-     * @see #setVersion
-     */
-    private String mode = null;
+    private String expression = null;
 
     /**
      * this instance variable stores the type of Definition (default: "replace")
@@ -467,14 +509,12 @@ public abstract class AbstractUpdate {
      *
      * @see #addProperty.
      */
-    private final Map<String, String> properties =
-        new HashMap<String, String>();
+    private final Map<String, String> properties = new HashMap<String, String>();
 
     /**
      *
      */
-    private final Map<Link, Set<LinkInstance>> links =
-        new HashMap<Link, Set<LinkInstance>>();
+    private final Map<Link, Set<LinkInstance>> links = new HashMap<Link, Set<LinkInstance>>();
 
     protected final List<Event> events = new ArrayList<Event>();
 
@@ -514,33 +554,50 @@ public abstract class AbstractUpdate {
       this.searchAttrName = _searchAttrName;
     }
 
+    protected void readXML(final List<String> _tags,
+                           final Map<String,String> _attributes,
+                           final String _text)
+    {
+      final String value = _tags.get(0);
+      if ("name".equals(value))  {
+        setName(_text);
+      } else if ("property".equals(value))  {
+        this.properties.put(_attributes.get("name"), _text);
+      } else if ("version-expression".equals(value))  {
+        this.expression = _text;
+      } else  {
+throw new Error("Unknown Tag '" + _tags + "' (file " + AbstractUpdate.this.url + ")");
+      }
+    }
+
     /**
-     * Evaluates the JEXP expression defined in {@link #mode}. If this
+     * Evaluates the JEXP expression defined in {@link #expression}. If this
      * expression returns true, the definition is a valid version and could
      * be executed.
      *
      * @param _jexlContext    context used to evaluate JEXL expressions
      * @return <i>true</i> if the definition is valid
-     * @throws EFapsException if the JEXL expression in {@link #mode} could
+     * @throws EFapsException if the JEXL expression in {@link #expression} could
      *                        not be evaluated
+     * @see #expression
      */
     public boolean isValidVersion(final JexlContext _jexlContext)
         throws EFapsException
     {
       boolean exec;
       try {
-        if (this.mode == null)  {
+        if (this.expression == null)  {
           final Expression jexlExpr = ExpressionFactory.createExpression("version==latest");
           exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
         } else  {
-          final Expression jexlExpr = ExpressionFactory.createExpression(this.mode);
+          final Expression jexlExpr = ExpressionFactory.createExpression(this.expression);
           exec = Boolean.parseBoolean((jexlExpr.evaluate(_jexlContext).toString()));
         }
       } catch (Exception e) {
         throw new EFapsException(getClass(),
                                  "isValidVersion.JEXLExpressionNotEvaluatable",
                                  e,
-                                 this.mode);
+                                 this.expression);
       }
       return exec;
     }
@@ -554,24 +611,20 @@ public abstract class AbstractUpdate {
      * The search is only done, if no instance is defined (meaning if
      * {@link #instance} has no value).
      *
-     * @param _dataModelType  type for which the a search is done
-     * @param _uuid           UUID which is used for the search if no search
-     *                        attributes is defined in {@link #searchAttrName}
      * @see #instance         variable in which the search result is stored
      *                        (and the search is only done if the value is
      *                        <code>null</code>)
      * @see #searchAttrName   name of the attribute which them the search is
      *                        done
      */
-    protected void searchInstance(final Type _dataModelType,
-                                  final String _uuid)
+    protected void searchInstance()
          throws EFapsException
      {
        if (this.instance == null)  {
          final SearchQuery query = new SearchQuery();
-         query.setQueryTypes(_dataModelType.getName());
+         query.setQueryTypes(AbstractUpdate.this.dataModelTypeName);
          if (this.searchAttrName == null)  {
-           query.addWhereExprEqValue("UUID", _uuid);
+           query.addWhereExprEqValue("UUID", AbstractUpdate.this.uuid);
          } else  {
            query.addWhereExprEqValue(this.searchAttrName,
                                      this.values.get(this.searchAttrName));
@@ -585,16 +638,15 @@ public abstract class AbstractUpdate {
        }
      }
 
-    public void createInDB(final Type _dataModelType,
-                           final String _uuid)
+    public void createInDB()
         throws EFapsException
     {
-      searchInstance(_dataModelType, _uuid);
+      searchInstance();
 
       // if no instance exists, a new insert must be done
       if (this.instance == null) {
-        final Insert insert = new Insert(_dataModelType);
-        insert.add("UUID", _uuid);
+        final Insert insert = new Insert(AbstractUpdate.this.dataModelTypeName);
+        insert.add("UUID", AbstractUpdate.this.uuid);
         createInDB(insert);
       }
     }
@@ -603,7 +655,7 @@ public abstract class AbstractUpdate {
         throws EFapsException
     {
       if (_insert.getInstance().getType().getAttribute("Revision") != null) {
-        _insert.add("Revision", this.globalVersion + "#" + this.localVersion);
+        _insert.add("Revision", AbstractUpdate.this.fileRevision);
       }
       final String name = this.values.get("Name");
       _insert.add("Name", (name == null) ? "-" : name);
@@ -617,17 +669,17 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     * @param _instance instance to update
+     * @param _allLinkTypes
      */
     protected void updateInDB(final Set<Link> _allLinkTypes)
         throws EFapsException
     {
       final String name = this.values.get("Name");
       final Update update = new Update(this.instance);
-      if (this.instance.getType().getAttribute("Revision") != null) {
-        update.add("Revision", this.globalVersion + "#" + this.localVersion);
+      if (this.instance.getType().getAttribute("Revision") != null)  {
+        update.add("Revision", AbstractUpdate.this.fileRevision);
       }
-      for (final Map.Entry<String, String> entry : this.values.entrySet()) {
+      for (final Map.Entry<String, String> entry : this.values.entrySet())  {
         update.add(entry.getKey(), entry.getValue());
       }
       if (LOG.isInfoEnabled() && (name != null)) {
@@ -696,9 +748,7 @@ public abstract class AbstractUpdate {
 
         // add the existing Links as LinkInstance to the List of all Links
         SearchQuery query = new SearchQuery();
-        query.setExpand(_instance, _linktype.linkName
-            + "\\"
-            + _linktype.parentAttrName);
+        query.setExpand(_instance, _linktype.linkName + "\\" + _linktype.parentAttrName);
         query.addSelect("OID");
         query.addSelect("Type");
         query.addSelect("ID");
@@ -837,10 +887,10 @@ public abstract class AbstractUpdate {
      * The properties are only set if the object to update could own properties
      * (meaning derived from 'Admin_Abstract').
      *
-     * @param _instance   instance for which the properties must be set
-     * @param _properties new properties to set
+     * @param _instance     instance for which the properties must be set
+     * @param _properties   new properties to set
      * @throws EFapsException if properties could not be set
-     * @todo rework of the update algorithmus (not always a complete delete and
+     * @todo rework of the update algorithm (not always a complete delete and
      *       and new create is needed)
      * @todo description
      */
@@ -876,33 +926,13 @@ public abstract class AbstractUpdate {
     }
 
     /**
-     * The version information of this defintion is set.
-     *
-     * @param _application
-     *                name of the application for which the version is defined
-     * @param _globalVersion
-     *                global version
+     * @param _link       link type
+     * @param _name       name of the object which is linked to
+     * @param _values     values in the link itself (or null)
      */
-    public void setVersion(final String _application,
-                           final String _globalVersion,
-                           final String _localVersion,
-                           final String _mode)
+    protected void addLink(final Link _link,
+                           final LinkInstance _linkinstance)
     {
-      this.application = _application;
-      this.globalVersion = Long.valueOf(_globalVersion);
-      this.localVersion = _localVersion;
-      this.mode = _mode;
-    }
-
-    /**
-     * @param _link
-     *                link type
-     * @param _name
-     *                name of the object which is linked to
-     * @param _values
-     *                values in the link itself (or null)
-     */
-    protected void addLink(final Link _link, final LinkInstance _linkinstance) {
       Set<LinkInstance> oneLink = this.links.get(_link);
       if (oneLink == null) {
         if (_link instanceof OrderedLink) {
@@ -915,7 +945,8 @@ public abstract class AbstractUpdate {
       oneLink.add(_linkinstance);
     }
 
-    public Set<LinkInstance> getLinks(final Link _linkType) {
+    public Set<LinkInstance> getLinks(final Link _linkType)
+    {
       return this.links.get(_linkType);
     }
 
@@ -924,7 +955,9 @@ public abstract class AbstractUpdate {
      * @param _value  value of the attribute
      * @see #values
      */
-    protected void addValue(final String _name, final String _value) {
+    protected void addValue(final String _name,
+                            final String _value)
+    {
       this.values.put(_name, _value);
     }
 
@@ -933,25 +966,16 @@ public abstract class AbstractUpdate {
      * @return value of the set attribute value in this definition
      * @see #values
      */
-    protected String getValue(final String _name) {
+    protected String getValue(final String _name)
+    {
       return this.values.get(_name);
-    }
-
-    /**
-     * Add a new property with given name and value to this definition.
-     *
-     * @param _name   name of the property to add
-     * @param _value  value of the property to add
-     * @see #properties
-     */
-    public void addProperty(final String _name, final String _value) {
-      this.properties.put(_name, _value);
     }
 
     /**
      * @see #values
      */
-    public void setName(final String _name) {
+    protected void setName(final String _name)
+    {
       addValue("Name", _name);
     }
 
@@ -964,15 +988,7 @@ public abstract class AbstractUpdate {
     @Override
     public String toString()
     {
-      return new ToStringBuilder(this)
-                .append("application", this.application)
-                .append("global version", this.globalVersion)
-                .append("local version", this.localVersion)
-                .append("mode", this.mode)
-                .append("values", this.values)
-                .append("properties", this.properties)
-                .append("links", this.links)
-                .toString();
+      return ToStringBuilder.reflectionToString(this);
     }
 
     /**
@@ -980,7 +996,8 @@ public abstract class AbstractUpdate {
      *
      * @param _event
      */
-    public void addEvent(final Event _event) {
+    protected void addEvent(final Event _event)
+    {
       this.events.add(_event);
     }
 
@@ -989,7 +1006,8 @@ public abstract class AbstractUpdate {
      *
      * @return value of instance variable {@link #events}
      */
-    public List<Event> getEvents() {
+    public List<Event> getEvents()
+    {
       return this.events;
     }
 
@@ -998,7 +1016,8 @@ public abstract class AbstractUpdate {
      *
      * @return value of instance variable {@link #properties}
      */
-    public Map<String, String> getProperties() {
+    public Map<String, String> getProperties()
+    {
       return this.properties;
     }
 
@@ -1007,19 +1026,19 @@ public abstract class AbstractUpdate {
      *
      * @return value of instance variable {@link #type}
      */
-    public String getType() {
+    public String getType()
+    {
       return this.type;
     }
 
     /**
      * This is the setter method for the instance variable {@link #type}.
      *
-     * @param _type
-     *                the type to set
+     * @param _type   the type to set
      */
-    public void setType(final String _type) {
+    public void setType(final String _type)
+    {
       this.type = _type;
     }
   }
-
 }

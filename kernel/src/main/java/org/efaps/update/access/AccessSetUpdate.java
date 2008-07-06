@@ -20,33 +20,24 @@
 
 package org.efaps.update.access;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.digester.Digester;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class AccessSetUpdate extends AbstractUpdate  {
-
+public class AccessSetUpdate extends AbstractUpdate
+{
   /////////////////////////////////////////////////////////////////////////////
   // static variables
-
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Logger LOG = LoggerFactory.getLogger(AccessSetUpdate.class);
-
 
   /** Link to access types. */
   private final static Link LINK2ACCESSTYPE
@@ -78,7 +69,8 @@ public class AccessSetUpdate extends AbstractUpdate  {
                                "AccessSetLink",
                                "Admin_User_Group", "UserAbstractLink");
 
-  private final static Set <Link> ALLLINKS = new HashSet < Link > ();  {
+  private final static Set <Link> ALLLINKS = new HashSet < Link > ();
+  static {
     ALLLINKS.add(LINK2ACCESSTYPE);
     ALLLINKS.add(LINK2DATAMODELTYPE);
     ALLLINKS.add(LINK2PERSON);
@@ -91,111 +83,49 @@ public class AccessSetUpdate extends AbstractUpdate  {
 
   /**
    *
+   * @param _url        URL of the file
    */
-  public AccessSetUpdate() {
-    super("Admin_Access_AccessSet", ALLLINKS);
+  public AccessSetUpdate(final URL _url)
+  {
+    super(_url, "Admin_Access_AccessSet", ALLLINKS);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // static methods
-
-  public static AccessSetUpdate readXMLFile(final URL _root, final URL _url)
+  /**
+   * Creates new instance of class {@link Definition}.
+   *
+   * @return new definition instance
+   * @see Definition
+   */
+  @Override
+  protected AbstractDefinition newDefinition()
   {
-    AccessSetUpdate ret = null;
-
-    try  {
-      final Digester digester = new Digester();
-      digester.setValidating(false);
-      digester.addObjectCreate("access-set", AccessSetUpdate.class);
-
-      digester.addCallMethod("access-set/uuid", "setUUID", 1);
-      digester.addCallParam("access-set/uuid", 0);
-
-      digester.addObjectCreate("access-set/definition", Definition.class);
-      digester.addSetNext("access-set/definition", "addDefinition");
-
-      digester.addCallMethod("access-set/definition/version", "setVersion", 4);
-      digester.addCallParam("access-set/definition/version/application", 0);
-      digester.addCallParam("access-set/definition/version/global", 1);
-      digester.addCallParam("access-set/definition/version/local", 2);
-      digester.addCallParam("access-set/definition/version/mode", 3);
-
-      digester.addCallMethod("access-set/definition/name", "setName", 1);
-      digester.addCallParam("access-set/definition/name", 0);
-
-      digester.addCallMethod("access-set/definition/access-type", "addAccessType", 1);
-      digester.addCallParam("access-set/definition/access-type", 0);
-
-      digester.addCallMethod("access-set/definition/type", "addDataModelType", 1);
-      digester.addCallParam("access-set/definition/type", 0);
-
-      digester.addCallMethod("access-set/definition/person", "addPerson", 1);
-      digester.addCallParam("access-set/definition/person", 0);
-
-      digester.addCallMethod("access-set/definition/role", "addRole", 1);
-      digester.addCallParam("access-set/definition/role", 0);
-
-      digester.addCallMethod("access-set/definition/group", "addGroup", 1);
-      digester.addCallParam("access-set/definition/group", 0);
-
-      ret = (AccessSetUpdate) digester.parse(_url);
-
-      if (ret != null)  {
-        ret.setURL(_url);
-      }
-    } catch (final IOException e) {
-      LOG.error(_url.toString() + " is not readable", e);
-    } catch (final SAXException e) {
-      LOG.error(_url.toString() + " seems to be invalide XML", e);
-    }
-    return ret;
+    return new Definition();
   }
 
   /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition extends AbstractDefinition {
+  private class Definition extends AbstractDefinition {
 
-    /**
-     * @param _accessType access type to add (defined with the name of the
-     *                    access type)
-     * @see #accessTypes
-     */
-    public void addAccessType(final String _accessType)  {
-      addLink(LINK2ACCESSTYPE, new LinkInstance(_accessType));
-    }
-
-    /**
-     * @param _dataModelType  data model type to add (defined with the name of
-     *                        the data model type)
-     * @see #dataModelTypes
-     */
-    public void addDataModelType(final String _dataModelType)  {
-      addLink(LINK2DATAMODELTYPE, new LinkInstance(_dataModelType));
-    }
-
-    /**
-     * @param _person person to add (defined with the name of the person)
-     * @see #persons
-     */
-    public void addPerson(final String _person)  {
-      addLink(LINK2PERSON, new LinkInstance(_person));
-    }
-
-    /**
-     * @param _role role to add (defined with the name of the role)
-     * @see #roles
-     */
-    public void addRole(final String _role)  {
-      addLink(LINK2ROLE, new LinkInstance(_role));
-    }
-
-    /**
-     * @param _group group to add (defined with the name of the group)
-     * @see #groups
-     */
-    public void addGroup(final String _group) {
-      addLink(LINK2GROUP, new LinkInstance(_group));
+    @Override
+    protected void readXML(final List<String> _tags,
+                           final Map<String,String> _attributes,
+                           final String _text)
+    {
+      final String value = _tags.get(0);
+      if ("access-type".equals(value))  {
+        addLink(LINK2ACCESSTYPE, new LinkInstance(_text));
+      } else if ("type".equals(value))  {
+        addLink(LINK2DATAMODELTYPE, new LinkInstance(_text));
+      } else if ("group".equals(value))  {
+        addLink(LINK2GROUP, new LinkInstance(_text));
+      } else if ("person".equals(value))  {
+        addLink(LINK2PERSON, new LinkInstance(_text));
+      } else if ("role".equals(value))  {
+        addLink(LINK2ROLE, new LinkInstance(_text));
+      } else  {
+        super.readXML(_tags, _attributes, _text);
+      }
     }
   }
 }

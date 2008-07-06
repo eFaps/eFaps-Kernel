@@ -26,14 +26,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.commons.digester.Digester;
+import org.efaps.update.Install.ImportInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import org.efaps.update.Install.ImportInterface;
-
 /**
- * Class wich contains the method to launch the import of Data into a efaps
+ * Class which contains the method to launch the import of Data into a efaps
  * connected Database.
  *
  * @author jmox
@@ -71,23 +70,21 @@ public class DataImport implements ImportInterface {
   // instance methods
 
   /**
-   * @param _xml
-   *                String representing the file name including path to the
+   * @param _xml    String representing the file name including path to the
    *                XML-File
    * @see #readXMLFile(File)
    * @see #readXMLFile(URL)
    */
-  public void readXMLFile(final String _xml) throws MalformedURLException {
-    readXMLFile(new File(_xml));
+  public void readFile(final String _xml) throws MalformedURLException {
+    readFile(new File(_xml));
   }
 
   /**
-   * @param _xml
-   *                XML-File
+   * @param _xml    XML-File
    * @see #readXMLFile(URL)
    */
-  public void readXMLFile(final File _xml) throws MalformedURLException {
-    readXMLFile(_xml.toURL());
+  public void readFile(final File _xml) throws MalformedURLException {
+    readFile(_xml.toURL());
   }
 
   /**
@@ -95,10 +92,9 @@ public class DataImport implements ImportInterface {
    * the objects from the given xml-File an build the java-Objects in a
    * parent-child Hirachy.
    *
-   * @param _url
-   *                URL to the XML-File
+   * @param _url    URL to the XML-File
    */
-  public static DataImport readXMLFile(final URL _url) {
+  public static DataImport readFile(final URL _url) {
 
     DataImport ret = new DataImport();
     try {

@@ -24,120 +24,62 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.db.Checkin;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * @author tmo
  * @version $Id$
  * @todo description
  */
-public class ImageUpdate extends AbstractUpdate  {
-
-  /////////////////////////////////////////////////////////////////////////////
-  // static variables
-
+public class ImageUpdate extends AbstractUpdate
+{
   /** Link from menu to type as type tree menu */
   private final static Link LINK2TYPE
              = new Link("Admin_UI_LinkIsTypeIconFor",
                         "From",
                         "Admin_DataModel_Type", "To");
 
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Logger LOG = LoggerFactory.getLogger(ImageUpdate.class);
-
   private final static Set <Link> ALLLINKS = new HashSet < Link > ();
   static  {
     ALLLINKS.add(LINK2TYPE);
   }
+
+  /** Name of the root path used to initialize the path for the image. */
+  private final String root;
 
   /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
    *
+   * @param _url        URL of the file
    */
-  public ImageUpdate() {
-    super("Admin_UI_Image", ALLLINKS);
+  public ImageUpdate(final URL _url)
+  {
+    super(_url, "Admin_UI_Image", ALLLINKS);
+    String urlStr = _url.toString();
+    final int i = urlStr.lastIndexOf("/");
+    this.root = urlStr.substring(0, i + 1);
   }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // instance methods
 
   /**
-   * Sets the root path in which the image file is located. The value is set
-   * for each single definition of the image update.
+   * Creates new instance of class {@link ImageDefinition}.
    *
-   * @param _root   name of the path where the image file is located
+   * @return new definition instance
+   * @see ImageDefinition
    */
-  protected void setRoot(final String _root) {
-    for (final AbstractDefinition def : getDefinitions()) {
-      ((ImageDefinition) def).setRoot(_root);
-    }
-  }
-
-  /////////////////////////////////////////////////////////////////////////////
-  // static methods
-
-  public static ImageUpdate readXMLFile(final URL _root, final URL _url)
+  @Override
+  protected AbstractDefinition newDefinition()
   {
-    ImageUpdate update = null;
-    try  {
-      final Digester digester = new Digester();
-      digester.setValidating(false);
-      digester.addObjectCreate("ui-image", ImageUpdate.class);
-
-      digester.addCallMethod("ui-image/uuid", "setUUID", 1);
-      digester.addCallParam("ui-image/uuid", 0);
-
-      digester.addObjectCreate("ui-image/definition", ImageDefinition.class);
-      digester.addSetNext("ui-image/definition", "addDefinition");
-
-      digester.addCallMethod("ui-image/definition/version", "setVersion", 4);
-      digester.addCallParam("ui-image/definition/version/application", 0);
-      digester.addCallParam("ui-image/definition/version/global", 1);
-      digester.addCallParam("ui-image/definition/version/local", 2);
-      digester.addCallParam("ui-image/definition/version/mode", 3);
-
-      digester.addCallMethod("ui-image/definition/name", "setName", 1);
-      digester.addCallParam("ui-image/definition/name", 0);
-
-      digester.addCallMethod("ui-image/definition/type", "assignType", 1);
-      digester.addCallParam("ui-image/definition/type", 0);
-
-      digester.addCallMethod("ui-image/definition/property", "addProperty", 2);
-      digester.addCallParam("ui-image/definition/property", 0, "name");
-      digester.addCallParam("ui-image/definition/property", 1);
-
-      digester.addCallMethod("ui-image/definition/file", "setFile", 1);
-      digester.addCallParam("ui-image/definition/file", 0);
-
-      update = (ImageUpdate) digester.parse(_url);
-
-      if (update != null)  {
-        String urlStr = _url.toString();
-        final int i = urlStr.lastIndexOf("/");
-        urlStr = urlStr.substring(0, i + 1);
-        update.setRoot(urlStr);
-        update.setURL(_url);
-      }
-    } catch (final IOException e) {
-      LOG.error(_url.toString() + " is not readable", e);
-    } catch (final SAXException e) {
-      LOG.error(_url.toString() + " seems to be invalide XML", e);
-    }
-    return update;
+    return new ImageDefinition();
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -145,16 +87,30 @@ public class ImageUpdate extends AbstractUpdate  {
   /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class ImageDefinition extends AbstractDefinition {
-
-    /** Name of the Image file (incl. the path) to import. */
+  private class ImageDefinition extends AbstractDefinition
+  {
+    /** Name of the Image file (including the path) to import. */
     private String file = null;
-
-    /** Name of the root path used to initialise the path for the image. */
-    private String root = null;
 
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
+
+    @Override
+    protected void readXML(final List<String> _tags,
+                           final Map<String,String> _attributes,
+                           final String _text)
+    {
+      final String value = _tags.get(0);
+      if ("file".equals(value))  {
+        this.file = _text;
+      } else if ("type".equals(value))  {
+        // Assigns a type the image for which this image instance is the type
+        // icon
+        addLink(LINK2TYPE, new LinkInstance(_text));
+      } else  {
+        super.readXML(_tags, _attributes, _text);
+      }
+    }
 
     /**
      * Updates / creates the instance in the database. If a file name is
@@ -174,49 +130,23 @@ public class ImageUpdate extends AbstractUpdate  {
 
       if (this.file != null)  {
         try  {
-          final InputStream in = new URL(this.root + this.file).openStream();
+          final InputStream in = new URL(ImageUpdate.this.root + this.file).openStream();
           final Checkin checkin = new Checkin(this.instance);
           checkin.executeWithoutAccessCheck(this.file,
                                             in,
                                             in.available());
           in.close();
         } catch (IOException e) {
-          throw new EFapsException(getClass(), "updateInDB.IOException", e, this.root + this.file);
+          throw new EFapsException(getClass(),
+                                   "updateInDB.IOException",
+                                   e,
+                                   ImageUpdate.this.root + this.file);
         }
       }
     }
 
-    /**
-     * Assigns a type the image for which this image instance is the type icon.
-     *
-     * @param _type   type to assign
-     */
-    public void assignType(final String _type)  {
-      addLink(LINK2TYPE, new LinkInstance(_type));
-    }
-
     ///////////////////////////////////////////////////////////////////////////
     // instance getter / setter methods
-
-    /**
-     * This is the setter method for instance variable {@link #file}.
-     *
-     * @param _number new value for instance variable {@link #file}
-     * @see #file
-     */
-    public void setFile(final String _file)  {
-      this.file = _file;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #root}.
-     *
-     * @param _root   new value for instance variable {@link #root}
-     * @see #root
-     */
-    public void setRoot(final String _root) {
-      this.root = _root;
-    }
 
     /**
      * Returns a string representation with values of all instance variables
@@ -228,8 +158,7 @@ public class ImageUpdate extends AbstractUpdate  {
     public String toString()  {
       return new ToStringBuilder(this)
               .appendSuper(super.toString())
-              .append("file", this.file)
-              .append("root", this.root).toString();
+              .append("file", this.file).toString();
     }
   }
 }

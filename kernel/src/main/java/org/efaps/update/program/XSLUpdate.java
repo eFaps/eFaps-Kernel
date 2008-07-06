@@ -32,21 +32,20 @@ public class XSLUpdate extends AbstractSourceUpdate {
 
   public static String TYPENAME = "Admin_Program_XSL";
 
-  protected XSLUpdate() {
-    super(TYPENAME);
+  protected XSLUpdate(final URL _url)
+  {
+    super(_url, TYPENAME);
   }
 
   public static XSLUpdate readFile(final URL _root, final URL _url)
   {
-    final XSLUpdate ret = new XSLUpdate();
-    ret.setURL(_url);
-    final XSLDefinition definition = new XSLDefinition(_root, _url);
+    final XSLUpdate ret = new XSLUpdate(_url);
+    final XSLDefinition definition = ret.new XSLDefinition(_root, _url);
     ret.addDefinition(definition);
-
     return ret;
   }
 
-  public static class XSLDefinition extends SourceDefinition {
+  public class XSLDefinition extends SourceDefinition {
 
     public XSLDefinition(final URL _rootUrl,
                          final URL _url)

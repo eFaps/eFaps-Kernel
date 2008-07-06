@@ -20,8 +20,12 @@
 
 package org.efaps.update;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,26 +40,9 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.db.Context;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.importer.DataImport;
-import org.efaps.update.access.AccessSetUpdate;
-import org.efaps.update.access.AccessTypeUpdate;
-import org.efaps.update.common.SystemAttributeUpdate;
-import org.efaps.update.datamodel.SQLTableUpdate;
-import org.efaps.update.datamodel.TypeUpdate;
 import org.efaps.update.dbproperty.DBPropertiesUpdate;
-import org.efaps.update.integration.WebDAVUpdate;
-import org.efaps.update.program.CSSUpdate;
-import org.efaps.update.program.JavaScriptUpdate;
-import org.efaps.update.program.JavaUpdate;
-import org.efaps.update.program.XSLUpdate;
-import org.efaps.update.ui.CommandUpdate;
-import org.efaps.update.ui.FormUpdate;
-import org.efaps.update.ui.ImageUpdate;
-import org.efaps.update.ui.MenuUpdate;
-import org.efaps.update.ui.SearchUpdate;
-import org.efaps.update.ui.TableUpdate;
-import org.efaps.update.user.JAASSystemUpdate;
-import org.efaps.update.user.RoleUpdate;
 import org.efaps.util.EFapsException;
+import org.xml.sax.SAXException;
 
 /**
  * TODO description
@@ -64,56 +51,8 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class Install {
-
-  public enum FileType {
-    JAVA("source-java", "readXMLFile"),
-    JS("source-js", "readFile"),
-    CSS("source-css", "readFile"),
-    XML("install-xml", "readXMLFile"),
-    XSL("source-xsl", "readFile");
-
-    public String type;
-
-    public String method;
-
-    private FileType(final String _type, final String _method) {
-      this.type = _type;
-      this.method = _method;
-    }
-
-  }
-
-  /**
-   * List of all update classes. The order is also used for the install order.
-   *
-   * @see #install(Long)
-   */
-  private final static Map<Class<? extends AbstractUpdate>, FileType> updateClasses =
-      new LinkedHashMap<Class<? extends AbstractUpdate>, FileType>();
-  static  {
-    if (updateClasses.isEmpty()) {
-      updateClasses.put(RoleUpdate.class, FileType.XML);
-      updateClasses.put(SQLTableUpdate.class, FileType.XML);
-      updateClasses.put(TypeUpdate.class, FileType.XML);
-      updateClasses.put(JAASSystemUpdate.class, FileType.XML);
-      updateClasses.put(AccessTypeUpdate.class, FileType.XML);
-      updateClasses.put(AccessSetUpdate.class, FileType.XML);
-      updateClasses.put(ImageUpdate.class, FileType.XML);
-      updateClasses.put(FormUpdate.class, FileType.XML);
-      updateClasses.put(TableUpdate.class, FileType.XML);
-      updateClasses.put(SearchUpdate.class, FileType.XML);
-      updateClasses.put(MenuUpdate.class, FileType.XML);
-      updateClasses.put(CommandUpdate.class, FileType.XML);
-      updateClasses.put(WebDAVUpdate.class, FileType.XML);
-      updateClasses.put(JavaUpdate.class, FileType.JAVA);
-      updateClasses.put(SystemAttributeUpdate.class, FileType.XML);
-      updateClasses.put(CSSUpdate.class, FileType.CSS);
-      updateClasses.put(XSLUpdate.class, FileType.XSL);
-      updateClasses.put(JavaScriptUpdate.class, FileType.JS);
-    }
-  }
-
+public class Install
+{
   /**
    * List of all import classes. The order is also used for the import order.
    *
@@ -156,8 +95,6 @@ public class Install {
       new HashMap<Class<? extends AbstractUpdate>, List<AbstractUpdate>>();
 
   private String application;
-
-  private Long maxVersion;
 
   private URL rootDir;
 
@@ -203,9 +140,8 @@ public class Install {
     }
 
     // create all objects
-    for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : updateClasses.entrySet()) {
-      final Class<? extends AbstractUpdate> updateClass = entry.getKey();
-      for (final AbstractUpdate update : this.cache.get(updateClass)) {
+    for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet())  {
+      for (final AbstractUpdate update : entry.getValue())  {
         update.createInDB(jexlContext);
         if (!bigTrans)  {
           Context.commit();
@@ -213,11 +149,22 @@ public class Install {
         }
       }
     }
+/*    for (final FileType fileType : FileType.values()) {
+      for (final Class<? extends AbstractUpdate> updateClass : fileType.clazzes)  {
+        for (final AbstractUpdate update : this.cache.get(updateClass)) {
+          update.createInDB(jexlContext);
+          if (!bigTrans)  {
+            Context.commit();
+            Context.begin(user);
+          }
+        }
+      }
+    }
+*/
 
     // and update them
-    for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : updateClasses.entrySet()) {
-      final Class<? extends AbstractUpdate> updateClass = entry.getKey();
-      for (final AbstractUpdate update : this.cache.get(updateClass)) {
+    for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet())  {
+      for (final AbstractUpdate update : entry.getValue())  {
         update.updateInDB(jexlContext);
         if (!bigTrans)  {
           Context.commit();
@@ -225,9 +172,24 @@ public class Install {
         }
       }
     }
+/*    for (final FileType fileType : FileType.values()) {
+      for (final Class<? extends AbstractUpdate> updateClass : fileType.clazzes)  {
+        for (final AbstractUpdate update : this.cache.get(updateClass)) {
+          update.updateInDB(jexlContext);
+          if (!bigTrans)  {
+            Context.commit();
+            Context.begin(user);
+          }
+        }
+      }
+    }*/
   }
 
   /**
+   * @throws SAXException
+   * @throws IOException
+   * @throws IOException
+   * @throws FileNotFoundException
    * @see #initialised
    */
   public void initialise()
@@ -237,42 +199,63 @@ public class Install {
       this.initialised = true;
       this.cache.clear();
 
-      for (final Entry<Class<? extends AbstractUpdate>, FileType> entry : updateClasses.entrySet()) {
-        final List<AbstractUpdate> list = new ArrayList<AbstractUpdate>();
+      for (final FileType fileType : FileType.values()) {
 
-        final Class<? extends AbstractUpdate> updateClass = entry.getKey();
-        this.cache.put(updateClass, list);
+        if (fileType == FileType.XML)  {
+          for (final InstallFile file : this.files) {
+            if (file.getType() == fileType) {
+try  {
+  SaxHandler handler = new SaxHandler();
+  AbstractUpdate elem = handler.parse(file.getUrl());
 
-        Method method = null;
-        try {
-          method = updateClass.getMethod(entry.getValue().method, URL.class, URL.class);
-        } catch (SecurityException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
-        }
-        for (final InstallFile file : this.files) {
-          if (file.getType().equals(entry.getValue().type)) {
-            Object obj = null;
-            try {
-              obj = method.invoke(null, this.rootDir, file.getUrl());
-            } catch (IllegalArgumentException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-            } catch (IllegalAccessException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-            } catch (InvocationTargetException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
+  List<AbstractUpdate> list = this.cache.get(elem.getClass());
+  if (list == null)  {
+    list = new ArrayList<AbstractUpdate>();
+    this.cache.put(elem.getClass(), list);
+  }
+  list.add(handler.elem);
+} catch (Exception e)  {
+  System.out.println("Error in File "+file);
+  e.printStackTrace();
+  throw new Error(e);
+}
             }
-            if (obj != null) {
-              final AbstractUpdate update = (AbstractUpdate) obj;
-              update.setApplication(this.application);
-              update.setMaxVersion(this.maxVersion);
-              list.add(update);
+          }
+System.out.println(""+this.cache);
+        } else
+        for (final Class<? extends AbstractUpdate> updateClass : fileType.clazzes)  {
+
+          final List<AbstractUpdate> list = new ArrayList<AbstractUpdate>();
+          this.cache.put(updateClass, list);
+
+          Method method = null;
+          try  {
+            method = updateClass.getMethod("readFile", URL.class, URL.class);
+          } catch (SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          } catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+          for (final InstallFile file : this.files) {
+            if (file.getType() == fileType) {
+              Object obj = null;
+              try {
+                obj = method.invoke(null, this.rootDir, file.getUrl());
+              } catch (IllegalArgumentException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              } catch (IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              } catch (InvocationTargetException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              }
+              if (obj != null) {
+                list.add((AbstractUpdate) obj);
+              }
             }
           }
         }
@@ -282,13 +265,11 @@ public class Install {
 
   public void importData() throws Exception {
 
-    for (final Entry<Class<? extends ImportInterface>, FileType> entry : this.importClasses
-        .entrySet()) {
-      final Method method =
-          entry.getKey().getMethod(entry.getValue().method, URL.class);
+    for (final Entry<Class<? extends ImportInterface>, FileType> entry : this.importClasses.entrySet()) {
+      final Method method = entry.getKey().getMethod("readFile", URL.class);
 
       for (final InstallFile file : this.files) {
-        if (file.getType().equals(entry.getValue().type)) {
+        if (file.getType() == entry.getValue()) {
           final Object obj = method.invoke(null, file.getUrl());
           if (obj != null) {
             ((ImportInterface) obj).updateInDB();
@@ -299,20 +280,52 @@ public class Install {
   }
 
   /**
-   * Appends a new file defined through an url. The initialised flag is
-   * automatically reseted.
+   * Appends a new file defined through an URL and the string representation of
+   * the file type.
    *
-   * @param _url
-   *                file to append
-   * @see #urls
+   * @param _url    URL of the file to append
+   * @param _type   type of the file
+   * @see #files
    * @see #initialised
+   * @see #addFile(URL, FileType) method called to add the URL after convert
+   *                              the string representation of the type to a
+   *                              file type instance
    */
-  public void addFile(final URL _url, final String _type) {
-    this.files.add(new InstallFile(_url, _type));
+  public void addFile(final URL _url,
+                      final String _type)
+  {
+    addFile(_url, FileType.getFileTypeByType(_type));
+  }
+
+  /**
+   * Appends a new file.
+   *
+   * @param _file   file to add
+   * @throws MalformedURLException if the path cannot be parsed as a URL
+   * @see #addFile(URL, FileType) method called to add the file after convert
+   *                              to an URL and evaluate of the file type
+   */
+  public void addFile(final File _file)
+      throws MalformedURLException
+  {
+/*    addFile(_file.toURL(),
+            FileType.getFileTypeByExensione(_file.getExtension()));
+*/  }
+
+  /**
+   * Appends a new file defined through an URL. The initialized flag
+   * {@link #initialised} is automatically reseted.
+   *
+   * @param _url        URL of the file to add
+   * @param _fileType   file type of the file to add
+   */
+  public void addFile(final URL _url, FileType _fileType)
+  {
+    this.files.add(new InstallFile(_url, _fileType));
     this.initialised = false;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance getter and setter methods
 
   /**
@@ -320,28 +333,20 @@ public class Install {
    *
    * @return value of instance variable {@link #files}
    */
-  public List<InstallFile> getFiles() {
+  public List<InstallFile> getFiles()
+  {
     return this.files;
   }
 
   /**
    * This is the setter method for the instance variable {@link #application}.
    *
-   * @param application
+   * @param _application
    *                the application to set
    */
-  public void setApplication(String application) {
-    this.application = application;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #maxVersion}.
-   *
-   * @param maxVersion
-   *                the maxVersion to set
-   */
-  public void setMaxVersion(Long maxVersion) {
-    this.maxVersion = maxVersion;
+  public void setApplication(String _application)
+  {
+    this.application = _application;
   }
 
   /**
@@ -349,7 +354,8 @@ public class Install {
    *
    * @param _rootDir  the rootDir to set
    */
-  public void setRootDir(final URL _rootDir) {
+  public void setRootDir(final URL _rootDir)
+  {
     this.rootDir = _rootDir;
   }
 
@@ -363,13 +369,14 @@ public class Install {
     return new ToStringBuilder(this).append("urls", this.files).toString();
   }
 
-  public class InstallFile {
+  private class InstallFile {
 
     private final URL url;
 
-    private final String type;
+    private final FileType type;
 
-    public InstallFile(final URL _url, final String _type) {
+    public InstallFile(final URL _url, final FileType _type)
+    {
       this.url = _url;
       this.type = _type;
     }
@@ -388,7 +395,7 @@ public class Install {
      *
      * @return value of instance variable {@link #type}
      */
-    public String getType() {
+    public FileType getType() {
       return this.type;
     }
 

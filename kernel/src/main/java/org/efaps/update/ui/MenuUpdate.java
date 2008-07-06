@@ -23,11 +23,12 @@ package org.efaps.update.ui;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.digester.Digester;
 import org.efaps.update.LinkInstance;
-import org.efaps.update.event.EventFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -76,98 +77,47 @@ public class MenuUpdate extends CommandUpdate {
   /**
    *
    */
-  public MenuUpdate() {
-    super("Admin_UI_Menu", ALLLINKS);
+  public MenuUpdate(final URL _url)
+  {
+    super(_url, "Admin_UI_Menu", ALLLINKS);
   }
 
   /**
    *
+   * @param _url        URL of the file
    */
-  protected MenuUpdate(final String _typeName, final Set<Link> _allLinks) {
-    super(_typeName, _allLinks);
+  protected MenuUpdate(final URL _url,
+                       final String _typeName,
+                       final Set<Link> _allLinks)
+  {
+    super(_url, _typeName, _allLinks);
   }
 
   // ///////////////////////////////////////////////////////////////////////////
   // static methods
 
-  public static MenuUpdate readXMLFile(final URL _root, final URL _url)
+  /**
+   *
+   * @param _root     root URL
+   * @param _url      URL of the file depending of the root URL
+   * @return menu update definition read by digester
+   */
+  public static MenuUpdate readFile(final URL _root, final URL _url)
   {
     MenuUpdate ret = null;
 
     try {
       final Digester digester = new Digester();
       digester.setValidating(false);
-      digester.addObjectCreate("ui-menu", MenuUpdate.class);
-
-      digester.addCallMethod("ui-menu/uuid", "setUUID", 1);
-      digester.addCallParam("ui-menu/uuid", 0);
-
-      digester.addObjectCreate("ui-menu/definition", MenuDefinition.class);
-      digester.addSetNext("ui-menu/definition", "addDefinition");
-
-      digester.addCallMethod("ui-menu/definition", "setType", 1);
-      digester.addCallParam("ui-menu/definition", 0, "type");
-
-      digester.addCallMethod("ui-menu/definition/version", "setVersion", 4);
-      digester.addCallParam("ui-menu/definition/version/application", 0);
-      digester.addCallParam("ui-menu/definition/version/global", 1);
-      digester.addCallParam("ui-menu/definition/version/local", 2);
-      digester.addCallParam("ui-menu/definition/version/mode", 3);
 
       digester.addCallMethod("ui-menu/definition/update", "setUpdate", 1,
           new Class[] { Boolean.class });
       digester.addCallParam("ui-menu/definition/update", 0);
 
-      digester.addCallMethod("ui-menu/definition/name", "setName", 1);
-      digester.addCallParam("ui-menu/definition/name", 0);
 
-      digester.addCallMethod("ui-menu/definition/icon", "assignIcon", 1);
-      digester.addCallParam("ui-menu/definition/icon", 0);
-
-      digester.addCallMethod("ui-menu/definition/type", "assignType", 1);
-      digester.addCallParam("ui-menu/definition/type", 0);
-
-      digester.addCallMethod("ui-menu/definition/target/table",
-          "assignTargetTable", 1);
-      digester.addCallParam("ui-menu/definition/target/table", 0);
-
-      digester.addCallMethod("ui-menu/definition/target/form",
-          "assignTargetForm", 1);
-      digester.addCallParam("ui-menu/definition/target/form", 0);
-
-      digester.addCallMethod("ui-menu/definition/target/menu",
-          "assignTargetMenu", 1);
-      digester.addCallParam("ui-menu/definition/target/menu", 0);
-
-      digester.addCallMethod("ui-menu/definition/target/search",
-          "assignTargetSearch", 1);
-      digester.addCallParam("ui-menu/definition/target/search", 0);
-
-      digester.addCallMethod("ui-menu/definition/childs/child", "assignChild",
-          3, new Class[] { String.class, String.class, Integer.class });
-      digester.addCallParam("ui-menu/definition/childs/child", 0);
-      digester.addCallParam("ui-menu/definition/childs/child", 1, "modus");
-      digester.addCallParam("ui-menu/definition/childs/child", 2, "order");
-
-      digester.addCallMethod("ui-menu/definition/property", "addProperty", 2);
-      digester.addCallParam("ui-menu/definition/property", 0, "name");
-      digester.addCallParam("ui-menu/definition/property", 1);
-
-      digester.addFactoryCreate("ui-menu/definition/target/evaluate",
-          new EventFactory("Admin_UI_TableEvaluateEvent"), false);
-      digester.addCallMethod("ui-menu/definition/target/evaluate/property",
-          "addProperty", 2);
-      digester.addCallParam("ui-menu/definition/target/evaluate/property", 0,
-          "name");
-      digester.addCallParam("ui-menu/definition/target/evaluate/property", 1);
-      digester.addSetNext("ui-menu/definition/target/evaluate", "addEvent",
-          "org.efaps.update.event.Event");
 
       ret = (MenuUpdate) digester.parse(_url);
 
-      if (ret != null) {
-        ret.setURL(_url);
-      }
     } catch (final IOException e) {
       LOG.error(_url.toString() + " is not readable", e);
     } catch (final SAXException e) {
@@ -176,41 +126,57 @@ public class MenuUpdate extends CommandUpdate {
     return ret;
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   * Creates new instance of class {@link MenuDefinition}.
+   *
+   * @return new definition instance
+   * @see MenuDefinition
+   */
+  @Override
+  protected AbstractDefinition newDefinition()
+  {
+    return new MenuDefinition();
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class MenuDefinition extends CommandDefinition {
+  protected class MenuDefinition extends CommandDefinition {
 
-    // /////////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
-    /**
-     * Assigns/Removes child commands / menus to this menu.
-     *
-     * @param _childName
-     *                name of the child command / menu
-     */
-    public void assignChild(final String _childName, final String _modus,
-                            final Integer _order) {
-      final LinkInstance child = new LinkInstance(_childName);
-      if ("remove".equals(_modus)) {
-
-      } else {
-        child.setOrder(_order);
-        addLink(LINK2CHILD, child);
+    @Override
+    protected void readXML(final List<String> _tags,
+                           final Map<String,String> _attributes,
+                           final String _text)
+    {
+      final String value = _tags.get(0);
+      if ("childs".equals(value))  {
+        if (_tags.size() > 1)  {
+          final String subValue = _tags.get(1);
+          if ("child".equals(subValue))  {
+            // assigns / removes child commands / menus to this menu
+            if ("remove".equals(_attributes.get("modus")))  {
+            } else  {
+              final LinkInstance child = new LinkInstance(_text);
+              final String order = _attributes.get("order");
+              if (order != null)  {
+                child.setOrder(Integer.parseInt(order));
+              }
+              addLink(LINK2CHILD, child);
+            }
+          } else  {
+            super.readXML(_tags, _attributes, _text);
+          }
+        }
+      } else if ("type".equals(value))  {
+        // assigns a type the menu for which this menu instance is the type
+        // tree menu
+        addLink(LINK2TYPE, new LinkInstance(_text));
+     } else  {
+        super.readXML(_tags, _attributes, _text);
       }
     }
-
-    /**
-     * Assigns a type the menu for which this menu instance is the type tree
-     * menu.
-     *
-     * @param _type
-     *                type to assign
-     */
-    public void assignType(final String _type) {
-      addLink(LINK2TYPE, new LinkInstance(_type));
-    }
-
   }
 }

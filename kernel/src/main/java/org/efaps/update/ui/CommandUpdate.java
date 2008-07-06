@@ -20,18 +20,16 @@
 
 package org.efaps.update.ui;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.digester.Digester;
+import org.efaps.admin.event.EventType;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
-import org.efaps.update.event.EventFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
+import org.efaps.update.event.Event;
 
 /**
  * This Class is responsible for the Update of "Command" in the Database.<br/>It
@@ -42,22 +40,16 @@ import org.xml.sax.SAXException;
  * @author tmo
  * @version $Id$
  */
-public class CommandUpdate extends AbstractUpdate {
+public class CommandUpdate extends AbstractUpdate
+{
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // static variables
-
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Logger LOG =
-      LoggerFactory.getLogger(CommandUpdate.class);
 
   /** Link from UI object to role */
   private final static Link LINK2ACCESSROLE   = new Link("Admin_UI_Access",
                                                          "UILink",
-                                                         "Admin_User_Role",
-                                                         "UserLink");
+                                                         "Admin_User_Role", "UserLink");
 
   /** Link from command to icon */
   private final static Link LINK2ICON         = new Link("Admin_UI_LinkIcon",
@@ -82,9 +74,11 @@ public class CommandUpdate extends AbstractUpdate {
   /** Link from command to search as target */
   private final static Link LINK2TARGETSEARCH = new Link("Admin_UI_LinkTargetSearch",
                                                          "From",
-                                                         "Admin_UI_Search",
-                                                         "To");
+                                                         "Admin_UI_Search", "To");
 
+  /**
+   * Set of all links used by commands.s
+   */
   protected final static Set<Link> ALLLINKS = new HashSet<Link>();
   static  {
     ALLLINKS.add(LINK2ACCESSROLE);
@@ -99,198 +93,124 @@ public class CommandUpdate extends AbstractUpdate {
   // constructors
 
   /**
-   * Default contractor used by the XML parser for initialise a command.
-   */
-  public CommandUpdate() {
-    super("Admin_UI_Command", ALLLINKS);
-  }
-
-  /**
+   * Default contractor used by the XML parser for initialize a command.
    *
+   * @param _url        URL of the file
    */
-  protected CommandUpdate(final String _typeName, final Set<Link> _allLinks) {
-    super(_typeName, _allLinks);
-  }
-
-  // ///////////////////////////////////////////////////////////////////////////
-  // static methods
-
-  /**
-   * Method that reads the given XML-File and than uses the
-   * <code>org.apache.commons.digester</code> to create the diffrent Class and
-   * invokes the Methods to Update a Command
-   *
-   * @param _file
-   *                XML-File to be read by the digester
-   * @return Command Definition read by digester
-   * @throws IOException
-   *                 if file is not readable
-   */
-  public static CommandUpdate readXMLFile(final URL _root, final URL _url)
+  public CommandUpdate(final URL _url)
   {
-    CommandUpdate ret = null;
-
-    try {
-      final Digester digester = new Digester();
-      digester.setValidating(false);
-      digester.addObjectCreate("ui-command", CommandUpdate.class);
-
-      digester.addCallMethod("ui-command/uuid", "setUUID", 1);
-      digester.addCallParam("ui-command/uuid", 0);
-
-      final String def = "ui-command/definition";
-
-      digester.addObjectCreate(def, CommandDefinition.class);
-      digester.addSetNext(def, "addDefinition");
-
-      digester.addCallMethod(def + "/version", "setVersion", 4);
-      digester.addCallParam(def + "/version/application", 0);
-      digester.addCallParam(def + "/version/global", 1);
-      digester.addCallParam(def + "/version/local", 2);
-      digester.addCallParam(def + "/version/mode", 3);
-
-      digester.addCallMethod(def + "/name", "setName", 1);
-      digester.addCallParam(def + "/name", 0);
-
-      digester.addCallMethod(def + "/icon", "assignIcon", 1);
-      digester.addCallParam(def + "/icon", 0);
-
-      digester.addCallMethod(def + "/access/role", "assignAccessRole", 1);
-      digester.addCallParam(def + "/access/role", 0);
-
-      // target definitions
-      digester.addCallMethod(def + "/target/form", "assignTargetForm", 1);
-      digester.addCallParam(def + "/target/form", 0);
-
-      digester.addCallMethod(def + "/target/menu", "assignTargetMenu", 1);
-      digester.addCallParam(def + "/target/menu", 0);
-
-      digester.addCallMethod(def + "/target/search", "assignTargetSearch", 1);
-      digester.addCallParam(def + "/target/search", 0);
-
-      digester.addCallMethod(def + "/target/table", "assignTargetTable", 1);
-      digester.addCallParam(def + "/target/table", 0);
-
-      digester.addFactoryCreate(def + "/target/evaluate", new EventFactory(
-          "Admin_UI_TableEvaluateEvent"), false);
-      digester.addCallMethod(def + "/target/evaluate/property", "addProperty",2);
-      digester.addCallParam(def + "/target/evaluate/property", 0, "name");
-      digester.addCallParam(def + "/target/evaluate/property", 1);
-      digester.addSetNext(def + "/target/evaluate", "addEvent",
-          "org.efaps.update.event.Event");
-
-      digester.addFactoryCreate(def + "/target/execute", new EventFactory(
-          "Admin_UI_CommandExecuteEvent"), false);
-      digester.addCallMethod(def + "/target/execute/property", "addProperty", 2);
-      digester.addCallParam(def + "/target/execute/property", 0, "name");
-      digester.addCallParam(def + "/target/execute/property", 1);
-      digester.addSetNext(def + "/target/execute", "addEvent",
-          "org.efaps.update.event.Event");
-
-      digester.addFactoryCreate(def + "/target/validate", new EventFactory(
-          "Admin_UI_ValidateEvent"), false);
-      digester.addCallMethod(def + "/target/validate/property", "addProperty", 2);
-      digester.addCallParam(def + "/target/validate/property", 0, "name");
-      digester.addCallParam(def + "/target/validate/property", 1);
-      digester.addSetNext(def + "/target/validate", "addEvent",
-          "org.efaps.update.event.Event");
-
-      // properties
-      digester.addCallMethod(def + "/property", "addProperty", 2);
-      digester.addCallParam(def + "/property", 0, "name");
-      digester.addCallParam(def + "/property", 1);
-
-      // Trigger
-      digester.addFactoryCreate(def + "/trigger", new EventFactory(), false);
-      digester.addCallMethod(def + "/trigger/property", "addProperty", 2);
-      digester.addCallParam(def + "/trigger/property", 0, "name");
-      digester.addCallParam(def + "/trigger/property", 1);
-      digester.addSetNext(def + "/trigger", "addEvent",
-          "org.efaps.update.event.Event");
-
-      ret = (CommandUpdate) digester.parse(_url);
-
-      if (ret != null) {
-        ret.setURL(_url);
-      }
-    } catch (final IOException e) {
-      LOG.error(_url.toString() + " is not readable", e);
-    } catch (final SAXException e) {
-      LOG.error(_url.toString() + " seems to be invalide XML", e);
-    }
-    return ret;
+    super(_url, "Admin_UI_Command", ALLLINKS);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
-  // ///////////////////////////////////////////////////////////////////////////
+  /**
+   *
+   */
+  protected CommandUpdate(final URL _url,
+                          final String _typeName,
+                          final Set<Link> _allLinks)
+  {
+    super(_url, _typeName, _allLinks);
+  }
+
+  /**
+   * Creates new instance of class {@link CommandDefinition}.
+   *
+   * @return new definition instance
+   * @see CommandDefinition
+   */
+  @Override
+  protected AbstractDefinition newDefinition()
+  {
+    return new CommandDefinition();
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class CommandDefinition extends AbstractDefinition {
+  protected class CommandDefinition extends AbstractDefinition {
 
-    // /////////////////////////////////////////////////////////////////////////
-    // instance methods
-
-    /**
-     * Assigns a role for accessing this command.
-     *
-     * @param _role
-     *                name of the role
-     */
-    public void assignAccessRole(final String _role) {
-      addLink(LINK2ACCESSROLE,new LinkInstance(_role) );
+    @Override
+    protected void readXML(final List<String> _tags,
+                           final Map<String,String> _attributes,
+                           final String _text)
+    {
+      final String value = _tags.get(0);
+      if ("access".equals(value))  {
+        if (_tags.size() > 1)  {
+          final String subValue = _tags.get(1);
+          if ("role".equals(subValue))  {
+            // Assigns a role for accessing this command.
+            addLink(LINK2ACCESSROLE,new LinkInstance(_text));
+          } else  {
+            super.readXML(_tags, _attributes, _text);
+          }
+        }
+      } else if ("icon".equals(value))  {
+        // Assigns an image
+        addLink(LINK2ICON,new LinkInstance(_text));
+      } else if ("target".equals(value))  {
+        if (_tags.size() == 2)  {
+          final String subValue = _tags.get(1);
+          if ("evaluate".equals(subValue))  {
+            this.events.add(new Event(_attributes.get("name"),
+                                      EventType.UI_TABLE_EVALUATE,
+                                      _attributes.get("program"),
+                                      _attributes.get("method"),
+                                      _attributes.get("index")));
+          } else if ("execute".equals(subValue))  {
+            this.events.add(new Event(_attributes.get("name"),
+                                      EventType.UI_COMMAND_EXECUTE,
+                                      _attributes.get("program"),
+                                      _attributes.get("method"),
+                                      _attributes.get("index")));
+          } else if ("form".equals(subValue))  {
+            // assigns a form as target for this command definition.
+            addLink(LINK2TARGETFORM, new LinkInstance(_text));
+          } else if ("menu".equals(subValue))  {
+            // assigns a menu as target for this command definition.
+            addLink(LINK2TARGETMENU, new LinkInstance(_text));
+          } else if ("search".equals(subValue))  {
+            // assigns a search menu as target for this command definition.
+            addLink(LINK2TARGETSEARCH, new LinkInstance(_text));
+          } else if ("table".equals(subValue))  {
+            // assigns a table as target for this command definition.
+            addLink(LINK2TARGETTABLE,new LinkInstance(_text) );
+          } else if ("trigger".equals(subValue))  {
+            this.events.add(new Event(_attributes.get("name"),
+                                      EventType.valueOf(_attributes.get("event")),
+                                      _attributes.get("program"),
+                                      _attributes.get("method"),
+                                      _attributes.get("index")));
+          } else if ("validate".equals(subValue))  {
+            this.events.add(new Event(_attributes.get("name"),
+                                      EventType.UI_VALIDATE,
+                                      _attributes.get("program"),
+                                      _attributes.get("method"),
+                                      _attributes.get("index")));
+          } else  {
+            super.readXML(_tags, _attributes, _text);
+          }
+        } else if (_tags.size() == 3)  {
+          final String subValue = _tags.get(1);
+          if (("evaluate".equals(subValue)
+                || "execute".equals(subValue)
+                || "trigger".equals(subValue)
+                || "validate".equals(subValue)) && "property".equals(_tags.get(2))) {
+            this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"),
+                                                                _text);
+          } else  {
+            super.readXML(_tags, _attributes, _text);
+          }
+        } else if (_tags.size() > 2)  {
+          // if size == 1, the target tag could be ignored
+          super.readXML(_tags, _attributes, _text);
+        }
+      } else  {
+        super.readXML(_tags, _attributes, _text);
+      }
     }
-
-    /**
-     * Assigns a table as target for this command definition.
-     *
-     * @param _targetTable
-     *                name of the target table
-     */
-    public void assignIcon(final String _icon) {
-      addLink(LINK2ICON,new LinkInstance(_icon) );
-    }
-
-    /**
-     * Assigns a table as target for this command definition.
-     *
-     * @param _targetTable
-     *                name of the target table
-     */
-    public void assignTargetTable(final String _targetTable) {
-      addLink(LINK2TARGETTABLE,new LinkInstance(_targetTable) );
-    }
-
-    /**
-     * Assigns a form as target for this command definition.
-     *
-     * @param _targetForm
-     *                name of the target form
-     */
-    public void assignTargetForm(final String _targetForm) {
-      addLink(LINK2TARGETFORM, new LinkInstance(_targetForm));
-    }
-
-    /**
-     * Assigns a menu as target for this command definition.
-     *
-     * @param _targetMenu
-     *                name of the target menu
-     */
-    public void assignTargetMenu(final String _targetMenu) {
-      addLink(LINK2TARGETMENU, new LinkInstance(_targetMenu));
-    }
-
-    /**
-     * Assigns a search menu as target for this command definition.
-     *
-     * @param _targetSearch
-     *                name of the target search
-     */
-    public void assignTargetSearch(final String _targetSearch) {
-      addLink(LINK2TARGETSEARCH, new LinkInstance(_targetSearch));
-    }
-
   }
 
 }

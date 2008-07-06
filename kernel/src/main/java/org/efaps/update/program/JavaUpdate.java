@@ -23,7 +23,6 @@ package org.efaps.update.program;
 import java.net.URL;
 import java.util.Set;
 
-import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.program.esjp.ESJPImporter;
 import org.efaps.util.EFapsException;
 
@@ -34,16 +33,17 @@ import org.efaps.util.EFapsException;
  * @author tmo
  * @version $Id$
  */
-public class JavaUpdate extends AbstractSourceUpdate {
-
+public class JavaUpdate extends AbstractSourceUpdate
+{
   /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
    * Constructor to initialize the type of Java programs.
    */
-  public JavaUpdate() {
-    super("Admin_Program_Java");
+  public JavaUpdate(final URL _url)
+  {
+    super(_url, "Admin_Program_Java");
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -54,15 +54,16 @@ public class JavaUpdate extends AbstractSourceUpdate {
    * an instance of this class. The instance of this class owns one definition
    * instance where the code and the name is defined.
    *
-   * @param _file
-   *                instance of the file to read
+   * @param _root     root URL
+   * @param _url      URL of the file depending of the root URL
+   * @return Java update definition read by digester
    */
-  public static JavaUpdate readXMLFile(final URL _root, final URL _url) {
-    final JavaUpdate ret = new JavaUpdate();
-    ret.setURL(_url);
-    final JavaDefinition definition = new JavaDefinition(_root, _url);
+  public static JavaUpdate readFile(final URL _root,
+                                    final URL _url)
+  {
+    final JavaUpdate ret = new JavaUpdate(_url);
+    final JavaDefinition definition = ret.new JavaDefinition(_root, _url);
     ret.addDefinition(definition);
-
     return ret;
   }
 
@@ -74,7 +75,8 @@ public class JavaUpdate extends AbstractSourceUpdate {
   /**
    * The Java definition holds the code and the name of the Java class.
    */
-  public static class JavaDefinition extends SourceDefinition {
+  public class JavaDefinition extends SourceDefinition
+  {
 
     ///////////////////////////////////////////////////////////////////////////
     // instance variables
@@ -91,7 +93,9 @@ public class JavaUpdate extends AbstractSourceUpdate {
      * @param _rootUrl
      * @param _fileUrl
      */
-    protected JavaDefinition(URL _rootUrl, URL _fileUrl) {
+    protected JavaDefinition(final URL _rootUrl,
+                             final URL _fileUrl)
+    {
       super(_rootUrl, _fileUrl);
     }
 
@@ -104,8 +108,7 @@ public class JavaUpdate extends AbstractSourceUpdate {
      *                        URL
      */
     @Override
-    protected void searchInstance(final Type _dataModelType,
-                                  final String _uuid)
+    protected void searchInstance()
         throws EFapsException
     {
       if (this.javaCode == null)  {

@@ -20,15 +20,16 @@
 
 package org.efaps.update.ui;
 
-import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.AbstractAdminObject.EFapsClassName;
+import org.efaps.admin.event.EventType;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -36,7 +37,6 @@ import org.efaps.db.SearchQuery;
 import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
-import org.efaps.update.event.EventFactory;
 import org.efaps.util.EFapsException;
 
 /**
@@ -49,179 +49,112 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo description
  */
-abstract class AbstractCollectionUpdate extends AbstractUpdate {
-
+abstract class AbstractCollectionUpdate extends AbstractUpdate
+{
   /** Link from field to icon */
-  private final static Link LINKFIELD2ICON =
-      new Link("Admin_UI_LinkIcon", "From", "Admin_UI_Image", "To");
+  private final static Link LINKFIELD2ICON =    new Link("Admin_UI_LinkIcon",
+                                                         "From",
+                                                         "Admin_UI_Image", "To");
 
   /** Link from field to table as target */
-  private final static Link LINK2TARGETTABLE =
-      new Link("Admin_UI_LinkTargetTable", "From", "Admin_UI_Table", "To");
+  private final static Link LINK2TARGETTABLE =  new Link("Admin_UI_LinkTargetTable",
+                                                         "From",
+                                                         "Admin_UI_Table", "To");
 
-  private final static Set<Link> ALLLINKS = new HashSet<Link>();
-
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // constructors
 
   /**
-   * @param _typeName
-   *                name of the type
+   * @param _url        URL of the file
+   * @param _typeName   name of the type
    */
-  protected AbstractCollectionUpdate(final String _typeName) {
-    super(_typeName, ALLLINKS);
+  protected AbstractCollectionUpdate(final URL _url,
+                                     final String _typeName)
+  {
+    super(_url, _typeName);
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
-  // static methods
+  /////////////////////////////////////////////////////////////////////////////
+  // instance methods
 
   /**
+   * Creates new instance of class {@link Definition}.
    *
+   * @return new definition instance
+   * @see Definition
    */
-  protected static Digester createDigester(final String _xmlTagName,
-                                           final Class<?> _createClass)
-                                                                       throws IOException {
-    final Digester digester = new Digester();
-    digester.setValidating(false);
-    digester.addObjectCreate(_xmlTagName, _createClass);
-
-    // set the UUID
-    digester.addCallMethod(_xmlTagName + "/uuid", "setUUID", 1);
-    digester.addCallParam(_xmlTagName + "/uuid", 0);
-
-    // #####################
-    // add a new Definition
-    digester.addObjectCreate(_xmlTagName + "/definition", Definition.class);
-    digester.addSetNext(_xmlTagName + "/definition", "addDefinition");
-    // set the Version
-    digester
-        .addCallMethod(_xmlTagName + "/definition/version", "setVersion", 4);
-    digester.addCallParam(_xmlTagName + "/definition/version/application", 0);
-    digester.addCallParam(_xmlTagName + "/definition/version/global", 1);
-    digester.addCallParam(_xmlTagName + "/definition/version/local", 2);
-    digester.addCallParam(_xmlTagName + "/definition/version/mode", 3);
-    // set the name
-    digester.addCallMethod(_xmlTagName + "/definition/name", "setName", 1);
-    digester.addCallParam(_xmlTagName + "/definition/name", 0);
-    // add a Property to the Definition
-    digester.addCallMethod(_xmlTagName + "/definition/property", "addProperty",
-        2);
-    digester.addCallParam(_xmlTagName + "/definition/property", 0, "name");
-    digester.addCallParam(_xmlTagName + "/definition/property", 1);
-
-    // #####################
-    // add a new FieldDefinition to the Definition
-    digester.addObjectCreate(_xmlTagName + "/definition/field",
-        FieldDefinition.class);
-    digester.addSetNext(_xmlTagName + "/definition/field", "addField");
-    // set the name of the field
-    digester.addCallMethod(_xmlTagName + "/definition/field", "setName", 1);
-    digester.addCallParam(_xmlTagName + "/definition/field", 0, "name");
-    // set the character of the field
-    digester
-        .addCallMethod(_xmlTagName + "/definition/field", "setCharacter", 1);
-    digester.addCallParam(_xmlTagName + "/definition/field", 0, "character");
-    // set the icon for the field
-    digester
-        .addCallMethod(_xmlTagName + "/definition/field/icon", "setIcon", 1);
-    digester.addCallParam(_xmlTagName + "/definition/field/icon", 0);
-    // add a property to the field
-    digester.addCallMethod(_xmlTagName + "/definition/field/property",
-        "addProperty", 2);
-    digester
-        .addCallParam(_xmlTagName + "/definition/field/property", 0, "name");
-    digester.addCallParam(_xmlTagName + "/definition/field/property", 1);
-
-    // assign a table as target to the field
-    digester.addCallMethod(_xmlTagName + "/definition/field/table",
-        "assignTargetTable", 1);
-    digester.addCallParam(_xmlTagName + "/definition/field/table", 0);
-
-    // assign the event (TableEvaluateEvent) to fill the Table with data
-    digester.addFactoryCreate(_xmlTagName + "/definition/field/evaluate",
-        new EventFactory("Admin_UI_TableEvaluateEvent"), false);
-    // add Properties to the event
-    digester.addCallMethod(_xmlTagName + "/definition/field/evaluate/property",
-        "addProperty", 2);
-    digester.addCallParam(_xmlTagName + "/definition/field/evaluate/property",
-        0, "name");
-    digester.addCallParam(_xmlTagName + "/definition/field/evaluate/property",
-        1);
-    digester.addSetNext(_xmlTagName + "/definition/field/evaluate", "addEvent",
-        "org.efaps.update.event.Event");
-
-    // assign a Trigger to the field
-    digester.addFactoryCreate(_xmlTagName + "/definition/field/trigger",
-        new EventFactory());
-    // add properties to the Trigger
-    digester.addCallMethod(_xmlTagName + "/definition/field/trigger/property",
-        "addProperty", 2);
-    digester.addCallParam(_xmlTagName + "/definition/field/trigger/property",
-        0, "name");
-    digester
-        .addCallParam(_xmlTagName + "/definition/field/trigger/property", 1);
-    digester.addSetNext(_xmlTagName + "/definition/field/trigger", "addEvent",
-        "org.efaps.update.event.Event");
-
-    return digester;
+  @Override
+  protected AbstractDefinition newDefinition()
+  {
+    return new Definition();
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // class for a field
 
-  public static class FieldDefinition extends AbstractDefinition {
-
+  private class FieldDefinition extends AbstractDefinition
+  {
     /** Name of the field. */
-    private String name = null;
+    private final String name;
 
     /** Icon of the field. */
     private String icon = null;
 
     /** set the character of the field */
-    private String character;
+    private final String character;
 
     /**
-     * This is the setter method for instance variable {@link #name}.
      *
      * @param _name
-     *                new value for instance variable {@link #name}
-     * @see #name
+     * @param _character
      */
-    @Override
-    public void setName(final String _name) {
+    private FieldDefinition(final String _name,
+                            final String _character)
+    {
       this.name = _name;
-    }
-
-    /**
-     * This is the setter method for instance variable {@link #character}
-     *
-     * @param _name
-     *                new value for instance variable {@link #character}
-     * @see #character
-     */
-    public void setCharacter(final String _character) {
       this.character = _character;
     }
 
-    /**
-     * This is the setter method for instance variable {@link #icon}.
-     *
-     * @param _name
-     *                new value for instance variable {@link #icon}
-     * @see #icon
-     */
-    public void setIcon(final String _icon) {
-      this.icon = _icon;
-    }
-
-    /**
-     * Assigns a table as target for this field definition.
-     *
-     * @param _targetTable
-     *                name of the target table
-     */
-    public void assignTargetTable(final String _targetTable) {
-      addLink(LINK2TARGETTABLE, new LinkInstance(_targetTable));
+    @Override
+    protected void readXML(final List<String> _tags,
+                           final Map<String,String> _attributes,
+                           final String _text)
+    {
+      final String value = _tags.get(0);
+      if ("evaluate".equals(value))  {
+        if (_tags.size() == 1)  {
+          this.events.add(new Event(_attributes.get("name"),
+                                  EventType.UI_TABLE_EVALUATE,
+                                  _attributes.get("program"),
+                                  _attributes.get("method"),
+                                  _attributes.get("index")));
+        } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+          this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"),
+                                                            _text);
+        } else  {
+          super.readXML(_tags, _attributes, _text);
+        }
+      } else if ("icon".equals(value))  {
+        this.icon = _text;
+      } else if ("table".equals(value))  {
+        // assigns a table as target for this field definition
+        addLink(LINK2TARGETTABLE, new LinkInstance(_text));
+      } else if ("trigger".equals(value))  {
+        if (_tags.size() == 1)  {
+          this.events.add(new Event(_attributes.get("name"),
+                                    EventType.valueOf(_attributes.get("event")),
+                                    _attributes.get("program"),
+                                    _attributes.get("method"),
+                                    _attributes.get("index")));
+        } else if ((_tags.size() == 2) && "property".equals(_tags.get(1))) {
+          this.events.get(this.events.size() - 1).addProperty(_attributes.get("name"),
+                                                              _text);
+        } else  {
+          super.readXML(_tags, _attributes, _text);
+        }
+      } else  {
+        super.readXML(_tags, _attributes, _text);
+      }
     }
 
     /**
@@ -237,17 +170,44 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
     }
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // class for the definitions
 
-  public static class Definition extends AbstractDefinition {
-
+  private class Definition extends AbstractDefinition
+  {
     /** All fields for the collection are stored in this variable */
-    private final List<FieldDefinition> fields =
-        new ArrayList<FieldDefinition>();
+    private final List<FieldDefinition> fields = new ArrayList<FieldDefinition>();
 
-    // /////////////////////////////////////////////////////////////////////////
+    /**
+     * Current read field definition.
+     *
+     * @see #readXML(List, Map, String)
+     */
+    private FieldDefinition curField = null;
+
+    ///////////////////////////////////////////////////////////////////////////
     // instance methods
+
+    @Override
+    protected void readXML(final List<String> _tags,
+                           final Map<String,String> _attributes,
+                           final String _text)
+    {
+      final String value = _tags.get(0);
+      if ("field".equals(value))  {
+        if (_tags.size() == 1)  {
+          this.curField = new FieldDefinition(_attributes.get("name"),
+                                              _attributes.get("character"));
+          this.fields.add(this.curField);
+        } else  {
+          this.curField.readXML(_tags.subList(1, _tags.size()),
+                                _attributes,
+                                _text);
+        }
+      } else  {
+        super.readXML(_tags, _attributes, _text);
+      }
+    }
 
     /**
      * Updates / creates the instance in the database. Only the
@@ -329,12 +289,12 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
     /**
      * Adds a new field to this definition of the table.
      *
-     * @param _field
-     *                new field to add to this table
+     * @param _field  new field to add to this table
      * @see #fields
      * @see #Field
      */
-    public void addField(final FieldDefinition _field) {
+    public void addField(final FieldDefinition _field)
+    {
       this.fields.add(_field);
     }
 
@@ -345,7 +305,8 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate {
      * @return string representation of this definition of a column
      */
     @Override
-    public String toString() {
+    public String toString()
+    {
       return new ToStringBuilder(this).appendSuper(super.toString()).append(
           "fields", this.fields).toString();
     }
