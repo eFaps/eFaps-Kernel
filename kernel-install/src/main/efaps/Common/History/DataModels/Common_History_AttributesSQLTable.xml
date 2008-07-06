@@ -28,15 +28,12 @@
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>fc7afd62-a520-4321-8723-a4e2e59b8449</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <!-- History of Events for Objects -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Common_History_AttributesSQLTable</name>
     <database>
       <table-name>T_HISTORYATTRIBUTES</table-name>

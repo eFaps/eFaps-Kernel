@@ -28,14 +28,11 @@
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>b8cd5c3b-5dc2-454c-a493-f19cefc15e1a</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==6) || (version==latest)</mode>
-    </version>
+    <version-expression>(version==6) || (version==latest)</version-expression>
     <name>Admin_DataModel_Type_Trigger_InsertPost</name>
     <parent>Admin_DataModel_Type_Trigger</parent>
   </definition>

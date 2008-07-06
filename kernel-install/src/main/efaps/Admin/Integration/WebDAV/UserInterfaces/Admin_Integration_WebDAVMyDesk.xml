@@ -28,15 +28,11 @@
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>b867fcef-5388-4b2c-9053-f93ca52f9111</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_Integration_WebDAVMyDesk</name>
     <icon>Admin_Integration_WebDAVImage</icon>
     <!-- access definitions -->

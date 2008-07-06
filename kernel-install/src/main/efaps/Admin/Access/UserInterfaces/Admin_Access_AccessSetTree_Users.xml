@@ -28,22 +28,18 @@
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>cdc52876-a0db-4265-993a-041324741d9e</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_Access_AccessSetTree_Users</name>
     <!-- target definitions -->
     <target>
       <menu>Admin_Access_AccessSetTree_Users_Menu</menu>
       <table>Admin_User_AbstractTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
-        <property name="Expand">Admin_Access_AccessSet2UserAbstract\AccessSetLink.UserAbstractLink</property>  
+        <property name="Expand">Admin_Access_AccessSet2UserAbstract\AccessSetLink.UserAbstractLink</property> 
       </evaluate>
     </target>
     <!-- properties -->

@@ -28,12 +28,12 @@
   <bundle name="efaps_DataModel" sequence="1"/>
   <resource>
     <type>Properties</type>
-    <language></language> 
+    <language></language>
     <file>DataModel.properties</file>
   </resource>
   <resource>
     <type>Properties</type>
-    <language>de</language> 
+    <language>de</language>
     <file>DataModel_de.properties</file>
   </resource>
 </dbproperties>

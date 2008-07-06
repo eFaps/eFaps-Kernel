@@ -23,8 +23,8 @@
  Original Author: Mark James (mjames at gmail.com)
  Original Name:   arrow_refresh_small.png
  Original Web:    Silk icon set 1.3
-                  [ http://www.famfamfam.com/lab/icons/silk/ ] 
- Original License:Creative Commons Attribution 2.5 License 
+                  [ http://www.famfamfam.com/lab/icons/silk/ ]
+ Original License:Creative Commons Attribution 2.5 License
                   [ http://creativecommons.org/licenses/by/2.5/ ]
 
 -->
@@ -34,14 +34,11 @@
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>d7373f08-d01f-4686-8b5f-d027babae84c</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_Common_ReloadCache</name>
     <file>Admin_Common_ReloadCache.gif</file>
   </definition>

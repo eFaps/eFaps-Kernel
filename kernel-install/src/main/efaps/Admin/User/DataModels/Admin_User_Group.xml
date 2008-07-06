@@ -28,25 +28,22 @@
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>f5e1e2ff-bfa9-40d9-8340-a259f48d5ad9</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <!-- define type (is already defined) -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_User_Group</name>
     <parent>Admin_User_Abstract</parent>
     <!-- triggers -->
     <trigger name="Admin_User_Group_AccessCheck"
-             event="ACCESSCHECK" 
+             event="ACCESSCHECK"
              program="org.efaps.esjp.admin.access.SimpleAccessCheckOnType" />
     <trigger name="Admin_User_Group_INSERT_POST"
-             event="INSERT_POST" 
+             event="INSERT_POST"
              program="org.efaps.esjp.admin.user.Person"
-             method="insertJaaskeyTrg"/>  
+             method="insertJaaskeyTrg"/> 
   </definition>
 
 </datamodel-type>

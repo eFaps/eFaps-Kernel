@@ -28,15 +28,11 @@
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>27412bbe-1dfd-49bb-a534-b6d317bceb28</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_User_RoleMyDesk_Menu_Action_Create</name>
     <icon>Admin_User_Role+Create+Image</icon>
     <!-- target definitions -->

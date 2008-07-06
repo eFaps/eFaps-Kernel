@@ -28,15 +28,11 @@
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>156a1f37-d4a7-4303-99df-783da408a05c</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_UI_MenuTree_Childs_Menu_Action</name>
     <childs>
       <child>Admin_UI_MenuTree_Childs_Menu_Action_AddExisting</child>

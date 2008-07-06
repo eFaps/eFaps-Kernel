@@ -23,17 +23,17 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>d3a64746-3666-4678-9603-f304bf16bb92</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <!-- attributes of types -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==4) || (version==latest)</mode>
-    </version>
+    <version-expression>(version==4) || (version==latest)</version-expression>
     <name>Admin_DataModel_AttributeSQLTable</name>
     <parent>Admin_Common_AbstractSQLTable</parent>
     <database>
@@ -56,12 +56,7 @@
 
   <!-- create view representing all attributes -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
+    <version-expression>(version==2)</version-expression>
     <database>
       <table-name>T_DMATTRIBUTE</table-name>
       <sql>
@@ -83,12 +78,7 @@
 
   <!-- create base SQL table -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
+    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_DMATTRIBUTE</table-name>
       <parent-table>T_CMABSTRACT</parent-table>

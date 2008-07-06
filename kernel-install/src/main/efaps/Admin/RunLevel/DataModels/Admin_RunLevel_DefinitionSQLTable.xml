@@ -28,23 +28,20 @@
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>ffdf2e8f-ff2b-4cc8-85bf-481c167302ab</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <!-- SQL Table to hold the RunLevel Basic Definitons -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==4) || (version==latest)</mode>
-    </version>
+    <version-expression>(version==4) || (version==latest)</version-expression>
     <name>Admin_RunLevel_DefinitionSQLTable</name>
     <database>
       <table-name>T_RUNLEVELDEF</table-name>
       <!-- columns -->
       <column name="RUNLEVELID" type="INTEGER"      not-null="true" />
       <column name="PRIORITY"   type="INTEGER"      not-null="true" />
-      <column name="CLASS"      type="STRING_SHORT" not-null="true" length="254"/> 
-      <column name="METHOD"     type="STRING_SHORT" not-null="true" length="128"/> 
+      <column name="CLASS"      type="STRING_SHORT" not-null="true" length="254"/>
+      <column name="METHOD"     type="STRING_SHORT" not-null="true" length="128"/>
       <column name="PARAMETER"  type="STRING_SHORT"                 length="128"/>
       <!-- foreign keys -->
       <foreign name="T_RUNLEVELDEF_FK_RNLVL"    key="RUNLEVELID"    reference="T_RUNLEVEL(ID)"/>
@@ -53,19 +50,14 @@
 
   <!-- create base data model -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
+    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_RUNLEVELDEF</table-name>
       <!-- columns -->
       <column name="RUNLEVELID" type="INTEGER"      not-null="true" />
       <column name="PRIORITY"   type="INTEGER"      not-null="true" />
-      <column name="CLASS"      type="STRING_SHORT" not-null="true" length="254"/> 
-      <column name="METHOD"     type="STRING_SHORT" not-null="true" length="128"/> 
+      <column name="CLASS"      type="STRING_SHORT" not-null="true" length="254"/>
+      <column name="METHOD"     type="STRING_SHORT" not-null="true" length="128"/>
       <column name="PARAMETER"  type="STRING_SHORT"                 length="128"/>
      </database>
   </definition>

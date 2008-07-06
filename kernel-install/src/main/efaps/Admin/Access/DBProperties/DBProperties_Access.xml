@@ -29,12 +29,12 @@
   <bundle name="efaps_Access" sequence="1"/>
   <resource>
     <type>Properties</type>
-    <language></language> 
+    <language></language>
     <file>Access.properties</file>
   </resource>
   <resource>
     <type>Properties</type>
-    <language>de</language> 
+    <language>de</language>
     <file>Access_de.properties</file>
   </resource>
 </dbproperties>

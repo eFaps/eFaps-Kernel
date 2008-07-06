@@ -28,15 +28,11 @@
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>9687a288-83b9-4dc5-a7b4-9004522dc5f0</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_User_GroupMyDesk_Menu_Action_Delete</name>
     <icon>Admin_User_Group+Delete+Image</icon>
     <!-- target definitions -->

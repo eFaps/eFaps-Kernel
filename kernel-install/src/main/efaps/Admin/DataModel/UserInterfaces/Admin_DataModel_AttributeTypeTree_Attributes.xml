@@ -28,15 +28,11 @@
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>77af178e-75ca-4bea-afcd-ef5d081ae9d0</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_DataModel_AttributeTypeTree_Attributes</name>
     <!-- target definitions -->
     <target>
@@ -44,7 +40,7 @@
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_DataModel_Attribute\AttributeType</property>
       </evaluate>
-            
+
     </target>
     <!-- properties -->
     <property name="Target">content</property>

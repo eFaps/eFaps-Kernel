@@ -34,15 +34,11 @@
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>5ae80273-6aa2-4e2e-aff3-10e6d9795087</uuid>
+  <file-application>eFaps-webapp</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>org.efaps.ui.wicket.components.button.accept.png</name>
     <file>accept.png</file>
   </definition>

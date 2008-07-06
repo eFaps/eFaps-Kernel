@@ -23,17 +23,17 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>5cf99cd6-06d6-4322-a344-55d206666c9c</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <!-- Common Properties -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==4) || (version==latest)</mode>
-    </version>
+    <version-expression>(version==4) || (version==latest)</version-expression>
     <name>Admin_Common_PropertySQLTable</name>
     <database>
       <table-name>T_CMPROPERTY</table-name>
@@ -51,12 +51,7 @@
 
   <!-- create base data model -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
+    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_CMPROPERTY</table-name>
       <!-- columns -->

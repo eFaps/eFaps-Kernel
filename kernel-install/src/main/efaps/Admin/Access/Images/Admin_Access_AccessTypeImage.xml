@@ -28,14 +28,11 @@
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>e0bffb4f-01cd-4c12-a92d-4c20a92863ab</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_Access_AccessTypeImage</name>
     <file>Admin_Access_AccessTypeImage.gif</file>
     <!-- is type icon for -->

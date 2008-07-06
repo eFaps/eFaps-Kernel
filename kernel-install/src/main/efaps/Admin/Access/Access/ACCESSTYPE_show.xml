@@ -28,14 +28,11 @@
              xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd" >
 
   <uuid>df0fed9f-4749-4444-bd78-323b2d6bc563</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==7)</mode>
-    </version>
+    <version-expression>(version==7)</version-expression>
     <name>show</name>
   </definition>
 

@@ -32,12 +32,12 @@
   <bundle name="efaps_Admin_Program_Abstract" sequence="1"/>
   <resource>
     <type>Properties</type>
-    <language></language> 
+    <language></language>
     <file>Admin_Program_Abstract.properties</file>
   </resource>
   <resource>
     <type>Properties</type>
-    <language>de</language> 
+    <language>de</language>
     <file>Admin_Program_Abstract_de.properties</file>
   </resource>
 

@@ -28,15 +28,12 @@
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>0fec9c45-6836-4312-956b-390d8e74736e</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <!-- Access Type object -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==4) || (version==latest)</mode>
-    </version>
+    <version-expression>(version==4) || (version==latest)</version-expression>
     <name>Admin_Access_AccessTypeSQLTable</name>
     <database>
       <table-name>T_ACCESSTYPE</table-name>
@@ -59,12 +56,7 @@
 
   <!-- create base data model -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
+    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_ACCESSTYPE</table-name>
       <!-- columns -->

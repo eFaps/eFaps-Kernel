@@ -28,14 +28,11 @@
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>4c3e33a2-a024-4bb7-b857-69886bce7132</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==6) || (version==latest)</mode>
-    </version>
+    <version-expression>(version==6) || (version==latest)</version-expression>
     <name>Admin_User_Abstract</name>
     <!-- attributes -->
     <attribute>

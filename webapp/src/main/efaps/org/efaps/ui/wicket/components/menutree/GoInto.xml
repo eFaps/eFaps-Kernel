@@ -28,15 +28,11 @@
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>028efe10-443c-425f-bf10-48e6233522b7</uuid>
+  <file-application>eFaps-webapp</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>org.efaps.ui.wicket.components.menutree.GoInto.gif</name>
     <file>GoInto.gif</file>
   </definition>

@@ -28,15 +28,11 @@
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>87001cc3-c45c-44de-b8f1-776df507f268</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>MainToolBar</name>
     <childs>
       <child>Admin_Common_MyDesk</child>
@@ -45,5 +41,5 @@
       <child>Common_Main_LogoutToolBar</child>
     </childs>
   </definition>
-    
+
 </ui-menu>

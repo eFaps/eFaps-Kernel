@@ -28,15 +28,11 @@
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>bf552c2a-03fb-4933-a444-70644b658e9c</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_User_JAASSystemMyDesk</name>
     <icon>Admin_User_JAASSystemImage</icon>
     <!-- access -->
@@ -49,7 +45,7 @@
       <table>Admin_User_JAASSystemTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">Admin_User_JAASSystem</property>
-      </evaluate>         
+      </evaluate>        
     </target>
     <!-- properties -->
     <property name="Target">content</property>

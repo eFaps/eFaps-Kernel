@@ -28,20 +28,16 @@
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>e333fffe-9223-4af0-bffa-7d0adce91da5</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_UI_MenuTree</name>
     <!-- targets -->
     <target>
       <menu>Admin_UI_MenuTree_Menu</menu>
-      <form>Admin_UI_AbstractForm</form>         
+      <form>Admin_UI_AbstractForm</form>        
     </target>
     <!-- type tree for -->
     <type>Admin_UI_Menu</type>

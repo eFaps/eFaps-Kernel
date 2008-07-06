@@ -28,14 +28,11 @@
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>96a6cfac-9bc5-47af-9a7d-42abbc466ba6</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_DataModel_Type_Trigger</name>
     <parent>Admin_Event_Definition</parent>
     <abstract>true</abstract>
@@ -44,12 +41,7 @@
   </definition>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==6)</mode>
-    </version>
+    <version-expression>(version==6)</version-expression>
     <name>Admin_DataModel_Type_Trigger</name>
     <parent>Admin_Event_Definition</parent>
     <abstract>true</abstract>

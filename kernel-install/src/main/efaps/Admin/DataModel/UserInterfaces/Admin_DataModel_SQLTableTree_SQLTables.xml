@@ -28,15 +28,11 @@
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>01454667-4a9b-4570-9072-9f5098d781ed</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_DataModel_SQLTableTree_SQLTables</name>
     <!-- target definitions -->
     <target>
@@ -44,7 +40,6 @@
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_DataModel_SQLTable\DMTableMain</property>
       </evaluate>
-      
     </target>
     <!-- properties -->
     <property name="Target">content</property>

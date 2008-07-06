@@ -28,14 +28,11 @@
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>031e3816-d9f3-4535-9bb4-05b25a4db61f</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-     </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_DataModel_AttributeRangeEvent</name>
     <parent>Admin_Event_Definition</parent>
     <!-- event for type? -->
@@ -43,12 +40,7 @@
   </definition>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==6)</mode>
-     </version>
+    <version-expression>(version==6)</version-expression>
     <name>Admin_DataModel_AttributeRangeEvent</name>
     <parent>Admin_Event_Definition</parent>
   </definition>

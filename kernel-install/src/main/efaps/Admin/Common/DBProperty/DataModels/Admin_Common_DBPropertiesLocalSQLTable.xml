@@ -28,16 +28,14 @@
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>7bf13230-062d-4c9d-b196-ce4721fcd1df</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
+
 
   <!-- SQL Table to hold the Values for the ResourceBundle -->
 
   <definition>
-	<version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==4) || (version==latest)</mode>
-    </version>
+	<version-expression>(version==4) || (version==latest)</version-expression>
     <name>Admin_Common_DBPropertiesLocalSQLTable</name>
     <database>
       <table-name>T_ADPROPLOC</table-name>
@@ -53,12 +51,7 @@
 
   <!-- base data model -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
+    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_ADPROPLOC</table-name>
       <!-- columns -->

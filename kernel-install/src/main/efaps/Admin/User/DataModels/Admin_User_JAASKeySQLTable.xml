@@ -28,15 +28,12 @@
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>5b782a85-eaf3-4574-901a-605776f4c72a</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <!-- Mapping to external JAAS systems -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==4) || (version==latest)</mode>
-    </version>
+    <version-expression>(version==4) || (version==latest)</version-expression>
     <name>Admin_User_JAASKeySQLTable</name>
     <database>
       <table-name>T_USERJAASKEY</table-name>
@@ -58,12 +55,7 @@
 
   <!-- create base data model -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
+    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_USERJAASKEY</table-name>
       <!-- columns -->

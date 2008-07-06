@@ -24,8 +24,8 @@
  Original Name:   server_connect.png
                   bullet_add.png
  Original Web:    Silk icon set 1.3
-                  [ http://www.famfamfam.com/lab/icons/silk/ ] 
- Original License:Creative Commons Attribution 2.5 License 
+                  [ http://www.famfamfam.com/lab/icons/silk/ ]
+ Original License:Creative Commons Attribution 2.5 License
                   [ http://creativecommons.org/licenses/by/2.5/ ]
 -->
 
@@ -34,14 +34,11 @@
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>2d507172-f091-46d5-9446-0b51d9f0585a</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_User_JAASSystem+Create+Image</name>
     <file>Admin_User_JAASSystem+Create+Image.gif</file>
   </definition>

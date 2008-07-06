@@ -24,8 +24,8 @@
  Original Name:   textfield_rename.png
                   bullet_delete.png
  Original Web:    Silk icon set 1.3
-                  [ http://www.famfamfam.com/lab/icons/silk/ ] 
- Original License:Creative Commons Attribution 2.5 License 
+                  [ http://www.famfamfam.com/lab/icons/silk/ ]
+ Original License:Creative Commons Attribution 2.5 License
                   [ http://creativecommons.org/licenses/by/2.5/ ]
 
 -->
@@ -35,17 +35,14 @@
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>9d2445eb-cf19-4831-aac9-e905f79164b2</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <!-- ************************************************************************
-    version definition used to create / update the image 
+    version definition used to create / update the image
   ************************************************************************* -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_UI_Field+Delete+Image</name>
     <file>Admin_UI_Field+Delete+Image.gif</file>
   </definition>

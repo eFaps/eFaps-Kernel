@@ -28,15 +28,12 @@
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>30152cda-e5a3-418d-ad1e-ad44be1307c2</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <!-- attribute types -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==4) || (version==latest)</mode>
-    </version>
+    <version-expression>(version==4) || (version==latest)</version-expression>
     <name>Admin_DataModel_AttributeTypeSQLTable</name>
     <database>
       <table-name>T_DMATTRIBUTETYPE</table-name>
@@ -51,17 +48,12 @@
 
   <!-- create view representing all types -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
+    <version-expression>(version==2)</version-expression>
     <database>
       <table-name>T_DMATTRIBUTETYPE</table-name>
       <sql>
         create view V_DMATTRIBUTETYPE as
-            select 
+            select
                 T_CMABSTRACT.ID,
                 T_CMABSTRACT.UUID,
                 T_CMABSTRACT.NAME,
@@ -77,12 +69,7 @@
 
   <!--  create base SQL tables -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
+    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_DMATTRIBUTETYPE</table-name>
       <parent-table>T_CMABSTRACT</parent-table>

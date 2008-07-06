@@ -23,22 +23,19 @@
   
 -->
 
-<common-systemattribute xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
->
+<common-systemattribute xmlns="http://www.efaps.org/xsd"
+                        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                        xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
   <uuid>32e06630-03af-42a8-97c9-e798d39a7f54</uuid>
+  <file-application>eFaps-webapp</file-application>
+  <file-revision>$Rev$</file-revision>
   <description>
     This Attribute defines the Menu wich is added as a DefaultMenu to all Menubars. To deaktivate this feature set the value to "none". The
     DefaultMenu can also be deactivated individually in every Command or Menu by setting the Property "TargetDefaultMenu" to "none".
   </description>
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Common_Main_DefaultMenu</name>
     <value>Common_Main_Default</value>
   </definition>

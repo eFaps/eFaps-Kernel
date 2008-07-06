@@ -28,15 +28,11 @@
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>68d02d24-a913-40f0-bd67-475d12add72a</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_Access_AccessTypeMyDesk</name>
     <icon>Admin_Access_AccessTypeImage</icon>
     <!-- access definitions -->
@@ -48,7 +44,7 @@
       <table>Admin_Access_AccessTypeTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryEvaluate">
         <property name="Types">Admin_Access_AccessType</property>
-      </evaluate>       
+      </evaluate>      
     </target>
     <!-- properties -->
     <property name="Target">content</property>

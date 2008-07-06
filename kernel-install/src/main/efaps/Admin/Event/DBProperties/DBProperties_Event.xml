@@ -28,12 +28,12 @@
   <bundle name="efaps_Event" sequence="1"/>
   <resource>
     <type>Properties</type>
-    <language></language> 
+    <language></language>
     <file>Event.properties</file>
   </resource>
   <resource>
     <type>Properties</type>
-    <language>de</language> 
+    <language>de</language>
     <file>Event_de.properties</file>
   </resource>
 </dbproperties>

@@ -32,12 +32,12 @@
   <bundle name="efaps_Admin_Program_JavaScript" sequence="1"/>
   <resource>
     <type>Properties</type>
-    <language></language> 
+    <language></language>
     <file>Admin_Program_JavaScript.properties</file>
   </resource>
   <resource>
     <type>Properties</type>
-    <language>de</language> 
+    <language>de</language>
     <file>Admin_Program_JavaScript_de.properties</file>
   </resource>
 

@@ -28,15 +28,12 @@
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>a3a1ab4b-f3c3-49ad-a5cf-fc776ba1990c</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <!-- Person object -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>3</global>
-      <local>$Rev$</local>
-      <mode>(version==4) || (version==latest)</mode>
-    </version>
+    <version-expression>(version==4) || (version==latest)</version-expression>
     <name>Admin_User_PersonSQLTable</name>
     <parent>Admin_User_AbstractSQLTable</parent>
     <database>
@@ -55,12 +52,7 @@
 
   <!-- define view-->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
+    <version-expression>(version==2)</version-expression>
     <database>
       <!-- create view representing all persons -->
       <sql>
@@ -76,7 +68,7 @@
                  T_USERPERSON.LOGINTRY,
                  T_USERPERSON.LOGINTRIES
              from T_USERABSTRACT
-             join T_USERPERSON 
+             join T_USERPERSON
                on T_USERABSTRACT.ID=T_USERPERSON.ID
       </sql>
       <table-name>T_USERPERSON</table-name>
@@ -85,12 +77,7 @@
 
   <!-- create base data model -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>2</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
+    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_USERPERSON</table-name>
       <parent-table>T_USERABSTRACT</parent-table>

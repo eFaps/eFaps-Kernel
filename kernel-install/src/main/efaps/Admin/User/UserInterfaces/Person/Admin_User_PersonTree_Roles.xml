@@ -28,15 +28,11 @@
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>33312c33-15b6-4961-9218-059b7f7cd1b3</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_User_PersonTree_Roles</name>
     <!-- target definitions -->
     <target>
@@ -44,7 +40,7 @@
       <table>Admin_User_AbstractTable</table>
       <evaluate program="org.efaps.esjp.common.uitable.QueryExpand">
         <property name="Expand">Admin_User_Person2Role\UserFromLink.UserToLink</property>
-      </evaluate>        
+      </evaluate>       
     </target>
     <!-- properties -->
     <property name="Target">content</property>

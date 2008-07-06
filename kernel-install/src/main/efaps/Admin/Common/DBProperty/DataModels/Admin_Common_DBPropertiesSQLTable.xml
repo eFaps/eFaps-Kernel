@@ -28,16 +28,13 @@
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>f7f298b4-19de-42b3-9e50-d9a2278f106f</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <!-- SQL Table to hold the Default-Values and Keys for the Properties -->
 
   <definition>
-	<version>
-      <application>lucene</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==4) || (version==latest)</mode>
-    </version>
+	<version-expression>(version==4) || (version==latest)</version-expression>
     <name>Admin_Common_DBPropertiesSQLTable</name>
     <database>
       <table-name>T_ADPROP</table-name>
@@ -52,12 +49,7 @@
 
   <!-- base data model -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
+    <version-expression>(version==1)</version-expression>
     <database>
       <table-name>T_ADPROP</table-name>
       <!-- columns -->

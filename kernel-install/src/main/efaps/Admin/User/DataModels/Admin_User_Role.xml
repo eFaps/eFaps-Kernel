@@ -28,14 +28,11 @@
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>e4d6ecbe-f198-4f84-aa69-5a9fd3165112</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_User_Role</name>
     <parent>Admin_User_Abstract</parent>
     <!-- triggers -->
@@ -48,12 +45,7 @@
 
   <!-- define type (is already defined) -->
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==6)</mode>
-    </version>
+    <version-expression>(version==6)</version-expression>
     <name>Admin_User_Role</name>
     <parent>Admin_User_Abstract</parent>
   </definition>

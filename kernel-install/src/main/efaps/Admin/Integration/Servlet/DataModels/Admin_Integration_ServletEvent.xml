@@ -28,14 +28,11 @@
                 xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>a9ac6e63-78f0-4a29-8b17-f319e590b17f</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-     </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_Integration_ServletEvent</name>
     <parent>Admin_Event_Definition</parent>
     <!-- event for type? -->

@@ -23,8 +23,8 @@
  Original Author: Mark James (mjames at gmail.com)
  Original Name:   group.png
  Original Web:    Silk icon set 1.3
-                  [ http://www.famfamfam.com/lab/icons/silk/ ] 
- Original License:Creative Commons Attribution 2.5 License 
+                  [ http://www.famfamfam.com/lab/icons/silk/ ]
+ Original License:Creative Commons Attribution 2.5 License
                   [ http://creativecommons.org/licenses/by/2.5/ ]
 
 -->
@@ -34,14 +34,11 @@
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>4e7e7de9-c728-4f7f-9de9-26416d52b858</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_User_GroupImage</name>
     <file>Admin_User_GroupImage.gif</file>
     <!-- is type icon for -->

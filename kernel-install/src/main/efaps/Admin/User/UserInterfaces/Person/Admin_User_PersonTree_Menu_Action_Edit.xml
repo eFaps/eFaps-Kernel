@@ -28,15 +28,11 @@
             xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>9311da93-750d-4184-b35d-d341c5f9614c</uuid>
+  <file-application>eFaps-kernel</file-application>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==latest)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>Admin_User_PersonTree_Menu_Action_Edit</name>
     <icon>Admin_User_Person+Edit+Image</icon>
     <!-- target definitions -->
@@ -49,7 +45,7 @@
     <property name="TargetMode">edit</property>
     <property name="WindowHeight">580</property>
     <property name="WindowWidth">680</property>
-    
+
   </definition>
 
 </ui-command>
