@@ -55,6 +55,7 @@
     <version-expression>(version==2)</version-expression>
     <database>
       <!-- create view representing all persons -->
+      <table-name>T_USERPERSON</table-name>
       <sql>
         create view V_USERPERSON as
            select
@@ -71,7 +72,6 @@
              join T_USERPERSON
                on T_USERABSTRACT.ID=T_USERPERSON.ID
       </sql>
-      <table-name>T_USERPERSON</table-name>
     </database>
   </definition>
 

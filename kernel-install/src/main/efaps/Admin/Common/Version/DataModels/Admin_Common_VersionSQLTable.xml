@@ -54,6 +54,7 @@
     <version-expression>(version==2)</version-expression>
     <database>
       <!-- view representing all versions -->
+      <table-name>T_CMVERSION</table-name>
       <sql>
         create view V_COMMONVERSION
              as select NAME,
@@ -61,7 +62,6 @@
                   from T_CMVERSION
                   group by NAME
       </sql>
-      <table-name>T_CMVERSION</table-name>
     </database>
   </definition>
 

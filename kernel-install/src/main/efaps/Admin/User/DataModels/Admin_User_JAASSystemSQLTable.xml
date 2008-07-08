@@ -69,6 +69,7 @@
     <version-expression>(version==2)</version-expression>
     <database>
       <!-- create view representing all JAAS systems -->
+       <table-name>T_USERJAASSYSTEM</table-name>
        <sql>
         create view V_USERJAASSYSTEM as
            select
@@ -86,8 +87,7 @@
                METHODGROUPKEY
            from T_USERJAASSYSTEM
       </sql>
-      <table-name>T_USERJAASSYSTEM</table-name>
-     </database>
+      </database>
   </definition>
 
   <!-- create base data model -->
