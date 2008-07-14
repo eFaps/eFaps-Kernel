@@ -30,6 +30,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
@@ -44,6 +45,7 @@ import org.efaps.util.EFapsException;
  * TODO    loeschen von sich selber nicht erlaubt, loeschen von letzdem holder
  *          nicht erlaubt
  */
+@EFapsUUID("57627004-8033-4f13-b828-683cf387d891")
 public class AccessCheckOnMember implements EventExecution {
 
   // ///////////////////////////////////////////////////////////////////////////

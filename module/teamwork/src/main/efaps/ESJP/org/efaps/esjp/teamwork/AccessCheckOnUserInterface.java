@@ -33,6 +33,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
@@ -45,6 +46,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
+@EFapsUUID("a6e91207-14d7-4676-b625-bcedaf0094c2")
 public class AccessCheckOnUserInterface implements EventExecution {
 
   // ///////////////////////////////////////////////////////////////////////////

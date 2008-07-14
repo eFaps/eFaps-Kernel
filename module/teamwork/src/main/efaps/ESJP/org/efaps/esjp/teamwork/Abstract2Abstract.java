@@ -27,11 +27,13 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+@EFapsUUID("")
 public class Abstract2Abstract implements EventExecution {
 
   /**
@@ -41,8 +43,8 @@ public class Abstract2Abstract implements EventExecution {
       LoggerFactory.getLogger(Abstract2Abstract.class);
 
   public Return execute(Parameter _parameter) {
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    String abstractlink = ((Long) instance.getId()).toString();
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final String abstractlink = ((Long) instance.getId()).toString();
 
     SearchQuery query = new SearchQuery();
     String parent = null;
@@ -79,12 +81,12 @@ public class Abstract2Abstract implements EventExecution {
       query.addSelect("Rank");
       query.executeWithoutAccessCheck();
       if (query.next()) {
-        Long rank = ((Long) query.get("Rank")) + 1;
+        final Long rank = ((Long) query.get("Rank")) + 1;
 
         insertDB(abstractlink, abstractlink, rank.toString());
 
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
 
       LOG.error("execute(Context, Instance, Map<TriggerKeys4Values,Map>)", e);
     }
@@ -92,8 +94,8 @@ public class Abstract2Abstract implements EventExecution {
   }
 
   public Return insertNewRoot(Parameter _parameter) {
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    String abstractlink = ((Long) instance.getId()).toString();
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final String abstractlink = ((Long) instance.getId()).toString();
 
     insertDB(abstractlink, abstractlink, "1");
     return null;
@@ -103,13 +105,13 @@ public class Abstract2Abstract implements EventExecution {
                         final String _rank) {
 
     try {
-      Insert insert = new Insert("TeamWork_Abstract2Abstract");
+      final Insert insert = new Insert("TeamWork_Abstract2Abstract");
       insert.add("AbstractLink", _abstractlink);
       insert.add("AncestorLink", _ancestorlink);
       insert.add("Rank", _rank);
       insert.execute();
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
 
       LOG.error("insertDB(String, String, String)", e);
     }

@@ -29,15 +29,17 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+@EFapsUUID("42f5f290-0575-479b-b6fa-29ed1771e0cd")
 public class StructurBrowser implements EventExecution {
 
   public Return execute(Parameter _parameter) throws EFapsException {
     Return ret = null;
-    String method = (String) _parameter.get(ParameterValues.OTHERS);
+    final String method = (String) _parameter.get(ParameterValues.OTHERS);
     if (method.equals("execute")) {
       ret = internalExecute(_parameter);
     } else if (method.equals("checkForChildren")) {
@@ -49,24 +51,24 @@ public class StructurBrowser implements EventExecution {
   }
 
   private Return internalExecute(Parameter _parameter) throws EFapsException {
-    Return ret = new Return();
-    Map<?, ?> properties =
+    final Return ret = new Return();
+    final Map<?, ?> properties =
         (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
-    String types = (String) properties.get("Types");
+    final String types = (String) properties.get("Types");
 
-    boolean expandChildTypes =
+    final boolean expandChildTypes =
         "true".equals(properties.get("ExpandChildTypes"));
 
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     query.setQueryTypes(types);
     query.setExpandChildTypes(expandChildTypes);
     query.addSelect("OID");
     query.execute();
 
-    List<List<Object[]>> list = new ArrayList<List<Object[]>>();
+    final List<List<Object[]>> list = new ArrayList<List<Object[]>>();
     while (query.next()) {
-      List<Object[]> instances = new ArrayList<Object[]>(1);
+      final List<Object[]> instances = new ArrayList<Object[]>(1);
       instances.add(new Object[] { new Instance((String) query.get("OID")),
           null });
       list.add(instances);
@@ -78,14 +80,14 @@ public class StructurBrowser implements EventExecution {
   }
 
   private Return checkForChildren(Parameter _parameter) throws EFapsException {
-    Return ret = new Return();
-    Map<?, ?> properties =
+    final Return ret = new Return();
+    final Map<?, ?> properties =
         (Map<?, ?>) _parameter.get(ParameterValues.PROPERTIES);
 
-    String expand = (String) properties.get("checkForChildren");
+    final String expand = (String) properties.get("checkForChildren");
 
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    SearchQuery query = new SearchQuery();
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final SearchQuery query = new SearchQuery();
 
     query.setExpand(instance, expand);
     query.execute();
@@ -97,11 +99,11 @@ public class StructurBrowser implements EventExecution {
   }
 
   private Return addChildren(Parameter _parameter) throws EFapsException {
-    Return ret = new Return();
+    final Return ret = new Return();
 
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
 
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
 
     query.setQueryTypes("TeamWork_Abstract");
     query.setExpandChildTypes(true);
@@ -109,10 +111,10 @@ public class StructurBrowser implements EventExecution {
     query.addWhereExprEqValue("ParentCollectionLink", this.getId(instance));
     query.execute();
 
-    List<List<Object[]>> lists = new ArrayList<List<Object[]>>();
+    final List<List<Object[]>> lists = new ArrayList<List<Object[]>>();
 
     while (query.next()) {
-      List<Object[]> instances = new ArrayList<Object[]>(1);
+      final List<Object[]> instances = new ArrayList<Object[]>(1);
       instances.add(new Object[] { new Instance((String) query.get("OID")),
           true });
       lists.add(instances);
@@ -123,7 +125,7 @@ public class StructurBrowser implements EventExecution {
   }
 
   private String getId(Instance _instance) {
-    String ret = _instance.getOid();
+    final String ret = _instance.getOid();
     return ret.substring(ret.indexOf(".") + 1);
   }
 }

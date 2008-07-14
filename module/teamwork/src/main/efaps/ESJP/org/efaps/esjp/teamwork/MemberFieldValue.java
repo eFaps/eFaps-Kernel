@@ -27,12 +27,14 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 
 /**
  * @author jmox
  * @version $Id$
  *
  */
+@EFapsUUID("8e8c8d1b-1320-4903-a203-c45fdfc07787")
 public class MemberFieldValue implements EventExecution {
 
   private FieldValue fieldvalue;

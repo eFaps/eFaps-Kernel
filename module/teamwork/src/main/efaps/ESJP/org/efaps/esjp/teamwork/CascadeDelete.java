@@ -32,11 +32,13 @@ import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.db.Delete;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 
+@EFapsUUID("df9925c2-3afe-4282-a04a-4a938af1a53f")
 public class CascadeDelete implements EventExecution {
 
   /**
@@ -47,10 +49,10 @@ public class CascadeDelete implements EventExecution {
       LoggerFactory.getLogger(CascadeDelete.class);
 
   public Return execute(Parameter _parameter) {
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    List<String> toDelete = new ArrayList<String>();
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final List<String> toDelete = new ArrayList<String>();
 
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     try {
       query.setQueryTypes("TeamWork_Abstract2Abstract");
       query.addSelect("AbstractLink");
@@ -60,15 +62,15 @@ public class CascadeDelete implements EventExecution {
         toDelete.add(query.get("AbstractLink").toString());
       }
       query.close();
-      Comparator<String> comparator = Collections.<String> reverseOrder();
+      final Comparator<String> comparator = Collections.<String> reverseOrder();
       Collections.sort(toDelete, comparator);
-      for (String delID : toDelete) {
+      for (final String delID : toDelete) {
         this.deleteMembers(delID);
         this.deleteAbstract2Abstract(delID);
         this.deleteSourceVersion(delID);
         this.deleteAbstract(delID);
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("cascadingDelete(Parameter)", e);
     }
 
@@ -78,18 +80,18 @@ public class CascadeDelete implements EventExecution {
   private void deleteSourceVersion(final String _id) {
     try {
 
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setQueryTypes("TeamWork_SourceVersion");
       query.addSelect("OID");
       query.addWhereExprEqValue("ParentSourceLink", _id);
       query.executeWithoutAccessCheck();
       while (query.next()) {
-        Delete delete = new Delete((String) query.get("OID"));
+        final Delete delete = new Delete((String) query.get("OID"));
         delete.execute();
       }
       query.close();
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("deleteMembers(List<String>)", e);
     }
 
@@ -99,18 +101,18 @@ public class CascadeDelete implements EventExecution {
 
     try {
 
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setQueryTypes("TeamWork_Member");
       query.addSelect("OID");
       query.addWhereExprEqValue("AbstractLink", _id);
       query.executeWithoutAccessCheck();
       while (query.next()) {
-        Delete delete = new Delete((String) query.get("OID"));
+        final Delete delete = new Delete((String) query.get("OID"));
         delete.execute();
       }
       query.close();
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("deleteMembers(List<String>)", e);
     }
 
@@ -120,18 +122,18 @@ public class CascadeDelete implements EventExecution {
 
     try {
 
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setQueryTypes("TeamWork_Abstract2Abstract");
       query.addSelect("OID");
       query.addWhereExprEqValue("AbstractLink", _id);
       query.executeWithoutAccessCheck();
       while (query.next()) {
-        Delete delete = new Delete((String) query.get("OID"));
+        final Delete delete = new Delete((String) query.get("OID"));
         delete.execute();
       }
       query.close();
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
 
       LOG.error("deleteAbstract2Abstract(List<String>)", e);
     }
@@ -142,19 +144,19 @@ public class CascadeDelete implements EventExecution {
 
     try {
 
-      SearchQuery query = new SearchQuery();
+      final SearchQuery query = new SearchQuery();
       query.setQueryTypes("TeamWork_Abstract");
       query.addSelect("OID");
       query.addWhereExprEqValue("ID", _id);
       query.setExpandChildTypes(true);
       query.executeWithoutAccessCheck();
       while (query.next()) {
-        Delete delete = new Delete((String) query.get("OID"));
+        final Delete delete = new Delete((String) query.get("OID"));
         delete.execute();
       }
       query.close();
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("deleteAbstract(List<String>)", e);
     }
 

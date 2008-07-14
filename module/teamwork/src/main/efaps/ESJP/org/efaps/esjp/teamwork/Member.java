@@ -33,6 +33,7 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Person;
 import org.efaps.db.Context;
 import org.efaps.db.Delete;
@@ -49,6 +50,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
+@EFapsUUID("f2d99e6a-107f-4980-bd58-7ce4a7b1d26d")
 public class Member implements EventExecution {
 
   /**

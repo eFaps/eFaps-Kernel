@@ -30,13 +30,14 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-
+@EFapsUUID("9dd18ca7-95a9-4ce1-91ea-5aaf7c227240")
 public class AccessCheckOnSourceVersion implements EventExecution {
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -62,8 +63,8 @@ public class AccessCheckOnSourceVersion implements EventExecution {
     // this only checks the rights for ..
     if ("TeamWork_SourceVersion".equals(_instance.getType().getName())) {
       try {
-        Context context = Context.getThreadContext();
-        for (Role role : context.getPerson().getRoles()) {
+        final Context context = Context.getThreadContext();
+        for (final Role role : context.getPerson().getRoles()) {
           // the TeamWorkAdmin has all rights on a TeamWork_RootCollection, so
           // no further controlling is needed
           if (role.getName().equals("TeamWorkAdmin")) {
@@ -71,7 +72,7 @@ public class AccessCheckOnSourceVersion implements EventExecution {
           }
         }
         // if create, get the parent
-        Instance instance = new Instance(context.getParameter("oid"));
+        final Instance instance = new Instance(context.getParameter("oid"));
         String OID = null;
         if ("TeamWork_SourceVersion".equals(instance.getType().getName())) {
           OID = getParentOID(context.getParameter("oid"));
@@ -85,7 +86,7 @@ public class AccessCheckOnSourceVersion implements EventExecution {
             getSpecificAccessSetID(OID, context.getPerson().getId());
 
         if (accessSetID != 0) {
-          AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
+          final AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
           if (accessSet.getAccessTypes().contains(_accessType)
               && (_accessType == AccessType.getAccessType("show") || accessSet
                   .getDataModelTypes().contains(_instance.getType()))) {
@@ -93,11 +94,11 @@ public class AccessCheckOnSourceVersion implements EventExecution {
           }
 
         } else {
-          for (Group group : context.getPerson().getGroups()) {
+          for (final Group group : context.getPerson().getGroups()) {
             accessSetID = getSpecificAccessSetID(OID, group.getId());
             if (accessSetID != 0) {
 
-              AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
+              final AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
               if (accessSet.getAccessTypes().contains(_accessType)
                   && (_accessType == AccessType.getAccessType("show") || accessSet
                       .getDataModelTypes().contains(_instance.getType()))) {
@@ -110,7 +111,7 @@ public class AccessCheckOnSourceVersion implements EventExecution {
 
         }
 
-      } catch (EFapsException e) {
+      } catch (final EFapsException e) {
         LOG.error("checkAccess(Instance, AccessType)", e);
       }
     }
@@ -120,7 +121,7 @@ public class AccessCheckOnSourceVersion implements EventExecution {
   }
 
   private String getParentOID(final String _oid) {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     String OID = null;
     try {
       query.setObject(_oid);
@@ -130,7 +131,7 @@ public class AccessCheckOnSourceVersion implements EventExecution {
         OID = (String) query.get("ParentSourceLink.OID");
       }
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
 
       LOG.error("getParentOID(String)", e);
     }
@@ -139,7 +140,7 @@ public class AccessCheckOnSourceVersion implements EventExecution {
 
   private long getSpecificAccessSetID(final String _oid,
       final long _abstractuserid) {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     long ret = 0;
     try {
       query.setExpand(_oid, "TeamWork_MemberRights\\AbstractLink");
@@ -150,7 +151,7 @@ public class AccessCheckOnSourceVersion implements EventExecution {
       if (query.next()) {
         ret = (Long) query.get("AccessSetLink");
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("getSpecificAccessSetID(Instance, long)", e);
     }
 
@@ -159,10 +160,10 @@ public class AccessCheckOnSourceVersion implements EventExecution {
   }
 
   public Return execute(Parameter _parameter) {
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    AccessType accessType =
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final AccessType accessType =
         (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
-    Return ret = new Return();
+    final Return ret = new Return();
 
     if (checkAccess(instance, accessType)) {
       ret.put(ReturnValues.TRUE, true);

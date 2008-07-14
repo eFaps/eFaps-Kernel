@@ -101,18 +101,6 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="esjp">
-    <xsd:complexType>
-      <xsd:complexContent>
-        <xsd:extension base="eFaps:AbstractBase">
-          <xsd:sequence>
-            <xsd:element name="definition" type="eFaps:definition_esjp" maxOccurs="unbounded" minOccurs="1"></xsd:element>
-          </xsd:sequence>
-        </xsd:extension>
-      </xsd:complexContent>
-    </xsd:complexType>
-  </xsd:element>
-
   <xsd:element name="import">
     <xsd:complexType>
       <xsd:sequence>
@@ -416,17 +404,6 @@
           <xsd:element name="property" type="eFaps:property_datamodel-type" maxOccurs="unbounded" minOccurs="0"></xsd:element>
           <xsd:element name="abstract" type="xsd:boolean" minOccurs="0" maxOccurs="1"></xsd:element>
           <xsd:element name="event-for" type="eFaps:event-for" minOccurs="0" maxOccurs="unbounded"></xsd:element>
-        </xsd:sequence>
-      </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-
-
-  <xsd:complexType name="definition_esjp">
-    <xsd:complexContent>
-      <xsd:extension base="eFaps:AbstractDefinition">
-        <xsd:sequence>
-          <xsd:element name="file" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>

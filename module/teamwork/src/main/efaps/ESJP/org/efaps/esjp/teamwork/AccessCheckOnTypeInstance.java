@@ -30,13 +30,14 @@ import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.event.Return.ReturnValues;
+import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.Role;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
-
+@EFapsUUID("f8eef1e5-d35f-4347-abbc-ee5dfe943a3d")
 public class AccessCheckOnTypeInstance implements EventExecution {
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -65,8 +66,8 @@ public class AccessCheckOnTypeInstance implements EventExecution {
         || "TeamWork_Source".equals(_instance.getType().getName())
         || "TeamWork_Abstract2Abstract".equals(_instance.getType().getName())) {
       try {
-        Context context = Context.getThreadContext();
-        for (Role role : context.getPerson().getRoles()) {
+        final Context context = Context.getThreadContext();
+        for (final Role role : context.getPerson().getRoles()) {
           // the TeamWorkAdmin has all rights on a TeamWork_RootCollection, so
           // no further controlling is needed
           if (role.getName().equals("TeamWorkAdmin")) {
@@ -87,7 +88,7 @@ public class AccessCheckOnTypeInstance implements EventExecution {
             getSpecificAccessSetID(instance, context.getPerson().getId());
 
         if (accessSetID != 0) {
-          AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
+          final AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
           if (accessSet.getAccessTypes().contains(_accessType)
               && (_accessType == AccessType.getAccessType("show") || accessSet
                   .getDataModelTypes().contains(_instance.getType()))) {
@@ -95,11 +96,11 @@ public class AccessCheckOnTypeInstance implements EventExecution {
           }
 
         } else {
-          for (Group group : context.getPerson().getGroups()) {
+          for (final Group group : context.getPerson().getGroups()) {
             accessSetID = getSpecificAccessSetID(instance, group.getId());
             if (accessSetID != 0) {
 
-              AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
+              final AccessSet accessSet = AccessSet.getAccessSet(accessSetID);
               if (accessSet.getAccessTypes().contains(_accessType)
                   && (_accessType == AccessType.getAccessType("show") || accessSet
                       .getDataModelTypes().contains(_instance.getType()))) {
@@ -112,7 +113,7 @@ public class AccessCheckOnTypeInstance implements EventExecution {
 
         }
 
-      } catch (EFapsException e) {
+      } catch (final EFapsException e) {
         LOG.error("checkAccess(Instance, AccessType)", e);
       }
     }
@@ -123,7 +124,7 @@ public class AccessCheckOnTypeInstance implements EventExecution {
 
   private long getSpecificAccessSetID(final Instance _instance,
       final long _abstractuserid) {
-    SearchQuery query = new SearchQuery();
+    final SearchQuery query = new SearchQuery();
     long ret = 0;
     try {
       query.setExpand(_instance, "TeamWork_MemberRights\\AbstractLink");
@@ -134,7 +135,7 @@ public class AccessCheckOnTypeInstance implements EventExecution {
       if (query.next()) {
         ret = (Long) query.get("AccessSetLink");
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       LOG.error("getSpecificAccessSetID(Instance, long)", e);
     }
 
@@ -143,10 +144,10 @@ public class AccessCheckOnTypeInstance implements EventExecution {
   }
 
   public Return execute(Parameter _parameter) {
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    AccessType accessType =
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final AccessType accessType =
         (AccessType) _parameter.get(ParameterValues.ACCESSTYPE);
-    Return ret = new Return();
+    final Return ret = new Return();
 
     if (checkAccess(instance, accessType)) {
       ret.put(ReturnValues.TRUE, true);
