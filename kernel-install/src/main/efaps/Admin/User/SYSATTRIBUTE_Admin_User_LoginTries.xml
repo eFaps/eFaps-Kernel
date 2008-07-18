@@ -31,7 +31,7 @@
   <file-application>eFaps-kernel</file-application>
   <file-revision>$Rev$</file-revision>
   <description>
-    This Attribute defines the maximum number of tries to login with the wrong
+    This attribute defines the maximum number of tries to login with the wrong
     Password into eFaps, before the User is going to be deactivated. To
     deactivate this mechanism set the value to 0.
   </description>

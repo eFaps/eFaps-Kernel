@@ -31,7 +31,7 @@
   <file-application>eFaps-kernel</file-application>
   <file-revision>$Rev$</file-revision>
   <description>
-    This Attribute defines the minimum length of a Password in eFaps.
+    This attribute defines the minimum length of a password in eFaps.
   </description>
   <definition>
     <version-expression>(version==7)</version-expression>

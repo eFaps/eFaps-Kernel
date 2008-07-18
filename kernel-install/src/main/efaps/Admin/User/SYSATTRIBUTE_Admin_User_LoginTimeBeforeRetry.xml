@@ -31,9 +31,10 @@
   <file-application>eFaps-kernel</file-application>
   <file-revision>$Rev$</file-revision>
   <description>
-    This Attribute defines the time in Minutes wich must elapse after trying
-    n-times to login with the wrong passwird,before the User has again the
-    possibilty to try to login. To deactivate this mechanism set the value to 0.
+    This attribute defines the time in minutes which must elapse after trying
+    n-times to login with the wrong password, before the user has again the
+    possibility to try to login. To deactivate this mechanism set the value to
+    0.
   </description>
   <definition>
     <version-expression>(version==7)</version-expression>
