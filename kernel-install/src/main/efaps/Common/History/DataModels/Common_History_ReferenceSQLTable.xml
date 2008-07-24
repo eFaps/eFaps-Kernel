@@ -28,7 +28,7 @@
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>251e7dfc-8bb8-4430-83c3-52b5588aa7da</uuid>
-  <file-application>eFaps-kernel</file-application>
+  <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <!-- History of Events for Objects -->

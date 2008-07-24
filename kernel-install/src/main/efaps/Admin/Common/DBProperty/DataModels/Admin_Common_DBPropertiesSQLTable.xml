@@ -28,7 +28,7 @@
                     xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>f7f298b4-19de-42b3-9e50-d9a2278f106f</uuid>
-  <file-application>eFaps-kernel</file-application>
+  <file-application>eFaps-Kernel</file-application>
   <file-revision>$Rev$</file-revision>
 
   <!-- SQL Table to hold the Default-Values and Keys for the Properties -->

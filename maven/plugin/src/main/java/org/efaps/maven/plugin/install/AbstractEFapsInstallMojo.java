@@ -125,7 +125,7 @@ public abstract class AbstractEFapsInstallMojo extends EFapsAbstractMojo
    * kernel application. The value is used to define the applications to
    * install or update.
    */
-  @Parameter(defaultValue = "efaps")
+  @Parameter(defaultValue = "eFaps-Kernel")
   private String applications;
 
   /////////////////////////////////////////////////////////////////////////////

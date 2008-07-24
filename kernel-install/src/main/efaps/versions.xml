@@ -27,7 +27,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <application>efaps</application>
+  <application>eFaps-Kernel</application>
 
   <version number="1" reloadCache="false" login="false">
     <description>Create base SQL tables.</description>
@@ -38,7 +38,7 @@
   </version>
 
   <version number="3" reloadCache="false" login="false">
-    <script name="org/efaps/installations/efaps/CreateAll.js" function="eFapsCreateAll()" />
+    <script name="org/efaps/installations/eFaps-Kernel/CreateAll.js" function="eFapsCreateAll()" />
   </version>
 
   <version number="4" reloadCache="true">
