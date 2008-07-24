@@ -20,11 +20,14 @@
 
 package org.efaps.jaas.efaps;
 
+import static org.efaps.admin.EFapsClassNames.USER_PERSON;
+
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Set;
 
+import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
@@ -33,12 +36,7 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.FailedLoginException;
 import javax.security.auth.login.LoginException;
 import javax.security.auth.spi.LoginModule;
-import javax.security.auth.Subject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.efaps.admin.AbstractAdminObject.EFapsClassName;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.user.Group;
 import org.efaps.admin.user.JAASSystem;
@@ -48,6 +46,8 @@ import org.efaps.db.Update;
 import org.efaps.db.Update.Status;
 import org.efaps.jaas.ActionCallback;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -171,7 +171,7 @@ public class UserLoginModule implements LoginModule {
           ret = true;
           if (mode.equals(ActionCallback.Mode.SET_PASSWORD)) {
 
-            final Type type = Type.get(EFapsClassName.USER_PERSON.name);
+            final Type type = Type.get(USER_PERSON.uuid);
             final Update update = new Update(type, "" + person.getId());
             final Status status = update.add("Password", newPassword);
 

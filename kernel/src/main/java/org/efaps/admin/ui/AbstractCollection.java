@@ -20,6 +20,12 @@
 
 package org.efaps.admin.ui;
 
+import static org.efaps.admin.EFapsClassNames.COLLECTION;
+import static org.efaps.admin.EFapsClassNames.FIELD;
+import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
+import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
+import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +47,9 @@ import org.efaps.util.cache.CacheReloadException;
  * @version $Id$
  * @todo description
  */
-public abstract class AbstractCollection extends AbstractUserInterfaceObject {
-
+public abstract class AbstractCollection
+    extends AbstractUserInterfaceObject
+{
   /**
    * Instance variable for all field expressions.
    *
@@ -84,8 +91,10 @@ public abstract class AbstractCollection extends AbstractUserInterfaceObject {
    * @param _uuid
    * @param _name
    */
-  protected AbstractCollection(final long _id, final String _uuid,
-                               final String _name) {
+  protected AbstractCollection(final long _id,
+                               final String _uuid,
+                               final String _name)
+  {
     super(_id, _uuid, _name);
   }
 
@@ -178,9 +187,9 @@ public abstract class AbstractCollection extends AbstractUserInterfaceObject {
   private void readFromDB4Fields() throws CacheReloadException {
     try {
       final Instance instance =
-          new Instance(Type.get(EFapsClassName.COLLECTION.name), getId());
+          new Instance(Type.get(COLLECTION.uuid), getId());
       final SearchQuery query = new SearchQuery();
-      query.setExpand(instance, EFapsClassName.FIELD.name + "\\Collection");
+      query.setExpand(instance, Type.get(FIELD.uuid).getName() + "\\Collection");
       query.addSelect("Type");
       query.addSelect("ID");
       query.addSelect("Name");
@@ -191,11 +200,11 @@ public abstract class AbstractCollection extends AbstractUserInterfaceObject {
         final String name = (String) query.get("Name");
         Field field;
         final Type type = (Type) query.get("Type");
-        if (EFapsClassName.FIELDHEADING.name.equals(type.getName())) {
+        if (FIELDHEADING.uuid.equals(type.getUUID())) {
           field = new FieldHeading(id, null, name);
-        } else if (EFapsClassName.FIELDTABLE.name.equals(type.getName())) {
+        } else if (FIELDTABLE.uuid.equals(type.getUUID())) {
           field = new FieldTable(id, null, name);
-        } else if (EFapsClassName.FIELDGROUP.name.equals(type.getName())) {
+        } else if (FIELDGROUP.uuid.equals(type.getUUID())) {
           field = new FieldGroup(id, null, name);
         } else {
           field = new Field(id, null, name);

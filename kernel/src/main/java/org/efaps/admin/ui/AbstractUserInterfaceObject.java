@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.efaps.admin.AbstractAdminObject;
+import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventDefinition;
 import org.efaps.admin.event.EventType;
@@ -283,12 +284,13 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
      *                eFaps context for this request
      * @see #readFromDB
      */
-    protected void initialise() throws CacheReloadException {
+    protected void initialise() throws CacheReloadException
+    {
       final Class<UIObj> uiObjClass = getCallerClass();
       try {
-        if (Type.get(getEFapsClassName().name) != null) {
+        if (Type.get(getEFapsClassName().uuid) != null) {
           final SearchQuery query = new SearchQuery();
-          query.setQueryTypes(getEFapsClassName().name);
+          query.setQueryTypes(Type.get(getEFapsClassName().uuid).getName());
           query.addSelect("ID");
           query.addSelect("Name");
           query.addSelect("UUID");
@@ -338,7 +340,7 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     protected UIObj read(final long _id) throws EFapsException {
       try {
         final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(getEFapsClassName().name);
+        query.setQueryTypes(Type.get(getEFapsClassName().uuid).getName());
         query.addWhereExprEqValue("ID", _id);
         query.addSelect("ID");
         query.addSelect("Name");
@@ -362,7 +364,7 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     protected UIObj read(final String _name) throws EFapsException {
       try {
         final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(getEFapsClassName().name);
+        query.setQueryTypes(Type.get(getEFapsClassName().uuid).getName());
         query.addWhereExprEqValue("Name", _name);
         query.addSelect("ID");
         query.addSelect("Name");
@@ -380,11 +382,10 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
      * @return <code>EFapsClassName</code>
      * @throws EFapsException
      */
-    private EFapsClassName getEFapsClassName() throws EFapsException {
+    private EFapsClassNames getEFapsClassName() throws EFapsException {
       final Class<UIObj> uiObjClass = getCallerClass();
       try {
-        return ((EFapsClassName) uiObjClass.getField("EFAPS_CLASSNAME").get(
-            null));
+        return ((EFapsClassNames) uiObjClass.getField("EFAPS_CLASSNAME").get(null));
       } catch (NoSuchFieldException e) {
         throw new EFapsException(UserInterfaceObjectCache.class,
             "getEFapsClassName.EFapsClassNameNotExist", e, uiObjClass.getName());

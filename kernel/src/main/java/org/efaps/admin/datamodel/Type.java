@@ -20,6 +20,9 @@
 
 package org.efaps.admin.datamodel;
 
+import static org.efaps.admin.EFapsClassNames.USER_PERSON;
+import static org.efaps.admin.EFapsClassNames.USER_ROLE;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -35,6 +38,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.access.AccessSet;
 import org.efaps.admin.access.AccessType;
 import org.efaps.admin.event.EventDefinition;
@@ -284,14 +288,14 @@ public class Type extends AbstractDataModelObject {
   }
 
   /**
-   * Adds link from an attribute to this type. The link is also registered under
-   * the name of all child types of the attribute.
+   * Adds link from an attribute to this type. The link is also registered
+   * under the name of all child types of the attribute.
    *
-   * @param _attr
-   *                attribute with the link to this type
+   * @param _attr   attribute with the link to this type
    * @todo description of algorithm
    */
-  protected void addLink(final Attribute _attr) {
+  protected void addLink(final Attribute _attr)
+  {
     getLinks().put(_attr.getParent().getName() + "\\" + _attr.getName(), _attr);
     for (Type type : _attr.getParent().getChildTypes()) {
       getLinks().put(type.getName() + "\\" + _attr.getName(), _attr);
@@ -479,9 +483,9 @@ public class Type extends AbstractDataModelObject {
    * @param _toName     to name
    */
   @Override
-  protected void setLinkProperty(final EFapsClassName _linkType,
+  protected void setLinkProperty(final EFapsClassNames _linkType,
                                  final long _toId,
-                                 final EFapsClassName _toType,
+                                 final EFapsClassNames _toType,
                                  final String _toName)
       throws Exception
   {
@@ -798,9 +802,9 @@ public class Type extends AbstractDataModelObject {
           }
           Type type = new Type(id, uuid, name);
           type.setAbstractType(abstractType);
-          if (type.getName().equals(EFapsClassName.USER_PERSON.name)) {
+          if (type.getUUID().equals(USER_PERSON.uuid)) {
             type.setCache(Person.getCache());
-          } else if (type.getName().equals(EFapsClassName.USER_ROLE.name)) {
+          } else if (type.getUUID().equals(USER_ROLE.uuid)) {
             type.setCache(Role.getCache());
           }
 

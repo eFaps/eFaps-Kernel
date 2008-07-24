@@ -20,18 +20,19 @@
 
 package org.efaps.admin.user;
 
+import static org.efaps.admin.EFapsClassNames.USER_JAASKEY;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -114,21 +115,20 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
   /**
    * Assign this user object to the given JAAS system under the given JAAS key.
    *
-   * @param _jaasSystem
-   *                JAAS system to which the person is assigned
-   * @param _jaasKey
-   *                key under which the person is know in the JAAS system
-   * @throws EFapsException
-   *                 if the assignment could not be made
+   * @param _jaasSystem JAAS system to which the person is assigned
+   * @param _jaasKey    key under which the person is know in the JAAS system
+   * @throws EFapsException if the assignment could not be made
    */
   public void assignToJAASSystem(final JAASSystem _jaasSystem,
-                                 final String _jaasKey) throws EFapsException {
+                                 final String _jaasKey)
+      throws EFapsException
+  {
 
     ConnectionResource rsrc = null;
     try {
       final Context context = Context.getThreadContext();
       rsrc = context.getConnectionResource();
-      final Type keyType = Type.get(EFapsClassName.USER_JAASKEY.name);
+      final Type keyType = Type.get(USER_JAASKEY.uuid);
 
       PreparedStatement stmt = null;
       final StringBuilder cmd = new StringBuilder();
@@ -205,21 +205,18 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
   /**
    * Assign this user object to the given user object for given JAAS system.
    *
-   * @param _assignType
-   *                type used to assign (in other words the relationship type)
-   * @param _jaasSystem
-   *                JAAS system for which this user object is assigned to the
-   *                given object
-   * @param _object
-   *                user object to which this user object is assigned
-   * @throws EFapsException
-   *                 if assignment could not be done
+   * @param _assignType   type used to assign (in other words the relationship
+   *                      type)
+   * @param _jaasSystem   JAAS system for which this user object is assigned to
+   *                      the given object
+   * @param _object       user object to which this user object is assigned
+   * @throws EFapsException if assignment could not be done
    */
   protected void assignToUserObjectInDb(final Type _assignType,
                                         final JAASSystem _jaasSystem,
                                         final AbstractUserObject _object)
-                                                                         throws EFapsException {
-
+      throws EFapsException
+  {
     ConnectionResource rsrc = null;
     try {
       final Context context = Context.getThreadContext();

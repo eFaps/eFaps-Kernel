@@ -20,10 +20,14 @@
 
 package org.efaps.admin.ui.field;
 
+import static org.efaps.admin.EFapsClassNames.FIELD;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.UIInterface;
 import org.efaps.admin.ui.AbstractCollection;
 import org.efaps.admin.ui.AbstractCommand;
@@ -49,7 +53,7 @@ public class Field extends AbstractUserInterfaceObject {
   /**
    * The static variable defines the class name in eFaps.
    */
-  public final static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.FIELD;
+  public final static EFapsClassNames EFAPS_CLASSNAME = FIELD;
 
   /**
    * Logger for this class
@@ -92,7 +96,7 @@ public class Field extends AbstractUserInterfaceObject {
   private String label = null;
 
   /**
-   * Is a field multiline? If yes, the value must be higher than the default
+   * Is a field multi line? If yes, the value must be higher than the default
    * value <i>1</i>. The value is only used for a create or a modify form.
    *
    * @see #setRows
@@ -144,7 +148,7 @@ public class Field extends AbstractUserInterfaceObject {
 
   /**
    * Is a field hidden? Default value is <i>false</i>. It used to store some
-   * values in the form in the modifcation and creating forms.
+   * values in the form in the modification and creating forms.
    *
    * @see #setHidden
    * @see #isHidden
@@ -277,7 +281,7 @@ public class Field extends AbstractUserInterfaceObject {
 
     try {
       final SearchQuery query = new SearchQuery();
-      query.setQueryTypes(EFapsClassName.FIELD.name);
+      query.setQueryTypes(Type.get(FIELD.uuid).getName());
       query.setExpandChildTypes(true);
       query.addSelect("Collection");
       query.addWhereExprEqValue("ID", _id);
@@ -361,21 +365,16 @@ public class Field extends AbstractUserInterfaceObject {
   // ///////////////////////////////////////////////////////////////////////////
 
   /**
-   * @param _context
-   *                eFaps context for this request
-   * @param _linkType
-   *                type of the link property
-   * @param _toId
-   *                to id
-   * @param _toType
-   *                to type
-   * @param _toName
-   *                to name
+   * @param _context  eFaps context for this request
+   * @param _linkType type of the link property
+   * @param _toId     to id
+   * @param _toType   to type
+   * @param _toName   to name
    */
   @Override
-  protected void setLinkProperty(final EFapsClassName _linkType,
+  protected void setLinkProperty(final EFapsClassNames _linkType,
                                  final long _toId,
-                                 final EFapsClassName _toType,
+                                 final EFapsClassNames _toType,
                                  final String _toName) throws Exception {
     switch (_linkType) {
       case LINK_ICON:

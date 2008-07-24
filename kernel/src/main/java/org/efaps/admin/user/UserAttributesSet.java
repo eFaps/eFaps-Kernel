@@ -20,12 +20,13 @@
 
 package org.efaps.admin.user;
 
+import static org.efaps.admin.EFapsClassNames.USER_ATTRIBUTEABSTRACT;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import org.efaps.admin.AbstractAdminObject.EFapsClassName;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Insert;
 import org.efaps.db.SearchQuery;
@@ -276,8 +277,7 @@ public class UserAttributesSet {
    * @throws EFapsException
    */
   private void readUserAttributes() throws EFapsException {
-    final Set<Type> types =
-        Type.get(EFapsClassName.USER_ATTRIBUTEABSTRACT.name).getChildTypes();
+    final Set<Type> types = Type.get(USER_ATTRIBUTEABSTRACT.uuid).getChildTypes();
     for (final Type type : types) {
       if (MAPPER.containsKey(type.getName())) {
         final UserAttributesDefinition definition = MAPPER.get(type.getName());

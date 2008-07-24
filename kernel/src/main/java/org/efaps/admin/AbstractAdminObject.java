@@ -46,89 +46,10 @@ import org.efaps.util.cache.CacheReloadException;
  * @author tmo
  * @version $Id$
  */
-public abstract class AbstractAdminObject implements CacheObjectInterface {
+public abstract class AbstractAdminObject implements CacheObjectInterface
+{
 
-  /**
-   *
-   */
-  public enum EFapsClassName {
-
-    ATTRTYPE_LINK("Link", "440f472f-7be2-41d3-baec-4a2f0e4e5b31"),
-    ATTRTYPE_LINK_WITH_RANGES(
-                              "LinkWithRanges",
-                              "9d6b2e3e-68ce-4509-a5f0-eae42323a696"),
-    ATTRTYPE_CREATOR_LINK("CreatorLink", "76122fe9-8fde-4dd4-a229-e48af0fb4083"),
-    ATTRTYPE_MODIFIER_LINK("ModifierLink",
-                           "447a7c87-8395-48c4-b2ed-d4e96d46332c"),
-
-    DATAMODEL_TYPE("Admin_DataModel_Type", null),
-    DATAMODEL_TYPEEVENTISALLOWEDFOR("Admin_DataModel_TypeEventIsAllowedFor",
-                                    "bf3d70ce-206e-4328-aa35-761c4aeb9d1d"),
-    DATAMODEL_ATTRIBUTE("Admin_DataModel_Attribute", null),
-
-    USER_ABSTRACT("Admin_User_Abstract", null),
-    USER_PERSON("Admin_User_Person", null),
-    USER_ROLE("Admin_User_Role", null),
-    USER_GROUP("Admin_User_Group", null),
-    USER_JAASKEY("Admin_User_JAASKey", null),
-    USER_JAASSYSTEM("Admin_User_JAASSystem", null),
-
-    USER_ABSTRACT2ABSTRACT("Admin_User_Abstract2Abstract", null),
-    USER_ATTRIBUTEABSTRACT("Admin_User_AttributeAbstract", null),
-    USER_PERSON2ROLE("Admin_User_Person2Role", null),
-    USER_PERSON2GROUP("Admin_User_Person2Group", null),
-
-    EVENT_DEFINITION("Admin_Event_Definition", null),
-
-    COLLECTION("Admin_UI_Collection", null),
-    FIELD("Admin_UI_Field", null),
-    FIELDGROUP("Admin_UI_FieldGroup", "629cd86d-5103-4ee5-9eef-aef9de7862c3"),
-    FIELDHEADING(
-                 "Admin_UI_FieldHeading",
-                 "29e30382-63cd-44ac-91b6-ca1ca58ff434"),
-    FIELDTABLE("Admin_UI_FieldTable", "d72728e9-2878-47fd-9250-21b5a04ebadb"),
-
-    FORM("Admin_UI_Form", null),
-    TABLE("Admin_UI_Table", null),
-    COMMAND("Admin_UI_Command", null),
-    MENU("Admin_UI_Menu", null),
-    SEARCH("Admin_UI_Search", null),
-    IMAGE("Admin_UI_Image", null),
-
-    LINK_ICON("Admin_UI_LinkIcon", null),
-    LINK_ICONISTYPEICONFOR(
-                           "Admin_UI_LinkIsTypeIconFor",
-                           "74b91e57-e5a3-43df-b0e4-43815ad79fec"),
-    LINK_MENUISTYPETREEFOR(
-                           "Admin_UI_LinkIsTypeTreeFor",
-                           "ce5087b5-ee5c-49c3-adfb-5da18f95a4d0"),
-    LINK_TARGET_FORM("Admin_UI_LinkTargetForm", null),
-    LINK_TARGET_MENU("Admin_UI_LinkTargetMenu", null),
-    LINK_TARGET_SEARCH("Admin_UI_LinkTargetSearch", null),
-    LINK_TARGET_TABLE("Admin_UI_LinkTargetTable", null),
-    LINK_DEFAULT_SEARCHCOMMAND(
-                               "Admin_UI_LinkDefaultSearchCommand",
-                               "3f827900-eda2-409f-be92-497dcacb0eef");
-
-    public final String name;
-
-    public final UUID uuid;
-
-    private EFapsClassName(final String _name, final String _uuid) {
-      this.name = _name;
-      this.uuid = (_uuid == null) ? null : UUID.fromString(_uuid);
-      mapper.put(this.name, this);
-    }
-
-    static public EFapsClassName getEnum(final String _name) {
-      return mapper.get(_name);
-    }
-  }
-
-  static private Map<String, EFapsClassName> mapper =
-      new HashMap<String, EFapsClassName>();
-
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -199,7 +120,7 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
                 : _name.trim();
   }
 
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance methods
 
   /**
@@ -210,9 +131,9 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * @param _toType     to type
    * @param _toName     to name
    */
-  protected void setLinkProperty(final EFapsClassName _linkType,
+  protected void setLinkProperty(final EFapsClassNames _linkType,
                                  final long _toId,
-                                 final EFapsClassName _toType,
+                                 final EFapsClassNames _toType,
                                  final String _toName)
       throws Exception
   {
@@ -222,37 +143,35 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * The instance method sets all properties of this administrational object.
    * All properties are stores in instance variable {@link #properties}.
    *
-   * @param _name
-   *                name of the property (key)
-   * @param _value
-   *                value of the property
+   * @param _name   name of the property (key)
+   * @param _value  value of the property
    * @see #properties
    */
-  protected void setProperty(final String _name, final String _value)
-                                                                     throws CacheReloadException {
+  protected void setProperty(final String _name,
+                             final String _value)
+      throws CacheReloadException
+  {
     getProperties().put(_name, _value);
   }
 
   /**
    * The value of the given property is returned.
    *
-   * @see #properties
-   * @param _name
-   *                name of the property (key)
+   * @param _name   name of the property (key)
    * @return value of the property with the given name / key.
+   * @see #properties
    */
-  public String getProperty(final String _name) {
+  public String getProperty(final String _name)
+  {
     return getProperties().get(_name);
   }
 
   /**
    * Adds a new event to this AdminObject.
    *
+   * @param _eventtype  Eventtype class name to add
+   * @param _eventdef   EventDefinition to add
    * @see #events
-   * @param _eventtype
-   *                Eventtype class name to add
-   * @param _eventdef
-   *                EventDefinition to add
    */
   public void addEvent(final EventType _eventtype,
                        final EventDefinition _eventdef)
@@ -276,20 +195,22 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
   /**
    * Returns the list of events defined for given event type.
    *
-   * @param _eventType
-   *                event type
+   * @param _eventType    event type
    * @return list of events for the given event type
    */
-  public List<EventDefinition> getEvents(final EventType _eventType) {
+  public List<EventDefinition> getEvents(final EventType _eventType)
+  {
     return this.events.get(_eventType);
   }
 
   /**
    * Does this instance have Event, for the specified EventType ?
    *
-   * @return <i>true</i>, if this instance has a trigger, otherwise <i>false</i>.
+   * @return <i>true</i>, if this instance has a trigger, otherwise
+   *         <i>false</i>.
    */
-  public boolean hasEvents(final EventType _eventtype) {
+  public boolean hasEvents(final EventType _eventtype)
+  {
     return (this.events.get(_eventtype) != null);
   }
 
@@ -297,18 +218,17 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * The method gets all events for the given event type and executes them in
    * the given order. If no events are defined, nothing is done.
    *
-   * @param _eventtype
-   *                type of event to execute
-   * @param _args
-   *                arguments used as parameter (doubles with first parameters
-   *                defining the key, second parameter the value itself)
+   * @param _eventtype  type of event to execute
+   * @param _args       arguments used as parameter (doubles with first
+   *                    parameters defining the key, second parameter the value
+   *                    itself)
    * @return List with Returns
    * @throws EFapsException
    */
   public List<Return> executeEvents(final EventType _eventtype,
                                     final Object... _args)
-                                                          throws EFapsException {
-
+      throws EFapsException
+  {
     List<Return> ret = new ArrayList<Return>();
     if (hasEvents(_eventtype)) {
       Parameter param = new Parameter();
@@ -402,10 +322,10 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
         final String toName = resultset.getString(4);
         final Type conType = Type.get(conTypeId);
         final Type toType = Type.get(toTypeId);
-        if (EFapsClassName.getEnum(conType.getName()) != null) {
-          setLinkProperty(EFapsClassName.getEnum(conType.getName()),
+        if (EFapsClassNames.getEnum(conType.getUUID()) != null)  {
+          setLinkProperty(EFapsClassNames.getEnum(conType.getUUID()),
                           toId,
-                          EFapsClassName.getEnum(toType.getName()),
+                          EFapsClassNames.getEnum(toType.getUUID()),
                           toName.trim());
         }
       }
@@ -433,7 +353,8 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * @return value of instance variable {@id}
    * @see #id
    */
-  public long getId() {
+  public long getId()
+  {
     return this.id;
   }
 
@@ -443,7 +364,8 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * @return value of instance variable {@uuid}
    * @see #uuid
    */
-  public UUID getUUID() {
+  public UUID getUUID()
+  {
     return this.uuid;
   }
 
@@ -454,7 +376,8 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * @see #name
    * @see #setName
    */
-  public String getName() {
+  public String getName()
+  {
     return this.name;
   }
 
@@ -463,7 +386,8 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    *
    * @return value of instance variable {@link #abstractType}
    */
-  public boolean isAbstractType() {
+  public boolean isAbstractType()
+  {
     return this.abstractType;
   }
 
@@ -473,7 +397,8 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * @param abstractType
    *                the abstractType to set
    */
-  protected void setAbstractType(boolean abstractType) {
+  protected void setAbstractType(final boolean abstractType)
+  {
     this.abstractType = abstractType;
   }
 
@@ -483,7 +408,8 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * @return value of instance variable {@link #properties}
    * @see #properties
    */
-  protected Map<String, String> getProperties() {
+  protected Map<String, String> getProperties()
+  {
     return this.properties;
   }
 
@@ -493,7 +419,8 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * @return value of instance variable {@link #events}
    * @see #events
    */
-  protected Map<EventType, List<EventDefinition>> getEvents() {
+  protected Map<EventType, List<EventDefinition>> getEvents()
+  {
     return this.events;
   }
 
@@ -504,7 +431,8 @@ public abstract class AbstractAdminObject implements CacheObjectInterface {
    * @return name of the user interface object
    */
   @Override
-  public String toString() {
+  public String toString()
+  {
     return new ToStringBuilder(this)
                 .append("name", getName())
                 .append("uuid", getUUID())

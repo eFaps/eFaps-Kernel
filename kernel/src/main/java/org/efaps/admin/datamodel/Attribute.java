@@ -20,6 +20,12 @@
 
 package org.efaps.admin.datamodel;
 
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_CREATOR_LINK;
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK;
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK_WITH_RANGES;
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_MODIFIER_LINK;
+import static org.efaps.admin.EFapsClassNames.USER_PERSON;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -412,17 +418,17 @@ public class Attribute extends AbstractDataModelObject {
                                          defaultval);
           attr.setParent(type);
           UUID uuid = attr.getAttributeType().getUUID();
-          if (uuid.equals(EFapsClassName.ATTRTYPE_LINK.uuid)
-              || uuid.equals(EFapsClassName.ATTRTYPE_LINK_WITH_RANGES.uuid)) {
+          if (uuid.equals(ATTRTYPE_LINK.uuid)
+              || uuid.equals(ATTRTYPE_LINK_WITH_RANGES.uuid)) {
             final Type linkType = Type.get(typeLinkId);
             attr.setLink(linkType);
             linkType.addLink(attr);
-          } else if (uuid.equals(EFapsClassName.ATTRTYPE_CREATOR_LINK.uuid)) {
-            final Type linkType = Type.get("Admin_User_Person");
+          } else if (uuid.equals(ATTRTYPE_CREATOR_LINK.uuid)) {
+            final Type linkType = Type.get(USER_PERSON.uuid);
             attr.setLink(linkType);
             linkType.addLink(attr);
-          } else if (uuid.equals(EFapsClassName.ATTRTYPE_MODIFIER_LINK.uuid)) {
-            final Type linkType = Type.get("Admin_User_Person");
+          } else if (uuid.equals(ATTRTYPE_MODIFIER_LINK.uuid)) {
+            final Type linkType = Type.get(USER_PERSON.uuid);
             attr.setLink(linkType);
             linkType.addLink(attr);
           }

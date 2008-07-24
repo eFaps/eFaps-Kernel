@@ -20,10 +20,13 @@
 
 package org.efaps.admin.ui;
 
+import static org.efaps.admin.EFapsClassNames.TABLE;
+
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
+import org.efaps.admin.EFapsClassNames;
 import org.efaps.db.Context;
 
 /**
@@ -36,7 +39,7 @@ public class Table extends AbstractCollection implements Cloneable {
   /**
    * The static variable defines the class name in eFaps.
    */
-  static public EFapsClassName EFAPS_CLASSNAME = EFapsClassName.TABLE;
+  static public EFapsClassNames EFAPS_CLASSNAME = TABLE;
 
   /**
    * Stores all instances of class {@link Table}.
@@ -49,23 +52,24 @@ public class Table extends AbstractCollection implements Cloneable {
   /**
    * This is the constructor to set the id and the name.
    *
-   * @param _id
-   *                id of the new table
-   * @param _name
-   *                name of the new table
+   * @param _id     id of the new table
+   * @param _name   name of the new table
    */
-  public Table(final Long _id, final String _uuid, final String _name) {
+  public Table(final Long _id,
+               final String _uuid,
+               final String _name)
+  {
     super(_id, _uuid, _name);
   }
 
   /**
    * The instance method returns the title of the table.
    *
-   * @param _context
-   *                context for this request
+   * @param _context    context for this request
    * @return title of the form
    */
-  public String getViewableName(Context _context) {
+  public String getViewableName(final Context _context)
+  {
     String title = "";
     ResourceBundle msgs =
         ResourceBundle.getBundle("org.efaps.properties.AttributeRessource",
@@ -82,7 +86,8 @@ public class Table extends AbstractCollection implements Cloneable {
   /**
    * Creates and returns a copy of this table object.
    */
-  public Table cloneTable() {
+  public Table cloneTable()
+  {
     Table ret = null;
     try {
       ret = (Table) super.clone();
@@ -95,12 +100,12 @@ public class Table extends AbstractCollection implements Cloneable {
   /**
    * Returns for given parameter <i>_id</i> the instance of class {@link Table}.
    *
-   * @param _id
-   *                id to search in the cache
+   * @param _id     id to search in the cache
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  static public Table get(long _id) {
+  static public Table get(final long _id)
+  {
     return getCache().get(_id);
   }
 
@@ -108,12 +113,12 @@ public class Table extends AbstractCollection implements Cloneable {
    * Returns for given parameter <i>_name</i> the instance of class
    * {@link Table}.
    *
-   * @param _name
-   *                name to search in the cache
+   * @param _name   name to search in the cache
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  static public Table get(String _name) {
+  static public Table get(final String _name)
+  {
     return getCache().get(_name);
   }
 
@@ -121,12 +126,12 @@ public class Table extends AbstractCollection implements Cloneable {
    * Returns for given parameter <i>UUID</i> the instance of class
    * {@link Table}.
    *
-   * @param _uuid
-   *                UUID to search in the cache
+   * @param _uuid   UUID to search in the cache
    * @return instance of class {@link Table}
    * @see #getCache
    */
-  public static Table get(UUID _uuid) {
+  public static Table get(final UUID _uuid)
+  {
     return getCache().get(_uuid);
   }
 
@@ -135,10 +140,8 @@ public class Table extends AbstractCollection implements Cloneable {
    *
    * @return value of static variable {@link #cache}
    */
-  protected static UserInterfaceObjectCache<Table> getCache() {
+  protected static UserInterfaceObjectCache<Table> getCache()
+  {
     return cache;
   }
-
-  // ///////////////////////////////////////////////////////////////////////////
-
 }

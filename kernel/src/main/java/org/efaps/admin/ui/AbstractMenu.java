@@ -20,13 +20,14 @@
 
 package org.efaps.admin.ui;
 
+import static org.efaps.admin.EFapsClassNames.MENU;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -172,15 +173,14 @@ abstract public class AbstractMenu extends AbstractCommand {
    * The instance method gets all sub menus and commands and adds them to this
    * menu instance via method {@link #add(long)}.
    *
-   * @param _context
-   *                eFaps context for this request
+   * @param _context  eFaps context for this request
    * @see #readFromDB
    * @see #add(long)
    */
-  private void readFromDB4Childs() throws CacheReloadException {
+  private void readFromDB4Childs() throws CacheReloadException
+  {
     try {
-      final Instance menuInst =
-          new Instance(Type.get(EFapsClassName.MENU.name), getId());
+      final Instance menuInst = new Instance(Type.get(MENU.uuid), getId());
       final SearchQuery query = new SearchQuery();
       query.setExpand(menuInst, "Admin_UI_Menu2Command\\FromMenu");
       query.addSelect("ID");

@@ -20,6 +20,7 @@
 
 package org.efaps.admin.ui.field;
 
+import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.ui.Table;
 
 /**
@@ -31,8 +32,7 @@ public class FieldTable extends Field {
   /**
    * The static variable defines the class name in eFaps.
    */
-  public final static EFapsClassName EFAPS_CLASSNAME =
-      EFapsClassName.FIELDTABLE;
+  public final static EFapsClassNames EFAPS_CLASSNAME = EFapsClassNames.FIELDTABLE;
 
   /**
    * The instance variable stores the target user interface table object which
@@ -48,9 +48,9 @@ public class FieldTable extends Field {
   }
 
   @Override
-  protected void setLinkProperty(final EFapsClassName _linkType,
+  protected void setLinkProperty(final EFapsClassNames _linkType,
                                  final long _toId,
-                                 final EFapsClassName _toType,
+                                 final EFapsClassNames _toType,
                                  final String _toName) throws Exception {
     switch (_linkType) {
       case LINK_TARGET_TABLE:

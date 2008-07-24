@@ -20,7 +20,11 @@
 
 package org.efaps.admin.ui;
 
+import static org.efaps.admin.EFapsClassNames.COMMAND;
+
 import java.util.UUID;
+
+import org.efaps.admin.EFapsClassNames;
 
 /**
  * @author tmo
@@ -32,7 +36,7 @@ public class Command extends AbstractCommand {
   /**
    * The static variable defines the class name in eFaps.
    */
-  public final static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.COMMAND;
+  public final static EFapsClassNames EFAPS_CLASSNAME = COMMAND;
 
   /**
    * Constructor to set the id and name of the command object.

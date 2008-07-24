@@ -20,6 +20,11 @@
 
 package org.efaps.update.ui;
 
+import static org.efaps.admin.EFapsClassNames.FIELD;
+import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
+import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
+import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.efaps.admin.AbstractAdminObject.EFapsClassName;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Delete;
 import org.efaps.db.Insert;
@@ -252,13 +257,13 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
       for (final FieldDefinition field : this.fields) {
         Insert insert;
         if ("Target".equals(field.character)) {
-          insert = new Insert(EFapsClassName.FIELDTABLE.name);
+          insert = new Insert(Type.get(FIELDTABLE.uuid));
         } else if ("Heading".equals(field.character)) {
-          insert = new Insert(EFapsClassName.FIELDHEADING.name);
+          insert = new Insert(Type.get(FIELDHEADING.uuid));
         } else if ("Group".equals(field.character)) {
-          insert = new Insert(EFapsClassName.FIELDGROUP.name);
+          insert = new Insert(Type.get(FIELDGROUP.uuid));
         } else {
-          insert = new Insert("Admin_UI_Field");
+          insert = new Insert(Type.get(FIELD.uuid));
         }
 
         insert.add("Collection", "" + this.instance.getId());

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.Vector;
 
+import org.efaps.admin.EFapsClassNames;
 import org.efaps.admin.common.SystemAttribute;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -985,9 +986,9 @@ public abstract class AbstractCommand extends AbstractUserInterfaceObject {
    * @param _toName     to name
    */
   @Override
-  protected void setLinkProperty(final EFapsClassName _linkType,
+  protected void setLinkProperty(final EFapsClassNames _linkType,
                                  final long _toId,
-                                 final EFapsClassName _toType,
+                                 final EFapsClassNames _toType,
                                  final String _toName)
       throws Exception
   {

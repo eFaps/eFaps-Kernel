@@ -20,8 +20,11 @@
 
 package org.efaps.admin.ui;
 
+import static org.efaps.admin.EFapsClassNames.SEARCH;
+
 import java.util.UUID;
 
+import org.efaps.admin.EFapsClassNames;
 import org.efaps.util.EFapsException;
 
 /**
@@ -37,7 +40,7 @@ public class Search extends AbstractMenu {
   /**
    * The static variable defines the class name in eFaps.
    */
-  public static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.SEARCH;
+  public static EFapsClassNames EFAPS_CLASSNAME = SEARCH;
 
   /**
    * Stores all instances of class {@link Search}.
@@ -111,10 +114,12 @@ public class Search extends AbstractMenu {
    *                to name
    */
   @Override
-  protected void setLinkProperty(final EFapsClassName _linkType,
+  protected void setLinkProperty(final EFapsClassNames _linkType,
                                  final long _toId,
-                                 final EFapsClassName _toType,
-                                 final String _toName) throws Exception {
+                                 final EFapsClassNames _toType,
+                                 final String _toName)
+      throws Exception
+  {
     switch (_linkType) {
       case LINK_DEFAULT_SEARCHCOMMAND:
         this.defaultCommand = Command.get(_toId);

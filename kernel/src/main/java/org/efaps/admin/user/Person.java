@@ -20,6 +20,10 @@
 
 package org.efaps.admin.user;
 
+import static org.efaps.admin.EFapsClassNames.USER_PERSON;
+import static org.efaps.admin.EFapsClassNames.USER_PERSON2GROUP;
+import static org.efaps.admin.EFapsClassNames.USER_PERSON2ROLE;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -32,9 +36,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.common.SystemAttribute;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -47,6 +48,8 @@ import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -406,7 +409,7 @@ public class Person extends AbstractUserObject {
 
       PreparedStatement stmt = null;
 
-      final Type type = Type.get(EFapsClassName.USER_PERSON.name);
+      final Type type = Type.get(USER_PERSON.uuid);
 
       final Attribute attrPass = type.getAttribute("Password");
       final PasswordType val = (PasswordType) attrPass.newInstance();
@@ -568,14 +571,14 @@ public class Person extends AbstractUserObject {
    * The instance method sets the new password for the current context user.
    * Before the new password is set, some checks are made.
    *
-   * @param _context
-   *                context for this request
-   * @param _newPasswd
-   *                new password to set for this user
+   * @param _context    context for this request
+   * @param _newPasswd  new password to set for this user
    */
-  public void setPassword(final Context _context, final String _newPasswd)
-                                                                          throws Exception {
-    final Type type = Type.get(EFapsClassName.USER_PERSON.name);
+  public void setPassword(final Context _context,
+                          final String _newPasswd)
+  throws Exception
+  {
+    final Type type = Type.get(USER_PERSON.uuid);
 
     if (_newPasswd.length() == 0) {
       throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd
@@ -595,8 +598,10 @@ public class Person extends AbstractUserObject {
    * @param _newPasswd
    * @throws Exception
    */
-  public void setPassword(final String _newPasswd) throws Exception {
-    final Type type = Type.get(EFapsClassName.USER_PERSON.name);
+  public void setPassword(final String _newPasswd)
+      throws Exception
+  {
+    final Type type = Type.get(USER_PERSON.uuid);
 
     if (_newPasswd.length() == 0) {
       throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd
@@ -798,48 +803,47 @@ public class Person extends AbstractUserObject {
   /**
    * For this person, a role is assigned for the given JAAS system.
    *
-   * @param _jaasSystem
-   *                JAAS system for which the role is assigned
-   * @param _role
-   *                role to assign
+   * @param _jaasSystem   JAAS system for which the role is assigned
+   * @param _role         role to assign
    * @see AbstractUserObject#assignToUserObjectInDb
    */
-  public void assignRoleInDb(final JAASSystem _jaasSystem, final Role _role)
-                                                                            throws EFapsException {
-
-    assignToUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2ROLE.name),
-        _jaasSystem, _role);
+  public void assignRoleInDb(final JAASSystem _jaasSystem,
+                             final Role _role)
+      throws EFapsException
+  {
+    assignToUserObjectInDb(Type.get(USER_PERSON2ROLE.uuid),
+                           _jaasSystem,
+                           _role);
   }
 
   /**
    * The given role is unassigned for the given JAAS system from this person.
    *
-   * @param _jaasSystem
-   *                JAAS system for which the role is assigned
-   * @param _role
-   *                role to unassign
+   * @param _jaasSystem   JAAS system for which the role is assigned
+   * @param _role         role to unassign
    * @see AbstractUserObject#unassignFromUserObjectInDb
    */
-  public void unassignRoleInDb(final JAASSystem _jaasSystem, final Role _role)
-                                                                              throws EFapsException {
-
-    unassignFromUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2ROLE.name),
-        _jaasSystem, _role);
+  public void unassignRoleInDb(final JAASSystem _jaasSystem,
+                               final Role _role)
+      throws EFapsException
+  {
+    unassignFromUserObjectInDb(Type.get(USER_PERSON2ROLE.uuid),
+                               _jaasSystem,
+                               _role);
   }
 
   /**
    * The method reads directly from the database all stores groups for the this
    * person. The found groups are returned as instance of {@link java.util.Set}.
    *
-   * @param _jaasSystem
-   *                JAAS system for which the groups must get from database (if
-   *                value is null, all groups independed from the related JAAS
-   *                system are returned)
+   * @param _jaasSystem   JAAS system for which the groups must get from
+   *                      database (if value is null, all groups independent
+   *                      from the related JAAS system are returned)
    * @return set of all found groups for given JAAS system
    */
   public Set<Group> getGroupsFromDB(final JAASSystem _jaasSystem)
-                                                                 throws EFapsException {
-
+      throws EFapsException
+  {
     final Set<Group> ret = new HashSet<Group>();
     ConnectionResource rsrc = null;
     try {
@@ -893,18 +897,16 @@ public class Person extends AbstractUserObject {
    * The depending groups for the user are set for the given JAAS system. All
    * groups are added to the loaded groups in the cache of this person.
    *
-   * @param _jaasSystem
-   *                JAAS system for which the roles are set
-   * @param _groups
-   *                set of groups to set for the JAAS system
+   * @param _jaasSystem   JAAS system for which the roles are set
+   * @param _groups       set of groups to set for the JAAS system
    * @see #assignGroupInDb
    * @see #unassignGroupInDb
-   * @throws EFapsException
-   *                 from calling methods
+   * @throws EFapsException from calling methods
    */
-  public void setGroups(final JAASSystem _jaasSystem, final Set<Group> _groups)
-                                                                               throws EFapsException {
-
+  public void setGroups(final JAASSystem _jaasSystem,
+                        final Set<Group> _groups)
+      throws EFapsException
+  {
     if (_jaasSystem == null) {
       throw new EFapsException(getClass(), "setGroups.nojaasSystem", getName());
     }
@@ -937,42 +939,42 @@ public class Person extends AbstractUserObject {
   /**
    * For this person, a group is assigned for the given JAAS system.
    *
-   * @param _jaasSystem
-   *                JAAS system for which the role is assigned
-   * @param _group
-   *                group to assign
+   * @param _jaasSystem   JAAS system for which the role is assigned
+   * @param _group        group to assign
    * @see AbstractUserObject#assignToUserObjectInDb
    */
-  public void assignGroupInDb(final JAASSystem _jaasSystem, final Group _group)
-                                                                               throws EFapsException {
-
-    assignToUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2GROUP.name),
-        _jaasSystem, _group);
+  public void assignGroupInDb(final JAASSystem _jaasSystem,
+                              final Group _group)
+      throws EFapsException
+  {
+    assignToUserObjectInDb(Type.get(USER_PERSON2GROUP.uuid),
+                           _jaasSystem,
+                           _group);
   }
 
   /**
    * The given group is unassigned for the given JAAS system from this person.
    *
-   * @param _jaasSystem
-   *                JAAS system for which the role is assigned
-   * @param _group
-   *                group to unassign
+   * @param _jaasSystem   JAAS system for which the role is assigned
+   * @param _group        group to unassign
    * @see AbstractUserObject#unassignFromUserObjectInDb
    */
-  public void unassignGroupInDb(final JAASSystem _jaasSystem, final Group _group)
-                                                                                 throws EFapsException {
-
-    unassignFromUserObjectInDb(Type.get(EFapsClassName.USER_PERSON2GROUP.name),
-        _jaasSystem, _group);
+  public void unassignGroupInDb(final JAASSystem _jaasSystem,
+                                final Group _group)
+      throws EFapsException
+  {
+    unassignFromUserObjectInDb(Type.get(USER_PERSON2GROUP.uuid),
+                               _jaasSystem,
+                               _group);
   }
 
   /**
    * Update the last login date of this person to current timestamp.
    *
-   * @throws EFapsException
-   *                 if the last login information could not be updated
+   * @throws EFapsException if the last login information could not be updated
    */
-  public void updateLastLogin() throws EFapsException {
+  public void updateLastLogin() throws EFapsException
+  {
     ConnectionResource rsrc = null;
     try {
       final Context context = Context.getThreadContext();
@@ -1256,10 +1258,10 @@ public class Person extends AbstractUserObject {
   public static Person createPerson(final JAASSystem _jaasSystem,
                                     final String _jaasKey,
                                     final String _userName)
-                                                           throws EFapsException {
-
+      throws EFapsException
+  {
     long persId = 0;
-    final Type persType = Type.get(EFapsClassName.USER_PERSON.name);
+    final Type persType = Type.get(USER_PERSON.uuid);
     ConnectionResource rsrc = null;
     try {
       final Context context = Context.getThreadContext();

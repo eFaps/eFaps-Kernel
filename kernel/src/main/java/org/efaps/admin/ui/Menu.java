@@ -20,14 +20,16 @@
 
 package org.efaps.admin.ui;
 
+import static org.efaps.admin.EFapsClassNames.MENU;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.efaps.admin.EFapsClassNames;
+import org.efaps.admin.datamodel.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.efaps.admin.datamodel.Type;
 
 /**
  * @author tmo
@@ -39,7 +41,7 @@ public class Menu extends AbstractMenu {
   /**
    * The static variable defines the class name in eFaps.
    */
-  public final static EFapsClassName EFAPS_CLASSNAME = EFapsClassName.MENU;
+  public final static EFapsClassNames EFAPS_CLASSNAME = MENU;
 
   /**
    * Logging instance used in this class.
@@ -105,10 +107,12 @@ public class Menu extends AbstractMenu {
    *                to name
    */
   @Override
-  protected void setLinkProperty(final EFapsClassName _linkType,
+  protected void setLinkProperty(final EFapsClassNames _linkType,
                                  final long _toId,
-                                 final EFapsClassName _toType,
-                                 final String _toName) throws Exception {
+                                 final EFapsClassNames _toType,
+                                 final String _toName)
+      throws Exception
+  {
     switch (_linkType) {
       case LINK_MENUISTYPETREEFOR:
         final Type type = Type.get(_toId);
