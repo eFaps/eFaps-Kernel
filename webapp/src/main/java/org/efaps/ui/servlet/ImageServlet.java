@@ -20,6 +20,8 @@
 
 package org.efaps.ui.servlet;
 
+import static org.efaps.admin.EFapsClassNames.IMAGE;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
@@ -29,10 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.efaps.admin.AbstractAdminObject;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkout;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
@@ -40,6 +39,8 @@ import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheObjectInterface;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The servlet checks out user interface images depending on the
@@ -49,8 +50,8 @@ import org.efaps.util.cache.CacheReloadInterface;
  * @author tmo
  * @version $Id:ImageServlet.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ImageServlet extends HttpServlet {
-
+public class ImageServlet extends HttpServlet
+{
   // ///////////////////////////////////////////////////////////////////////////
   // static variables
 
@@ -92,9 +93,10 @@ public class ImageServlet extends HttpServlet {
    * @see #PARAM_OID
    */
   @Override
-  protected void doGet(HttpServletRequest _req, HttpServletResponse _res)
-                                                                         throws ServletException,
-                                                                         IOException {
+  protected void doGet(final HttpServletRequest _req,
+                       final HttpServletResponse _res)
+      throws ServletException, IOException
+  {
     String imgName = _req.getRequestURI();
 
     imgName = imgName.substring(imgName.lastIndexOf('/') + 1);
@@ -147,7 +149,7 @@ public class ImageServlet extends HttpServlet {
     try {
       synchronized (cache) {
         final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(AbstractAdminObject.EFapsClassName.IMAGE.name);
+        query.setQueryTypes(Type.get(IMAGE.uuid).getName());
         query.addSelect("Name");
         query.addSelect("FileName");
         query.addSelect("OID");
@@ -198,16 +200,16 @@ public class ImageServlet extends HttpServlet {
     private final Long time;
 
     /**
-     * @param _name
-     *                administrational name of the image
-     * @param _file
-     *                file name of the image
-     * @param _oid
-     *                object id of the image
+     * @param _name   administrational name of the image
+     * @param _file   file name of the image
+     * @param _oid    object id of the image
      */
-    private ImageMapper(final String _name, final String _file,
-                        final String _oid, final Long _filelength,
-                        final Long _time) {
+    private ImageMapper(final String _name,
+                        final String _file,
+                        final String _oid,
+                        final Long _filelength,
+                        final Long _time)
+    {
       this.name = _name;
       this.oid = _oid;
       this.file = _file;
@@ -221,29 +223,31 @@ public class ImageServlet extends HttpServlet {
      * @return value of instance variable {@link #name}
      * @see #name
      */
-    public String getName() {
+    public String getName()
+    {
       return this.name;
     }
 
     /**
-     * The method is not needed in this cache implementation, but to implemente
+     * The method is not needed in this cache implementation, but to implement
      * interface {@link CacheInterface} the method is required.
      *
      * @return always <code>null</code>
      */
-    public UUID getUUID() {
+    public UUID getUUID()
+    {
       return null;
     }
 
     /**
-     * The method is not needed in this cache implementation, but to implemente
+     * The method is not needed in this cache implementation, but to implement
      * interface {@link CacheInterface} the method is required.
      *
      * @return always <code>0</code>
      */
-    public long getId() {
+    public long getId()
+    {
       return 0;
     }
   }
-
 }
