@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  
+  Copyright 2003-2008 The eFaps Team
+  
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  
+  Author:          tmo
+  Revision:        $Rev$
+  Last Changed:    $Date$
+  Last Changed By: $Author$
+  
+-->
+
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+>
+
+  <modelVersion>4.0.0</modelVersion>
+ 
+  <groupId>org.efaps.eclipse</groupId>
+  <artifactId>efaps-eclipse-plugin</artifactId>
+  <name>EFaps Eclipse Plugin</name>
+  <version>1.0-SNAPSHOT</version>
+   <!-- packaging>binary-plugin</packaging -->
+
+  <build>
+    <plugins>
+      <!--
+        Compiler Settings:
+        - Java 1.5 is needed!
+      -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+          <!--compileSourceRoots>${project.compileSourceRoots}</compileSourceRoots-->
+        </configuration>
+      </plugin>
+      
+    
+       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+ 
+       <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>${basedir}</directory>
+              <includes>
+                <include>*.jar</include>
+              </includes>
+              <followSymlinks>false</followSymlinks>
+             </fileset>
+           </filesets>
+         </configuration>
+       </plugin>
+    
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <pde>true</pde>
+          <downloadSources>true</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- Connection Pooling -->
+    <dependency>
+      <groupId>commons-dbcp</groupId>
+      <artifactId>commons-dbcp</artifactId>
+     <version>1.2.1</version>
+    </dependency>
+    <!-- eFaps kernel  -->
+    <dependency>
+      <groupId>org.efaps</groupId>
+      <artifactId>eFaps-Kernel</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- For Logging Purpose
+      http://www.slf4j.org
+    -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+    <!-- commons logging over slf4j -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl104-over-slf4j</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+    <!-- log4j over slf4j -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>1.5.0</version>
+    </dependency>
+
+    <!-- java transaction manager -->
+    <dependency>
+      <groupId>jotm</groupId>
+      <artifactId>jotm</artifactId>
+      <version>2.0.10</version>
+      <exclusions>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.resource</groupId>
+          <artifactId>connector</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- replacement for the javax.resource.connector-api-1.5 needed by jotm-->
+    <dependency>
+      <groupId>org.ow2.spec.ee</groupId>
+      <artifactId>ow2-connector-1.5-spec</artifactId>
+      <version>1.0-M1</version>
+    </dependency>
+    
+    <!-- eclipse plugin depencies -->
+    <!-- dependency>
+      <groupId>org.eclipse</groupId>
+      <artifactId>jface</artifactId>
+      <version>3.2.1-M20060908-1000</version>
+      <type>jar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse</groupId>
+      <artifactId>ui</artifactId>
+      <version>3.2.1-M20060913-0800</version>
+      <type>jar</type>
+    </dependency-->
+
+    <!-- used as javax.naming.* implementation -->
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty</artifactId>
+      <version>6.1.5</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>6.1.5</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jetty-naming</artifactId>
+      <version>6.1.5</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- JDBC driver -->
+    <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>8.3-603.jdbc3</version>
+    </dependency>
+
+  </dependencies>
+
+</project> 

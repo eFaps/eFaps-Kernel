@@ -24,7 +24,20 @@
 -->
 
 <?eclipse version="3.2"?>
-<plugin>
+<plugin
+>
+<!--
+  id="@maven.eclipse.plugin.artifact.id@"
+  version="@maven.eclipse.plugin.artifact.version@"
+  name="eFaps Eclipse Plugin"
+  provider-name="The eFaps Team"
+
+   <runtime>
+      <library name="@maven.eclipse.plugin.artifact.internal.id@-@maven.eclipse.plugin.artifact.internal.version@.jar">
+      </library>
+   </runtime>
+   -->
+
    <extension
          point="org.eclipse.core.contenttype.contentTypes">
       <content-type
@@ -566,6 +579,108 @@
                contentTypeId="org.efaps.eclipse.contenttypes.table">
          </contentTypeBinding>
       </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.efaps.eclipse.PreferencePage"
+            id="EclipsePlugin.page1"
+            name="eFaps Settings">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            id="org.efaps.eclipse.command.connect"
+            name="%plugin.command.connect">
+         <defaultHandler
+               class="org.efaps.eclipse.handlers.ConnectHandler">
+            <parameter
+                  name="EclipsePlugin.parameter4"
+                  value="EclipsePlugin.parameter4">
+            </parameter>
+         </defaultHandler>
+      </command>
+      <command
+            id="org.efaps.eclipse.command.reloadCache"
+            name="%plugin.command.reloadCache">
+         <defaultHandler
+               class="org.efaps.eclipse.handlers.ReloadCacheHandler">
+            <parameter
+                  name="EclipsePlugin.parameter5"
+                  value="EclipsePlugin.parameter5">
+            </parameter>
+         </defaultHandler>
+      </command>
+      <command
+            id="org.efaps.eclipse.command.update"
+            name="%plugin.command.update">
+         <defaultHandler
+               class="org.efaps.eclipse.handlers.UpdateHandler">
+            <parameter
+                  name="EclipsePlugin.parameter1"
+                  value="EclipsePlugin.parameter1">
+            </parameter>
+         </defaultHandler>
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="org.efaps.eclipse.command.update"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="M1+6">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               id="org.efaps.eclipse.menus.sampleMenu"
+               label="eFaps"
+               mnemonic="M">
+            <command
+                  commandId="org.efaps.eclipse.command.update"
+                  id="org.efaps.eclipse.menus.update"
+                  style="push">
+            </command>
+            <command
+                  commandId="org.efaps.eclipse.command.reloadCache"
+                  id="org.efaps.eclipse.menus.reloadCache"
+                  style="push">
+            </command>
+            <separator
+                  name="org.efaps.eclipse.menus.separator1"
+                  visible="true">
+            </separator>
+            <command
+                  commandId="org.efaps.eclipse.command.connect"
+                  id="org.efaps.eclipse.menus.connect"
+                  style="push">
+            </command>
+         </menu>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="org.efaps.eclipse.toolbars.sampleToolbar">
+            <command
+                  commandId="org.efaps.eclipse.command.update"
+                  icon="icons/datamodel/Admin_DataModel_Type+Delete+Image.gif"
+                  id="org.efaps.eclipse.toolbars.updateCommand"
+                  tooltip="Say hello world">
+            </command>
+         </toolbar>
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.console.consoleFactories">
+      <consoleFactory
+            class="org.efaps.eclipse.EfapsConsoleFactory"
+            label="%plugin.console">
+      </consoleFactory>
    </extension>
 
 </plugin>
