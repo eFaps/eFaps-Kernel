@@ -20,6 +20,8 @@
 
 package org.efaps.update;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -37,7 +39,9 @@ import java.util.Map.Entry;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Context;
+import org.efaps.db.SearchQuery;
 import org.efaps.db.databases.AbstractDatabase;
 import org.efaps.importer.DataImport;
 import org.efaps.update.dbproperty.DBPropertiesUpdate;
@@ -94,8 +98,6 @@ public class Install
   private final Map<Class<? extends AbstractUpdate>, List<AbstractUpdate>> cache =
       new HashMap<Class<? extends AbstractUpdate>, List<AbstractUpdate>>();
 
-  private String application;
-
   private URL rootDir;
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -149,18 +151,6 @@ public class Install
         }
       }
     }
-/*    for (final FileType fileType : FileType.values()) {
-      for (final Class<? extends AbstractUpdate> updateClass : fileType.clazzes)  {
-        for (final AbstractUpdate update : this.cache.get(updateClass)) {
-          update.createInDB(jexlContext);
-          if (!bigTrans)  {
-            Context.commit();
-            Context.begin(user);
-          }
-        }
-      }
-    }
-*/
 
     // and update them
     for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet())  {
@@ -172,27 +162,110 @@ public class Install
         }
       }
     }
-/*    for (final FileType fileType : FileType.values()) {
-      for (final Class<? extends AbstractUpdate> updateClass : fileType.clazzes)  {
-        for (final AbstractUpdate update : this.cache.get(updateClass)) {
-          update.updateInDB(jexlContext);
-          if (!bigTrans)  {
-            Context.commit();
-            Context.begin(user);
-          }
-        }
-      }
-    }*/
   }
 
   /**
+   * All installation files are updated. For each file, the installation and
+   * latest version is evaluated depending from all installed version and the
+   * defined application in the XML update file. The installation version is
+   * the same as the latest version of the application.
+   *
+   * @throws EFapsException if update failed
+   */
+  @SuppressWarnings("unchecked")
+  public void updateLatest()
+      throws EFapsException
+  {
+    final boolean bigTrans = Context.getDbType().supportsBigTransactions();
+    final String user = (org.efaps.db.Context.getThreadContext().getPerson() != null)
+                        ? org.efaps.db.Context.getThreadContext().getPerson().getName()
+                        : null;
+
+    // initialize cache
+    initialise();
+
+    // get for all applications the latest version
+    final Map<String,Long> versions = getLatestVersions(user);
+
+    // create all objects
+    for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet())  {
+      for (final AbstractUpdate update : entry.getValue())  {
+        final Long latestVersion = versions.get(update.getFileApplication());
+        // initialize JexlContext (used to evaluate version)
+        final JexlContext jexlContext = JexlHelper.createContext();
+        if (latestVersion != null)  {
+          jexlContext.getVars().put("version", latestVersion);
+          jexlContext.getVars().put("latest", latestVersion);
+        }
+        // and create
+        update.createInDB(jexlContext);
+        if (!bigTrans)  {
+          Context.commit();
+          Context.begin(user);
+        }
+      }
+    }
+
+    // and update them
+    for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet())  {
+      for (final AbstractUpdate update : entry.getValue())  {
+        final Long latestVersion = versions.get(update.getFileApplication());
+        // initialize JexlContext (used to evaluate version)
+        final JexlContext jexlContext = JexlHelper.createContext();
+        if (latestVersion != null)  {
+          jexlContext.getVars().put("version", latestVersion);
+          jexlContext.getVars().put("latest", latestVersion);
+        }
+        update.updateInDB(jexlContext);
+        if (!bigTrans)  {
+          Context.commit();
+          Context.begin(user);
+        }
+      }
+    }
+  }
+
+  /**
+   * Load the already installed versions for this application from eFaps. The
+   * method must be called within a Context begin and commit (it is not done
+   * itself in this method!
+   *
+   * @param _userName logged in user name
+   * @see #installed
+   */
+  protected Map<String,Long> getLatestVersions(final String _userName)
+      throws EFapsException
+  {
+    final Map<String,Long> versions = new HashMap<String,Long>();
+    final Type versionType = Type.get(ADMIN_COMMON_VERSION.uuid);
+    if (versionType != null) {
+      final SearchQuery query = new SearchQuery();
+      query.setQueryTypes(versionType.getName());
+      query.addSelect("Name");
+      query.addSelect("Revision");
+      query.executeWithoutAccessCheck();
+      while (query.next()) {
+        final String name = (String) query.get("Name");
+        final Long revision = (Long) query.get("Revision");
+        if (!versions.containsKey(name) || (versions.get(name) < revision))  {
+          versions.put(name, revision);
+        }
+      }
+      query.close();
+    }
+    return versions;
+  }
+
+  /**
+   * Reads all XML update files and parses them.
+   *
    * @throws SAXException
    * @throws IOException
    * @throws IOException
    * @throws FileNotFoundException
    * @see #initialised
    */
-  public void initialise()
+  protected void initialise()
       throws EFapsException
   {
     if (!this.initialised) {
@@ -314,12 +387,13 @@ System.out.println(""+this.cache);
 
   /**
    * Appends a new file defined through an URL. The initialized flag
-   * {@link #initialised} is automatically reseted.
+   * {@link #initialized} is automatically reseted.
    *
    * @param _url        URL of the file to add
    * @param _fileType   file type of the file to add
    */
-  public void addFile(final URL _url, FileType _fileType)
+  public void addFile(final URL _url,
+                      final FileType _fileType)
   {
     this.files.add(new InstallFile(_url, _fileType));
     this.initialised = false;
@@ -336,17 +410,6 @@ System.out.println(""+this.cache);
   public List<InstallFile> getFiles()
   {
     return this.files;
-  }
-
-  /**
-   * This is the setter method for the instance variable {@link #application}.
-   *
-   * @param _application
-   *                the application to set
-   */
-  public void setApplication(String _application)
-  {
-    this.application = _application;
   }
 
   /**
