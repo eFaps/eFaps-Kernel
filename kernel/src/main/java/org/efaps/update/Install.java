@@ -185,7 +185,7 @@ public class Install
     initialise();
 
     // get for all applications the latest version
-    final Map<String,Long> versions = getLatestVersions(user);
+    final Map<String,Long> versions = getLatestVersions();
 
     // create all objects
     for (final Map.Entry<Class<? extends AbstractUpdate>, List<AbstractUpdate>> entry : this.cache.entrySet())  {
@@ -229,11 +229,8 @@ public class Install
    * Load the already installed versions for this application from eFaps. The
    * method must be called within a Context begin and commit (it is not done
    * itself in this method!
-   *
-   * @param _userName logged in user name
-   * @see #installed
    */
-  protected Map<String,Long> getLatestVersions(final String _userName)
+  public Map<String,Long> getLatestVersions()
       throws EFapsException
   {
     final Map<String,Long> versions = new HashMap<String,Long>();
@@ -461,7 +458,6 @@ System.out.println(""+this.cache);
     public FileType getType() {
       return this.type;
     }
-
   }
 
   /**
@@ -474,5 +470,4 @@ System.out.println(""+this.cache);
     public void updateInDB() throws EFapsException;
 
   }
-
 }

@@ -20,15 +20,16 @@
 
 package org.efaps.maven.plugin.goal.efaps.install;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_COMMON_VERSION;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
 
 import org.apache.commons.digester.Digester;
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -36,7 +37,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.runlevel.RunLevel;
 import org.efaps.db.Context;
 import org.efaps.db.Insert;
-import org.efaps.db.SearchQuery;
 import org.efaps.update.Install;
 import org.efaps.util.EFapsException;
 import org.slf4j.Logger;
@@ -47,9 +47,9 @@ import org.slf4j.LoggerFactory;
  * @author jmox
  * @version $Id$
  */
-public class Application {
-
-  // ///////////////////////////////////////////////////////////////////////////
+public class Application
+{
+  /////////////////////////////////////////////////////////////////////////////
   // static variables
 
   /**
@@ -57,13 +57,7 @@ public class Application {
    */
   private final static Logger LOG = LoggerFactory.getLogger(Application.class);
 
-  /**
-   * UUID of eFaps type 'Admin_Common_Version'.
-   */
-  private final static UUID VERSION_UUID
-      = UUID.fromString("1bb051f3-b664-43db-b409-c0c4009f5972");
-
-  // ///////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////////////////////////////////////////////
   // instance variables
 
   /**
@@ -82,13 +76,6 @@ public class Application {
       new TreeSet<ApplicationVersion>();
 
   /**
-   * Stores all already installed version numbers.
-   *
-   * @see #loadInstalledVersions
-   */
-  private final Set<Long> installed = new HashSet<Long>();
-
-  /**
    * Install instance holding all XML definition / update files.
    *
    * @see #addURL
@@ -103,8 +90,8 @@ public class Application {
   private final List<Long> notStoredVersions = new ArrayList<Long>();
 
   /**
-   * this instance variable stores the highes or maximum Numer of the Versions
-   * to be installed
+   * this instance variable stores the highest or maximum number of the
+   * versions to be installed
    */
   private Long maxVersion;
 
@@ -184,8 +171,8 @@ public class Application {
   // instance methods
 
   /**
-   * For each version in {@link @versions} is tested, if it is alread installed
-   * (installed versions are previously loaded with
+   * For each version in {@link @versions} is tested, if it is already
+   * installed (installed versions are previously loaded with
    * {@link #loadInstalledVersions}). If not already installed, the version is
    * installed.
    *
@@ -208,8 +195,11 @@ public class Application {
     }
     Context.rollback();
 
-    // load installed versions
-    loadInstalledVersions(_userName);
+    // load latest installed versions
+    Context.begin();
+    final Map<String,Long> latestVersions = this.install.getLatestVersions();
+    Context.rollback();
+    final Long latestVersion = latestVersions.get(this.application);
 
     this.install.setRootDir(this.eFapsDir.toURL());
 
@@ -219,7 +209,7 @@ public class Application {
       if (LOG.isInfoEnabled()) {
         LOG.info("Check version " + version.getNumber());
       }
-      if (this.installed.contains(version.getNumber())) {
+      if ((latestVersion != null) && (version.getNumber() < latestVersion)) {
         if (LOG.isInfoEnabled()) {
           LOG.info("Version " + version.getNumber() + " already installed");
         }
@@ -275,10 +265,13 @@ public class Application {
     Context.rollback();
 
     // load installed versions
-    loadInstalledVersions(_userName);
+    Context.begin();
+    final Map<String,Long> latestVersions = this.install.getLatestVersions();
+    Context.rollback();
+    final long latestVersion = latestVersions.get(this.application);
 
     final ApplicationVersion version = getLastVersion();
-    if (this.installed.contains(version.getNumber())) {
+    if (version.getNumber() == latestVersion)  {
       if (LOG.isInfoEnabled()) {
         LOG.info("Update version "
             + version.getNumber()
@@ -300,31 +293,6 @@ public class Application {
   }
 
   /**
-   * Load the already installed versions for this application from eFaps.
-   *
-   * @param _userName logged in user name
-   * @see #installed
-   */
-  private void loadInstalledVersions(final String _userName)
-      throws EFapsException
-  {
-    final Type versionType = Type.get(VERSION_UUID);
-    if (versionType != null) {
-      Context.begin(_userName);
-      final SearchQuery query = new SearchQuery();
-      query.setQueryTypes(versionType.getName());
-      query.addWhereExprEqValue("Name", this.application);
-      query.addSelect("Revision");
-      query.executeWithoutAccessCheck();
-      while (query.next()) {
-        this.installed.add((Long) query.get("Revision"));
-      }
-      query.close();
-      Context.commit();
-    }
-  }
-
-  /**
    * Store for this application that the version is already installed. If data
    * model in the local type cache is not loaded (because, e.g., it is a new
    * kernel install), the version numbers are cached.<br/> The first time, the
@@ -338,7 +306,7 @@ public class Application {
                             final Long _version)
       throws EFapsException
   {
-    final Type versionType = Type.get(VERSION_UUID);
+    final Type versionType = Type.get(ADMIN_COMMON_VERSION.uuid);
 
     if (versionType != null) {
       Context.begin(_userName);
@@ -475,8 +443,7 @@ public class Application {
   /**
    * This is the setter method for the instance variable {@link #maxVersion}.
    *
-   * @param maxVersion
-   *                the maxVersion to set
+   * @param maxVersion  the maxVersion to set
    */
   public void setMaxVersion(final Long maxVersion)
   {
