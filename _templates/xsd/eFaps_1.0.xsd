@@ -696,6 +696,12 @@
 
 
   <xsd:complexType name="property_field">
+    <xsd:annotation>
+      <xsd:documentation>
+        Used to define properties on fields which are used to define
+        a field with expressions, label etc.
+      </xsd:documentation>
+    </xsd:annotation>
     <xsd:simpleContent>
       <xsd:extension base="xsd:string">
         <xsd:attribute name="name" use="required">
