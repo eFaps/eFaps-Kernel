@@ -20,6 +20,8 @@
 
 package org.efaps.admin.program.bundle;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_STATICCOMPILED;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,11 +44,8 @@ import org.efaps.util.cache.CacheReloadInterface;
  * @author jmox
  * @version $Id$
  */
-public final class BundleMaker {
-
-  public static UUID STATICCOMPILED =
-      UUID.fromString("76fb464e-1d14-4437-ad23-092ab12669dd");
-
+public final class BundleMaker
+{
   /**
    * Map is used to map a List of Names representing StaticSources from the
    * eFaps-DataBase, to a Key for a Bundle
@@ -214,7 +213,7 @@ public final class BundleMaker {
     try {
       synchronized (CACHE) {
         final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(Type.get(STATICCOMPILED).getName());
+        query.setQueryTypes(Type.get(ADMIN_PROGRAM_STATICCOMPILED).getName());
         query.setExpandChildTypes(true);
         query.addSelect("OID");
         query.addSelect("Name");

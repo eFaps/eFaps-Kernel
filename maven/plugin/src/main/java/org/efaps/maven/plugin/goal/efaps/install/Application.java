@@ -306,7 +306,7 @@ public class Application
                             final Long _version)
       throws EFapsException
   {
-    final Type versionType = Type.get(ADMIN_COMMON_VERSION.uuid);
+    final Type versionType = Type.get(ADMIN_COMMON_VERSION);
 
     if (versionType != null) {
       Context.begin(_userName);

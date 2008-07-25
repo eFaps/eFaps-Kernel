@@ -20,6 +20,8 @@
 
 package org.efaps.admin.program.esjp;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_JAVA;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,8 +48,8 @@ import org.efaps.util.EFapsException;
  * @version $Id$
  * @todo encoding from java files!
  */
-public class ESJPImporter {
-
+public class ESJPImporter
+{
   /////////////////////////////////////////////////////////////////////////////
   // static variables
 
@@ -55,12 +57,6 @@ public class ESJPImporter {
    * Defines the encoding of the ESJP source code within eFaps.
    */
   private final static String ENCODING = "UTF8";
-
-  /**
-   * UUID of the ESJP Type.
-   */
-  private final static UUID UUID_ESJPTYPE
-          = UUID.fromString("11043a35-f73c-481c-8c77-00306dbce824");
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -141,7 +137,7 @@ public class ESJPImporter {
   public Instance searchInstance() throws EFapsException  {
     Instance instance = null;
 
-    final Type esjpType = Type.get(UUID_ESJPTYPE);
+    final Type esjpType = Type.get(ADMIN_PROGRAM_JAVA);
     final SearchQuery query = new SearchQuery();
     query.setQueryTypes(esjpType.getName());
     query.addWhereExprEqValue("Name", this.className);
@@ -179,7 +175,7 @@ public class ESJPImporter {
    * @throws EFapsException
    */
   protected Instance createInstance() throws EFapsException  {
-    final Type esjpType = Type.get(UUID_ESJPTYPE);
+    final Type esjpType = Type.get(ADMIN_PROGRAM_JAVA);
     final Insert insert = new Insert(esjpType);
     insert.add("Name", this.className);
     if (this.eFapsUUID != null)  {

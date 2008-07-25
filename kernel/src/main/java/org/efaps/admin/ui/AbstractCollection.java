@@ -187,9 +187,9 @@ public abstract class AbstractCollection
   private void readFromDB4Fields() throws CacheReloadException {
     try {
       final Instance instance =
-          new Instance(Type.get(COLLECTION.uuid), getId());
+          new Instance(Type.get(COLLECTION), getId());
       final SearchQuery query = new SearchQuery();
-      query.setExpand(instance, Type.get(FIELD.uuid).getName() + "\\Collection");
+      query.setExpand(instance, Type.get(FIELD).getName() + "\\Collection");
       query.addSelect("Type");
       query.addSelect("ID");
       query.addSelect("Name");

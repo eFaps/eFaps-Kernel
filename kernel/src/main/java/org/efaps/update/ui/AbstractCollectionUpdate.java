@@ -257,13 +257,13 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
       for (final FieldDefinition field : this.fields) {
         Insert insert;
         if ("Target".equals(field.character)) {
-          insert = new Insert(Type.get(FIELDTABLE.uuid));
+          insert = new Insert(Type.get(FIELDTABLE));
         } else if ("Heading".equals(field.character)) {
-          insert = new Insert(Type.get(FIELDHEADING.uuid));
+          insert = new Insert(Type.get(FIELDHEADING));
         } else if ("Group".equals(field.character)) {
-          insert = new Insert(Type.get(FIELDGROUP.uuid));
+          insert = new Insert(Type.get(FIELDGROUP));
         } else {
-          insert = new Insert(Type.get(FIELD.uuid));
+          insert = new Insert(Type.get(FIELD));
         }
 
         insert.add("Collection", "" + this.instance.getId());

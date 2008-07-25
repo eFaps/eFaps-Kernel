@@ -281,7 +281,7 @@ public class Field extends AbstractUserInterfaceObject {
 
     try {
       final SearchQuery query = new SearchQuery();
-      query.setQueryTypes(Type.get(FIELD.uuid).getName());
+      query.setQueryTypes(Type.get(FIELD).getName());
       query.setExpandChildTypes(true);
       query.addSelect("Collection");
       query.addWhereExprEqValue("ID", _id);

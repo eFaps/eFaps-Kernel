@@ -866,7 +866,8 @@ public class Type extends AbstractDataModelObject {
    *
    * @return instance of class {@link Type}
    */
-  public static Type get(final long _id) {
+  public static Type get(final long _id)
+  {
     return getTypeCache().get(_id);
   }
 
@@ -876,7 +877,8 @@ public class Type extends AbstractDataModelObject {
    *
    * @return instance of class {@link Type}
    */
-  public static Type get(final String _name) {
+  public static Type get(final String _name)
+  {
     return getTypeCache().get(_name);
   }
 
@@ -886,8 +888,20 @@ public class Type extends AbstractDataModelObject {
    *
    * @return instance of class {@link Type}
    */
-  public static Type get(final UUID _uuid) {
+  public static Type get(final UUID _uuid)
+  {
     return getTypeCache().get(_uuid);
+  }
+
+  /**
+   * Returns for given parameter <i>_className</i> the instance of class
+   * {@link Type}.
+   *
+   * @return instance of class {@link Type}
+   */
+  public static Type get(final EFapsClassNames _className)
+  {
+    return getTypeCache().get(_className.uuid);
   }
 
   /**

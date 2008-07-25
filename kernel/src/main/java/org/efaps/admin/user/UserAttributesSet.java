@@ -277,7 +277,7 @@ public class UserAttributesSet {
    * @throws EFapsException
    */
   private void readUserAttributes() throws EFapsException {
-    final Set<Type> types = Type.get(USER_ATTRIBUTEABSTRACT.uuid).getChildTypes();
+    final Set<Type> types = Type.get(USER_ATTRIBUTEABSTRACT).getChildTypes();
     for (final Type type : types) {
       if (MAPPER.containsKey(type.getName())) {
         final UserAttributesDefinition definition = MAPPER.get(type.getName());

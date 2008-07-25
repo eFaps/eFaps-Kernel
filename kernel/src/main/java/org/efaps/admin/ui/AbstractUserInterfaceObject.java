@@ -288,9 +288,9 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     {
       final Class<UIObj> uiObjClass = getCallerClass();
       try {
-        if (Type.get(getEFapsClassName().uuid) != null) {
+        if (Type.get(getEFapsClassName()) != null) {
           final SearchQuery query = new SearchQuery();
-          query.setQueryTypes(Type.get(getEFapsClassName().uuid).getName());
+          query.setQueryTypes(Type.get(getEFapsClassName()).getName());
           query.addSelect("ID");
           query.addSelect("Name");
           query.addSelect("UUID");
@@ -340,7 +340,7 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     protected UIObj read(final long _id) throws EFapsException {
       try {
         final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(Type.get(getEFapsClassName().uuid).getName());
+        query.setQueryTypes(Type.get(getEFapsClassName()).getName());
         query.addWhereExprEqValue("ID", _id);
         query.addSelect("ID");
         query.addSelect("Name");
@@ -364,7 +364,7 @@ public abstract class AbstractUserInterfaceObject extends AbstractAdminObject {
     protected UIObj read(final String _name) throws EFapsException {
       try {
         final SearchQuery query = new SearchQuery();
-        query.setQueryTypes(Type.get(getEFapsClassName().uuid).getName());
+        query.setQueryTypes(Type.get(getEFapsClassName()).getName());
         query.addWhereExprEqValue("Name", _name);
         query.addSelect("ID");
         query.addSelect("Name");

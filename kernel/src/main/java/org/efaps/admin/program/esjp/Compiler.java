@@ -20,6 +20,9 @@
 
 package org.efaps.admin.program.esjp;
 
+import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_JAVA;
+import static org.efaps.admin.EFapsClassNames.ADMIN_PROGRAM_JAVACLASS;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,7 +30,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.regex.Matcher;
 
 import org.apache.commons.jci.compilers.CompilationResult;
@@ -35,15 +37,14 @@ import org.apache.commons.jci.compilers.JavaCompiler;
 import org.apache.commons.jci.compilers.JavaCompilerFactory;
 import org.apache.commons.jci.readers.ResourceReader;
 import org.apache.commons.jci.stores.ResourceStore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.Checkout;
 import org.efaps.db.Delete;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The class is used to compile all checked in Java programs. Because the
@@ -89,18 +90,6 @@ public class Compiler {
    * @see #compile
    */
   private static final String DEFAULT_COMPILER = "javac";
-
-  /**
-   * UUID of the esjp type.
-   */
-  private static final UUID TYPE_ESJP
-          = UUID.fromString("11043a35-f73c-481c-8c77-00306dbce824");
-
-  /**
-   * UUID of the esjp class type.
-   */
-  private static final UUID TYPE_ESJPCLASS
-          = UUID.fromString("9118e1e3-ed4c-425d-8578-8d1f1d385110");
 
   /////////////////////////////////////////////////////////////////////////////
   // instance variables
@@ -153,8 +142,8 @@ public class Compiler {
    * @see #classType
    */
   public Compiler(final List<String> _classPathElements) {
-    this.esjpType = Type.get(TYPE_ESJP);
-    this.classType = Type.get(TYPE_ESJPCLASS);
+    this.esjpType = Type.get(ADMIN_PROGRAM_JAVA);
+    this.classType = Type.get(ADMIN_PROGRAM_JAVACLASS);
     this.classPathElements = _classPathElements;
   }
 

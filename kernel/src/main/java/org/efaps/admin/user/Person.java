@@ -409,7 +409,7 @@ public class Person extends AbstractUserObject {
 
       PreparedStatement stmt = null;
 
-      final Type type = Type.get(USER_PERSON.uuid);
+      final Type type = Type.get(USER_PERSON);
 
       final Attribute attrPass = type.getAttribute("Password");
       final PasswordType val = (PasswordType) attrPass.newInstance();
@@ -578,7 +578,7 @@ public class Person extends AbstractUserObject {
                           final String _newPasswd)
   throws Exception
   {
-    final Type type = Type.get(USER_PERSON.uuid);
+    final Type type = Type.get(USER_PERSON);
 
     if (_newPasswd.length() == 0) {
       throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd
@@ -601,7 +601,7 @@ public class Person extends AbstractUserObject {
   public void setPassword(final String _newPasswd)
       throws Exception
   {
-    final Type type = Type.get(USER_PERSON.uuid);
+    final Type type = Type.get(USER_PERSON);
 
     if (_newPasswd.length() == 0) {
       throw new EFapsException(getClass(), "PassWordLength", 1, _newPasswd
@@ -811,7 +811,7 @@ public class Person extends AbstractUserObject {
                              final Role _role)
       throws EFapsException
   {
-    assignToUserObjectInDb(Type.get(USER_PERSON2ROLE.uuid),
+    assignToUserObjectInDb(Type.get(USER_PERSON2ROLE),
                            _jaasSystem,
                            _role);
   }
@@ -827,7 +827,7 @@ public class Person extends AbstractUserObject {
                                final Role _role)
       throws EFapsException
   {
-    unassignFromUserObjectInDb(Type.get(USER_PERSON2ROLE.uuid),
+    unassignFromUserObjectInDb(Type.get(USER_PERSON2ROLE),
                                _jaasSystem,
                                _role);
   }
@@ -947,7 +947,7 @@ public class Person extends AbstractUserObject {
                               final Group _group)
       throws EFapsException
   {
-    assignToUserObjectInDb(Type.get(USER_PERSON2GROUP.uuid),
+    assignToUserObjectInDb(Type.get(USER_PERSON2GROUP),
                            _jaasSystem,
                            _group);
   }
@@ -963,7 +963,7 @@ public class Person extends AbstractUserObject {
                                 final Group _group)
       throws EFapsException
   {
-    unassignFromUserObjectInDb(Type.get(USER_PERSON2GROUP.uuid),
+    unassignFromUserObjectInDb(Type.get(USER_PERSON2GROUP),
                                _jaasSystem,
                                _group);
   }
@@ -1261,7 +1261,7 @@ public class Person extends AbstractUserObject {
       throws EFapsException
   {
     long persId = 0;
-    final Type persType = Type.get(USER_PERSON.uuid);
+    final Type persType = Type.get(USER_PERSON);
     ConnectionResource rsrc = null;
     try {
       final Context context = Context.getThreadContext();

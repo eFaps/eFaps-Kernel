@@ -128,7 +128,7 @@ public abstract class AbstractUserObject extends AbstractAdminObject {
     try {
       final Context context = Context.getThreadContext();
       rsrc = context.getConnectionResource();
-      final Type keyType = Type.get(USER_JAASKEY.uuid);
+      final Type keyType = Type.get(USER_JAASKEY);
 
       PreparedStatement stmt = null;
       final StringBuilder cmd = new StringBuilder();

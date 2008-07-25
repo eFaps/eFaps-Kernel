@@ -180,7 +180,7 @@ abstract public class AbstractMenu extends AbstractCommand {
   private void readFromDB4Childs() throws CacheReloadException
   {
     try {
-      final Instance menuInst = new Instance(Type.get(MENU.uuid), getId());
+      final Instance menuInst = new Instance(Type.get(MENU), getId());
       final SearchQuery query = new SearchQuery();
       query.setExpand(menuInst, "Admin_UI_Menu2Command\\FromMenu");
       query.addSelect("ID");

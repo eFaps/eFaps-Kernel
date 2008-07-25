@@ -418,17 +418,16 @@ public class Attribute extends AbstractDataModelObject {
                                          defaultval);
           attr.setParent(type);
           UUID uuid = attr.getAttributeType().getUUID();
-          if (uuid.equals(ATTRTYPE_LINK.uuid)
-              || uuid.equals(ATTRTYPE_LINK_WITH_RANGES.uuid)) {
+          if (uuid.equals(ATTRTYPE_LINK.uuid) || uuid.equals(ATTRTYPE_LINK_WITH_RANGES.uuid)) {
             final Type linkType = Type.get(typeLinkId);
             attr.setLink(linkType);
             linkType.addLink(attr);
           } else if (uuid.equals(ATTRTYPE_CREATOR_LINK.uuid)) {
-            final Type linkType = Type.get(USER_PERSON.uuid);
+            final Type linkType = Type.get(USER_PERSON);
             attr.setLink(linkType);
             linkType.addLink(attr);
           } else if (uuid.equals(ATTRTYPE_MODIFIER_LINK.uuid)) {
-            final Type linkType = Type.get(USER_PERSON.uuid);
+            final Type linkType = Type.get(USER_PERSON);
             attr.setLink(linkType);
             linkType.addLink(attr);
           }

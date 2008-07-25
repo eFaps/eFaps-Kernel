@@ -234,7 +234,7 @@ public class Install
       throws EFapsException
   {
     final Map<String,Long> versions = new HashMap<String,Long>();
-    final Type versionType = Type.get(ADMIN_COMMON_VERSION.uuid);
+    final Type versionType = Type.get(ADMIN_COMMON_VERSION);
     if (versionType != null) {
       final SearchQuery query = new SearchQuery();
       query.setQueryTypes(versionType.getName());

@@ -171,7 +171,7 @@ public class UserLoginModule implements LoginModule {
           ret = true;
           if (mode.equals(ActionCallback.Mode.SET_PASSWORD)) {
 
-            final Type type = Type.get(USER_PERSON.uuid);
+            final Type type = Type.get(USER_PERSON);
             final Update update = new Update(type, "" + person.getId());
             final Status status = update.add("Password", newPassword);
 

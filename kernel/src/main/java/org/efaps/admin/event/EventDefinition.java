@@ -221,7 +221,7 @@ public class EventDefinition extends AbstractAdminObject implements
    */
   public static void initialise() throws Exception {
     final SearchQuery query = new SearchQuery();
-    query.setQueryTypes(Type.get(EVENT_DEFINITION.uuid).getName());
+    query.setQueryTypes(Type.get(EVENT_DEFINITION).getName());
     query.setExpandChildTypes(true);
     query.addSelect("OID");
     query.addSelect("ID");
