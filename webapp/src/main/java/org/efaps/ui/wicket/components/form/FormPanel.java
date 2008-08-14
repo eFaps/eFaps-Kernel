@@ -45,7 +45,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @version $Id$
  *
  */
-public class FormPanel extends Panel<UIForm> {
+public class FormPanel extends Panel {
 
   private static final long serialVersionUID = 1550111712776698728L;
 
@@ -55,8 +55,8 @@ public class FormPanel extends Panel<UIForm> {
   public static final EFapsContentReference FILEINPUT =
       new EFapsContentReference(FormPanel.class, "EFapsFileInput.js");
 
-  private final Map<String, Label<String>> requiredComponents =
-      new HashMap<String, Label<String>>();
+  private final Map<String, Label> requiredComponents =
+      new HashMap<String, Label>();
 
   public FormPanel(final String _wicketId, final Page _page,
                    final IModel<UIForm> _model,
@@ -71,7 +71,7 @@ public class FormPanel extends Panel<UIForm> {
     if (uiForm.isFileUpload()) {
       add(StaticHeaderContributor.forJavaScript(FILEINPUT));
     }
-    final RepeatingView<Object> rowRepeater = new RepeatingView<Object>("rowRepeater");
+    final RepeatingView rowRepeater = new RepeatingView("rowRepeater");
     this.add(rowRepeater);
 
     for (final FormRow rowmodel : _formelementmodel.getRowModels()) {
@@ -91,11 +91,11 @@ public class FormPanel extends Panel<UIForm> {
    * @return value of instance variable {@link #requiredComponents}
    */
 
-  public Map<String, Label<String>> getRequiredComponents() {
+  public Map<String, Label> getRequiredComponents() {
     return this.requiredComponents;
   }
 
-  public void addRequiredComponent(final String _name, final Label<String> _label) {
+  public void addRequiredComponent(final String _name, final Label _label) {
     this.requiredComponents.put(_name, _label);
   }
 

@@ -44,7 +44,7 @@ public class FormContainer extends Form<Object> {
 
   private static final long serialVersionUID = 1L;
 
-  private Component<?> defaultSubmit;
+  private Component defaultSubmit;
 
   private String actionUrl;
 
@@ -78,21 +78,21 @@ public class FormContainer extends Form<Object> {
   @Override
   protected void onComponentTag(final ComponentTag _tag) {
     super.onComponentTag(_tag);
-    if (((AbstractUIObject) this.getPage().getModelObject()).isCreateMode()
-        || ((AbstractUIObject) this.getPage().getModelObject()).isEditMode()) {
+    if (((AbstractUIObject) this.getPage().getDefaultModelObject()).isCreateMode()
+        || ((AbstractUIObject) this.getPage().getDefaultModelObject()).isEditMode()) {
       _tag.put("enctype", "multipart/form-data");
     }
 
     this.actionUrl = urlFor(IFormSubmitListener.INTERFACE).toString();
     // only on SearchMode we want normal submit, in any other case we use
     // AjaxSubmit
-    if (!((AbstractUIObject) this.getPage().getModelObject()).isSearchMode()) {
+    if (!((AbstractUIObject) this.getPage().getDefaultModelObject()).isSearchMode()) {
       _tag.put("onSubmit", "return false;");
       _tag.put("action", "");
     }
   }
 
-  public void setDefaultSubmit(final Component<?> _component) {
+  public void setDefaultSubmit(final Component _component) {
     this.defaultSubmit = _component;
   }
 

@@ -29,7 +29,7 @@ import org.apache.wicket.model.IModel;
  * @author jmox
  * @version $Id:LabelComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class LabelComponent extends WebComponent<String> {
+public class LabelComponent extends WebComponent {
 
   private static final long serialVersionUID = 1L;
 
@@ -40,6 +40,6 @@ public class LabelComponent extends WebComponent<String> {
   @Override
   protected void onComponentTagBody(final MarkupStream _markupStream,
                                     final ComponentTag _openTag) {
-    super.replaceComponentTagBody(_markupStream, _openTag, super.getModelObject());
+    super.replaceComponentTagBody(_markupStream, _openTag, (CharSequence) super.getDefaultModelObject());
   }
 }

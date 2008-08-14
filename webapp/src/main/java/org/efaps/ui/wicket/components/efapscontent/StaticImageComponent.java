@@ -28,7 +28,7 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
 /**
  * @author jmox * @version $Id:StaticImageComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class StaticImageComponent extends WebComponent<Object> {
+public class StaticImageComponent extends WebComponent {
 
   private static final long serialVersionUID = 1L;
 

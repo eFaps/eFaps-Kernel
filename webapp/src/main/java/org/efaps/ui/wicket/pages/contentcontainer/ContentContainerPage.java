@@ -56,7 +56,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:ContentContainerPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class ContentContainerPage extends AbstractMergePage<Object> {
+public class ContentContainerPage extends AbstractMergePage {
 
   private static final long serialVersionUID = 3169723830151134904L;
 
@@ -180,7 +180,7 @@ public class ContentContainerPage extends AbstractMergePage<Object> {
 
     this.menuTreeKey = "MenuTree_" + this.getPageMapName();
     // add a Split
-    final WebMarkupContainer<Object> split = new WebMarkupContainer<Object>("split");
+    final WebMarkupContainer split = new WebMarkupContainer("split");
     this.add(split);
     split.add(new SplitContainerBehavior());
     // add a StructurBowser?
@@ -191,12 +191,12 @@ public class ContentContainerPage extends AbstractMergePage<Object> {
       split
           .add(new ListOnlyPanel("left", this.menuTreeKey, getPageParameters()));
     }
-    final WebMarkupContainer<Object> right = new WebMarkupContainer<Object>("right");
+    final WebMarkupContainer right = new WebMarkupContainer("right");
     split.add(right);
 
     right.add(new ContentPaneBehavior(80, 20));
 
-    final WebMarkupContainer<Object> parent = new WebMarkupContainer<Object>("splitrightact");
+    final WebMarkupContainer parent = new WebMarkupContainer("splitrightact");
     right.add(parent);
     parent.setOutputMarkupId(true);
 
@@ -233,8 +233,8 @@ public class ContentContainerPage extends AbstractMergePage<Object> {
                *
                * @see org.apache.wicket.markup.html.link.IPageLink#getPage()
                */
-              public Page<?> getPage() {
-                AbstractContentPage<?> page;
+              public Page getPage() {
+                AbstractContentPage page;
                 if (ContentContainerPage.this.webForm) {
                   page = new FormPage(parametersForPage);
                 } else {

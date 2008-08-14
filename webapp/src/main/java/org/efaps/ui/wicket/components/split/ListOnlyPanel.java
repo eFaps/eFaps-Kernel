@@ -33,7 +33,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id$
  */
-public class ListOnlyPanel extends Panel<Object> {
+public class ListOnlyPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
@@ -49,7 +49,7 @@ public class ListOnlyPanel extends Panel<Object> {
     final SplitHeaderPanel header = new SplitHeaderPanel("header", false);
     this.add(header);
 
-    final WebMarkupContainer<Object> overflow = new WebMarkupContainer<Object>("overflow");
+    final WebMarkupContainer overflow = new WebMarkupContainer("overflow");
     overflow.setOutputMarkupId(true);
     overflow.add(new MenuTree("menu", _parameters, _listmenukey)
         .setOutputMarkupId(true));

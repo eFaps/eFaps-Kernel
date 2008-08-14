@@ -86,7 +86,7 @@ public class ModalWindowContainer extends ModalWindow {
   }
 
   public String getReloadJavaScript() {
-    final AbstractUIObject model = (AbstractUIObject) this.getPage().getModelObject();
+    final AbstractUIObject model = (AbstractUIObject) this.getPage().getDefaultModelObject();
     String javascript = "";
     if (model != null) {
       Class<? extends Page> clazz = null;

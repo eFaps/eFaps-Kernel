@@ -30,12 +30,12 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
  * @author jmox
  * @version $Id$
  */
-public abstract class AbstractMenuItemAjaxComponent extends WebComponent<UIMenuItem> {
+public abstract class AbstractMenuItemAjaxComponent extends WebComponent {
 
   private static final long serialVersionUID = 1L;
 
   public AbstractMenuItemAjaxComponent(final String _id,
-                                       final IModel<UIMenuItem> _model) {
+                                       final IModel _model) {
     super(_id, _model);
   }
 

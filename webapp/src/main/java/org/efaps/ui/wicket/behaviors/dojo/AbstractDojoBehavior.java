@@ -57,7 +57,7 @@ public abstract class AbstractDojoBehavior extends AbstractBehavior {
    * @see org.apache.wicket.behavior.AbstractBehavior#beforeRender(org.apache.wicket.Component)
    */
   @Override
-  public void beforeRender(final Component<?> _component) {
+  public void beforeRender(final Component _component) {
     super.beforeRender(_component);
     _component.setOutputMarkupId(true);
   }

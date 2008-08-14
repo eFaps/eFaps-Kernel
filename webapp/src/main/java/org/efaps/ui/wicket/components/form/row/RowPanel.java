@@ -36,7 +36,7 @@ import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
 
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
-public class RowPanel extends Panel<FormRow> {
+public class RowPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
@@ -44,14 +44,14 @@ public class RowPanel extends Panel<FormRow> {
                   final UIForm _formmodel, final Page _page,
                   final FormPanel _formPanel) {
     super(_wicketId, _model);
-    final FormRow row = super.getModelObject();
-    final RepeatingView<Object> cellRepeater = new RepeatingView<Object>("cellRepeater");
+    final FormRow row = (FormRow) super.getDefaultModelObject();
+    final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
     add(cellRepeater);
 
     for (final UIFormCell cell : row.getValues()) {
 
-      final Label<String> labelCell =
-          new Label<String>(cellRepeater.newChildId(), cell.getCellLabel());
+      final Label labelCell =
+          new Label(cellRepeater.newChildId(), cell.getCellLabel());
       cellRepeater.add(labelCell);
 
       if (cell.isRequired()) {

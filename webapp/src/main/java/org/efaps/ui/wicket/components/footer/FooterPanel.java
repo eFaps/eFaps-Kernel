@@ -49,7 +49,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:FooterPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class FooterPanel<T> extends Panel<T> {
+public class FooterPanel extends Panel {
 
   private static final long serialVersionUID = -1722339596237748160L;
 
@@ -77,13 +77,13 @@ public class FooterPanel<T> extends Panel<T> {
    * @param _form
    *                FormContainer of the Page (needed to submit the Form)
    */
-  public FooterPanel(final String _id, final IModel<T> _model,
+  public FooterPanel(final String _id, final IModel _model,
                      final ModalWindowContainer _modalWindow,
                      final FormContainer _form) {
     super(_id, _model);
     this.modalWindow = _modalWindow;
 
-    final AbstractUIObject uiObject = (AbstractUIObject) super.getModelObject();
+    final AbstractUIObject uiObject = (AbstractUIObject) super.getDefaultModelObject();
 
     // if we want a SucessDialog we add it here, it will be opened after closing
     // the window
@@ -151,8 +151,8 @@ public class FooterPanel<T> extends Panel<T> {
       this.add(button);
     } else {
       closelabelkey = "Close";
-      final Component<?> invisible =
-          new WebMarkupContainer<Object>("createeditsearch").setVisible(false);
+      final Component invisible =
+          new WebMarkupContainer("createeditsearch").setVisible(false);
       add(invisible);
     }
 

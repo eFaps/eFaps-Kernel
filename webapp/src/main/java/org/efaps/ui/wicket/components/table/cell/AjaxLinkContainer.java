@@ -46,11 +46,11 @@ import org.efaps.ui.wicket.pages.error.ErrorPage;
  * @author jmox
  * @version $Id:AjaxLinkContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxLinkContainer<T> extends WebMarkupContainer<T> {
+public class AjaxLinkContainer extends WebMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
-  public AjaxLinkContainer(final String id, final IModel<T> model) {
+  public AjaxLinkContainer(final String id, final IModel model) {
     super(id, model);
     this.add(new AjaxSelfCallBackBehavior());
     this.add(new AjaxParentCallBackBehavior());
@@ -72,7 +72,7 @@ public class AjaxLinkContainer<T> extends WebMarkupContainer<T> {
 
     @Override
     protected void onEvent(final AjaxRequestTarget _target) {
-      final UITableCell cellmodel = (UITableCell) super.getComponent().getModelObject();
+      final UITableCell cellmodel = (UITableCell) super.getComponent().getDefaultModelObject();
       Instance instance = null;
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());
@@ -117,7 +117,7 @@ public class AjaxLinkContainer<T> extends WebMarkupContainer<T> {
 
     @Override
     protected void onEvent(AjaxRequestTarget arg0) {
-      final UITableCell cellmodel = (UITableCell) super.getComponent().getModelObject();
+      final UITableCell cellmodel = (UITableCell) super.getComponent().getDefaultModelObject();
       Instance instance = null;
       if (cellmodel.getOid() != null) {
         instance = new Instance(cellmodel.getOid());

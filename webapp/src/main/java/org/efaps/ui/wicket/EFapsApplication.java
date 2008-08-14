@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
 import org.apache.wicket.Response;
@@ -29,9 +28,9 @@ import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.Session;
 import org.apache.wicket.authorization.Action;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
+import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebRequest;
-
 import org.efaps.ui.wicket.pages.login.LoginPage;
 import org.efaps.ui.wicket.pages.main.MainPage;
 
@@ -108,7 +107,7 @@ public class EFapsApplication extends WebApplication {
      * @see org.apache.wicket.authorization.IAuthorizationStrategy#isActionAuthorized(org.apache.wicket.Component,
      *      org.apache.wicket.authorization.Action)
      */
-    public boolean isActionAuthorized(final Component<?> _component,
+    public boolean isActionAuthorized(final Component _component,
                                       final Action _action) {
       return true;
     }
@@ -123,7 +122,7 @@ public class EFapsApplication extends WebApplication {
     @SuppressWarnings("unchecked")
     public boolean isInstantiationAuthorized(final Class _componentClass) {
 
-      if (Page.class.isAssignableFrom(_componentClass)) {
+      if (WebPage.class.isAssignableFrom(_componentClass)) {
         if (((EFapsSession) Session.get()).isLogedIn()
             || EFapsNoAuthorizationNeededInterface.class
                 .isAssignableFrom(_componentClass)) {

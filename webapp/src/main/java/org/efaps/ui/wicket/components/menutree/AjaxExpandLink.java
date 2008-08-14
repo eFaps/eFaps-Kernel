@@ -61,7 +61,7 @@ public class AjaxExpandLink extends AjaxLink {
       menutree.nodeExpanded(this.node);
     }
 
-    ((DefaultTreeModel) menutree.getModelObject()).nodeChanged(this.node);
+    ((DefaultTreeModel) menutree.getDefaultModelObject()).nodeChanged(this.node);
 
     menutree.updateTree(_target);
   }

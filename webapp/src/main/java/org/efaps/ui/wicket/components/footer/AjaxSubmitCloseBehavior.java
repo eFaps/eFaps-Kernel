@@ -119,7 +119,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
           return;
         }
 
-        final FooterPanel<?> footer =
+        final FooterPanel footer =
             this.getComponent().findParent(FooterPanel.class);
 
         if (this.uiObject.getCommand().getTarget() == Target.MODAL) {
@@ -206,7 +206,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
                                 final String[] _other) throws EFapsException {
     boolean ret = true;
     final List<Return> returns =
-        ((AbstractUIObject) this.form.getParent().getModelObject())
+        ((AbstractUIObject) this.form.getParent().getDefaultModelObject())
             .executeEvents(_other);
     for (final Return oneReturn : returns) {
       if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {
@@ -232,7 +232,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     boolean ret = true;
 
     final List<Return> validation =
-        ((AbstractUIObject) this.form.getParent().getModelObject()).validate();
+        ((AbstractUIObject) this.form.getParent().getDefaultModelObject()).validate();
 
     for (final Return oneReturn : validation) {
       if (oneReturn.get(ReturnValues.TRUE) == null) {
@@ -256,7 +256,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
    */
   private boolean checkForRequired(final AjaxRequestTarget _target) {
     boolean ret = true;
-    if (this.form.getParent().getModel() instanceof TableModel) {
+    if (this.form.getParent().getDefaultModel() instanceof TableModel) {
       return true;
     }
 
@@ -265,7 +265,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     while (iterator.hasNext()) {
       final Object object = iterator.next();
       if (object instanceof WebMarkupContainer) {
-        final Iterator<?> iterator2 = ((WebMarkupContainer<?>) object).iterator();
+        final Iterator<?> iterator2 = ((WebMarkupContainer) object).iterator();
         while (iterator2.hasNext()) {
           final Object object2 = iterator2.next();
           if (object2 instanceof FormPanel) {
@@ -279,13 +279,13 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
 
     final Map<?, ?> map =
         this.getComponent().getRequestCycle().getRequest().getParameterMap();
-    for (final Entry<String, Label<String>> entry : container.getRequiredComponents()
+    for (final Entry<String, Label> entry : container.getRequiredComponents()
         .entrySet()) {
 
       final String[] values = (String[]) map.get(entry.getKey());
       final String value = values[0];
       if (value == null || value.length() == 0) {
-        final Label<String> label = entry.getValue();
+        final Label label = entry.getValue();
         label.add(new SimpleAttributeModifier("class",
             "eFapsFormLabelRequiredForce"));
         _target.addComponent(label);

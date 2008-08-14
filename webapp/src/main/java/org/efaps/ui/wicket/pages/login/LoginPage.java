@@ -47,7 +47,7 @@ import org.efaps.ui.wicket.pages.main.MainPage;
  * @author jmox
  * @version $Id:LoginPage.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class LoginPage extends WebPage<Object> implements
+public class LoginPage extends WebPage implements
     EFapsNoAuthorizationNeededInterface {
 
   private static final long serialVersionUID = 524408099967362477L;
@@ -97,13 +97,13 @@ public class LoginPage extends WebPage<Object> implements
 
     };
     this.add(form);
-    form.add(new Label<String>("formname", new Model<String>(DBProperties.getProperty(
+    form.add(new Label("formname", new Model<String>(DBProperties.getProperty(
         "Login.Name.Label", Session.get().getLocale().getLanguage()))));
 
-    form.add(new Label<String>("formpwd", new Model<String>(DBProperties.getProperty(
+    form.add(new Label("formpwd", new Model<String>(DBProperties.getProperty(
         "Login.Password.Label", Session.get().getLocale().getLanguage()))));
 
-    final Button<Object> button = new Button<Object>("formbutton") {
+    final Button button = new Button("formbutton") {
 
       private static final long serialVersionUID = 1L;
 
@@ -121,14 +121,14 @@ public class LoginPage extends WebPage<Object> implements
 
     form.add(button);
 
-    button.add(new Label<String>("formbuttonlabel", new Model<String>(DBProperties.getProperty(
+    button.add(new Label("formbuttonlabel", new Model<String>(DBProperties.getProperty(
         "Login.Button.Label", Session.get().getLocale().getLanguage()))));
 
     if (_msg) {
-      this.add(new Label<String>("msg", new Model<String>(DBProperties.getProperty(
+      this.add(new Label("msg", new Model<String>(DBProperties.getProperty(
           "Login.Wrong.Label", Session.get().getLocale().getLanguage()))));
     } else {
-      this.add(new WebMarkupContainer<Object>("msg").setVisible(false));
+      this.add(new WebMarkupContainer("msg").setVisible(false));
     }
   }
 }

@@ -44,7 +44,7 @@ public class SearchLink extends AbstractMenuItemLink {
   @Override
   public void onClick() {
     final UIForm form =
-        (UIForm) ((MenuPanel)this.findParent(MenuPanel.class)).getModelObject();
+        (UIForm) ((MenuPanel)this.findParent(MenuPanel.class)).getDefaultModelObject();
     form.resetModel();
     final AbstractCommand command = super.getModelObject().getCommand();
     form.setCommandUUID(command.getUUID());

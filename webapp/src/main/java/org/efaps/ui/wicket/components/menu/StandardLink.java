@@ -61,7 +61,7 @@ public class StandardLink extends AbstractMenuItemLink {
     final AbstractCommand command = model.getCommand();
     if (command.getTarget() == Target.POPUP) {
       ((EFapsSession) this.getSession()).setOpenerModel(this.getPage()
-          .getModel());
+          .getDefaultModel());
     }
     final PageParameters para =
         new PageParameters("command=" + command.getUUID());

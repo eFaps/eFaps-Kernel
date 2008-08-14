@@ -36,19 +36,19 @@ import org.efaps.ui.wicket.models.objects.UITable;
  * @author jmox
  * @version $Id$
  */
-public class RowPanel extends Panel<UIRow> {
+public class RowPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
   public RowPanel(final String _id, final IModel<UIRow> _model,
                   final TablePanel _tablePanel, final boolean _updateListMenu) {
     super(_id, _model);
-    final UIRow uirow = super.getModelObject();
+    final UIRow uirow = (UIRow) super.getDefaultModelObject();
 
-    final UITable uiTable = _tablePanel.getModelObject();
+    final UITable uiTable = (UITable) _tablePanel.getDefaultModelObject();
     int i = uiTable.getTableId();
 
-    final RepeatingView<Object> cellRepeater = new RepeatingView<Object>("cellRepeater");
+    final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
     add(cellRepeater);
 
     if (uiTable.isShowCheckBoxes()) {

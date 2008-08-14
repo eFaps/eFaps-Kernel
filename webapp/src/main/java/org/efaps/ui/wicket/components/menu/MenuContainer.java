@@ -48,7 +48,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:MenuContainer.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class MenuContainer extends AbstractParentMarkupContainer<UIMenuItem> {
+public class MenuContainer extends AbstractParentMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
@@ -91,11 +91,11 @@ public class MenuContainer extends AbstractParentMarkupContainer<UIMenuItem> {
 
   private Integer childID = 0;
 
-  public MenuContainer(final String _id, final IModel<UIMenuItem> _model) {
+  public MenuContainer(final String _id, final IModel _model) {
     this(_id, _model, null);
   }
 
-  public MenuContainer(final String _id, final IModel<UIMenuItem> _model,
+  public MenuContainer(final String _id, final IModel _model,
                        final FormContainer _form) {
     super(_id, _model);
     this.form = _form;
@@ -108,7 +108,7 @@ public class MenuContainer extends AbstractParentMarkupContainer<UIMenuItem> {
   }
 
   private void initialise() {
-    final UIMenuItem model = super.getModelObject();
+    final UIMenuItem model = (UIMenuItem) super.getDefaultModelObject();
     for (final UIMenuItem menuItem : model.getChilds()) {
       addLink(menuItem);
     }
@@ -137,7 +137,7 @@ public class MenuContainer extends AbstractParentMarkupContainer<UIMenuItem> {
               new AjaxSubmitComponent(getNewChildId(), new MenuItemModel(_menuItem),
                   this.form);
           this.add(item);
-        } else if (super.getModelObject().getObject() instanceof UISearchItem) {
+        } else if (super.getDefaultModelObject() instanceof UISearchItem) {
 
           final SearchLink item =
               new SearchLink(getNewChildId(), new MenuItemModel(_menuItem));
@@ -190,7 +190,7 @@ public class MenuContainer extends AbstractParentMarkupContainer<UIMenuItem> {
 
       } else if (child instanceof AjaxOpenModalComponent) {
         final AjaxOpenModalComponent item = (AjaxOpenModalComponent) child;
-        final UIMenuItem childModel = (UIMenuItem) item.getModelObject();
+        final UIMenuItem childModel = (UIMenuItem) item.getDefaultModelObject();
 
         final String url = item.getJavaScript();
 
@@ -198,7 +198,7 @@ public class MenuContainer extends AbstractParentMarkupContainer<UIMenuItem> {
 
       } else if (child instanceof AjaxSubmitComponent) {
         final AjaxSubmitComponent item = (AjaxSubmitComponent) child;
-        final UIMenuItem childModel = (UIMenuItem) item.getModelObject();
+        final UIMenuItem childModel = (UIMenuItem) item.getDefaultModelObject();
 
         final String url = item.getJavaScript();
 
@@ -227,7 +227,7 @@ public class MenuContainer extends AbstractParentMarkupContainer<UIMenuItem> {
   public String convertToHtml(final ComponentTag _openTag) {
     final CharSequence id = _openTag.getString("id");
 
-    final UIMenuItem model = super.getModelObject();
+    final UIMenuItem model = (UIMenuItem) super.getDefaultModelObject();
 
     final StringBuilder html = new StringBuilder();
 

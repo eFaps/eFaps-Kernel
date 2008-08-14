@@ -38,17 +38,17 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 import org.efaps.ui.wicket.resources.EFapsContentReference;
 import org.efaps.ui.wicket.resources.StaticHeaderContributor;
 
-public class TablePanel extends Panel<UITable> {
+public class TablePanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
   public static final EFapsContentReference CSS =
       new EFapsContentReference(TablePanel.class, "TablePanel.css");
 
-  public TablePanel(final String _id, final IModel<UITable> _model, final Page _page) {
+  public TablePanel(final String _id, final IModel _model, final Page _page) {
     super(_id, _model);
 
-    final UITable  model =super.getModelObject();
+    final UITable  model =(UITable) super.getDefaultModelObject();
 
     if (!model.isInitialised()) {
       model.execute();
@@ -58,12 +58,12 @@ public class TablePanel extends Panel<UITable> {
 
     add(StaticHeaderContributor.forCss(CSS));
 
-    final RepeatingView<Object> rowsRepeater = new RepeatingView<Object>("rowRepeater");
+    final RepeatingView rowsRepeater = new RepeatingView("rowRepeater");
     add(rowsRepeater);
 
     if (model.getValues().isEmpty()) {
-      final Label<String> nodata =
-          new Label<String>(rowsRepeater.newChildId(), DBProperties
+      final Label nodata =
+          new Label(rowsRepeater.newChildId(), DBProperties
               .getProperty("WebTable.NoData"));
       nodata.add(new SimpleAttributeModifier("class", "eFapsTableNoData"));
       rowsRepeater.add(nodata);

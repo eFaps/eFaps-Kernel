@@ -35,15 +35,15 @@ import org.efaps.ui.wicket.models.objects.UISearchItem;
  * @author jmox
  * @version $Id:MenuPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class MenuPanel<T> extends Panel<T> {
+public class MenuPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public MenuPanel(final String _id, final IModel<T> _model) {
+  public MenuPanel(final String _id, final IModel _model) {
     this(_id, _model, null);
   }
 
-  public MenuPanel(final String _id, final IModel<T> _model,
+  public MenuPanel(final String _id, final IModel _model,
                    final FormContainer _form) {
     super(_id,  _model);
 
@@ -62,7 +62,7 @@ public class MenuPanel<T> extends Panel<T> {
 
       add(menu);
     } else {
-      add(new WebMarkupContainer<Object>("eFapsMenu"));
+      add(new WebMarkupContainer("eFapsMenu"));
     }
 
   }

@@ -111,13 +111,13 @@ public class MenuTree extends AbstractTree {
         new UIMenuItem(UUID.fromString(_parameters.getString("command")),
             _parameters.getString("oid"));
 
-    this.setModel(new Model((Serializable) model.getTreeModel()));
+    this.setDefaultModel(new Model((Serializable) model.getTreeModel()));
 
     add(StaticHeaderContributor.forCss(CSS));
     ((EFapsSession) this.getSession()).putIntoCache(this.menuKey, this);
 
     final DefaultMutableTreeNode rootNode =
-        (DefaultMutableTreeNode) ((DefaultTreeModel) getModelObject())
+        (DefaultMutableTreeNode) ((DefaultTreeModel) getDefaultModelObject())
             .getRoot();
 
     boolean noChildSelected = true;
@@ -144,7 +144,7 @@ public class MenuTree extends AbstractTree {
                   final String _menukey) {
     super(_wicketId);
     this.menuKey = _menukey;
-    this.setModel(new Model((Serializable) _model));
+    this.setDefaultModel(new Model((Serializable) _model));
 
     final ITreeState treestate = this.getTreeState();
     treestate.expandAll();
@@ -166,7 +166,7 @@ public class MenuTree extends AbstractTree {
   @Override
   protected void populateTreeItem(final WebMarkupContainer item, final int level) {
     final DefaultMutableTreeNode node =
-        (DefaultMutableTreeNode) item.getModelObject();
+        (DefaultMutableTreeNode) item.getDefaultModelObject();
 
     item.add(new AbstractBehavior() {
 
@@ -331,7 +331,7 @@ public class MenuTree extends AbstractTree {
 
                 private static final long serialVersionUID = 1L;
 
-                public Page<UITable> getPage() {
+                public Page getPage() {
                   final TablePage page = new TablePage(para);
                   page.setMenuTreeKey(getMenuKey());
                   return page;
@@ -349,7 +349,7 @@ public class MenuTree extends AbstractTree {
 
                 private static final long serialVersionUID = 1L;
 
-                public Page<UIForm> getPage() {
+                public Page getPage() {
                   final FormPage page = new FormPage(para);
                   page.setMenuTreeKey(getMenuKey());
                   return page;
@@ -404,7 +404,7 @@ public class MenuTree extends AbstractTree {
     protected void respond(final AjaxRequestTarget _target) {
       final DefaultMutableTreeNode node = MenuTree.this.oidToNode.get(getOid());
       final DefaultTreeModel treemodel =
-          (DefaultTreeModel) this.getComponent().getModel().getObject();
+          (DefaultTreeModel) this.getComponent().getDefaultModel().getObject();
       final UIMenuItem model = (UIMenuItem) node.getUserObject();
       final MenuTree tree = (MenuTree) this.getComponent();
       if (getMode() == TargetMode.EDIT) {

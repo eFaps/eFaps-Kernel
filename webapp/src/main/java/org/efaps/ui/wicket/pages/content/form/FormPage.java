@@ -48,7 +48,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:FormPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public class FormPage extends AbstractContentPage<UIForm> {
+public class FormPage extends AbstractContentPage {
 
   private static final long serialVersionUID = -3554311414948286302L;
 
@@ -64,11 +64,11 @@ public class FormPage extends AbstractContentPage<UIForm> {
     this(new FormModel(new UIForm(_parameters)), _modalWindow);
   }
 
-  public FormPage(final IModel<UIForm> _model) {
+  public FormPage(final IModel _model) {
     this(_model, null);
   }
 
-  public FormPage(final IModel<UIForm> _model, final ModalWindowContainer _modalWindow) {
+  public FormPage(final IModel _model, final ModalWindowContainer _modalWindow) {
     super(_model, _modalWindow);
     this.addComponents();
   }
@@ -79,7 +79,7 @@ public class FormPage extends AbstractContentPage<UIForm> {
     this(new FormModel(new UIForm(_parameters)), _modalWindow, _pagemap);
   }
 
-  public FormPage(final IModel<UIForm> _model, final ModalWindowContainer _modalWindow,
+  public FormPage(final IModel _model, final ModalWindowContainer _modalWindow,
                   final IPageMap _pagemap) {
     super(_model, _modalWindow, _pagemap);
     this.addComponents();
@@ -91,20 +91,20 @@ public class FormPage extends AbstractContentPage<UIForm> {
     final FormContainer form = new FormContainer("form");
     add(form);
 
-    final UIForm model = (UIForm) super.getModelObject();
+    final UIForm model = (UIForm) super.getDefaultModelObject();
 
     if (!model.isInitialised()) {
       model.execute();
     }
     super.addComponents(form);
 
-    final WebMarkupContainer<Object> script = new WebMarkupContainer<Object>("selectscript");
+    final WebMarkupContainer script = new WebMarkupContainer("selectscript");
     this.add(script);
     script.setVisible(model.isCreateMode()
         || model.isEditMode()
         || model.isSearchMode());
     int i = 0;
-    final RepeatingView<Object> elementRepeater = new RepeatingView<Object>("elementRepeater");
+    final RepeatingView elementRepeater = new RepeatingView("elementRepeater");
     form.add(elementRepeater);
     for (final Element element : model.getElements()) {
       if (element.getType().equals(ElementType.FORM)) {

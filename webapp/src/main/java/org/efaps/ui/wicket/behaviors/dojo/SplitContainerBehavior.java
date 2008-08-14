@@ -70,7 +70,7 @@ public class SplitContainerBehavior extends AbstractDojoBehavior {
   private String style = "width: 100%; height: 100%;";
 
   @Override
-  public void onComponentTag(final Component<?> _component, final ComponentTag _tag) {
+  public void onComponentTag(final Component _component, final ComponentTag _tag) {
     super.onComponentTag(_component, _tag);
     _tag.put("dojoType", "dijit.layout.SplitContainer");
     _tag.put("orientation", this.orientation.value);

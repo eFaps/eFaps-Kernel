@@ -60,7 +60,7 @@ public class FilterPage extends WebPage {
   public FilterPage(final IModel<UITable> _model,
                     final ModalWindowContainer _modalwindow) {
     super(_model);
-    final UITable table  = (UITable)super.getModelObject();
+    final UITable table  = (UITable)super.getDefaultModelObject();
     add(StaticHeaderContributor.forCss(CSS));
 
     final FormContainer form = new FormContainer("eFapsForm");
@@ -71,7 +71,7 @@ public class FilterPage extends WebPage {
 
     form.add(checksList);
 
-    final AjaxButton<Object> ajaxbutton = new AjaxButton<Object>(Button.LINKID, form) {
+    final AjaxButton ajaxbutton = new AjaxButton(Button.LINKID, form) {
 
       private static final long serialVersionUID = 1L;
 
@@ -116,7 +116,7 @@ public class FilterPage extends WebPage {
         .add(new Button("closeButton", ajaxcancel, "cancel", Button.ICON_CANCEL));
   }
 
-  public class ValueCheckBox extends FormComponent<Object> {
+  public class ValueCheckBox extends FormComponent {
 
     private static final long serialVersionUID = 1L;
 
@@ -146,7 +146,7 @@ public class FilterPage extends WebPage {
 
     @Override
     protected void populateItem(final ListItem _item) {
-      final WebMarkupContainer<Object> tr = new WebMarkupContainer<Object>("listview_tr");
+      final WebMarkupContainer tr = new WebMarkupContainer("listview_tr");
       _item.add(tr);
 
       if (this.odd) {
@@ -159,7 +159,7 @@ public class FilterPage extends WebPage {
       tr
           .add(new ValueCheckBox("listview_tr_check", new Model(_item
               .getIndex())));
-      tr.add(new Label<String>("listview_tr_label", _item.getModelObjectAsString()));
+      tr.add(new Label("listview_tr_label", _item.getDefaultModelObjectAsString()));
     }
   }
 

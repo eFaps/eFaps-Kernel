@@ -33,7 +33,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:StructurBrowserPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public class StructurBrowserPage extends AbstractContentPage<UIStructurBrowser> {
+public class StructurBrowserPage extends AbstractContentPage {
 
   private static final long serialVersionUID = 7564911406648729094L;
 
@@ -49,7 +49,7 @@ public class StructurBrowserPage extends AbstractContentPage<UIStructurBrowser> 
   protected void addComponents() {
     add(StaticHeaderContributor.forCss(CSS));
 
-    final UIStructurBrowser model = (UIStructurBrowser) super.getModelObject();
+    final UIStructurBrowser model = (UIStructurBrowser) super.getDefaultModelObject();
     if (!model.isInitialised()) {
       model.execute();
     }

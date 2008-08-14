@@ -42,7 +42,7 @@ import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
  * @author jmox
  * @version $Id$
  */
-public class StructurBrowserTreeTablePanel extends Panel<UIStructurBrowser> {
+public class StructurBrowserTreeTablePanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
@@ -55,7 +55,7 @@ public class StructurBrowserTreeTablePanel extends Panel<UIStructurBrowser> {
                                        final IModel<UIStructurBrowser> _model) {
     super(_id, _model);
 
-    final UIStructurBrowser model = super.getModelObject();
+    final UIStructurBrowser model = (UIStructurBrowser) super.getDefaultModelObject();
     if (!model.isInitialised()) {
       model.execute();
     }

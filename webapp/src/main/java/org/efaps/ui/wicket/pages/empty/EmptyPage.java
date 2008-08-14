@@ -27,7 +27,7 @@ import org.apache.wicket.markup.html.WebPage;
  * @author jmox
  * @version $Id$
  */
-public class EmptyPage extends WebPage<Object>  {
+public class EmptyPage extends WebPage  {
 
   private static final long serialVersionUID = 1L;
 

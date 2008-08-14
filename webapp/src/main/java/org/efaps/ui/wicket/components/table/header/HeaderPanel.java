@@ -62,7 +62,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id:TableHeaderPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class HeaderPanel extends Panel<UITable> {
+public class HeaderPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
@@ -72,14 +72,14 @@ public class HeaderPanel extends Panel<UITable> {
   public static final EFapsContentReference JAVASCRIPT =
       new EFapsContentReference(HeaderPanel.class, "HeaderPanel.js");
 
-  private final Component<?> tablepanel;
+  private final Component tablepanel;
 
   private final String headerproperties;
 
   public HeaderPanel(final String _id, final TablePanel _tablePanel) {
-    super(_id, _tablePanel.getModel());
+    super(_id, _tablePanel.getDefaultModel());
     this.tablepanel = _tablePanel;
-    final UITable uitable = super.getModelObject();
+    final UITable uitable = (UITable) super.getDefaultModelObject();
     this.headerproperties = "eFapsTable" + uitable.getTableId();
 
     this.add(new AjaxStoreColumnWidthBehavior());
@@ -103,7 +103,7 @@ public class HeaderPanel extends Panel<UITable> {
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
             .getBrowserWidth();
 
-    final RepeatingView<Object> cellRepeater = new RepeatingView<Object>("cellRepeater");
+    final RepeatingView cellRepeater = new RepeatingView("cellRepeater");
     add(cellRepeater);
     int i = uitable.getTableId();
     if (uitable.isShowCheckBoxes()) {
@@ -201,7 +201,7 @@ public class HeaderPanel extends Panel<UITable> {
             + "\";\n  "
             + this.headerproperties
             + ".modelID = "
-            + ( super.getModelObject()).getTableId()
+            + ((UITable) super.getDefaultModelObject()).getTableId()
             + ";\n  "
             + this.headerproperties
             + ".storeColumnWidths = "
@@ -232,7 +232,7 @@ public class HeaderPanel extends Panel<UITable> {
     final StringBuilder ret = new StringBuilder();
 
     ret.append(CssUtils.INLINE_OPEN_TAG).append(".eFapsCSSId").append(
-        super.getModelObject().getTableId()).append("{}\n");
+        ((UITable)super.getDefaultModelObject()).getTableId()).append("{}\n");
     for (final String width : _widths) {
       ret.append(width);
     }
@@ -278,9 +278,9 @@ public class HeaderPanel extends Panel<UITable> {
           this.getComponent().getRequest().getParameter(COLUMNW_PARAMETERNAME);
       try {
         Context.getThreadContext().setUserAttribute(
-            ((UITable)this.getComponent().getModelObject())
+            ((UITable)this.getComponent().getDefaultModelObject())
                 .getUserAttributeKey(UserAttributeKey.COLUMNWIDTH), widths);
-        ((UITable)this.getComponent().getModelObject()).resetModel();
+        ((UITable)this.getComponent().getDefaultModelObject()).resetModel();
       } catch (final EFapsException e) {
         throw new RestartResponseException(new ErrorPage(e));
       }
@@ -313,7 +313,7 @@ public class HeaderPanel extends Panel<UITable> {
           this.getComponent().getRequest().getParameter(
               COLUMNORDER_PARAMETERNAME);
 
-      ((UITable)this.getComponent().getModelObject()).setColumnOrder(order);
+      ((UITable)this.getComponent().getDefaultModelObject()).setColumnOrder(order);
 
     }
   }
@@ -331,12 +331,12 @@ public class HeaderPanel extends Panel<UITable> {
 
     @Override
     protected void respond(final AjaxRequestTarget _target) {
-      final TableModel model = (TableModel) this.getComponent().getModel();
+      final TableModel model = (TableModel) this.getComponent().getDefaultModel();
       model.getObject().resetModel();
       if (this.getComponent().getPage() instanceof TablePage) {
         this.getComponent().setResponsePage(new TablePage(model));
       } else {
-        final UIForm uiform = (UIForm) this.getComponent().getPage().getModelObject();
+        final UIForm uiform = (UIForm) this.getComponent().getPage().getDefaultModelObject();
         this.getComponent().setResponsePage(
             new FormPage(new FormModel(uiform)));
       }

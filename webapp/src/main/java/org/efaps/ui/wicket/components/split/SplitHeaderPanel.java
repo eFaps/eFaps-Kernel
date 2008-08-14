@@ -45,7 +45,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:SplitHeaderPanel.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class SplitHeaderPanel extends Panel<Object> {
+public class SplitHeaderPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
@@ -85,7 +85,7 @@ public class SplitHeaderPanel extends Panel<Object> {
    * style "display" to "none". This is necessary because Firefox is is showing
    * the scrollbars of a div even if it is behind another div (z-index)
    */
-  private final Set<Component<?>> hideComponents = new HashSet<Component<?>>();
+  private final Set<Component> hideComponents = new HashSet<Component>();
 
   public SplitHeaderPanel(final String _id, final boolean _hidevertical) {
     super(_id);
@@ -94,7 +94,7 @@ public class SplitHeaderPanel extends Panel<Object> {
     this.add(StaticHeaderContributor.forCss(CSS));
     this.add(new StringHeaderContributor(getJavaScript()));
 
-    this.add(new Label<String>("titel", DBProperties.getProperty("Split.Titel")));
+    this.add(new Label("titel", DBProperties.getProperty("Split.Titel")));
 
     if (this.hidevertical) {
       final AjaxLink<?> linkvertical = new AjaxLink<Object>("expandcontractvertical") {
@@ -111,10 +111,10 @@ public class SplitHeaderPanel extends Panel<Object> {
           while (iter.hasNext()) {
             Object child = iter.next();
             if (child instanceof WebMarkupContainer) {
-              List<?> behaviors = ((WebMarkupContainer<?>) child).getBehaviors();
+              List<?> behaviors = ((WebMarkupContainer) child).getBehaviors();
               for (Object behavior : behaviors) {
                 if (behavior instanceof ContentPaneBehavior) {
-                  splitId = ((WebMarkupContainer<?>) child).getMarkupId();
+                  splitId = ((WebMarkupContainer) child).getMarkupId();
                   found = true;
                   break;
                 }
@@ -140,7 +140,7 @@ public class SplitHeaderPanel extends Panel<Object> {
       };
       this.add(linkvertical);
     } else {
-      this.add(new WebMarkupContainer<Object>("expandcontractvertical").setVisible(false));
+      this.add(new WebMarkupContainer("expandcontractvertical").setVisible(false));
     }
 
     final AjaxLink<?> link = new AjaxLink<Object>("expandcontract") {
@@ -163,7 +163,7 @@ public class SplitHeaderPanel extends Panel<Object> {
                 .getMarkupId()).append("\",\"").append(panelId).append("\",\"")
             .append(this.getParent().getMarkupId()).append("\", new Array(");
         boolean addComma = false;
-        for (Component<?> _component : SplitHeaderPanel.this.hideComponents) {
+        for (Component _component : SplitHeaderPanel.this.hideComponents) {
           if (addComma) {
             ret.append(",");
           }
@@ -298,7 +298,7 @@ public class SplitHeaderPanel extends Panel<Object> {
    * @param _component
    *                Component wich must be hidden
    */
-  public void addHideComponent(final Component<?> _component) {
+  public void addHideComponent(final Component _component) {
     this.hideComponents.add(_component);
   }
 }

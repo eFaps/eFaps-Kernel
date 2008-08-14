@@ -33,7 +33,7 @@ import org.efaps.ui.wicket.models.objects.UIStructurBrowser;
  * @author jmox
  * @version $Id$
  */
-public class StructurBrowserTreePanel extends Panel<UIStructurBrowser> {
+public class StructurBrowserTreePanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 

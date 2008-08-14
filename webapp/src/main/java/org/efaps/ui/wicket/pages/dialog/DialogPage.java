@@ -51,7 +51,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class DialogPage extends AbstractMergePage<UIMenuItem> {
+public class DialogPage extends AbstractMergePage {
 
   private static final long serialVersionUID = 1L;
 
@@ -70,7 +70,7 @@ public class DialogPage extends AbstractMergePage<UIMenuItem> {
    * this instance variable stores the Compoment wich called this DialogPage, so
    * that it can be accessed
    */
-  private Component<?> parent;
+  private Component parent;
 
   /**
    * Constructor used for a DialogPage that renders a Question like: "Are you
@@ -87,7 +87,7 @@ public class DialogPage extends AbstractMergePage<UIMenuItem> {
    */
   public DialogPage(final ModalWindowContainer _modal,
                     final IModel<UIMenuItem> _model, final Map<?, ?> _parameters,
-                    final Component<?> _parent) {
+                    final Component _parent) {
     super(_model);
     this.parent = _parent;
     this.modal = _modal;
@@ -97,7 +97,7 @@ public class DialogPage extends AbstractMergePage<UIMenuItem> {
 
     this.add(StaticHeaderContributor.forCss(CSS));
 
-    this.add(new Label<String>("textLabel", DBProperties.getProperty(cmdName
+    this.add(new Label("textLabel", DBProperties.getProperty(cmdName
         + ".Question")));
 
     this.add(new Button("submitButton", new AjaxSubmitLink(Button.LINKID,
@@ -129,9 +129,9 @@ public class DialogPage extends AbstractMergePage<UIMenuItem> {
     this.modal = _modal;
     this.add(StaticHeaderContributor.forCss(CSS));
 
-    this.add(new Label<String>("textLabel", _message));
+    this.add(new Label("textLabel", _message));
 
-    this.add(new WebMarkupContainer<Object>("submitButton").setVisible(false));
+    this.add(new WebMarkupContainer("submitButton").setVisible(false));
 
     this.add(new Button("closeButton", new AjaxCloseLink(Button.LINKID),
         _button, Button.ICON_CANCEL));

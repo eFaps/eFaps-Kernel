@@ -62,7 +62,7 @@ public class StaticHeaderContributor extends HeaderContributor {
   /**
    * Component this StaticHeaderContributor is bind to
    */
-  private Component<?> component;
+  private Component component;
 
   /**
    * The HeaderType of this StaticHeaderContributor
@@ -75,7 +75,7 @@ public class StaticHeaderContributor extends HeaderContributor {
    * @see org.apache.wicket.behavior.AbstractBehavior#bind(org.apache.wicket.Component)
    */
   @Override
-  public void bind(final Component<?> _component) {
+  public void bind(final Component _component) {
     this.component = _component;
   }
 
@@ -194,7 +194,7 @@ public class StaticHeaderContributor extends HeaderContributor {
    *
    * @return value of instance variable {@link #component}
    */
-  public Component<?> getComponent() {
+  public Component getComponent() {
     return this.component;
   }
 

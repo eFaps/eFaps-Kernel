@@ -49,7 +49,7 @@ public class SortLink extends Link<UITableHeader> {
   @Override
   public void onClick() {
 
-    final UITable uiTable = ((HeaderPanel)this.findParent(HeaderPanel.class)).getModelObject();
+    final UITable uiTable = (UITable) ((HeaderPanel)this.findParent(HeaderPanel.class)).getDefaultModelObject();
     final UITableHeader uiTableHeader = super.getModelObject();
     uiTable.setSortKey(uiTableHeader.getName());
 
@@ -73,7 +73,7 @@ public class SortLink extends Link<UITableHeader> {
       this.getRequestCycle().setResponsePage(new TablePage(new TableModel(uiTable)));
     } else {
       this.getRequestCycle().setResponsePage(
-          new FormPage(new FormModel((UIForm) this.getPage().getModelObject())));
+          new FormPage(new FormModel((UIForm) this.getPage().getDefaultModelObject())));
     }
 
   }

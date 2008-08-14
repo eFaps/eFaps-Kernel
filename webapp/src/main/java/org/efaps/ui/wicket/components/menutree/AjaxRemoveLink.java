@@ -65,7 +65,7 @@ public class AjaxRemoveLink extends AjaxLink {
     }
     menutree.getTreeState().selectNode(parent, true);
 
-    ((DefaultTreeModel) menutree.getModelObject())
+    ((DefaultTreeModel) menutree.getDefaultModelObject())
         .removeNodeFromParent(this.node);
 
     if (selectParent) {

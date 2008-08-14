@@ -41,7 +41,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:AbstractContentPage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public abstract class AbstractContentPage<T> extends AbstractMergePage<T> {
+public abstract class AbstractContentPage extends AbstractMergePage {
 
   private static final long serialVersionUID = -2374207555009145191L;
 
@@ -72,17 +72,17 @@ public abstract class AbstractContentPage<T> extends AbstractMergePage<T> {
    */
   private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
-  public AbstractContentPage(final IModel<T> _model) {
+  public AbstractContentPage(final IModel _model) {
     this(_model, null);
   }
 
-  public AbstractContentPage(final IModel<T> _model,
+  public AbstractContentPage(final IModel _model,
                              final ModalWindowContainer _modalWindow) {
     super(_model);
     this.modalWindow = _modalWindow;
   }
 
-  public AbstractContentPage(final IModel<T> _model,
+  public AbstractContentPage(final IModel _model,
                              final ModalWindowContainer _modalWindow,
                              final IPageMap _pagemap) {
     super(_pagemap, _model);
@@ -101,15 +101,15 @@ public abstract class AbstractContentPage<T> extends AbstractMergePage<T> {
     add(this.modal);
     this.modal.setPageMapName("modal");
 
-    final AbstractUIObject uiObject = (AbstractUIObject) super.getModelObject();
+    final AbstractUIObject uiObject = (AbstractUIObject) super.getDefaultModelObject();
     add(new HeadingPanel("titel", uiObject.getTitle()));
 
-    add(new MenuPanel<Object>("menu", (IModel<Object>) super.getModel(), _form));
-    WebMarkupContainer<AbstractUIObject> footerpanel;
+    add(new MenuPanel("menu", (IModel<Object>) super.getDefaultModel(), _form));
+    WebMarkupContainer footerpanel;
     if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode()) {
-      footerpanel = new FooterPanel("footer",  super.getModel(), this.modalWindow, _form);
+      footerpanel = new FooterPanel("footer",  super.getDefaultModel(), this.modalWindow, _form);
     } else {
-      footerpanel = new WebMarkupContainer<AbstractUIObject>("footer");
+      footerpanel = new WebMarkupContainer("footer");
       footerpanel.setVisible(false);
     }
 
@@ -156,7 +156,7 @@ public abstract class AbstractContentPage<T> extends AbstractMergePage<T> {
     super.onAfterRender();
     if (this.menuTreeKey == null) {
       this.menuTreeKey =
-          ((AbstractUIObject) this.getModelObject()).getParameter("eFapsMenuTreeKey");
+          ((AbstractUIObject) this.getDefaultModelObject()).getParameter("eFapsMenuTreeKey");
 
     }
   }

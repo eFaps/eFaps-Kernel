@@ -31,7 +31,7 @@ import org.efaps.ui.wicket.models.objects.AbstractUIObject;
  * @author jmox
  * @version $Id$
  */
-public class AjaxSubmitCloseLink extends SubmitLink<Object> {
+public class AjaxSubmitCloseLink extends SubmitLink {
 
   private static final long serialVersionUID = 1L;
 

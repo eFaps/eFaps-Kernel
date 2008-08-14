@@ -95,7 +95,7 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
     @Override
     protected void onSubmit(final AjaxRequestTarget _target) {
       final UIMenuItem uiMenuItem =
-          (UIMenuItem) super.getComponent().getModelObject();
+          (UIMenuItem) super.getComponent().getDefaultModelObject();
 
       final Map<?, ?> para = this.form.getRequest().getParameterMap();
 
@@ -120,7 +120,7 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
         modal.show(_target);
       } else {
         final AbstractCommand command =
-            ((UIMenuItem) super.getComponent().getModelObject()).getCommand();
+            ((UIMenuItem) super.getComponent().getDefaultModelObject()).getCommand();
 
         if (command.hasEvents(EventType.UI_COMMAND_EXECUTE)) {
           try {
@@ -135,7 +135,7 @@ public class AjaxSubmitComponent extends AbstractMenuItemAjaxComponent {
             throw new RestartResponseException(new ErrorPage(e));
           }
         }
-       final AbstractUIObject uiObject = ((AbstractUIObject) this.form.getPage().getModelObject());
+       final AbstractUIObject uiObject = ((AbstractUIObject) this.form.getPage().getDefaultModelObject());
        uiObject.resetModel();
 
         Page page = null;

@@ -31,11 +31,11 @@ import org.efaps.ui.wicket.models.cell.UITableCell;
  * @author jmox
  * @version $Id$
  */
-public class CheckOutLink extends WebMarkupContainer<UITableCell> {
+public class CheckOutLink extends WebMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
-  public CheckOutLink(final String _wicketId, final IModel <UITableCell> _model) {
+  public CheckOutLink(final String _wicketId, final IModel  _model) {
     super(_wicketId, _model);
   }
 
@@ -47,7 +47,7 @@ public class CheckOutLink extends WebMarkupContainer<UITableCell> {
   @Override
   protected void onComponentTag(final ComponentTag _tag) {
     super.onComponentTag(_tag);
-    final UITableCell model =  super.getModelObject();
+    final UITableCell model =  (UITableCell) super.getDefaultModelObject();
     final StringBuilder href = new StringBuilder();
 
     href.append(model.getReference()).append("oid=").append(model.getOid());;

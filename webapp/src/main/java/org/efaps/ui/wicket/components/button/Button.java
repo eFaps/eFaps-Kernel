@@ -32,7 +32,7 @@ import org.efaps.ui.wicket.resources.EFapsContentReference;
  * @author jmox
  * @version $Id$
  */
-public class Button extends Panel<Object> {
+public class Button extends Panel {
 
   private static final long serialVersionUID = 1L;
 
@@ -49,17 +49,17 @@ public class Button extends Panel<Object> {
 
   private final ButtonImage imagediv = new ButtonImage("icon");
 
-  public Button(final String _wicketId, final WebMarkupContainer<?> _link,
+  public Button(final String _wicketId, final WebMarkupContainer _link,
                 final String _label) {
     this(_wicketId, _link, _label, null);
   }
 
-  public Button(final String _wicketId, final WebMarkupContainer<?> _link,
+  public Button(final String _wicketId, final WebMarkupContainer _link,
                 final String _label, final EFapsContentReference _icon) {
     super(_wicketId);
     this.add(_link);
     _link.add(new ButtonStyleBehavior());
-    final Label<String> buttonlabel = new Label<String>("buttonLabel", _label);
+    final Label buttonlabel = new Label("buttonLabel", _label);
     buttonlabel.add(new ButtonStyleBehavior());
     _link.add(buttonlabel);
 

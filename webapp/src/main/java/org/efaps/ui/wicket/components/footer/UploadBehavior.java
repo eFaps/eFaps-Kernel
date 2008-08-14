@@ -62,7 +62,7 @@ public class UploadBehavior extends AbstractBehavior implements
   /**
    * this instance variable stores the Component this IBhevaior is bind to
    */
-  private Component<?> component;
+  private Component component;
 
   private final ModalWindowContainer modalWindow;
 
@@ -76,7 +76,7 @@ public class UploadBehavior extends AbstractBehavior implements
    * @see org.apache.wicket.behavior.AbstractBehavior#bind(org.apache.wicket.Component)
    */
   @Override
-  public void bind(final Component<?> _form) {
+  public void bind(final Component _form) {
     super.bind(_form);
     this.component = _form;
   }
@@ -87,7 +87,7 @@ public class UploadBehavior extends AbstractBehavior implements
     } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
-    final UIForm uiForm = (UIForm) this.component.getPage().getModelObject();
+    final UIForm uiForm = (UIForm) this.component.getPage().getDefaultModelObject();
     String script;
     if (uiForm.getTarget() == Target.MODAL) {
 
@@ -139,7 +139,7 @@ public class UploadBehavior extends AbstractBehavior implements
 
     boolean ret = true;
     final List<Return> returns =
-        ((AbstractUIObject) this.component.getParent().getModelObject())
+        ((AbstractUIObject) this.component.getParent().getDefaultModelObject())
             .executeEvents(null);
     for (final Return oneReturn : returns) {
       if (oneReturn.get(ReturnValues.TRUE) == null && !oneReturn.isEmpty()) {

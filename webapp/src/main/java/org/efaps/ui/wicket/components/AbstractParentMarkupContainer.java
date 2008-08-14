@@ -32,7 +32,7 @@ import org.apache.wicket.model.IModel;
  * @author jmox
  * @version $Id$
  */
-public abstract class AbstractParentMarkupContainer<T> extends WebMarkupContainer<T> {
+public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
@@ -40,7 +40,7 @@ public abstract class AbstractParentMarkupContainer<T> extends WebMarkupContaine
     super(id);
   }
 
-  public AbstractParentMarkupContainer(String id, IModel<T> _model) {
+  public AbstractParentMarkupContainer(String id, IModel _model) {
     super(id, _model);
   }
 
@@ -79,7 +79,7 @@ public abstract class AbstractParentMarkupContainer<T> extends WebMarkupContaine
     while (childs.hasNext()) {
       markupStream.setCurrentIndex(markupStart);
 
-      final Component<?> child = (Component<?>) childs.next();
+      final Component child = (Component) childs.next();
 
       child.render(getMarkupStream());
 

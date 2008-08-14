@@ -135,7 +135,7 @@ public class XMLExport {
 
   public XMLExport(final Object object) throws EFapsException {
     if (object instanceof Component) {
-      initialise((AbstractUIObject) ((Component) object).getPage().getModelObject());
+      initialise((AbstractUIObject) ((Component) object).getPage().getDefaultModelObject());
     }
   }
 

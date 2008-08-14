@@ -37,7 +37,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id:TablePage.java 1491 2007-10-15 23:40:43Z jmox $
  */
-public class TablePage extends AbstractContentPage<UITable> {
+public class TablePage extends AbstractContentPage {
 
   private static final long serialVersionUID = 7564911406648729094L;
 
@@ -65,7 +65,7 @@ public class TablePage extends AbstractContentPage<UITable> {
   protected void addComponents() {
     this.add(StaticHeaderContributor.forCss(CSS));
 
-    final UITable table = (UITable) super.getModelObject();
+    final UITable table = (UITable) super.getDefaultModelObject();
     if (!table.isInitialised()) {
       table.execute();
     }

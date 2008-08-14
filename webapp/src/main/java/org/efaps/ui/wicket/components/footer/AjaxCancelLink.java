@@ -41,7 +41,7 @@ public class AjaxCancelLink extends AjaxLink<Object> {
   @Override
   public void onClick(final AjaxRequestTarget _target) {
 
-    final FooterPanel<?> footer = this.findParent(FooterPanel.class);
+    final FooterPanel footer = this.findParent(FooterPanel.class);
     footer.getModalWindow().setReloadChild(false);
     footer.getModalWindow().close(_target);
   }

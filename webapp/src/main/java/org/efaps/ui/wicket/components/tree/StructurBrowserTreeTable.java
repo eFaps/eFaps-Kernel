@@ -202,7 +202,7 @@ public class StructurBrowserTreeTable extends TreeTable {
    * @author jmox
    * @version $Id$
    */
-  private class StructurBrowserTreeFragment extends Panel<Object> {
+  private class StructurBrowserTreeFragment extends Panel {
 
     private static final long serialVersionUID = 1L;
 
@@ -217,7 +217,7 @@ public class StructurBrowserTreeTable extends TreeTable {
 
       add(newJunctionLink(this, "link", "image", _node));
 
-      final WebComponent<Object> direction = new WebComponent<Object>("direction");
+      final WebComponent direction = new WebComponent("direction");
       add(direction);
       final UIStructurBrowser model =
           (UIStructurBrowser) ((DefaultMutableTreeNode) _node)
@@ -229,12 +229,12 @@ public class StructurBrowserTreeTable extends TreeTable {
       } else {
         direction.add(new SimpleAttributeModifier("class", "directionUp"));
       }
-      final MarkupContainer<?> nodeLink = newNodeLink(this, "nodeLink", _node);
+      final MarkupContainer nodeLink = newNodeLink(this, "nodeLink", _node);
       add(nodeLink);
 
       nodeLink.add(newNodeIcon(nodeLink, "icon", _node));
 
-      nodeLink.add(new Label<String>("label", new AbstractReadOnlyModel<String>() {
+      nodeLink.add(new Label("label", new AbstractReadOnlyModel<String>() {
 
         private static final long serialVersionUID = 1L;
 

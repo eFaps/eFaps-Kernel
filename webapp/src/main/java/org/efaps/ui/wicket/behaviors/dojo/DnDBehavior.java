@@ -104,7 +104,7 @@ public class DnDBehavior extends AbstractDojoBehavior {
    *      org.apache.wicket.markup.ComponentTag)
    */
   @Override
-  public void onComponentTag(final Component<?> _component, final ComponentTag _tag) {
+  public void onComponentTag(final Component _component, final ComponentTag _tag) {
     super.onComponentTag(_component, _tag);
 
     if (this.type == BehaviorType.ITEM) {

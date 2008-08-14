@@ -41,7 +41,7 @@ import org.efaps.ui.wicket.models.cell.UIFormCell;
  * @author jmox
  * @version $Id$
  */
-public class ValueCellPanel extends Panel<UIFormCell> {
+public class ValueCellPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
@@ -49,25 +49,25 @@ public class ValueCellPanel extends Panel<UIFormCell> {
                         final boolean _ajaxLink) {
     super(_wicketId, _model);
 
-    final UIFormCell uiFormCell = super.getModelObject();
+    final UIFormCell uiFormCell = (UIFormCell) super.getDefaultModelObject();
 
     if (uiFormCell.getReference() == null) {
       if (uiFormCell.getIcon() == null) {
-        this.add(new WebComponent<Object>("icon").setVisible(false));
+        this.add(new WebComponent("icon").setVisible(false));
       } else {
         this.add(new StaticImageComponent("icon", uiFormCell.getIcon()));
       }
 
       this.add(new LabelComponent("label", new Model<String>(uiFormCell.getCellValue())));
-      this.add(new WebMarkupContainer<Object>("link").setVisible(false));
+      this.add(new WebMarkupContainer("link").setVisible(false));
 
     } else {
-      this.add(new WebComponent<Object>("icon").setVisible(false));
-      this.add(new WebComponent<Object>("label").setVisible(false));
+      this.add(new WebComponent("icon").setVisible(false));
+      this.add(new WebComponent("label").setVisible(false));
 
-      WebMarkupContainer<UIFormCell> link;
+      WebMarkupContainer link;
       if (_ajaxLink && uiFormCell.getTarget() != Target.POPUP) {
-        link = new AjaxLinkContainer<UIFormCell>("link", _model);
+        link = new AjaxLinkContainer("link", _model);
       } else {
         link = new ContentContainerLink<UIFormCell>("link", _model);
         if (uiFormCell.getTarget() == Target.POPUP) {
@@ -77,7 +77,7 @@ public class ValueCellPanel extends Panel<UIFormCell> {
         }
       }
       if (uiFormCell.getIcon() == null) {
-        link.add(new WebComponent<Object>("linkIcon").setVisible(false));
+        link.add(new WebComponent("linkIcon").setVisible(false));
       } else {
         link.add(new StaticImageComponent("linkIcon", uiFormCell.getIcon()));
       }

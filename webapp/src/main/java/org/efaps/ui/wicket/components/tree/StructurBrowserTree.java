@@ -280,13 +280,13 @@ public class StructurBrowserTree extends DefaultAbstractTree {
   protected void populateTreeItem(final WebMarkupContainer _item,
                                   final int _level) {
     final DefaultMutableTreeNode node =
-        (DefaultMutableTreeNode) _item.getModelObject();
+        (DefaultMutableTreeNode) _item.getDefaultModelObject();
 
     _item.add(newIndentation(_item, "indent", node, _level));
 
     _item.add(newJunctionLink(_item, "link", "image", node));
 
-    final WebComponent<Object> direction = new WebComponent<Object>("direction");
+    final WebComponent direction = new WebComponent("direction");
     _item.add(direction);
 
     final UIStructurBrowser model =
@@ -299,12 +299,12 @@ public class StructurBrowserTree extends DefaultAbstractTree {
       direction.add(new SimpleAttributeModifier("class", "directionUp"));
     }
 
-    final MarkupContainer<?> nodeLink = newNodeLink(_item, "nodeLink", node);
+    final MarkupContainer nodeLink = newNodeLink(_item, "nodeLink", node);
     _item.add(nodeLink);
 
     nodeLink.add(newNodeIcon(nodeLink, "icon", node));
 
-    nodeLink.add(new Label<String>("label", new AbstractReadOnlyModel<String>() {
+    nodeLink.add(new Label("label", new AbstractReadOnlyModel<String>() {
 
       private static final long serialVersionUID = 1L;
 
@@ -360,7 +360,7 @@ public class StructurBrowserTree extends DefaultAbstractTree {
       final DefaultMutableTreeNode node =
           StructurBrowserTree.this.oidToNode.get(getOid());
       final DefaultTreeModel treemodel =
-          (DefaultTreeModel) this.getComponent().getModel().getObject();
+          (DefaultTreeModel) this.getComponent().getDefaultModel().getObject();
       final UIStructurBrowser model =
           (UIStructurBrowser) node.getUserObject();
       final StructurBrowserTree tree =

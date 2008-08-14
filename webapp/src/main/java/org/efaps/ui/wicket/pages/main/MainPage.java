@@ -53,7 +53,7 @@ import org.efaps.util.EFapsException;
  * @author jmox
  * @version $Id$
  */
-public class MainPage extends AbstractMergePage<Object> {
+public class MainPage extends AbstractMergePage {
 
   private static final long serialVersionUID = -4231606613730698766L;
 
@@ -113,19 +113,19 @@ public class MainPage extends AbstractMergePage<Object> {
 
     this.add(new ChildCallBackHeaderContributer());
 
-    this.add(new Label<String>("welcome", DBProperties
+    this.add(new Label("welcome", DBProperties
         .getProperty("Logo.Welcome.Label")));
 
     try {
-      this.add(new Label<String>("firstname", Context.getThreadContext().getPerson()
+      this.add(new Label("firstname", Context.getThreadContext().getPerson()
           .getFirstName()));
-      this.add(new Label<String>("lastname", Context.getThreadContext().getPerson()
+      this.add(new Label("lastname", Context.getThreadContext().getPerson()
           .getLastName()));
     } catch (final EFapsException e) {
       throw new RestartResponseException(new ErrorPage(e));
     }
 
-    this.add(new Label<String>("version", DBProperties
+    this.add(new Label("version", DBProperties
         .getProperty("Logo.Version.Label")));
 
     // add the MainToolBar to the Page
@@ -134,10 +134,10 @@ public class MainPage extends AbstractMergePage<Object> {
             .fromString("87001cc3-c45c-44de-b8f1-776df507f268"))));
     this.add(menu);
 
-    this.add(new InlineFrame<Object>(IFRAME_WICKETID, PageMap
+    this.add(new InlineFrame(IFRAME_WICKETID, PageMap
         .forName(IFRAME_PAGEMAP_NAME), EmptyPage.class));
 
-    this.add(new InlineFrame<Object>("hidden", getPageMap(), EmptyPage.class));
+    this.add(new InlineFrame("hidden", getPageMap(), EmptyPage.class));
 
   }
 

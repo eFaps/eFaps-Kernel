@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.Request;
 import org.apache.wicket.RequestCycle;
@@ -36,9 +37,6 @@ import org.apache.wicket.protocol.http.IMultipartWebRequest;
 import org.apache.wicket.protocol.http.WebRequest;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.util.upload.FileItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.user.UserAttributesSet;
 import org.efaps.admin.user.UserAttributesSet.UserAttributesDefinition;
 import org.efaps.db.Context;
@@ -46,6 +44,8 @@ import org.efaps.jaas.LoginHandler;
 import org.efaps.ui.wicket.behaviors.update.UpdateInterface;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A WebSession subclass that is used e.g. as a store for behaviors that last a
@@ -79,8 +79,8 @@ public class EFapsSession extends WebSession {
    * @see #putIntoCache(String, Component)
    * @see #removeFromCache(String)
    */
-  private final Map<String, Component<?>> componentcache =
-      new HashMap<String, Component<?>>();
+  private final Map<String, Component> componentcache =
+      new HashMap<String, Component>();
 
   /**
    * This instance variable holds an IModel wich must be past from one Page in
@@ -191,7 +191,7 @@ public class EFapsSession extends WebSession {
    *                Component to be stored
    * @see #componentcache
    */
-  public void putIntoCache(final String _key, final Component<?> _component) {
+  public void putIntoCache(final String _key, final Component _component) {
     this.componentcache.remove(_key);
     this.componentcache.put(_key, _component);
   }
@@ -204,7 +204,7 @@ public class EFapsSession extends WebSession {
    * @return Component if found, else null
    * @see #componentcache
    */
-  public Component<?> getFromCache(final String _key) {
+  public Component getFromCache(final String _key) {
     return this.componentcache.get(_key);
   }
 
@@ -357,7 +357,6 @@ public class EFapsSession extends WebSession {
    *
    * @see #attach()
    */
-  @SuppressWarnings("unchecked")
   public void openContext() {
     if (isLogedIn()) {
       try {

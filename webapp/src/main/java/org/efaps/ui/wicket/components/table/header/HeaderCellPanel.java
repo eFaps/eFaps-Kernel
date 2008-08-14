@@ -43,7 +43,7 @@ import org.efaps.ui.wicket.resources.StaticHeaderContributor;
  * @author jmox
  * @version $Id$
  */
-public class HeaderCellPanel extends Panel<UITableHeader> {
+public class HeaderCellPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
@@ -73,9 +73,9 @@ public class HeaderCellPanel extends Panel<UITableHeader> {
         "eFapsTableCheckBoxCell eFapsCellFixedWidth0"));
     this.add(new Checkbox("checkBox"));
 
-    this.add(new WebMarkupContainer<Object>("sortlink").setVisible(false));
-    this.add(new WebComponent<Object>("label").setVisible(false));
-    this.add(new WebComponent<Object>("filterlink").setVisible(false));
+    this.add(new WebMarkupContainer("sortlink").setVisible(false));
+    this.add(new WebComponent("label").setVisible(false));
+    this.add(new WebComponent("filterlink").setVisible(false));
   }
 
   /**
@@ -90,13 +90,13 @@ public class HeaderCellPanel extends Panel<UITableHeader> {
                          final UITable _uitable) {
     super(_id, _model);
 
-    final UITableHeader uiTableHeader = super.getModelObject();
+    final UITableHeader uiTableHeader = (UITableHeader) super.getDefaultModelObject();
 
     add(StaticHeaderContributor.forCss(CSS));
 
     this.add(new SimpleAttributeModifier("title", uiTableHeader.getLabel()));
 
-    this.add(new WebComponent<Object>("checkBox").setVisible(false));
+    this.add(new WebComponent("checkBox").setVisible(false));
 
     if (uiTableHeader.isSortable()) {
       final SortLink sortlink = new SortLink("sortlink", _model);
@@ -120,13 +120,13 @@ public class HeaderCellPanel extends Panel<UITableHeader> {
             .add(new AttributeAppender("style", new Model<String>("width:80%"), ";"));
       }
       this.add(sortlink);
-      final Label<String> sortlabel = new Label<String>("sortlabel", uiTableHeader.getLabel());
+      final Label sortlabel = new Label("sortlabel", uiTableHeader.getLabel());
       sortlabel.add(DnDBehavior.getHandleBehavior());
       sortlink.add(sortlabel);
-      this.add(new WebComponent<Object>("label").setVisible(false));
+      this.add(new WebComponent("label").setVisible(false));
     } else {
-      this.add(new WebMarkupContainer<Object>("sortlink").setVisible(false));
-      final Label<String> label = new Label<String>("label", uiTableHeader.getLabel());
+      this.add(new WebMarkupContainer("sortlink").setVisible(false));
+      final Label label = new Label("label", uiTableHeader.getLabel());
       label.add(DnDBehavior.getHandleBehavior());
       this.add(label);
     }
@@ -151,7 +151,7 @@ public class HeaderCellPanel extends Panel<UITableHeader> {
       this.add(filterlink);
 
     } else {
-      this.add(new WebComponent<Object>("filterlink").setVisible(false));
+      this.add(new WebComponent("filterlink").setVisible(false));
 
     }
   }
@@ -164,13 +164,13 @@ public class HeaderCellPanel extends Panel<UITableHeader> {
   @Override
   protected void onAfterRender() {
     super.onAfterRender();
-    if (this.getModel() != null) {
-      final UITableHeader headermodel = (UITableHeader) this.getModelObject();
+    if (this.getDefaultModel() != null) {
+      final UITableHeader headermodel = (UITableHeader) this.getDefaultModelObject();
       headermodel.setMarkupId(this.getMarkupId());
     }
   }
 
-  public class Checkbox extends WebComponent<Object> {
+  public class Checkbox extends WebComponent {
 
     private static final long serialVersionUID = 1L;
 

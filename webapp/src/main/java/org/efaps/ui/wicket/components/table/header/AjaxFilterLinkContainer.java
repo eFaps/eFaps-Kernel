@@ -51,7 +51,7 @@ public class AjaxFilterLinkContainer extends AjaxLink<UITableHeader> {
         this.findParent(HeaderPanel.class);
 
     final UITable tablemodel =
-        tableheaderpanel.getModelObject();
+        (UITable) tableheaderpanel.getDefaultModelObject();
     tablemodel.setFilterKey(super.getModelObject().getName());
 
     final FilterPageCreator pagecreator =

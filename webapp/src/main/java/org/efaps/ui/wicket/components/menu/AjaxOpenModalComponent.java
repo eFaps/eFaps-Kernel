@@ -93,10 +93,10 @@ public class AjaxOpenModalComponent extends AbstractMenuItemAjaxComponent {
       modal.reset();
       final ModalWindowAjaxPageCreator pageCreator =
           new ModalWindowAjaxPageCreator((UIMenuItem) super.getComponent()
-              .getModelObject(), modal);
+              .getDefaultModelObject(), modal);
       modal.setPageCreator(pageCreator);
-      modal.setInitialHeight(((UIMenuItem) getModelObject()).getWindowHeight());
-      modal.setInitialWidth(((UIMenuItem) getModelObject()).getWindowWidth());
+      modal.setInitialHeight(((UIMenuItem) getDefaultModelObject()).getWindowHeight());
+      modal.setInitialWidth(((UIMenuItem) getDefaultModelObject()).getWindowWidth());
       modal.show(_target);
 
     }

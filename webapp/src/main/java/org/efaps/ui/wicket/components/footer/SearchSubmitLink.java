@@ -36,20 +36,20 @@ import org.efaps.ui.wicket.pages.content.table.TablePage;
  * @author jmox
  * @version $Id$
  */
-public class SearchSubmitLink<T> extends SubmitLink<T> {
+public class SearchSubmitLink extends SubmitLink {
 
   private static final long serialVersionUID = 1L;
 
-  public SearchSubmitLink(final String _id, final IModel<T> _model,
+  public SearchSubmitLink(final String _id, final IModel _model,
                           final Form<?> _form) {
     super(_id, _form);
-    super.setModel(_model);
+    super.setDefaultModel(_model);
   }
 
   @Override
   public void onSubmit() {
     super.onSubmit();
-    final AbstractUIObject uiObject = (AbstractUIObject) super.getModelObject();
+    final AbstractUIObject uiObject = (AbstractUIObject) super.getDefaultModelObject();
 
     final PageParameters parameters = new PageParameters();
     parameters.add("command", uiObject.getCommand().getUUID().toString());
