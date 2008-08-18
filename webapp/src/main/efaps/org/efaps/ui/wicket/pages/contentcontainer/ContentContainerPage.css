@@ -35,20 +35,13 @@ html,body {
   position: absolute;
   top: 0px;
   width: 100%;
-  /*height: 100%; needed for safari */
+  height: 100%; 
   bottom: 0px;
   left: 0px;
   right: 0px;
   overflow: auto;
   padding: 0px;
   margin: 0px;
-  /*background-color: green; for tests*/
   border: 0;
-}
-
-* html .eFapsContentContainerFrame { /* IE */
-  position: static;
-  height: 100%;
-  border-bottom: 63px solid white;
 }
 

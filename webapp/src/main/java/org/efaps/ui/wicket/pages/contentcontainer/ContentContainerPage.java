@@ -87,13 +87,6 @@ public class ContentContainerPage extends AbstractMergePage {
           "ContentContainerPage_IE.css");
 
   /**
-   * static variable as Reference to the Stylesheet for the Page (Safari)
-   */
-  private static EFapsContentReference CSS_SAFARI =
-      new EFapsContentReference(ContentContainerPage.class,
-          "ContentContainerPage_Safari.css");
-
-  /**
    * variable contains the key to the MenuTree
    */
   private String menuTreeKey;
@@ -170,9 +163,7 @@ public class ContentContainerPage extends AbstractMergePage {
     final ClientProperties properties =
         ((WebClientInfo) getRequestCycle().getClientInfo()).getProperties();
     // we use different StyleSheets for different Bowsers
-    if (properties.isBrowserSafari()) {
-      add(StaticHeaderContributor.forCss(CSS_SAFARI));
-    } else if (properties.isBrowserInternetExplorer()) {
+    if (properties.isBrowserInternetExplorer()) {
       add(StaticHeaderContributor.forCss(CSS_IE));
     } else {
       add(StaticHeaderContributor.forCss(CSS));
