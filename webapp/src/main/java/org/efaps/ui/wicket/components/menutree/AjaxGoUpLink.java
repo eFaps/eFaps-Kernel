@@ -26,14 +26,13 @@ import javax.swing.tree.TreeNode;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
  * @author jmox
  * @version $Id:AjaxGoUpLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxGoUpLink extends AjaxLink {
+public class AjaxGoUpLink extends AjaxLink<Object> {
 
   private static final long serialVersionUID = 1L;
 

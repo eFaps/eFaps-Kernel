@@ -25,7 +25,6 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
@@ -64,11 +63,11 @@ public class FormPage extends AbstractContentPage {
     this(new FormModel(new UIForm(_parameters)), _modalWindow);
   }
 
-  public FormPage(final IModel _model) {
+  public FormPage(final IModel<?> _model) {
     this(_model, null);
   }
 
-  public FormPage(final IModel _model, final ModalWindowContainer _modalWindow) {
+  public FormPage(final IModel<?> _model, final ModalWindowContainer _modalWindow) {
     super(_model, _modalWindow);
     this.addComponents();
   }
@@ -79,7 +78,7 @@ public class FormPage extends AbstractContentPage {
     this(new FormModel(new UIForm(_parameters)), _modalWindow, _pagemap);
   }
 
-  public FormPage(final IModel _model, final ModalWindowContainer _modalWindow,
+  public FormPage(final IModel<?> _model, final ModalWindowContainer _modalWindow,
                   final IPageMap _pagemap) {
     super(_model, _modalWindow, _pagemap);
     this.addComponents();

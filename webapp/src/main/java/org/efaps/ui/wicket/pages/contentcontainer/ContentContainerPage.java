@@ -240,7 +240,7 @@ public class ContentContainerPage extends AbstractMergePage {
                *
                * @see org.apache.wicket.markup.html.link.IPageLink#getPageIdentity()
                */
-              public Class getPageIdentity() {
+              public Class<AbstractContentPage> getPageIdentity() {
                 return AbstractContentPage.class;
               }
             });

@@ -28,7 +28,6 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.link.InlineFrame;
-
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
@@ -40,7 +39,7 @@ import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
  * @author jmox
  * @version $Id:AjaxGoIntoLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxGoIntoLink extends AjaxLink {
+public class AjaxGoIntoLink extends AjaxLink<Object> {
 
   private static final long serialVersionUID = 1L;
 

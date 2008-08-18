@@ -28,7 +28,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Menu;
 import org.efaps.db.Instance;
@@ -50,7 +49,7 @@ public class AjaxLinkContainer extends WebMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
-  public AjaxLinkContainer(final String id, final IModel model) {
+  public AjaxLinkContainer(final String id, final IModel<?> model) {
     super(id, model);
     this.add(new AjaxSelfCallBackBehavior());
     this.add(new AjaxParentCallBackBehavior());

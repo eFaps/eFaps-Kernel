@@ -31,7 +31,6 @@ import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.util.string.CssUtils;
 import org.apache.wicket.util.string.JavascriptUtils;
-
 import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.Target;
@@ -91,11 +90,11 @@ public class MenuContainer extends AbstractParentMarkupContainer {
 
   private Integer childID = 0;
 
-  public MenuContainer(final String _id, final IModel _model) {
+  public MenuContainer(final String _id, final IModel<?> _model) {
     this(_id, _model, null);
   }
 
-  public MenuContainer(final String _id, final IModel _model,
+  public MenuContainer(final String _id, final IModel<?> _model,
                        final FormContainer _form) {
     super(_id, _model);
     this.form = _form;

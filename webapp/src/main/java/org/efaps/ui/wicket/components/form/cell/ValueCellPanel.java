@@ -27,7 +27,6 @@ import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
@@ -73,7 +72,7 @@ public class ValueCellPanel extends Panel {
         if (uiFormCell.getTarget() == Target.POPUP) {
           final PopupSettings popup =
               new PopupSettings(PageMap.forName("popup"));
-         ((ContentContainerLink<UIFormCell>) link).setPopupSettings(popup);
+         ((ContentContainerLink<?>) link).setPopupSettings(popup);
         }
       }
       if (uiFormCell.getIcon() == null) {

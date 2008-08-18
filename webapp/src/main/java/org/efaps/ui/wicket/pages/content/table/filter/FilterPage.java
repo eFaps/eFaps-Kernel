@@ -36,7 +36,6 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -116,11 +115,11 @@ public class FilterPage extends WebPage {
         .add(new Button("closeButton", ajaxcancel, "cancel", Button.ICON_CANCEL));
   }
 
-  public class ValueCheckBox extends FormComponent {
+  public class ValueCheckBox<T> extends FormComponent<T> {
 
     private static final long serialVersionUID = 1L;
 
-    public ValueCheckBox(final String _id, final IModel<?> _model) {
+    public ValueCheckBox(final String _id, final IModel<T> _model) {
       super(_id, _model);
     }
 

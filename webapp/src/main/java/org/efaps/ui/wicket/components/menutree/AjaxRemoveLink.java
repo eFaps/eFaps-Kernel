@@ -25,7 +25,6 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
@@ -34,7 +33,7 @@ import org.efaps.ui.wicket.models.objects.UIMenuItem;
  * @author jmox
  * @version $Id:AjaxRemoveLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxRemoveLink extends AjaxLink {
+public class AjaxRemoveLink extends AjaxLink<Object> {
 
   private static final long serialVersionUID = 1L;
 

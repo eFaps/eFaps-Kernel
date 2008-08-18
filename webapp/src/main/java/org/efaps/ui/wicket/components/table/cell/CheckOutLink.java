@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.table.cell;
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.ui.AbstractCommand.Target;
 import org.efaps.ui.wicket.models.cell.UITableCell;
 
@@ -35,7 +34,7 @@ public class CheckOutLink extends WebMarkupContainer {
 
   private static final long serialVersionUID = 1L;
 
-  public CheckOutLink(final String _wicketId, final IModel  _model) {
+  public CheckOutLink(final String _wicketId, final IModel<?>  _model) {
     super(_wicketId, _model);
   }
 

@@ -29,7 +29,6 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.link.PopupCloseLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
@@ -77,7 +76,7 @@ public class FooterPanel extends Panel {
    * @param _form
    *                FormContainer of the Page (needed to submit the Form)
    */
-  public FooterPanel(final String _id, final IModel _model,
+  public FooterPanel(final String _id, final IModel<?> _model,
                      final ModalWindowContainer _modalWindow,
                      final FormContainer _form) {
     super(_id, _model);

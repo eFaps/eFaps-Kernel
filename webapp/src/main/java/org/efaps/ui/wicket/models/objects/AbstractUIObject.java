@@ -54,6 +54,11 @@ import org.efaps.util.EFapsException;
 public abstract class AbstractUIObject implements IClusterable{
 
   /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
    * This instance variable stores the UUID of the CommandAbstract wich was
    * originaly called from the Frontend and let to the construction of this
    * model

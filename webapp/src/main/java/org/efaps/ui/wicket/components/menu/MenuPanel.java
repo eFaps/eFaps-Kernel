@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.components.menu;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.models.MenuItemModel;
@@ -39,11 +38,11 @@ public class MenuPanel extends Panel {
 
   private static final long serialVersionUID = 1L;
 
-  public MenuPanel(final String _id, final IModel _model) {
+  public MenuPanel(final String _id, final IModel<?> _model) {
     this(_id, _model, null);
   }
 
-  public MenuPanel(final String _id, final IModel _model,
+  public MenuPanel(final String _id, final IModel<?> _model,
                    final FormContainer _form) {
     super(_id,  _model);
 

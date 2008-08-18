@@ -23,7 +23,6 @@ package org.efaps.ui.wicket.pages.content;
 import org.apache.wicket.IPageMap;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.footer.FooterPanel;
 import org.efaps.ui.wicket.components.heading.HeadingPanel;
@@ -72,17 +71,17 @@ public abstract class AbstractContentPage extends AbstractMergePage {
    */
   private final ModalWindowContainer modal = new ModalWindowContainer("modal");
 
-  public AbstractContentPage(final IModel _model) {
+  public AbstractContentPage(final IModel<?> _model) {
     this(_model, null);
   }
 
-  public AbstractContentPage(final IModel _model,
+  public AbstractContentPage(final IModel<?> _model,
                              final ModalWindowContainer _modalWindow) {
     super(_model);
     this.modalWindow = _modalWindow;
   }
 
-  public AbstractContentPage(final IModel _model,
+  public AbstractContentPage(final IModel<?> _model,
                              final ModalWindowContainer _modalWindow,
                              final IPageMap _pagemap) {
     super(_pagemap, _model);
@@ -104,7 +103,7 @@ public abstract class AbstractContentPage extends AbstractMergePage {
     final AbstractUIObject uiObject = (AbstractUIObject) super.getDefaultModelObject();
     add(new HeadingPanel("titel", uiObject.getTitle()));
 
-    add(new MenuPanel("menu", (IModel<Object>) super.getDefaultModel(), _form));
+    add(new MenuPanel("menu", (IModel<?>) super.getDefaultModel(), _form));
     WebMarkupContainer footerpanel;
     if (uiObject.isCreateMode() || uiObject.isEditMode() || uiObject.isSearchMode()) {
       footerpanel = new FooterPanel("footer",  super.getDefaultModel(), this.modalWindow, _form);

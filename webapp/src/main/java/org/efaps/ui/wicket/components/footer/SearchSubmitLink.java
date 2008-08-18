@@ -24,7 +24,6 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.SubmitLink;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.models.TableModel;
 import org.efaps.ui.wicket.models.objects.AbstractUIObject;
 import org.efaps.ui.wicket.models.objects.UITable;
@@ -40,7 +39,7 @@ public class SearchSubmitLink extends SubmitLink {
 
   private static final long serialVersionUID = 1L;
 
-  public SearchSubmitLink(final String _id, final IModel _model,
+  public SearchSubmitLink(final String _id, final IModel<?> _model,
                           final Form<?> _form) {
     super(_id, _form);
     super.setDefaultModel(_model);

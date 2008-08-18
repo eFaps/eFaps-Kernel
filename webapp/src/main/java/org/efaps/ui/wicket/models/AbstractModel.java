@@ -25,6 +25,11 @@ import org.apache.wicket.model.IModel;
 
 public abstract class AbstractModel<T> implements IModel<T>{
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
   public void detach() {
     // TODO Auto-generated method stub
   }

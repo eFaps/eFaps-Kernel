@@ -48,15 +48,12 @@ import org.apache.wicket.markup.html.link.InlineFrame;
 import org.apache.wicket.markup.html.tree.AbstractTree;
 import org.apache.wicket.markup.html.tree.ITreeState;
 import org.apache.wicket.model.Model;
-
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.AbstractCommand.TargetMode;
 import org.efaps.ui.wicket.EFapsSession;
 import org.efaps.ui.wicket.behaviors.update.AbstractAjaxUpdateBehavior;
 import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
-import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
-import org.efaps.ui.wicket.models.objects.UITable;
 import org.efaps.ui.wicket.pages.content.form.FormPage;
 import org.efaps.ui.wicket.pages.content.table.TablePage;
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
@@ -111,7 +108,7 @@ public class MenuTree extends AbstractTree {
         new UIMenuItem(UUID.fromString(_parameters.getString("command")),
             _parameters.getString("oid"));
 
-    this.setDefaultModel(new Model((Serializable) model.getTreeModel()));
+    this.setDefaultModel(new Model<Serializable>((Serializable) model.getTreeModel()));
 
     add(StaticHeaderContributor.forCss(CSS));
     ((EFapsSession) this.getSession()).putIntoCache(this.menuKey, this);
@@ -144,7 +141,7 @@ public class MenuTree extends AbstractTree {
                   final String _menukey) {
     super(_wicketId);
     this.menuKey = _menukey;
-    this.setDefaultModel(new Model((Serializable) _model));
+    this.setDefaultModel(new Model<Serializable>((Serializable) _model));
 
     final ITreeState treestate = this.getTreeState();
     treestate.expandAll();

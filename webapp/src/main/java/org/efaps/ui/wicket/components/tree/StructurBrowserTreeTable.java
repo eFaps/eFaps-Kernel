@@ -100,7 +100,6 @@ public class StructurBrowserTreeTable extends TreeTable {
    * @see org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree#newNodeIcon(org.apache.wicket.MarkupContainer,
    *      java.lang.String, javax.swing.tree.TreeNode)
    */
-  @SuppressWarnings("unchecked")
   @Override
   protected Component newNodeIcon(final MarkupContainer _parent,
                                   final String _wicketId, final TreeNode _node) {
@@ -129,7 +128,6 @@ public class StructurBrowserTreeTable extends TreeTable {
    *      java.lang.String, javax.swing.tree.TreeNode, int,
    *      org.apache.wicket.extensions.markup.html.tree.table.TreeTable.IRenderNodeCallback)
    */
-  @SuppressWarnings("unchecked")
   @Override
   protected Component newTreePanel(final MarkupContainer _parent,
                                    final String _wicketId,
@@ -147,7 +145,6 @@ public class StructurBrowserTreeTable extends TreeTable {
    * @see org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree#newNodeLink(org.apache.wicket.MarkupContainer,
    *      java.lang.String, javax.swing.tree.TreeNode)
    */
-  @SuppressWarnings("unchecked")
   @Override
   protected MarkupContainer newNodeLink(final MarkupContainer _parent,
                                         final String _id, final TreeNode _node) {

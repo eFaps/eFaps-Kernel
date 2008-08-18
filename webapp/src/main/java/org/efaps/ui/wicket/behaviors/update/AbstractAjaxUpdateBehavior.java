@@ -21,7 +21,6 @@
 package org.efaps.ui.wicket.behaviors.update;
 
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
-
 import org.efaps.admin.ui.AbstractCommand.TargetMode;
 
 /**
@@ -30,6 +29,11 @@ import org.efaps.admin.ui.AbstractCommand.TargetMode;
  */
 public abstract class AbstractAjaxUpdateBehavior extends
     AbstractDefaultAjaxBehavior implements UpdateInterface {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   /**
    * this instance variable stores the TargetMode of this behavior

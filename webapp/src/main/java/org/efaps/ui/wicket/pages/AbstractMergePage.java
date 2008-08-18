@@ -35,7 +35,6 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.behavior.IBehavior;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.program.bundle.BundleMaker;
 import org.efaps.admin.program.bundle.TempFileBundle;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
@@ -72,14 +71,14 @@ public abstract class AbstractMergePage extends WebPage {
   /**
    * Constructor that passes to the SuperConstructor
    */
-  public AbstractMergePage(final IModel _model) {
+  public AbstractMergePage(final IModel<?> _model) {
     super(_model);
   }
 
   /**
    * Constructor that passes to the SuperConstructor
    */
-  public AbstractMergePage(final IPageMap _pagemap, final IModel _model) {
+  public AbstractMergePage(final IPageMap _pagemap, final IModel<?> _model) {
     super(_pagemap, _model);
   }
 
@@ -213,7 +212,6 @@ public abstract class AbstractMergePage extends WebPage {
    * @param _markupcontainer
    * @see #addStaticBehaviors(Map, List)
    */
-  @SuppressWarnings("unchecked")
   protected void addChildStatics(
                                  final Map<StaticHeaderContributor.HeaderType, List<StaticHeaderContributor>> resources,
                                  final MarkupContainer _markupcontainer) {

@@ -33,7 +33,7 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
  * @author jmox
  * @version $Id:AjaxCollapseLink.java 1510 2007-10-18 14:35:40Z jmox $
  */
-public class AjaxExpandLink extends AjaxLink {
+public class AjaxExpandLink extends AjaxLink<Object> {
 
   private static final long serialVersionUID = 1L;
 

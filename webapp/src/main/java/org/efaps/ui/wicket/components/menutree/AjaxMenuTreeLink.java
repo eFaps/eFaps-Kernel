@@ -24,14 +24,13 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-
 import org.efaps.ui.wicket.models.objects.UIMenuItem;
 
 /**
  * @author jmox
  * @version $Id$
  */
-public class AjaxMenuTreeLink extends AjaxLink {
+public class AjaxMenuTreeLink extends AjaxLink<Object> {
 
   private static final long serialVersionUID = 1L;
 

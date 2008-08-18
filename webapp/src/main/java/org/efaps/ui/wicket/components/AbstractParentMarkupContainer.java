@@ -40,7 +40,7 @@ public abstract class AbstractParentMarkupContainer extends WebMarkupContainer {
     super(id);
   }
 
-  public AbstractParentMarkupContainer(String id, IModel _model) {
+  public AbstractParentMarkupContainer(String id, IModel<?> _model) {
     super(id, _model);
   }
 

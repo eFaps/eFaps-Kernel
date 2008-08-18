@@ -134,7 +134,6 @@ public class StructurBrowserTree extends DefaultAbstractTree {
    * @see org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree#newNodeIcon(org.apache.wicket.MarkupContainer,
    *      java.lang.String, javax.swing.tree.TreeNode)
    */
-  @SuppressWarnings("unchecked")
   @Override
   protected Component newNodeIcon(final MarkupContainer _parent,
                                   final String _wicketId, final TreeNode _node) {
@@ -166,7 +165,6 @@ public class StructurBrowserTree extends DefaultAbstractTree {
    * @see org.apache.wicket.extensions.markup.html.tree.DefaultAbstractTree#newNodeLink(org.apache.wicket.MarkupContainer,
    *      java.lang.String, javax.swing.tree.TreeNode)
    */
-  @SuppressWarnings("unchecked")
   @Override
   protected MarkupContainer newNodeLink(final MarkupContainer _parent,
                                         final String _id, final TreeNode _node) {
@@ -275,7 +273,6 @@ public class StructurBrowserTree extends DefaultAbstractTree {
    * @param _item
    * @param _level
    */
-  @SuppressWarnings("unchecked")
   @Override
   protected void populateTreeItem(final WebMarkupContainer _item,
                                   final int _level) {

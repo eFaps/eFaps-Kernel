@@ -28,7 +28,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.table.row.RowPanel;
 import org.efaps.ui.wicket.models.RowModel;
@@ -45,7 +44,7 @@ public class TablePanel extends Panel {
   public static final EFapsContentReference CSS =
       new EFapsContentReference(TablePanel.class, "TablePanel.css");
 
-  public TablePanel(final String _id, final IModel _model, final Page _page) {
+  public TablePanel(final String _id, final IModel<?> _model, final Page _page) {
     super(_id, _model);
 
     final UITable  model =(UITable) super.getDefaultModelObject();
