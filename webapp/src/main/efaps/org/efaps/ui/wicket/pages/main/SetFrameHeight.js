@@ -20,6 +20,8 @@
  */
  
 function eFapsSetIFrameHeight() {
-  var frameheight = window.innerHeight - 67; 
-  document.getElementById('eFapsFrameContent').height = frameheight;
+  total = window.innerHeight;
+  logo = document.getElementById('eFapsLogo').offsetHeight;
+  menu = document.getElementById('eFapsMainMenu').offsetHeight; 
+  document.getElementById('eFapsFrameContent').height = total - logo - menu;
 }

@@ -27,9 +27,7 @@ import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.behavior.StringHeaderContributor;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.InlineFrame;
-import org.apache.wicket.protocol.http.request.WebClientInfo;
 import org.apache.wicket.util.string.JavascriptUtils;
-
 import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.db.Context;
 import org.efaps.ui.wicket.components.ChildCallBackHeaderContributer;
@@ -77,7 +75,7 @@ public class MainPage extends AbstractMergePage {
    * Reference to a JavaScript used for this Page
    */
   private static final EFapsContentReference FRAMEJS =
-      new EFapsContentReference(MainPage.class, "SetFrameHeight4Safari.js");
+      new EFapsContentReference(MainPage.class, "SetFrameHeight.js");
 
   /**
    * the MainPage has a ModalWindow that can be called from the childPages
@@ -90,17 +88,14 @@ public class MainPage extends AbstractMergePage {
   public MainPage() {
     super();
 
-    // for Safari we need to add a JavaScript Function to resize the iFrame
-    if (((WebClientInfo) getRequestCycle().getClientInfo()).getProperties()
-        .isBrowserSafari()) {
+    // we need to add a JavaScript Function to resize the iFrame
       // don't merge it to keep the sequence
-      this.add(StaticHeaderContributor.forJavaScript(FRAMEJS, true));
-      this.add(new StringHeaderContributor(JavascriptUtils.SCRIPT_OPEN_TAG
+    this.add(StaticHeaderContributor.forJavaScript(FRAMEJS, true));
+    this.add(new StringHeaderContributor(JavascriptUtils.SCRIPT_OPEN_TAG
           + "  window.onresize = eFapsSetIFrameHeight; \n"
           + "  window.onload = eFapsSetIFrameHeight; \n"
           + JavascriptUtils.SCRIPT_CLOSE_TAG));
 
-    }
     // set the title for the Page
     this.add(new StringHeaderContributor("<title>"
         + DBProperties.getProperty("Logo.Version.Label")
