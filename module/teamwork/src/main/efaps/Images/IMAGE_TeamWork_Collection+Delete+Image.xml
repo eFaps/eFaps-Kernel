@@ -29,20 +29,14 @@
 
 -->
 
-<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>23d760cc-bcce-4c0f-919a-5f437bf710af</uuid>
-
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-  ************************************************************************* -->
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
+    <version-expression>(version==2)</version-expression>
     <name>TeamWork_Collection+Delete+Image</name>
     <file>IMAGE_TeamWork_Collection+Delete+Image.gif</file>
   </definition>

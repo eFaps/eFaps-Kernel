@@ -28,13 +28,11 @@
 >
   <uuid>a66610b2-235f-4b2a-8bb0-9aa5c5362fb3</uuid>
 
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==3)</mode>
-    </version>
+    <version-expression>(version==3)</version-expression>
 
     <name>CollectionHolder</name>
 

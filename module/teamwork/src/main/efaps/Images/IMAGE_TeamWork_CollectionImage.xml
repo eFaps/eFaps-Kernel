@@ -32,17 +32,11 @@
 <ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>7032e92b-62d2-4beb-87a8-9e9f8b020ca7</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-  ************************************************************************* -->
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
+    <version-expression>(version==2)</version-expression>
     <name>TeamWork_CollectionImage</name>
     <file>IMAGE_TeamWork_CollectionImage.gif</file>
     <!-- is type icon for -->

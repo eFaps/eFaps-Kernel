@@ -23,23 +23,40 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>5e047326-1490-4651-b11b-ef8a16393b6c</uuid>
-
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
-
+    <version-expression>(version==2) || (version==latest)</version-expression>
     <name>TeamWork_AbstractSQLTable</name>
-
+    <typeid-column>TYPEID</typeid-column>
+   
     <database>
       <table-name>T_TWABSTRACT</table-name>
-      <create>true</create>
-      <update>true</update>
+      <!-- columns -->
+      <column name="TYPEID"       type="INTEGER"        not-null="true"/>
+      <column name="NAME"         type="STRING_SHORT"   not-null="true"     length="128"/>
+      <column name="CREATOR"      type="INTEGER"        not-null="true"/>
+      <column name="CREATED"      type="DATETIME"       not-null="true"/>
+      <column name="MODIFIER"     type="INTEGER"        not-null="true"/>
+      <column name="MODIFIED"     type="DATETIME"       not-null="true"/>
+      <column name="PARENT"       type="INTEGER"/>
+      <column name="LOCKED"       type="BOOLEAN"/>
+      <!-- contraints -->
+      <foreign name="T_TWABSTRACT_FK_CRTR"    key="CREATOR"   reference="T_USERPERSON(ID)"/>
+      <foreign name="T_TWABSTRACT_FK_MDFR"    key="MODIFIER"  reference="T_USERPERSON(ID)"/>
+      <foreign name="T_TWABSTRACT_FK_PARENT"  key="PARENT"    reference="T_TWABSTRACT(ID)"/>
+     </database>
+  </definition>
+  
+  
+  <definition>
+    <version-expression>(version==1)</version-expression>
+    <database>
+      <table-name>T_TWABSTRACT</table-name>
       <!-- columns -->
       <column name="TYPEID"       type="INTEGER"        not-null="true"/>
       <column name="NAME"         type="STRING_SHORT"   not-null="true"     length="128"/>
@@ -50,40 +67,6 @@
       <column name="PARENT"       type="INTEGER"/>
       <column name="LOCKED"       type="BOOLEAN"/>
      </database>
-  </definition>
-
-  <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
-
-    <name>TeamWork_AbstractSQLTable</name>
-
-    <database>
-      <table-name>T_TWABSTRACT</table-name>
-      <update>true</update>
-      <!-- contraints -->
-      <foreign name="T_TWABSTRACT_FK_CRTR"    key="CREATOR"   reference="T_USERPERSON(ID)"/>
-      <foreign name="T_TWABSTRACT_FK_MDFR"    key="MODIFIER"  reference="T_USERPERSON(ID)"/>
-      <foreign name="T_TWABSTRACT_FK_PARENT"  key="PARENT"    reference="T_TWABSTRACT(ID)"/>
-     </database>
-  </definition>
-
-  <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version>=3)</mode>
-    </version>
-    <name>TeamWork_AbstractSQLTable</name>
-    <typeid-column>TYPEID</typeid-column>
-    <database>
-      <table-name>T_TWABSTRACT</table-name>
-    </database>  
   </definition>
 
 </datamodel-sqltable>

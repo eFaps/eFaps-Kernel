@@ -27,15 +27,12 @@
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
   <uuid>9c737a50-9069-48b3-9c1e-4e04e77523c1</uuid>
-
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==3)</mode>
-    </version>
-
+    <version-expression>(version==3)</version-expression>
+  
     <name>Collection create/delete</name>
 
     <access-type>show</access-type>

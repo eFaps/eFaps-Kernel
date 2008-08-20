@@ -25,25 +25,18 @@
 
 <datamodel-type  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>87d95aa0-f3ce-43c2-bec6-dca23d4353e4</uuid>
-
+<file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
+    <version-expression>(version==2)</version-expression>
+  
 
     <name>TeamWork_Member</name>
   </definition>
 
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version>=3)</mode>
-    </version>
+    <version-expression>(version==3)</version-expression>
 
     <name>TeamWork_Member</name>
 

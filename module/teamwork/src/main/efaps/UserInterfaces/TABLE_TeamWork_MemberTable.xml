@@ -25,32 +25,10 @@
 
 <ui-table  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>54a93a19-b527-4a94-9e33-e60cb5d57918</uuid>
-
-  <!-- ************************************************************************
-    version definition used to create the table 
-  ************************************************************************* -->
+<file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
-    <name>TeamWork_MemberTable</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the table 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version>=3)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>TeamWork_MemberTable</name>
     <!-- fields -->
     <field name="User">

@@ -28,37 +28,17 @@
 >
   <uuid>c527b39c-dd8e-4aa6-ab71-4855c6939793</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the command 
-    ************************************************************************* -->
-  <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
-    <name>TeamWork_CollectionTree_SubCollections_Menu_Action_Delete</name>
-  </definition>
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
 
-  <!-- ************************************************************************
-    version definition used to define the command 
-    ************************************************************************* -->
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version>=3)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>TeamWork_CollectionTree_SubCollections_Menu_Action_Delete</name>
     <icon>TeamWork_Collection+Delete+Image</icon>
     <!-- target definitions -->
     <target>
       <execute program="org.efaps.esjp.common.uitable.CommonDelete" />
-    </target>
+    
     <!-- trigger -->
     <trigger name="TeamWork_CollectionTree_Delete_UI_ACCESSCHECK" event="UI_ACCESSCHECK" program="org.efaps.esjp.teamwork.AccessCheckOnUserInterface"
       method="execute" index="1"
@@ -66,6 +46,7 @@
       <property name="AccessType">delete</property>
       <property name="Type">TeamWork_Collection</property>
     </trigger>
+    </target>
     <!-- property definitions -->
     <property name="AskUser">true</property>
     <property name="Submit">true</property>

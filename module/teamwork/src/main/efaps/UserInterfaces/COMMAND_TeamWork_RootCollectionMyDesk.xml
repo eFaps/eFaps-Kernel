@@ -26,31 +26,11 @@
 <ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>133cadce-0a69-4880-8832-1ab228949508</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the command 
-  ************************************************************************* -->
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
-    <name>TeamWork_RootCollectionMyDesk</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the command 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version>=3)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>TeamWork_RootCollectionMyDesk</name>
     <icon>TeamWork_RootCollectionImage</icon>
     <!-- access definitions -->

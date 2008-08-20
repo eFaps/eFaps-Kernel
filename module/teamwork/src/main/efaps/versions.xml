@@ -27,8 +27,9 @@
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
   <application>teamwork</application>
-
-  <version number="1" />
+  <version number="1" reloadCache="false" login="true">
+    <description>Create SQL tables.</description>
+  </version>
   <version number="2" />
   <version number="3" compile="true" />
 

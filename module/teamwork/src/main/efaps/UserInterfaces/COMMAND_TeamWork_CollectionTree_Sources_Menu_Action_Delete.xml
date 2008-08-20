@@ -26,31 +26,11 @@
 <ui-command xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>9b6d3855-e6ee-4c56-87c9-be4bbe1e874e</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the command 
-  ************************************************************************* -->
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
-    <name>TeamWork_CollectionTree_Sources_Menu_Action_Delete</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the command 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version>=3)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>TeamWork_CollectionTree_Sources_Menu_Action_Delete</name>
     <icon>TeamWork_Source+Delete+Image</icon>
     <!-- target definitions -->

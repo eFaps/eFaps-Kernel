@@ -25,19 +25,21 @@
 
 <datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>06032b97-d1c2-4bd9-9d17-075a0fcbe47f</uuid>
-
+<file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>lucene</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
-
+    <version-expression>(version==2) || (version==latest)</version-expression>
+   
     <name>TeamWork_MemberRightsSQLView</name>
 
     <database>
-      <sql>
+      <table-name>V_TWMEMBER</table-name>
+      <column name="ID"           type="INTEGER"        not-null="true"/>
+      <column name="ABSTRACT"     type="INTEGER"        not-null="true"/>
+      <column name="USERABSTRACT" type="INTEGER"        not-null="true"/>
+      <column name="ACCESSSET"    type="INTEGER"        not-null="true"/>
+<!--       <sql>
 
    create view V_TWMEMBER as 
      select 
@@ -69,13 +71,13 @@
           inner join T_TWMEMBER on STEP2.ancestor= T_TWMEMBER.ABSTRACT 
             and STEP2.USERABSTRACT = T_TWMEMBER.USERABSTRACT
   
-  
-  
-      </sql>
+      </sql> -->
+    </database>
+  </definition>
+  <definition>
+    <version-expression>(version==1)</version-expression>
+    <database>
       <table-name>V_TWMEMBER</table-name>
-      <create>false</create>
-      <update>false</update>
-      
       <!-- columns -->
       <column name="ID"           type="INTEGER"        not-null="true"/>
       <column name="ABSTRACT"     type="INTEGER"        not-null="true"/>

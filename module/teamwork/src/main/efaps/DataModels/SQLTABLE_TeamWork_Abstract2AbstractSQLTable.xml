@@ -23,51 +23,37 @@
 
 -->
 
-<datamodel-sqltable  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<datamodel-sqltable xmlns="http://www.efaps.org/xsd"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>a3c3d05f-8f6a-4801-af74-aa4ee0f03e52</uuid>
-
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
-
+    <version-expression>(version==2) || (version==latest)</version-expression>
     <name>TeamWork_Abstract2AbstractSQLTable</name>
-
     <database>
       <table-name>T_TWABSTRACT2ABSTRACT</table-name>
-      <create>true</create>
-      <update>true</update>
-      
-      <!-- columns -->
-      <column name="ABSTRACT"     type="INTEGER"        not-null="true"/>
-      <column name="ANCESTOR"     type="INTEGER"        not-null="true"/>
-      <column name="RANK"         type="INTEGER"        not-null="true"/>
-     </database>
-  </definition>
-
-  <definition>
-    <version>
-      <application>teamcenter</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
-
-    <name>TeamWork_Abstract2AbstractSQLTable</name>
-
-    <database>
-      
-      <table-name>T_TWABSTRACT2ABSTRACT</table-name>
-      <update>true</update>
+      <column name="ABSTRACT" type="INTEGER" not-null="true" />
+      <column name="ANCESTOR" type="INTEGER" not-null="true" />
+      <column name="RANK"     type="INTEGER" not-null="true" />
       <!-- contraints -->
-      
-      <foreign name="T_TWABST2ABST_FK_ABSTRACT"    key="ABSTRACT"  reference="T_TWABSTRACT(ID)"/>
-      <foreign name="T_TWABST2ABST_FK_ANCESTOR"    key="ANCESTOR"  reference="T_TWABSTRACT(ID)"/>
+      <foreign name="T_TWABST2ABST_FK_ABSTRACT" key="ABSTRACT"
+        reference="T_TWABSTRACT(ID)" />
+      <foreign name="T_TWABST2ABST_FK_ANCESTOR" key="ANCESTOR"
+        reference="T_TWABSTRACT(ID)" />
     </database>
-    
   </definition>
-
+  
+  <definition>
+    <version-expression>(version==1)</version-expression>
+    <database>
+      <table-name>T_TWABSTRACT2ABSTRACT</table-name>
+      <!-- columns -->
+      <column name="ABSTRACT" type="INTEGER" not-null="true" />
+      <column name="ANCESTOR" type="INTEGER" not-null="true" />
+      <column name="RANK" type="INTEGER" not-null="true" />
+    </database>
+  </definition>
 </datamodel-sqltable>

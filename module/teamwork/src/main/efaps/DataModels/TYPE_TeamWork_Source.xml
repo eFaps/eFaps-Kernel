@@ -27,25 +27,18 @@
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
   <uuid>d105d4ec-7915-44a6-9d83-665e4ce71720</uuid>
-
+<file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
+    <version-expression>(version==2)</version-expression>
+  
 
     <name>TeamWork_Source</name>
   </definition>
 
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version>=3)</mode>
-    </version>
+    <version-expression>(version==3)</version-expression>
 
     <name>TeamWork_Source</name>
     <parent>TeamWork_Abstract</parent>

@@ -28,13 +28,11 @@
 >
   <uuid>6a53d40e-af87-40eb-931b-5b6ce68338dd</uuid>
 
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==3)</mode>
-    </version>
+    <version-expression>(version==3)</version-expression>
 
     <name>Source read/write</name>
 

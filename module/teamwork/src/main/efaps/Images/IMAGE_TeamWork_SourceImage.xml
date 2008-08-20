@@ -29,20 +29,14 @@
 
 -->
 
-<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+<ui-image  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+    xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>15927cea-8490-4325-9770-8e3f9ab27dc5</uuid>
-
-  <!-- ************************************************************************
-    version definition used to create / update the image 
-  ************************************************************************* -->
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
+    <version-expression>(version==2)</version-expression>
     <name>TeamWork_SourceImage</name>
     <file>IMAGE_TeamWork_SourceImage.gif</file>
     <!-- is type icon for -->

@@ -25,32 +25,11 @@
 
 <ui-form  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>a0a17f5b-7ae2-4197-8528-d6e14413124f</uuid>
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
 
-  <!-- ************************************************************************
-    version definition used to create the form 
-  ************************************************************************* -->
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
-    <name>TeamWork_MemberForm</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the form 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version>=3)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>TeamWork_MemberForm</name>
     <!-- fields -->
     <field name="type">

@@ -27,15 +27,12 @@
   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd"
 >
   <uuid>1be3f2ad-6047-4b73-bf13-9866d5b15500</uuid>
-
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==3)</mode>
-    </version>
-
+    <version-expression>(version==3)</version-expression>
+  
     <name>browse</name>
 
     <access-type>show</access-type>

@@ -28,13 +28,11 @@
 >
   <uuid>19849187-9c46-46b8-8723-b5b7090522b8</uuid>
 
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>eFaps</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==1)</mode>
-    </version>
+    <version-expression>(version==1)</version-expression>
 
     <name>TeamWorkAdmin</name>
     <status>true</status>

@@ -20,9 +20,6 @@
 
 package org.efaps.esjp.teamwork;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
 import org.efaps.admin.event.Return;
@@ -32,8 +29,10 @@ import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@EFapsUUID("")
+@EFapsUUID("5725c5b0-f20b-4ce4-86f8-c0a277fe5715")
 public class Abstract2Abstract implements EventExecution {
 
   /**
@@ -42,7 +41,7 @@ public class Abstract2Abstract implements EventExecution {
   private static final Logger LOG =
       LoggerFactory.getLogger(Abstract2Abstract.class);
 
-  public Return execute(Parameter _parameter) {
+  public Return execute(final Parameter _parameter) {
     final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     final String abstractlink = ((Long) instance.getId()).toString();
 
@@ -93,7 +92,7 @@ public class Abstract2Abstract implements EventExecution {
     return null;
   }
 
-  public Return insertNewRoot(Parameter _parameter) {
+  public Return insertNewRoot(final Parameter _parameter) {
     final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
     final String abstractlink = ((Long) instance.getId()).toString();
 

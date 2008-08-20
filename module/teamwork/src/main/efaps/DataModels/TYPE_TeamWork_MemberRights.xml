@@ -28,24 +28,18 @@
 >
   <uuid>10535032-0761-4c56-b876-0d0b849d58fb</uuid>
 
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
+  
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version==2)</mode>
-    </version>
+    <version-expression>(version==2)</version-expression>
+  
 
     <name>TeamWork_MemberRights</name>
   </definition>
 
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>(version>=3)</mode>
-    </version>
+    <version-expression>(version==3)</version-expression>
 
     <name>TeamWork_MemberRights</name>
     <attribute>

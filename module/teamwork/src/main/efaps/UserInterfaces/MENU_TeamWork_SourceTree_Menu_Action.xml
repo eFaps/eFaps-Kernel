@@ -25,32 +25,10 @@
 
 <ui-menu  xmlns="http://www.efaps.org/xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
   <uuid>7fa8052f-3e29-495d-a1bc-628d1554d442</uuid>
-
-  <!-- ************************************************************************
-    version definition used to create the menu 
-  ************************************************************************* -->
+<file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
-    <name>TeamWork_SourceTree_Menu_Action</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the menu 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version>=3)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>TeamWork_SourceTree_Menu_Action</name>
     <childs>
       <child>TeamWork_SourceTree_Menu_Action_Edit</child>

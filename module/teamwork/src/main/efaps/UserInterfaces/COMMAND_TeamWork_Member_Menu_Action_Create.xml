@@ -28,37 +28,17 @@
 >
   <uuid>ce06627a-1dd3-4463-b98b-965785756848</uuid>
 
-  <!-- ************************************************************************
-    version definition used to create the command 
-    ************************************************************************* -->
-  <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
-    <name>TeamWork_Member_Menu_Action_Create</name>
-  </definition>
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
 
-  <!-- ************************************************************************
-    version definition used to define the command 
-    ************************************************************************* -->
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version>=3)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>TeamWork_Member_Menu_Action_Create</name>
     <icon>TeamWork_MemberAddImage</icon>
     <!-- target definitions -->
     <target>
       <form>TeamWork_MemberForm</form>
-    </target>
+    
 
     <trigger name="TeamWork_Member_Menu_Action_Create_UI_ACCESSCHECK" event="UI_ACCESSCHECK"
       program="org.efaps.esjp.teamwork.AccessCheckOnUserInterface" method="execute" index="1"
@@ -66,6 +46,7 @@
       <property name="AccessType">create</property>
       <property name="Type">TeamWork_Member</property>
     </trigger>
+    </target>
     <!-- property definitions -->
     <property name="Target">popup</property>
     <property name="TargetConnectAttribute">TeamWork_MemberRights/AbstractLink</property>

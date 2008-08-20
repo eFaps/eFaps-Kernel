@@ -28,32 +28,11 @@
          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
   <uuid>3a215f1e-a32d-44fb-9598-e21901f26db6</uuid>
+  <file-application>teamwork</file-application>
+  <file-revision>$Rev$</file-revision>
 
-  <!-- ************************************************************************
-    version definition used to create the table 
-  ************************************************************************* -->
   <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version==2)</mode>
-    </version>
-    <name>TeamWork_SourceVersionForm</name>
-  </definition>
-    
-  <!-- ************************************************************************
-    version definition used to define the table 
-  ************************************************************************* -->
-  <definition>
-    <version>
-      <application>teamwork</application>
-      <global>1</global>
-      <local>$Rev$</local>
-      <mode>true</mode>
-      <mode>(version>=3)</mode>
-    </version>
+    <version-expression>(version==latest)</version-expression>
     <name>TeamWork_SourceVersionForm</name>
     <!-- fields -->
     <field name="type">
