@@ -20,16 +20,13 @@
 
 package org.efaps.update.integration;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.digester.Digester;
 import org.efaps.update.AbstractUpdate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 /**
  * @author tmo
@@ -40,11 +37,6 @@ public class WebDAVUpdate extends AbstractUpdate {
 
   /////////////////////////////////////////////////////////////////////////////
   // static variables
-
-  /**
-   * Logging instance used to give logging information of this class.
-   */
-  private final static Logger LOG = LoggerFactory.getLogger(WebDAVUpdate.class);
 
   private final static Set<Link> ALLLINKS = new HashSet<Link>();
   {
@@ -67,63 +59,6 @@ public class WebDAVUpdate extends AbstractUpdate {
     super(_url, "Admin_Integration_WebDAV", ALLLINKS);
   }
 
-  /////////////////////////////////////////////////////////////////////////////
-  // static methods
-
-  /**
-   *
-   * @param _root     root URL
-   * @param _url      URL of the file depending of the root URL
-   * @return WebDAV update definition read by digester
-   */
-  public static WebDAVUpdate readFile(final URL _root, final URL _url)
-  {
-    WebDAVUpdate ret = null;
-
-    try {
-      Digester digester = new Digester();
-      digester.setValidating(false);
-      digester.addObjectCreate("integration-webdav", WebDAVUpdate.class);
-
-      digester.addCallMethod("integration-webdav/uuid", "setUUID", 1);
-      digester.addCallParam("integration-webdav/uuid", 0);
-
-      digester.addObjectCreate("integration-webdav/definition",
-          Definition.class);
-      digester.addSetNext("integration-webdav/definition", "addDefinition");
-
-      digester.addCallMethod("integration-webdav/definition/version",
-          "setVersion", 4);
-      digester.addCallParam(
-          "integration-webdav/definition/version/application", 0);
-      digester.addCallParam("integration-webdav/definition/version/global", 1);
-      digester.addCallParam("integration-webdav/definition/version/local", 2);
-      digester.addCallParam("integration-webdav/definition/version/mode", 3);
-
-      digester
-          .addCallMethod("integration-webdav/definition/name", "setName", 1);
-      digester.addCallParam("integration-webdav/definition/name", 0);
-
-      digester
-          .addCallMethod("integration-webdav/definition/path", "setPath", 1);
-      digester.addCallParam("integration-webdav/definition/path", 0);
-
-      digester.addCallMethod("integration-webdav/definition/property",
-          "addProperty", 2);
-      digester
-          .addCallParam("integration-webdav/definition/property", 0, "name");
-      digester.addCallParam("integration-webdav/definition/property", 1);
-
-      ret = (WebDAVUpdate) digester.parse(_url);
-
-     } catch (IOException e) {
-      LOG.error(_url.toString() + " is not readable", e);
-    } catch (SAXException e) {
-      LOG.error(_url.toString() + " seems to be invalide XML", e);
-    }
-    return ret;
-  }
-
   /**
    * Creates new instance of class {@link Definition}.
    *
@@ -143,12 +78,17 @@ public class WebDAVUpdate extends AbstractUpdate {
 
   public class Definition extends AbstractDefinition {
 
-    /**
-     *
-     * @see #values
-     */
-    public void setPath(final String _path) {
-      addValue("Path", _path);
+    
+    @Override
+    public void readXML(final List<String> _tags, 
+                        final Map<String, String> _attributes,
+                        final String _text) {
+      final String value = _tags.get(0);
+      if ("path".equals(value))  {
+        addValue("Path", value);
+      }else{
+        super.readXML(_tags, _attributes, _text);
+      }
     }
   }
 }

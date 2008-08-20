@@ -33,6 +33,7 @@ import org.efaps.update.access.AccessTypeUpdate;
 import org.efaps.update.common.SystemAttributeUpdate;
 import org.efaps.update.datamodel.SQLTableUpdate;
 import org.efaps.update.datamodel.TypeUpdate;
+import org.efaps.update.integration.WebDAVUpdate;
 import org.efaps.update.ui.CommandUpdate;
 import org.efaps.update.ui.FormUpdate;
 import org.efaps.update.ui.ImageUpdate;
@@ -163,6 +164,8 @@ public class SaxHandler extends DefaultHandler
       this.elem = new SQLTableUpdate(this.url);
     } else if ("datamodel-type".equals(_qName))  {
       this.elem = new TypeUpdate(this.url);
+    } else if ("integration-webdav".equals(_qName))  {
+      this.elem = new WebDAVUpdate(this.url);
     } else if ("ui-command".equals(_qName))  {
       this.elem = new CommandUpdate(this.url);
     } else if ("ui-form".equals(_qName))  {
