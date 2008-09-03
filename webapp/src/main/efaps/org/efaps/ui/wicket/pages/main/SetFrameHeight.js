@@ -23,5 +23,5 @@ function eFapsSetIFrameHeight() {
   total = window.innerHeight;
   logo = document.getElementById('eFapsLogo').offsetHeight;
   menu = document.getElementById('eFapsMainMenu').offsetHeight; 
-  document.getElementById('eFapsFrameContent').height = total - logo - menu;
+  document.getElementById('eFapsFrameContent').style.height = total - logo - menu + "px";
 }
