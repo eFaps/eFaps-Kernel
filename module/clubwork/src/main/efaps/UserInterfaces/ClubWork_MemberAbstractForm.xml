@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2008 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmox
+ Revision:        $Rev: 1937 $
+ Last Changed:    $Date: 2008-07-24 15:46:58 -0500 (Thu, 24 Jul 2008) $
+ Last Changed By: $Author: tmo $
+
+-->
+
+<ui-form xmlns="http://www.efaps.org/xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+
+  <uuid>c6b488bc-8357-4c69-976e-5baade7e2c5f</uuid>
+  <file-application>eFaps-ClubWork</file-application>
+  <file-revision>$Rev: 1937 $</file-revision>
+
+  <definition>
+    <version-expression>(version==latest)</version-expression>
+    <name>ClubWork_MemberAbstractForm</name>
+    <!-- fields -->
+    <field name="name">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Name</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
+    </field>
+    <field name="forename">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Forename</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
+    </field>
+    <field name="number">
+      <property name="Columns">40</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">Number</property>
+      <property name="Required">true</property>
+      <property name="Searchable">true</property>
+    </field>
+    <field name="createGroup" character="Group">
+      <property name="Creatable">false</property>
+      <property name="GroupCount">2</property>
+    </field>
+    <field name="creator">
+      <property name="AlternateOID">Creator.OID</property>
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Creator</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Searchable">true</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="created">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Created</property>
+      <property name="Searchable">true</property>
+    </field>
+    <field name="modifyGroup" character="Group">
+      <property name="Creatable">false</property>
+      <property name="GroupCount">2</property>
+    </field>
+    <field name="modifier">
+      <property name="AlternateOID">Modifier.OID</property>
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Modifier</property>
+      <property name="HRef">${COMMONURL}/MenuTree.jsp</property>
+      <property name="Searchable">true</property>
+      <property name="ShowTypeIcon">true</property>
+    </field>
+    <field name="modified">
+      <property name="Creatable">false</property>
+      <property name="Editable">false</property>
+      <property name="Expression">Modified</property>
+      <property name="Searchable">true</property>
+    </field>
+  </definition>
+
+</ui-form>

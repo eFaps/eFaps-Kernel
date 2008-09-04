@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Copyright 2003-2008 The eFaps Team
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+
+ Author:          jmox
+ Revision:        $Rev: 1952 $
+ Last Changed:    $Date: 2008-08-20 13:18:49 -0500 (Wed, 20 Aug 2008) $
+ Last Changed By: $Author: jmox $
+
+-->
+
+<ui-menu  xmlns="http://www.efaps.org/xsd" 
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"   
+          xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
+  
+  <uuid>50c175e5-cd25-4956-b349-1549c2a9f338</uuid>
+  <file-application>eFaps-ClubWork</file-application>
+  <file-revision>$Rev: 1952 $</file-revision>
+  <description>Menu for the table of members.</description>
+  <definition>
+    <version-expression>(version==latest)</version-expression>
+    <name>ClubWork_AffiliatedAbstractForm_Menu_Action</name>
+    <childs>
+      <child>ClubWork_AffiliatedAbstractForm_Menu_Action_Edit</child>
+    </childs>
+  </definition>
+
+</ui-menu>
