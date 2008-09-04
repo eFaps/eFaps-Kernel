@@ -36,6 +36,7 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.efaps.admin.dbproperty.DBProperties;
 import org.efaps.ui.wicket.components.FormContainer;
 import org.efaps.ui.wicket.components.button.Button;
 import org.efaps.ui.wicket.components.modalwindow.ModalWindowContainer;
@@ -70,13 +71,17 @@ public class FilterPage extends WebPage {
 
     form.add(checksList);
 
+    final Label all = new Label("checkAll", 
+                                DBProperties.getProperty("FilterPage.All"));
+    form.add(all);
+    
     final AjaxButton ajaxbutton = new AjaxButton(Button.LINKID, form) {
 
       private static final long serialVersionUID = 1L;
 
       @Override
       protected void onSubmit(final AjaxRequestTarget _target, final Form<?> _form) {
-        String[] selection =
+        final String[] selection =
             this.getRequestCycle().getRequest().getParameters(CHECKBOXNAME);
 
         if (selection != null) {
@@ -124,7 +129,7 @@ public class FilterPage extends WebPage {
     }
 
     @Override
-    protected void onComponentTag(ComponentTag tag) {
+    protected void onComponentTag(final ComponentTag tag) {
       super.onComponentTag(tag);
       tag.put("value", getValue());
       tag.put("name", CHECKBOXNAME);

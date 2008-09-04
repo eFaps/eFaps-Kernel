@@ -24,8 +24,13 @@
   font-size: 8pt;
   white-space: nowrap;
   width: 100%;
+  background-color: #008800;
 }
 
+.eFapsFilterTable th {
+  text-align: left;
+  color: white;
+}
 tr.eFapsTableRowEven {
   background-color: #d0edb8;
 }
@@ -45,3 +50,4 @@ tr.eFapsTableRowOdd {
 .eFapsFilterCancel {
   float: left;
 }
+

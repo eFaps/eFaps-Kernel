@@ -27,7 +27,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <body>
     <form wicket:id="eFapsForm">
+     
       <table class="eFapsFilterTable">
+        <thead>
+          <tr>
+            <th>
+              <input type="checkbox" onclick="var cb=document.getElementsByName('eFapsFilterSelection');if(!isNaN(cb.length)) { for(var i=0;i<cb.length;i++){ cb[i].checked=this.checked;} }else{ cb.checked=this.checked;}"/>
+              <span  wicket:id="checkAll"></span>
+            </th>
+          </tr>
+        </thead>
         <span wicket:id="listview">
           <tr wicket:id="listview_tr">
             <td>
@@ -40,7 +49,7 @@
       <br/>
       <div class="eFapsFilterSubmit" wicket:id="submitButton"></div>
       <div class="eFapsFilterCancel" wicket:id="closeButton"></div>
-    </form>
+      </form>
   </body>
 </html>
 
