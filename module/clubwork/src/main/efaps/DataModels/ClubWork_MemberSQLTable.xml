@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          jmox
- Revision:        $Rev: 1937 $
- Last Changed:    $Date: 2008-07-24 15:46:58 -0500 (Thu, 24 Jul 2008) $
- Last Changed By: $Author: tmo $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -29,7 +29,7 @@
 
   <uuid>f40f1bb0-7e4b-4305-8016-3df3d5ce8865</uuid>
   <file-application>eFaps-ClubWork</file-application>
-  <file-revision>$Rev: 1937 $</file-revision>
+  <file-revision>$Rev$</file-revision>
   <description>SQL-Table for the members, containing information like membership number.</description>
   
   <!-- install the SQL Table -->

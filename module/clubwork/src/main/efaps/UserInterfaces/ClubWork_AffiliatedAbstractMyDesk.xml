@@ -17,9 +17,9 @@
  limitations under the License.
 
  Author:          jmox
- Revision:        $Rev: 1952 $
- Last Changed:    $Date: 2008-08-20 13:18:49 -0500 (Wed, 20 Aug 2008) $
- Last Changed By: $Author: jmox $
+ Revision:        $Rev$
+ Last Changed:    $Date$
+ Last Changed By: $Author$
 
 -->
 
@@ -29,7 +29,7 @@
   
   <uuid>fd7cc90c-2d31-49e4-85c1-2341804d3b6e</uuid>
   <file-application>eFaps-ClubWork</file-application>
-  <file-revision>$Rev: 1952 $</file-revision>
+  <file-revision>$Rev$</file-revision>
 
   <definition>
     <version-expression>(version==latest)</version-expression>
