@@ -48,10 +48,6 @@
     <field name="forename">
       <property name="Expression">Forename</property>
       <property name="Label">ClubWork_AffiliatedAbstract/Forename.Label</property>
-      </field>
-    <field name="number">
-      <property name="Expression">Number</property>
-      <property name="Label">ClubWork_AffiliatedAbstract/Number.Label</property>
     </field>
     <field name="buttonOpenInNewWindow">
       <icon>eFapsActionNewWindow</icon>

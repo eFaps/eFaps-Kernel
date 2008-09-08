@@ -51,13 +51,6 @@
       <property name="Required">true</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="number">
-      <property name="Columns">40</property>
-      <property name="Creatable">false</property>
-      <property name="Editable">false</property>
-      <property name="Required">false</property>
-      <property name="Searchable">true</property>
-    </field>
     <field name="createGroup" character="Group">
       <property name="Creatable">false</property>
       <property name="GroupCount">2</property>
@@ -94,6 +87,13 @@
       <property name="Creatable">false</property>
       <property name="Editable">false</property>
       <property name="Expression">Modified</property>
+      <property name="Searchable">true</property>
+    </field>
+      <field name="email">
+      <property name="Label">ClubWork_AttributeEmail/Value.Label</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">ClubWork_AttributeEmail\AbstractLink.Value</property>
       <property name="Searchable">true</property>
     </field>
   </definition>

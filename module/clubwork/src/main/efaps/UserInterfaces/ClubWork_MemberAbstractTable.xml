@@ -39,6 +39,7 @@
       <property name="Expression">Type</property>
       <property name="Label">ClubWork_MemberAbstract/Type.Label</property>
       <property name="ShowTypeIcon">true</property>
+      <property name="Filterable">true</property>
     </field>
     <field name="name">
       <property name="Expression">Name</property>

@@ -97,6 +97,13 @@
       <property name="Expression">Modified</property>
       <property name="Searchable">true</property>
     </field>
+    <field name="email">
+      <property name="Label">ClubWork_AttributeEmail/Value.Label</property>
+      <property name="Creatable">true</property>
+      <property name="Editable">true</property>
+      <property name="Expression">ClubWork_AttributeEmail\AbstractLink.Value</property>
+      <property name="Searchable">true</property>
+    </field>
   </definition>
 
 </ui-form>
