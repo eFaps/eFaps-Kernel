@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
@@ -59,6 +58,7 @@ public class OneRoundQuery {
 
   private final Type type;
 
+
   /**
    * Stores all select statements for this query.
    */
@@ -74,12 +74,23 @@ public class OneRoundQuery {
 
   private int colTypeId = 0;
 
+
+  /**
+   * Value of the key of the expand.
+   */
+  private String expand;
+
+  /**
+   * The Attribute that was expanded.
+   */
+  private Attribute expandAttribute;
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
 
   /**
    * @param _instances
    *          list of instances for which this query is executed
+   * @param map
    * @todo check das alle instanzen von gleicher main table sind
    * @todo if no column for the type exists, all types must be the same!
    */
@@ -98,46 +109,90 @@ public class OneRoundQuery {
     }
 
     // das muss nur gemacht werden, wenn unterschiedliche typen existieren!?
-    SQLTableMapping2Attributes tmp =
+    final SQLTableMapping2Attributes tmp =
         new SQLTableMapping2Attributes(this.mainSQLTable);
     tmp.addInstances(this.instances);
     this.sqlTableMappings.put(this.mainSQLTable, tmp);
   }
 
+
+
+  /**
+   * @param _instances
+   * @param _selects
+   * @param _expand
+   */
+  public OneRoundQuery(final List<Instance> _instances, final Set<String> _selects,
+      final String _expand) {
+    this.instances=_instances;
+    this.selects = _selects;
+    this.expand = _expand;
+    expandAttribute = _instances.get(0).getType().getLinks().get(_expand);
+    this.type = _instances.get(0).getType().getLinks().get(_expand).getParent();
+    this.mainSQLTable = type.getMainTable();
+
+  }
+
   // ///////////////////////////////////////////////////////////////////////////
   // instance methods
 
+
+
   public void execute() {
-    // make type mapping to instances
-    for (Instance instance : this.instances) {
-      TypeMapping2Instances typeMapping =
-          this.typeMappings.get(instance.getType());
-      if (typeMapping == null) {
-        typeMapping = new TypeMapping2Instances(instance.getType());
-        this.typeMappings.put(instance.getType(), typeMapping);
+
+    if (this.expand == null){
+      // make type mapping to instances
+      for (final Instance instance : this.instances) {
+        TypeMapping2Instances typeMapping =
+            this.typeMappings.get(instance.getType());
+        if (typeMapping == null) {
+          typeMapping = new TypeMapping2Instances(instance.getType());
+          this.typeMappings.put(instance.getType(), typeMapping);
+        }
+        typeMapping.addInstance(instance);
       }
-      typeMapping.addInstance(instance);
-    }
 
-    for (TypeMapping2Instances typeMapping : this.typeMappings.values()) {
-      typeMapping.evaluateSelects();
-    }
+      for (final TypeMapping2Instances typeMapping : this.typeMappings.values()) {
+        typeMapping.evaluateSelects();
+      }
 
-    // evalute sql statements
-    int curIndex = 2;
-    for (SQLTableMapping2Attributes sqlTableMapping : this.sqlTableMappings
-        .values()) {
-      curIndex = sqlTableMapping.evaluateSQLStatement(curIndex - 1);
-    }
+      // evalute sql statements
+      int curIndex = 2;
+      for (final SQLTableMapping2Attributes sqlTableMapping : this.sqlTableMappings
+          .values()) {
+        curIndex = sqlTableMapping.evaluateSQLStatement(curIndex - 1);
+      }
 
+    } else {
+      //expand
+      for (final Instance instance : this.instances) {
+        TypeMapping2Instances typeMapping =
+            this.typeMappings.get(type);
+        if (typeMapping == null) {
+          typeMapping = new TypeMapping2Instances(type);
+          this.typeMappings.put(type, typeMapping);
+        }
+        typeMapping.addInstance(instance);
+      }
+      for (final TypeMapping2Instances typeMapping : this.typeMappings.values()) {
+        typeMapping.evaluateSelects();
+      }
+      // evalute sql statements
+      int curIndex = 2;
+      for (final SQLTableMapping2Attributes sqlTableMapping : this.sqlTableMappings
+          .values()) {
+        sqlTableMapping.setExpand(true);
+        sqlTableMapping.setLinkAttribute(this.expandAttribute);
+        curIndex = sqlTableMapping.evaluateSQLStatement(curIndex - 1);
+      }
+    }
     // get index of type id
     if (this.mainSQLTable.getSqlColType() != null) {
-      SQLTableMapping2Attributes sqlTableMapping =
+      final SQLTableMapping2Attributes sqlTableMapping =
           this.sqlTableMappings.get(this.mainSQLTable);
       this.colTypeId =
           sqlTableMapping.col2index.get(this.mainSQLTable.getSqlColType());
     }
-
     beforeFirst();
   }
 
@@ -208,7 +263,7 @@ public class OneRoundQuery {
   }
 
   /**
-   * The instance method returns for the given key the atribute.
+   * The instance method returns for the given key the attribute.
    *
    * @param _key
    *          key for which the attribute value must returned
@@ -217,6 +272,9 @@ public class OneRoundQuery {
   public Attribute getAttribute(final String _expression) throws Exception {
     Attribute ret = null;
     ret = getType().getAttribute(_expression);
+    if (ret==null){
+      ret = getType().getLinks().get(_expression);
+    }
     /*
      * SelExpr2Attr selExpr = getAllSelExprMap().get(_key); if (selExpr != null) {
      * ret = selExpr.getAttribute(); }
@@ -249,12 +307,14 @@ public class OneRoundQuery {
     final Map<SQLTable, SQLTableMapping2Attributes> sqlTable2Attrs =
         new HashMap<SQLTable, SQLTableMapping2Attributes>();
 
+
+
     /**
      * @param _type
      *          type for which this type mapping is defined
      * @see type
      */
-    TypeMapping2Instances(final Type _type) {
+    public TypeMapping2Instances(final Type _type) {
       this.type = _type;
     }
 
@@ -270,13 +330,14 @@ public class OneRoundQuery {
     }
 
     void evaluateSelects() {
-      for (String select : OneRoundQuery.this.selects) {
-        Attribute attr = this.type.getAttribute(select);
+      for (final String select : OneRoundQuery.this.selects) {
+        final Attribute attr = this.type.getAttribute(select);
         if (attr != null) {
           this.expr2Attr.put(select, attr);
         }
       }
-      for (Attribute attribute : this.expr2Attr.values()) {
+
+      for (final Attribute attribute : this.expr2Attr.values()) {
         SQLTableMapping2Attributes sqlTable2Attr =
             this.sqlTable2Attrs.get(attribute.getTable());
         if (sqlTable2Attr == null) {
@@ -291,7 +352,7 @@ public class OneRoundQuery {
         sqlTable2Attr.addAttribute(attribute);
       }
       // add all instances to the sql table mapping
-      for (SQLTableMapping2Attributes sqlTableMapping : this.sqlTable2Attrs
+      for (final SQLTableMapping2Attributes sqlTableMapping : this.sqlTable2Attrs
           .values()) {
         sqlTableMapping.addInstances(this.instances);
       }
@@ -300,9 +361,9 @@ public class OneRoundQuery {
     public Object getValue(final String _expression) throws Exception {
       // System.out.println("getValue.expression="+_expression);
       Object ret = null;
-      Attribute attr = this.expr2Attr.get(_expression);
+      final Attribute attr = this.expr2Attr.get(_expression);
       if (attr != null) {
-        SQLTableMapping2Attributes sqlTable2attr =
+        final SQLTableMapping2Attributes sqlTable2attr =
             this.sqlTable2Attrs.get(attr.getTable());
         if (sqlTable2attr != null) {
           ret = sqlTable2attr.getValue(attr);
@@ -311,8 +372,16 @@ public class OneRoundQuery {
           // System.out.println("this.expr2Attr="+this.expr2Attr);
         }
       } else {
-        System.out.println("!!! NULLLLLLLL" + _expression);
-        // System.out.println("_expression="+_expression);
+        //in case we have an expand we return the id of the object
+        if (_expression.contains("\\")){
+          final SQLTableMapping2Attributes sqlTable2attr =
+            this.sqlTable2Attrs.get(OneRoundQuery.this.getType().getMainTable());
+          if (sqlTable2attr != null) {
+             final Integer idx = sqlTable2attr.col2index.get(OneRoundQuery.this.getType().getMainTable().getSqlColId());
+             ret = OneRoundQuery.this.cachedResult.getLong(idx);
+          }
+
+        }
       }
       return ret;
     }
@@ -340,7 +409,7 @@ public class OneRoundQuery {
     /**
      *
      */
-    final SQLTable sqlTable;
+    private final SQLTable sqlTable;
 
     /**
      * @see #addAttribute
@@ -359,6 +428,14 @@ public class OneRoundQuery {
 
     int index = 0;
 
+    private boolean expand;
+
+    private boolean expandHasResult = true;
+
+    private Attribute linkAttribute;
+
+
+
     /**
      *
      */
@@ -373,10 +450,29 @@ public class OneRoundQuery {
       }
     }
 
+    /**
+     * @param _attribute
+     */
+    public void setLinkAttribute(final Attribute _attribute) {
+      this.linkAttribute = _attribute;
+      final String column = _attribute.getSqlColNames().get(0);
+      if(!this.col2index.containsKey(column)){
+        this.col2index.put(column, this.index++);
+        this.cols.add(column);
+      }
+    }
+
+    /**
+     * @param _expand
+     */
+    public void setExpand(final boolean _expand) {
+      this.expand = _expand;
+    }
+
     void addAttribute(final Attribute _attribute) {
       if (!this.attr2index.containsKey(_attribute)) {
-        ArrayList<Integer> idxs = new ArrayList<Integer>();
-        for (String col : _attribute.getSqlColNames()) {
+        final ArrayList<Integer> idxs = new ArrayList<Integer>();
+        for (final String col : _attribute.getSqlColNames()) {
           Integer idx = this.col2index.get(col);
           if (idx == null) {
             idx = this.index++;
@@ -395,19 +491,23 @@ public class OneRoundQuery {
     }
 
     public Object getValue(final Attribute _attribute) throws Exception {
-      AttributeTypeInterface attrInterf = _attribute.newInstance();
-      return attrInterf.readValue(OneRoundQuery.this.cachedResult,
-          this.attr2index.get(_attribute));
+      final AttributeTypeInterface attrInterf = _attribute.newInstance();
+      Object ret = null;
+      if(expandHasResult){
+        ret = attrInterf.readValue(OneRoundQuery.this.cachedResult,
+            this.attr2index.get(_attribute));
+      }
+      return ret;
     }
 
     int evaluateSQLStatement(final int _startIndex) {
 
-      int maxExpression = Context.getDbType().getMaxExpressions();
-      List<StringBuilder> instSQLs = new ArrayList<StringBuilder>();
+      final int maxExpression = Context.getDbType().getMaxExpressions();
+      final List<StringBuilder> instSQLs = new ArrayList<StringBuilder>();
       StringBuilder instSQL = new StringBuilder();
       instSQLs.add(instSQL);
       int i = 0;
-      for (Instance instance : this.instances) {
+      for (final Instance instance : this.instances) {
         i++;
         if (i > maxExpression - 1 && maxExpression > 0) {
           instSQL.deleteCharAt(instSQL.length() - 1);
@@ -422,9 +522,9 @@ public class OneRoundQuery {
       }
 
       // update mapping from attribute to indexes
-      for (Map.Entry<Attribute, List<Integer>> entry : this.attr2index
+      for (final Map.Entry<Attribute, List<Integer>> entry : this.attr2index
           .entrySet()) {
-        List<Integer> newList = new ArrayList<Integer>();
+        final List<Integer> newList = new ArrayList<Integer>();
         for (int curIndex : entry.getValue()) {
           if (curIndex > 0) {
             curIndex += _startIndex;
@@ -438,7 +538,7 @@ public class OneRoundQuery {
       }
 
       // update mapping from columns to index
-      for (Map.Entry<String, Integer> entry : this.col2index.entrySet()) {
+      for (final Map.Entry<String, Integer> entry : this.col2index.entrySet()) {
         int curIndex = entry.getValue();
         if (curIndex > 0) {
           curIndex += _startIndex;
@@ -449,17 +549,19 @@ public class OneRoundQuery {
         // System.out.println(""+entry.getKey()+"="+curIndex);
       }
 
-      evaluateSQLStatement(instSQLs);
-      return (_startIndex + this.index);
+      final boolean shiftIndex = evaluateSQLStatement(instSQLs);
+      // if we don't want to shift we must return the startvalue again
+      return shiftIndex ? (_startIndex + this.index) : _startIndex + 1;
     }
 
-    void evaluateSQLStatement(final List<StringBuilder> _instSQLs) {
 
-      StringBuilder sql = new StringBuilder();
+    boolean evaluateSQLStatement(final List<StringBuilder> _instSQLs) {
 
+      final StringBuilder sql = new StringBuilder();
+      boolean ret = true;
       boolean first = true;
 
-      for (StringBuilder instSQL : _instSQLs) {
+      for (final StringBuilder instSQL : _instSQLs) {
         if (first) {
           sql.append("select distinct ");
           first = false;
@@ -468,14 +570,20 @@ public class OneRoundQuery {
         }
 
         // append columns including the id
-        for (String col : this.cols) {
+        for (final String col : this.cols) {
           sql.append(col).append(",");
         }
+
         sql.deleteCharAt(sql.length() - 1);
 
-        sql.append(" from ").append(this.sqlTable.getSqlTable()).append(
-            " where ID in (").append(instSQL).append(")");
-        // System.out.println("sql="+sql);
+        sql.append(" from ").append(this.sqlTable.getSqlTable()).append(" where ");
+        if (expand){
+          sql.append(this.linkAttribute.getSqlColNames().get(0));
+        }else{
+          sql.append(" ID ");
+        }
+        sql.append(" in (").append(instSQL).append(")");
+        System.out.println("sql="+sql);
       }
       ConnectionResource con = null;
       try {
@@ -485,11 +593,24 @@ public class OneRoundQuery {
         // LOG.trace(_complStmt.getStatement().toString());
         // }
 
-        Statement stmt = con.getConnection().createStatement();
-        ResultSet rs = stmt.executeQuery(sql.toString());
-
-        OneRoundQuery.this.cachedResult.populate(rs, 1);
-
+        final Statement stmt = con.getConnection().createStatement();
+        final ResultSet rs = stmt.executeQuery(sql.toString());
+        int keyIndex = 1;
+        if (expand){
+          int idx=1;
+          for(final String col :cols){
+            if(col.equals(this.linkAttribute.getSqlColNames().get(0))){
+              keyIndex=idx;
+            }
+            idx++;
+          }
+        }
+        OneRoundQuery.this.cachedResult.populate(rs, keyIndex);
+        //we had an expand that did not deliver any Data
+        if(!rs.isAfterLast() && this.expand){
+          ret = false;
+          expandHasResult = false;
+        }
         rs.close();
         stmt.close();
         con.commit();
@@ -498,7 +619,7 @@ public class OneRoundQuery {
          * } catch (EFapsException e) { if (con != null) { con.abort(); } throw
          * e;
          */
-      } catch (Throwable e) {
+      } catch (final Throwable e) {
         // TODO: exception eintragen!
         e.printStackTrace();
         // throw new EFapsException(getClass(),
@@ -508,12 +629,12 @@ public class OneRoundQuery {
         if (con != null) {
           try {
             con.abort();
-          } catch (Exception e) {
+          } catch (final Exception e) {
             e.printStackTrace();
           }
         }
       }
-
+      return ret;
     }
 
     /**

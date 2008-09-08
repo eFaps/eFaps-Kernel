@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-
+import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.db.query.OneRoundQuery;
@@ -59,6 +59,8 @@ public class ListQuery extends AbstractQuery {
 
   private OneRoundQuery query = null;
 
+  private String expand;
+
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
 
@@ -81,33 +83,55 @@ public class ListQuery extends AbstractQuery {
   public void execute() throws EFapsException {
     try {
       if (this.instances.size() > 0) {
-        this.query = new OneRoundQuery(this.instances, this.selects);
+        if (expand == null){
+          this.query = new OneRoundQuery(this.instances, this.selects);
+        } else {
+          this.query = new OneRoundQuery(this.instances, this.selects, this.expand);
+        }
         this.query.execute();
-        for (Map.Entry<String, ListQuery> sub : this.subSelects.entrySet()) {
+        for (final Map.Entry<String, ListQuery> sub : this.subSelects.entrySet()) {
           while (this.query.next()) {
-            Attribute attr;
-            attr = this.query.getAttribute(sub.getKey());
+            final Attribute attr = this.query.getAttribute(sub.getKey());
             if ((attr != null) && (attr.getLink() != null)) {
               if (this.query.getValue(sub.getKey()) != null) {
-                Long id =
-                    ((Number) this.query.getValue(sub.getKey())).longValue();
-                if ((id != null) && (id != 0)) {
-                  sub.getValue().addInstance(attr.getLink(), id);
+                final Object value = this.query.getValue(sub.getKey());
+                //we must differ between ids that are returned and AdminObject
+                //(e.g. Person in case of CreatorLink)
+                if (value instanceof Number){
+                  final Long id = ((Number) value).longValue();
+                  if ((id != null) && (id != 0)) {
+                    sub.getValue().addInstance(attr.getLink(), id);
+                  }
+                } else if (value instanceof AbstractAdminObject){
+                  sub.getValue().addInstance(attr.getLink(),
+                      ((AbstractAdminObject) value).getId());
                 }
               }
             }
           }
           this.query.beforeFirst();
+          if (sub.getKey().contains("\\")){
+            sub.getValue().setExpand(sub.getKey());
+          }
           sub.getValue().execute();
         }
       }
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw (new EFapsException(this.getClass(), "execute", e));
     }
   }
 
+
+
+  /**
+   * @param _expand
+   */
+  private void setExpand(final String _expand) {
+   this.expand = _expand;
+  }
+
   private boolean gotoKey(final Object _key) {
-    return this.query.gotoKey(_key);
+    return this.query == null ? false : this.query.gotoKey(_key);
   }
 
   /**
@@ -119,12 +143,11 @@ public class ListQuery extends AbstractQuery {
    */
   @Override
   public void addSelect(final String _select) {
-    // System.out.println("_select=" + _select);
     final int idx = _select.indexOf(".");
     if (idx > 0) {
       // differ select expression from sub expression
-      String select = _select.substring(0, idx);
-      String subSel = _select.substring(idx + 1);
+      final String select = _select.substring(0, idx);
+      final String subSel = _select.substring(idx + 1);
       this.selects.add(select);
       // make the subquery depending on the select statement
       ListQuery subQuery = this.subSelects.get(select);
@@ -165,18 +188,22 @@ public class ListQuery extends AbstractQuery {
       Object ret = null;
       if (idx > 0) {
         // differ select expression from sub expression
-        String select = _select.substring(0, idx);
-        String subSel = _select.substring(idx + 1);
+        final String select = _select.substring(0, idx);
+        final String subSel = _select.substring(idx + 1);
         // evalute sub select expression for given id
-        ListQuery subQuery = this.subSelects.get(select);
-        if (subQuery.gotoKey(this.query.getValue(select))) {
+        final ListQuery subQuery = this.subSelects.get(select);
+        Object key = this.query.getValue(select);
+        if (key instanceof AbstractAdminObject){
+          key = ((AbstractAdminObject)key).getId();
+        }
+        if (subQuery.gotoKey(key)) {
           ret = subQuery.get(subSel);
         }
       } else {
         ret = this.query.getValue(_select);
       }
       return ret;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw (new EFapsException(this.getClass(), "get", e));
     }
 
@@ -204,12 +231,16 @@ public class ListQuery extends AbstractQuery {
     Attribute ret = null;
     if (idx > 0) {
       // differ select expression from sub expression
-      String select = _select.substring(0, idx);
-      String subSel = _select.substring(idx + 1);
-      // evalute sub select expression for given id
-      ListQuery subQuery = this.subSelects.get(select);
-      if (subQuery.gotoKey(this.query.getValue(select))) {
-        ret = subQuery.getAttribute(subSel);
+      final String select = _select.substring(0, idx);
+      final String subSel = _select.substring(idx + 1);
+      if (select.contains("\\")){
+        ret = this.query.getAttribute(select);
+      }else{
+        // evalute sub select expression for given id
+        final ListQuery subQuery = this.subSelects.get(select);
+        if (subQuery.gotoKey(this.query.getValue(select))) {
+          ret = subQuery.getAttribute(subSel);
+        }
       }
     } else {
       ret = this.query.getAttribute(_select);
