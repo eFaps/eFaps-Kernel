@@ -41,7 +41,7 @@ import org.efaps.admin.ui.field.FieldGroup;
 import org.efaps.admin.ui.field.FieldHeading;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
-import org.efaps.db.SearchQuery;
+import org.efaps.db.ListQuery;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.pages.error.ErrorPage;
 import org.efaps.util.EFapsException;
@@ -80,7 +80,7 @@ public class UIForm extends AbstractUIObject {
 
   private boolean fileUpload = false;
 
-  public UIForm(PageParameters _parameters) {
+  public UIForm(final PageParameters _parameters) {
     super(_parameters);
     final AbstractCommand command = super.getCommand();
     if (command == null) {
@@ -111,7 +111,7 @@ public class UIForm extends AbstractUIObject {
     int rowgroupcount = 1;
     FormRow row = new FormRow();
     Type type = null;
-    SearchQuery query = null;
+    ListQuery query = null;
     boolean queryhasresult = false;
     try {
       final Form form = Form.get(this.formUUID);
@@ -129,9 +129,10 @@ public class UIForm extends AbstractUIObject {
           }
         }
       } else {
-        query = new SearchQuery();
-        query.setObject(getCallInstance());
-
+        final List<Instance> instances = new ArrayList<Instance>();
+        instances.add(getCallInstance());
+        query = new ListQuery(instances);
+        
         for (final Field field : form.getFields()) {
           if (field.getExpression() != null) {
             query.addSelect(field.getExpression());
@@ -300,7 +301,7 @@ public class UIForm extends AbstractUIObject {
    * @param formUUID
    *                the formUUID to set
    */
-  public void setFormUUID(UUID formUUID) {
+  public void setFormUUID(final UUID formUUID) {
     this.formUUID = formUUID;
   }
 
@@ -328,7 +329,7 @@ public class UIForm extends AbstractUIObject {
    * @param fileUpload
    *                the fileUpload to set
    */
-  public void setFileUpload(boolean fileUpload) {
+  public void setFileUpload(final boolean fileUpload) {
     this.fileUpload = fileUpload;
   }
 
