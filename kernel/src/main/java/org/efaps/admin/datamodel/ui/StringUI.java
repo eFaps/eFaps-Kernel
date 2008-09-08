@@ -20,6 +20,8 @@
 
 package org.efaps.admin.datamodel.ui;
 
+import java.util.List;
+
 import org.efaps.admin.ui.field.Field;
 import org.efaps.util.EFapsException;
 
@@ -31,28 +33,48 @@ import org.efaps.util.EFapsException;
 public class StringUI extends AbstractUI {
   @Override
   public String getViewHtml(final FieldValue _fieldValue) throws EFapsException {
-    String ret = null;
+    final StringBuilder ret = new StringBuilder();
 
     if (_fieldValue.getValue() != null) {
-      ret = _fieldValue.getValue().toString();
-      if (ret != null) {
-        ret =
-            ret.replaceAll("\\n", "<br/>").replaceAll("<", "&lt;").replaceAll(
-                ">", "&gt;");
+
+      if(_fieldValue.getValue() instanceof List){
+        final List<?> values = (List<?>) _fieldValue.getValue();
+        boolean first = true;
+        for (final Object value : values){
+          final String tmp = value.toString();
+          if (tmp != null) {
+            if (first) {
+              first = false;
+            } else {
+              ret.append("<br/>");
+            }
+
+            ret.append(tmp.replaceAll("\\n", "<br/>").replaceAll("<", "&lt;")
+                .replaceAll(
+                  ">", "&gt;"));
+
+
+          }
+        }
       } else {
-        ret = "";
+        final String tmp = _fieldValue.getValue().toString();
+        if (tmp != null) {
+          ret.append(tmp.replaceAll("\\n", "<br/>").replaceAll("<", "&lt;")
+              .replaceAll(
+                ">", "&gt;"));
+        }
       }
     } else {
       // throw new EFapsException();
     }
-    return ret;
+    return ret.toString();
   }
 
   @Override
   public String getEditHtml(final FieldValue _fieldValue) throws EFapsException {
     String ret;
-    Field field = _fieldValue.getFieldDef().getField();
-    Object value = _fieldValue.getValue();
+    final Field field = _fieldValue.getFieldDef().getField();
+    final Object value = _fieldValue.getValue();
     if (field.getRows() > 1) {
       ret =
           "<textarea " + "type=\"text\" " + "cols=\"" + field.getCols() + "\" "
@@ -74,9 +96,9 @@ public class StringUI extends AbstractUI {
   @Override
   public String getCreateHtml(final FieldValue _fieldValue)
       throws EFapsException {
-    StringBuffer ret = new StringBuffer();
-    Field field = _fieldValue.getFieldDef().getField();
-    Object value = _fieldValue.getValue();
+    final StringBuffer ret = new StringBuffer();
+    final Field field = _fieldValue.getFieldDef().getField();
+    final Object value = _fieldValue.getValue();
 
     if (field.getRows() > 1) {
       ret.append("<textarea " + "type=\"text\" " + "cols=\"").append(
@@ -102,15 +124,15 @@ public class StringUI extends AbstractUI {
   @Override
   public String getSearchHtml(final FieldValue _fieldValue)
       throws EFapsException {
-    Field field = _fieldValue.getFieldDef().getField();
+    final Field field = _fieldValue.getFieldDef().getField();
     return "<input type=\"text\" " + "size=\"" + field.getCols() + "\" "
         + "name=\"" + field.getName() + "\" " + "value=\"*\"" + "/>";
   }
 
   @Override
   public int compare(final FieldValue _fieldValue, final FieldValue _fieldValue2) {
-    String value = _fieldValue.getValue().toString();
-    String value2 = _fieldValue2.getValue().toString();
+    final String value = _fieldValue.getValue().toString();
+    final String value2 = _fieldValue2.getValue().toString();
     return value.compareTo(value2);
   }
 

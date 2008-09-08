@@ -157,7 +157,7 @@ public abstract class AbstractQuery {
   public void finalize() {
     try {
       close();
-    } catch (Exception e) {
+    } catch (final Exception e) {
     }
   }
 
@@ -245,7 +245,7 @@ public abstract class AbstractQuery {
   protected void addTypes4Order(final Type _type,
                                 final boolean _nullAllowed)
   {
-    SelectType selectType = getSelectType(_type);
+    final SelectType selectType = getSelectType(_type);
     selectType.setOrderIndex(getSelectTypesOrder().size());
     selectType.setNullAllowed(_nullAllowed);
     getSelectTypesOrder().add(selectType);
@@ -305,7 +305,7 @@ public abstract class AbstractQuery {
     Object ret = null;
 
     if (hasAccess(_key)) {
-      SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
+      final SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
       if (selExpr != null) {
         ret = selExpr.getAttrValue();
       }
@@ -318,7 +318,7 @@ public abstract class AbstractQuery {
     if (this.checkAccess) {
       Instance instance = null;
       String oid = null;
-      SelExpr2Attr selExpr = getAllOIDSelExprMap().get(_key);
+      final SelExpr2Attr selExpr = getAllOIDSelExprMap().get(_key);
       if (selExpr != null) {
         oid = (String) selExpr.getAttrValue();
       }
@@ -346,7 +346,7 @@ public abstract class AbstractQuery {
       throws Exception
   {
     Attribute ret = null;
-    SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
+    final SelExpr2Attr selExpr = getAllSelExprMap().get(_key);
     if (selExpr != null) {
       ret = selExpr.getAttribute();
     }
@@ -378,7 +378,7 @@ public abstract class AbstractQuery {
       throws EFapsException
   {
     String ret = null;
-    SelExpr2Attr selExpr = getAllOIDSelExprMap().get(_key);
+    final SelExpr2Attr selExpr = getAllOIDSelExprMap().get(_key);
     if (selExpr != null) {
       ret = (String) selExpr.getAttrValue();
     }
@@ -402,14 +402,14 @@ public abstract class AbstractQuery {
           .getName());
     }
     // String id = getResultSet().getString(selectType.getIndexId().intValue());
-    String id = this.cachedResult.getString(selectType.getIndexId().intValue());
+    final String id = this.cachedResult.getString(selectType.getIndexId().intValue());
 
     Type type = _type;
 
     if (selectType.getIndexType() != null) {
       // long typeId =
       // getResultSet().getLong(selectType.getIndexType().intValue());
-      long typeId =
+      final long typeId =
           this.cachedResult.getLong(selectType.getIndexType().intValue());
       type = Type.get(typeId);
     }
@@ -440,7 +440,7 @@ public abstract class AbstractQuery {
       int incSelIndex = 0;
       this.cachedResult = new CachedResult();
 
-      for (JoinElement joinElement : getJoinElements()) {
+      for (final JoinElement joinElement : getJoinElements()) {
 
         joinElement.setIncSelIndex(incSelIndex);
         // warum diese Ueberpruefung? weil der join jeweils die spalte mit der
@@ -451,7 +451,7 @@ public abstract class AbstractQuery {
           incSelIndex += joinElement.getSelectExpressions().size() - 1;
         }
 
-        CompleteStatement completeStatement = new CompleteStatement();
+        final CompleteStatement completeStatement = new CompleteStatement();
 
         joinElement
             .appendStatement(completeStatement, -1, isExpandChildTypes());
@@ -467,10 +467,10 @@ public abstract class AbstractQuery {
         executeOneCompleteStmt(completeStatement, joinElement.getMatchColumn());
       }
 
-      for (SelExpr2Attr selExpr : getAllSelExprMap().values()) {
+      for (final SelExpr2Attr selExpr : getAllSelExprMap().values()) {
         selExpr.initSelectIndex();
       }
-      for (SelExpr2Attr selExpr : getAllOIDSelExprMap().values()) {
+      for (final SelExpr2Attr selExpr : getAllOIDSelExprMap().values()) {
         selExpr.initSelectIndex();
       }
     }
@@ -502,17 +502,17 @@ public abstract class AbstractQuery {
 
       final ResultSet rs = stmt.executeQuery(_complStmt.getStatement().toString());
 
-      this.cachedResult.populate(rs, _matchColumn);
+      this.cachedResult.populate(rs, _matchColumn, 0);
 
       rs.close();
       stmt.close();
       con.commit();
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       if (con != null) {
         con.abort();
       }
       throw e;
-    } catch (Throwable e) {
+    } catch (final Throwable e) {
       if (con != null) {
         con.abort();
       }
@@ -620,7 +620,7 @@ public abstract class AbstractQuery {
    * @see #expandChildTypes
    * @see #isExpandChildTypes
    */
-  public void setExpandChildTypes(boolean _expandChildTypes) {
+  public void setExpandChildTypes(final boolean _expandChildTypes) {
     this.expandChildTypes = _expandChildTypes;
   }
 
@@ -671,7 +671,7 @@ public abstract class AbstractQuery {
       appendFrom(_completeStatement, _orderIndex);
       appendWhereClause(_completeStatement, _orderIndex, _childTypes);
 
-      for (SelectType selectType : getSelectTypesOrder()) {
+      for (final SelectType selectType : getSelectTypesOrder()) {
         if (selectType.isNullAllowed()
             && (_orderIndex < 0 || selectType.getOrderIndex() < _orderIndex)) {
           _completeStatement.appendUnion();
@@ -728,7 +728,7 @@ public abstract class AbstractQuery {
     {
       final Iterator<SelectType> typeIter = getSelectTypes().iterator();
       while (typeIter.hasNext()) {
-        SelectType selectType = typeIter.next();
+        final SelectType selectType = typeIter.next();
         if (_orderIndex < 0 || selectType.getOrderIndex() < _orderIndex) {
           _completeStatement.appendWhereAnd();
           selectType.appendTypeWhereClause(_completeStatement, _childTypes);
@@ -851,7 +851,7 @@ public abstract class AbstractQuery {
     protected SelectType getNewSelectType(final Type _type,
                                           final boolean _nullAllowed)
     {
-      SelectType selectType = new SelectType(this, _type, (getSelectTypesOrder().size() + 1000));
+      final SelectType selectType = new SelectType(this, _type, (getSelectTypesOrder().size() + 1000));
       selectType.setOrderIndex(getSelectTypesOrder().size() + 1000);
       selectType.setNullAllowed(_nullAllowed);
       getSelectTypesOrder().add(selectType);
@@ -1081,8 +1081,8 @@ public abstract class AbstractQuery {
      */
     protected void initSelectIndex() {
       // System.out.println("~~~~~~~~~~~~++initSelectIndex+"+getSelExprs());
-      for (SQLSelectExpression selExpr : getSelExprs()) {
-        int index =
+      for (final SQLSelectExpression selExpr : getSelExprs()) {
+        final int index =
             selExpr.getJoinElement().getIncSelIndex() + selExpr.getIndex();
         // System.out.println("~~~~~~~~~~~~++index="+index);
         getIndexes().add(new Integer(index));
@@ -1099,11 +1099,11 @@ public abstract class AbstractQuery {
         throw new EFapsException(getClass(), "SelectExpression.get.NoAttribute");
       }
       // System.out.println("~~~~~~~~~~~~++getIndexes()="+getIndexes());
-      AttributeTypeInterface attrInterf = getAttribute().newInstance();
+      final AttributeTypeInterface attrInterf = getAttribute().newInstance();
       Object ret = null;
       try {
         ret = attrInterf.readValue(AbstractQuery.this.cachedResult, getIndexes());
-      } catch (Exception e) {
+      } catch (final Exception e) {
         throw new EFapsException(getClass(), "getAttrValue.CouldNotReadValue",
             e);
       }
@@ -1131,7 +1131,7 @@ public abstract class AbstractQuery {
      * @see #attribute
      * @see #getAttribute
      */
-    private void setAttribute(Attribute _attribute) {
+    private void setAttribute(final Attribute _attribute) {
       this.attribute = _attribute;
     }
 
@@ -1154,7 +1154,7 @@ public abstract class AbstractQuery {
      * @see #selExprs
      * @see #getSelExprs
      */
-    private void setSelExprs(ArrayList<SQLSelectExpression> _selExprs) {
+    private void setSelExprs(final ArrayList<SQLSelectExpression> _selExprs) {
       this.selExprs = _selExprs;
     }
 
@@ -1474,7 +1474,7 @@ public abstract class AbstractQuery {
 
     protected void appendFrom(final CompleteStatement _completeStatement)
     {
-      for (SQLTable table : getTypeTableNames()) {
+      for (final SQLTable table : getTypeTableNames()) {
         _completeStatement.appendFrom(table.getSqlTable()).append(" ").append(
             table.getSqlTable()).append(this.typeIndex);
       }
@@ -1498,7 +1498,7 @@ public abstract class AbstractQuery {
               .getSqlColType());
           _completeStatement.appendWhere(" in (");
           _completeStatement.appendWhere(getType().getId());
-          for (Type child : getType().getChildTypes()) {
+          for (final Type child : getType().getChildTypes()) {
             _completeStatement.appendWhere(",").appendWhere(child.getId());
           }
           _completeStatement.appendWhere(")");
@@ -1626,7 +1626,7 @@ public abstract class AbstractQuery {
      * @see #orderIndex
      * @see #getOrderIndex
      */
-    private void setOrderIndex(int _orderIndex) {
+    private void setOrderIndex(final int _orderIndex) {
       this.orderIndex = _orderIndex;
     }
   }

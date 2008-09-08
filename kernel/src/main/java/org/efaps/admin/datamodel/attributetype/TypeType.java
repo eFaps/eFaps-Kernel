@@ -33,6 +33,7 @@ import org.efaps.db.query.CachedResult;
  */
 public class TypeType extends AbstractType {
 
+  @Override
   public void update(final Object _object, final PreparedStatement _stmt,
       final List<Integer> _indexes) throws SQLException {
     throw new SQLException("Update value for Type not allowed!!!");
@@ -43,6 +44,7 @@ public class TypeType extends AbstractType {
    * sql column is given in the type description, the value is read directly
    * from the attribute.
    */
+  @Override
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
       throws Exception {
     Type value;
@@ -61,6 +63,7 @@ public class TypeType extends AbstractType {
   /**
    * @todo must an exception thrown?
    */
+  @Override
   public void set(final Object _value) {
   }
 
@@ -69,7 +72,7 @@ public class TypeType extends AbstractType {
   /**
    * The value stores the instance of {@link org.efaps.admin.datamodel.Type}
    * which represents current value.
-   * 
+   *
    * @see #setType
    * @see #getType
    */
@@ -79,19 +82,19 @@ public class TypeType extends AbstractType {
 
   /**
    * This is the setter method for instance variable {@link #value}.
-   * 
+   *
    * @param _value
    *          new value for instance variable {@link #value}
    * @see #value
    * @see #getValue
    */
-  public void setValue(Type _value) {
+  public void setValue(final Type _value) {
     this.value = _value;
   }
 
   /**
    * This is the getter method for instance variable {@link #value}.
-   * 
+   *
    * @return the value of the instance variable {@link #value}.
    * @see #value
    * @see #setValue
@@ -100,6 +103,15 @@ public class TypeType extends AbstractType {
     return this.value;
   }
 
+  /* (non-Javadoc)
+   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
+   */
+  public Object get() {
+    return value;
+  }
+
+
+  @Override
   public String toString() {
     return "" + getValue();
   }

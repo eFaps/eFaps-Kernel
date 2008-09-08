@@ -33,6 +33,7 @@ abstract public class AbstractFileType extends AbstractType {
   /**
    * @todo must an exception thrown?
    */
+  @Override
   public void set(final Object _value) {
   }
 
@@ -41,7 +42,7 @@ abstract public class AbstractFileType extends AbstractType {
 
   /**
    * The value stores the file name of the file.
-   * 
+   *
    * @see #getFileName
    * @see #setFileName
    */
@@ -52,7 +53,7 @@ abstract public class AbstractFileType extends AbstractType {
 
   /**
    * This is the setter method for instance variable {@link #fileName}.
-   * 
+   *
    * @param _fileName
    *          new fileName for instance variable {@link #fileName}
    * @see #fileName
@@ -64,12 +65,19 @@ abstract public class AbstractFileType extends AbstractType {
 
   /**
    * This is the getter method for instance variable {@link #fileName}.
-   * 
+   *
    * @return the fileName of the instance variable {@link #fileName}.
    * @see #fileName
    * @see #setFileName
    */
   public String getFileName() {
     return this.fileName;
+  }
+
+  /* (non-Javadoc)
+   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
+   */
+  public Object get() {
+    return null;
   }
 }

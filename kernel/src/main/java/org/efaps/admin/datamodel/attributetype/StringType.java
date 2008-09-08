@@ -32,6 +32,7 @@ import org.efaps.db.query.CachedResult;
  */
 public class StringType extends AbstractType {
 
+  @Override
   public void update(final Object _object, final PreparedStatement _stmt,
       final List<Integer> _indexes) throws SQLException {
     _stmt.setString(_indexes.get(0), getValue());
@@ -40,6 +41,7 @@ public class StringType extends AbstractType {
   /**
    * @todo test that only one value is given for indexes
    */
+  @Override
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
 
     setValue(_rs.getString(_indexes.get(0).intValue()));
@@ -55,12 +57,13 @@ public class StringType extends AbstractType {
   /**
    * The localised string and the internal string value are equal. So the
    * internal value can be set directly with method {@link #setValue}.
-   * 
+   *
    * @param _context
    *          context for this request
    * @param _value
    *          new value to set
    */
+  @Override
   public void set(final Object _value) {
     if (_value instanceof String) {
       setValue((String) _value);
@@ -69,7 +72,7 @@ public class StringType extends AbstractType {
     }
   }
 
-  
+
 
   // ///////////////////////////////////////////////////////////////////////////
 
@@ -83,19 +86,19 @@ public class StringType extends AbstractType {
 
   /**
    * This is the setter method for instance variable {@link #value}.
-   * 
+   *
    * @param _value
    *          new value for instance variable {@link #value}
    * @see #value
    * @see #getValue
    */
-  public void setValue(String _value) {
+  public void setValue(final String _value) {
     this.value = (_value != null ? _value.trim() : null);
   }
 
   /**
    * This is the getter method for instance variable {@link #value}.
-   * 
+   *
    * @return the value of the instance variable {@link #value}.
    * @see #value
    * @see #setValue
@@ -104,6 +107,15 @@ public class StringType extends AbstractType {
     return this.value;
   }
 
+  /* (non-Javadoc)
+   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
+   */
+  public Object get() {
+    return value;
+  }
+
+
+  @Override
   public String toString() {
     return "" + getValue();
   }

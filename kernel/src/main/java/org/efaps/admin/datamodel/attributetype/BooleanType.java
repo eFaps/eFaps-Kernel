@@ -44,9 +44,10 @@ public class BooleanType extends AbstractType {
   /**
    * @todo test that only one value is given for indexes
    */
+  @Override
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes)
       throws SQLException {
-    Boolean value = _rs.getBoolean(_indexes.get(0).intValue());
+    final Boolean value = _rs.getBoolean(_indexes.get(0).intValue());
     if (value != null) {
       setValue(value);
     }
@@ -62,6 +63,7 @@ public class BooleanType extends AbstractType {
    * @param _value
    *          new value to set
    */
+  @Override
   public void set(final Object _value) {
     if (_value != null) {
       if (_value instanceof String) {
@@ -90,7 +92,7 @@ public class BooleanType extends AbstractType {
 
   /**
    * This is the setter method for instance variable {@link #value}.
-   * 
+   *
    * @param _value
    *          new value for instance variable {@link #value}
    * @see #value
@@ -102,7 +104,7 @@ public class BooleanType extends AbstractType {
 
   /**
    * This is the getter method for instance variable {@link #value}.
-   * 
+   *
    * @return the value of the instance variable {@link #value}.
    * @see #value
    * @see #setValue
@@ -111,6 +113,14 @@ public class BooleanType extends AbstractType {
     return this.value;
   }
 
+  /* (non-Javadoc)
+   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
+   */
+  public Object get() {
+    return value;
+  }
+
+  @Override
   public String toString() {
     return "" + getValue();
   }

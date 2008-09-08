@@ -33,14 +33,15 @@ import org.efaps.db.query.CachedResult;
 public class IntegerType extends AbstractType {
 
   @Override
-  public void update(Object _object, PreparedStatement _stmt,
-      List<Integer> _index) throws SQLException {
+  public void update(final Object _object, final PreparedStatement _stmt,
+      final List<Integer> _index) throws SQLException {
     _stmt.setInt(_index.get(0), getValue());
   }
 
   /**
    * @todo test that only one value is given for indexes
    */
+  @Override
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
 
     final Long val = _rs.getLong(_indexes.get(0).intValue());
@@ -50,6 +51,7 @@ public class IntegerType extends AbstractType {
 
   // //////////////////////////////////////////////////////////////////////////7
 
+  @Override
   public void set(final Object _value) {
     if (_value != null) {
       if ((_value instanceof String) && (((String) _value).length() > 0)) {
@@ -72,7 +74,7 @@ public class IntegerType extends AbstractType {
 
   /**
    * This is the setter method for instance variable {@link #value}.
-   * 
+   *
    * @param _value
    *          new value for instance variable {@link #value}
    * @see #value
@@ -84,7 +86,7 @@ public class IntegerType extends AbstractType {
 
   /**
    * This is the getter method for instance variable {@link #value}.
-   * 
+   *
    * @return the value of the instance variable {@link #value}.
    * @see #value
    * @see #setValue
@@ -92,7 +94,13 @@ public class IntegerType extends AbstractType {
   public int getValue() {
     return this.value;
   }
-
+  /* (non-Javadoc)
+   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
+   */
+  public Object get() {
+    return value;
+  }
+  @Override
   public String toString() {
     return "" + getValue();
   }

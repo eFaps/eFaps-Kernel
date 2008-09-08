@@ -37,7 +37,7 @@ public interface AttributeTypeInterface {
 
   /**
    * The method prepares the statement for update the object in the database.
-   * 
+   *
    * @param _stmt
    *          string buffer to append the statement
    * @return <i>true</i> if only a preparation is needed, otherwise <i>false</i>
@@ -47,7 +47,7 @@ public interface AttributeTypeInterface {
 
   /**
    * The method updates in the statment the value.
-   * 
+   *
    * @param _stmt
    *          SQL statement to update the value
    * @param _index
@@ -71,7 +71,7 @@ public interface AttributeTypeInterface {
   /**
    * This methods sets the internal value with a string coming from the user
    * interface. The string is a localised value!
-   * 
+   *
    * @param _context
    *          context for this request
    * @param _value
@@ -83,16 +83,18 @@ public interface AttributeTypeInterface {
 
   /**
    * The instance method gets the attribute for this attribute type interface.
-   * 
+   *
    * @return attribute for this attribute value representing
    */
   public Attribute getAttribute();
 
   /**
    * The instance method sets the field for this attribute type interface.
-   * 
+   *
    * @param _field
    *          field to set for this attribute type value
    */
   public void setAttribute(final Attribute _attribute);
+
+  public Object get();
 }

@@ -38,12 +38,13 @@ public abstract class AbstractLinkType extends AbstractType {
    * @param _value
    *          new value to set
    */
+  @Override
   public void set(final Object _value) {
     if (_value != null) {
       if ((_value instanceof String) && (((String) _value).length() > 0)) {
         setValue(Long.parseLong((String) _value));
       } else if (_value instanceof Long) {
-        setValue((Long) _value);
+        setValue(_value);
       }
     }
   }
@@ -55,7 +56,8 @@ public abstract class AbstractLinkType extends AbstractType {
    * the value is '0', the value in the database is set to <i>NULL</i> (a zero
    * in the cache means no link!).
    */
-  public void update(final Object _object, 
+  @Override
+  public void update(final Object _object,
                      final PreparedStatement _stmt,
                      final List<Integer> _index)
       throws SQLException {
@@ -72,6 +74,7 @@ public abstract class AbstractLinkType extends AbstractType {
    * @param _index
    * @todo test that only one value is given for indexes
    */
+  @Override
   public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
 
     setValue(_rs.getObject(_indexes.get(0)));
@@ -90,7 +93,7 @@ public abstract class AbstractLinkType extends AbstractType {
 
   /**
    * This is the setter method for instance variable {@link #value}.
-   * 
+   *
    * @param _value
    *          new value for instance variable {@link #value}
    * @see #value
@@ -102,12 +105,16 @@ public abstract class AbstractLinkType extends AbstractType {
 
   /**
    * This is the getter method for instance variable {@link #value}.
-   * 
+   *
    * @return the value of the instance variable {@link #value}.
    * @see #value
    * @see #setValue
    */
   public Object getValue() {
     return this.value;
+  }
+
+  public Object get(){
+    return value;
   }
 }

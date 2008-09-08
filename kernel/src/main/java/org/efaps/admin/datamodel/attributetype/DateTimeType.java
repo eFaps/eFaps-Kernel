@@ -37,7 +37,8 @@ public class DateTimeType extends AbstractType {
   /**
    * @todo test that only one value is given for indexes
    */
-  public Object readValue(CachedResult _rs, List<Integer> _indexes) {
+  @Override
+  public Object readValue(final CachedResult _rs, final List<Integer> _indexes) {
     setValue(_rs.getTimestamp(_indexes.get(0).intValue()));
     return getValue();
   }
@@ -50,6 +51,7 @@ public class DateTimeType extends AbstractType {
    * @param _value
    *          new value to set
    */
+  @Override
   public void set(final Object _value) {
     if (_value instanceof Date) {
       setValue(new Timestamp((((Date) _value)).getTime()));
@@ -76,7 +78,7 @@ public class DateTimeType extends AbstractType {
 
   /**
    * This is the setter method for instance variable {@link #value}.
-   * 
+   *
    * @param _value
    *          new value for instance variable {@link #value}
    * @see #value
@@ -88,7 +90,7 @@ public class DateTimeType extends AbstractType {
 
   /**
    * This is the getter method for instance variable {@link #value}.
-   * 
+   *
    * @return the value of the instance variable {@link #value}.
    * @see #value
    * @see #setValue
@@ -97,6 +99,14 @@ public class DateTimeType extends AbstractType {
     return this.value;
   }
 
+  /* (non-Javadoc)
+   * @see org.efaps.admin.datamodel.AttributeTypeInterface#get()
+   */
+  public Object get() {
+    return value;
+  }
+
+  @Override
   public String toString() {
     return "" + getValue();
   }

@@ -35,6 +35,7 @@ import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.attributetype.MulitpleAttributeType;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
 import org.efaps.db.transaction.ConnectionResource;
@@ -493,9 +494,15 @@ public class OneRoundQuery {
     public Object getValue(final Attribute _attribute) throws Exception {
       final AttributeTypeInterface attrInterf = _attribute.newInstance();
       Object ret = null;
-      if(expandHasResult){
-        ret = attrInterf.readValue(OneRoundQuery.this.cachedResult,
-            this.attr2index.get(_attribute));
+      if (expandHasResult){
+        if (OneRoundQuery.this.cachedResult.isMultiple()){
+           final MulitpleAttributeType multi = new MulitpleAttributeType(attrInterf);
+           ret = multi.readValue(OneRoundQuery.this.cachedResult,
+                                 this.attr2index.get(_attribute));
+        } else {
+          ret = attrInterf.readValue(OneRoundQuery.this.cachedResult,
+                                     this.attr2index.get(_attribute));
+        }
       }
       return ret;
     }
@@ -596,6 +603,7 @@ public class OneRoundQuery {
         final Statement stmt = con.getConnection().createStatement();
         final ResultSet rs = stmt.executeQuery(sql.toString());
         int keyIndex = 1;
+        int subKeyIndex = 0;
         if (expand){
           int idx=1;
           for(final String col :cols){
@@ -604,8 +612,9 @@ public class OneRoundQuery {
             }
             idx++;
           }
+          subKeyIndex = 1;
         }
-        OneRoundQuery.this.cachedResult.populate(rs, keyIndex);
+        OneRoundQuery.this.cachedResult.populate(rs, keyIndex, subKeyIndex);
         //we had an expand that did not deliver any Data
         if(!rs.isAfterLast() && this.expand){
           ret = false;
