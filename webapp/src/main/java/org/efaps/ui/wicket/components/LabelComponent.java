@@ -24,8 +24,13 @@ import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.MarkupStream;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 
 /**
+ * This class is a Label for webform and webtable. It is needed because the
+ * standard Label from wicket replaces tags from a String. So that the String will
+ * be shown and not be interpreteted as HtmlTag.
+ *
  * @author jmox
  * @version $Id:LabelComponent.java 1510 2007-10-18 14:35:40Z jmox $
  */
@@ -33,13 +38,31 @@ public class LabelComponent extends WebComponent {
 
   private static final long serialVersionUID = 1L;
 
+  /**
+   * Standard constructor
+   *
+   * @param _wicketId   wicketId of this Component
+   * @param _model      model of this Component
+   */
   public LabelComponent(final String _wicketId, final IModel<String> _model) {
     super(_wicketId, _model);
+  }
+
+  /**
+   * Constructor that makes a model from the value to use the standard
+   * constructor.
+   *
+   * @param _wicketId   wicketId of this Component
+   * @param _value      value of this Component
+   */
+  public LabelComponent(final String _wicketId, final String _value) {
+    this(_wicketId, new Model<String>(_value));
   }
 
   @Override
   protected void onComponentTagBody(final MarkupStream _markupStream,
                                     final ComponentTag _openTag) {
-    super.replaceComponentTagBody(_markupStream, _openTag, (CharSequence) super.getDefaultModelObject());
+    super.replaceComponentTagBody(_markupStream, _openTag,
+                                  (CharSequence) super.getDefaultModelObject());
   }
 }

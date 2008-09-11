@@ -22,29 +22,27 @@ package org.efaps.ui.wicket.models.objects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
-import org.apache.wicket.RestartResponseException;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
-import org.efaps.admin.event.EventDefinition;
-import org.efaps.admin.event.EventType;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.Form;
 import org.efaps.admin.ui.Image;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldGroup;
 import org.efaps.admin.ui.field.FieldHeading;
+import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
-import org.efaps.ui.wicket.pages.error.ErrorPage;
-import org.efaps.util.EFapsException;
+import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 
 
 /**
@@ -105,34 +103,26 @@ public class UIForm extends AbstractUIObject {
     return Form.get(this.formUUID);
   }
 
+  private void createForm(){
+
+  }
+
   public void execute() {
-
-    String strValue;
-    int rowgroupcount = 1;
-    FormRow row = new FormRow();
-    Type type = null;
-    ListQuery query = null;
-    boolean queryhasresult = false;
     try {
-      final Form form = Form.get(this.formUUID);
-
-      if (isCreateMode() || isSearchMode()) {
-        if (isCreateMode()) {
-          type = getCommand().getTargetCreateType();
-        } else if (super.isSearchMode()) {
-          final List<EventDefinition> events = getCommand().getEvents(EventType.UI_TABLE_EVALUATE);
-          for (final EventDefinition eventDef : events) {
-            final String tmp = eventDef.getProperty("Types");
-            if (tmp != null) {
-              type = Type.get(tmp);
-            }
-          }
-        }
+      if (isCreateMode()) {
+        createForm();
       } else {
+        int rowgroupcount = 1;
+        FormRow row = new FormRow();
+        final Type type = null;
+        ListQuery query = null;
+
+        final Form form = Form.get(this.formUUID);
+
         final List<Instance> instances = new ArrayList<Instance>();
         instances.add(getCallInstance());
         query = new ListQuery(instances);
-        
+
         for (final Field field : form.getFields()) {
           if (field.getExpression() != null) {
             query.addSelect(field.getExpression());
@@ -143,145 +133,140 @@ public class UIForm extends AbstractUIObject {
         }
         query.execute();
         if (query.next()) {
-          queryhasresult = true;
-        }
-      }
-
-      // only if a query was positive evaluate (mode view / edit)
-      // or it is a create / search mode all fields could be shown
-      if (queryhasresult || isCreateMode() || isSearchMode()) {
-        boolean addNew = true;
-        FormElement formelement = null;
-        for (final Field field : form.getFields()) {
-          if (field instanceof FieldGroup) {
-            final FieldGroup group = (FieldGroup) field;
-            if (getMaxGroupCount() < group.getGroupCount()) {
-              setMaxGroupCount(group.getGroupCount());
-            }
-            rowgroupcount = group.getGroupCount();
-          } else if (field instanceof FieldTable) {
-            if (!isCreateMode() && !isEditMode() && !isSearchMode()) {
-              final UIFieldTable tablemodel =
-                  new UIFieldTable(this.getCommandUUID(), this.getOid(),
-                      ((FieldTable) field));
-              this.elements.add(new Element(ElementType.TABLE, tablemodel));
-              addNew = true;
-            }
-          } else if (field instanceof FieldHeading) {
-            if (!isCreateMode() && !isEditMode() && !isSearchMode()) {
-              this.elements.add(new Element(ElementType.HEADING,
-                  new UIHeading((FieldHeading) field)));
-              addNew = true;
-            }
-          } else {
-            if (addNew) {
-              formelement = new FormElement();
-              this.elements.add(new Element(ElementType.FORM, formelement));
-              addNew = false;
-            }
-
-            // get attribute, attribute value and instance
-            Attribute attr = null;
-            Instance fieldInstance = null;
-            Object value = null;
-            // mode edit / view
-            if (queryhasresult) {
-              if (field.getAlternateOID() != null) {
-                fieldInstance = new Instance((String) query.get(field.getAlternateOID()));
-              } else  {
-                fieldInstance = getCallInstance();
+          FormElement formelement = null;
+          boolean addNew = true;
+          for (final Field field : form.getFields()) {
+            if (field instanceof FieldGroup) {
+              final FieldGroup group = (FieldGroup) field;
+              if (getMaxGroupCount() < group.getGroupCount()) {
+                setMaxGroupCount(group.getGroupCount());
               }
-              value = query.get(field.getExpression());
-              attr = query.getAttribute(field.getExpression());
-            // mode search / create
-            } else if (type != null)  {
-              attr = type.getAttribute(field.getExpression());
-            }
-
-            // evaluate the label of the field
-            String label;
-            if (field.getLabel() != null) {
-              label = field.getLabel();
-            } else if (attr != null)  {
-              label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
+              rowgroupcount = group.getGroupCount();
+            } else if (field instanceof FieldTable) {
+              if (!isEditMode()) {
+                final UIFieldTable tablemodel = new UIFieldTable(this
+                    .getCommandUUID(), this.getOid(), ((FieldTable) field));
+                this.elements.add(new Element(ElementType.TABLE, tablemodel));
+                addNew = true;
+              }
+            } else if (field instanceof FieldHeading) {
+              if (!isEditMode()) {
+                this.elements.add(new Element(ElementType.HEADING,
+                    new UIHeading((FieldHeading) field)));
+                addNew = true;
+              }
             } else {
-              label = "Unknown";
-            }
-
-            final FieldValue fieldvalue = new FieldValue(new FieldDefinition("egal", field),
-                                                         attr,
-                                                         value,
-                                                         fieldInstance);
-
-            if (isCreateMode() && field.isCreatable())  {
-              strValue = fieldvalue.getCreateHtml(getCallInstance());
-            } else if (isEditMode() && field.isEditable())  {
-              strValue = fieldvalue.getEditHtml(getCallInstance());
-            } else if (isSearchMode() && field.isSearchable())  {
-              strValue = fieldvalue.getSearchHtml(getCallInstance());
-            } else if (field.isViewable())  {
-              strValue = fieldvalue.getViewHtml(getCallInstance());
-            } else  {
-              strValue = null;
-            }
-
-            // we search in the string if it is like <input type="file".. and
-            // set the fileUpload Flag
-            if (strValue != null) {
-              final String tmp = strValue.replaceAll(" ", "");
-              if (tmp.toLowerCase().contains("type=\"file\"")) {
-                this.fileUpload = true;
+              if (addNew) {
+                formelement = new FormElement();
+                this.elements.add(new Element(ElementType.FORM, formelement));
+                addNew = false;
               }
-            }
-            String oid = null;
-            String icon = field.getIcon();
-            if (fieldInstance != null) {
-              oid = fieldInstance.getOid();
-              if (field.isShowTypeIcon() && fieldInstance.getType() != null) {
-                final Image image = Image.getTypeIcon(fieldInstance.getType());
-                if (image != null) {
-                  icon = image.getUrl();
+              final Attribute attr = query.getAttribute(field.getExpression());
+              // evaluate the label of the field
+              String label;
+              if (field.getLabel() != null) {
+                label = field.getLabel();
+              } else if (attr != null) {
+                 label = attr.getParent().getName() + "/" + attr.getName() +
+                 ".Label";
+              } else {
+                label = "Unknown";
+              }
+
+              String oid = null;
+              final Instance fieldInstance = getCallInstance();
+              if (fieldInstance != null) {
+                oid = fieldInstance.getOid();
+              }
+              if (field instanceof FieldSet) {
+                final Map<?, ?> tmp = (Map<?, ?>) query.get(field
+                    .getExpression());
+                int y = 0;
+                boolean add = true;
+                final UIFormCellSet cellset = new UIFormCellSet(field, oid, "",
+                    "", isEditMode() ? field.isRequired() : false, label);
+                while (add) {
+                  int x = 0;
+                  for (final Attribute child : attr.getChildAttributes()) {
+                    final List<?> tmplist = (List<?>) tmp.get(child.getName());
+                    if (y < tmplist.size()) {
+                      final Object value = tmplist.get(y);
+                      final FieldValue fieldvalue = new FieldValue(
+                          new FieldDefinition("egal", field), child, value,
+                          getCallInstance());
+                      String tmpStr = null;
+                      if (isEditMode() && field.isEditable()) {
+                        tmpStr = fieldvalue.getEditHtml(getCallInstance());
+                      } else if (field.isViewable()) {
+                        tmpStr = fieldvalue.getViewHtml(getCallInstance());
+                      }
+
+                      cellset.add(x, y, tmpStr);
+                      x++;
+                    } else {
+                      add = false;
+                    }
+                  }
+                  y++;
+                }
+                row.add(cellset);
+              } else {
+                final Object value = query.get(field.getExpression());
+                final FieldValue fieldvalue = new FieldValue(
+                    new FieldDefinition("egal", field), attr, value,
+                    fieldInstance);
+
+                String strValue = null;
+                if (isEditMode() && field.isEditable()) {
+                  strValue = fieldvalue.getEditHtml(getCallInstance());
+                } else if (field.isViewable()) {
+                  strValue = fieldvalue.getViewHtml(getCallInstance());
+                }
+                if (strValue != null && !this.fileUpload) {
+                  final String tmp = strValue.replaceAll(" ", "");
+                  if (tmp.toLowerCase().contains("type=\"file\"")) {
+                    this.fileUpload = true;
+                  }
+                }
+
+                String icon = field.getIcon();
+                if (fieldInstance != null) {
+                  oid = fieldInstance.getOid();
+                  if (field.isShowTypeIcon() && fieldInstance.getType() != null) {
+                    final Image image = Image.getTypeIcon(fieldInstance
+                        .getType());
+                    if (image != null) {
+                      icon = image.getUrl();
+                    }
+                  }
+
+                  // if we have ViewMode and the field is not Viewable than we
+                  // don't
+                  // add the Cell to the row
+                  if (!(isViewMode() && !field.isViewable())) {
+
+                    final UIFormCell cell = new UIFormCell(field, oid,
+                        strValue, icon, isEditMode() ? field.isRequired()
+                            : false, label);
+                    row.add(cell);
+                  }
                 }
               }
-            }
-            // if we have ViewMode and the field is not Viewable than we don't
-            // add the Cell to the row
-            if (!(isViewMode() && !field.isViewable())) {
-              if (queryhasresult) {
-                final UIFormCell cell =
-                    new UIFormCell(field, oid, strValue, icon, super
-                        .isEditMode() ? field.isRequired() : false, label);
-                row.add(cell);
-              } else if (strValue != null && !strValue.equals("")) {
-                final UIFormCell cell =
-                    new UIFormCell(field, oid, strValue, icon, super
-                        .isSearchMode() ? false : field.isRequired(), label);
-                if (super.isSearchMode()) {
-                  cell.setReference(null);
+              rowgroupcount--;
+              if (rowgroupcount < 1) {
+                rowgroupcount = 1;
+                if (row.getGroupCount() > 0) {
+                  formelement.addRowModel(row);
+                  row = new FormRow();
                 }
-                row.add(cell);
-              }
-            }
-            rowgroupcount--;
-            if (rowgroupcount < 1) {
-              rowgroupcount = 1;
-              if (row.getGroupCount() > 0) {
-                formelement.addRowModel(row);
-                row = new FormRow();
               }
             }
           }
 
         }
       }
-
-      if (query != null) {
-        query.close();
-      }
-    } catch (final EFapsException e) {
-      throw new RestartResponseException(new ErrorPage(e));
     } catch (final Exception e) {
-      throw new RestartResponseException(new ErrorPage(e));
+
     }
     super.setInitialised(true);
   }

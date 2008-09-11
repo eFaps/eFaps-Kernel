@@ -26,14 +26,15 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.RepeatingView;
 import org.apache.wicket.model.IModel;
-
 import org.efaps.ui.wicket.components.form.FormPanel;
 import org.efaps.ui.wicket.components.form.cell.ValueCellPanel;
+import org.efaps.ui.wicket.components.form.set.YPanel;
 import org.efaps.ui.wicket.models.cell.FormCellModel;
+import org.efaps.ui.wicket.models.cell.FormCellSetModel;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
+import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.objects.UIForm;
 import org.efaps.ui.wicket.models.objects.UIForm.FormRow;
-
 import org.efaps.ui.wicket.pages.contentcontainer.ContentContainerPage;
 
 public class RowPanel extends Panel {
@@ -62,17 +63,21 @@ public class RowPanel extends Panel {
       } else {
         labelCell.add(new SimpleAttributeModifier("class", "eFapsFormLabel"));
       }
-
-      final ValueCellPanel valueCell =
-          new ValueCellPanel(cellRepeater.newChildId(),new FormCellModel( cell),
+      Panel valueCell;
+      if (cell instanceof UIFormCellSet) {
+        valueCell = new YPanel(cellRepeater.newChildId(),new FormCellSetModel((UIFormCellSet)cell));
+      } else {
+         valueCell =
+          new ValueCellPanel(cellRepeater.newChildId(), new FormCellModel( cell),
               ContentContainerPage.IFRAME_PAGEMAP_NAME.equals(_page
                   .getPageMapName()));
+      }
+
       final Integer colspan =
-          2 * (_formmodel.getMaxGroupCount() - _model.getObject().getGroupCount()) + 1;
+        2 * (_formmodel.getMaxGroupCount() - _model.getObject().getGroupCount()) + 1;
       valueCell.add(new SimpleAttributeModifier("colspan", colspan.toString()));
       cellRepeater.add(valueCell);
       valueCell.add(new SimpleAttributeModifier("class", "eFapsFormValue"));
-
     }
   }
 }
