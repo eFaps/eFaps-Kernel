@@ -104,6 +104,27 @@
       <sqltable>Admin_User_PersonSQLTable</sqltable>
       <sqlcolumn>EMAIL</sqlcolumn>
     </attribute>
+    
+    <attributeset>
+      <name>EmailSet</name>
+      <uuid>35ee0050-322f-4bd4-bb7d-0559be8bd200</uuid>
+      <type>MultiLineArray</type>
+      <sqltable>Admin_User_PersonAttributeSQLTable</sqltable>
+      <sqlcolumn>PERSONID</sqlcolumn>
+      <attribute>
+        <name>email</name>
+        <type>String</type>
+        <sqltable>Admin_User_PersonAttributeSQLTable</sqltable>
+        <sqlcolumn>VALUE</sqlcolumn>
+      </attribute>
+      <attribute>
+        <name>primary</name>
+        <type>Boolean</type>
+        <sqltable>Admin_User_PersonAttributeSQLTable</sqltable>
+        <sqlcolumn>FLAG</sqlcolumn>
+      </attribute>
+    </attributeset>
+    
     <attribute>
       <name>Password</name>
       <type>Password</type>

@@ -42,7 +42,7 @@
       <!-- columns -->
       <column name="FIRSTNAME"  type="STRING_SHORT" length="128" not-null="true"/>
       <column name="LASTNAME"   type="STRING_SHORT" length="128" not-null="true"/>
-      <column name="EMAIL"      type="STRING_SHORT" length="128" not-null="true"/>
+      <column name="EMAIL"      type="STRING_SHORT" length="128" />
       <column name="PASSWORD"   type="STRING_SHORT" length="128"/>
       <column name="LASTLOGIN"  type="DATETIME"/>
       <column name="LOGINTRY"   type="DATETIME"/>
@@ -84,7 +84,7 @@
       <!-- columns -->
       <column name="FIRSTNAME"  type="STRING_SHORT" length="128" not-null="true"/>
       <column name="LASTNAME"   type="STRING_SHORT" length="128" not-null="true"/>
-      <column name="EMAIL"      type="STRING_SHORT" length="128" not-null="true"/>
+      <column name="EMAIL"      type="STRING_SHORT" length="128" />
       <column name="PASSWORD"   type="STRING_SHORT" length="128"/>
       <column name="LASTLOGIN"  type="DATETIME"/>
       <column name="LOGINTRY"   type="DATETIME"/>
