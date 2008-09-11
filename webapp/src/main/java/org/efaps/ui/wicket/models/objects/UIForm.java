@@ -43,6 +43,7 @@ import org.efaps.db.Instance;
 import org.efaps.db.ListQuery;
 import org.efaps.ui.wicket.models.cell.UIFormCell;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
+import org.efaps.util.EFapsException;
 
 
 /**
@@ -103,8 +104,61 @@ public class UIForm extends AbstractUIObject {
     return Form.get(this.formUUID);
   }
 
-  private void createForm(){
+  private void createForm() throws EFapsException{
+    int rowgroupcount = 1;
+    FormRow row = new FormRow();
+    final Form form = Form.get(this.formUUID);
+    final Type type = getCommand().getTargetCreateType();
+    FormElement formelement = new FormElement();
+    this.elements.add(new Element(ElementType.FORM, formelement));
 
+    for (final Field field : form.getFields()) {
+      if (field instanceof FieldGroup) {
+        final FieldGroup group = (FieldGroup) field;
+        if (getMaxGroupCount() < group.getGroupCount()) {
+          setMaxGroupCount(group.getGroupCount());
+        }
+        rowgroupcount = group.getGroupCount();
+      } else if (field instanceof FieldTable ){
+
+      } else if (field instanceof FieldHeading && field.isCreatable()){
+        this.elements.add(new Element(ElementType.HEADING,
+            new UIHeading((FieldHeading) field)));
+        formelement = new FormElement();
+        this.elements.add(new Element(ElementType.FORM, formelement));
+      } else if (field.isCreatable()){
+
+        final Attribute attr = type.getAttribute(field.getExpression());
+
+        String label;
+        if (field.getLabel() != null) {
+          label = field.getLabel();
+        } else if (attr != null)  {
+          label = attr.getParent().getName() + "/" + attr.getName() + ".Label";
+        } else {
+          label = "Unknown";
+        }
+        final Instance fieldInstance = getCallInstance();
+        final FieldValue fieldvalue = new FieldValue(new FieldDefinition(
+            "egal", field), attr, "", fieldInstance);
+
+        String strValue = null;
+        if (isCreateMode()) {
+          strValue = fieldvalue.getCreateHtml(getCallInstance());
+        }
+        final UIFormCell cell =
+          new UIFormCell(field, null, strValue, null, field.isRequired(), label);
+        row.add(cell);
+      }
+      rowgroupcount--;
+      if (rowgroupcount < 1) {
+        rowgroupcount = 1;
+        if (row.getGroupCount() > 0) {
+          formelement.addRowModel(row);
+          row = new FormRow();
+        }
+      }
+    }
   }
 
   public void execute() {
@@ -114,7 +168,6 @@ public class UIForm extends AbstractUIObject {
       } else {
         int rowgroupcount = 1;
         FormRow row = new FormRow();
-        final Type type = null;
         ListQuery query = null;
 
         final Form form = Form.get(this.formUUID);
@@ -174,7 +227,12 @@ public class UIForm extends AbstractUIObject {
               }
 
               String oid = null;
-              final Instance fieldInstance = getCallInstance();
+              Instance fieldInstance;
+              if (field.getAlternateOID() != null) {
+                fieldInstance = new Instance((String) query.get(field.getAlternateOID()));
+              } else  {
+                fieldInstance = getCallInstance();
+              }
               if (fieldInstance != null) {
                 oid = fieldInstance.getOid();
               }
@@ -266,7 +324,7 @@ public class UIForm extends AbstractUIObject {
         }
       }
     } catch (final Exception e) {
-
+      //TODO exception fangen und schmeissen
     }
     super.setInitialised(true);
   }
