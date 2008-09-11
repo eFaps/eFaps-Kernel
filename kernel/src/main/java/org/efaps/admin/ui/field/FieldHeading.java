@@ -36,6 +36,7 @@ public class FieldHeading extends Field {
 
   public FieldHeading(final long _id, final String _uuid, final String _name) {
     super(_id, _uuid, _name);
+    super.setCreatable(false);
   }
 
   /*
@@ -45,7 +46,7 @@ public class FieldHeading extends Field {
    *      java.lang.String)
    */
   @Override
-  protected void setProperty(String _name, String _value)
+  protected void setProperty(final String _name, final String _value)
                                                          throws CacheReloadException {
     if ("Level".equals(_name)) {
       this.level = Integer.parseInt(_value);
