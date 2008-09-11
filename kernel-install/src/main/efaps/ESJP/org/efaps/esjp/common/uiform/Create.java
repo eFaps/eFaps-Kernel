@@ -65,8 +65,10 @@ public class Create implements EventExecution
         if (attr != null
             && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
                 .getClassRepr())) {
-          final String value = context.getParameter(field.getName());
-          insert.add(attr, value);
+          if (context.getParameters().containsKey(field.getName())) {
+            final String value = context.getParameter(field.getName());
+            insert.add(attr, value);
+          }
         }
       }
     }
@@ -93,6 +95,7 @@ public class Create implements EventExecution
     // connect.execute();
     // }
 
+    // check if we have a fileupload field
     for (final Field field : command.getTargetForm().getFields()) {
       if (field.getExpression() == null && field.isCreatable()) {
         final Context.FileParameter fileItem =

@@ -30,9 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
@@ -42,6 +39,8 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -91,7 +90,7 @@ public class Insert extends Update {
    * insert must be made for all tables!!!
    */
   private void addTables() {
-    for (SQLTable table : getType().getTables()) {
+    for (final SQLTable table : getType().getTables()) {
       if (getExpr4Tables().get(table) == null) {
         getExpr4Tables().put(table,
             new HashMap<String, AttributeTypeInterface>());
@@ -184,22 +183,22 @@ public class Insert extends Update {
 
       setInstance(new Instance(getInstance().getType(), id));
 
-      for (Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
+      for (final Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
           .entrySet()) {
         final SQLTable table = entry.getKey();
-        if ((table != mainTable) && !table.isReadOnly()) {
+        if ((table != mainTable) && !table.isReadOnly() && entry.getValue().size() > 0) {
           executeOneStatement(context, con, table, entry.getValue(), id);
         }
       }
 
       con.commit();
 
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       if (con != null) {
         con.abort();
       }
       throw e;
-    } catch (Throwable e) {
+    } catch (final Throwable e) {
       if (con != null) {
         con.abort();
       }
@@ -256,16 +255,16 @@ public class Insert extends Update {
         }
         resultset.close();
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       throw e;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       throw new EFapsException(getClass(), "executeOneStatement.Exception", e,
           _table.getName());
     }
     finally {
       try {
         stmt.close();
-      } catch (Exception e) {
+      } catch (final Exception e) {
       }
     }
     return ret;
