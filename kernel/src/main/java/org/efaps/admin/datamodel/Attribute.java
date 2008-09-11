@@ -24,6 +24,7 @@ import static org.efaps.admin.EFapsClassNames.ATTRTYPE_CREATOR_LINK;
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK;
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_LINK_WITH_RANGES;
 import static org.efaps.admin.EFapsClassNames.ATTRTYPE_MODIFIER_LINK;
+import static org.efaps.admin.EFapsClassNames.ATTRTYPE_MULTILINEARRAY;
 import static org.efaps.admin.EFapsClassNames.USER_PERSON;
 
 import java.sql.ResultSet;
@@ -31,9 +32,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.db.Context;
@@ -76,6 +81,7 @@ public class Attribute extends AbstractDataModelObject {
              + "DMTYPE,"
              + "DMATTRIBUTETYPE,"
              + "DMTYPELINK,"
+             + "PARENTATTR,"
              + "SQLCOLUMN,"
              + "DEFAULTVAL "
        + "from V_ADMINATTRIBUTE";
@@ -88,7 +94,7 @@ public class Attribute extends AbstractDataModelObject {
   private final SQLTable sqlTable;
 
   /**
-   * Instance variable for the link to onther type.
+   * Instance variable for the link to another type.
    *
    * @see #getLink
    * @see #setLink
@@ -141,6 +147,14 @@ public class Attribute extends AbstractDataModelObject {
    * @see #isRequired
    */
   private final boolean required;
+
+  private boolean multiline = false;
+
+  private Attribute parentAttribute;
+
+  private final Set<Attribute> childAttributes = new HashSet<Attribute>();
+
+
 
   /**
    * This is the constructor for class {@link Attribute}. Every instance of
@@ -226,7 +240,7 @@ public class Attribute extends AbstractDataModelObject {
    *          unique key to add to this attribute
    * @see #uniqueKeys
    */
-  public void addUniqueKey(UniqueKey _uniqueKey) {
+  public void addUniqueKey(final UniqueKey _uniqueKey) {
     if (getUniqueKeys() == null) {
       setUniqueKeys(new HashSet<UniqueKey>());
     }
@@ -239,7 +253,7 @@ public class Attribute extends AbstractDataModelObject {
    * @return new created instance of this attribute
    */
   public AttributeTypeInterface newInstance() throws EFapsException {
-    AttributeTypeInterface ret = getAttributeType().newInstance();
+    final AttributeTypeInterface ret = getAttributeType().newInstance();
     ret.setAttribute(this);
     return ret;
   }
@@ -250,7 +264,7 @@ public class Attribute extends AbstractDataModelObject {
    * @return clone of current attribute instance
    */
   public Attribute copy() {
-    Attribute ret = new Attribute(getId(),
+    final Attribute ret = new Attribute(getId(),
                                   getName(),
                                   this.sqlTable,
                                   this.attributeType,
@@ -281,7 +295,7 @@ public class Attribute extends AbstractDataModelObject {
    * @see #link
    * @see #getLink
    */
-  private void setLink(Type _link) {
+  private void setLink(final Type _link) {
     this.link = _link;
   }
 
@@ -304,7 +318,7 @@ public class Attribute extends AbstractDataModelObject {
    * @see #parent
    * @see #getParent
    */
-  void setParent(Type _parent) {
+  void setParent(final Type _parent) {
     this.parent = _parent;
   }
 
@@ -317,6 +331,22 @@ public class Attribute extends AbstractDataModelObject {
    */
   public Type getParent() {
     return this.parent;
+  }
+
+  public Attribute getParentAttribute() {
+    return this.parentAttribute;
+  }
+
+  private void setParentAttribute(final Attribute _parentAttribute) {
+    this.parentAttribute = _parentAttribute;
+  }
+
+  private void addChildAttribute(final Attribute _childAttribute){
+    this.childAttributes.add(_childAttribute);
+  }
+
+  public Set<Attribute> getChildAttributes() {
+    return this.childAttributes;
   }
 
   /**
@@ -357,7 +387,7 @@ public class Attribute extends AbstractDataModelObject {
    * @see #uniqueKeys
    * @see #getUniqueKeys
    */
-  private void setUniqueKeys(Collection<UniqueKey> _uniqueKeys) {
+  private void setUniqueKeys(final Collection<UniqueKey> _uniqueKeys) {
     this.uniqueKeys = _uniqueKeys;
   }
 
@@ -396,6 +426,8 @@ public class Attribute extends AbstractDataModelObject {
       Statement stmt = null;
       try {
         stmt = con.getConnection().createStatement();
+        final Map<Long,Attribute> id2AllAttribute = new HashMap<Long, Attribute>();
+        final Map<Attribute,Long> attribute2parentId = new HashMap<Attribute,Long>();
 
         final ResultSet rs = stmt.executeQuery(SQL_SELECT);
         while (rs.next()) {
@@ -405,19 +437,24 @@ public class Attribute extends AbstractDataModelObject {
           final long typeId = rs.getLong(4);
           final long attrTypeId = rs.getLong(5);
           final long typeLinkId = rs.getLong(6);
-          final String sqlCol = rs.getString(7);
-          final String defaultval = rs.getString(8);
-          Type type = Type.get(typeId);
+          final long parentAttrId = rs.getLong(7);
+          final String sqlCol = rs.getString(8);
+          final String defaultval = rs.getString(9);
+          final Type type = Type.get(typeId);
 
           log.debug("read attribute '" + type.getName() + "/" + name + "' "
               + "(id = " + id + ")");
 
-          Attribute attr = new Attribute(id, name, sqlCol,
+          final Attribute attr = new Attribute(id, name, sqlCol,
                                          SQLTable.get(tableId),
                                          AttributeType.get(attrTypeId),
                                          defaultval);
           attr.setParent(type);
-          UUID uuid = attr.getAttributeType().getUUID();
+          id2AllAttribute.put(id,attr);
+          if (parentAttrId > 0){
+            attribute2parentId.put(attr, parentAttrId);
+          }
+          final UUID uuid = attr.getAttributeType().getUUID();
           if (uuid.equals(ATTRTYPE_LINK.uuid) || uuid.equals(ATTRTYPE_LINK_WITH_RANGES.uuid)) {
             final Type linkType = Type.get(typeLinkId);
             attr.setLink(linkType);
@@ -428,6 +465,11 @@ public class Attribute extends AbstractDataModelObject {
             linkType.addLink(attr);
           } else if (uuid.equals(ATTRTYPE_MODIFIER_LINK.uuid)) {
             final Type linkType = Type.get(USER_PERSON);
+            attr.setLink(linkType);
+            linkType.addLink(attr);
+          } else if (uuid.equals(ATTRTYPE_MULTILINEARRAY.uuid)) {
+            attr.setMultiline(true);
+            final Type linkType = Type.get(typeLinkId);
             attr.setLink(linkType);
             linkType.addLink(attr);
           }
@@ -449,6 +491,13 @@ public class Attribute extends AbstractDataModelObject {
           attr.readFromDB4Properties();
         }
         rs.close();
+
+        for (final Entry<Attribute,Long> entry : attribute2parentId.entrySet()){
+          final Attribute parentAttr = id2AllAttribute.get(entry.getValue());
+          final Attribute childAttr = entry.getKey();
+          childAttr.setParentAttribute(parentAttr);
+          parentAttr.addChildAttribute(childAttr);
+        }
       }
       finally {
         if (stmt != null) {
@@ -456,16 +505,19 @@ public class Attribute extends AbstractDataModelObject {
         }
       }
       con.commit();
-    } catch (SQLException e) {
+
+
+
+    } catch (final SQLException e) {
       throw new CacheReloadException("could not read attributes", e);
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       throw new CacheReloadException("could not read attributes", e);
     }
     finally {
       if ((con != null) && con.isOpened()) {
         try {
           con.abort();
-        } catch (EFapsException e) {
+        } catch (final EFapsException e) {
           throw new CacheReloadException("could not read attributes", e);
         }
       }
@@ -481,7 +533,7 @@ public class Attribute extends AbstractDataModelObject {
    * @return instance of class {@link Attribute}
    * @see #getCache
    */
-  static public Attribute get(long _id) {
+  static public Attribute get(final long _id) {
     return getCache().get(_id);
   }
 
@@ -494,7 +546,7 @@ public class Attribute extends AbstractDataModelObject {
    * @return instance of class {@link Attribute}
    * @see #getCache
    */
-  static public Attribute get(String _name) {
+  static public Attribute get(final String _name) {
     return getCache().get(_name);
   }
 
@@ -506,6 +558,22 @@ public class Attribute extends AbstractDataModelObject {
   static AttributeCache getCache() {
     return attributeCache;
   }
+
+  /**
+   * @param _multiline the multiline to set
+   */
+  protected void setMultiline(final boolean _multiline) {
+    this.multiline = _multiline;
+  }
+
+  /**
+   * @return the multiline
+   */
+  public boolean isMultiline() {
+    return this.multiline;
+  }
+
+
 
   /**
    * The instance method returns the string representation of this attribute.
@@ -591,7 +659,7 @@ public class Attribute extends AbstractDataModelObject {
      */
     // protected void add(CacheInterface _cacheObj) {
     @Override
-    public void add(Attribute _attr) {
+    public void add(final Attribute _attr) {
       getCache4Id().put(new Long(_attr.getId()), _attr);
       getCache4Name().put(_attr.getParent().getName() + "/" + _attr.getName(),
           _attr);

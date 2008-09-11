@@ -54,12 +54,18 @@ public class ListQuery extends AbstractQuery {
    */
   private final Set<String> selects = new HashSet<String>();
 
+  private final Set<String> multiSelects = new HashSet<String>();
+
+
+
   private final Map<String, ListQuery> subSelects =
       new HashMap<String, ListQuery>();
 
+
+
   private OneRoundQuery query = null;
 
-  private String expand;
+  private Attribute expand;
 
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
@@ -72,7 +78,7 @@ public class ListQuery extends AbstractQuery {
     this.instances = _instances;
   }
 
-  private ListQuery() {
+  public ListQuery() {
     this.instances = new ArrayList<Instance>();
   }
 
@@ -83,11 +89,7 @@ public class ListQuery extends AbstractQuery {
   public void execute() throws EFapsException {
     try {
       if (this.instances.size() > 0) {
-        if (expand == null){
-          this.query = new OneRoundQuery(this.instances, this.selects);
-        } else {
-          this.query = new OneRoundQuery(this.instances, this.selects, this.expand);
-        }
+        this.query = new OneRoundQuery(this.instances, this.selects, this);
         this.query.execute();
         for (final Map.Entry<String, ListQuery> sub : this.subSelects.entrySet()) {
           while (this.query.next()) {
@@ -108,11 +110,12 @@ public class ListQuery extends AbstractQuery {
                 }
               }
             }
+            if (sub.getKey().contains("\\") && this.getExpand()==null){
+              sub.getValue().setExpand(attr);
+            }
           }
           this.query.beforeFirst();
-          if (sub.getKey().contains("\\")){
-            sub.getValue().setExpand(sub.getKey());
-          }
+
           sub.getValue().execute();
         }
       }
@@ -126,8 +129,12 @@ public class ListQuery extends AbstractQuery {
   /**
    * @param _expand
    */
-  private void setExpand(final String _expand) {
+  public void setExpand(final Attribute _expand) {
    this.expand = _expand;
+  }
+
+  public Set<String> getMultiSelects() {
+    return this.multiSelects;
   }
 
   private boolean gotoKey(final Object _key) {
@@ -199,7 +206,13 @@ public class ListQuery extends AbstractQuery {
         if (subQuery.gotoKey(key)) {
           ret = subQuery.get(subSel);
         }
-      } else {
+      } else if (this.multiSelects.contains(_select)){
+        final ListQuery subQuery = this.subSelects.get(_select);
+        final Object key = this.query.getValue(_select);
+        if (subQuery.gotoKey(key)) {
+          ret = subQuery.query.getMultiLineValue();
+        }
+      }else {
         ret = this.query.getValue(_select);
       }
       return ret;
@@ -216,6 +229,10 @@ public class ListQuery extends AbstractQuery {
 
   public Instance getInstance() throws Exception {
     return this.query.getInstance();
+  }
+
+  public Map<String, ListQuery> getSubSelects() {
+    return this.subSelects;
   }
 
   /**
@@ -258,5 +275,12 @@ public class ListQuery extends AbstractQuery {
     return new ToStringBuilder(this).appendSuper(super.toString()).append(
         "selects", this.selects.toString()).append("subSelects",
         this.subSelects.toString()).toString();
+  }
+
+  /**
+   * @return the expand
+   */
+  public Attribute getExpand() {
+    return this.expand;
   }
 }

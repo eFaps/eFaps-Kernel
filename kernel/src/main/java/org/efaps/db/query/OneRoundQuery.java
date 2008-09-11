@@ -33,11 +33,12 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
+import org.efaps.admin.datamodel.MultipleAttributeTypeInterface;
 import org.efaps.admin.datamodel.SQLTable;
 import org.efaps.admin.datamodel.Type;
-import org.efaps.admin.datamodel.attributetype.MulitpleAttributeType;
 import org.efaps.db.Context;
 import org.efaps.db.Instance;
+import org.efaps.db.ListQuery;
 import org.efaps.db.transaction.ConnectionResource;
 
 /**
@@ -75,16 +76,7 @@ public class OneRoundQuery {
 
   private int colTypeId = 0;
 
-
-  /**
-   * Value of the key of the expand.
-   */
-  private String expand;
-
-  /**
-   * The Attribute that was expanded.
-   */
-  private Attribute expandAttribute;
+  private final ListQuery listquery;
   // ///////////////////////////////////////////////////////////////////////////
   // constructors / desctructors
 
@@ -96,42 +88,31 @@ public class OneRoundQuery {
    * @todo if no column for the type exists, all types must be the same!
    */
   public OneRoundQuery(final List<Instance> _instances,
-                       final Set<String> _selects) {
+                       final Set<String> _selects,
+                       final ListQuery _listquery) {
+
     this.instances = _instances;
     this.selects = _selects;
-
-    this.mainSQLTable = _instances.get(0).getType().getMainTable();
-
-    // if no column for the type exists, the type must be defined directly
-    if (this.mainSQLTable.getSqlColType() == null) {
-      this.type = _instances.get(0).getType();
+    this.listquery = _listquery;
+    if (this.listquery.getExpand()!=null){
+      this.mainSQLTable = this.listquery.getExpand().getTable();
+      this.type = this.listquery.getExpand().getLink();
     } else {
-      this.type = null;
+      this.mainSQLTable = _instances.get(0).getType().getMainTable();
+
+      // if no column for the type exists, the type must be defined directly
+      if (this.mainSQLTable.getSqlColType() == null) {
+        this.type = _instances.get(0).getType();
+      } else {
+        this.type = null;
+      }
+
+      // das muss nur gemacht werden, wenn unterschiedliche typen existieren!?
+      final SQLTableMapping2Attributes tmp =
+          new SQLTableMapping2Attributes(this.mainSQLTable);
+      tmp.addInstances(this.instances);
+      this.sqlTableMappings.put(this.mainSQLTable, tmp);
     }
-
-    // das muss nur gemacht werden, wenn unterschiedliche typen existieren!?
-    final SQLTableMapping2Attributes tmp =
-        new SQLTableMapping2Attributes(this.mainSQLTable);
-    tmp.addInstances(this.instances);
-    this.sqlTableMappings.put(this.mainSQLTable, tmp);
-  }
-
-
-
-  /**
-   * @param _instances
-   * @param _selects
-   * @param _expand
-   */
-  public OneRoundQuery(final List<Instance> _instances, final Set<String> _selects,
-      final String _expand) {
-    this.instances=_instances;
-    this.selects = _selects;
-    this.expand = _expand;
-    expandAttribute = _instances.get(0).getType().getLinks().get(_expand);
-    this.type = _instances.get(0).getType().getLinks().get(_expand).getParent();
-    this.mainSQLTable = type.getMainTable();
-
   }
 
   // ///////////////////////////////////////////////////////////////////////////
@@ -141,7 +122,7 @@ public class OneRoundQuery {
 
   public void execute() {
 
-    if (this.expand == null){
+    if (this.listquery.getExpand() == null){
       // make type mapping to instances
       for (final Instance instance : this.instances) {
         TypeMapping2Instances typeMapping =
@@ -168,10 +149,10 @@ public class OneRoundQuery {
       //expand
       for (final Instance instance : this.instances) {
         TypeMapping2Instances typeMapping =
-            this.typeMappings.get(type);
+            this.typeMappings.get(this.type);
         if (typeMapping == null) {
-          typeMapping = new TypeMapping2Instances(type);
-          this.typeMappings.put(type, typeMapping);
+          typeMapping = new TypeMapping2Instances(this.type);
+          this.typeMappings.put(this.type, typeMapping);
         }
         typeMapping.addInstance(instance);
       }
@@ -183,7 +164,7 @@ public class OneRoundQuery {
       for (final SQLTableMapping2Attributes sqlTableMapping : this.sqlTableMappings
           .values()) {
         sqlTableMapping.setExpand(true);
-        sqlTableMapping.setLinkAttribute(this.expandAttribute);
+        sqlTableMapping.setLinkAttribute(this.listquery.getExpand());
         curIndex = sqlTableMapping.evaluateSQLStatement(curIndex - 1);
       }
     }
@@ -283,6 +264,36 @@ public class OneRoundQuery {
     return ret;
   }
 
+  /**
+   * @return
+   * @throws Exception
+   */
+  public Object getMultiLineValue() throws Exception {
+
+    Object ret = null;
+    final Map<Integer, String> indexes =
+              new HashMap<Integer, String>();
+
+    for (final SQLTableMapping2Attributes sql2attr : this.sqlTableMappings.values()){
+      for (final String select : this.selects){
+        final Attribute attr = this.type.getAttribute(select);
+        if (attr != null) {
+          final List<Integer> idx = sql2attr.attr2index.get(attr);
+          if (idx != null) {
+            indexes.put(idx.get(0),attr.getName());
+          }
+        }
+      }
+    }
+
+    final MultipleAttributeTypeInterface attrInterf
+            = (MultipleAttributeTypeInterface) this.listquery.getExpand()
+                                                             .newInstance();
+    ret = attrInterf.readValues(OneRoundQuery.this.cachedResult, indexes);
+
+    return ret;
+  }
+
   // ///////////////////////////////////////////////////////////////////////////
   // ///////////////////////////////////////////////////////////////////////////
   // ///////////////////////////////////////////////////////////////////////////
@@ -305,6 +316,7 @@ public class OneRoundQuery {
 
     final Map<String, Attribute> expr2Attr = new HashMap<String, Attribute>();
 
+    final Set<String> multiExpr = new HashSet<String>();
     final Map<SQLTable, SQLTableMapping2Attributes> sqlTable2Attrs =
         new HashMap<SQLTable, SQLTableMapping2Attributes>();
 
@@ -317,6 +329,14 @@ public class OneRoundQuery {
      */
     public TypeMapping2Instances(final Type _type) {
       this.type = _type;
+    }
+
+    /**
+     * @return
+     */
+    public Object getMultiLineValue() {
+      // TODO Auto-generated method stub
+      return null;
     }
 
     /**
@@ -334,7 +354,24 @@ public class OneRoundQuery {
       for (final String select : OneRoundQuery.this.selects) {
         final Attribute attr = this.type.getAttribute(select);
         if (attr != null) {
-          this.expr2Attr.put(select, attr);
+          if (attr.isMultiline()) {
+            for (final String subSelect : attr.getLink().getAttributes().keySet()) {
+              if (!subSelect.equals("Type")) {
+                ListQuery subQuery =  OneRoundQuery.this.listquery.getSubSelects().get(attr.getName());
+                if (subQuery == null) {
+                  subQuery = new ListQuery();
+                  OneRoundQuery.this.listquery.getSubSelects().put(attr.getName(), subQuery);
+                }
+                subQuery.addSelect(subSelect);
+                subQuery.setExpand(attr);
+
+              }
+            }
+            OneRoundQuery.this.listquery.getMultiSelects().add(select);
+            this.multiExpr.add(select);
+          } else{
+            this.expr2Attr.put(select, attr);
+          }
         }
       }
 
@@ -363,7 +400,7 @@ public class OneRoundQuery {
       // System.out.println("getValue.expression="+_expression);
       Object ret = null;
       final Attribute attr = this.expr2Attr.get(_expression);
-      if (attr != null) {
+      if (attr != null && !attr.isMultiline()) {
         final SQLTableMapping2Attributes sqlTable2attr =
             this.sqlTable2Attrs.get(attr.getTable());
         if (sqlTable2attr != null) {
@@ -374,15 +411,18 @@ public class OneRoundQuery {
         }
       } else {
         //in case we have an expand we return the id of the object
-        if (_expression.contains("\\")){
+        if (_expression.contains("\\") || this.multiExpr.contains(_expression)){
           final SQLTableMapping2Attributes sqlTable2attr =
             this.sqlTable2Attrs.get(OneRoundQuery.this.getType().getMainTable());
           if (sqlTable2attr != null) {
              final Integer idx = sqlTable2attr.col2index.get(OneRoundQuery.this.getType().getMainTable().getSqlColId());
              ret = OneRoundQuery.this.cachedResult.getLong(idx);
           }
-
         }
+
+//      if (this.multiExpr.contains(_expression)) {
+//        OneRoundQuery.this.listquery.getSubSelects().get(_expression)
+//      }
       }
       return ret;
     }
@@ -494,15 +534,9 @@ public class OneRoundQuery {
     public Object getValue(final Attribute _attribute) throws Exception {
       final AttributeTypeInterface attrInterf = _attribute.newInstance();
       Object ret = null;
-      if (expandHasResult){
-        if (OneRoundQuery.this.cachedResult.isMultiple()){
-           final MulitpleAttributeType multi = new MulitpleAttributeType(attrInterf);
-           ret = multi.readValue(OneRoundQuery.this.cachedResult,
-                                 this.attr2index.get(_attribute));
-        } else {
+      if (this.expandHasResult){
           ret = attrInterf.readValue(OneRoundQuery.this.cachedResult,
                                      this.attr2index.get(_attribute));
-        }
       }
       return ret;
     }
@@ -584,7 +618,7 @@ public class OneRoundQuery {
         sql.deleteCharAt(sql.length() - 1);
 
         sql.append(" from ").append(this.sqlTable.getSqlTable()).append(" where ");
-        if (expand){
+        if (this.expand){
           sql.append(this.linkAttribute.getSqlColNames().get(0));
         }else{
           sql.append(" ID ");
@@ -604,9 +638,9 @@ public class OneRoundQuery {
         final ResultSet rs = stmt.executeQuery(sql.toString());
         int keyIndex = 1;
         int subKeyIndex = 0;
-        if (expand){
+        if (this.expand){
           int idx=1;
-          for(final String col :cols){
+          for(final String col :this.cols){
             if(col.equals(this.linkAttribute.getSqlColNames().get(0))){
               keyIndex=idx;
             }
@@ -618,7 +652,7 @@ public class OneRoundQuery {
         //we had an expand that did not deliver any Data
         if(!rs.isAfterLast() && this.expand){
           ret = false;
-          expandHasResult = false;
+          this.expandHasResult = false;
         }
         rs.close();
         stmt.close();
@@ -658,4 +692,6 @@ public class OneRoundQuery {
           this.attributes.toString()).toString();
     }
   }
+
+
 }

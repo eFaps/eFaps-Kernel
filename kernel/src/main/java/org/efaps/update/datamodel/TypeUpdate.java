@@ -113,16 +113,16 @@ public class TypeUpdate extends AbstractUpdate
   public class Attribute extends AbstractDefinition
   {
     /** Name of the attribute. */
-    private String name = null;
+    protected String name = null;
 
     /** Name of the Attribute Type of the attribute. */
-    private String type = null;
+    protected String type = null;
 
     /** Name of the SQL Table of the attribute. */
-    private String sqlTable = null;
+    protected String sqlTable = null;
 
     /** SQL Column of the attribute. */
-    private String sqlColumn = null;
+    protected String sqlColumn = null;
 
     /** Name of the Linked Type (used for links to another type). */
     private String typeLink = null;
@@ -217,13 +217,15 @@ public class TypeUpdate extends AbstractUpdate
      *
      * @param _instance   type instance to update with this attribute
      * @param _typeName   name of the type to update
+     * @param _attrInstanceId
      * @see #getAttrTypeId
      * @see #getSqlTableId
      * @see #getTypeLinkId
      * @todo throw Exception is not allowed
      */
     protected void updateInDB(final Instance _instance,
-                              final String _typeName)
+                              final String _typeName,
+                              final String _attrInstanceId)
         throws EFapsException
     {
       final long attrTypeId = getAttrTypeId(_typeName);
@@ -258,9 +260,12 @@ public class TypeUpdate extends AbstractUpdate
       if (this.defaultValue != null) {
         update.add("DefaultValue", this.defaultValue);
       }
+      if (_attrInstanceId!=null) {
+        update.add("ParentAttribute", _attrInstanceId);
+      }
       update.executeWithoutAccessCheck();
 
-      for (Event event : this.events) {
+      for (final Event event : this.events) {
         final Instance newInstance =
             event.updateInDB(update.getInstance(), this.name);
         setPropertiesInDb(newInstance, event.getProperties());
@@ -274,7 +279,7 @@ public class TypeUpdate extends AbstractUpdate
      * @return id of the attribute type
      * @see #type
      */
-    private long getAttrTypeId(final String _typeName)
+    protected long getAttrTypeId(final String _typeName)
         throws EFapsException
     {
       final SearchQuery query = new SearchQuery();
@@ -305,7 +310,7 @@ public class TypeUpdate extends AbstractUpdate
      * @return id of the SQL table
      * @see #sqlTable
      */
-    private long getSqlTableId(final String _typeName)
+    protected long getSqlTableId(final String _typeName)
         throws EFapsException
     {
       final SearchQuery query = new SearchQuery();
@@ -383,6 +388,118 @@ public class TypeUpdate extends AbstractUpdate
     }
   }
 
+  public class AttributeSet extends Attribute {
+
+
+    /**
+     * Current read attribute definition instance.
+     *
+     * @see #readXML(List, Map, String)
+     */
+    private Attribute curAttr = null;
+
+
+
+
+    private final List<Attribute> attributes = new ArrayList<Attribute>();
+
+    private String uuid;
+    /**
+     * @param _tags
+     * @param _attributes
+     * @param _text
+     */
+    @Override
+    public void readXML(final List<String> _tags,
+                        final Map<String, String> _attributes,
+                        final String _text) {
+
+      final String value = _tags.get(0);
+      if ("name".equals(value))  {
+        this.name = _text;
+      } else if ("uuid".equals(value))  {
+        this.uuid = _text;
+      } else if ("type".equals(value))  {
+        this.type = _text;
+      } else if ("sqltable".equals(value))  {
+          this.sqlTable = _text;
+      } else if ("sqlcolumn".equals(value))  {
+          this.sqlColumn = _text;
+      } else if ("attribute".equals(value))  {
+        if (_tags.size() == 1) {
+          this.curAttr = new Attribute();
+          this.attributes.add(this.curAttr);
+        } else {
+          this.curAttr.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
+        }
+      } else {
+//        super.readXML(_tags, _attributes, _text);
+      }
+    }
+    /**
+     * @param instance
+     * @param value
+     * @throws EFapsException
+     */
+    public void updateInDB(final Instance _instance, final String _typeName) throws EFapsException {
+      final String name = _typeName + ":" + this.name;
+      // create the new type for this set
+      SearchQuery query = new SearchQuery();
+      query.setQueryTypes("Admin_DataModel_Type");
+      query.addWhereExprEqValue("Name", this.name);
+      query.addSelect("OID");
+      query.executeWithoutAccessCheck();
+      Update update = null;
+      if (query.next()) {
+
+      } else {
+        update = new Insert("Admin_DataModel_Type");
+        update.add("Name", name);
+        update.add("UUID", this.uuid );
+      }
+      query.close();
+      update.executeWithoutAccessCheck();
+      this.instance = update.getInstance();
+      update.close();
+
+
+      final long attrTypeId = getAttrTypeId(_typeName);
+      final long sqlTableId = getSqlTableId(_typeName);
+
+      query = new SearchQuery();
+      query.setQueryTypes("Admin_DataModel_Attribute");
+      query.addWhereExprEqValue("Name", this.name);
+      query.addWhereExprEqValue("ParentType", _instance.getId());
+      query.addSelect("OID");
+      query.executeWithoutAccessCheck();
+
+      if (query.next()) {
+        update = new Update((String) query.get("OID"));
+      } else {
+        update = new Insert("Admin_DataModel_Attribute");
+        update.add("ParentType", "" + _instance.getId());
+        update.add("Name", this.name);
+      }
+      query.close();
+
+      update.add("AttributeType", "" + attrTypeId);
+      update.add("Table", "" + sqlTableId);
+      update.add("SQLColumn", this.sqlColumn);
+      update.add("TypeLink", "" + this.instance.getId());
+      update.executeWithoutAccessCheck();
+      final String attrInstanceId = update.getId();
+      update.close();
+
+   // add the attributes to the new Type
+      for (final Attribute attr : this.attributes) {
+        attr.updateInDB(this.instance, name, attrInstanceId);
+      }
+
+    }
+
+
+  }
+
   /////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
   /////////////////////////////////////////////////////////////////////////////
@@ -412,6 +529,8 @@ public class TypeUpdate extends AbstractUpdate
      */
     private final List<Attribute> attributes = new ArrayList<Attribute>();
 
+    private final List<AttributeSet> attributeSets = new ArrayList<AttributeSet>();
+
     /**
      * Current read attribute definition instance.
      *
@@ -419,6 +538,8 @@ public class TypeUpdate extends AbstractUpdate
      */
     private Attribute curAttr = null;
 
+
+    private AttributeSet curAttrSet = null;
     ///////////////////////////////////////////////////////////////////////////
     // instance methods
 
@@ -437,7 +558,14 @@ public class TypeUpdate extends AbstractUpdate
         } else  {
           this.curAttr.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
         }
-      } else if ("event-for".equals(value))  {
+      } else if ("attributeset".equals(value)) {
+        if (_tags.size() == 1) {
+          this.curAttrSet = new AttributeSet();
+          this.attributeSets.add(this.curAttrSet);
+        } else {
+          this.curAttrSet.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
+        }
+      }else if ("event-for".equals(value))  {
         // Adds the name of a allowed event type
         addLink(LINK2ALLOWEDEVENT, new LinkInstance(_attributes.get("type")));
       } else if ("parent".equals(value))  {
@@ -494,9 +622,14 @@ public class TypeUpdate extends AbstractUpdate
 
       super.updateInDB(_allLinkTypes);
 
-      for (Attribute attr : this.attributes) {
-        attr.updateInDB(this.instance, getValue("Name"));
+      for (final Attribute attr : this.attributes) {
+        attr.updateInDB(this.instance, getValue("Name"), null);
       }
+
+      for (final AttributeSet attrSet : this.attributeSets) {
+        attrSet.updateInDB(this.instance, getValue("Name"));
+      }
+
     }
   }
 

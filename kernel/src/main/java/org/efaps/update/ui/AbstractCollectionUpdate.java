@@ -23,6 +23,7 @@ package org.efaps.update.ui;
 import static org.efaps.admin.EFapsClassNames.FIELD;
 import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
 import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
+import static org.efaps.admin.EFapsClassNames.FIELDSET;
 import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
 
 import java.net.URL;
@@ -262,6 +263,8 @@ abstract class AbstractCollectionUpdate extends AbstractUpdate
           insert = new Insert(Type.get(FIELDHEADING));
         } else if ("Group".equals(field.character)) {
           insert = new Insert(Type.get(FIELDGROUP));
+        } else if ("Set".equals(field.character)){
+          insert = new Insert(Type.get(FIELDSET));
         } else {
           insert = new Insert(Type.get(FIELD));
         }

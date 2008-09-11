@@ -24,6 +24,7 @@ import static org.efaps.admin.EFapsClassNames.COLLECTION;
 import static org.efaps.admin.EFapsClassNames.FIELD;
 import static org.efaps.admin.EFapsClassNames.FIELDGROUP;
 import static org.efaps.admin.EFapsClassNames.FIELDHEADING;
+import static org.efaps.admin.EFapsClassNames.FIELDSET;
 import static org.efaps.admin.EFapsClassNames.FIELDTABLE;
 
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldGroup;
 import org.efaps.admin.ui.field.FieldHeading;
+import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.admin.ui.field.FieldTable;
 import org.efaps.db.Instance;
 import org.efaps.db.SearchQuery;
@@ -206,13 +208,15 @@ public abstract class AbstractCollection
           field = new FieldTable(id, null, name);
         } else if (FIELDGROUP.uuid.equals(type.getUUID())) {
           field = new FieldGroup(id, null, name);
+        } else if (FIELDSET.uuid.equals(type.getUUID())) {
+          field = new FieldSet(id, null, name);
         } else {
           field = new Field(id, null, name);
         }
         field.readFromDB();
         add(field);
       }
-    } catch (EFapsException e) {
+    } catch (final EFapsException e) {
       throw new CacheReloadException("could not read fields for '"
           + getName()
           + "'", e);

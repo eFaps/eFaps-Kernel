@@ -152,7 +152,7 @@ public class CachedResult {
     final int columnCount = metaData.getColumnCount();
 
     if (_subKeyIndex>0){
-      multiple = true;
+      this.multiple = true;
     }
 
     if (this.cache.size() == 0) {
@@ -167,7 +167,7 @@ public class CachedResult {
               list.add(_rs.getObject(i));
           }
         }
-        if (multiple){
+        if (this.multiple){
           List<Object> mulitple = this.cache.get(_rs.getObject(_keyIndex));
           if (mulitple==null){
             mulitple = new ArrayList<Object>();
@@ -209,7 +209,7 @@ public class CachedResult {
    */
   public Object getObject(final int _index) {
     Object ret;
-    if (multiple){
+    if (this.multiple){
       final List<Object> tmp = new ArrayList<Object>();
       for (final Object obj : this.currentRow){
         tmp.add(((List<?>) obj).get(_index - 1));
@@ -217,6 +217,20 @@ public class CachedResult {
       ret = tmp;
     } else {
       ret = this.currentRow.get(_index - 1);
+    }
+    return ret;
+  }
+
+  public List<List<Object>> getObjectList(final List<Integer> _indexes){
+    final List<List<Object>> ret = new ArrayList<List<Object>>();
+    if (this.multiple) {
+      for (final Object obj :  this.currentRow){
+        final List<Object> tmp = new ArrayList<Object>();
+        for (final Integer idx : _indexes){
+          tmp.add(((List<?>) obj).get(idx - 1));
+        }
+        ret.add(tmp);
+      }
     }
     return ret;
   }
@@ -329,6 +343,6 @@ public class CachedResult {
   }
 
   public boolean isMultiple() {
-    return multiple;
+    return this.multiple;
   }
 }
