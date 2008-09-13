@@ -112,13 +112,13 @@
       <sqltable>Admin_User_PersonAttributeSQLTable</sqltable>
       <sqlcolumn>PERSONID</sqlcolumn>
       <attribute>
-        <name>email</name>
+        <name>Email</name>
         <type>String</type>
         <sqltable>Admin_User_PersonAttributeSQLTable</sqltable>
         <sqlcolumn>VALUE</sqlcolumn>
       </attribute>
       <attribute>
-        <name>primary</name>
+        <name>Primary</name>
         <type>Boolean</type>
         <sqltable>Admin_User_PersonAttributeSQLTable</sqltable>
         <sqlcolumn>FLAG</sqlcolumn>

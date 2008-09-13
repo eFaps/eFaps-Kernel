@@ -132,10 +132,11 @@
     </field>
     <field name="Email" character="Set">
       <property name="Columns">40</property>
-      <property name="Creatable">true</property>
+      <property name="Creatable">false</property>
       <property name="Editable">true</property>
       <property name="Expression">EmailSet</property>
       <property name="Searchable">true</property>
+      <property name="Order">Email|Primary</property>
     </field>
     <field name="rolesheader" character="Heading">
       <property name="Level">1</property>

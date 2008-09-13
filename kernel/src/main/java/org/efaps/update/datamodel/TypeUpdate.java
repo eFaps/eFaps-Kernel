@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.event.EventType;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
@@ -37,8 +40,6 @@ import org.efaps.update.AbstractUpdate;
 import org.efaps.update.LinkInstance;
 import org.efaps.update.event.Event;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This Class is responsible for the Update of Type in the Database.<br>
@@ -398,9 +399,6 @@ public class TypeUpdate extends AbstractUpdate
      */
     private Attribute curAttr = null;
 
-
-
-
     private final List<Attribute> attributes = new ArrayList<Attribute>();
 
     private String uuid;
@@ -433,7 +431,7 @@ public class TypeUpdate extends AbstractUpdate
           this.curAttr.readXML(_tags.subList(1, _tags.size()), _attributes, _text);
         }
       } else {
-//        super.readXML(_tags, _attributes, _text);
+        super.readXML(_tags, _attributes, _text);
       }
     }
     /**
@@ -466,6 +464,7 @@ public class TypeUpdate extends AbstractUpdate
       final long attrTypeId = getAttrTypeId(_typeName);
       final long sqlTableId = getSqlTableId(_typeName);
 
+      //create/update the attributSet
       query = new SearchQuery();
       query.setQueryTypes("Admin_DataModel_Attribute");
       query.addWhereExprEqValue("Name", this.name);
@@ -488,6 +487,31 @@ public class TypeUpdate extends AbstractUpdate
       update.add("TypeLink", "" + this.instance.getId());
       update.executeWithoutAccessCheck();
       final String attrInstanceId = update.getId();
+      update.close();
+
+
+      //add the LinkAttribute
+      query = new SearchQuery();
+      query.setQueryTypes("Admin_DataModel_Attribute");
+      query.addWhereExprEqValue("Name", this.name);
+      query.addWhereExprEqValue("ParentType", this.instance.getId());
+      query.addSelect("OID");
+      query.executeWithoutAccessCheck();
+
+      if (query.next()) {
+        update = new Update((String) query.get("OID"));
+      } else {
+        update = new Insert("Admin_DataModel_Attribute");
+        update.add("ParentType", "" + this.instance.getId());
+        update.add("Name", this.name);
+      }
+      query.close();
+      this.type = "Link";
+      update.add("AttributeType", "" + getAttrTypeId("Link"));
+      update.add("Table", "" + sqlTableId);
+      update.add("SQLColumn", this.sqlColumn);
+      update.add("TypeLink", "" + _instance.getId());
+      update.executeWithoutAccessCheck();
       update.close();
 
    // add the attributes to the new Type
