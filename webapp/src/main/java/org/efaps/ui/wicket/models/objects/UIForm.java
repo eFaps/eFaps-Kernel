@@ -21,12 +21,15 @@
 package org.efaps.ui.wicket.models.objects;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
@@ -78,6 +81,9 @@ public class UIForm extends AbstractUIObject {
   private UUID formUUID;
 
   private boolean fileUpload = false;
+
+
+  private final Map<String,String[]> newValues = new HashMap<String,String[]>();
 
   public UIForm(final PageParameters _parameters) {
     super(_parameters);
@@ -237,37 +243,58 @@ public class UIForm extends AbstractUIObject {
                 oid = fieldInstance.getOid();
               }
               if (field instanceof FieldSet) {
-                final Map<?, ?> tmp = (Map<?, ?>) query.get(field
-                    .getExpression());
+                final Map<?, ?> tmp = (Map<?, ?>) query.get(field.getExpression());
+                final List<Instance> fieldins = new ArrayList<Instance>();
+                if (tmp != null) {
+                    fieldins.addAll(query.getInstances(field.getExpression()));
+                }
                 int y = 0;
                 boolean add = true;
                 final UIFormCellSet cellset = new UIFormCellSet(field, oid, "",
-                    "", isEditMode() ? field.isRequired() : false, label);
+                    "", isEditMode() ? field.isRequired() : false, label, isEditMode());
+                final Iterator<Instance> iter  = fieldins.iterator();
                 while (add) {
                   int x = 0;
-                  for (final Attribute child : attr.getChildAttributes()) {
-                    final List<?> tmplist = (List<?>) tmp.get(child.getName());
-                    if (y < tmplist.size()) {
-                      final Object value = tmplist.get(y);
+                  if (iter.hasNext()){
+                    cellset.addInstance(y, iter.next());
+                  }
+                  for (final String attrName : ((FieldSet)field).getOrder() ) {
+                    final Attribute child = attr.getChildAttribute(attrName);
+                    if (isEditMode()) {
                       final FieldValue fieldvalue = new FieldValue(
-                          new FieldDefinition("egal", field), child, value,
+                          new FieldDefinition("egal", field), child, "",
                           getCallInstance());
-                      String tmpStr = null;
-                      if (isEditMode() && field.isEditable()) {
-                        tmpStr = fieldvalue.getEditHtml(getCallInstance());
-                      } else if (field.isViewable()) {
-                        tmpStr = fieldvalue.getViewHtml(getCallInstance());
-                      }
-
-                      cellset.add(x, y, tmpStr);
-                      x++;
-                    } else {
-                      add = false;
+                      cellset.addDefiniton(x,fieldvalue.getCreateHtml(getCallInstance()));
                     }
+                    if (tmp == null) {
+                      add = false;
+                    } else {
+                      final List<?> tmplist = (List<?>) tmp.get(child.getName());
+                      if (y < tmplist.size()) {
+                        final Object value = tmplist.get(y);
+                        final FieldValue fieldvalue = new FieldValue(
+                            new FieldDefinition("egal", field), child, value,
+                            getCallInstance());
+                        String tmpStr = null;
+                        if (isEditMode() && field.isEditable()) {
+                          tmpStr = fieldvalue.getEditHtml(getCallInstance());
+                        } else if (field.isViewable()) {
+                          tmpStr = fieldvalue.getViewHtml(getCallInstance());
+                        }
+                        cellset.add(x, y, tmpStr);
+                      } else {
+                        add = false;
+                      }
+                    }
+                    x++;
                   }
                   y++;
                 }
-                row.add(cellset);
+
+                // we only add multiline if we have a value or we are in editmodus
+                if (tmp != null || isEditMode()){
+                  row.add(cellset);
+                }
               } else {
                 final Object value = query.get(field.getExpression());
                 final FieldValue fieldvalue = new FieldValue(
@@ -375,6 +402,16 @@ public class UIForm extends AbstractUIObject {
   public void setFileUpload(final boolean fileUpload) {
     this.fileUpload = fileUpload;
   }
+
+
+
+
+  public Map<String, String[]> getNewValues() {
+    return this.newValues;
+  }
+
+
+
 
   public class FormRow  implements IClusterable{
 

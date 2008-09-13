@@ -20,6 +20,7 @@
 
 package org.efaps.ui.wicket.components.footer;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+
 import org.efaps.admin.event.Return;
 import org.efaps.admin.event.Return.ReturnValues;
 import org.efaps.admin.ui.AbstractCommand.Target;
@@ -89,9 +91,11 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
   @Override
   protected void onSubmit(final AjaxRequestTarget _target) {
 
+    final Map<String, String[]> others = new HashMap<String,String[]>();
     final String[] other =
         this.getComponent().getRequestCycle().getRequest().getParameters(
             "selectedRow");
+    others.put("selectedRow", other);
     if (checkForRequired(_target) && (validateForm(_target))) {
 
       if (this.uiObject instanceof UIForm
@@ -99,8 +103,13 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
         doFileUpload(_target);
 
       } else {
+
+        if (this.uiObject instanceof UIForm) {
+          others.putAll(((UIForm) this.uiObject).getNewValues());
+        }
+
         try {
-          if (!executeEvents(_target, other)) {
+          if (!executeEvents(_target, others)) {
             return;
           }
 
@@ -162,7 +171,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
     }
   }
 
-  private void doFileUpload(AjaxRequestTarget _target) {
+  private void doFileUpload(final AjaxRequestTarget _target) {
     final StringBuilder script = new StringBuilder();
     script.append("var f=document.getElementById('").append(
         this.form.getMarkupId()).append("');f.onsubmit=undefined;f.action=\"")
@@ -192,7 +201,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
   }
 
   /**
-   * execute the events wich are related to CommandAbstract calling the Form
+   * execute the events which are related to CommandAbstract calling the Form
    *
    * @param _target
    *                AjaxRequestTarget to be used in the case a ModalPage should
@@ -203,7 +212,7 @@ public class AjaxSubmitCloseBehavior extends AjaxFormSubmitBehavior {
    * @throws EFapsException
    */
   private boolean executeEvents(final AjaxRequestTarget _target,
-                                final String[] _other) throws EFapsException {
+                                final Map<String,String[]> _other) throws EFapsException {
     boolean ret = true;
     final List<Return> returns =
         ((AbstractUIObject) this.form.getParent().getDefaultModelObject())
