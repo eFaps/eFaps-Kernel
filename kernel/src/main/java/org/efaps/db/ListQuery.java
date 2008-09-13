@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.Type;
@@ -231,10 +232,20 @@ public class ListQuery extends AbstractQuery {
     return this.query.getInstance();
   }
 
+  public List<Instance> getInstances(final String _select){
+    final List<Instance> ret = new ArrayList<Instance>();
+    if (this.multiSelects.contains(_select)){
+      final ListQuery subQuery = this.subSelects.get(_select);
+         ret.addAll(subQuery.query.getInstances());
+      } else {
+      ret.addAll(this.instances);
+    }
+    return ret;
+  }
+
   public Map<String, ListQuery> getSubSelects() {
     return this.subSelects;
   }
-
   /**
    * The instance method returns for the given key the atribute.
    *

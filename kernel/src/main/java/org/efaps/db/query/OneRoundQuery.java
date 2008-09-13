@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeTypeInterface;
 import org.efaps.admin.datamodel.MultipleAttributeTypeInterface;
@@ -167,15 +168,21 @@ public class OneRoundQuery {
         sqlTableMapping.setLinkAttribute(this.listquery.getExpand());
         curIndex = sqlTableMapping.evaluateSQLStatement(curIndex - 1);
       }
+
+
     }
+    beforeFirst();
+
     // get index of type id
     if (this.mainSQLTable.getSqlColType() != null) {
       final SQLTableMapping2Attributes sqlTableMapping =
           this.sqlTableMappings.get(this.mainSQLTable);
       this.colTypeId =
           sqlTableMapping.col2index.get(this.mainSQLTable.getSqlColType());
+      //this.instances.clear();
+
     }
-    beforeFirst();
+
   }
 
   /**
@@ -244,6 +251,22 @@ public class OneRoundQuery {
     return new Instance(getType(), this.cachedResult.getLong(1));
   }
 
+  public List<Instance> getInstances() {
+    if (this.listquery.getExpand() != null) {
+      this.instances.clear();
+      final SQLTableMapping2Attributes sqlTableMapping = this.sqlTableMappings
+          .get(this.mainSQLTable);
+      final List<?> ids = (List<?>) this.cachedResult
+          .getObject(sqlTableMapping.col2index.get(this.mainSQLTable
+              .getSqlColId()));
+      for (final Object id : ids) {
+        this.instances.add(new Instance(this.getType(), (Long) id));
+      }
+    }
+
+    return this.instances;
+  }
+
   /**
    * The instance method returns for the given key the attribute.
    *
@@ -290,6 +313,7 @@ public class OneRoundQuery {
             = (MultipleAttributeTypeInterface) this.listquery.getExpand()
                                                              .newInstance();
     ret = attrInterf.readValues(OneRoundQuery.this.cachedResult, indexes);
+
 
     return ret;
   }
@@ -692,6 +716,8 @@ public class OneRoundQuery {
           this.attributes.toString()).toString();
     }
   }
+
+
 
 
 }
