@@ -38,7 +38,7 @@
   <definition>
     <version-expression>(version==2)</version-expression>
     <name>TeamWork_RootCollection+Delete+Image</name>
-    <file>IMAGE_TeamWork_RootCollection+Delete+Image.gif</file>
+    <file>TeamWork_RootCollection+Delete+Image.gif</file>
   </definition>
 
 </ui-image>

@@ -38,7 +38,7 @@
   <definition>
     <version-expression>(version==2)</version-expression>
     <name>TeamWork_SourceImage</name>
-    <file>IMAGE_TeamWork_SourceImage.gif</file>
+    <file>TeamWork_SourceImage.gif</file>
     <!-- is type icon for -->
     <type>TeamWork_Source</type>
   </definition>
