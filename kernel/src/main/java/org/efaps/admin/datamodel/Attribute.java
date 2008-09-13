@@ -35,20 +35,20 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.UUID;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.db.Context;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.Cache;
 import org.efaps.util.cache.CacheReloadException;
 import org.efaps.util.cache.CacheReloadInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This is the class for the type description. The type description holds
@@ -152,7 +152,7 @@ public class Attribute extends AbstractDataModelObject {
 
   private Attribute parentAttribute;
 
-  private final Set<Attribute> childAttributes = new HashSet<Attribute>();
+  private final Map<String,Attribute> childAttributes = new HashMap<String,Attribute>();
 
 
 
@@ -342,13 +342,16 @@ public class Attribute extends AbstractDataModelObject {
   }
 
   private void addChildAttribute(final Attribute _childAttribute){
-    this.childAttributes.add(_childAttribute);
+    this.childAttributes.put(_childAttribute.getName(),_childAttribute);
   }
 
-  public Set<Attribute> getChildAttributes() {
+  public Map<String,Attribute> getChildAttributes() {
     return this.childAttributes;
   }
 
+  public Attribute getChildAttribute(final String _name){
+    return  this.childAttributes.get(_name);
+  }
   /**
    * This is the getter method for instance variable {@link #sqlColNames}.
    *
