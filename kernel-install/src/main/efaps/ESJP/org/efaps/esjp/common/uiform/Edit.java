@@ -20,7 +20,17 @@
 
 package org.efaps.esjp.common.uiform;
 
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.attributetype.AbstractFileType;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
@@ -29,12 +39,12 @@ import org.efaps.admin.event.Parameter.ParameterValues;
 import org.efaps.admin.program.esjp.EFapsUUID;
 import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.field.Field;
+import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.db.Context;
+import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.Update;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author jmox
@@ -54,18 +64,19 @@ public class Edit implements EventExecution
    */
   public Return execute(final Parameter _parameter) throws EFapsException
   {
-    Return ret = new Return();
-    Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    AbstractCommand command =
+    final Return ret = new Return();
+    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
+    final AbstractCommand command =
         (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
+    final Map<?,?> others = (HashMap<?,?>) _parameter.get(ParameterValues.OTHERS);
+    System.out.println(others);
+    final Context context = Context.getThreadContext();
 
-    Context context = Context.getThreadContext();
-
-    Update update = new Update(instance);
-
-    for (Field field : command.getTargetForm().getFields()) {
+    final List<FieldSet>fieldsets = new ArrayList<FieldSet>();
+    final Update update = new Update(instance);
+    for (final Field field : command.getTargetForm().getFields()) {
       if (field.getExpression() != null && field.isEditable()) {
-        Attribute attr = instance.getType().getAttribute(field.getExpression());
+        final Attribute attr = instance.getType().getAttribute(field.getExpression());
         if (attr != null
             && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
                 .getClassRepr())) {
@@ -74,13 +85,77 @@ public class Edit implements EventExecution
                 .debug("execute(Parameter) - field.getName()="
                     + field.getName());
           }
-          update.add(attr, context.getParameter(field.getName()).replace(',',
+          if (context.getParameters().containsKey(field.getName())){
+            update.add(attr, context.getParameter(field.getName()).replace(',',
               '.'));
+          }
         }
       }
+      if (field instanceof FieldSet) {
+        fieldsets.add((FieldSet) field);
+      }
+    }
+    System.out.println(fieldsets);
+    update.execute();
+    final NumberFormat nf= NumberFormat.getInstance();
+    nf.setMinimumIntegerDigits(2);
+    nf.setMaximumIntegerDigits(2);
+
+    for (final FieldSet fieldset : fieldsets) {
+
+      final Attribute attr = instance.getType().getAttribute(fieldset.getExpression());
+
+      final Type type = attr.getLink();
+
+
+      boolean updateExisting = true;
+      int y = 0;
+      while (updateExisting) {
+        final String idfield = "hiddenId" + fieldset.getName() + nf.format(y);
+        if (context.getParameters().containsKey(idfield)) {
+          final String id = context.getParameter(idfield);
+
+
+          final Update setupdate = new Update(type, id);
+           int x = 0;
+          for (final String attrName : fieldset.getOrder()){
+             final Attribute child =  attr.getChildAttribute(attrName);
+             final String fieldName = fieldset.getName() + nf.format(y) + nf.format(x);
+             System.out.println(fieldName);
+             if (context.getParameters().containsKey(fieldName)){
+               setupdate.add(child, context.getParameter(fieldName));
+             }
+             x++;
+          }
+
+          setupdate.execute();
+        } else {
+          updateExisting = false;
+        }
+        y++;
+      }
+
+      final String[] newOnes = (String[]) others.get(fieldset.getName());
+      if(newOnes!=null) {
+        for (final String newOne : newOnes){
+          final Insert insert = new Insert(type);
+          insert.add(type.getAttribute(fieldset.getExpression()),((Long)instance.getId()).toString());
+          int x = 0;
+          for (final String attrName : fieldset.getOrder()){
+            final Attribute child =  attr.getChildAttribute(attrName);
+            final String fieldName = fieldset.getName()+ "New" + nf.format(Integer.parseInt(newOne)) + nf.format(x);
+            System.out.println(fieldName);
+            if (context.getParameters().containsKey(fieldName)){
+              System.out.println(context.getParameter(fieldName));
+              insert.add(child, context.getParameter(fieldName));
+            }
+            x++;
+          }
+          insert.execute();
+        }
+        }
     }
 
-    update.execute();
 
     return ret;
   }
