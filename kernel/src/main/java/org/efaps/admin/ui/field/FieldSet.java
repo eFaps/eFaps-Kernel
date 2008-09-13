@@ -20,6 +20,11 @@
 
 package org.efaps.admin.ui.field;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.efaps.util.cache.CacheReloadException;
+
 /**
  * TODO comment
  *
@@ -27,6 +32,10 @@ package org.efaps.admin.ui.field;
  * @version $Id: $
  */
 public class FieldSet extends Field{
+
+  private final List<String> order = new ArrayList<String>();
+
+
 
   /**
    * @param id
@@ -37,4 +46,20 @@ public class FieldSet extends Field{
     super(_id, _uuid, _name);
   }
 
+  @Override
+  protected void setProperty(final String _name, final String _value)
+                                                         throws CacheReloadException {
+    if ("Order".equals(_name)) {
+      final String[] values = _value.split("\\|");
+      for (final String value : values) {
+        this.order.add(value);
+      }
+    } else {
+      super.setProperty(_name, _value);
+    }
+  }
+
+  public List<String> getOrder() {
+    return this.order;
+  }
 }
