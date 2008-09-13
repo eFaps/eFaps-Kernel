@@ -30,6 +30,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.efaps.admin.access.AccessTypeEnums;
 import org.efaps.admin.datamodel.Attribute;
 import org.efaps.admin.datamodel.AttributeType;
@@ -39,8 +42,6 @@ import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.event.EventType;
 import org.efaps.db.transaction.ConnectionResource;
 import org.efaps.util.EFapsException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author tmo
@@ -186,7 +187,7 @@ public class Insert extends Update {
       for (final Map.Entry<SQLTable, Map<String, AttributeTypeInterface>> entry : getExpr4Tables()
           .entrySet()) {
         final SQLTable table = entry.getKey();
-        if ((table != mainTable) && !table.isReadOnly() && entry.getValue().size() > 0) {
+        if ((table != mainTable) && !table.isReadOnly()) {
           executeOneStatement(context, con, table, entry.getValue(), id);
         }
       }
