@@ -402,6 +402,8 @@ public class TypeUpdate extends AbstractUpdate
     private final List<Attribute> attributes = new ArrayList<Attribute>();
 
     private String uuid;
+
+    private String parentType;
     /**
      * @param _tags
      * @param _attributes
@@ -419,7 +421,11 @@ public class TypeUpdate extends AbstractUpdate
         this.uuid = _text;
       } else if ("type".equals(value))  {
         this.type = _text;
-      } else if ("sqltable".equals(value))  {
+      } else if ("parent".equals(value))  {
+        this.parentType = _text;
+      }
+
+      else if ("sqltable".equals(value))  {
           this.sqlTable = _text;
       } else if ("sqlcolumn".equals(value))  {
           this.sqlColumn = _text;
@@ -434,6 +440,31 @@ public class TypeUpdate extends AbstractUpdate
         super.readXML(_tags, _attributes, _text);
       }
     }
+
+    protected long getParentTypeId(final String _typeName)
+    throws EFapsException
+    {
+      final SearchQuery query = new SearchQuery();
+      query.setQueryTypes("Admin_DataModel_Type");
+      query.addWhereExprEqValue("Name", _typeName);
+      query.addSelect("OID");
+      query.executeWithoutAccessCheck();
+      if (!query.next()) {
+        LOG.error("type["
+            + _typeName
+            + "]."
+            + "attribute["
+            + this.name
+            + "]: "
+            + "Parent TYpe '"
+            + this.parentType
+            + "' not found");
+      }
+      final long typeId = (new Instance((String) query.get("OID"))).getId();
+      query.close();
+      return typeId;
+    }
+
     /**
      * @param instance
      * @param value
@@ -441,6 +472,12 @@ public class TypeUpdate extends AbstractUpdate
      */
     public void updateInDB(final Instance _instance, final String _typeName) throws EFapsException {
       final String name = _typeName + ":" + this.name;
+      long parentTypeId = 0;
+
+      if ((this.parentType != null) && (this.parentType.length() > 0)) {
+        parentTypeId = getParentTypeId(this.parentType);
+      }
+
       // create the new type for this set
       SearchQuery query = new SearchQuery();
       query.setQueryTypes("Admin_DataModel_Type");
@@ -455,11 +492,14 @@ public class TypeUpdate extends AbstractUpdate
         update.add("Name", name);
         update.add("UUID", this.uuid );
       }
+      if (parentTypeId>0) {
+        update.add("ParentType","" + parentTypeId);
+      }
+
       query.close();
       update.executeWithoutAccessCheck();
       this.instance = update.getInstance();
       update.close();
-
 
       final long attrTypeId = getAttrTypeId(_typeName);
       final long sqlTableId = getSqlTableId(_typeName);

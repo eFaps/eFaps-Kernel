@@ -109,6 +109,7 @@
       <name>EmailSet</name>
       <uuid>35ee0050-322f-4bd4-bb7d-0559be8bd200</uuid>
       <type>MultiLineArray</type>
+      <parent>Admin_UserPersonAttribute</parent>
       <sqltable>Admin_User_PersonAttributeSQLTable</sqltable>
       <sqlcolumn>PERSONID</sqlcolumn>
       <attribute>
