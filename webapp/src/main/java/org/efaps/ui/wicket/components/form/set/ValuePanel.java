@@ -33,6 +33,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 
 import org.efaps.ui.wicket.components.LabelComponent;
+import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.XYValue;
 import org.efaps.ui.wicket.models.objects.UIForm;
@@ -92,7 +93,12 @@ public class ValuePanel extends Panel{
 
     table.add(new LabelComponent("label", bld.toString()));
     if (set.isEditMode()) {
-      table.add(new AjaxRemove("remove",valueid,set.getName()));
+      final AjaxRemove remove = new AjaxRemove("remove",valueid,set.getName());
+      table.add(remove);
+      final StaticImageComponent image = new StaticImageComponent("removeIcon");
+      image.setReference(YPanel.ICON_DELETE);
+      remove.add(image);
+
     } else {
       table.add( new WebMarkupContainer("remove").setVisible(false));
     }

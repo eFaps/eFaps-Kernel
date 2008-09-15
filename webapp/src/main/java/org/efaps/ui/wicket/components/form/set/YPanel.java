@@ -40,10 +40,12 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 
+import org.efaps.ui.wicket.components.efapscontent.StaticImageComponent;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.XYModel;
 import org.efaps.ui.wicket.models.cell.XYValue;
 import org.efaps.ui.wicket.models.objects.UIForm;
+import org.efaps.ui.wicket.resources.EFapsContentReference;
 
 
 /**
@@ -59,6 +61,11 @@ public class YPanel extends Panel{
    */
   private static final long serialVersionUID = 1L;
 
+  public static final EFapsContentReference ICON_ADD =
+    new EFapsContentReference(YPanel.class, "add.png");
+
+  public static final EFapsContentReference ICON_DELETE =
+    new EFapsContentReference(YPanel.class, "delete.png");
   /**
    * @param id
    * @param _model
@@ -74,6 +81,9 @@ public class YPanel extends Panel{
     if (set.isEditMode()) {
       final AjaxAddNew  addNew = new AjaxAddNew("addNew", _model, view);
       add(addNew);
+       final StaticImageComponent image = new StaticImageComponent("add");
+       image.setReference(ICON_ADD);
+       addNew.add(image);
     } else {
       final Component invisible =
         new WebMarkupContainer("addNew").setVisible(false);
@@ -184,7 +194,14 @@ public class YPanel extends Panel{
      this.view.add(remove);
 
      final StringBuilder bld = new StringBuilder();
-     bld.append("<table id=\"").append(remove.getMarkupId()).append("\" ><tr>");
+     bld.append("<table id=\"").append(remove.getMarkupId()).append("\" ><tr>")
+     .append("<td><a onclick=\"").append(remove.getJavaScript()).append("\"")
+     .append(" href=\"#\">")
+     .append("<img src=\"")
+     .append(ICON_DELETE.getImageUrl())
+     .append("\"/>")
+     .append("</a>")
+     .append("</td>");
      for (int x = 0; x< set.getDefinitionsize();x++){
        bld.append("<td>");
        final String value = set.getDefinitionValue(x);
@@ -196,23 +213,18 @@ public class YPanel extends Panel{
          final String tag = matcher.group();
          final StringBuilder name = new StringBuilder().append(" name=\"").append(set.getName())
          .append("eFapsNew").append(nf.format(count)).append(nf.format(x)).append("\" ");
-         ;
+
          bld.append(tag.replaceAll(regex.toString(), name.toString()));
          start= matcher.end();
        }
        bld.append(value.substring(start ,value.length()));
        bld.append("</td>");
      }
-
-
-     bld.append("<td><a onclick=\"").append(remove.getJavaScript()).append("\"")
-       .append(" href=\"#\">removeNew</a>")
-       .append("</td></tr></table>");
+     bld.append("</tr></table>");
 
      script.append(bld.toString().replace("\"","\\\""));
      script.append("'; ")
-     //.append("container.appendChild(div);")
-     .append("container.insertBefore(div, document.getElementById('").append(this.getMarkupId()).append("'));");
+       .append("container.insertBefore(div, document.getElementById('").append(this.getMarkupId()).append("'));");
       _target.appendJavascript(script.toString());
       }
 
