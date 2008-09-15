@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 1958 $
- * Last Changed:    $Date: 2008-09-08 17:49:32 -0500 (Mon, 08 Sep 2008) $
- * Last Changed By: $Author: jmox $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.datamodel;
@@ -28,7 +28,7 @@ import org.efaps.db.query.CachedResult;
 
 /**
  * @author jmox
- * @version $Id: AttributeTypeInterface.java 1958 2008-09-08 22:49:32Z jmox $
+ * @version $Id$
  */
 public interface MultipleAttributeTypeInterface extends AttributeTypeInterface{
 

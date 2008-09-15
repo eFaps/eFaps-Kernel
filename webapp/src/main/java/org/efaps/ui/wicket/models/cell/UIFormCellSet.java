@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:  $
- * Last Changed:    $Date:  $
- * Last Changed By: $Author: $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.cell;
@@ -30,7 +30,7 @@ import org.efaps.db.Instance;
  * TODO comment
  *
  * @author jmox
- * @version $Id: $
+ * @version $Id$
  */
 public class UIFormCellSet extends UIFormCell{
 

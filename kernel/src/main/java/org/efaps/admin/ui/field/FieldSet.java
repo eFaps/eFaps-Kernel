@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev:  $
- * Last Changed:    $Date:  $
- * Last Changed By: $Author: $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.admin.ui.field;
@@ -29,7 +29,7 @@ import org.efaps.util.cache.CacheReloadException;
  * TODO comment
  *
  * @author jmox
- * @version $Id: $
+ * @version $Id$
  */
 public class FieldSet extends Field{
 

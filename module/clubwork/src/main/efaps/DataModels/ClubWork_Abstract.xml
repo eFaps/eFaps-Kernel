@@ -100,22 +100,7 @@
       <sqlcolumn>FORENAME</sqlcolumn>
     </attribute>
     
-    <attributeset>
-      <name>emailset</name>
-      <type>MultiLineArray</type>
-      <set>
-        <attribute>
-          <name>email</name>
-          <type>String</type>
-        </attribute>
-        <attribute>
-          <name>primary</name>
-          <type>Boolean</type>
-        </attribute>
-      </set>
-      <sqltable>ClubWork_AbstractSQLTable</sqltable>
-      <sqlcolumn>FORENAME</sqlcolumn>
-    </attributeset>
+
     
   </definition>
 </datamodel-type>

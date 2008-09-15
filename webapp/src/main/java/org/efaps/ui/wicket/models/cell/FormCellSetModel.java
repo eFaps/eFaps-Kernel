@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Revision:        $Rev: 1931 $
- * Last Changed:    $Date: 2008-06-10 10:37:30 -0500 (Tue, 10 Jun 2008) $
- * Last Changed By: $Author: jmox $
+ * Revision:        $Rev$
+ * Last Changed:    $Date$
+ * Last Changed By: $Author$
  */
 
 package org.efaps.ui.wicket.models.cell;
