@@ -41,6 +41,7 @@ import org.efaps.admin.ui.AbstractCommand;
 import org.efaps.admin.ui.field.Field;
 import org.efaps.admin.ui.field.FieldSet;
 import org.efaps.db.Context;
+import org.efaps.db.Delete;
 import org.efaps.db.Insert;
 import org.efaps.db.Instance;
 import org.efaps.db.Update;
@@ -65,18 +66,21 @@ public class Edit implements EventExecution
   public Return execute(final Parameter _parameter) throws EFapsException
   {
     final Return ret = new Return();
-    final Instance instance = (Instance) _parameter.get(ParameterValues.INSTANCE);
-    final AbstractCommand command =
-        (AbstractCommand) _parameter.get(ParameterValues.UIOBJECT);
-    final Map<?,?> others = (HashMap<?,?>) _parameter.get(ParameterValues.OTHERS);
+    final Instance instance = (Instance) _parameter
+        .get(ParameterValues.INSTANCE);
+    final AbstractCommand command = (AbstractCommand) _parameter
+        .get(ParameterValues.UIOBJECT);
+    final Map<?, ?> others = (HashMap<?, ?>) _parameter
+        .get(ParameterValues.OTHERS);
     System.out.println(others);
     final Context context = Context.getThreadContext();
 
-    final List<FieldSet>fieldsets = new ArrayList<FieldSet>();
+    final List<FieldSet> fieldsets = new ArrayList<FieldSet>();
     final Update update = new Update(instance);
     for (final Field field : command.getTargetForm().getFields()) {
       if (field.getExpression() != null && field.isEditable()) {
-        final Attribute attr = instance.getType().getAttribute(field.getExpression());
+        final Attribute attr = instance.getType().getAttribute(
+            field.getExpression());
         if (attr != null
             && !AbstractFileType.class.isAssignableFrom(attr.getAttributeType()
                 .getClassRepr())) {
@@ -85,9 +89,9 @@ public class Edit implements EventExecution
                 .debug("execute(Parameter) - field.getName()="
                     + field.getName());
           }
-          if (context.getParameters().containsKey(field.getName())){
+          if (context.getParameters().containsKey(field.getName())) {
             update.add(attr, context.getParameter(field.getName()).replace(',',
-              '.'));
+                '.'));
           }
         }
       }
@@ -97,16 +101,17 @@ public class Edit implements EventExecution
     }
     System.out.println(fieldsets);
     update.execute();
-    final NumberFormat nf= NumberFormat.getInstance();
+
+    final NumberFormat nf = NumberFormat.getInstance();
     nf.setMinimumIntegerDigits(2);
     nf.setMaximumIntegerDigits(2);
 
     for (final FieldSet fieldset : fieldsets) {
 
-      final Attribute attr = instance.getType().getAttribute(fieldset.getExpression());
+      final Attribute attr = instance.getType().getAttribute(
+          fieldset.getExpression());
 
       final Type type = attr.getLink();
-
 
       boolean updateExisting = true;
       int y = 0;
@@ -115,17 +120,17 @@ public class Edit implements EventExecution
         if (context.getParameters().containsKey(idfield)) {
           final String id = context.getParameter(idfield);
 
-
           final Update setupdate = new Update(type, id);
-           int x = 0;
-          for (final String attrName : fieldset.getOrder()){
-             final Attribute child =  attr.getChildAttribute(attrName);
-             final String fieldName = fieldset.getName() + nf.format(y) + nf.format(x);
-             System.out.println(fieldName);
-             if (context.getParameters().containsKey(fieldName)){
-               setupdate.add(child, context.getParameter(fieldName));
-             }
-             x++;
+          int x = 0;
+          for (final String attrName : fieldset.getOrder()) {
+            final Attribute child = attr.getChildAttribute(attrName);
+            final String fieldName = fieldset.getName() + nf.format(y)
+                + nf.format(x);
+            System.out.println(fieldName);
+            if (context.getParameters().containsKey(fieldName)) {
+              setupdate.add(child, context.getParameter(fieldName));
+            }
+            x++;
           }
 
           setupdate.execute();
@@ -135,17 +140,20 @@ public class Edit implements EventExecution
         y++;
       }
 
-      final String[] newOnes = (String[]) others.get(fieldset.getName());
-      if(newOnes!=null) {
-        for (final String newOne : newOnes){
+      // add new Values
+      final String[] newOnes = (String[]) others.get(fieldset.getName()+"eFapsNew");
+      if (newOnes != null) {
+        for (final String newOne : newOnes) {
           final Insert insert = new Insert(type);
-          insert.add(type.getAttribute(fieldset.getExpression()),((Long)instance.getId()).toString());
+          insert.add(type.getAttribute(fieldset.getExpression()),
+              ((Long) instance.getId()).toString());
           int x = 0;
-          for (final String attrName : fieldset.getOrder()){
-            final Attribute child =  attr.getChildAttribute(attrName);
-            final String fieldName = fieldset.getName()+ "New" + nf.format(Integer.parseInt(newOne)) + nf.format(x);
+          for (final String attrName : fieldset.getOrder()) {
+            final Attribute child = attr.getChildAttribute(attrName);
+            final String fieldName = fieldset.getName() + "eFapsNew"
+                + nf.format(Integer.parseInt(newOne)) + nf.format(x);
             System.out.println(fieldName);
-            if (context.getParameters().containsKey(fieldName)){
+            if (context.getParameters().containsKey(fieldName)) {
               System.out.println(context.getParameter(fieldName));
               insert.add(child, context.getParameter(fieldName));
             }
@@ -153,7 +161,17 @@ public class Edit implements EventExecution
           }
           insert.execute();
         }
+      }
+
+      //remove Values
+      final String[] removeOnes = (String[]) others.get(fieldset.getName()+"eFapsRemove");
+      if (removeOnes != null) {
+        for (final String removeOne : removeOnes) {
+          final Delete delete = new Delete(type,removeOne);
+          delete.execute();
+
         }
+      }
     }
 
 

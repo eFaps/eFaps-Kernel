@@ -29,15 +29,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.MarkupStream;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.markup.repeater.RefreshingView;
 import org.apache.wicket.model.IModel;
 
-import org.efaps.ui.wicket.components.LabelComponent;
 import org.efaps.ui.wicket.models.cell.UIFormCellSet;
 import org.efaps.ui.wicket.models.cell.XYModel;
 import org.efaps.ui.wicket.models.cell.XYValue;
@@ -69,19 +71,6 @@ public class YPanel extends Panel{
     final YRefreshingView view = new YRefreshingView("yView", _model);
     add(view);
 
-//    for (int y=0; y < set.getYsize(); y++){
-//        final Item item = view.newItem(view.newChildId(), y, _model);
-//        view.populateItem(item);
-//        view.add(item);
-//      }
-
-
-//    for (int y=0; y < set.getYsize(); y++){
-//      final XPanel xpanel = new XPanel(yRepeater.newChildId(), _model,y);
-//      yRepeater.add(xpanel);
-//    }
-//    yRepeater.setOutputMarkupId(true);
-//
     if (set.isEditMode()) {
       final AjaxAddNew  addNew = new AjaxAddNew("addNew", _model, view);
       add(addNew);
@@ -124,39 +113,8 @@ public class YPanel extends Panel{
      */
     @Override
     protected void populateItem(final Item<XYValue> _item) {
-      final XYValue asd = (XYValue) _item.getDefaultModelObject();
-      final UIFormCellSet set = (UIFormCellSet) super.getDefaultModelObject();
-      final Pattern tagpattern = Pattern.compile("</?\\w+((\\s+\\w+(\\s*=\\s*(?:\".*?\"|'.*?'|[^'\">\\s]+))?)+\\s*|\\s*)/?>");
-      final StringBuilder regex = new StringBuilder().append("(?i)name\\s*=\\s*\"(?-i)").append(set.getName()).append("\"");
-      final NumberFormat nf= NumberFormat.getInstance();
-      nf.setMinimumIntegerDigits(2);
-      nf.setMaximumIntegerDigits(2);
 
-
-      final StringBuilder bld = new StringBuilder();
-      bld.append("<tr>").append("<input type=\"hidden\" value=\"")
-      .append(set.getInstance(asd.getY()).getId()).append("\" name=\"hiddenId")
-      .append(set.getName()).append(nf.format(asd.getY())).append("\"");
-      for (int x = 0; x<asd.getX();x++){
-        bld.append("<td>");
-        final String value = set.getXYValue(x, asd.getY());
-        final Matcher matcher = tagpattern.matcher(value);
-        int start = 0;
-        while (matcher.find()) {
-          value.substring(start , matcher.start());
-          bld.append(value.substring(start , matcher.start()));
-          final String tag = matcher.group();
-          final StringBuilder name = new StringBuilder().append(" name=\"").append(set.getName())
-          .append(nf.format(asd.getY())).append(nf.format(x)).append("\" ");
-          ;
-          bld.append(tag.replaceAll(regex.toString(), name.toString()));
-          start= matcher.end();
-        }
-        bld.append(value.substring(start ,value.length()));
-        bld.append("</td>");
-      }
-      bld.append("</tr>");
-      _item.add(new LabelComponent("label", bld.toString()));
+      _item.add(new ValuePanel("valuepanel", super.getDefaultModel(),_item));
     }
 
     @Override
@@ -165,20 +123,23 @@ public class YPanel extends Panel{
         return new Item<XYValue>(id, index, _model);
     }
 
+
   }
 
   public class AjaxAddNew extends AjaxLink<UIFormCellSet> {
 
     private static final long serialVersionUID = 1L;
-    private final YRefreshingView repeater;
+    private final YRefreshingView view;
+
 
     /**
+     * @param _view
      * @param repeater
      * @param id
      */
-    public AjaxAddNew(final String _id,final IModel<UIFormCellSet> _model, final YRefreshingView _repeater ) {
+    public AjaxAddNew(final String _id,final IModel<UIFormCellSet> _model, final YRefreshingView _view) {
       super(_id,_model);
-      this.repeater = _repeater;
+      this.view = _view;
     }
 
 
@@ -189,27 +150,27 @@ public class YPanel extends Panel{
     @Override
     public void onClick(final AjaxRequestTarget _target) {
 
-     // final XPanel xpanel = new XPanel(this.repeater.newChildId(), super.getModel());
       final UIFormCellSet set = (UIFormCellSet) super.getDefaultModelObject();
 
-     final StringBuilder script = new StringBuilder();
+      final StringBuilder script = new StringBuilder();
      script.append("var div = document.createElement('div');")
-     //.append("div.id ='").append(set.getName()).append(set.getNewCount()).append("';")
+
      .append("var container = document.getElementById('").append(this.getParent().getMarkupId()).append("');")
      .append("div.innerHTML='");
      final UIForm formmodel = (UIForm) this.getPage().getDefaultModelObject();
      final Map<String, String[]> newmap = formmodel.getNewValues();
      final Integer count = set.getNewCount();
-     if (!newmap.containsKey(set.getName())){
-       newmap.put(set.getName(),new String[]{count.toString()});
+     final String keyName = set.getName() + "eFapsNew";
+     if (!newmap.containsKey(keyName)){
+       newmap.put(keyName,new String[]{count.toString()});
      } else {
-       final String[] oldvalues = newmap.get(set.getName());
+       final String[] oldvalues = newmap.get(keyName);
        final String[] newvalues = new String[oldvalues.length+1];
        for (int i = 0;i<oldvalues.length;i++) {
          newvalues[i] = oldvalues[i];
        }
        newvalues[oldvalues.length] = count.toString();
-       newmap.put(set.getName(),newvalues);
+       newmap.put(keyName,newvalues);
      }
 
 
@@ -219,11 +180,12 @@ public class YPanel extends Panel{
      nf.setMinimumIntegerDigits(2);
      nf.setMaximumIntegerDigits(2);
 
+     final AjaxRemoveNew remove = new AjaxRemoveNew(this.view.newChildId(),set.getName(),count.toString());
+     this.view.add(remove);
 
      final StringBuilder bld = new StringBuilder();
-     bld.append("<table><tr>");
+     bld.append("<table id=\"").append(remove.getMarkupId()).append("\" ><tr>");
      for (int x = 0; x< set.getDefinitionsize();x++){
-
        bld.append("<td>");
        final String value = set.getDefinitionValue(x);
        final Matcher matcher = tagpattern.matcher(value);
@@ -233,7 +195,7 @@ public class YPanel extends Panel{
          bld.append(value.substring(start , matcher.start()));
          final String tag = matcher.group();
          final StringBuilder name = new StringBuilder().append(" name=\"").append(set.getName())
-         .append("New").append(nf.format(count)).append(nf.format(x)).append("\" ");
+         .append("eFapsNew").append(nf.format(count)).append(nf.format(x)).append("\" ");
          ;
          bld.append(tag.replaceAll(regex.toString(), name.toString()));
          start= matcher.end();
@@ -241,14 +203,99 @@ public class YPanel extends Panel{
        bld.append(value.substring(start ,value.length()));
        bld.append("</td>");
      }
-     bld.append("</tr></table>");
+
+
+     bld.append("<td><a onclick=\"").append(remove.getJavaScript()).append("\"")
+       .append(" href=\"#\">removeNew</a>")
+       .append("</td></tr></table>");
+
      script.append(bld.toString().replace("\"","\\\""));
      script.append("'; ")
-     .append("container.appendChild(div);");
-
-
+     //.append("container.appendChild(div);")
+     .append("container.insertBefore(div, document.getElementById('").append(this.getMarkupId()).append("'));");
       _target.appendJavascript(script.toString());
+      }
+
+  }
+
+  public class AjaxRemoveNew extends WebComponent {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    private final String name;
+    private final String count;
+
+    /**
+     * @param _id
+     * @param _count
+     */
+    public AjaxRemoveNew(final String _id, final String _name, final String _count) {
+      super(_id);
+      this.name = _name;
+      this.count = _count;
+      this.add(new AjaxOpenModalBehavior());
     }
 
+    public String getJavaScript() {
+      return ((AjaxOpenModalBehavior) super.getBehaviors().get(0))
+          .getJavaScript();
+    }
+    /**
+     * for the JSCookMenu nothing must be renderd, because JavaScript is used to
+     * create the Menu
+     *
+     * @see org.apache.wicket.markup.html.WebComponent#onRender(org.apache.wicket.markup.MarkupStream)
+     */
+    @Override
+    protected void onRender(final MarkupStream _markupStream) {
+      _markupStream.next();
+    }
+
+    public class AjaxOpenModalBehavior extends AjaxEventBehavior {
+
+      private static final long serialVersionUID = 1L;
+
+      public AjaxOpenModalBehavior() {
+        super("onclick");
+      }
+
+      public String getJavaScript() {
+        return super.getCallbackScript().toString().replace("'", "\\\'");
+      }
+
+      @Override
+      protected void onEvent(final AjaxRequestTarget _target) {
+        final UIForm formmodel = (UIForm) this.getComponent().getPage().getDefaultModelObject();
+        final Map<String, String[]> newmap = formmodel.getNewValues();
+
+        final String keyName = AjaxRemoveNew.this.name + "eFapsNew";
+
+        if (newmap.containsKey(keyName)){
+          final String[] oldvalues = newmap.get(keyName);
+          final List<String> newvalues = new ArrayList<String>();
+          for (final String oldValue: oldvalues) {
+            if(!oldValue.equals(AjaxRemoveNew.this.count.toString())){
+              newvalues.add(oldValue);
+            }
+          }
+          newmap.put(keyName, newvalues.toArray(new String[newvalues.size()]));
+        }
+
+
+
+        final StringBuilder script = new StringBuilder();
+        script.append("var thisNode = document.getElementById('")
+          .append(this.getComponent().getMarkupId()).append("');")
+          .append("thisNode.parentNode.removeChild(thisNode);");
+        _target.appendJavascript(script.toString());
+      }
+
+      @Override
+      protected CharSequence getPreconditionScript() {
+        return null;
+      }
+    }
   }
 }
