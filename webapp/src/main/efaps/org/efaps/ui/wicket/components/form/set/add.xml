@@ -33,7 +33,7 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://www.efaps.org/xsd http://www.efaps.org/xsd/eFaps_1.0.xsd">
 
-  <uuid></uuid>
+  <uuid>2b87d2fc-f6b9-42ce-b2e8-eb7927ca6452</uuid>
   <file-application>eFaps-webapp</file-application>
   <file-revision>$Rev$</file-revision>
 
