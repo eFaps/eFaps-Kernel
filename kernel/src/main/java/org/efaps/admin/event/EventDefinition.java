@@ -22,6 +22,7 @@ package org.efaps.admin.event;
 
 import static org.efaps.admin.EFapsClassNames.COMMAND;
 import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTE;
+import static org.efaps.admin.EFapsClassNames.DATAMODEL_ATTRIBUTESETATTRIBUTE;
 import static org.efaps.admin.EFapsClassNames.DATAMODEL_TYPE;
 import static org.efaps.admin.EFapsClassNames.EVENT_DEFINITION;
 import static org.efaps.admin.EFapsClassNames.FIELD;
@@ -31,6 +32,9 @@ import static org.efaps.admin.EFapsClassNames.MENU;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.AbstractAdminObject;
 import org.efaps.admin.EFapsClassNames;
@@ -46,8 +50,6 @@ import org.efaps.db.Context;
 import org.efaps.db.SearchQuery;
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * In this Class a Event can be defined. <br/> On loading the Cache all
@@ -137,7 +139,7 @@ public class EventDefinition extends AbstractAdminObject implements
 
   }
 
-  public String getViewableName(Context _context) {
+  public String getViewableName(final Context _context) {
     return null;
   }
 
@@ -303,7 +305,8 @@ public class EventDefinition extends AbstractAdminObject implements
         field.addEvent(triggerEvent, new EventDefinition(eventId, eventName,
             eventPos, resName, method, eventOID));
 
-      } else if (eFapsClass == DATAMODEL_ATTRIBUTE) {
+      } else if (eFapsClass == DATAMODEL_ATTRIBUTE
+                      || eFapsClass == DATAMODEL_ATTRIBUTESETATTRIBUTE) {
         final Attribute attribute = Attribute.get(abstractID);
         if (LOG.isDebugEnabled()) {
           LOG.debug("      Attribute=" + attribute.getName());
