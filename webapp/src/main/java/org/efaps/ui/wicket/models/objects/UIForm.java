@@ -31,6 +31,7 @@ import org.apache.wicket.IClusterable;
 import org.apache.wicket.PageParameters;
 
 import org.efaps.admin.datamodel.Attribute;
+import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.Type;
 import org.efaps.admin.datamodel.ui.FieldDefinition;
 import org.efaps.admin.datamodel.ui.FieldValue;
@@ -243,6 +244,7 @@ public class UIForm extends AbstractUIObject {
                 oid = fieldInstance.getOid();
               }
               if (field instanceof FieldSet) {
+                final AttributeSet set = (AttributeSet) Type.get(AttributeSet.evaluateName(getCallInstance().getType().getName(), field.getExpression()));
                 final Map<?, ?> tmp = (Map<?, ?>) query.get(field.getExpression());
                 final List<Instance> fieldins = new ArrayList<Instance>();
                 if (tmp != null) {
@@ -259,7 +261,7 @@ public class UIForm extends AbstractUIObject {
                     cellset.addInstance(y, iter.next());
                   }
                   for (final String attrName : ((FieldSet)field).getOrder() ) {
-                    final Attribute child = attr.getChildAttribute(attrName);
+                    final Attribute child = set.getAttribute(attrName);
                     if (isEditMode()) {
                       final FieldValue fieldvalue = new FieldValue(
                           new FieldDefinition("egal", field), child, "",

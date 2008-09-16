@@ -291,7 +291,7 @@ public class Attribute extends AbstractDataModelObject {
    * @see #link
    * @see #getLink
    */
-  private void setLink(final Type _link) {
+  protected void setLink(final Type _link) {
     this.link = _link;
   }
 
@@ -437,9 +437,13 @@ public class Attribute extends AbstractDataModelObject {
           final Type typeAttr = Type.get(typeAttrId);
 
           if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESET.uuid)) {
-            final AttributeSet set = new AttributeSet(id,type.getName(),name,AttributeType.get(attrTypeId),sqlCol );
+            final AttributeSet set = new AttributeSet(id,
+                                                      type,
+                                                      name,
+                                                      AttributeType.get(attrTypeId),
+                                                      sqlCol,
+                                                      tableId);
             id2Set.put(id, set);
-
           } else if (typeAttr.getUUID().equals(DATAMODEL_ATTRIBUTESETATTRIBUTE.uuid)) {
             final AttributeSet parentset =  (AttributeSet) Type.get(parentSetId);
             final Attribute attr = new Attribute(id, name, sqlCol, SQLTable

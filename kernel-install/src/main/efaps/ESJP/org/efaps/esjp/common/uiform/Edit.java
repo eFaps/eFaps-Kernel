@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.efaps.admin.datamodel.Attribute;
-import org.efaps.admin.datamodel.Type;
+import org.efaps.admin.datamodel.AttributeSet;
 import org.efaps.admin.datamodel.attributetype.AbstractFileType;
 import org.efaps.admin.event.EventExecution;
 import org.efaps.admin.event.Parameter;
@@ -108,10 +108,7 @@ public class Edit implements EventExecution
 
     for (final FieldSet fieldset : fieldsets) {
 
-      final Attribute attr = instance.getType().getAttribute(
-          fieldset.getExpression());
-
-      final Type type = attr.getLink();
+      final AttributeSet set  = AttributeSet.get(instance.getType().getName(), fieldset.getExpression());
 
       boolean updateExisting = true;
       int y = 0;
@@ -120,10 +117,10 @@ public class Edit implements EventExecution
         if (context.getParameters().containsKey(idfield)) {
           final String id = context.getParameter(idfield);
 
-          final Update setupdate = new Update(type, id);
+          final Update setupdate = new Update(set, id);
           int x = 0;
           for (final String attrName : fieldset.getOrder()) {
-            final Attribute child = attr.getChildAttribute(attrName);
+            final Attribute child = set.getAttribute(attrName);
             final String fieldName = fieldset.getName() + nf.format(y)
                 + nf.format(x);
             System.out.println(fieldName);
@@ -144,12 +141,12 @@ public class Edit implements EventExecution
       final String[] newOnes = (String[]) others.get(fieldset.getName()+"eFapsNew");
       if (newOnes != null) {
         for (final String newOne : newOnes) {
-          final Insert insert = new Insert(type);
-          insert.add(type.getAttribute(fieldset.getExpression()),
+          final Insert insert = new Insert(set);
+          insert.add(set.getAttribute(fieldset.getExpression()),
               ((Long) instance.getId()).toString());
           int x = 0;
           for (final String attrName : fieldset.getOrder()) {
-            final Attribute child = attr.getChildAttribute(attrName);
+            final Attribute child = set.getAttribute(attrName);
             final String fieldName = fieldset.getName() + "eFapsNew"
                 + nf.format(Integer.parseInt(newOne)) + nf.format(x);
             System.out.println(fieldName);
@@ -167,7 +164,7 @@ public class Edit implements EventExecution
       final String[] removeOnes = (String[]) others.get(fieldset.getName()+"eFapsRemove");
       if (removeOnes != null) {
         for (final String removeOne : removeOnes) {
-          final Delete delete = new Delete(type,removeOne);
+          final Delete delete = new Delete(set,removeOne);
           delete.execute();
 
         }

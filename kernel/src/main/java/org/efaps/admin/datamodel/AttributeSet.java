@@ -20,9 +20,7 @@
 
 package org.efaps.admin.datamodel;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.efaps.util.EFapsException;
 import org.efaps.util.cache.CacheReloadException;
@@ -37,7 +35,7 @@ public class AttributeSet extends Type{
 
   private final AttributeType attributeType;
 
-  private final List<String> sqlColNames = new ArrayList<String>();
+  private final String attributeName;
 
   /**
    * @param _id
@@ -46,26 +44,35 @@ public class AttributeSet extends Type{
    * @param attributeType
    * @throws CacheReloadException
    */
-  protected AttributeSet(final long _id, final String _typeName, final String _name, final AttributeType _attributeType, final String _sqlColNames) throws CacheReloadException {
-    super(_id, null, _typeName  + ":" + _name);
+  protected AttributeSet(final long _id,
+                        final Type _type,
+                        final String _name,
+                        final AttributeType _attributeType,
+                        final String _sqlColNames,
+                        final long _tableId) throws CacheReloadException {
+    super(_id, null, evaluateName(_type.getName(), _name));
+
+    this.attributeName = (_name == null) ? null : _name.trim();
+
     getTypeCache().add(this);
     readFromDB4Properties();
-    this.attributeType = _attributeType;
-    final StringTokenizer tokens = new StringTokenizer(_sqlColNames.trim(), ",");
-    while (tokens.hasMoreTokens()) {
-      final String colName = tokens.nextToken().trim();
-      getSqlColNames().add(colName);
 
-    }
+    this.attributeType = _attributeType;
+
+    final Attribute attr = new Attribute(_id, _name, _sqlColNames, SQLTable
+        .get(_tableId), AttributeType.get("Link"), null);
+    attr.setParent(this);
+    addAttribute(attr);
+
+    attr.setLink(_type);
+    _type.addLink(attr);
   }
 
   public AttributeType getAttributeType() {
     return this.attributeType;
   }
 
-  public static String evaluateName(final String _typeName, final String _name) {
-    return _typeName  + ":" + _name;
-  }
+
 
   public MultipleAttributeTypeInterface getAttributeTypeInstance() throws EFapsException {
     final MultipleAttributeTypeInterface ret = (MultipleAttributeTypeInterface) this.attributeType.newInstance();
@@ -78,6 +85,16 @@ public class AttributeSet extends Type{
    * @see #sqlColNames
    */
   public List<String> getSqlColNames() {
-    return this.sqlColNames;
+    return this.getAttribute(this.attributeName).getSqlColNames();
+  }
+
+  public static String evaluateName(final String _typeName, final String _name) {
+    final StringBuilder ret = new StringBuilder();
+    ret.append(_typeName).append(":").append(_name).toString();
+    return ret.toString();
+  }
+
+  public static AttributeSet get(final String _typeName, final String _name){
+   return (AttributeSet) Type.get(evaluateName(_typeName, _name));
   }
 }
