@@ -130,7 +130,8 @@
       <property name="Expression">FirstName</property>
       <property name="Searchable">true</property>
     </field>
-    <field name="Email" character="Set">
+    <field name="EmailSet" character="Set">
+      <property name="Label">Admin_User_Person/EmailSet.Label</property>
       <property name="Columns">40</property>
       <property name="Creatable">false</property>
       <property name="Editable">true</property>
