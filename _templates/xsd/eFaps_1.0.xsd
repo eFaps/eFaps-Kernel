@@ -302,7 +302,23 @@
     </xsd:sequence>
   </xsd:complexType>
 
-
+  <xsd:complexType name="attributeset">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      <xsd:element name="type" maxOccurs="1" minOccurs="1">
+        <xsd:simpleType>
+          <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="MultiLineArray" />
+          </xsd:restriction>
+        </xsd:simpleType>
+      </xsd:element>
+      <xsd:element name="parent" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+      <xsd:element name="sqltable" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      <xsd:element name="sqlcolumn" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+      <xsd:element name="attribute" type="eFaps:attribute" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+ 
   <xsd:complexType name="bundle">
     <xsd:attribute name="name" type="xsd:string"></xsd:attribute>
     <xsd:attribute name="sequence" type="xsd:string"></xsd:attribute>
@@ -350,8 +366,8 @@
     <xsd:sequence>
       <xsd:element name="command" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
     </xsd:sequence>
-
   </xsd:complexType>
+  
   <xsd:complexType name="definition_access-set">
     <xsd:complexContent>
       <xsd:extension base="eFaps:AbstractDefinition">
@@ -399,10 +415,10 @@
     <xsd:complexContent>
       <xsd:extension base="eFaps:AbstractDefinition">
         <xsd:sequence>
-          <xsd:element name="attribute" type="eFaps:attribute" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+          <xsd:element name="abstract" type="xsd:boolean" minOccurs="0" maxOccurs="1"></xsd:element>
+          <xsd:group ref="eFaps:attributeGroup" maxOccurs="unbounded" minOccurs="0"></xsd:group>
           <xsd:element name="trigger" type="eFaps:trigger" maxOccurs="unbounded" minOccurs="0"></xsd:element>
           <xsd:element name="property" type="eFaps:property_datamodel-type" maxOccurs="unbounded" minOccurs="0"></xsd:element>
-          <xsd:element name="abstract" type="xsd:boolean" minOccurs="0" maxOccurs="1"></xsd:element>
           <xsd:element name="event-for" type="eFaps:event-for" minOccurs="0" maxOccurs="unbounded"></xsd:element>
         </xsd:sequence>
       </xsd:extension>
@@ -462,10 +478,14 @@
 
   <xsd:complexType name="definition_ui-menu">
     <xsd:complexContent>
-      <xsd:extension base="eFaps:definition_ui-command">
+      <xsd:extension base="eFaps:AbstractDefinition">
         <xsd:sequence>
+          <xsd:element name="icon" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          <xsd:element name="access" type="eFaps:access" maxOccurs="1" minOccurs="0"></xsd:element>
+          <xsd:element name="target" type="eFaps:target" maxOccurs="1" minOccurs="0"></xsd:element>
           <xsd:element name="type" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
           <xsd:element name="childs" type="eFaps:childs" maxOccurs="1" minOccurs="0"></xsd:element>
+          <xsd:element name="trigger" type="eFaps:trigger" maxOccurs="unbounded" minOccurs="0"></xsd:element>
           <xsd:element name="property" type="eFaps:property_ui-command" maxOccurs="unbounded" minOccurs="0"></xsd:element>
         </xsd:sequence>
       </xsd:extension>
@@ -559,6 +579,7 @@
           <xsd:enumeration value="Expression" />
           <xsd:enumeration value="Group" />
           <xsd:enumeration value="Heading" />
+          <xsd:enumeration value="Set"></xsd:enumeration>
           <xsd:enumeration value="Target" />
         </xsd:restriction>
       </xsd:simpleType>
@@ -645,16 +666,6 @@
     <xsd:attribute name="compile" type="xsd:boolean" use="optional" default="false"></xsd:attribute>
   </xsd:complexType>
 
-
-  <xsd:complexType name="property">
-    <xsd:simpleContent>
-      <xsd:extension base="xsd:string">
-        <xsd:attribute name="name" use="required"></xsd:attribute>
-      </xsd:extension>
-    </xsd:simpleContent>
-  </xsd:complexType>
-
-
   <xsd:complexType name="person">
     <xsd:sequence>
       <xsd:element name="classname" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
@@ -669,6 +680,14 @@
       <xsd:element name="mobile-method" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
       <xsd:element name="fax-method" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
     </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="property">
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="name" use="required"></xsd:attribute>
+      </xsd:extension>
+    </xsd:simpleContent>
   </xsd:complexType>
 
   <xsd:complexType name="property_datamodel-type">
@@ -718,6 +737,7 @@
               <xsd:enumeration value="HRef" />
               <xsd:enumeration value="Label" />
               <xsd:enumeration value="Level"></xsd:enumeration>
+              <xsd:enumeration value="Order"></xsd:enumeration>
               <xsd:enumeration value="Required" />
               <xsd:enumeration value="Searchable" />
               <xsd:enumeration value="ShowTypeIcon" />
@@ -835,5 +855,13 @@
     <xsd:attribute name="program" type="xsd:string" use="required"></xsd:attribute>
     <xsd:attribute name="method" type="xsd:string" use="optional" default="execute"></xsd:attribute>
   </xsd:complexType>
+
+   <xsd:group name="attributeGroup">
+    <xsd:choice>
+      <xsd:element name="attribute" type="eFaps:attribute" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+      <xsd:element name="attributeset" type="eFaps:attributeset" maxOccurs="unbounded" minOccurs="0"></xsd:element>
+    </xsd:choice>
+  </xsd:group>
+  
 
 </xsd:schema>
